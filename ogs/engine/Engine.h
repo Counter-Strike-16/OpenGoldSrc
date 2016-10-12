@@ -26,49 +26,40 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-class IEngine
+#include "IEngine.hpp"
+
+class CEngine : public IEngine
 {
 public:
-	enum
-	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
-
-	virtual			~IEngine(){}
+	CEngine();
+	~CEngine();
 	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
+	bool Load(bool dedicated, char *basedir, char *cmdline);
+	void Unload();
 	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
+	void SetState(int nState);
+	int GetState(){return mnState;}
 	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
+	void SetSubState(int nSubState);
+	int GetSubState(){return mnSubState;}
 	
-	virtual int		Frame() = 0;
+	int Frame();
 	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
+	double GetFrameTime();
+	double GetCurTime();
 	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
+	void TrapKey_Event(int key, bool down);
+	void TrapMouse_Event(int buttons, bool down);
 	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int& buttons, int& key) = 0;
+	void StartTrapMode();
+	bool IsTrapping();
+	bool CheckDoneTrapping(int &buttons, int &key);
 	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
+	int GetQuitting();
+	void SetQuitting();
+private:
+	int mnState;
+	int mnSubState;
 };
-
-extern IEngine *engine;
-
-#endif // IENGINE_H

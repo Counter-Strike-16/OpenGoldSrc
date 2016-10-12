@@ -26,49 +26,34 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-class IEngine
+class CHost
 {
 public:
-	enum
-	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
-
-	virtual			~IEngine(){}
+	CHost();
+	~CHost();
 	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
+	void Init(quakeparms_t *parms);
+	void InitLocal();
+	void InitCommands();
 	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
+	void Shutdown();
+	void ShutdownServer(qboolean crash);
 	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
+	void ClearMemory();
 	
-	virtual int		Frame() = 0;
+	qboolean FilterTime(float time);
 	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
+	void WriteConfiguration();
 	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
+	void EndGame(char *message, ...);
+	void Error(char *error, ...);
 	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int& buttons, int& key) = 0;
+	void FindMaxClients();
+	void GetConsoleCommands();
 	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
+	qboolean IsInitialized();
+private:
+	qboolean bInitialized; // True if into command execution
 };
-
-extern IEngine *engine;
-
-#endif // IENGINE_H
