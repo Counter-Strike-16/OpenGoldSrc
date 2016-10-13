@@ -31,11 +31,15 @@ public:
 	~CGameServer();
 	
 	void Init();
+	void Shutdown();
+	
+	void Frame(float time);
 	
 	void SendClientMessages();
 	
 	void ClientPrintf(CGameClient *apClient, char *fmt, ...);
 	void BroadcastPrintf(char *fmt, ...);
+	void BroadcastCommand(char *fmt, ...);
 	
 	CGameClient *GetClientByName(const char *name);
 	CGameClient *GetClientByIndex(int id);

@@ -57,7 +57,7 @@ byte		*host_colormap;
 cvar_t	host_framerate = {"host_framerate","0"};	// set for slow motion
 cvar_t	host_speeds = {"host_speeds","0"};			// set for running times
 
-cvar_t	sys_ticrate = {"sys_ticrate","0.05"};
+cvar_t	sys_ticrate = {"sys_ticrate","0.05"}; // 100
 cvar_t	serverprofile = {"serverprofile","0"};
 
 cvar_t	fraglimit = {"fraglimit", "0", false, true};
@@ -107,7 +107,7 @@ void CHost::Init(quakeparms_t *parms)
 
 	Memory_Init (parms->membase, parms->memsize);
 	mpCmdBuffer->Init();
-	Cmd_Init ();	
+	mpCmdSystem->Init();	
 	V_Init ();
 	Chase_Init ();
 	Host_InitVCR (parms);
@@ -167,6 +167,8 @@ void CHost::Init(quakeparms_t *parms)
 	};
 	
 	//Cbuf_InsertText ("exec quake.rc\n");
+	//Cbuf_AddText ("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
+	//Cbuf_AddText ("cl_warncmd 1\n");
 
 	//Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
 	//host_hunklevel = Hunk_LowMark ();
@@ -205,13 +207,15 @@ void CHost::Shutdown()
 	mpSound->Shutdown();
 	mpInput->Shutdown();
 	
-	if(cls->GetState() != ca_dedicated)
+	if(cls->GetState() != ca_dedicated) // host_basepal instead of this in qw
 		VID_Shutdown();
 };
 
 /*
 ================
 Host_EndGame
+
+Call this to drop to a console without exiting
 ================
 */
 void CHost::EndGame(char *message, ...)
@@ -243,7 +247,7 @@ void CHost::EndGame(char *message, ...)
 ================
 Host_Error
 
-This shuts down both the client and server
+This shuts down both the client and server and exits
 ================
 */
 void CHost::Error(char *error, ...)
@@ -271,9 +275,13 @@ void CHost::Error(char *error, ...)
 		Sys_Error ("Host_Error: %s\n",string);	// dedicated servers exit
 
 	CL_Disconnect ();
+	
 	cls.demonum = -1;
 
 	inerror = false;
+	
+	// FIXME
+	//Sys_Error ("Host_Error: %s\n",string);
 
 	longjmp (host_abortserver, 1);
 }

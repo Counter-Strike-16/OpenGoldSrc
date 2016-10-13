@@ -9,6 +9,11 @@ public:
 	~CGameClient();
 	
 	void Disconnect(const char *reason, ...);
+	
+	int CalcPing();
+	
+	void SendServerInfo();
+	void ExtractFromUserInfo();
 private:
 typedef struct client_s
 {
@@ -29,8 +34,9 @@ typedef struct client_s
 	sizebuf_t		message;			// can be added to at any time,
 										// copied and clear once per frame
 	byte			msgbuf[MAX_MSGLEN];
-	edict_t			*edict;				// EDICT_NUM(clientnum+1)
-	char			name[32];			// for printing to other people
+	
+	edict_t			*edict;				// Associated entity; EDICT_NUM(clientnum+1)
+	char			name[32];			// for printing to other people (extracted from userinfo)
 	int				colors;
 		
 	float			ping_times[NUM_PING_TIMES];

@@ -14,6 +14,7 @@ void GameDLL_GameShutdown()
 
 int GameDLL_ShouldCollide(edict_t *pentTouched, edict_t *pentOther)
 {
+	return 0;
 };
 
 void GameDLL_CvarValue(const edict_t *pEnt, const char *value)
