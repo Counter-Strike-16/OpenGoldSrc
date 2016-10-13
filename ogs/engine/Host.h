@@ -28,6 +28,11 @@
 
 #pragma once
 
+class CCmdBuffer;
+class CNetwork;
+class CSound;
+class CInput;
+
 class CHost
 {
 public:
@@ -39,13 +44,15 @@ public:
 	void InitCommands();
 	
 	void Shutdown();
-	void ShutdownServer(qboolean crash);
+	void ShutdownServer(bool crash);
+	
+	void Frame(float time);
 	
 	void ClearMemory();
 	
-	qboolean FilterTime(float time);
+	bool FilterTime(float time);
 	
-	void WriteConfiguration();
+	void WriteConfig();
 	
 	void EndGame(char *message, ...);
 	void Error(char *error, ...);
@@ -53,7 +60,16 @@ public:
 	void FindMaxClients();
 	void GetConsoleCommands();
 	
-	qboolean IsInitialized();
+	bool IsInitialized();
 private:
-	qboolean bInitialized; // True if into command execution
+	CCmdBuffer *mpCmdBuffer;
+	CNetwork *mpNetwork;
+	CSound *mpSound;
+	CInput *mpInput;
+	
+	quakeparms_t host_parms; // todo: make ptr
+	
+	int host_framecount;
+	
+	bool bInitialized; // True if into command execution
 };

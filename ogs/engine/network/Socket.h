@@ -5,7 +5,7 @@ class qsocket_t // CNetChannel
 public:
 	// Returns true or false if the given qsocket can currently accept a
 	// message to be transmitted
-	qboolean CanSendMessage();
+	bool CanSendMessage();
 	
 	// Returns data in net_message sizebuf
 	// returns 0 if no data is waiting
@@ -19,36 +19,38 @@ public:
 	//
 	// returns 1 if the message was sent properly
 	// returns -1 if the connection died
-	int SendMessage(struct qsocket_s *sock, sizebuf_t *data);
-	int SendUnreliableMessage(struct qsocket_s *sock, sizebuf_t *data);
+	int SendMessage(sizebuf_t *data);
+	int SendUnreliableMessage(sizebuf_t *data);
 	
 	qsocket_t *next;
 	
-	double			connecttime;
-	double			lastMessageTime;
-	double			lastSendTime;
-
-	qboolean		disconnected;
-	qboolean		canSend;
-	qboolean		sendNext;
+	double connecttime;
+	double lastMessageTime;
+	double lastSendTime;
 	
-	int				driver;
-	int				landriver;
-	int				socket;
-	void			*driverdata;
+	bool mbDisconnected;
+	bool canSend;
+	bool sendNext;
+	
+	int driver;
+	int landriver;
+	int socket;
+	
+	void *driverdata;
 
-	unsigned int	ackSequence;
-	unsigned int	sendSequence;
-	unsigned int	unreliableSendSequence;
-	int				sendMessageLength;
-	byte			sendMessage [NET_MAXMESSAGE];
-
-	unsigned int	receiveSequence;
-	unsigned int	unreliableReceiveSequence;
-	int				receiveMessageLength;
-	byte			receiveMessage [NET_MAXMESSAGE];
-
-	struct qsockaddr	addr;
-	char				address[NET_NAMELEN];
-
+	uint ackSequence;
+	uint sendSequence;
+	uint unreliableSendSequence;
+	
+	int sendMessageLength;
+	byte sendMessage[NET_MAXMESSAGE];
+	
+	uint receiveSequence;
+	uint unreliableReceiveSequence;
+	
+	int receiveMessageLength;
+	byte receiveMessage[NET_MAXMESSAGE];
+	
+	qsockaddr addr;
+	char address[NET_NAMELEN];
 };

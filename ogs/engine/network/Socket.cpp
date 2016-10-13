@@ -11,14 +11,14 @@ returns 1 if a message was received
 returns -1 if connection is invalid
 =================
 */
-int	NET_GetMessage (qsocket_t *sock)
+int	qsocket_t::GetMessage()
 {
 	int ret;
 
 	if (!sock)
 		return -1;
 
-	if (sock->disconnected)
+	if (mbDisconnected)
 	{
 		Con_Printf("NET_GetMessage: disconnected socket\n");
 		return -1;
@@ -87,7 +87,7 @@ returns 1 if the message was sent properly
 returns -1 if the connection died
 ==================
 */
-int NET_SendMessage (qsocket_t *sock, sizebuf_t *data)
+int qsocket_t::SendMessage(sizebuf_t *data)
 {
 	int		r;
 	
@@ -117,7 +117,7 @@ int NET_SendMessage (qsocket_t *sock, sizebuf_t *data)
 	return r;
 }
 
-int NET_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
+int qsocket_t::SendUnreliableMessage(sizebuf_t *data)
 {
 	int		r;
 	
@@ -155,7 +155,7 @@ Returns true or false if the given qsocket can currently accept a
 message to be transmitted.
 ==================
 */
-qboolean NET_CanSendMessage (qsocket_t *sock)
+bool qsocket_t::CanSendMessage()
 {
 	int		r;
 	

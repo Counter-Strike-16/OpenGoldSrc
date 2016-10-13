@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+class qsocket_t;
+
 class CNetwork
 {
 public:
@@ -29,17 +31,17 @@ public:
 	void Shutdown();
 	
 	// Returns a new connection number if there is one pending, else -1
-	struct qsocket_s *CheckNewConnections();
+	qsocket_t *CheckNewConnections();
 	
 	// Called by client to connect to a host. Returns -1 if not able to
-	struct qsocket_s *ConnectTo(char *host);
+	qsocket_t *ConnectTo(char *host);
 	
 	// This is a reliable *blocking* send to all attached clients
 	int SendToAll(sizebuf_t *data, int blocktime);
 	
 	// If a dead connection is returned by a get or send function, 
 	// this function should be called when it is convenient
-	void CloseSocket(struct qsocket_s *sock);
+	void CloseSocket(qsocket_t *sock);
 	
 	// Server calls when a client is kicked off for a game related misbehavior
 	// like an illegal protocal conversation.  Client calls when disconnecting

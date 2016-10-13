@@ -1,12 +1,12 @@
-#pragma once
+#include "network/Network.h"
+#include "network/Socket.h"
 
 /*
 ====================
 NET_Init
 ====================
 */
-
-void CNetwork::Init(void)
+void CNetwork::Init()
 {
 	int			i;
 	int			controlSocket;
@@ -33,11 +33,13 @@ void CNetwork::Init(void)
 			DEFAULTnet_hostport = Q_atoi (com_argv[i+1]);
 		else
 			Sys_Error ("NET_Init: you must specify a number after -port");
-	}
+	};
+	
 	net_hostport = DEFAULTnet_hostport;
 
-	if (COM_CheckParm("-listen") || cls.state == ca_dedicated)
+	if (COM_CheckParm("-listen") || cls->GetState() == ca_dedicated)
 		listening = true;
+	
 	net_numsockets = svs.maxclientslimit;
 	if (cls.state != ca_dedicated)
 		net_numsockets++;
@@ -65,9 +67,6 @@ void CNetwork::Init(void)
 	Cvar_RegisterVariable (&config_modem_clear);
 	Cvar_RegisterVariable (&config_modem_init);
 	Cvar_RegisterVariable (&config_modem_hangup);
-#ifdef IDGODS
-	Cvar_RegisterVariable (&idgods);
-#endif
 
 	Cmd_AddCommand ("slist", NET_Slist_f);
 	Cmd_AddCommand ("listen", NET_Listen_f);
@@ -88,6 +87,7 @@ void CNetwork::Init(void)
 
 	if (*my_ipx_address)
 		Con_DPrintf("IPX address %s\n", my_ipx_address);
+	
 	if (*my_tcpip_address)
 		Con_DPrintf("TCP/IP address %s\n", my_tcpip_address);
 }
@@ -97,8 +97,7 @@ void CNetwork::Init(void)
 NET_Shutdown
 ====================
 */
-
-void CNetwork::Shutdown (void)
+void CNetwork::Shutdown()
 {
 	qsocket_t	*sock;
 
@@ -126,28 +125,30 @@ void CNetwork::Shutdown (void)
 	}
 }
 
-void CNetwork::Poll(void)
+void CNetwork::Poll()
 {
 	PollProcedure *pp;
-	qboolean	useModem;
-
+	bool useModem;
+	
 	if (!configRestored)
 	{
 		if (serialAvailable)
 		{
-			if (config_com_modem.value == 1.0)
+			if(config_com_modem.value == 1.0f)
 				useModem = true;
 			else
 				useModem = false;
+			
 			SetComPortConfig (0, (int)config_com_port.value, (int)config_com_irq.value, (int)config_com_baud.value, useModem);
 			SetModemConfig (0, config_modem_dialtype.string, config_modem_clear.string, config_modem_init.string, config_modem_hangup.string);
-		}
+		};
+		
 		configRestored = true;
-	}
-
+	};
+	
 	SetNetTime();
-
-	for (pp = pollProcedureList; pp; pp = pp->next)
+	
+	for(pp = pollProcedureList; pp; pp = pp->next)
 	{
 		if (pp->nextTime > net_time)
 			break;
