@@ -26,63 +26,42 @@
 *
 */
 
-// Game server
-
 #pragma once
 
-class CGameClient;
+#include "maintypes.h"
 
-enum server_state_t
+enum MOD_GAMEPLAY_TYPE_E
 {
-	ss_dead = 0,
-	ss_loading,
-	ss_active
+	BOTH = 0,
+	SINGLEPLAYER_ONLY,
+	MULTIPLAYER_ONLY
 };
 
-class CGameServer
+struct modinfo_t
+{
+	qboolean bIsMod;
+	char szInfo[256];
+	char szDL[256];
+	char szHLVersion[32];
+	int version;
+	int size;
+	qboolean svonly;
+	qboolean cldll;
+	qboolean secure;
+	MOD_GAMEPLAY_TYPE_E type;
+	int num_edicts;
+	int clientDllCRC;
+};
+
+class CModInfo
 {
 public:
-	CGameServer();
-	~CGameServer();
+	CModInfo();
+	~CModInfo();
 	
-	void Init();
-	void Shutdown();
+	void LoadFromFile();
 	
-	void Frame(float time);
-	
-	void ConnectionlessPacket();
-	
-	void ReadPackets();
-	void SendClientMessages(); // SendPackets
-	void CheckTimeouts();
-	
-	void RejectConnection(netadr_t *adr, char *fmt, ...);
-	void RejectConnectionForPassword(netadr_t *adr);
-	
-	void ClientPrintf(CGameClient *apClient, /*int level,*/ char *fmt, ...);
-	void BroadcastPrintf(/*int level,*/ const char *fmt, ...);
-	void BroadcastCommand(char *fmt, ...);
-	
-	void KickPlayer(int nPlayerSlot, int nReason);
-	// GetClient->Kick(reason);
-	
-	void InactivateClients();
-	
-	void BuildReconnect(sizebuf_t *msg);
-	void ReconnectAllClients();
-	
-	CGameClient *GetClientByName(const char *name);
-	CGameClient *GetClientByIndex(int id);
+	void SetModKey(char *pkey, char *pvalue);
 private:
-	server_state_t	state; // some actions are only valid during load
-	//tGameServerStateVec mvStates; // mvStates[state]->Frame();
-	
-	int maxclients;
-	int maxclientslimit;
-	
-	GameClient *clients; // [maxclients]
-	
-	int flags; // episode completion information
-	
-	bool changelevel_issued; // cleared when at SV_SpawnServer
+	modinfo_t *mpPODInfo;
 };

@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// cvar.h
+
+// CvarSystem.h
 
 /*
 
@@ -95,3 +96,10 @@ void 	Cvar_WriteVariables (FILE *f);
 cvar_t *Cvar_FindVar (char *var_name);
 
 extern cvar_t	*cvar_vars;
+
+float CVarGetFloat(const char *szVarName);
+const char *CVarGetString(const char *szVarName);
+cvar_t *CVarGetPointer(const char *szVarName);
+void CVarSetFloat(const char *szVarName, float flValue);
+void CVarSetString(const char *szVarName, const char *szValue);
+void CVarRegister(cvar_t *pCvar);

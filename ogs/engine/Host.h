@@ -28,10 +28,29 @@
 
 #pragma once
 
+// Note: it is possible to move local client code to host somehow (QW-client style)
+// Need to think about it (client_state and client_static -> ClientData or something like that)
+// void CHost::Disconnect() // will disconnect local client from server if connected to any
+
+class CLocalClient;
+class CGameServer;
 class CCmdBuffer;
 class CNetwork;
+class CConsole;
 class CSound;
-class CInput;
+class CInput; // partially implemented in clientdll
+
+struct quakeparms_t
+{
+	char *basedir;
+	char *cachedir;
+	
+	int argc;
+	char **argv;
+	
+	void *membase;
+	int memsize;
+};
 
 class CHost
 {
@@ -39,12 +58,15 @@ public:
 	CHost();
 	~CHost();
 	
-	void Init(quakeparms_t *parms);
+	/*int*/ void Init(quakeparms_t *parms);
 	void InitLocal();
 	void InitCommands();
 	
 	void Shutdown();
 	void ShutdownServer(bool crash);
+	
+	bool IsSinglePlayerGame();
+	bool IsServerActive();
 	
 	void Frame(float time);
 	
@@ -53,8 +75,9 @@ public:
 	bool FilterTime(float time);
 	
 	void WriteConfig();
+	void WriteCustomConfig();
 	
-	void EndGame(char *message, ...);
+	void EndGame(const char *message, ...);
 	void Error(char *error, ...);
 	
 	void FindMaxClients();
@@ -62,6 +85,9 @@ public:
 	
 	bool IsInitialized();
 private:
+	CConsole *mpConsole;
+	CLocalClient *mpLocalClient; // it's local client so the right choice is to call it so
+	CGameServer *mpLocalServer; // mpGameServer, but it's local too...
 	CCmdBuffer *mpCmdBuffer;
 	CNetwork *mpNetwork;
 	CSound *mpSound;

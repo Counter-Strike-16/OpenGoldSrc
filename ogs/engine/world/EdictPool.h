@@ -26,63 +26,16 @@
 *
 */
 
-// Game server
-
 #pragma once
 
-class CGameClient;
+#include "progdefs.h"
 
-enum server_state_t
-{
-	ss_dead = 0,
-	ss_loading,
-	ss_active
-};
-
-class CGameServer
+class CEdictPool
 {
 public:
-	CGameServer();
-	~CGameServer();
+	CEdictPool();
+	~CEdictPool();
 	
-	void Init();
-	void Shutdown();
-	
-	void Frame(float time);
-	
-	void ConnectionlessPacket();
-	
-	void ReadPackets();
-	void SendClientMessages(); // SendPackets
-	void CheckTimeouts();
-	
-	void RejectConnection(netadr_t *adr, char *fmt, ...);
-	void RejectConnectionForPassword(netadr_t *adr);
-	
-	void ClientPrintf(CGameClient *apClient, /*int level,*/ char *fmt, ...);
-	void BroadcastPrintf(/*int level,*/ const char *fmt, ...);
-	void BroadcastCommand(char *fmt, ...);
-	
-	void KickPlayer(int nPlayerSlot, int nReason);
-	// GetClient->Kick(reason);
-	
-	void InactivateClients();
-	
-	void BuildReconnect(sizebuf_t *msg);
-	void ReconnectAllClients();
-	
-	CGameClient *GetClientByName(const char *name);
-	CGameClient *GetClientByIndex(int id);
-private:
-	server_state_t	state; // some actions are only valid during load
-	//tGameServerStateVec mvStates; // mvStates[state]->Frame();
-	
-	int maxclients;
-	int maxclientslimit;
-	
-	GameClient *clients; // [maxclients]
-	
-	int flags; // episode completion information
-	
-	bool changelevel_issued; // cleared when at SV_SpawnServer
+	edict_t *Alloc(); // AllocEdict
+	void Free(edict_t *ed); // FreeEdict
 };
