@@ -246,7 +246,9 @@ void CHost::EndGame(char *message, ...)
 	vsprintf(string,message,argptr);
 	va_end(argptr);
 	
+	Con_Printf ("\n===========================\n");
 	Con_DPrintf("Host_EndGame: %s\n",string);
+	Con_Printf ("===========================\n\n");
 	
 	if(sv->IsActive())
 		ShutdownServer(false);
@@ -257,9 +259,9 @@ void CHost::EndGame(char *message, ...)
 	if(mpLocalClient->demonum != -1)
 		CL_NextDemo();
 	else
-		CL_Disconnect();
+		mpLocalClient->Disconnect();
 
-	longjmp(host_abortserver, 1);
+	longjmp(host_abortserver, 1); // host_abort
 };
 
 /*
@@ -280,8 +282,8 @@ void CHost::Error(char *error, ...)
 	
 	inerror = true;
 	
-	SCR_EndLoadingPlaque();		// reenable screen updates
-
+	SCR_EndLoadingPlaque(); // reenable screen updates
+	
 	va_start(argptr,error);
 	vsprintf(string,error,argptr);
 	va_end(argptr);
@@ -290,14 +292,14 @@ void CHost::Error(char *error, ...)
 	
 	if(sv->IsActive())
 		ShutdownServer(false);
-
+	
 	if(mpLocalClient->GetState() == ca_dedicated)
 		Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
-
+	
 	mpLocalClient->Disconnect();
 	
 	cls.demonum = -1;
-
+	
 	inerror = false;
 	
 	// FIXME
@@ -464,14 +466,6 @@ void Host_ClientCommands(char *fmt, ...)
 }
 
 /*
-void CHost::DisconnectLocalClient() // = CL_Disconnect // how about that?
-{
-	if(localclientactive)
-		blablabla
-};
-*/
-
-/*
 ==================
 Host_ShutdownServer
 
@@ -629,10 +623,10 @@ Host_ServerFrame
 */
 #ifdef FPS_20
 
-void _Host_ServerFrame(void)
+void Host::_ServerFrame(void)
 {
 // run the world state	
-	pr_global_struct->frametime = host_frametime;
+	gpGlobals->frametime = host_frametime;
 
 // read client messages
 	SV_RunClients();
@@ -643,13 +637,13 @@ void _Host_ServerFrame(void)
 		SV_Physics();
 }
 
-void Host_ServerFrame(void)
+void CHost::ServerFrame(void)
 {
 	float	save_host_frametime;
 	float	temp_host_frametime;
 
 // run the world state	
-	pr_global_struct->frametime = host_frametime;
+	gpGlobals->frametime = host_frametime;
 
 // set the time and clear the general datagram
 	SV_ClearDatagram();
@@ -665,7 +659,7 @@ void Host_ServerFrame(void)
 		else
 			host_frametime = temp_host_frametime;
 		temp_host_frametime -= host_frametime;
-		_Host_ServerFrame();
+		_ServerFrame();
 	}
 	host_frametime = save_host_frametime;
 
@@ -675,10 +669,10 @@ void Host_ServerFrame(void)
 
 #else
 
-void Host_ServerFrame(void)
+void CHost::ServerFrame(void)
 {
 // run the world state	
-	pr_global_struct->frametime = host_frametime;
+	gpGlobals->frametime = host_frametime;
 
 // set the time and clear the general datagram
 	SV_ClearDatagram();
@@ -707,7 +701,7 @@ Host_Frame
 Runs all active servers
 ==================
 */
-void _Host_Frame(float time)
+void CHost::_Frame(float time)
 {
 	static double		time1 = 0;
 	static double		time2 = 0;
@@ -721,7 +715,7 @@ void _Host_Frame(float time)
 	rand();
 	
 // decide the simulation time
-	if(!Host_FilterTime(time))
+	if(!FilterTime(time))
 		return;			// don't run too fast, or packets will flood out
 		
 // get new key events
@@ -746,10 +740,10 @@ void _Host_Frame(float time)
 //-------------------
 
 // check for commands typed to the host
-	Host_GetConsoleCommands();
+	GetConsoleCommands();
 	
 	if(sv.active)
-		Host_ServerFrame();
+		ServerFrame();
 
 //-------------------
 //

@@ -26,7 +26,9 @@
 *
 */
 
-// Game server
+// GameServer.h - Game server
+
+//=============================================================================
 
 #pragma once
 
@@ -34,9 +36,33 @@ class CGameClient;
 
 enum server_state_t
 {
-	ss_dead = 0,
-	ss_loading,
-	ss_active
+	ss_dead = 0,	// no map loaded
+	ss_loading,		// spawning level edicts
+	ss_active		// actively running
+};
+
+// MAX_CHALLENGES is made large to prevent a denial
+// of service attack that could cycle all of them
+// out before legitimate users connected
+const int MAX_CHALLENGES = 1024;
+
+struct challenge_t
+{
+	netadr_t adr;
+	int challenge;
+	int time;
+};
+
+struct svstats_t
+{
+	double	active;
+	double	idle;
+	int		count;
+	int		packets;
+
+	double	latched_active;
+	double	latched_idle;
+	int		latched_packets;
 };
 
 class CGameServer
@@ -48,9 +74,11 @@ public:
 	void Init();
 	void Shutdown();
 	
-	void Frame(float time);
+	void Frame(float time); // int msec
 	
 	void ConnectionlessPacket();
+	
+	void CheckForNewClients();
 	
 	void ReadPackets();
 	void SendClientMessages(); // SendPackets
@@ -71,18 +99,60 @@ public:
 	void BuildReconnect(sizebuf_t *msg);
 	void ReconnectAllClients();
 	
+	void ClearDatagram();
+	
 	CGameClient *GetClientByName(const char *name);
 	CGameClient *GetClientByIndex(int id);
 private:
-	server_state_t	state; // some actions are only valid during load
+	server_state_t state; // some actions are only valid during load
 	//tGameServerStateVec mvStates; // mvStates[state]->Frame();
+	
+	int spawncount; // number of servers spawned since start, used to check late spawns
+	
+	// added to every client's unreliable buffer each frame, then cleared
+	sizebuf_t	datagram;
+	byte		datagram_buf[MAX_DATAGRAM];
+
+	// added to every client's reliable buffer each frame, then cleared
+	sizebuf_t	reliable_datagram;
+	byte		reliable_datagram_buf[MAX_MSGLEN];
+
+	// the multicast buffer is used to send a message to a set of clients
+	sizebuf_t	multicast;
+	byte		multicast_buf[MAX_MSGLEN];
+
+	// the master buffer is used for building log packets
+	sizebuf_t	master;
+	byte		master_buf[MAX_DATAGRAM];
+	
+	sizebuf_t	signon;
+	byte		signon_buf[8192];
+	
+	double		time;
+	
+	int			lastcheck;			// used by PF_checkclient
+	double		lastchecktime; // for monster ai
+	
+	svstats_t stats;
 	
 	int maxclients;
 	int maxclientslimit;
 	
-	GameClient *clients; // [maxclients]
+	double last_heartbeat;
+	int heartbeat_sequence;
+	
+	struct model_s	*models[MAX_MODELS];
+	
+	char *model_precache[MAX_MODELS];	// NULL terminated
+	char *sound_precache[MAX_SOUNDS];	// NULL terminated
+	
+	GameClient *clients; // [maxclients->value]
+	
+	char info[MAX_SERVERINFO_STRING];
 	
 	int flags; // episode completion information
 	
 	bool changelevel_issued; // cleared when at SV_SpawnServer
+	
+	challenge_t	challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
 };

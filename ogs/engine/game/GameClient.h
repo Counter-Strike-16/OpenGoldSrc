@@ -30,14 +30,14 @@
 
 #pragma once
 
-typedef enum
+enum client_state_t
 {
 	cs_free,		// can be reused for a new connection
 	cs_zombie,		// client has been disconnected, but don't reuse
 					// connection for a couple seconds
 	cs_connected,	// has been assigned to a client_t, but not in game yet
 	cs_spawned		// client is fully in game
-} client_state_t;
+};
 
 class CGameClient
 {
@@ -75,8 +75,6 @@ public:
 	
 	edict_t *GetEdict(){return edict;}
 private:
-struct client_t
-{
 	client_state_t	state;
 	
 	qboolean active;				// false = client is free
@@ -123,5 +121,62 @@ struct client_t
 
 // client known data for deltas	
 	int old_frags;
-};
+	
+	int				spectator;			// non-interactive
+
+	qboolean		sendinfo;			// at end of frame, send info to all
+										// this prevents malicious multiple broadcasts
+	float			lastnametime;		// time of last name change
+	int				lastnamecount;		// time of last name change
+	unsigned		checksum;			// checksum for calcs
+	qboolean		drop;				// lose this guy next opportunity
+	int				lossage;			// loss percentage	
+			
+	double			localtime;			// of last message
+	int				oldbuttons;
+
+	float			maxspeed;			// localized maxspeed
+	float			entgravity;			// localized ent gravity
+										
+	int				messagelevel;		// for filtering printed messages
+
+	// the datagram is written to after every frame, but only cleared
+	// when it is sent out to the client.  overflow is tolerated.
+	sizebuf_t		datagram;
+	byte			datagram_buf[MAX_DATAGRAM];
+
+	// back buffers for client reliable data
+	sizebuf_t	backbuf;
+	int			num_backbuf;
+	int			backbuf_size[MAX_BACK_BUFFERS];
+	byte		backbuf_data[MAX_BACK_BUFFERS][MAX_MSGLEN];
+
+	double			connection_started;	// or time of disconnect for zombies
+	qboolean		send_message;		// set on frames a datagram arived on
+	
+	int				stats[MAX_CL_STATS];
+
+	client_frame_t	frames[UPDATE_BACKUP];	// updates can be deltad from here
+
+	FILE			*download;			// file being downloaded
+	int				downloadsize;		// total bytes
+	int				downloadcount;		// bytes sent
+
+	int				spec_track;			// entnum of player tracking
+
+	double			whensaid[10];       // JACK: For floodprots
+ 	int			whensaidhead;       // Head value for floodprots
+ 	double			lockedtill;
+
+	qboolean		upgradewarn;		// did we warn him?
+
+	FILE			*upload;
+	char			uploadfn[MAX_QPATH];
+	netadr_t		snap_from;
+	qboolean		remote_snap;
+ 
+//===== NETWORK ============
+	int				chokecount;
+	int				delta_sequence;		// -1 = no compression
+	netchan_t		netchan;
 };

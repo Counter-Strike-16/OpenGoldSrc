@@ -21,8 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // LocalClient.cpp  -- client main loop; local game client
 
 #include "LocalClient.h"
+#include "network/Network.h"
 
-CLocalClient::CLocalClient()
+CLocalClient::CLocalClient(CNetwork *apNetwork) : mpNetwork(apNetwork)
 {
 };
 
@@ -38,6 +39,12 @@ CL_Init
 void CLocalClient::Init() // TODO: fix logic mixing
 {
 	cls.state = ca_disconnected;
+	
+	Info_SetValueForKey (cls.userinfo, "name", "unnamed", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "topcolor", "0", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "rate", "2500", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "msg", "1", MAX_INFO_STRING);
 	
 	SZ_Alloc (&cls.message, 1024);
 
@@ -85,6 +92,11 @@ void CLocalClient::Init() // TODO: fix logic mixing
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 };
 
+void CLocalClient::Frame()
+{
+	mvStates[state]->OnFrame();
+};
+
 /*
 =====================
 CL_EstablishConnection
@@ -101,8 +113,8 @@ void CLocalClient::EstablishConnection(char *host)
 		return;
 	
 	Disconnect();
-
-	cls.netcon = NET_Connect(host);
+	
+	cls.netcon = mpNetwork->Connect(host);
 	
 	if (!cls.netcon)
 		Host_Error ("CL_Connect: connect failed\n");
@@ -125,37 +137,31 @@ This is also called on Host_Error, so it shouldn't cause any errors
 void CLocalClient::Disconnect()
 {
 	// Stop sounds (especially looping!)
-	S_StopAllSounds(true);
+	mpSound->StopAllSounds(true);
+	
+	cls.connect_time = -1;
 	
 	// bring the console down and fade the colors back to normal
 	//	SCR_BringDownConsole();
 	
 	// if running a local server, shut it down
-	if(cls.demoplayback)
+	if(cls.demoplayback) // TODO: demoplayback -> clientstate?
 		CL_StopPlayback();
-	else if(cls.state == ca_connected)
-	{
-		if(cls.demorecording)
-			CL_Stop_f();
-		
-		Con_DPrintf ("Sending clc_disconnect\n");
-		SZ_Clear (&cls.message);
-		MSG_WriteByte (&cls.message, clc_disconnect);
-		NET_SendUnreliableMessage (cls.netcon, &cls.message);
-		SZ_Clear (&cls.message);
-		NET_Close(cls.netcon);
-		
-		cls.state = ca_disconnected;
-		
-		// Local client cause local server to shutdown. Hm...
-		// Should this thing be placed somewhere in host class?
-		// Or send event?
-		if(sv->IsActive())
-			mpHost->ShutdownServer(false);
-	};
+	
+	mvStates[state]->OnDisconnect();
 	
 	cls.demoplayback = cls.timedemo = false;
 	cls.signon = 0;
+	
+	Cam_Reset();
+	
+	if(cls.download)
+	{
+		fclose(cls.download);
+		cls.download = NULL;
+	};
+	
+	CL_StopUpload();
 };
 
 /*
@@ -525,4 +531,112 @@ int CLocalClient::ReadFromServer() // ReadPackets?
 // bring the links up to date
 //
 	return 0;
+};
+
+/*
+=================
+CL_SendCmd
+=================
+*/
+void CLocalClient::SendCmd()
+{
+	usercmd_t cmd;
+
+	if (cls.state != ca_connected)
+		return;
+
+	if (cls.signon == SIGNONS)
+	{
+	// get basic movement from keyboard
+		CL_BaseMove (&cmd);
+	
+	// allow mice or other external controllers to add to the move
+		IN_Move (&cmd);
+	
+	// send the unreliable message
+		CL_SendMove (&cmd);
+	
+	}
+
+	if (cls.demoplayback)
+	{
+		SZ_Clear (&cls.message);
+		return;
+	}
+	
+// send the reliable message
+	if (!cls.message.cursize)
+		return;		// no message at all
+	
+	if (!NET_CanSendMessage (cls.netcon))
+	{
+		Con_DPrintf ("CL_WriteToServer: can't send\n");
+		return;
+	}
+
+	if (NET_SendMessage (cls.netcon, &cls.message) == -1)
+		Host_Error ("CL_WriteToServer: lost server connection");
+
+	SZ_Clear (&cls.message);
+};
+
+/*
+==================
+CL_KeepaliveMessage
+
+When the client is taking a long time to load stuff, send keepalive messages
+so the server doesn't disconnect.
+==================
+*/
+void CLocalClient::KeepaliveMessage()
+{
+	float	time;
+	static float lastmsg;
+	int		ret;
+	sizebuf_t	old;
+	byte		olddata[8192];
+	
+	if (sv.active)
+		return;		// no need if server is local
+	if (cls.demoplayback)
+		return;
+
+// read messages from server, should just be nops
+	old = net_message;
+	memcpy (olddata, net_message.data, net_message.cursize);
+	
+	do
+	{
+		ret = CL_GetMessage ();
+		switch (ret)
+		{
+		default:
+			Host_Error ("CL_KeepaliveMessage: CL_GetMessage failed");		
+		case 0:
+			break;	// nothing waiting
+		case 1:
+			Host_Error ("CL_KeepaliveMessage: received a message");
+			break;
+		case 2:
+			if (MSG_ReadByte() != svc_nop)
+				Host_Error ("CL_KeepaliveMessage: datagram wasn't a nop");
+			break;
+		}
+	} while (ret);
+
+	net_message = old;
+	memcpy (net_message.data, olddata, net_message.cursize);
+
+// check time
+	time = Sys_FloatTime ();
+	if (time - lastmsg < 5)
+		return;
+	lastmsg = time;
+
+// write out a nop
+	Con_Printf ("--> client to server keepalive\n");
+
+	MSG_WriteByte (&cls.message, clc_nop);
+	NET_SendMessage (cls.netcon, &cls.message);
+	SZ_Clear (&cls.message);
 };
