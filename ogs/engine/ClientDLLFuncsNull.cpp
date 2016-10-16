@@ -1,4 +1,11 @@
-#include "cdll_exp.h"
+#include "common/mathlib.h"
+#include "common/const.h"
+#include "common/usercmd.h"
+#include "engine/cdll_int.h"
+#include "common/cl_entity.h"
+#include "common/ref_params.h"
+#include "engine/cdll_exp.h"
+#include <cstddef>
 
 namespace
 {
@@ -40,7 +47,7 @@ void ClientDLL_PlayerMoveInit(struct playermove_s *ppmove)
 
 char ClientDLL_PlayerMoveTexture(char *name)
 {
-	return '';
+	return '\0';
 };
 
 void ClientDLL_IN_ActivateMouse()
@@ -190,7 +197,7 @@ void *ClientDLL_GetClientFactory()
 };
 }; // namespace
 
-static cdll_func_t *gpClientDLLFuncsNull =
+cdll_func_t gClientDLLFuncsNull =
 {
 	ClientDLL_Initialize,
 	ClientDLL_Init,

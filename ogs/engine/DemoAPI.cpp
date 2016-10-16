@@ -22,7 +22,7 @@ void DemoAPI_WriteBuffer(int size, unsigned char *buffer)
 };
 }; // namespace
 
-demo_api_t gDemoAPINull =
+demo_api_t gDemoAPI =
 {
 	DemoAPI_IsRecording,
 	DemoAPI_IsPlayingback,

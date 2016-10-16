@@ -82,7 +82,7 @@ void TriAPI_FogParams(float flDensity, int iFogSkybox)
 };
 }; // namespace
 
-triangleapi_t gTriAPINull =
+triangleapi_t gTriAPI =
 {
 	TRI_API_VERSION,
 	

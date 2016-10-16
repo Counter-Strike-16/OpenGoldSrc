@@ -95,7 +95,7 @@ void EventAPI_KillEvents(int entnum, const char *eventname)
 };
 }; // namespace
 
-event_api_t gEventAPINull =
+event_api_t gEventAPI =
 {
 	EVENT_API_VERSION,
 	

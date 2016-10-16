@@ -1,6 +1,8 @@
 // Null implementation for game dll exports (in case we couldn't load that dll instead of check for func presence)
 
-#include "eiface.h"
+#include "common/mathlib.h"
+#include "engine/eiface.h"
+#include <cstddef>
 
 namespace
 {
@@ -154,7 +156,7 @@ void GameDLL_PM_Init(struct playermove_s *ppmove)
 
 char GameDLL_PM_FindTextureType(char *name)
 {
-	return '';
+	return ' ';
 };
 
 void GameDLL_SetupVisibility(struct edict_s *pViewEntity, struct edict_s *pClient, unsigned char **pvs, unsigned char **pas)
@@ -216,7 +218,7 @@ int GameDLL_AllowLagCompensation()
 };
 }; // namespace
 
-static DLL_FUNCTIONS *gpNullGameDLL =
+DLL_FUNCTIONS gGameDLLFuncsNull =
 {
 	GameDLL_GameInit,
 	
@@ -234,7 +236,7 @@ static DLL_FUNCTIONS *gpNullGameDLL =
 	GameDLL_SaveReadFields,
 	
 	GameDLL_SaveGlobalState,
-	GameDLL_ResetGlobalState,
+	GameDLL_RestoreGlobalState,
 	GameDLL_ResetGlobalState,
 	
 	GameDLL_ClientConnect,

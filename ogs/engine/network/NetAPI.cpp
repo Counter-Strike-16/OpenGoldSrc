@@ -51,7 +51,7 @@ void NetAPI_SetValueForKey(char *s, const char *key, const char *value, int maxs
 };
 }; // namespace
 
-net_api_t gNetAPINull =
+net_api_t gNetAPI =
 {
 	NetAPI_InitNetworking,
 	NetAPI_Status,

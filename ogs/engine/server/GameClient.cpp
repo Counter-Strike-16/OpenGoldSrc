@@ -326,3 +326,27 @@ void CGameClient::UserinfoChanged(client_t *cl)
 		cl->messagelevel = atoi(val);
 	}
 }
+
+/*
+=================
+SV_ClientPrintf
+
+Sends text across to be displayed if the level passes
+=================
+*/
+void CGameClient::Printf(client_t *cl, int level, char *fmt, ...)
+{
+	va_list		argptr;
+	char		string[1024];
+	
+	if (level < cl->messagelevel)
+		return;
+	
+	va_start (argptr,fmt);
+	vsprintf (string, fmt,argptr);
+	va_end (argptr);
+	
+	MSG_WriteByte (&cl->netchan.message, svc_print);
+	MSG_WriteByte (&cl->netchan.message, level);
+	MSG_WriteString (&cl->netchan.message, string);
+};

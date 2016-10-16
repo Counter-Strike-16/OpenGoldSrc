@@ -1,6 +1,7 @@
 // Null implementation for NEW_DLL_FUNCTIONS (this struct can be optionally present in gamedll)
 
-#include "eiface.h"
+#include "common/mathlib.h"
+#include "engine/eiface.h"
 
 namespace
 {
@@ -26,7 +27,7 @@ void GameDLL_CvarValue2(const edict_t *pEnt, int requestID, const char *cvarName
 };
 }; // namespace
 
-static NEW_DLL_FUNCTIONS *gpNewGameDLLFuncsNull =
+NEW_DLL_FUNCTIONS gNewGameDLLFuncsNull =
 {
 	GameDLL_OnFreeEntPrivateData,
 	GameDLL_GameShutdown,
