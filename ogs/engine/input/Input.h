@@ -33,8 +33,19 @@ public:
 	
 	void Frame();
 	
-	void SetActive(qboolean active);
-	qboolean IsActive();
+	void SetActive(bool active);
+	bool IsActive();
+	
+	void ShowMouse();
+	void HideMouse();
+	
+	void ActivateMouse();
+	void DeactivateMouse();
+	
+	void RestoreOriginalMouseState();
+	void SetQuakeMouseState();
+	
+	void MouseEvent(int mstate);
 	
 	// Oportunity for devices to stick commands on the script buffer
 	void Commands();

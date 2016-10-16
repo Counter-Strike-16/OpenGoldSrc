@@ -180,7 +180,7 @@ void CHost::Init(quakeparms_t *parms)
 #endif
 	};
 	
-	//Cbuf_InsertText("exec quake.rc\n");
+	Cbuf_InsertText("exec valve.rc\n");
 	//Cbuf_AddText("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
 	//Cbuf_AddText("cl_warncmd 1\n");
 

@@ -17,26 +17,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+// r_vars.c: global refresh variables
 
-// view.h
+#include	"quakedef.h"
 
-#pragma once
+#if	!id386
 
-class CView
-{
-public:
-	CView();
-	~CView();
-	
-	void Init();
-	
-	void StartPitchDrift();
-	void StopPitchDrift();
-	
-	void RenderView();
-	void UpdatePalette();
-	void Register();
-	void ParseDamage();
-	void SetContentsColor(int contents);
-	void CalcBlend();
-};
+// all global and static refresh variables are collected in a contiguous block
+// to avoid cache conflicts.
+
+//-------------------------------------------------------
+// global refresh variables
+//-------------------------------------------------------
+
+// FIXME: make into one big structure, like cl or sv
+// FIXME: do separately for refresh engine and driver
+
+int	r_bmodelactive;
+
+#endif	// !id386
+

@@ -37,12 +37,15 @@ public:
 	void StaticSound(sfx_t *sfx, vec3_t origin, float vol, float attenuation);
 	
 	void StopSound(int entnum, int entchannel);
-	void StopAllSounds(qboolean clear);
+	void StopAllSounds(bool clear);
 	
 	void ClearBuffer();
 	
 	void Update(vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
 	void ExtraUpdate();
+	
+	void BlockSound();
+	void UnblockSound();
 	
 	sfx_t *PrecacheSound(char *sample);
 	

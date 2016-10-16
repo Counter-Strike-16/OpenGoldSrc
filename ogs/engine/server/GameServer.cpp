@@ -1,5 +1,5 @@
 /*
-Copyright (C) 1996-1997 Id Software, Inc.
+Copyright (C) 1997-2001 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@ SV_Init
 */
 void CGameServer::Init()
 {
+	InitOperatorCommands();
+	
 	int		i;
 	extern	cvar_t	sv_maxvelocity;
 	extern	cvar_t	sv_gravity;
@@ -60,7 +62,182 @@ void CGameServer::Init()
 
 	for (i=0 ; i<MAX_MODELS ; i++)
 		sprintf (localmodels[i], "*%i", i);
+	
+	Con_DPrintf("Server module initialized.\n");
 };
+
+/*
+================
+SV_Shutdown
+
+Called when each game quits,
+before Sys_Quit or Sys_Error
+================
+*/
+void CGameServer::Shutdown(char *finalmsg, bool reconnect)
+{
+	Con_DPrintf("Server module shutdown.\n");
+	
+	if(svs.clients)
+		SV_FinalMessage (finalmsg, reconnect);
+
+	Master_Shutdown ();
+	SV_ShutdownGameProgs ();
+
+	// free current level
+	if (sv.demofile)
+		fclose (sv.demofile);
+	memset (&sv, 0, sizeof(sv));
+	Com_SetServerState (sv.state);
+
+	// free server static data
+	if (svs.clients)
+		Z_Free (svs.clients);
+	if (svs.client_entities)
+		Z_Free (svs.client_entities);
+	if (svs.demofile)
+		fclose (svs.demofile);
+	memset (&svs, 0, sizeof(svs));
+};
+
+/*
+=================
+SV_ConnectionlessPacket
+
+A connectionless packet has four leading 0xff
+characters to distinguish it from a game channel.
+Clients that are in the game can still send
+connectionless packets.
+=================
+*/
+void CGameServer::ConnectionlessPacket()
+{
+	char	*s;
+	char	*c;
+
+	MSG_BeginReading (&net_message);
+	MSG_ReadLong (&net_message);		// skip the -1 marker
+
+	s = MSG_ReadStringLine (&net_message);
+
+	Cmd_TokenizeString (s, false);
+
+	c = Cmd_Argv(0);
+	Com_DPrintf ("Packet %s : %s\n", NET_AdrToString(net_from), c);
+
+	if (!strcmp(c, "ping"))
+		SVC_Ping ();
+	else if (!strcmp(c, "ack"))
+		SVC_Ack ();
+	else if (!strcmp(c,"status"))
+		SVC_Status ();
+	else if (!strcmp(c,"info"))
+		SVC_Info ();
+	else if (!strcmp(c,"getchallenge"))
+		SVC_GetChallenge ();
+	else if (!strcmp(c,"connect"))
+		SVC_DirectConnect ();
+	else if (!strcmp(c, "rcon"))
+		SVC_RemoteCommand ();
+	else
+		Com_Printf ("bad connectionless packet from %s:\n%s\n"
+		, NET_AdrToString (net_from), s);
+};
+
+/*
+===================
+SV_CalcPings
+
+Updates the cl->ping variables
+===================
+*/
+void CGameServer::CalcPings()
+{
+	int			i, j;
+	client_t	*cl;
+	int			total, count;
+
+	for (i=0 ; i<maxclients->value ; i++)
+	{
+		cl = &svs.clients[i];
+		if (cl->state != cs_spawned )
+			continue;
+
+#if 0
+		if (cl->lastframe > 0)
+			cl->frame_latency[sv.framenum&(LATENCY_COUNTS-1)] = sv.framenum - cl->lastframe + 1;
+		else
+			cl->frame_latency[sv.framenum&(LATENCY_COUNTS-1)] = 0;
+#endif
+
+		total = 0;
+		count = 0;
+		for (j=0 ; j<LATENCY_COUNTS ; j++)
+		{
+			if (cl->frame_latency[j] > 0)
+			{
+				count++;
+				total += cl->frame_latency[j];
+			}
+		}
+		if (!count)
+			cl->ping = 0;
+		else
+#if 0
+			cl->ping = total*100/count - 100;
+#else
+			cl->ping = total / count;
+#endif
+
+		// let the game dll know about the ping
+		cl->edict->client->ping = cl->ping;
+	}
+}
+
+/*
+==================
+SV_CheckTimeouts
+
+If a packet has not been received from a client for timeout->value
+seconds, drop the conneciton.  Server frames are used instead of
+realtime to avoid dropping the local client while debugging.
+
+When a client is normally dropped, the client_t goes into a zombie state
+for a few seconds to make sure any final reliable message gets resent
+if necessary
+==================
+*/
+void CGameServer::CheckTimeouts()
+{
+	int		i;
+	client_t	*cl;
+	int			droppoint;
+	int			zombiepoint;
+
+	droppoint = svs.realtime - 1000*timeout->value;
+	zombiepoint = svs.realtime - 1000*zombietime->value;
+
+	for (i=0,cl=svs.clients ; i<maxclients->value ; i++,cl++)
+	{
+		// message times may be wrong across a changelevel
+		if (cl->lastmessage > svs.realtime)
+			cl->lastmessage = svs.realtime;
+
+		if (cl->state == cs_zombie
+		&& cl->lastmessage < zombiepoint)
+		{
+			cl->state = cs_free;	// can now be reused
+			continue;
+		}
+		if ( (cl->state == cs_connected || cl->state == cs_spawned) 
+			&& cl->lastmessage < droppoint)
+		{
+			SV_BroadcastPrintf (PRINT_HIGH, "%s timed out\n", cl->name);
+			SV_DropClient (cl); 
+			cl->state = cs_free;	// don't bother with zombie state
+		}
+	}
+}
 
 /*
 ===================
@@ -97,6 +274,64 @@ void CGameServer::CheckForNewClients(void)
 		net_activeconnections++;
 	}
 };
+
+/*
+=================
+SV_ReadPackets
+=================
+*/
+void CGameServer::ReadPackets(void)
+{
+	int			i;
+	client_t	*cl;
+	int			qport;
+
+	while (NET_GetPacket (NS_SERVER, &net_from, &net_message))
+	{
+		// check for connectionless packet (0xffffffff) first
+		if (*(int *)net_message.data == -1)
+		{
+			SV_ConnectionlessPacket ();
+			continue;
+		}
+
+		// read the qport out of the message so we can fix up
+		// stupid address translating routers
+		MSG_BeginReading (&net_message);
+		MSG_ReadLong (&net_message);		// sequence number
+		MSG_ReadLong (&net_message);		// sequence number
+		qport = MSG_ReadShort (&net_message) & 0xffff;
+
+		// check for packets from connected clients
+		for (i=0, cl=svs.clients ; i<maxclients->value ; i++,cl++)
+		{
+			if (cl->state == cs_free)
+				continue;
+			if (!NET_CompareBaseAdr (net_from, cl->netchan.remote_address))
+				continue;
+			if (cl->netchan.qport != qport)
+				continue;
+			if (cl->netchan.remote_address.port != net_from.port)
+			{
+				Com_Printf ("SV_ReadPackets: fixing up a translated port\n");
+				cl->netchan.remote_address.port = net_from.port;
+			}
+
+			if (Netchan_Process(&cl->netchan, &net_message))
+			{	// this is a valid, sequenced packet, so process it
+				if (cl->state != cs_zombie)
+				{
+					cl->lastmessage = svs.realtime;	// don't timeout
+					SV_ExecuteClientMessage (cl);
+				}
+			}
+			break;
+		}
+		
+		if (i != maxclients->value)
+			continue;
+	}
+}
 
 /*
 =======================

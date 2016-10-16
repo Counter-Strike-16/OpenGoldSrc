@@ -60,6 +60,8 @@ public:
 	
 	void CheckRate();
 	
+	void WriteEntities(sizebuf_t *msg);
+	
 	void ProcessFile(char *filename);
 	
 	bool SendDatagram();
