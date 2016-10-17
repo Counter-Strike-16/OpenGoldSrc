@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+struct sfx_s;
+
 class CSound
 {
 public:
@@ -35,6 +37,7 @@ public:
 	
 	void StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol,  float attenuation);
 	void StaticSound(sfx_t *sfx, vec3_t origin, float vol, float attenuation);
+	void LocalSound(char *s);
 	
 	void StopSound(int entnum, int entchannel);
 	void StopAllSounds(bool clear);
@@ -48,6 +51,7 @@ public:
 	void UnblockSound();
 	
 	sfx_t *PrecacheSound(char *sample);
+	sfxcache_t *LoadSound(sfx_t *s);
 	
 	void TouchSound(char *sample);
 	

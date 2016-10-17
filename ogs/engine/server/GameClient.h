@@ -108,7 +108,7 @@ private:
 										// periodically
 
 	struct qsocket_s *netconnection;	// communications handle
-
+	
 	usercmd_t lastcmd; // for filling in big drops and partial predictions
 	//usercmd_t cmd; // movement
 	vec3_t wishdir;			// intended motion calced from cmd

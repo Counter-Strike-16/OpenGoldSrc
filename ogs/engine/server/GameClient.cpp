@@ -17,27 +17,91 @@ or unwillingly.  This is NOT called if the entire server is quiting
 or crashing.
 =====================
 */
-void CGameClient::Drop(client_t *drop)
+/*
+=====================
+SV_DropClient
+
+Called when the player is getting totally kicked off the host
+if (crash = true), don't bother sending signofs
+=====================
+*/
+void CGameClient::Drop()
 {
 	// add the disconnect
-	MSG_WriteByte (&drop->netchan.message, svc_disconnect);
-
-	if (drop->state == cs_spawned)
+	MSG_WriteByte(&mpNetChan->message, svc_disconnect);
+	
+	// call the prog function for removing a client
+	// this will remove the body, among other things
+	if(meState == cs_spawned)
+		mpGame->ClientDisconnect(mpEdict);
+	
+	if(mpDownload)
 	{
+		FS_FreeFile(mpDownload); // fclose
+		mpDownload = NULL;
+	};
+	
+	meState = cs_zombie; // become free in a few seconds
+	msName[0] = 0;
+};
+
+/*
+void CGameServer::DropClient(CGameClient *apClient, bool crash)
+{
+	int		saveSelf;
+	int		i;
+	client_t *client;
+
+	if (!crash)
+	{
+		// send any final messages (don't check for errors)
+		if (NET_CanSendMessage (host_client->netconnection))
+		{
+			MSG_WriteByte (&host_client->message, svc_disconnect);
+			NET_SendMessage (host_client->netconnection, &host_client->message);
+		}
+	
+		if (host_client->edict && host_client->spawned)
+		{
 		// call the prog function for removing a client
-		// this will remove the body, among other things
-		ge->ClientDisconnect (drop->edict);
+		// this will set the body to a dead frame, among other things
+			saveSelf = pr_global_struct->self;
+			pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
+			PR_ExecuteProgram (pr_global_struct->ClientDisconnect);
+			pr_global_struct->self = saveSelf;
+		}
+
+		Sys_Printf ("Client %s removed\n",host_client->name);
 	}
 
-	if (drop->download)
+// break the net connection
+	NET_Close (host_client->netconnection);
+	host_client->netconnection = NULL;
+
+// free the client (the body stays around)
+	host_client->active = false;
+	host_client->name[0] = 0;
+	host_client->old_frags = -999999;
+	net_activeconnections--;
+
+// send notification to all clients
+	for (i=0, client = svs.clients ; i<svs.maxclients ; i++, client++)
 	{
-		FS_FreeFile (drop->download);
-		drop->download = NULL;
+		if (!client->active)
+			continue;
+		MSG_WriteByte (&client->message, svc_updatename);
+		MSG_WriteByte (&client->message, host_client - svs.clients);
+		MSG_WriteString (&client->message, "");
+		MSG_WriteByte (&client->message, svc_updatefrags);
+		MSG_WriteByte (&client->message, host_client - svs.clients);
+		MSG_WriteShort (&client->message, 0);
+		MSG_WriteByte (&client->message, svc_updatecolors);
+		MSG_WriteByte (&client->message, host_client - svs.clients);
+		MSG_WriteByte (&client->message, 0);
 	}
-
-	drop->state = cs_zombie;		// become free in a few seconds
-	drop->name[0] = 0;
 }
+
+*/
 
 /*
 =======================
@@ -321,32 +385,32 @@ void CGameClient::UserinfoChanged(client_t *cl)
 
 	// msg command
 	val = Info_ValueForKey (cl->userinfo, "msg");
+	
 	if (strlen(val))
-	{
 		cl->messagelevel = atoi(val);
-	}
-}
+};
 
 /*
 =================
 SV_ClientPrintf
 
 Sends text across to be displayed if the level passes
+FIXME: make this just a stuffed echo?
 =================
 */
-void CGameClient::Printf(client_t *cl, int level, char *fmt, ...)
+void CGameClient::Printf(CGameClient *cl, /*int level,*/ char *fmt, ...)
 {
-	va_list		argptr;
-	char		string[1024];
-	
-	if (level < cl->messagelevel)
+	if(level < cl->messagelevel)
 		return;
 	
-	va_start (argptr,fmt);
-	vsprintf (string, fmt,argptr);
-	va_end (argptr);
+	va_list argptr;
+	char string[1024];
 	
-	MSG_WriteByte (&cl->netchan.message, svc_print);
-	MSG_WriteByte (&cl->netchan.message, level);
-	MSG_WriteString (&cl->netchan.message, string);
+	va_start(argptr,fmt);
+	vsprintf(string, fmt,argptr);
+	va_end(argptr);
+	
+	MSG_WriteByte(&cl->netchan.message, svc_print); // host_client->message
+	//MSG_WriteByte(&cl->netchan.message, level);
+	MSG_WriteString(&cl->netchan.message, string);
 };

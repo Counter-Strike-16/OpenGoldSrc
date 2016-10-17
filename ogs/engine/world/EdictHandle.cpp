@@ -1,48 +1,57 @@
+#include "world/EdictHandle.h"
+
+/*
+=================
+ED_ClearEdict
+
+Sets everything to NULL
+=================
+*/
 void CEdictHandle::Clear()
 {
-	Q_memset(&mpHoldingEdict->v, 0, sizeof(mpHoldingEdict->v));
-	mpHoldingEdict->free = FALSE;
-	ReleaseEntityDLLFields(mpHoldingEdict);
-	InitEntityDLLFields(mpHoldingEdict);
+	Q_memset(&mpHandlingEdict->v, 0, sizeof(mpHandlingEdict->v));
+	mpHandlingEdict->free = FALSE;
+	ReleaseEntityDLLFields(mpHandlingEdict);
+	InitEntityDLLFields(mpHandlingEdict);
 };
 
 entvars_t *CEdictHandle::GetEntVars()
 {
-	if(mpHoldingEdict)
-		return &mpHoldingEdict->v;
+	if(mpHandlingEdict)
+		return &mpHandlingEdict->v;
 	
 	return NULL;
 };
 
 void *CEdictHandle::GetModelPtr()
 {
-	if(!mpHoldingEdict)
+	if(!mpHandlingEdict)
 		return NULL;
 	
-	return Mod_Extradata(g_psv.models[mpHoldingEdict->v.modelindex]);
+	return Mod_Extradata(g_psv.models[mpHandlingEdict->v.modelindex]);
 }
 
 void *CEdictHandle::GetPrivateData()
 {
-	if(!mpHoldingEdict)
+	if(!mpHandlingEdict)
 		return NULL;
 	
-	return mpHoldingEdict->pvPrivateData;
+	return mpHandlingEdict->pvPrivateData;
 };
 
 void CEdictHandle::FreePrivateData()
 {
-	if(mpHoldingEdict->pvPrivateData)
+	if(mpHandlingEdict->pvPrivateData)
 	{
 		if(gNewDLLFunctions.pfnOnFreeEntPrivateData)
-			gNewDLLFunctions.pfnOnFreeEntPrivateData(mpHoldingEdict);
+			gNewDLLFunctions.pfnOnFreeEntPrivateData(mpHandlingEdict);
 		
 #ifdef REHLDS_FLIGHT_REC
 		if(rehlds_flrec_pvdata.string[0] != '0')
-			FR_FreeEntPrivateData(mpHoldingEdict->pvPrivateData);
+			FR_FreeEntPrivateData(mpHandlingEdict->pvPrivateData);
 #endif //REHLDS_FLIGHT_REC
 
-		Mem_Free(mpHoldingEdict->pvPrivateData);
-		mpHoldingEdict->pvPrivateData = 0;
+		Mem_Free(mpHandlingEdict->pvPrivateData);
+		mpHandlingEdict->pvPrivateData = 0;
 	};
 };

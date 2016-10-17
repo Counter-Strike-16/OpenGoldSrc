@@ -118,7 +118,8 @@ void CHost::Init(quakeparms_t *parms)
 	
 	Memory_Init(parms->membase, parms->memsize);
 	mpCmdBuffer->Init();
-	mpCmdSystem->Init();	
+	mpCmdSystem->Init();
+	
 	V_Init();
 	Chase_Init();
 	Host_InitVCR(parms);
@@ -126,7 +127,7 @@ void CHost::Init(quakeparms_t *parms)
 	InitLocal();
 	W_LoadWadFile("gfx.wad");
 	Key_Init(); // move to input
-	Con_Init();	
+	mpConsole->Init();	
 	M_Init();	
 	PR_Init();
 	Mod_Init();
@@ -181,15 +182,72 @@ void CHost::Init(quakeparms_t *parms)
 #endif
 	};
 	
-	mpCmdBuffer->InsertText("exec valve.rc\n");
+	if(bDedicated)
+		mpCmdBuffer->InsertText("exec server.cfg\n"); // TODO: fix hardcode (it's a cvar in gs)
+	else
+		mpCmdBuffer->InsertText("exec valve.rc\n");
+	
 	//mpCmdBuffer->AddText("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
 	//mpCmdBuffer->AddText("cl_warncmd 1\n");
+	
+	mpCmdBuffer->Execute();
 	
 	//Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
 	//host_hunklevel = Hunk_LowMark();
 	
 	bInitialized = true;
 	Sys_Printf("======== OGS Initialized =========\n\n");	
+};
+
+/*
+=======================
+Host_InitLocal
+======================
+*/
+void CHost::InitLocal()
+{
+	InitCommands();
+	
+	Cvar_RegisterVariable(&host_killtime);
+	
+	Cvar_RegisterVariable(&sys_ticrate);
+	
+	Cvar_RegisterVariable(&fps_max);
+	Cvar_RegisterVariable(&fps_override);
+	
+	Cvar_RegisterVariable(&host_name);
+	Cvar_RegisterVariable(&host_limitlocal);
+	
+	Cvar_RegisterVariable(&host_framerate);
+	Cvar_RegisterVariable(&host_speeds);
+	Cvar_RegisterVariable(&host_profile);
+	
+	Cvar_RegisterVariable(&mp_logfile);
+	Cvar_RegisterVariable(&mp_logecho);
+	
+	Cvar_RegisterVariable(&sv_log_onefile);
+	Cvar_RegisterVariable(&sv_log_singleplayer);
+	Cvar_RegisterVariable(&sv_logsecret);
+	Cvar_RegisterVariable(&sv_stats);
+	
+	Cvar_RegisterVariable(&serverprofile);
+	
+	Cvar_RegisterVariable(&fraglimit);
+	Cvar_RegisterVariable(&timelimit);
+	Cvar_RegisterVariable(&teamplay);
+	Cvar_RegisterVariable(&samelevel);
+	Cvar_RegisterVariable(&noexit);
+	Cvar_RegisterVariable(&skill);
+	Cvar_RegisterVariable(&developer);
+	Cvar_RegisterVariable(&deathmatch);
+	Cvar_RegisterVariable(&coop);
+	Cvar_RegisterVariable(&pausable);
+	
+	sys_timescale.value = 1.0f;
+	
+	FindMaxClients(); // SV_SetMaxclients();
+	
+	host_time = 1.0f; // so a think at time 0 won't get called
 };
 
 /*
@@ -362,57 +420,6 @@ void CHost::FindMaxClients()
 		Cvar_SetValue("deathmatch", 1.0f);
 	else
 		Cvar_SetValue("deathmatch", 0.0f);
-};
-
-/*
-=======================
-Host_InitLocal
-======================
-*/
-void CHost::InitLocal()
-{
-	InitCommands();
-	
-	Cvar_RegisterVariable(&host_killtime);
-	
-	Cvar_RegisterVariable(&sys_ticrate);
-	
-	Cvar_RegisterVariable(&fps_max);
-	Cvar_RegisterVariable(&fps_override);
-	
-	Cvar_RegisterVariable(&host_name);
-	Cvar_RegisterVariable(&host_limitlocal);
-	
-	Cvar_RegisterVariable(&host_framerate);
-	Cvar_RegisterVariable(&host_speeds);
-	Cvar_RegisterVariable(&host_profile);
-	
-	Cvar_RegisterVariable(&mp_logfile);
-	Cvar_RegisterVariable(&mp_logecho);
-	
-	Cvar_RegisterVariable(&sv_log_onefile);
-	Cvar_RegisterVariable(&sv_log_singleplayer);
-	Cvar_RegisterVariable(&sv_logsecret);
-	Cvar_RegisterVariable(&sv_stats);
-	
-	Cvar_RegisterVariable(&serverprofile);
-	
-	Cvar_RegisterVariable(&fraglimit);
-	Cvar_RegisterVariable(&timelimit);
-	Cvar_RegisterVariable(&teamplay);
-	Cvar_RegisterVariable(&samelevel);
-	Cvar_RegisterVariable(&noexit);
-	Cvar_RegisterVariable(&skill);
-	Cvar_RegisterVariable(&developer);
-	Cvar_RegisterVariable(&deathmatch);
-	Cvar_RegisterVariable(&coop);
-	Cvar_RegisterVariable(&pausable);
-	
-	sys_timescale.value = 1.0f;
-	
-	FindMaxClients(); // SV_SetMaxclients();
-	
-	host_time = 1.0;		// so a think at time 0 won't get called
 };
 
 /*

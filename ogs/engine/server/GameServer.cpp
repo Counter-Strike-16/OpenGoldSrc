@@ -37,7 +37,7 @@ void CGameServer::Init()
 {
 	InitOperatorCommands();
 	
-	int		i;
+	// physics cvars
 	extern	cvar_t	sv_maxvelocity;
 	extern	cvar_t	sv_gravity;
 	extern	cvar_t	sv_nostep;
@@ -60,7 +60,7 @@ void CGameServer::Init()
 	Cvar_RegisterVariable (&sv_aim);
 	Cvar_RegisterVariable (&sv_nostep);
 
-	for (i=0 ; i<MAX_MODELS ; i++)
+	for(int i = 0; i < MAX_MODELS; i++)
 		sprintf (localmodels[i], "*%i", i);
 	
 	Con_DPrintf("Server module initialized.\n");
@@ -223,17 +223,17 @@ void CGameServer::CheckTimeouts()
 		if (cl->lastmessage > svs.realtime)
 			cl->lastmessage = svs.realtime;
 
-		if (cl->state == cs_zombie
-		&& cl->lastmessage < zombiepoint)
+		if (cl->state == cs_zombie && cl->lastmessage < zombiepoint)
 		{
 			cl->state = cs_free;	// can now be reused
 			continue;
-		}
+		};
+		
 		if ( (cl->state == cs_connected || cl->state == cs_spawned) 
 			&& cl->lastmessage < droppoint)
 		{
-			SV_BroadcastPrintf (PRINT_HIGH, "%s timed out\n", cl->name);
-			SV_DropClient (cl); 
+			BroadcastPrintf (PRINT_HIGH, "%s timed out\n", cl->name);
+			cl->Drop(); 
 			cl->state = cs_free;	// don't bother with zombie state
 		}
 	}
@@ -280,7 +280,7 @@ void CGameServer::CheckForNewClients(void)
 SV_ReadPackets
 =================
 */
-void CGameServer::ReadPackets(void)
+void CGameServer::ReadPackets()
 {
 	int			i;
 	client_t	*cl;
@@ -288,12 +288,14 @@ void CGameServer::ReadPackets(void)
 
 	while (NET_GetPacket (NS_SERVER, &net_from, &net_message))
 	{
+		// filter packet here
+		
 		// check for connectionless packet (0xffffffff) first
-		if (*(int *)net_message.data == -1)
+		if(*(int *)net_message.data == -1)
 		{
-			SV_ConnectionlessPacket ();
+			HandleConnectionlessPacket();
 			continue;
-		}
+		};
 
 		// read the qport out of the message so we can fix up
 		// stupid address translating routers
@@ -410,27 +412,6 @@ void CGameServer::SendClientMessages(void)
 
 /*
 =================
-SV_ClientPrintf
-
-Sends text across to be displayed 
-FIXME: make this just a stuffed echo?
-=================
-*/
-void CGameServer::ClientPrintf(CGameClient *apClient, /*int level,*/ char *fmt, ...)
-{
-	va_list		argptr;
-	char		string[1024];
-	
-	va_start (argptr,fmt);
-	vsprintf (string, fmt,argptr);
-	va_end (argptr);
-	
-	MSG_WriteByte (&host_client->message, svc_print);
-	MSG_WriteString (&host_client->message, string);
-}
-
-/*
-=================
 SV_BroadcastPrintf
 
 Sends text to all active clients
@@ -438,84 +419,46 @@ Sends text to all active clients
 */
 void CGameServer::BroadcastPrintf(/*int level,*/ char *fmt, ...)
 {
+	va_list argptr;
+	char string[1024]; // 2048
+	
+	va_start(argptr, fmt);
+	vsprintf(string, fmt, argptr);
+	va_end(argptr);
+	
+	for(int i = 0; i < svs.maxclients; i++)
+	{
+		if(svs.clients[i].active && svs.clients[i].spawned)
+		{
+			MSG_WriteByte(&svs.clients[i].message, svc_print);
+			MSG_WriteString(&svs.clients[i].message, string);
+		};
+	};
+};
+
+/*
+=================
+SV_BroadcastCommand
+
+Sends text to all active clients
+=================
+*/
+void CGameServer::BroadcastCommand(char *fmt, ...)
+{
+	if(!sv.state)
+		return;
+	
 	va_list		argptr;
 	char		string[1024];
-	int			i;
 	
 	va_start (argptr,fmt);
 	vsprintf (string, fmt,argptr);
 	va_end (argptr);
-	
-	for (i=0 ; i<svs.maxclients ; i++)
-		if (svs.clients[i].active && svs.clients[i].spawned)
-		{
-			MSG_WriteByte (&svs.clients[i].message, svc_print);
-			MSG_WriteString (&svs.clients[i].message, string);
-		}
-}
 
-/*
-=====================
-SV_DropClient
-
-Called when the player is getting totally kicked off the host
-if (crash = true), don't bother sending signofs
-=====================
-*/
-void CGameServer::DropClient(CGameClient *apClient, bool crash)
-{
-	int		saveSelf;
-	int		i;
-	client_t *client;
-
-	if (!crash)
-	{
-		// send any final messages (don't check for errors)
-		if (NET_CanSendMessage (host_client->netconnection))
-		{
-			MSG_WriteByte (&host_client->message, svc_disconnect);
-			NET_SendMessage (host_client->netconnection, &host_client->message);
-		}
-	
-		if (host_client->edict && host_client->spawned)
-		{
-		// call the prog function for removing a client
-		// this will set the body to a dead frame, among other things
-			saveSelf = pr_global_struct->self;
-			pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
-			PR_ExecuteProgram (pr_global_struct->ClientDisconnect);
-			pr_global_struct->self = saveSelf;
-		}
-
-		Sys_Printf ("Client %s removed\n",host_client->name);
-	}
-
-// break the net connection
-	NET_Close (host_client->netconnection);
-	host_client->netconnection = NULL;
-
-// free the client (the body stays around)
-	host_client->active = false;
-	host_client->name[0] = 0;
-	host_client->old_frags = -999999;
-	net_activeconnections--;
-
-// send notification to all clients
-	for (i=0, client = svs.clients ; i<svs.maxclients ; i++, client++)
-	{
-		if (!client->active)
-			continue;
-		MSG_WriteByte (&client->message, svc_updatename);
-		MSG_WriteByte (&client->message, host_client - svs.clients);
-		MSG_WriteString (&client->message, "");
-		MSG_WriteByte (&client->message, svc_updatefrags);
-		MSG_WriteByte (&client->message, host_client - svs.clients);
-		MSG_WriteShort (&client->message, 0);
-		MSG_WriteByte (&client->message, svc_updatecolors);
-		MSG_WriteByte (&client->message, host_client - svs.clients);
-		MSG_WriteByte (&client->message, 0);
-	}
-}
+	MSG_WriteByte (&sv.multicast, svc_stufftext);
+	MSG_WriteString (&sv.multicast, string);
+	SV_Multicast (NULL, MULTICAST_ALL_R);
+};
 
 /*
 ================
@@ -526,6 +469,7 @@ Tell all the clients that the server is changing levels
 */
 void CGameServer::ReconnectAll()
 {
+	//
 	char	data[128];
 	sizebuf_t	msg;
 
@@ -536,6 +480,9 @@ void CGameServer::ReconnectAll()
 	MSG_WriteChar (&msg, svc_stufftext);
 	MSG_WriteString (&msg, "reconnect\n");
 	NET_SendToAll (&msg, 5);
+	//
+//	BroadcastCommand("reconnect"); // voila
+	//
 	
 	if (cls.state != ca_dedicated)
 #ifdef QUAKE2

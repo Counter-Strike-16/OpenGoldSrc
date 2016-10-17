@@ -1,5 +1,3 @@
-#include "world/EdictPool.h"
-
 /*
 *
 *    This program is free software; you can redistribute it and/or modify it
@@ -28,6 +26,8 @@
 *
 */
 
+#include "world/EdictPool.h"
+
 CEdictPool::CEdictPool(unsigned anMaxEdicts) : mnMaxEdicts(anMaxEdicts)
 {
 };
@@ -36,6 +36,17 @@ CEdictPool::~CEdictPool()
 {
 };
 
+/*
+=================
+ED_Alloc
+
+Either finds a free edict, or allocates a new one.
+Try to avoid reusing an entity that was recently freed, because it
+can cause the client to think the entity morphed into something else
+instead of being removed and recreated, which can cause interpolated
+angles and bad trails.
+=================
+*/
 edict_t *CEdictPool::AllocEdict()
 {
 	// Search for free edict and return it if found
@@ -57,9 +68,19 @@ edict_t *CEdictPool::AllocEdict()
 	
 	edict_t *pNewEdict = new edict_t;
 	mvEdicts.push_back(pNewEdict);
+	
+	pNewEdict->Clear();
 	return pNewEdict;
 };
 
+/*
+=================
+ED_Free
+
+Marks the edict as free
+FIXME: walk all entities and NULL out references to this entity
+=================
+*/
 void CEdictPool::FreeEdict(edict_t *edict)
 {
 	if(!edict)
@@ -83,7 +104,7 @@ void CEdictPool::FreeEdict(edict_t *edict)
 		ed->v.frame = 0;
 		ed->v.scale = 0;
 		ed->v.gravity = 0;
-		ed->v.nextthink = -1.0;
+		ed->v.nextthink = -1.0f;
 		ed->v.solid = SOLID_NOT;
 		
 		ed->v.origin[0] = vec3_origin[0];
