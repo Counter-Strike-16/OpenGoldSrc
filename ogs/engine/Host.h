@@ -34,7 +34,9 @@
 
 class CLocalClient;
 class CGameServer;
-class CCmdBuffer;
+class CCmdBuffer;  //
+class CCmdSystem;  // -> CCONSOLE!
+class CCvarSystem; //
 class CNetwork;
 class CConsole;
 class CSound;

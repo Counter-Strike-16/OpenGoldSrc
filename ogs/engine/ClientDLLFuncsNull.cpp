@@ -1,10 +1,10 @@
 #include "common/mathlib.h"
 #include "common/const.h"
 #include "common/usercmd.h"
+#include "common/enums.h"
 #include "engine/cdll_int.h"
 #include "common/cl_entity.h"
 #include "common/ref_params.h"
-#include "engine/cdll_exp.h"
 #include <cstddef>
 
 namespace
@@ -195,9 +195,8 @@ void *ClientDLL_GetClientFactory()
 {
 	return NULL;
 };
-}; // namespace
 
-cdll_func_t gClientDLLFuncsNull =
+cldll_func_t gClientDLLFuncsNull =
 {
 	ClientDLL_Initialize,
 	ClientDLL_Init,
@@ -265,3 +264,4 @@ cdll_func_t gClientDLLFuncsNull =
 	ClientDLL_GetPlayerTeam,
 	ClientDLL_GetClientFactory
 };
+}; // namespace

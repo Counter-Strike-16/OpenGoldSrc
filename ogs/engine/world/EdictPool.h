@@ -30,6 +30,9 @@
 
 #include "progdefs.h"
 
+typedef std::vector<edict_t*> tEdictVec;
+typedef tEdictVec::iterator tEdictVecIt;
+
 class CEdictPool
 {
 public:
@@ -38,4 +41,6 @@ public:
 	
 	edict_t *Alloc(); // AllocEdict
 	void Free(edict_t *ed); // FreeEdict
+private:
+	tEdictVec mvEdicts;
 };

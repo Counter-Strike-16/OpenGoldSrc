@@ -10,6 +10,8 @@ public:
 	CNetAdr(netadr_t *apAdr) : mpAdr(apAdr){}
 	~CNetAdr();
 	
+	bool IsLocal();
+	
 	char *ToString();
 private:
 	netadr_t *mpAdr;

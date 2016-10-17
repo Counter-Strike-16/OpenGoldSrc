@@ -1,4 +1,5 @@
 #include "common/net_api.h"
+#include <cstddef>
 
 namespace
 {
@@ -24,7 +25,7 @@ void NetAPI_CancelAllRequests()
 
 char *NetAPI_AdrToString(struct netadr_s *a)
 {
-	return "";
+	return NULL;
 };
 
 int NetAPI_CompareAdr(struct netadr_s *a, struct netadr_s *b)

@@ -59,10 +59,10 @@ public:
 	
 	void Poll();
 	
-	qboolean NET_CompareAdr (netadr_t a, netadr_t b);
-	qboolean NET_CompareBaseAdr (netadr_t a, netadr_t b);
+	qboolean CompareAdr(netadr_t a, netadr_t b);
+	qboolean CompareBaseAdr(netadr_t a, netadr_t b);
 	
-	char *NET_BaseAdrToString (netadr_t a);
-	qboolean NET_StringToAdr (char *s, netadr_t *a);
-	qboolean NET_IsClientLegal(netadr_t *adr);
+	char *BaseAdrToString(netadr_t a);
+	qboolean StringToAdr(char *s, netadr_t *a);
+	qboolean IsClientLegal(netadr_t *adr);
 };

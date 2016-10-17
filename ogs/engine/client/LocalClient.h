@@ -26,7 +26,7 @@
 *
 */
 
-// LocalClient.h - Local client representation
+// LocalClient.h - Local client representation, primary header for client
 
 #pragma once
 
@@ -91,23 +91,23 @@ private:
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo
 
-// connection information
+	// connection information
 	int			signon;			// 0 to SIGNONS
 	sizebuf_t	message;		// writing buffer to send to server
 	
-	int challenge;
+	int challenge; // from the server to use for connecting
 	
 	int userid;
 	
 	// network stuff
 	CNetChannel *netchan;
 
-// private userinfo for sending to masterless servers
-	char		userinfo[MAX_INFO_STRING];
+	// private userinfo for sending to masterless servers
+	char userinfo[MAX_INFO_STRING];
 	
-	char		servername[MAX_OSPATH];	// name of server from original connect
+	char servername[MAX_OSPATH];	// name of server from original connect
 
-	int			qport;
+	int qport;
 
 	FILE		*download;		// file transfer from server
 	char		downloadtempname[MAX_OSPATH];

@@ -1,4 +1,19 @@
-void LoadEntityDLLs(const char *szBaseDir)
+// All game dll exported funcs are passing by func pointers
+// Main set (DLL_FUNCTIONS) is required, additional (NEW_DLL_FUNCTIONS) is optional
+// Moreover, funcs of main can be missed because of old interface version or someone's "experiments" so we need to handle that cases
+// TODO: replace blank pointers by null impl from null-object impl
+
+#include "server/GameDLLLoader.h"
+
+CGameDLLLoader::CGameDLLLoader()
+{
+};
+
+CGameDLLLoader::CGameDLLLoader()
+{
+};
+
+void CGameDLLLoader::LoadEntityDLLs(const char *szBaseDir)
 {
 	FileHandle_t hLibListFile;
 	unsigned int nFileSize;
@@ -155,7 +170,7 @@ void LoadEntityDLLs(const char *szBaseDir)
 	Con_DPrintf("Dll loaded for %s %s\n", gmodinfo.bIsMod ? "mod" : "game", gEntityInterface.pfnGetGameDescription());
 }
 
-void ReleaseEntityDlls(void)
+void CGameDLLLoader::ReleaseEntityDlls()
 {
 	extensiondll_t *pextdll;
 	extensiondll_t *pextdllMac;

@@ -26,9 +26,19 @@
 *
 */
 
-// Representation of client connected to server
-
 #pragma once
+
+//=============================================================================
+
+// Representation of a client connected to server
+
+// a client can leave the server in one of four ways:
+// dropping properly by quiting or disconnecting
+// timing out if no valid messages are received for timeout.value seconds
+// getting kicked off by the server operator
+// a program error, like an overflowed reliable buffer
+
+//=============================================================================
 
 enum client_state_t
 {
@@ -46,6 +56,13 @@ public:
 	~CGameClient();
 	
 	void Disconnect(const char *reason, ...);
+	void Drop();
+	
+	// Most valuable funcs
+	// Usually provided by amx plugins
+	void Kick();
+	void Ban();
+	void TimeBan();
 	
 	void SetConnected(bool connected);
 	bool IsConnected();
@@ -60,7 +77,10 @@ public:
 	
 	void CheckRate();
 	
+	void BuildFrame();
+	
 	void WriteEntities(sizebuf_t *msg);
+	void WriteFrame(sizebuf_t *msg);
 	
 	void ProcessFile(char *filename);
 	
@@ -72,19 +92,17 @@ public:
 	void FullUpdate(sizebuf_t *sb);
 	
 	const char *GetName();
-	
 	int GetID();
-	
 	edict_t *GetEdict(){return edict;}
 private:
 	client_state_t	state;
 	
-	qboolean active;				// false = client is free
-	qboolean spawned;			// false = don't send datagrams
-	qboolean dropasap;			// has been told to go to another level
-	qboolean sendsignon;			// only valid before spawned
-	qboolean fakeclient;
-	qboolean hltvproxy;
+	bool active;				// false = client is free
+	bool spawned;			// false = don't send datagrams
+	bool dropasap;			// has been told to go to another level
+	bool sendsignon;			// only valid before spawned
+	bool fakeclient;
+	bool hltvproxy;
 	
 	double last_message;		// reliable messages must be sent
 										// periodically
@@ -110,7 +128,7 @@ private:
 	int lw;
 	int lc;
 	
-	char name[32];			// for printing to other people (extracted from userinfo)
+	char name[32]; // for printing to other people (extracted from userinfo, high bits masked)
 	
 	int topcolor;
 	int bottomcolor;
@@ -131,7 +149,7 @@ private:
 	float			lastnametime;		// time of last name change
 	int				lastnamecount;		// time of last name change
 	unsigned		checksum;			// checksum for calcs
-	qboolean		drop;				// lose this guy next opportunity
+	bool drop;				// lose this guy next opportunity
 	int				lossage;			// loss percentage	
 			
 	double			localtime;			// of last message
@@ -139,13 +157,13 @@ private:
 
 	float			maxspeed;			// localized maxspeed
 	float			entgravity;			// localized ent gravity
-										
+	
 	int				messagelevel;		// for filtering printed messages
 
 	// the datagram is written to after every frame, but only cleared
 	// when it is sent out to the client.  overflow is tolerated.
 	sizebuf_t		datagram;
-	byte			datagram_buf[MAX_DATAGRAM];
+	byte			datagram_buf[MAX_DATAGRAM]; // MAX_MSGLEN
 
 	// back buffers for client reliable data
 	sizebuf_t	backbuf;
@@ -153,15 +171,15 @@ private:
 	int			backbuf_size[MAX_BACK_BUFFERS];
 	byte		backbuf_data[MAX_BACK_BUFFERS][MAX_MSGLEN];
 
-	double			connection_started;	// or time of disconnect for zombies
-	qboolean		send_message;		// set on frames a datagram arived on
+	double connection_started;	// or time of disconnect for zombies
+	bool send_message;		// set on frames a datagram arived on
 	
 	int				stats[MAX_CL_STATS];
 
-	client_frame_t	frames[UPDATE_BACKUP];	// updates can be deltad from here
+	client_frame_t	frames[UPDATE_BACKUP];	// updates can be delta'd from here
 
 	FILE			*download;			// file being downloaded
-	int				downloadsize;		// total bytes
+	int				downloadsize;		// total bytes (can't use EOF because of paks)
 	int				downloadcount;		// bytes sent
 
 	int				spec_track;			// entnum of player tracking
@@ -170,12 +188,12 @@ private:
  	int			whensaidhead;       // Head value for floodprots
  	double			lockedtill;
 
-	qboolean		upgradewarn;		// did we warn him?
+	bool upgradewarn;		// did we warn him?
 
 	FILE			*upload;
 	char			uploadfn[MAX_QPATH];
 	netadr_t		snap_from;
-	qboolean		remote_snap;
+	bool remote_snap;
  
 //===== NETWORK ============
 	int				chokecount;

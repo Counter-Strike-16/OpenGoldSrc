@@ -93,29 +93,29 @@ Host_Init
 */
 void CHost::Init(quakeparms_t *parms)
 {
-	if(standard_quake)
+	if(standard_quake) // never happened since now
 		minimum_memory = MINIMUM_MEMORY;
 	else
 		minimum_memory = MINIMUM_MEMORY_LEVELPAK;
-
+	
 	if(COM_CheckParm("-minmemory"))
 		parms->memsize = minimum_memory;
-
+	
 	host_parms = *parms;
-
+	
 	if(parms->memsize < minimum_memory)
 		Sys_Error("Only %4.1f megs of memory available, can't execute game", parms->memsize /(float)0x100000);
-
+	
 	com_argc = parms->argc;
 	com_argv = parms->argv;
 	
 	// Lazy subsystem initialization
-	// TODO: don't forget to delete all this crap
+	// TODO: don't forget to delete all this crap, i mean free
 	mpCmdBuffer = new CCmdBuffer();
 	mpNetwork = new CNetwork();
 	mpSound = new CSound();
 	mpInput = new CInput();
-
+	
 	Memory_Init(parms->membase, parms->memsize);
 	mpCmdBuffer->Init();
 	mpCmdSystem->Init();	
@@ -131,13 +131,14 @@ void CHost::Init(quakeparms_t *parms)
 	PR_Init();
 	Mod_Init();
 	mpNetwork->Init();
-	SV_Init(); // move to network?
-
+	
+	mpLocalServer->Init(); // move to network?
+	
 	Con_Printf("Exe: " __TIME__ " " __DATE__ "\n");
 	Con_Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
 	
-	R_InitTextures();		// needed even for dedicated servers
- 
+	R_InitTextures(); // needed even for dedicated servers
+	
 	if(mpLocalClient->GetState() != ca_dedicated)
 	{
 		host_basepal = (byte*)COM_LoadHunkFile("gfx/palette.lmp");
@@ -149,12 +150,12 @@ void CHost::Init(quakeparms_t *parms)
 		
 		if(!host_colormap)
 			Sys_Error("Couldn't load gfx/colormap.lmp");
-
+		
 #ifndef _WIN32 // on non win32, mouse comes before video for security reasons
 		mpInput->Init();
 #endif
 		//VID_Init(host_basepal);
-
+		
 		//Draw_Init();
 		//SCR_Init();
 		//R_Init();
@@ -164,7 +165,7 @@ void CHost::Init(quakeparms_t *parms)
 	// can put up a popup if the sound hardware is in use
 		mpSound->Init();
 #else
-
+		
 #ifdef	GLQUAKE
 	// FIXME: doesn't use the new one-window approach yet
 		mpSound->Init();
@@ -180,15 +181,15 @@ void CHost::Init(quakeparms_t *parms)
 #endif
 	};
 	
-	Cbuf_InsertText("exec valve.rc\n");
-	//Cbuf_AddText("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
-	//Cbuf_AddText("cl_warncmd 1\n");
-
+	mpCmdBuffer->InsertText("exec valve.rc\n");
+	//mpCmdBuffer->AddText("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
+	//mpCmdBuffer->AddText("cl_warncmd 1\n");
+	
 	//Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
 	//host_hunklevel = Hunk_LowMark();
 	
 	bInitialized = true;
-	Sys_Printf("========OGS Initialized=========\n");	
+	Sys_Printf("======== OGS Initialized =========\n\n");	
 };
 
 /*
@@ -243,24 +244,24 @@ void CHost::EndGame(char *message, ...)
 	char string[1024];
 	
 	va_start(argptr,message);
-	vsprintf(string,message,argptr);
+	vsprintf(string,message,argptr); // Q_vsnprintf(string, sizeof(string), message, argptr);
 	va_end(argptr);
 	
 	Con_Printf ("\n===========================\n");
 	Con_DPrintf("Host_EndGame: %s\n",string);
 	Con_Printf ("===========================\n\n");
 	
-	if(sv->IsActive())
+	if(mpLocalServer->IsActive())
 		ShutdownServer(false);
 	
 	if(mpLocalClient->GetState() == ca_dedicated)
-		Sys_Error("Host_EndGame: %s\n",string);	// dedicated servers exit
+		Sys_Error("Host_EndGame: %s\n", string); // dedicated servers exit
 	
 	if(mpLocalClient->demonum != -1)
 		CL_NextDemo();
 	else
 		mpLocalClient->Disconnect();
-
+	
 	longjmp(host_abortserver, 1); // host_abort
 };
 
@@ -273,9 +274,7 @@ This shuts down both the client and server and exits
 */
 void CHost::Error(char *error, ...)
 {
-	va_list		argptr;
-	char		string[1024];
-	static	qboolean inerror = false;
+	static bool inerror = false;
 	
 	if(inerror)
 		Sys_Error("Host_Error: recursively entered");
@@ -284,17 +283,20 @@ void CHost::Error(char *error, ...)
 	
 	SCR_EndLoadingPlaque(); // reenable screen updates
 	
-	va_start(argptr,error);
-	vsprintf(string,error,argptr);
+	va_list argptr;
+	char string[1024];
+	
+	va_start(argptr, error);
+	vsprintf(string, error, argptr);
 	va_end(argptr);
 	
-	Con_Printf("Host_Error: %s\n",string);
+	Con_Printf("Host_Error: %s\n", string);
 	
-	if(sv->IsActive())
+	if(mpLocalServer->IsActive())
 		ShutdownServer(false);
 	
 	if(mpLocalClient->GetState() == ca_dedicated)
-		Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
+		Sys_Error("Host_Error: %s\n", string); // dedicated servers exit
 	
 	mpLocalClient->Disconnect();
 	
@@ -304,9 +306,9 @@ void CHost::Error(char *error, ...)
 	
 	// FIXME
 	//Sys_Error("Host_Error: %s\n",string);
-
+	
 	longjmp(host_abortserver, 1);
-}
+};
 
 /*
 ================
@@ -315,20 +317,16 @@ Host_FindMaxClients
 */
 void CHost::FindMaxClients()
 {
-	int		i;
-
-	svs.maxclients = 1;
-		
-	i = COM_CheckParm("-dedicated");
+	mpLocalServer->SetMaxClients(1);
+	
+	int i = COM_CheckParm("-dedicated");
 	
 	if(i)
 	{
 		mpLocalClient->SetState(ca_dedicated);
 		
-		if(i !=(com_argc - 1))
-		{
-			svs.maxclients = Q_atoi(com_argv[i+1]);
-		}
+		if(i != (com_argc - 1))
+			svs.maxclients = Q_atoi(com_argv[i + 1]);
 		else
 			svs.maxclients = 8;
 	}
@@ -336,13 +334,14 @@ void CHost::FindMaxClients()
 		mpLocalClient->SetState(ca_disconnected);
 
 	i = COM_CheckParm("-listen");
+	
 	if(i)
 	{
 		if(mpLocalClient->GetState() == ca_dedicated)
 			Sys_Error("Only one of -dedicated or -listen can be specified");
 		
 		if(i != (com_argc - 1))
-			svs.maxclients = Q_atoi(com_argv[i+1]);
+			svs.maxclients = Q_atoi(com_argv[i + 1]);
 		else
 			svs.maxclients = 8;
 	};
@@ -351,18 +350,18 @@ void CHost::FindMaxClients()
 		svs.maxclients = 8;
 	else if(svs.maxclients > MAX_SCOREBOARD)
 		svs.maxclients = MAX_SCOREBOARD;
-
+	
 	svs.maxclientslimit = svs.maxclients;
 	
 	if(svs.maxclientslimit < 4)
 		svs.maxclientslimit = 4;
 	
 	svs.clients = Hunk_AllocName(svs.maxclientslimit*sizeof(client_t), "clients");
-
+	
 	if(svs.maxclients > 1)
-		Cvar_SetValue("deathmatch", 1.0);
+		Cvar_SetValue("deathmatch", 1.0f);
 	else
-		Cvar_SetValue("deathmatch", 0.0);
+		Cvar_SetValue("deathmatch", 0.0f);
 };
 
 /*
@@ -370,7 +369,7 @@ void CHost::FindMaxClients()
 Host_InitLocal
 ======================
 */
-void CHost::InitLocal(void)
+void CHost::InitLocal()
 {
 	InitCommands();
 	
@@ -395,9 +394,9 @@ void CHost::InitLocal(void)
 	Cvar_RegisterVariable(&sv_log_singleplayer);
 	Cvar_RegisterVariable(&sv_logsecret);
 	Cvar_RegisterVariable(&sv_stats);
-
+	
 	Cvar_RegisterVariable(&serverprofile);
-
+	
 	Cvar_RegisterVariable(&fraglimit);
 	Cvar_RegisterVariable(&timelimit);
 	Cvar_RegisterVariable(&teamplay);
@@ -410,7 +409,7 @@ void CHost::InitLocal(void)
 	Cvar_RegisterVariable(&pausable);
 	
 	sys_timescale.value = 1.0f;
-
+	
 	FindMaxClients(); // SV_SetMaxclients();
 	
 	host_time = 1.0;		// so a think at time 0 won't get called
@@ -425,22 +424,21 @@ Writes key bindings and archived cvars to config.cfg
 */
 void CHost::WriteConfig()
 {
-	FILE	*f;
-
-// dedicated servers initialize the host but don't parse and set the
-// config.cfg cvars
+	// dedicated servers initialize the host but don't parse 
+	// and set the config.cfg cvars
 	if(bInitialized & !isDedicated)
 	{
-		f = fopen(va("%s/config.cfg",com_gamedir), "w");
+		FILE *f = fopen(va("%s/config.cfg", com_gamedir), "w");
+		
 		if(!f)
 		{
 			Con_Printf("Couldn't write config.cfg.\n");
 			return;
-		}
+		};
 		
 		Key_WriteBindings(f);
 		Cvar_WriteVariables(f);
-
+		
 		fclose(f);
 	};
 };
@@ -454,8 +452,8 @@ Send text over to the client to be executed
 */
 void Host_ClientCommands(char *fmt, ...)
 {
-	va_list		argptr;
-	char		string[1024];
+	va_list argptr;
+	char string[1024];
 	
 	va_start(argptr,fmt);
 	vsprintf(string, fmt,argptr);
@@ -463,7 +461,7 @@ void Host_ClientCommands(char *fmt, ...)
 	
 	MSG_WriteByte(&host_client->message, svc_stufftext);
 	MSG_WriteString(&host_client->message, string);
-}
+};
 
 /*
 ==================
@@ -480,20 +478,21 @@ void CHost::ShutdownServer(bool crash)
 	char		message[4];
 	double	start;
 
-	if(!sv.active)
+	if(!mpLocalServer->IsActive())
 		return;
 	
 	SV_ServerShutdown();
 	sv.active = false;
 	
 	NET_ClearLagData(TRUE, TRUE);
-
-// stop all client sounds immediately
+	
+	// stop all client sounds immediately
 	if(mpLocalClient->GetState() == ca_connected)
 		mpLocalClient->Disconnect();
-
-// flush any pending messages - like the score!!!
+	
+	// flush any pending messages - like the score!!!
 	start = Sys_FloatTime();
+	
 	do
 	{
 		count = 0;
@@ -518,7 +517,7 @@ void CHost::ShutdownServer(bool crash)
 	}
 	while(count);
 
-// make sure all the clients know we're disconnecting
+	// make sure all the clients know we're disconnecting
 	buf.data = message;
 	buf.maxsize = 4;
 	buf.cursize = 0;
@@ -530,14 +529,13 @@ void CHost::ShutdownServer(bool crash)
 	for(i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 		if(host_client->active)
 			SV_DropClient(crash);
-
-//
-// clear structures
-//
+	
+	//
+	// clear structures
+	//
 	memset(&sv, 0, sizeof(sv));
 	memset(svs.clients, 0, svs.maxclientslimit*sizeof(client_t));
-}
-
+};
 
 /*
 ================
@@ -555,7 +553,7 @@ void CHost::ClearMemory()
 	
 	if(host_hunklevel)
 		Hunk_FreeToLowMark(host_hunklevel);
-
+	
 	cls.signon = 0;
 	memset(&sv, 0, sizeof(sv));
 	memset(&cl, 0, sizeof(cl));
@@ -573,25 +571,29 @@ Returns false if the time is too short to run a frame
 bool CHost::FilterTime(float time)
 {
 	realtime += time;
-
-	if(!cls.timedemo && realtime - oldrealtime < 1.0/72.0)
-		return false;		// framerate is too high
-
+	
+	// framerate is too high
+	if(!cls.timedemo && realtime - oldrealtime < 1.0f / 72.0f)
+		return false;
+	
 	host_frametime = realtime - oldrealtime;
 	oldrealtime = realtime;
-
+	
 	if(host_framerate.value > 0)
 		host_frametime = host_framerate.value;
 	else
-	{	// don't allow really long or short frames
-		if(host_frametime > 0.1)
-			host_frametime = 0.1;
-		if(host_frametime < 0.001)
-			host_frametime = 0.001;
-	}
+	{
+		// don't allow really long or short frames
+		
+		if(host_frametime > 0.1f)
+			host_frametime = 0.1f;
+		
+		if(host_frametime < 0.001f)
+			host_frametime = 0.001f;
+	};
 	
 	return true;
-}
+};
 
 /*
 ===================
@@ -602,18 +604,18 @@ Add them exactly as if they had been typed at the console
 */
 void CHost::GetConsoleCommands()
 {
-	char	*cmd;
-
+	char *cmd = NULL;
+	
 	while(1)
 	{
 		cmd = Sys_ConsoleInput();
+		
 		if(!cmd)
 			break;
 		
 		mpCmdBuffer->AddText(cmd);
-	}
-}
-
+	};
+};
 
 /*
 ==================
@@ -830,7 +832,7 @@ void CHost::Frame(float time)
 	}
 
 	Con_Printf("serverprofile: %2i clients %2i msec\n",  c,  m);
-}
+};
 
 //============================================================================
 
@@ -847,17 +849,17 @@ void Host_InitVCR(quakeparms_t *parms)
 	{
 		if(com_argc != 2)
 			Sys_Error("No other parameters allowed with -playback\n");
-
+		
 		Sys_FileOpenRead("quake.vcr", &vcrFile);
 		
 		if(vcrFile == -1)
 			Sys_Error("playback file not found\n");
-
+		
 		Sys_FileRead(vcrFile, &i, sizeof(int));
 		
 		if(i != VCR_SIGNATURE)
 			Sys_Error("Invalid signature in vcr file\n");
-
+		
 		Sys_FileRead(vcrFile, &com_argc, sizeof(int));
 		
 		com_argv = malloc(com_argc * sizeof(char *));
@@ -875,15 +877,16 @@ void Host_InitVCR(quakeparms_t *parms)
 		parms->argc = com_argc;
 		parms->argv = com_argv;
 	};
-
+	
 	if((n = COM_CheckParm("-record")) != 0)
 	{
 		vcrFile = Sys_FileOpenWrite("quake.vcr");
-
+		
 		i = VCR_SIGNATURE;
 		Sys_FileWrite(vcrFile, &i, sizeof(int));
 		i = com_argc - 1;
 		Sys_FileWrite(vcrFile, &i, sizeof(int));
+		
 		for(i = 1; i < com_argc; i++)
 		{
 			if(i == n)

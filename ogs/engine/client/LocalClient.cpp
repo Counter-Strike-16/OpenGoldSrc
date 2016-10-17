@@ -1,5 +1,5 @@
 /*
-Copyright (C) 1996-1997 Id Software, Inc.
+Copyright (C) 1997-2001 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -54,10 +54,6 @@ void CLocalClient::Init() // TODO: fix logic mixing
 	CL_InitCam ();
 	Pmove_Init ();
 	
-//
-// register our commands
-//
-
 	// SOME OF THESE CVARS BELOW SHOULD BE REMOVED HERE DUE 
 	// TO PRESENCE IN CLIENTDLL OF HLSDK
 	
@@ -82,7 +78,11 @@ void CLocalClient::Init() // TODO: fix logic mixing
 	Cvar_RegisterVariable (&m_forward);
 	Cvar_RegisterVariable (&m_side);
 	
-//	Cvar_RegisterVariable (&cl_autofire);
+	//Cvar_RegisterVariable (&cl_autofire);
+	
+	//
+	// register our commands
+	//
 	
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
@@ -130,6 +130,7 @@ void CLocalClient::EstablishConnection(char *host)
 =====================
 CL_Disconnect
 
+Goes from a connected state to full screen console state
 Sends a disconnect message to the server
 This is also called on Host_Error, so it shouldn't cause any errors
 =====================
@@ -250,31 +251,32 @@ CL_ParseServerMessage
 // TODO: impl some sort of protocol class?
 void CLocalClient::ParseServerMessage()
 {
-	int			cmd;
-	int			i;
+	int cmd;
+	int i;
 	
-//
-// if recording demos, copy the message out
-//
-	if (cl_shownet.value == 1)
-		Con_Printf ("%i ",net_message.cursize);
-	else if (cl_shownet.value == 2)
-		Con_Printf ("------------------\n");
+	//
+	// if recording demos, copy the message out
+	//
+	if(cl_shownet.value == 1)
+		Con_Printf("%i ",net_message.cursize);
+	else if(cl_shownet.value == 2)
+		Con_Printf("------------------\n");
 	
 	cl.onground = false;	// unless the server says otherwise	
-//
-// parse the message
-//
-	MSG_BeginReading ();
 	
-	while (1)
+	//
+	// parse the message
+	//
+	MSG_BeginReading();
+	
+	while(1)
 	{
-		if (msg_badread)
-			Host_Error ("CL_ParseServerMessage: Bad server message");
-
-		cmd = MSG_ReadByte ();
-
-		if (cmd == -1)
+		if(msg_badread)
+			Host_Error("CL_ParseServerMessage: Bad server message");
+		
+		cmd = MSG_ReadByte();
+		
+		if(cmd == -1)
 		{
 			SHOWNET("END OF MESSAGE");
 			return;		// end of message

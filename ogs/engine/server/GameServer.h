@@ -104,6 +104,8 @@ public:
 	CGameClient *GetClientByName(const char *name);
 	CGameClient *GetClientByIndex(int id);
 private:
+	bool mbInitialized; // sv_init has completed
+	
 	server_state_t state; // some actions are only valid during load
 	//tGameServerStateVec mvStates; // mvStates[state]->Frame();
 	
@@ -138,10 +140,10 @@ private:
 	int maxclients;
 	int maxclientslimit;
 	
-	double last_heartbeat;
+	/*int*/ double last_heartbeat;
 	int heartbeat_sequence;
 	
-	struct model_s	*models[MAX_MODELS];
+	struct model_s *models[MAX_MODELS];
 	
 	char *model_precache[MAX_MODELS];	// NULL terminated
 	char *sound_precache[MAX_SOUNDS];	// NULL terminated
