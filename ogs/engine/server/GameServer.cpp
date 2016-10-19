@@ -110,37 +110,56 @@ Clients that are in the game can still send
 connectionless packets.
 =================
 */
-void CGameServer::ConnectionlessPacket()
+void CGameServer::HandleConnectionlessPacket()
 {
-	char	*s;
-	char	*c;
-
 	MSG_BeginReading (&net_message);
 	MSG_ReadLong (&net_message);		// skip the -1 marker
-
-	s = MSG_ReadStringLine (&net_message);
-
+	
+	char *s = MSG_ReadStringLine (&net_message);
+	
 	Cmd_TokenizeString (s, false);
-
-	c = Cmd_Argv(0);
+	
+	char *c = Cmd_Argv(0);
+	
 	Com_DPrintf ("Packet %s : %s\n", NET_AdrToString(net_from), c);
-
+	
 	if (!strcmp(c, "ping"))
+	{
 		SVC_Ping ();
+		return;
+	}
 	else if (!strcmp(c, "ack"))
+	{
 		SVC_Ack ();
+		return;
+	}
 	else if (!strcmp(c,"status"))
+	{
 		SVC_Status ();
+		return;
+	}
 	else if (!strcmp(c,"info"))
+	{
 		SVC_Info ();
+		return;
+	}
 	else if (!strcmp(c,"getchallenge"))
+	{
 		SVC_GetChallenge ();
+		return;
+	}
 	else if (!strcmp(c,"connect"))
+	{
 		SVC_DirectConnect ();
+		return;
+	}
 	else if (!strcmp(c, "rcon"))
+	{
 		SVC_RemoteCommand ();
+		return;
+	}
 	else
-		Com_Printf ("bad connectionless packet from %s:\n%s\n"
+		Con_Printf ("bad connectionless packet from %s:\n%s\n"
 		, NET_AdrToString (net_from), s);
 };
 
@@ -342,20 +361,20 @@ SV_SendClientMessages
 */
 void CGameServer::SendClientMessages(void)
 {
-	int			i;
+	int i;
 	
-// update frags, names, etc
-	SV_UpdateToReliableMessages ();
-
-// build individual updates
-	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
+	// update frags, names, etc
+	UpdateToReliableMessages();
+	
+	// build individual updates
+	for(i = 0, CGameClient *pclient = mvClients; i < mnMaxClients; i++, pclient++)
 	{
-		if (!host_client->active)
+		if(!pclient->active)
 			continue;
 
-		if (host_client->spawned)
+		if(pclient->spawned)
 		{
-			if (!SV_SendClientDatagram (host_client))
+			if(!SV_SendClientDatagram(pclient))
 				continue;
 		}
 		else
@@ -365,10 +384,11 @@ void CGameServer::SendClientMessages(void)
 		// send a full message when the next signon stage has been requested
 		// some other message data (name changes, etc) may accumulate 
 		// between signon stages
-			if (!host_client->sendsignon)
+			if(!pclient->sendsignon)
 			{
-				if (realtime - host_client->last_message > 5)
-					SV_SendNop (host_client);
+				if(realtime - pclient->last_message > 5)
+					pclient->SendNop();
+				
 				continue;	// don't send out non-signon messages
 			}
 		}
@@ -376,31 +396,31 @@ void CGameServer::SendClientMessages(void)
 		// check for an overflowed message.  Should only happen
 		// on a very fucked up connection that backs up a lot, then
 		// changes level
-		if (host_client->message.overflowed)
+		if(pclient->message.overflowed)
 		{
-			SV_DropClient (true);
-			host_client->message.overflowed = false;
+			pclient->Drop(true);
+			pclient->message.overflowed = false;
 			continue;
 		}
 			
-		if (host_client->message.cursize || host_client->dropasap)
+		if(pclient->message.cursize || pclient->dropasap)
 		{
-			if (!NET_CanSendMessage (host_client->netconnection))
+			if (!NET_CanSendMessage(pclient->netconnection))
 			{
 //				I_Printf ("can't write\n");
 				continue;
 			}
 
-			if (host_client->dropasap)
-				SV_DropClient (false);	// went to another level
+			if (pclient->dropasap)
+				pclient->Drop(false);	// went to another level
 			else
 			{
-				if (NET_SendMessage (host_client->netconnection
-				, &host_client->message) == -1)
-					SV_DropClient (true);	// if the message couldn't send, kick off
-				SZ_Clear (&host_client->message);
-				host_client->last_message = realtime;
-				host_client->sendsignon = false;
+				if (NET_SendMessage(pclient->netconnection, &pclient->message) == -1)
+					pclient->Drop(true);	// if the message couldn't send, kick off
+				
+				SZ_Clear (&pclient->message);
+				pclient->last_message = realtime;
+				pclient->sendsignon = false;
 			}
 		}
 	}
@@ -428,6 +448,12 @@ void CGameServer::BroadcastPrintf(/*int level,*/ char *fmt, ...)
 	
 	for(int i = 0; i < svs.maxclients; i++)
 	{
+		if(level < cl->messagelevel)
+			continue;
+		
+		if(!cl->state)
+			continue;
+		
 		if(svs.clients[i].active && svs.clients[i].spawned)
 		{
 			MSG_WriteByte(&svs.clients[i].message, svc_print);

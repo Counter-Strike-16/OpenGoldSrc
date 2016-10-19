@@ -116,6 +116,8 @@ bool CGameClient::SendDatagram(/*client_t *client*/)
 	msg.data = buf;
 	msg.maxsize = sizeof(buf);
 	msg.cursize = 0;
+	msg.allowoverflow = true;
+	msg.overflowed = false;
 
 	MSG_WriteByte (&msg, svc_time);
 	MSG_WriteFloat (&msg, sv.time);
@@ -413,4 +415,60 @@ void CGameClient::Printf(CGameClient *cl, /*int level,*/ char *fmt, ...)
 	MSG_WriteByte(&cl->netchan.message, svc_print); // host_client->message
 	//MSG_WriteByte(&cl->netchan.message, level);
 	MSG_WriteString(&cl->netchan.message, string);
+};
+
+/*
+=======================
+SV_UpdateClientStats
+
+Performs a delta update of the stats array.  This should only be performed
+when a reliable message can be delivered this frame.
+=======================
+*/
+void CGameClient::UpdateStats(client_t *client)
+{
+	edict_t	*ent;
+	int		stats[MAX_CL_STATS];
+	int		i;
+	
+	ent = client->edict;
+	memset (stats, 0, sizeof(stats));
+	
+	// if we are a spectator and we are tracking a player, we get his stats
+	// so our status bar reflects his
+	if (client->spectator && client->spec_track > 0)
+		ent = svs.clients[client->spec_track - 1].edict;
+
+	stats[STAT_HEALTH] = ent->v.health;
+	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->v.weaponmodel));
+	stats[STAT_AMMO] = ent->v.currentammo;
+	stats[STAT_ARMOR] = ent->v.armorvalue;
+	stats[STAT_SHELLS] = ent->v.ammo_shells;
+	stats[STAT_NAILS] = ent->v.ammo_nails;
+	stats[STAT_ROCKETS] = ent->v.ammo_rockets;
+	stats[STAT_CELLS] = ent->v.ammo_cells;
+	if (!client->spectator)
+		stats[STAT_ACTIVEWEAPON] = ent->v.weapon;
+	// stuff the sigil bits into the high bits of items for sbar
+	stats[STAT_ITEMS] = (int)ent->v.items | ((int)pr_global_struct->serverflags << 28);
+
+	for (i=0 ; i<MAX_CL_STATS ; i++)
+	{
+		if (stats[i] != client->stats[i])
+		{
+			client->stats[i] = stats[i];
+			if (stats[i] >=0 && stats[i] <= 255)
+			{
+				ClientReliableWrite_Begin(client, svc_updatestat, 3);
+				ClientReliableWrite_Byte(client, i);
+				ClientReliableWrite_Byte(client, stats[i]);
+			}
+			else
+			{
+				ClientReliableWrite_Begin(client, svc_updatestatlong, 6);
+				ClientReliableWrite_Byte(client, i);
+				ClientReliableWrite_Long(client, stats[i]);
+			}
+		}
+	};
 };

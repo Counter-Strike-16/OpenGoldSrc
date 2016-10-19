@@ -41,15 +41,15 @@ BOOL OnVideoModeFailed()
 BlobFootprint_t g_blobfootprintClient;
 
 #ifdef WIN32
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
-	return Sys_Main();
-};
+	int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+	{
+		return Sys_Main();
+	};
 #else
-int main(int argc, char **argv)
-{
-	return Sys_Main();
-};
+	int main(int argc, char **argv)
+	{
+		return Sys_Main();
+	};
 #endif
 
 int Sys_Main()
