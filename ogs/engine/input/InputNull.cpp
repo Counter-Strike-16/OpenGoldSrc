@@ -45,3 +45,12 @@ void CInput::Commands()
 void CInput::Move(usercmd_t *cmd)
 {
 };
+
+/*
+===========
+IN_ModeChanged
+===========
+*/
+void CInput::ModeChanged()
+{
+};

@@ -48,6 +48,7 @@ public:
 	char *ConsoleInput();
 	void ConsoleOutput(char *string);
 	
+	// Perform Key_Event () callbacks until the input que is empty
 	void SendKeyEvents();
 	
 	// an error will cause the entire program to exit

@@ -1,10 +1,10 @@
 #pragma once
 
-class CSizeBuffer // CNetBuffer/CNetMsg
+class CNetBuffer // CNetMsg/bf_readwrite
 {
 public:
-	CSizeBuffer();
-	~CSizeBuffer();
+	CNetBuffer();
+	~CNetBuffer();
 	
 	void Clear();
 	

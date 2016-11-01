@@ -18,6 +18,14 @@ void CGameWorld::Shutdown()
 	Con_DPrintf("World module shutdown.\n");
 };
 
+/*
+=============================================================================
+
+EVENT MESSAGES
+
+=============================================================================
+*/
+
 /*  
 ==================
 SV_StartSound
@@ -44,13 +52,13 @@ void CGameWorld::StartSound(edict_t *entity, int channel, char *sample, int volu
 	qboolean	reliable = false;
 
 	if (volume < 0 || volume > 255)
-		SV_Error ("SV_StartSound: volume = %i", volume);
+		Sys_Error ("SV_StartSound: volume = %i", volume);
 
 	if (attenuation < 0 || attenuation > 4)
-		SV_Error ("SV_StartSound: attenuation = %f", attenuation);
+		Sys_Error ("SV_StartSound: attenuation = %f", attenuation);
 
-	if (channel < 0 || channel > 15)
-		SV_Error ("SV_StartSound: channel = %i", channel);
+	if (channel < 0 || channel > 15) // 7
+		Sys_Error ("SV_StartSound: channel = %i", channel);
 
 // find precache number for sound
     for (sound_num=1 ; sound_num<MAX_SOUNDS
@@ -110,4 +118,38 @@ void CGameWorld::StartSound(edict_t *entity, int channel, char *sample, int volu
 		SV_Multicast (origin, reliable ? MULTICAST_PHS_R : MULTICAST_PHS);
 	else
 		SV_Multicast (origin, reliable ? MULTICAST_ALL_R : MULTICAST_ALL);
+};
+
+/*  
+==================
+SV_StartParticle
+
+Make sure the event gets sent to all clients
+==================
+*/
+void CGameWorld::StartParticle(vec3_t org, vec3_t dir, int color, int count)
+{
+	int i, v;
+
+	if (sv.datagram.cursize > MAX_DATAGRAM - 16)
+		return;
+	
+	MSG_WriteByte (&sv.datagram, svc_particle);
+	
+	MSG_WriteCoord (&sv.datagram, org[0]);
+	MSG_WriteCoord (&sv.datagram, org[1]);
+	MSG_WriteCoord (&sv.datagram, org[2]);
+	
+	for(i=0 ; i<3 ; i++)
+	{
+		v = dir[i]*16;
+		if (v > 127)
+			v = 127;
+		else if (v < -128)
+			v = -128;
+		MSG_WriteChar (&sv.datagram, v);
+	};
+	
+	MSG_WriteByte (&sv.datagram, count);
+	MSG_WriteByte (&sv.datagram, color);
 };

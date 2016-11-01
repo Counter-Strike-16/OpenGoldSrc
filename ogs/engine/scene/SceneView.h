@@ -22,6 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+extern	cvar_t		v_gamma;
+extern	cvar_t		lcd_x;
+#ifdef GLQUAKE
+extern float v_blend[4];
+#endif
+
 class CView
 {
 public:
@@ -39,4 +45,6 @@ public:
 	void ParseDamage();
 	void SetContentsColor(int contents);
 	void CalcBlend();
+	
+	float CalcRoll(vec3_t angles, vec3_t velocity);
 };

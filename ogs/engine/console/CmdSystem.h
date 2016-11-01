@@ -1,6 +1,26 @@
+/*
+Copyright (C) 1996-1997 Id Software, Inc.
 
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-// CmdSystem.h -- Command execution
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+*/
+
+// CmdSystem.h -- Console command system
+
+#pragma once
 
 //===========================================================================
 
@@ -15,6 +35,8 @@ not apropriate.
 
 */
 
+//===========================================================================
+
 typedef void (*xcommand_t)();
 
 typedef enum
@@ -25,6 +47,8 @@ typedef enum
 } cmd_source_t;
 
 extern	cmd_source_t	cmd_source;
+
+void Cmd_StuffCmds_f();
 
 class CCmdSystem
 {
@@ -37,6 +61,8 @@ public:
 	// called by the init functions of other parts of the program to
 	// register commands and functions to call for them.
 	// The cmd_name is referenced later, so it should not be in temp memory
+	// if function is NULL, the command will be forwarded to the server
+	// as a clc_stringcmd instead of executed locally
 	void AddCommand(char *cmd_name, xcommand_t function);
 	
 	// used by the cvar code to check for cvar / command name overlap
@@ -46,12 +72,12 @@ public:
 	// returns NULL if nothing fits
 	char *Cmd_CompleteCommand (char *partial);
 	
+	// The functions that execute commands get their parameters with these
+	// functions. Cmd_Argv () will return an empty string, not a NULL
+	// if arg > argc, so string operations are always safe
 	int Cmd_Argc(void);
 	char *Cmd_Argv(int arg);
 	char *Cmd_Args(void);
-// The functions that execute commands get their parameters with these
-// functions. Cmd_Argv () will return an empty string, not a NULL
-// if arg > argc, so string operations are allways safe.
 
 	int Cmd_CheckParm (char *parm);
 // Returns the position (1 to argc-1) in the command's argument list
@@ -62,7 +88,7 @@ public:
 // breaks the string up into arg tokens.
 
 	void Cmd_ExecuteString (char *text, cmd_source_t src);
-// Parses a single line of text into arguments and tries to execute it.
+// Parses a single line of text into arguments and tries to execute it as if it was typed at the console
 // The text can come from the command buffer, a remote client, or stdin.
 
 	void Cmd_ForwardToServer (void);

@@ -113,6 +113,8 @@ bool CGameClient::SendDatagram(/*client_t *client*/)
 	byte		buf[MAX_DATAGRAM];
 	sizebuf_t	msg;
 	
+	// CNetBuffer *pNetBuffer = mpNetChan->CreateBuffer(blablabla); ?
+	
 	msg.data = buf;
 	msg.maxsize = sizeof(buf);
 	msg.cursize = 0;

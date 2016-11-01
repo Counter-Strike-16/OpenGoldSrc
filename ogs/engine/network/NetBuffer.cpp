@@ -1,24 +1,24 @@
-#include "system/SizeBuffer.h"
+#include "network/NetBuffer.h"
 
 //===========================================================================
 
-CSizeBuffer::CSizeBuffer()
+CNetBuffer::CNetBuffer()
 {
 };
 
-CSizeBuffer::~CSizeBuffer()
+CNetBuffer::~CNetBuffer()
 {
 };
 
-void CSizeBuffer::Clear (sizebuf_t *buf)
+void CNetBuffer::Clear(sizebuf_t *buf)
 {
 	buf->cursize = 0;
 	buf->overflowed = false;
 }
 
-void *CSizeBuffer::GetSpace (sizebuf_t *buf, int length)
+void *CNetBuffer::GetSpace(sizebuf_t *buf, int length)
 {
-	void	*data;
+	void *data;
 	
 	if (buf->cursize + length > buf->maxsize)
 	{
@@ -39,12 +39,12 @@ void *CSizeBuffer::GetSpace (sizebuf_t *buf, int length)
 	return data;
 }
 
-void CSizeBuffer::Write(sizebuf_t *buf, void *data, int length)
+void CNetBuffer::Write(sizebuf_t *buf, void *data, int length)
 {
 	Q_memcpy (SZ_GetSpace(buf,length),data,length);		
 }
 
-void CSizeBuffer::Print(sizebuf_t *buf, char *data)
+void CNetBuffer::Print(sizebuf_t *buf, char *data)
 {
 	int		len;
 	

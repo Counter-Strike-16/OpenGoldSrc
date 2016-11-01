@@ -47,7 +47,7 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-edict_t *CEdictPool::AllocEdict()
+CEdictHandle *CEdictPool::AllocEdict()
 {
 	// Search for free edict and return it if found
 	for(tEdictVecIt It = mvEdicts.begin(); It < mvEdicts.end(); ++It)
@@ -66,7 +66,8 @@ edict_t *CEdictPool::AllocEdict()
 		return NULL;
 	};
 	
-	edict_t *pNewEdict = new edict_t;
+	// new pointer to edict (new edict) : edict = handling edict; destructor->delete handled edict?; release method
+	CEdictHandle *pNewEdict = new CEdictHandle(new edict_t); // ouch; is edict_t's deletion handled?
 	mvEdicts.push_back(pNewEdict);
 	
 	pNewEdict->Clear();
@@ -81,14 +82,16 @@ Marks the edict as free
 FIXME: walk all entities and NULL out references to this entity
 =================
 */
-void CEdictPool::FreeEdict(edict_t *edict)
+void CEdictPool::FreeEdict(edict_t *edict) // can be turned into method of edicthandle
 {
 	if(!edict)
 		return;
 	
 	if(!edict->free)
 	{
+		// unlink from world bsp
 		SV_UnlinkEdict(ed);
+		
 		FreeEntPrivateData(ed);
 		
 		ed->serialnumber++;
@@ -107,11 +110,23 @@ void CEdictPool::FreeEdict(edict_t *edict)
 		ed->v.nextthink = -1.0f;
 		ed->v.solid = SOLID_NOT;
 		
+		//
+		
+		//VectorCopy(vec3_origin, ed->v.origin);
+		//VectorCopy(vec3_origin, ed->v.angles);
+		
+		//#define vec3_t Vector // defined in sdk so this below should work
+		//ed->v.origin = vec3_origin
+		
+		//
+		
 		ed->v.origin[0] = vec3_origin[0];
 		ed->v.origin[1] = vec3_origin[1];
 		ed->v.origin[2] = vec3_origin[2];
 		ed->v.angles[0] = vec3_origin[0];
 		ed->v.angles[1] = vec3_origin[1];
 		ed->v.angles[2] = vec3_origin[2];
+		
+		//
 	};
 };

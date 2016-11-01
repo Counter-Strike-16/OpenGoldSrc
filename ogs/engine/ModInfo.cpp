@@ -1,19 +1,97 @@
-#include "ModInfo.h"
+#include "GameInfo.h"
 
-CModInfo::CModInfo()
+CGameInfo::CGameInfo()
 {
 };
 
-CModInfo::~CModInfo()
+CGameInfo::~CGameInfo()
 {
 };
 
 // will load the mod info (game info) from gamefolder/asFileName (it should be liblist.gam but it would be hardcode)
-void CModInfo::LoadFromFile(const char *asFileName)
+void CGameInfo::LoadFromFile(const char *asFileName)
 {
+	Q_strncpy(szGameDir, com_gamedir, sizeof(szGameDir) - 1);
+	if(Q_stricmp(szGameDir, "valve"))
+		gmodinfo.bIsMod = 1;
+	
+	Q_snprintf(szDllListFile, sizeof(szDllListFile), "%s", "liblist.gam");
+	hLibListFile = FS_Open(szDllListFile, "rb");
+	
+	if(hLibListFile)
+	{
+		nFileSize = FS_Size(hLibListFile);
+		nFileSize2 = nFileSize;
+		
+		if(!nFileSize || (signed int)nFileSize > 262144)
+			Sys_Error("Game listing file size is bogus [%s: size %i]", "liblist.gam", nFileSize);
+
+		pszInputStream = (char *)Mem_Malloc(nFileSize + 1);
+		
+		if(!pszInputStream)
+			Sys_Error("Could not allocate space for game listing file of %i bytes", nFileSize2 + 1);
+
+		nBytesRead = FS_Read(pszInputStream, nFileSize2, 1, hLibListFile);
+		
+		if(nBytesRead != nFileSize2)
+			Sys_Error("Error reading in game listing file, expected %i bytes, read %i", nFileSize2, nBytesRead);
+
+		pszInputStream[nFileSize2] = 0;
+		pStreamPos = pszInputStream;
+		com_ignorecolons = 1;
+		
+		while(1)
+		{
+			pStreamPos = COM_Parse(pStreamPos);
+			
+			if(Q_strlen(com_token) <= 0)
+				break;
+
+			Q_strncpy(szKey, com_token, sizeof(szKey) - 1);
+			szKey[sizeof(szKey) - 1] = 0;
+			pStreamPos = COM_Parse(pStreamPos);
+			Q_strncpy(szValue, com_token, sizeof(szValue) - 1);
+			szValue[sizeof(szValue) - 1] = 0;
+			
+#ifdef _WIN32
+			if(Q_stricmp(szKey, "gamedll"))
+#else // _WIN32
+			if(Q_stricmp(szKey, "gamedll_linux"))
+#endif // _WIN32
+			{
+				DLL_SetModKey(&gmodinfo, szKey, szValue);
+			}
+			else
+			{
+				int index = COM_CheckParm("-dll");
+				if(index && index < com_argc - 1)
+				{
+					Q_strncpy(szValue, com_argv[index + 1], sizeof(szValue) - 1);
+					szValue[sizeof(szValue) - 1] = 0;
+				};
+				
+#ifdef _WIN32
+				if(Q_strstr(szValue, ".dll"))
+#else // _WIN32
+				if(Q_strstr(szValue, ".so"))
+#endif // _WIN32
+				{
+					FS_GetLocalPath(szValue, szDllFilename, sizeof(szDllFilename));
+					Con_DPrintf("\nAdding:  %s/%s\n", szGameDir, szValue);
+					LoadThisDll(szDllFilename);
+				}
+				else
+					Con_DPrintf("Skipping non-dll:  %s\n", szValue);
+			};
+		};
+		
+		com_ignorecolons = 0;
+		Mem_Free(pszInputStream);
+		FS_Close(hLibListFile);
+	}
 };
 
-void CModInfo::SetModKey(/*modinfo_t *pinfo,*/ char *pkey, char *pvalue)
+void CGameInfo::SetModKey(/*modinfo_t *pinfo,*/ char *pkey, char *pvalue)
 {
 	if (!Q_stricmp(pkey, "url_info"))
 	{
@@ -78,7 +156,5 @@ void CModInfo::SetModKey(/*modinfo_t *pinfo,*/ char *pkey, char *pvalue)
 			pinfo->type = BOTH;
 	}
 	else if (!Q_stricmp(pkey, "fallback_dir"))
-	{
 		COM_AddDefaultDir(pvalue);
-	}
-}
+};

@@ -28,6 +28,8 @@
 
 #pragma once
 
+class CNetBuffer;
+
 class CNetChannel
 {
 public:
@@ -42,6 +44,10 @@ public:
 	// message to be transmitted
 	bool CanSendMessage(); // CanPacket
 	
+	qboolean Netchan_Process(sizebuf_t *msg);
+	
+	qboolean Netchan_CanReliable();
+	
 	// Returns data in net_message sizebuf
 	// returns 0 if no data is waiting
 	// returns 1 if a message was received
@@ -54,8 +60,8 @@ public:
 	//
 	// returns 1 if the message was sent properly
 	// returns -1 if the connection died
-	int SendMessage(sizebuf_t *data);
-	int SendUnreliableMessage(sizebuf_t *data);
+	int SendMessage(CNetBuffer *data);
+	int SendUnreliableMessage(CNetBuffer *data);
 	
 	qsocket_t *next;
 	

@@ -28,9 +28,17 @@
 
 #pragma once
 
+//=============================================================================
+
+// the host system specifies the base of the directory tree, the
+// command line parms passed to the program, and the amount of memory
+// available for the program to use
+
 // Note: it is possible to move local client code to host somehow (QW-client style)
 // Need to think about it (client_state and client_static -> ClientData or something like that)
 // void CHost::Disconnect() // will disconnect local client from server if connected to any
+
+//=============================================================================
 
 class CLocalClient;
 class CGameServer;
@@ -45,7 +53,7 @@ class CInput; // partially implemented in clientdll
 struct quakeparms_t
 {
 	char *basedir;
-	char *cachedir;
+	char *cachedir; // for development over ISDN lines
 	
 	int argc;
 	char **argv;
@@ -53,6 +61,8 @@ struct quakeparms_t
 	void *membase;
 	int memsize;
 };
+
+extern quakeparms_t host_parms;
 
 class CHost
 {

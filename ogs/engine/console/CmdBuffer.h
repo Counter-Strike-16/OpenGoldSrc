@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#pragma once
+
 // CmdBuffer.h -- Command buffer
 
 /*
@@ -32,8 +34,6 @@ The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
 */
 
 //===========================================================================
-
-#pragma once
 
 class CCmdBuffer
 {
@@ -56,5 +56,6 @@ public:
 	// Do not call inside a command function!
 	void Execute();
 private:
-	sizebuf_t cmd_text;
+	CNetBuffer cmd_text;
+	//byte cmd_text_buf[8192];
 };

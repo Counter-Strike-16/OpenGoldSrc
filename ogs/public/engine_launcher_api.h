@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "interface.h"
+//#include "maintypes.h"
+#include "public/interface.h"
 
 #define VENGINE_LAUNCHER_API_VERSION "VENGINE_LAUNCHER_API_VERSION002"
 

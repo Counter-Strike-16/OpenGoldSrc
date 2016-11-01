@@ -54,9 +54,7 @@ Adds command text at the end of the buffer
 */
 void CCmdBuffer::AddText(char *text)
 {
-	int		l;
-	
-	l = Q_strlen (text);
+	int l = Q_strlen (text);
 
 	if (cmd_text.cursize + l >= cmd_text.maxsize)
 	{
@@ -78,24 +76,23 @@ FIXME: actually change the command buffer to do less copying
 */
 void CCmdBuffer::InsertText(char *text)
 {
-	char	*temp;
-	int		templen;
+	char *temp = NULL;
+	int templen;
 
-// copy off any commands still remaining in the exec buffer
+	// copy off any commands still remaining in the exec buffer
 	templen = cmd_text.cursize;
 	if (templen)
 	{
 		temp = Z_Malloc (templen);
 		Q_memcpy (temp, cmd_text.data, templen);
 		SZ_Clear (&cmd_text);
-	}
-	else
-		temp = NULL;	// shut up compiler
+	};
 		
-// add the entire text of the file
+	// add the entire text of the file
 	AddText(text);
+	//SZ_Write(&cmd_text, "\n", 1);
 	
-// add the copied off data
+	// add the copied off data
 	if (templen)
 	{
 		SZ_Write (&cmd_text, temp, templen);
@@ -121,6 +118,7 @@ void CCmdBuffer::Execute()
 		text = (char *)cmd_text.data;
 
 		quotes = 0;
+		
 		for (i=0 ; i< cmd_text.cursize ; i++)
 		{
 			if (text[i] == '"')
@@ -129,9 +127,8 @@ void CCmdBuffer::Execute()
 				break;	// don't break if inside a quoted string
 			if (text[i] == '\n')
 				break;
-		}
-			
-				
+		};
+		
 		memcpy (line, text, i);
 		line[i] = 0;
 		

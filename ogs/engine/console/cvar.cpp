@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // cvar.c -- dynamic variable tracking
 
 #ifdef SERVERONLY 
@@ -25,22 +26,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#include "quakedef.h"
 #endif
 
-cvar_t	*cvar_vars;
-char	*cvar_null_string = "";
+cvar_t *cvar_vars;
+const char *cvar_null_string = "";
 
 /*
 ============
 Cvar_FindVar
 ============
 */
-cvar_t *Cvar_FindVar (char *var_name)
+cvar_t *CCvarSystem::FindVar(char *var_name)
 {
-	cvar_t	*var;
-	
-	for (var=cvar_vars ; var ; var=var->next)
-		if (!Q_strcmp (var_name, var->name))
+	for(cvar_t *var = cvar_vars; var; var=var->next)
+		if(!Q_strcmp(var_name, var->name))
 			return var;
-
+	
 	return NULL;
 }
 
@@ -49,46 +48,42 @@ cvar_t *Cvar_FindVar (char *var_name)
 Cvar_VariableValue
 ============
 */
-float	Cvar_VariableValue (char *var_name)
+float CCvarSystem::VariableValue(char *var_name)
 {
-	cvar_t	*var;
+	cvar_t *var = FindVar(var_name);
 	
-	var = Cvar_FindVar (var_name);
-	if (!var)
+	if(!var)
 		return 0;
-	return Q_atof (var->string);
-}
-
+	
+	return Q_atof(var->string);
+};
 
 /*
 ============
 Cvar_VariableString
 ============
 */
-char *Cvar_VariableString (char *var_name)
+char *Cvar_VariableString(char *var_name)
 {
-	cvar_t *var;
+	cvar_t *var = FindVar(var_name);
 	
-	var = Cvar_FindVar (var_name);
-	if (!var)
+	if(!var)
 		return cvar_null_string;
+	
 	return var->string;
-}
-
+};
 
 /*
 ============
 Cvar_CompleteVariable
 ============
 */
-char *Cvar_CompleteVariable (char *partial)
+char *CCvarSystem::CompleteVariable(char *partial)
 {
-	cvar_t		*cvar;
-	int			len;
+	cvar_t *cvar;
+	int len = Q_strlen(partial);
 	
-	len = Q_strlen(partial);
-	
-	if (!len)
+	if(!len)
 		return NULL;
 	
 	/*
@@ -112,7 +107,7 @@ char *Cvar_CompleteVariable (char *partial)
 Cvar_Set
 ============
 */
-void Cvar_Set (char *var_name, char *value)
+void CCvarSystem::Set(char *var_name, char *value)
 {
 	cvar_t	*var;
 	qboolean changed;
@@ -144,14 +139,13 @@ void Cvar_Set (char *var_name, char *value)
 Cvar_SetValue
 ============
 */
-void Cvar_SetValue (char *var_name, float value)
+void CCvarSystem::SetValue(char *var_name, float value)
 {
-	char	val[32];
+	char val[32];
 	
-	sprintf (val, "%f",value);
-	Cvar_Set (var_name, val);
-}
-
+	sprintf(val, "%f",value);
+	Cvar_Set(var_name, val);
+};
 
 /*
 ============
@@ -160,7 +154,7 @@ Cvar_RegisterVariable
 Adds a freestanding variable to the variable list.
 ============
 */
-void Cvar_RegisterVariable (cvar_t *variable)
+void CCvarSystem::RegisterVariable(cvar_t *variable)
 {
 	char	*oldstr;
 	
@@ -196,9 +190,9 @@ Cvar_Command
 Handles variable inspection and changing from the console
 ============
 */
-qboolean	Cvar_Command (void)
+bool CCvarSystem::HandleCommand()
 {
-	cvar_t			*v;
+	cvar_t *v;
 
 // check variables
 	v = Cvar_FindVar (Cmd_Argv(0));
@@ -214,8 +208,7 @@ qboolean	Cvar_Command (void)
 
 	Cvar_Set (v->name, Cmd_Argv(1));
 	return true;
-}
-
+};
 
 /*
 ============
@@ -225,12 +218,11 @@ Writes lines containing "set variable value" for all variables
 with the archive flag set to true.
 ============
 */
-void Cvar_WriteVariables (FILE *f)
+void CCvarSystem::WriteVariables(FILE *f)
 {
 	cvar_t	*var;
 	
 	for (var = cvar_vars ; var ; var = var->next)
 		if (var->archive)
 			fprintf (f, "%s \"%s\"\n", var->name, var->string);
-}
-
+};

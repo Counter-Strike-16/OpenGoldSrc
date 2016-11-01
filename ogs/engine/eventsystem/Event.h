@@ -26,50 +26,18 @@
 *
 */
 
+#ifndef EVENT_H
+#define EVENT_H
+#ifdef _WIN32
 #pragma once
+#endif
 
-#include "IEngine.hpp"
-
-extern IEngine *eng = NULL;
-
-class CEngine : public IEngine
+struct event_t
 {
-public:
-	CEngine();
-	~CEngine(){};
-	
-	bool Load(bool dedicated, char *basedir, char *cmdline);
-	void Unload();
-	
-	void SetState(int nState);
-	int GetState(){return mnState;}
-	
-	void SetSubState(int nSubState);
-	int GetSubState(){return mnSubState;}
-	
-	int Frame();
-	
-	double GetFrameTime(){return mfFrameTime;}
-	double GetCurTime(){return mfCurTime;}
-	
-	void TrapKey_Event(int key, bool down){};
-	void TrapMouse_Event(int buttons, bool down);
-	
-	void StartTrapMode();
-	bool IsTrapping(){return mbTrapMode;}
-	bool CheckDoneTrapping(int &buttons, int &key);
-	
-	int GetQuitting(){return mnQuitType;}
-	void SetQuitting(int anQuitType){mnQuitType = anQuitType;}
-private:
-	double mfCurTime;
-	double mfOldTime;
-	double mfFrameTime;
-	
-	int mnState;
-	int mnSubState;
-	
-	int mnQuitType;
-	
-	bool mbTrapMode;
+	unsigned short	index;
+	const char		*filename;
+	int				filesize;
+	const char		*pszScript;
 };
+
+#endif // EVENT_H

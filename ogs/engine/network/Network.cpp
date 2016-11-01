@@ -155,4 +155,24 @@ void CNetwork::Poll()
 		pollProcedureList = pp->next;
 		pp->procedure(pp->arg);
 	}
-}
+};
+
+qboolean CNetwork::StringToAdr(char *s, netadr_t *a)
+{
+	struct sockaddr sadr;
+	
+	if(Q_strcmp(s, "localhost"))
+	{
+		if(!NET_StringToSockaddr(s, &sadr))
+			return FALSE;
+		
+		SockadrToNetadr(&sadr, a);
+	}
+	else
+	{
+		Q_memset(a, 0, sizeof(netadr_t));
+		a->type = NA_LOOPBACK;
+	};
+	
+	return TRUE;
+};

@@ -1,12 +1,18 @@
-#include "metahook.h"
-#include <IEngine.h>
+#include <stdio.h>
+#include <windows.h>
+
+//#include "metahook.h"
+#include "engine_launcher_api.h"
 #include "LoadBlob.h"
 #include "ExceptHandle.h"
-#include "sys.h"
+//#include "sys.h"
+#include "IFileSystem.h"
+#include "ICommandLine.h"
+#include "IRegistry.h"
 
 #pragma warning(disable : 4733)
 
-IFileSystem *g_pFileSystem = nullptr;
+IFileSystem *g_pFileSystem = NULL;
 
 HINTERFACEMODULE LoadFilesystemModule()
 {
@@ -14,8 +20,8 @@ HINTERFACEMODULE LoadFilesystemModule()
 	
 	if(!hModule)
 	{
-		Plat_MessageBox(eMsgBoxType_Error, "Fatal Error", "Could not load filesystem dll.\nFileSystem crashed during construction.");
-		return nullptr;
+		//Plat_MessageBox(eMsgBoxType_Error, "Fatal Error", "Could not load filesystem dll.\nFileSystem crashed during construction.");
+		return NULL;
 	};
 	
 	return hModule;
@@ -86,7 +92,7 @@ int Sys_Main()
 		CommandLine()->AppendParm("-game", szExeName);
 	};
 	
-	const char *_szGameName = nullptr;
+	const char *_szGameName = "";
 	static char szGameName[32];
 	const char *szGameStr = CommandLine()->CheckParm("-game", &_szGameName);
 	strcpy(szGameName, _szGameName);
@@ -128,7 +134,7 @@ int Sys_Main()
 		if(!hFileSystem)
 			break;
 		
-		MH_Init(szGameName);
+		//MH_Init(szGameName);
 		
 		CreateInterfaceFn fsCreateInterface = (CreateInterfaceFn)Sys_GetFactory(hFileSystem);
 		g_pFileSystem = (IFileSystem*)fsCreateInterface(FILESYSTEM_INTERFACE_VERSION, nullptr);
@@ -176,9 +182,9 @@ int Sys_Main()
 		
 		if(engineAPI)
 		{
-			MH_LoadEngine(bUseBlobDLL ? NULL : (HMODULE)hEngine);
+			//MH_LoadEngine(bUseBlobDLL ? NULL : (HMODULE)hEngine);
 			iResult = engineAPI->Run(hInstance, Sys_GetLongPathName(), CommandLine()->GetCmdLine(), szNewCommandParams, Sys_GetFactoryThis(), Sys_GetFactory(hFileSystem));
-			MH_ExitGame(iResult);
+			//MH_ExitGame(iResult);
 			
 			if(bUseBlobDLL)
 				FreeBlob(&g_blobfootprintClient);
@@ -232,7 +238,7 @@ int Sys_Main()
 		
 		g_pFileSystem->Unmount();
 		Sys_FreeModule(hFileSystem);
-		MH_Shutdown();
+		//MH_Shutdown();
 		
 		if(!bContinue)
 			break;
@@ -246,7 +252,7 @@ int Sys_Main()
 		CloseHandle(hObject);
 	};
 	
-	MH_Shutdown();
+	//MH_Shutdown();
 	TerminateProcess(GetCurrentProcess(), 1);
 	
 	Plat_Shutdown();
