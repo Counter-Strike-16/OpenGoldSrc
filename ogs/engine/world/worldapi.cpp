@@ -1,10 +1,14 @@
 // C API for server world (game & physics)
 
-void World_RemoveEntity(edict_t *e)
+edict_t *World_CreateEntity()
 {
 };
 
 edict_t *World_CreateNamedEntity(int className)
+{
+};
+
+void World_RemoveEntity(edict_t *e)
 {
 };
 
@@ -41,5 +45,45 @@ const char *World_TraceTexture(edict_t *pTextureEntity, const float *v1, const f
 };
 
 void World_TraceSphere(const float *v1, const float *v2, int fNoMonsters, float radius, edict_t *pentToSkip, TraceResult *ptr)
+{
+};
+
+void World_CreateParticleEffect(const float *org, const float *dir, float color, float count)
+{
+};
+
+void World_CreateStaticDecal(const float *origin, int decalIndex, int entityIndex, int modelIndex)
+{
+};
+
+void World_PlaybackEvent(int flags, const edict_t *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2)
+{
+};
+
+void World_SetLightStyle(int style, char *val)
+{
+};
+
+int World_GetPointContents(const float *rgflVector)
+{
+};
+
+int World_GetNumberOfEntities()
+{
+};
+
+unsigned char *World_SetFatPVS(float *org)
+{
+};
+
+unsigned char *World_SetFatPAS(float *org)
+{
+};
+
+int World_CheckEntityVisibility(const edict_t *entity, unsigned char *pset)
+{
+};
+
+int World_CreateInstancedBaseline( int classname, struct entity_state_s *baseline)
 {
 };

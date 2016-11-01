@@ -1,4 +1,8 @@
 #include "engine/eiface.h"
+#include "world/edictapi.hpp"
+#include "world/worldapi.hpp"
+#include "math/mathapi.hpp"
+#include "network/netmsgapi.hpp"
 
 namespace
 {
@@ -22,14 +26,6 @@ void EngFunc_ChangeLevel(char *s1, char *s2)
 {
 };
 
-float EngFunc_VecToYaw(const float *rgflVector)
-{
-};
-
-void EngFunc_VecToAngles(const float *rgflVectorIn, float *rgflVectorOut)
-{
-};
-
 edict_t *EngFunc_FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue)
 {
 };
@@ -43,18 +39,6 @@ edict_t *EngFunc_FindClientInPVS(edict_t *pEdict)
 };
 
 edict_t *EngFunc_EntitiesInPVS(edict_t *pplayer)
-{
-};
-
-void EngFunc_MakeVectors(const float *rgflVector)
-{
-};
-
-void EngFunc_AngleVectors(const float *rgflVector, float *forward, float *right, float *up)
-{
-};
-
-edict_t *EngFunc_CreateEntity()
 {
 };
 
@@ -74,79 +58,7 @@ void EngFunc_ClientCommand(edict_t *pEdict, char *szFmt, ...)
 {
 };
 
-void EngFunc_ParticleEffect(const float *org, const float *dir, float color, float count)
-{
-};
-
-void EngFunc_LightStyle(int style, char *val)
-{
-};
-
 int EngFunc_DecalIndex(const char *name)
-{
-};
-
-int EngFunc_PointContents(const float *rgflVector)
-{
-};
-
-void EngFunc_MessageBegin(int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)
-{
-};
-
-void EngFunc_MessageEnd()
-{
-};
-
-void EngFunc_WriteByte(int iValue)
-{
-};
-
-void EngFunc_WriteChar(int iValue)
-{
-};
-
-void EngFunc_WriteShort(int iValue)
-{
-};
-
-void EngFunc_WriteLong(int iValue)
-{
-};
-
-void EngFunc_WriteAngle(float flValue)
-{
-};
-
-void EngFunc_WriteCoord(float flValue)
-{
-};
-
-void EngFunc_WriteString(const char *sz)
-{
-};
-
-void EngFunc_WriteEntity(int iValue)
-{
-};
-
-void EngFunc_CVarRegister(cvar_t *pCvar)
-{
-};
-
-float EngFunc_CVarGetFloat(const char *szVarName)
-{
-};
-
-const char *EngFunc_CVarGetString(const char *szVarName)
-{
-};
-
-void EngFunc_CVarSetFloat(const char *szVarName, float flValue)
-{
-};
-
-void EngFunc_CVarSetString(const char *szVarName, const char *szValue)
 {
 };
 
@@ -246,14 +158,6 @@ CRC32_t EngFunc_CRC32_Final(CRC32_t pulCRC)
 {
 };
 
-int32 EngFunc_RandomLong(int32lLow,int32lHigh)
-{
-};
-
-float EngFunc_RandomFloat(float flLow, float flHigh)
-{
-};
-
 void EngFunc_SetView(const edict_t *pClient, const edict_t *pViewent)
 {
 };
@@ -286,10 +190,6 @@ void EngFunc_GetGameDir(char *szGetGameDir)
 {
 };
 
-void EngFunc_Cvar_RegisterVariable(cvar_t *variable)
-{
-};
-
 void EngFunc_FadeClientVolume(const edict_t *pEdict, int fadePercent, int fadeOutSeconds, int holdTime, int fadeInSeconds)
 {
 };
@@ -303,10 +203,6 @@ edict_t *EngFunc_CreateFakeClient(const char *netname)
 };
 
 void EngFunc_RunPlayerMove(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, byte msec)
-{
-};
-
-int EngFunc_NumberOfEntities()
 {
 };
 
@@ -330,10 +226,6 @@ int EngFunc_IsMapValid(char *filename)
 {
 };
 
-void EngFunc_StaticDecal(const float *origin, int decalIndex, int entityIndex, int modelIndex)
-{
-};
-
 int EngFunc_PrecacheGeneric(char *s)
 {
 };
@@ -347,10 +239,6 @@ void EngFunc_BuildSoundMsg(edict_t *entity, int channel, const char *sample, /*i
 };
 
 int EngFunc_IsDedicatedServer()
-{
-};
-
-cvar_t *EngFunc_CVarGetPointer(const char *szVarName)
 {
 };
 
@@ -375,22 +263,6 @@ const char *EngFunc_GetPhysicsInfoString(const edict_t *pClient)
 };
 
 unsigned short EngFunc_PrecacheEvent(int type, const char*psz)
-{
-};
-
-void EngFunc_PlaybackEvent(int flags, const edict_t *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2)
-{
-};
-
-unsigned char *EngFunc_SetFatPVS(float *org)
-{
-};
-
-unsigned char *EngFunc_SetFatPAS(float *org)
-{
-};
-
-int EngFunc_CheckVisibility(const edict_t *entity, unsigned char *pset)
 {
 };
 
@@ -427,14 +299,6 @@ void EngFunc_DeltaUnsetFieldByIndex(struct delta_s *pFields, int fieldNumber)
 };
 
 void EngFunc_SetGroupMask(int mask, int op)
-{
-};
-
-int EngFunc_CreateInstancedBaseline( int classname, struct entity_state_s *baseline)
-{
-};
-
-void EngFunc_Cvar_DirectSet(struct cvar_s *var, char *value)
 {
 };
 
@@ -487,26 +351,6 @@ int EngFunc_IsCareerMatch()
 };
 
 int EngFunc_GetLocalizedStringLength(const char *label)
-{
-};
-
-void EngFunc_RegisterTutorMessageShown(int mid)
-{
-};
-
-int EngFunc_GetTimesTutorMessageShown(int mid)
-{
-};
-
-void EngFunc_ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength)
-{
-};
-
-void EngFunc_ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength)
-{
-};
-
-void EngFunc_ResetTutorMessageDecayData()
 {
 };
 
