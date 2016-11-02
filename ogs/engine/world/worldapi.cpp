@@ -1,11 +1,15 @@
 // C API for server world (game & physics)
 
+#include "world/worldapi.hpp"
+
 edict_t *World_CreateEntity()
 {
+	return nullptr;
 };
 
 edict_t *World_CreateNamedEntity(int className)
 {
+	return nullptr;
 };
 
 void World_RemoveEntity(edict_t *e)
@@ -30,6 +34,7 @@ void World_TraceToss(edict_t *pent, edict_t *pentToIgnore, TraceResult *ptr)
 
 int World_TraceMonsterHull(edict_t *pEdict, const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr)
 {
+	return 0;
 };
 
 void World_TraceHull(const float *v1, const float *v2, int fNoMonsters, int hullNumber, edict_t *pentToSkip, TraceResult *ptr)
@@ -42,6 +47,7 @@ void World_TraceModel(const float *v1, const float *v2, int hullNumber, edict_t 
 
 const char *World_TraceTexture(edict_t *pTextureEntity, const float *v1, const float *v2)
 {
+	return "";
 };
 
 void World_TraceSphere(const float *v1, const float *v2, int fNoMonsters, float radius, edict_t *pentToSkip, TraceResult *ptr)
@@ -66,24 +72,35 @@ void World_SetLightStyle(int style, char *val)
 
 int World_GetPointContents(const float *rgflVector)
 {
+	return 0;
 };
 
 int World_GetNumberOfEntities()
 {
+	return 0;
 };
 
 unsigned char *World_SetFatPVS(float *org)
 {
+	return NULL;
 };
 
 unsigned char *World_SetFatPAS(float *org)
 {
+	return NULL;
 };
 
 int World_CheckEntityVisibility(const edict_t *entity, unsigned char *pset)
 {
+	return 0;
 };
 
 int World_CreateInstancedBaseline( int classname, struct entity_state_s *baseline)
 {
+	return 0;
+};
+
+char *EngFunc_GetInfoKeyBuffer(edict_t *e)
+{
+	return NULL;
 };

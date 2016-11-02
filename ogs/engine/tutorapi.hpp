@@ -1,22 +1,18 @@
-#ifndef
+#pragma once
+#ifndef OGS_TUTORAPI_HPP
+#define OGS_TUTORAPI_HPP
 
-
-void EngFunc_RegisterTutorMessageShown(int mid)
+extern "C"
 {
+
+void EngFunc_RegisterTutorMessageShown(int mid);
+int EngFunc_GetTimesTutorMessageShown(int mid);
+
+void EngFunc_ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength);
+void EngFunc_ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength);
+
+void EngFunc_ResetTutorMessageDecayData();
+
 };
 
-int EngFunc_GetTimesTutorMessageShown(int mid)
-{
-};
-
-void EngFunc_ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength)
-{
-};
-
-void EngFunc_ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength)
-{
-};
-
-void EngFunc_ResetTutorMessageDecayData()
-{
-};
+#endif // OGS_TUTORAPI_HPP

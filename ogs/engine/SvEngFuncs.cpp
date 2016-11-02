@@ -158,15 +158,7 @@ CRC32_t EngFunc_CRC32_Final(CRC32_t pulCRC)
 {
 };
 
-void EngFunc_SetView(const edict_t *pClient, const edict_t *pViewent)
-{
-};
-
 float EngFunc_Time()
-{
-};
-
-void EngFunc_CrosshairAngle(const edict_t *pClient, float pitch, float yaw)
 {
 };
 
@@ -190,10 +182,6 @@ void EngFunc_GetGameDir(char *szGetGameDir)
 {
 };
 
-void EngFunc_FadeClientVolume(const edict_t *pEdict, int fadePercent, int fadeOutSeconds, int holdTime, int fadeInSeconds)
-{
-};
-
 void EngFunc_SetClientMaxspeed(const edict_t *pEdict, float fNewMaxspeed)
 {
 };
@@ -203,10 +191,6 @@ edict_t *EngFunc_CreateFakeClient(const char *netname)
 };
 
 void EngFunc_RunPlayerMove(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, byte msec)
-{
-};
-
-char *EngFunc_GetInfoKeyBuffer(edict_t *e)
 {
 };
 
@@ -230,10 +214,6 @@ int EngFunc_PrecacheGeneric(char *s)
 {
 };
 
-int EngFunc_GetPlayerUserId(edict_t *e)
-{
-};
-
 void EngFunc_BuildSoundMsg(edict_t *entity, int channel, const char *sample, /*int*/float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)
 {
 };
@@ -242,27 +222,11 @@ int EngFunc_IsDedicatedServer()
 {
 };
 
-unsigned int EngFunc_GetPlayerWONId(edict_t *e)
-{
-};
-
 void EngFunc_Info_RemoveKey(char *s, const char *key)
 {
 };
 
-const char *EngFunc_GetPhysicsKeyValue(const edict_t *pClient, const char *key)
-{
-};
-
-void EngFunc_SetPhysicsKeyValue(const edict_t *pClient, const char *key, const char *value)
-{
-};
-
-const char *EngFunc_GetPhysicsInfoString(const edict_t *pClient)
-{
-};
-
-unsigned short EngFunc_PrecacheEvent(int type, const char*psz)
+unsigned short EngFunc_PrecacheEvent(int type, const char *psz)
 {
 };
 
@@ -306,10 +270,6 @@ void EngFunc_ForceUnmodified(FORCE_TYPE type, float *mins, float *maxs, const ch
 {
 };
 
-void EngFunc_GetPlayerStats(const edict_t *pClient, int *ping, int *packet_loss)
-{
-};
-
 void EngFunc_AddServerCommand(char *cmd_name, void (*function)())
 {
 };
@@ -319,10 +279,6 @@ qboolean EngFunc_Voice_GetClientListening(int iReceiver, int iSender)
 };
 
 qboolean EngFunc_Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen)
-{
-};
-
-const char *EngFunc_GetPlayerAuthId(edict_t *e)
 {
 };
 
@@ -351,14 +307,6 @@ int EngFunc_IsCareerMatch()
 };
 
 int EngFunc_GetLocalizedStringLength(const char *label)
-{
-};
-
-void EngFunc_QueryClientCvarValue(const edict_t *player, const char *cvarName)
-{
-};
-
-void EngFunc_QueryClientCvarValue2(const edict_t *player, const char *cvarName, int requestID)
 {
 };
 
