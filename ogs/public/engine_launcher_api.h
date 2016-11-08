@@ -44,7 +44,7 @@ enum
 	ENGINE_RESULT_UNSUPPORTEDVIDEO
 };
 
-class IEngineAPI /*IEngine*/ : public IBaseInterface
+class IEngineAPI : public IBaseInterface
 {
 public:
 	virtual int Run(/*HINSTANCE*/ void *instance, char *basedir, /*const*/ char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;

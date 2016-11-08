@@ -183,7 +183,7 @@ void CHost::Init(quakeparms_t *parms)
 	};
 	
 	if(bDedicated)
-		mpCmdBuffer->InsertText("exec server.cfg\n"); // TODO: fix hardcode (it's a cvar in gs)
+		mpCmdBuffer->InsertText(lservercfgfile->string); // Exec local server config
 	else
 		mpCmdBuffer->InsertText("exec valve.rc\n");
 	

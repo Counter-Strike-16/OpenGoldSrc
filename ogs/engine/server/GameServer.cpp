@@ -159,8 +159,7 @@ void CGameServer::HandleConnectionlessPacket()
 		return;
 	}
 	else
-		Con_Printf ("bad connectionless packet from %s:\n%s\n"
-		, NET_AdrToString (net_from), s);
+		Con_Printf("bad connectionless packet from %s:\n%s\n" , NET_AdrToString(net_from), s);
 };
 
 /*
@@ -443,8 +442,10 @@ void CGameServer::BroadcastPrintf(/*int level,*/ char *fmt, ...)
 	char string[1024]; // 2048
 	
 	va_start(argptr, fmt);
-	vsprintf(string, fmt, argptr);
+	vsprintf(string, fmt, argptr); // Q_vsnprintf(string, ARRAYSIZE(string) - 1, fmt, argptr);
 	va_end(argptr);
+	
+	string[ARRAYSIZE(string) - 1] = 0;
 	
 	for(int i = 0; i < svs.maxclients; i++)
 	{

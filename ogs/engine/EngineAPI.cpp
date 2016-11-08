@@ -1,4 +1,4 @@
-#include "precompiled.h"
+//#include "precompiled.h"
 #include "EngineAPI.h"
 
 static CEngineAPI g_CEngineAPI;
@@ -16,5 +16,12 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CEngineAPI, IEngineAPI, VENGINE_LAUNCHER_API_V
 
 int CEngineAPI::Run(void *instance, char *basedir, char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
 {
+	if(!gpEngine->Load(false, basedir, cmdline))
+		return 1;
+	
+	while(!gpEngine->GetQuitting()) // ?
+		gpEngine->Frame();
+	
+	gpEngine->Unload();
 	return 0;
 };

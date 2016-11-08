@@ -1,3 +1,11 @@
+# Visual Studio files
+ipch/
+*.db
+*.user
+*.suo
+*.sdf
+*.opensdf
+
 # Local environment
 bin
 build

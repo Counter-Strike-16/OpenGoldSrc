@@ -28,15 +28,15 @@
 
 #pragma once
 
-#include "IEngine.hpp"
+#include "IEngine.h"
 
-extern IEngine *eng = NULL;
+extern IEngine *eng = nullptr;
 
 class CEngine : public IEngine
 {
 public:
 	CEngine();
-	~CEngine(){};
+	~CEngine(){}
 	
 	bool Load(bool dedicated, char *basedir, char *cmdline);
 	void Unload();
@@ -52,7 +52,7 @@ public:
 	double GetFrameTime(){return mfFrameTime;}
 	double GetCurTime(){return mfCurTime;}
 	
-	void TrapKey_Event(int key, bool down){};
+	void TrapKey_Event(int key, bool down){}
 	void TrapMouse_Event(int buttons, bool down);
 	
 	void StartTrapMode();
