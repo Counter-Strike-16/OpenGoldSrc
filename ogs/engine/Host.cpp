@@ -29,7 +29,7 @@
 // Host.cpp -- coordinates spawning and killing of local servers
 
 #include "Host.h"
-#include "CmdBuffer.h"
+#include "console/CmdBuffer.h"
 #include "network/Network.h"
 #include "sound/Sound.h"
 #include "input/Input.h"
@@ -63,8 +63,8 @@ jmp_buf 	host_abortserver;
 byte		*host_basepal;
 byte		*host_colormap;
 
-cvar_t	host_framerate = {"host_framerate","0"};	// set for slow motion
-cvar_t	host_speeds = {"host_speeds","0"};			// set for running times
+cvar_t	host_framerate = {"host_framerate", "0"};				// set for slow motion
+cvar_t	host_speeds = { "host_speeds", "0", 0, 0.0f, NULL };	// set for running times
 
 cvar_t	sys_ticrate = {"sys_ticrate","0.05"}; // 100
 cvar_t	serverprofile = {"serverprofile","0"};
@@ -93,9 +93,9 @@ Host_Init
 */
 void CHost::Init(quakeparms_t *parms)
 {
-	if(standard_quake) // never happened since now
-		minimum_memory = MINIMUM_MEMORY;
-	else
+	//if(standard_quake)
+		//minimum_memory = MINIMUM_MEMORY;
+	//else
 		minimum_memory = MINIMUM_MEMORY_LEVELPAK;
 	
 	if(COM_CheckParm("-minmemory"))
@@ -135,7 +135,9 @@ void CHost::Init(quakeparms_t *parms)
 	
 	mpLocalServer->Init(); // move to network?
 	
+	Con_Printf("Protocol version %d", PROTOCOL_VERSION);
 	Con_Printf("Exe: " __TIME__ " " __DATE__ "\n");
+
 	Con_Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
 	
 	R_InitTextures(); // needed even for dedicated servers
@@ -162,13 +164,13 @@ void CHost::Init(quakeparms_t *parms)
 		//R_Init();
 		
 #ifndef	_WIN32
-	// on Win32, sound initialization has to come before video initialization, so we
-	// can put up a popup if the sound hardware is in use
+		// on Win32, sound initialization has to come before video initialization, so we
+		// can put up a popup if the sound hardware is in use
 		mpSound->Init();
 #else
 		
 #ifdef	GLQUAKE
-	// FIXME: doesn't use the new one-window approach yet
+		// FIXME: doesn't use the new one-window approach yet
 		mpSound->Init();
 #endif
 
@@ -183,7 +185,7 @@ void CHost::Init(quakeparms_t *parms)
 	};
 	
 	if(bDedicated)
-		mpCmdBuffer->InsertText(lservercfgfile->string); // Exec local server config
+		mpCmdBuffer->InsertText("exec %s", lservercfgfile->string); // Exec local server config
 	else
 		mpCmdBuffer->InsertText("exec valve.rc\n");
 	

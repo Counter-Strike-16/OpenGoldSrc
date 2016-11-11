@@ -230,35 +230,11 @@ unsigned short EngFunc_PrecacheEvent(int type, const char *psz)
 {
 };
 
-void EngFunc_DeltaSetField(struct delta_s *pFields, const char *fieldname)
-{
-};
-
-void EngFunc_DeltaUnsetField(struct delta_s *pFields, const char *fieldname)
-{
-};
-
-void EngFunc_DeltaAddEncoder(char *name, void (*conditionalencode)(struct delta_s *pFields, const unsigned char *from, const unsigned char *to))
-{
-};
-
 int EngFunc_GetCurrentPlayer()
 {
 };
 
 int EngFunc_CanSkipPlayer(const edict_t *player)
-{
-};
-
-int EngFunc_DeltaFindField(struct delta_s *pFields, const char *fieldname)
-{
-};
-
-void EngFunc_DeltaSetFieldByIndex(struct delta_s *pFields, int fieldNumber)
-{
-};
-
-void EngFunc_DeltaUnsetFieldByIndex(struct delta_s *pFields, int fieldNumber)
 {
 };
 

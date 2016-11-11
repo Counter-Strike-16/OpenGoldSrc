@@ -26,7 +26,7 @@
 *
 */
 
-// LocalClient.h - Local client representation, primary header for client
+// EngClient.h - Local client representation, primary header for engine client
 
 #pragma once
 
@@ -40,11 +40,11 @@ enum cactive_t
 	ca_active			// everything is in, so frames can be rendered
 };
 
-class CLocalClient // i dunno how to call this class
+class CEngClient // CEngineClient
 {
 public:
-	CLocalClient();
-	~CLocalClient();
+	CEngClient();
+	~CEngClient();
 	
 	void Init();
 	void Shutdown();

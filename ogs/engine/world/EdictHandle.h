@@ -2,6 +2,20 @@
 
 #pragma once
 
+/*
+class CEdict : edict_t
+{
+	void SetSize(...){Edict_SetSize(this, ...)}
+	void SetModel(...);
+};
+
+class CEdictHandle // reference to edict object; semantically it would work as EHANDLE in hlsdk
+{
+CEdictHandle(edict_t *aggr);
+edict_t *privedict;
+};
+*/
+
 class CEdictHandle
 {
 public:

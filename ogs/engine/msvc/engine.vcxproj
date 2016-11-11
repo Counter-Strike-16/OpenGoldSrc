@@ -111,14 +111,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ClEngFuncsNull.cpp" />
     <ClCompile Include="..\DedicatedServerAPI.cpp" />
     <ClCompile Include="..\Engine.cpp" />
     <ClCompile Include="..\EngineAPI.cpp" />
+    <ClCompile Include="..\Host.cpp" />
+    <ClCompile Include="..\SvEngFuncsNull.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DedicatedServerAPI.h" />
     <ClInclude Include="..\Engine.h" />
     <ClInclude Include="..\EngineAPI.h" />
+    <ClInclude Include="..\Host.h" />
     <ClInclude Include="..\IEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -22,6 +22,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+extern "C"
+{
+
+char *EngFunc_InfoKeyValue(char *infobuffer, char *key)
+{
+};
+
+void EngFunc_SetKeyValue(char *infobuffer, char *key, char *value)
+{
+};
+
+void EngFunc_Info_RemoveKey(char *s, const char *key)
+{
+};
+
+};
+
 class CInfoKeyBuffer
 {
 public:
