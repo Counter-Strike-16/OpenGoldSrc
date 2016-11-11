@@ -199,7 +199,7 @@ int World_CheckEntityVisibility(const edict_t *entity, unsigned char *pset)
 	return 0;
 };
 
-int World_CreateInstancedBaseline( int classname, struct entity_state_s *baseline)
+int World_CreateInstancedBaseline(int classname, struct entity_state_s *baseline)
 {
 	return 0;
 };
@@ -222,6 +222,38 @@ edict_t *EngFunc_FindClientInPVS(edict_t *pEdict)
 };
 
 edict_t *EngFunc_EntitiesInPVS(edict_t *pplayer)
+{
+};
+
+void EngFunc_RunPlayerMove(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, byte msec)
+{
+};
+
+void EngFunc_BuildSoundMsg(edict_t *entity, int channel, const char *sample, /*int*/float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)
+{
+};
+
+edict_t *EngFunc_FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue)
+{
+};
+
+edict_t *EngFunc_PEntityOfEntOffset(int iEntOffset)
+{
+};
+
+edict_t *EngFunc_PEntityOfEntIndex(int iEntIndex)
+{
+};
+
+edict_t *EngFunc_FindEntityByVars(struct entvars_s *pvars)
+{
+};
+
+void *EngFunc_PvAllocEntPrivateData(edict_t *pEdict, int32 cb)
+{
+};
+
+void EngFunc_GetAimVector(edict_t *ent, float speed, float *rgflReturn)
 {
 };
 #endif // OGS_NULL_WORLD_API_IMPL

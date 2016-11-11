@@ -1,11 +1,11 @@
-// FSAPI.h - filesystem api funcs
+// FSAPI.cpp - filesystem api funcs
 
 #pragma once
 
 extern "C"
 {
 
-#if !()
+#if !(OGS_NULL_FS_API_IMPL || OGS_NULL_EXPORT_API_IMPL)
 byte *FS_LoadFileForMe(char *filename, int *pLength)
 {
 };
@@ -25,7 +25,7 @@ int FS_GetFileSize(char *filename)
 void FS_EngineFprintf(void *pfile, char *szFmt, ...)
 {
 };
-#else
+#else // OGS_NULL_FS_API_IMPL || OGS_NULL_EXPORT_API_IMPL
 byte *FS_LoadFileForMe(char *filename, int *pLength)
 {
 };
@@ -45,6 +45,6 @@ int FS_GetFileSize(char *filename)
 void FS_EngineFprintf(void *pfile, char *szFmt, ...)
 {
 };
-#endif
+#endif // OGS_NULL_FS_API_IMPL || OGS_NULL_EXPORT_API_IMPL
 
-};
+}; // extern "C"

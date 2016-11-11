@@ -49,6 +49,10 @@ void GameClient_QueryClientCvarValue2(const edict_t *player, const char *cvarNam
 {
 };
 #else // OGS_NULL_GAMECLIENT_API_IMPL
+edict_t *EngFunc_CreateFakeClient(const char *netname)
+{
+};
+
 void GameClient_SetView(const edict_t *pClient, const edict_t *pViewent)
 {
 };
@@ -102,6 +106,26 @@ void EngFunc_SetClientMaxspeed(const edict_t *pEdict, float fNewMaxspeed)
 };
 
 int EngFunc_CanSkipPlayer(const edict_t *player)
+{
+};
+
+void EngFunc_SetClientKeyValue(int clientIndex, char *infobuffer, char *key, char *value)
+{
+};
+
+void EngFunc_ClientPrintf(edict_t *pEdict, PRINT_TYPE ptype, const char *szMsg)
+{
+};
+
+void EngFunc_ClientCommand(edict_t *pEdict, char *szFmt, ...)
+{
+};
+
+qboolean EngFunc_Voice_GetClientListening(int iReceiver, int iSender)
+{
+};
+
+qboolean EngFunc_Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen)
 {
 };
 #endif // OGS_NULL_GAMECLIENT_API_IMPL

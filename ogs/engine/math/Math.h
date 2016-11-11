@@ -1,7 +1,8 @@
 #pragma once
-#ifndef OGS_MATHAPI_HPP
-#define OGS_MATHAPI_HPP
+#ifndef OGS_MATH_HPP
+#define OGS_MATH_HPP
 
+// Export API funcs
 extern "C"
 {
 
@@ -16,4 +17,4 @@ float Math_RandomFloat(float flLow, float flHigh);
 
 };
 
-#endif // OGS_MATHAPI_HPP
+#endif // OGS_MATH_HPP

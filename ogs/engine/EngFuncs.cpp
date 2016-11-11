@@ -1,8 +1,8 @@
 #include "engine/eiface.h"
-#include "world/edictapi.hpp"
-#include "world/worldapi.hpp"
-#include "math/mathapi.hpp"
-#include "network/netmsgapi.hpp"
+#include "world/EdictAPI.hpp"
+#include "world/WorldAPI.hpp"
+#include "math/Math.hpp"
+#include "network/NetMsgAPI.hpp"
 
 namespace
 {
@@ -22,39 +22,11 @@ int EngFunc_ModelFrames(int modelIndex)
 {
 };
 
-void EngFunc_ChangeLevel(char *s1, char *s2)
-{
-};
-
-edict_t *EngFunc_FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue)
-{
-};
-
-edict_t *EngFunc_FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *org, float rad)
-{
-};
-
-edict_t *EngFunc_FindClientInPVS(edict_t *pEdict)
-{
-};
-
-edict_t *EngFunc_EntitiesInPVS(edict_t *pplayer)
-{
-};
-
-void EngFunc_GetAimVector(edict_t *ent, float speed, float *rgflReturn)
-{
-};
-
 void EngFunc_ServerCommand(char *str)
 {
 };
 
 void EngFunc_ServerExecute()
-{
-};
-
-void EngFunc_ClientCommand(edict_t *pEdict, char *szFmt, ...)
 {
 };
 
@@ -66,47 +38,11 @@ void EngFunc_AlertMessage(ALERT_TYPE atype, char *szFmt, ...)
 {
 };
 
-void EngFunc_EngineFprintf(void *pfile, char *szFmt, ...)
-{
-};
-
-void *EngFunc_PvAllocEntPrivateData(edict_t *pEdict, int32 cb)
-{
-};
-
-void *EngFunc_PvEntPrivateData(edict_t *pEdict)
-{
-};
-
-void EngFunc_FreeEntPrivateData(edict_t *pEdict)
-{
-};
-
 const char *EngFunc_SzFromIndex(int iString)
 {
 };
 
 int EngFunc_AllocString(const char *szValue)
-{
-};
-
-edict_t *EngFunc_PEntityOfEntOffset(int iEntOffset)
-{
-};
-
-int EngFunc_EntOffsetOfPEntity(const edict_t *pEdict)
-{
-};
-
-int EngFunc_IndexOfEdict(const edict_t *pEdict)
-{
-};
-
-edict_t *EngFunc_PEntityOfEntIndex(int iEntIndex)
-{
-};
-
-edict_t *EngFunc_FindEntityByVars(struct entvars_s *pvars)
 {
 };
 
@@ -119,10 +55,6 @@ uint32 EngFunc_FunctionFromName(const char *pName)
 };
 
 const char *EngFunc_NameForFunction(uint32 function)
-{
-};
-
-void EngFunc_ClientPrintf(edict_t *pEdict, PRINT_TYPE ptype, const char *szMsg)
 {
 };
 
@@ -142,31 +74,7 @@ int EngFunc_Cmd_Argc()
 {
 };
 
-void EngFunc_CRC32_Init(CRC32_t *pulCRC)
-{
-};
-
-void EngFunc_CRC32_ProcessBuffer(CRC32_t *pulCRC, void *p, int len)
-{
-};
-
-void EngFunc_CRC32_ProcessByte(CRC32_t *pulCRC, unsigned char ch)
-{
-};
-
-CRC32_t EngFunc_CRC32_Final(CRC32_t pulCRC)
-{
-};
-
 float EngFunc_Time()
-{
-};
-
-byte *EngFunc_LoadFileForMe(char *filename, int *pLength)
-{
-};
-
-void EngFunc_FreeFile(void *buffer)
 {
 };
 
@@ -174,15 +82,7 @@ void EngFunc_EndSection(const char *pszSectionName)
 {
 };
 
-int EngFunc_CompareFileTime(char *filename1, char *filename2, int *iCompare)
-{
-};
-
 void EngFunc_GetGameDir(char *szGetGameDir)
-{
-};
-
-void EngFunc_SetClientMaxspeed(const edict_t *pEdict, float fNewMaxspeed)
 {
 };
 
@@ -202,19 +102,11 @@ void EngFunc_SetKeyValue(char *infobuffer, char *key, char *value)
 {
 };
 
-void EngFunc_SetClientKeyValue(int clientIndex, char *infobuffer, char *key, char *value)
-{
-};
-
 int EngFunc_IsMapValid(char *filename)
 {
 };
 
 int EngFunc_PrecacheGeneric(char *s)
-{
-};
-
-void EngFunc_BuildSoundMsg(edict_t *entity, int channel, const char *sample, /*int*/float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)
 {
 };
 
@@ -250,14 +142,6 @@ void EngFunc_AddServerCommand(char *cmd_name, void (*function)())
 {
 };
 
-qboolean EngFunc_Voice_GetClientListening(int iReceiver, int iSender)
-{
-};
-
-qboolean EngFunc_Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen)
-{
-};
-
 //const char *EngFunc_KeyNameForBinding(const char *pBinding)
 //{
 //};
@@ -267,10 +151,6 @@ sequenceEntry_s *EngFunc_SequenceGet(const char *fileName, const char *entryName
 };
 
 sentenceEntry_s *EngFunc_SequencePickSentence(const char *groupName, int pickMethod, int *picked)
-{
-};
-
-int EngFunc_GetFileSize(char *filename)
 {
 };
 

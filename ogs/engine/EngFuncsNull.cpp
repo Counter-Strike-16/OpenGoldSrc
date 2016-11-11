@@ -18,14 +18,6 @@ int EngFunc_ModelFrames(int modelIndex)
 {
 };
 
-edict_t *EngFunc_FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue)
-{
-};
-
-void EngFunc_GetAimVector(edict_t *ent, float speed, float *rgflReturn)
-{
-};
-
 void EngFunc_ServerCommand(char *str)
 {
 };
@@ -34,19 +26,7 @@ void EngFunc_ServerExecute()
 {
 };
 
-void EngFunc_ClientCommand(edict_t *pEdict, char *szFmt, ...)
-{
-};
-
 int EngFunc_DecalIndex(const char *name)
-{
-};
-
-void EngFunc_AlertMessage(ALERT_TYPE atype, char *szFmt, ...)
-{
-};
-
-void *EngFunc_PvAllocEntPrivateData(edict_t *pEdict, int32 cb)
 {
 };
 
@@ -55,18 +35,6 @@ const char *EngFunc_SzFromIndex(int iString)
 };
 
 int EngFunc_AllocString(const char *szValue)
-{
-};
-
-edict_t *EngFunc_PEntityOfEntOffset(int iEntOffset)
-{
-};
-
-edict_t *EngFunc_PEntityOfEntIndex(int iEntIndex)
-{
-};
-
-edict_t *EngFunc_FindEntityByVars(struct entvars_s *pvars)
 {
 };
 
@@ -79,10 +47,6 @@ uint32 EngFunc_FunctionFromName(const char *pName)
 };
 
 const char *EngFunc_NameForFunction(uint32 function)
-{
-};
-
-void EngFunc_ClientPrintf(edict_t *pEdict, PRINT_TYPE ptype, const char *szMsg)
 {
 };
 
@@ -114,18 +78,6 @@ void EngFunc_GetGameDir(char *szGetGameDir)
 {
 };
 
-edict_t *EngFunc_CreateFakeClient(const char *netname)
-{
-};
-
-void EngFunc_RunPlayerMove(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, byte msec)
-{
-};
-
-void EngFunc_SetClientKeyValue(int clientIndex, char *infobuffer, char *key, char *value)
-{
-};
-
 int EngFunc_IsMapValid(char *filename)
 {
 };
@@ -134,15 +86,11 @@ int EngFunc_PrecacheGeneric(char *s)
 {
 };
 
-void EngFunc_BuildSoundMsg(edict_t *entity, int channel, const char *sample, /*int*/float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)
-{
-};
-
 int EngFunc_IsDedicatedServer()
 {
 };
 
-unsigned short EngFunc_PrecacheEvent(int type, const char*psz)
+unsigned short EngFunc_PrecacheEvent(int type, const char *psz)
 {
 };
 
@@ -159,14 +107,6 @@ void EngFunc_ForceUnmodified(FORCE_TYPE type, float *mins, float *maxs, const ch
 };
 
 void EngFunc_AddServerCommand(char *cmd_name, void (*function)())
-{
-};
-
-qboolean EngFunc_Voice_GetClientListening(int iReceiver, int iSender)
-{
-};
-
-qboolean EngFunc_Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen)
 {
 };
 
