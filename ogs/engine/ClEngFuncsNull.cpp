@@ -2,50 +2,6 @@
 
 namespace
 {
-HSPRITE_ EngFunc_SPR_Load(const char *szPicName)
-{
-};
-
-int EngFunc_SPR_Frames(HSPRITE_ hPic)
-{
-};
-
-int EngFunc_SPR_Height(HSPRITE_ hPic, int frame)
-{
-};
-
-int EngFunc_SPR_Width(HSPRITE_ hPic, int frame)
-{
-};
-
-void EngFunc_SPR_Set(HSPRITE_ hPic, int r, int g, int b)
-{
-};
-
-void EngFunc_SPR_Draw(int frame, int x, int y, const wrect_t *prc)
-{
-};
-
-void EngFunc_SPR_DrawHoles(int frame, int x, int y, const wrect_t *prc)
-{
-};
-
-void EngFunc_SPR_DrawAdditive(int frame, int x, int y, const wrect_t *prc)
-{
-};
-
-void EngFunc_SPR_EnableScissor(int x, int y, int width, int height)
-{
-};
-
-void EngFunc_SPR_DisableScissor()
-{
-};
-
-client_sprite_t *EngFunc_SPR_GetList(char *psz, int *piCount)
-{
-};
-
 void EngFunc_FillRGBA(int x, int y, int width, int height, int r, int g, int b, int a)
 {
 };
@@ -55,22 +11,6 @@ int EngFunc_GetScreenInfo(SCREENINFO *pscrinfo)
 };
 
 void EngFunc_SetCrosshair(HSPRITE_ hspr, wrect_t rc, int r, int g, int b)
-{
-};
-
-struct cvar_s *EngFunc_RegisterVariable(char *szName, char *szValue, int flags)
-{
-};
-
-float EngFunc_GetCvarFloat(char *szName)
-{
-};
-
-char *EngFunc_GetCvarString(char *szName)
-{
-};
-
-int EngFunc_AddCommand(char *cmd_name, void (*function)())
 {
 };
 
@@ -95,10 +35,6 @@ void EngFunc_PlaySoundByName(char *szSound, float volume)
 };
 
 void EngFunc_PlaySoundByIndex(int iSound, float volume)
-{
-};
-
-void EngFunc_AngleVectors(const float *vecAngles, float *forward, float *right, float *up)
 {
 };
 
@@ -147,34 +83,6 @@ void EngFunc_SetViewAngles(float *)
 };
 
 int EngFunc_GetMaxClients()
-{
-};
-
-void EngFunc_Cvar_SetValue(char *cvar, float value)
-{
-};
-
-int EngFunc_Cmd_Argc()
-{
-};
-
-char *EngFunc_Cmd_Argv(int arg)
-{
-};
-
-void EngFunc_Con_Printf(char *fmt, ...)
-{
-};
-
-void EngFunc_Con_DPrintf(char *fmt, ...)
-{
-};
-
-void EngFunc_Con_NPrintf(int pos, char *fmt, ...)
-{
-};
-
-void EngFunc_Con_NXPrintf(struct con_nprint_s *info, char *fmt, ...)
 {
 };
 
@@ -250,10 +158,6 @@ int EngFunc_CL_CreateVisibleEntity(int type, struct cl_entity_s *ent)
 {
 };
 
-const struct model_s *EngFunc_GetSpritePointer(HSPRITE hSprite)
-{
-};
-
 void EngFunc_PlaySoundByNameAtLocation(char *szSound, float volume, float *origin)
 {
 };
@@ -281,10 +185,6 @@ void EngFunc_WeaponAnim(int iAnim, int body)
 {
 };
 
-float EngFunc_RandomFloat(float flLow, float flHigh)
-{
-};
-
 long EngFunc_RandomLong(long lLow, long lHigh)
 {
 };
@@ -293,15 +193,7 @@ void EngFunc_HookEvent(char *name, void (*pfnEvent)(struct event_args_s *args))
 {
 };
 
-int EngFunc_Con_IsVisible()
-{
-};
-
 const char *EngFunc_GetGameDirectory()
-{
-};
-
-struct cvar_s *EngFunc_GetCvarPointer(const char *szName)
 {
 };
 
@@ -321,46 +213,11 @@ void EngFunc_SetScreenFade(struct screenfade_s *fade)
 {
 };
 
-void *EngFunc_VGui_GetPanel()
-{
-};
-
-void EngFunc_VGui_ViewportPaintBackground(int extents[4])
-{
-};
-
-byte *EngFunc_COM_LoadFile(char *path, int usehunk, int *pLength)
-{
-};
-
-char *EngFunc_COM_ParseFile(char *data, char *token)
-{
-};
-
-void EngFunc_COM_FreeFile(void *buffer)
-{
-};
-
-struct triangleapi_s*pTriAPI;
-struct efx_api_s*pEfxAPI;
-struct event_api_s*pEventAPI;
-struct demo_api_s*pDemoAPI;
-struct net_api_s*pNetAPI;
-struct IVoiceTweak_s*pVoiceTweak;
-
 int EngFunc_IsSpectateOnly()
 {
 };
 
 struct model_s *EngFunc_LoadMapSprite(const char *filename)
-{
-};
-
-void EngFunc_COM_AddAppDirectoryToSearchPath(const char *pszBaseDir, const char *appName)
-{
-};
-
-int EngFunc_COM_ExpandFilename(const char *fileName, char *nameOutBuffer, int nameOutBufferSize)
 {
 };
 
@@ -397,22 +254,6 @@ void EngFunc_SetMousePos(int x, int y)
 };
 
 void EngFunc_SetMouseEnable(qboolean fEnable)
-{
-};
-
-struct cvar_s *EngFunc_GetFirstCvarPtr()
-{
-};
-
-void *EngFunc_GetFirstCmdFunctionHandle()
-{
-};
-
-void *EngFunc_GetNextCmdFunctionHandle(void *cmdhandle)
-{
-};
-
-const char *EngFunc_GetCmdFunctionName(void *cmdhandle)
 {
 };
 
@@ -464,23 +305,11 @@ const char *EngFunc_LocalPlayerInfo_ValueForKey(const char* key)
 {
 };
 
-int EngFunc_VGUI2DrawCharacter(int x, int y, int ch, unsigned int font)
-{
-};
-
-int EngFunc_VGUI2DrawCharacterAdditive(int x, int y, int ch, int r, int g, int b, unsigned int font)
-{
-};
-
 unsigned int EngFunc_GetApproxWavePlayLen(char *filename)
 {
 };
 
 void *EngFunc_GetCareerGameUI()
-{
-};
-
-void EngFunc_Cvar_Set(char *name, char *value)
 {
 };
 
@@ -500,18 +329,6 @@ double EngFunc_Sys_FloatTime()
 {
 };
 
-void EngFunc_ProcessTutorMessageDecayBuffer(int *buffer, int buflen)
-{
-};
-
-void EngFunc_ConstructTutorMessageDecayBuffer(int *buffer, int buflen)
-{
-};
-
-void EngFunc_ResetTutorMessageDecayData()
-{
-};
-
 void EngFunc_PlaySoundByNameAtPitch(char *szSound, float volume, int pitch)
 {
 };
@@ -521,10 +338,6 @@ void EngFunc_FillRGBABlend(int x, int y, int width, int height, int r, int g, in
 };
 
 int EngFunc_GetAppID()
-{
-};
-
-cmdalias_t *EngFunc_GetAliases()
 {
 };
 

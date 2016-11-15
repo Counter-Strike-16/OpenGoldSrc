@@ -9,6 +9,9 @@ extern char *Ed_StrPool_Alloc(const char* str);
 extern void Ed_StrPool_Reset();
 extern void Ed_StrPool_Init();
 
+int AllocEngineString(const char *szValue);
+const char *SzFromIndex(int iString);
+
 class CStringPool
 {
 public:

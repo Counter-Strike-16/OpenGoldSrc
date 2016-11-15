@@ -1,5 +1,11 @@
 #pragma once
 
+// Export API
+extern "C"
+{
+
+}; // extern "C"
+
 void Con_Debug_f();
 void Con_Init();
 void Con_DebugLog(const char *file, const char *fmt, ...);
