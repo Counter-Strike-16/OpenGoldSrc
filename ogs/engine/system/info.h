@@ -26,51 +26,39 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
+#ifndef INFO__H
+#define INFO__H
 #ifdef _WIN32
 #pragma once
 #endif
 
 #include "maintypes.h"
 
-class IEngine
-{
-public:
-	enum
-	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
 
-	virtual			~IEngine(){}
-	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
-	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
-	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
-	
-	virtual int		Frame() = 0;
-	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
-	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
-	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int &buttons, int &key) = 0;
-	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
-};
+// Max key/value length (with a NULL char)
+#define MAX_KV_LEN 127
+// Key + value + 2 x slash + NULL
+#define MAX_INFO_STRING 256
 
-extern IEngine *engine; // eng
+#define INFO_MAX_BUFFER_VALUES 4
 
-#endif // IENGINE_H
+#ifdef REHLDS_FIXES
+#define MAX_LOCALINFO 4096
+#else
+#define MAX_LOCALINFO MAX_INFO_STRING * 128
+#endif // REHLDS_FIXES
+
+const char *Info_ValueForKey(const char *s, const char *key);
+void Info_RemoveKey(char *s, const char *key);
+void Info_RemovePrefixedKeys(char *s, const char prefix);
+qboolean Info_IsKeyImportant(const char *key);
+char *Info_FindLargestKey(char *s, int maxsize);
+void Info_SetValueForStarKey(char *s, const char *key, const char *value, int maxsize);
+void Info_SetValueForKey(char *s, const char *key, const char *value, int maxsize);
+void Info_Print(const char *s);
+qboolean Info_IsValid(const char *s);
+#ifdef REHLDS_FIXES
+void Info_CollectFields(char *destInfo, const char *srcInfo, const char *collectedKeysOfFields);
+#endif
+
+#endif // INFO__H

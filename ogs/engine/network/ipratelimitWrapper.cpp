@@ -26,51 +26,28 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
-#ifdef _WIN32
-#pragma once
-#endif
+#include "precompiled.h"
 
-#include "maintypes.h"
 
-class IEngine
+#ifdef HOOK_ENGINE
+int (*pCheckIP)(netadr_t adr);
+#endif //HOOK_ENGINE
+
+class CIPRateLimit rateChecker;
+
+
+/* <e7175> ../engine/ipratelimitWrapper.cpp:6 */
+int CheckIP(netadr_t adr)
 {
-public:
-	enum
+#ifdef HOOK_ENGINE
+	int res = pCheckIP(adr);
+	if (res != 1)
 	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
-
-	virtual			~IEngine(){}
-	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
-	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
-	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
-	
-	virtual int		Frame() = 0;
-	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
-	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
-	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int &buttons, int &key) = 0;
-	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
-};
-
-extern IEngine *engine; // eng
-
-#endif // IENGINE_H
+		rehlds_syserror("CheckIP() is expected to return 1");
+	}
+	return res;
+#else
+	CRehldsPlatformHolder::get()->time(NULL); //time() is called inside IpRateLimiter
+	return 1;
+#endif
+}

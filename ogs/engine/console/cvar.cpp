@@ -1,21 +1,29 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
+*
+*    This program is free software; you can redistribute it and/or modify it
+*    under the terms of the GNU General Public License as published by the
+*    Free Software Foundation; either version 2 of the License, or (at
+*    your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful, but
+*    WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software Foundation,
+*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*    In addition, as a special exception, the author gives permission to
+*    link the code of this program with the Half-Life Game Engine ("HL
+*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*    L.L.C ("Valve").  You must obey the GNU General Public License in all
+*    respects for all of the code used other than the HL Engine and MODs
+*    from Valve.  If you modify this file, you may extend this exception
+*    to your version of the file, but you are not obligated to do so.  If
+*    you do not wish to do so, delete this exception statement from your
+*    version.
+*
 */
 
 // cvar.c -- dynamic variable tracking
@@ -29,15 +37,35 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 cvar_t *cvar_vars;
 const char *cvar_null_string = "";
 
+/* <1853e> ../engine/cvar.c:26 */
+void Cvar_Init(void)
+{
+#ifndef SWDS
+	// TODO: add client code, possibly none
+#endif
+}
+
+/* <18552> ../engine/cvar.c:30 */
+void Cvar_Shutdown(void)
+{
+	// TODO: Check memory releasing
+	cvar_vars = NULL;
+}
+
 /*
 ============
 Cvar_FindVar
 ============
 */
-cvar_t *CCvarSystem::FindVar(char *var_name)
+/* <18566> ../engine/cvar.c:40 */
+cvar_t *Cvar_FindVar(/*const*/ char *var_name) // CVarGetPointer
 {
-	for(cvar_t *var = cvar_vars; var; var=var->next)
-		if(!Q_strcmp(var_name, var->name))
+#ifndef SWDS
+	g_engdstAddrs->pfnGetCvarPointer(&var_name);
+#endif
+	
+	for(cvar_t *var = cvar_vars; var; var = var->next)
+		if(!Q_strcmp(var_name, var->name)) // Q_stricmp
 			return var;
 	
 	return NULL;
@@ -48,24 +76,39 @@ cvar_t *CCvarSystem::FindVar(char *var_name)
 Cvar_VariableValue
 ============
 */
-float CCvarSystem::VariableValue(char *var_name)
+/* <18606> ../engine/cvar.c:78 */
+float Cvar_VariableValue(/*const*/ char *var_name)
 {
-	cvar_t *var = FindVar(var_name);
+	cvar_t *var = Cvar_FindVar(var_name);
+	
+	if(!var)
+		return 0.0f;
+	
+	return Q_atof(var->string);
+};
+
+/* <18666> ../engine/cvar.c:94 */
+NOXREF int Cvar_VariableInt(const char *var_name)
+{
+	NOXREFCHECK;
+	
+	cvar_t *var = Cvar_FindVar(var_name);
 	
 	if(!var)
 		return 0;
 	
-	return Q_atof(var->string);
-};
+	return Q_atoi(var->string);
+}
 
 /*
 ============
 Cvar_VariableString
 ============
 */
-char *Cvar_VariableString(char *var_name)
+/* <186c6> ../engine/cvar.c:110 */
+char *Cvar_VariableString(/*const*/ char *var_name)
 {
-	cvar_t *var = FindVar(var_name);
+	cvar_t *var = Cvar_FindVar(var_name);
 	
 	if(!var)
 		return cvar_null_string;
@@ -78,7 +121,7 @@ char *Cvar_VariableString(char *var_name)
 Cvar_CompleteVariable
 ============
 */
-char *CCvarSystem::CompleteVariable(char *partial)
+char *Cvar_CompleteVariable(char *partial)
 {
 	cvar_t *cvar;
 	int len = Q_strlen(partial);
@@ -101,13 +144,12 @@ char *CCvarSystem::CompleteVariable(char *partial)
 	return NULL;
 }
 
-
 /*
 ============
 Cvar_Set
 ============
 */
-void CCvarSystem::Set(char *var_name, char *value)
+void Cvar_Set(char *var_name, char *value)
 {
 	cvar_t	*var;
 	qboolean changed;
@@ -139,7 +181,7 @@ void CCvarSystem::Set(char *var_name, char *value)
 Cvar_SetValue
 ============
 */
-void CCvarSystem::SetValue(char *var_name, float value)
+void Cvar_SetValue(char *var_name, float value)
 {
 	char val[32];
 	
@@ -154,7 +196,7 @@ Cvar_RegisterVariable
 Adds a freestanding variable to the variable list.
 ============
 */
-void CCvarSystem::RegisterVariable(cvar_t *variable)
+void Cvar_RegisterVariable(cvar_t *variable)
 {
 	char	*oldstr;
 	
@@ -190,7 +232,7 @@ Cvar_Command
 Handles variable inspection and changing from the console
 ============
 */
-bool CCvarSystem::HandleCommand()
+bool Cvar_Command()
 {
 	cvar_t *v;
 
@@ -218,7 +260,7 @@ Writes lines containing "set variable value" for all variables
 with the archive flag set to true.
 ============
 */
-void CCvarSystem::WriteVariables(FILE *f)
+void Cvar_WriteVariables(FILE *f)
 {
 	cvar_t	*var;
 	

@@ -26,51 +26,37 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "maintypes.h"
 
-class IEngine
-{
-public:
-	enum
-	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
+#ifdef HOOK_ENGINE
+#define r_pixbytes (*pr_pixbytes)
+#define gl_vsync (*pgl_vsync)
+#define scr_con_current (*pscr_con_current)
+#endif //HOOK_ENGINE
 
-	virtual			~IEngine(){}
-	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
-	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
-	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
-	
-	virtual int		Frame() = 0;
-	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
-	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
-	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int &buttons, int &key) = 0;
-	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
-};
+extern int r_pixbytes;
+extern cvar_t gl_vsync;
+extern float scr_con_current;
 
-extern IEngine *engine; // eng
-
-#endif // IENGINE_H
+void VID_SetPalette(unsigned char *palette);
+void VID_ShiftPalette(unsigned char *palette);
+void VID_WriteBuffer(const char *pFilename);
+NOBODY int VID_Init(short unsigned int *palette);
+void D_FlushCaches(void);
+void R_SetStackBase(void);
+void SCR_UpdateScreen(void);
+void V_Init(void);
+void Draw_Init(void);
+void SCR_Init(void);
+void R_Init(void);
+void R_ForceCVars(qboolean multiplayer);
+void SCR_BeginLoadingPlaque(qboolean reconnect);
+void SCR_EndLoadingPlaque(void);
+void R_InitSky(void);
+void R_MarkLeaves(void);
+void R_InitTextures(void);
+void StartLoadingProgressBar(const char *loadingType, int numProgressPoints);
+void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction);
+void SetLoadingProgressBarStatusText(const char *statusText);

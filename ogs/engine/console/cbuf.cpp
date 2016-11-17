@@ -1,23 +1,32 @@
 /*
-Copyright (C) 1996-1997 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*
+*    This program is free software; you can redistribute it and/or modify it
+*    under the terms of the GNU General Public License as published by the
+*    Free Software Foundation; either version 2 of the License, or (at
+*    your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful, but
+*    WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software Foundation,
+*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*    In addition, as a special exception, the author gives permission to
+*    link the code of this program with the Half-Life Game Engine ("HL
+*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*    L.L.C ("Valve").  You must obey the GNU General Public License in all
+*    respects for all of the code used other than the HL Engine and MODs
+*    from Valve.  If you modify this file, you may extend this exception
+*    to your version of the file, but you are not obligated to do so.  If
+*    you do not wish to do so, delete this exception statement from your
+*    version.
+*
 */
 
-#include "CmdBuffer.h"
+#include "console/cbuf.h"
 
 /*
 =============================================================================
@@ -27,20 +36,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 =============================================================================
 */
 
-CCmdBuffer::CCmdBuffer()
-{
-};
-
-CCmdBuffer::~CCmdBuffer()
-{
-};
-
 /*
 ============
 Cbuf_Init
 ============
 */
-void CCmdBuffer::Init()
+void Cbuf_Init()
 {
 	SZ_Alloc (&cmd_text, 8192);		// space for commands and script files
 }
@@ -50,19 +51,23 @@ void CCmdBuffer::Init()
 Cbuf_AddText
 
 Adds command text at the end of the buffer
+
+As new commands are generated from the console or keybindings,
+the text is added to the end of the command buffer.
 ============
 */
+/* <4d80> ../engine/cmd.c:83 */
 void CCmdBuffer::AddText(char *text)
 {
-	int l = Q_strlen (text);
+	int len = Q_strlen(text);
 
-	if (cmd_text.cursize + l >= cmd_text.maxsize)
+	if(cmd_text.cursize + len >= cmd_text.maxsize)
 	{
-		Con_Printf ("Cbuf_AddText: overflow\n");
+		Con_Printf("Cbuf_AddText: overflow\n");
 		return;
 	}
 
-	SZ_Write (&cmd_text, text, Q_strlen (text));
+	SZ_Write(&cmd_text, text, len);
 }
 
 /*

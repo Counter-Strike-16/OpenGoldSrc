@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#pragma once
+
 //
 // these are the key numbers that should be passed to Key_Event
 //
@@ -120,6 +122,14 @@ typedef enum
 	key_message,
 	key_menu
 } keydest_t;
+
+// GS doesn't have a key_console since console input is handled by key_menu
+typedef enum
+{
+	key_game = 0,
+	key_message = 1,
+	key_menu = 2,
+} keydest_t; /* size: 4 */
 
 extern keydest_t key_dest;
 

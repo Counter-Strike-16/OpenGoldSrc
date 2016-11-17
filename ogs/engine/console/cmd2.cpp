@@ -1,31 +1,3 @@
-/*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
-
 #include "precompiled.h"
 
 int cmd_argc;
@@ -56,22 +28,6 @@ void Cmd_Wait_f(void)
 void Cbuf_Init(void)
 {
 	SZ_Alloc("cmd_text", &cmd_text, MAX_CMD_BUFFER);
-}
-
-/* <4d80> ../engine/cmd.c:83 */
-// As new commands are generated from the console or keybindings,
-// the text is added to the end of the command buffer.
-void Cbuf_AddText(char *text)
-{
-	int len = Q_strlen(text);
-
-	if (cmd_text.cursize + len >= cmd_text.maxsize)
-	{
-		Con_Printf(__FUNCTION__ ": overflow\n");
-		return;
-	}
-
-	SZ_Write(&cmd_text, text, len);
 }
 
 /* <4dcf> ../engine/cmd.c:109 */
@@ -552,30 +508,6 @@ void Cmd_Init(void)
 	Cmd_AddCommand("cmdlist", Cmd_CmdList_f);
 }
 
-/* <5521> ../engine/cmd.c:663 */
-void Cmd_Shutdown(void)
-{
-	for (int i = 0; i < cmd_argc; i++)
-	{
-		Z_Free(cmd_argv[i]);
-	}
-	Q_memset(cmd_argv, 0, sizeof(cmd_argv));
-	cmd_argc = 0;
-	cmd_args = NULL;
-
-	cmd_functions = NULL;	// TODO: Check that memory from functions is released too
-}
-
-/* <5536> ../engine/cmd.c:677 */
-int EXT_FUNC Cmd_Argc(void)
-{
-#ifndef SWDS
-	g_engdstAddrs->Cmd_Argc();
-#endif
-
-	return cmd_argc;
-}
-
 /* <5547> ../engine/cmd.c:689 */
 const char* EXT_FUNC Cmd_Argv(int arg)
 {
@@ -588,16 +520,6 @@ const char* EXT_FUNC Cmd_Argv(int arg)
 		return cmd_argv[arg];
 	}
 	return "";	// TODO: Possibly better to return NULL here, but require to check all usages
-}
-
-/* <5565> ../engine/cmd.c:703 */
-const char* EXT_FUNC Cmd_Args(void)
-{
-#ifndef SWDS
-	g_engdstAddrs->Cmd_Args();
-#endif
-
-	return cmd_args;
 }
 
 /* <5575> ../engine/cmd.c:715 */
@@ -867,7 +789,7 @@ void Cmd_RemoveWrapperCmds(void)
 	Cmd_RemoveMallocedCmds(FCMD_WRAPPER_COMMAND);
 }
 
-/* <5af2> ../engine/cmd.c:1035 */
+
 qboolean Cmd_Exists(const char *cmd_name)
 {
 	cmd_function_t *cmd = cmd_functions;
@@ -885,10 +807,9 @@ qboolean Cmd_Exists(const char *cmd_name)
 	return FALSE;
 }
 
-/* <5b30> ../engine/cmd.c:1055 */
-NOXREF char *Cmd_CompleteCommand(char *search, int forward)
+ char *Cmd_CompleteCommand(char *search, int forward)
 {
-	NOXREFCHECK;
+	
 
 	// TODO: We have a command name length limit here: prepare for unforeseen consequences!
 	static char lastpartial[256];

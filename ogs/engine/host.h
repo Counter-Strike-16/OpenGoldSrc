@@ -27,6 +27,8 @@
 */
 
 #pragma once
+#ifndef OGS_HOST_H
+#define OGS_HOST_H
 
 //=============================================================================
 
@@ -50,7 +52,8 @@ class CConsole;
 class CSound;
 class CInput; // partially implemented in clientdll
 
-struct quakeparms_t
+/* <271d2> ../engine/host.h:19 */
+typedef struct quakeparms_s
 {
 	char *basedir;
 	char *cachedir; // for development over ISDN lines
@@ -60,43 +63,41 @@ struct quakeparms_t
 	
 	void *membase;
 	int memsize;
-};
+} quakeparms_t;
 
 extern quakeparms_t host_parms;
 
-class CHost
+int Host_Init(quakeparms_t *parms);
+void Host_InitLocal();
+void Host_InitCommands();
+
+void Host_Shutdown();
+void Host_ShutdownServer(bool crash);
+
+/*qboolean*/ bool Host_IsSinglePlayerGame();
+/*qboolean*/ bool Host_IsServerActive();
+
+void Host_Frame(float time);
+void Host_UpdateScreen();
+void Host_UpdateSounds();
+
+void Host_ClearMemory(qboolean bQuiet);
+
+bool Host_FilterTime(float time);
+
+void Host_WriteConfig();
+void Host_WriteCustomConfig();
+
+NOXREF void Host_EndGame(const char *message, ...);
+void __declspec(noreturn) Host_Error(const char *error, ...);
+
+void Host_FindMaxClients();
+void Host_GetConsoleCommands();
+
+bool Host_IsInitialized();
+
+struct host_t
 {
-public:
-	CHost();
-	~CHost();
-	
-	/*int*/ void Init(quakeparms_t *parms);
-	void InitLocal();
-	void InitCommands();
-	
-	void Shutdown();
-	void ShutdownServer(bool crash);
-	
-	bool IsSinglePlayerGame();
-	bool IsServerActive();
-	
-	void Frame(float time);
-	
-	void ClearMemory();
-	
-	bool FilterTime(float time);
-	
-	void WriteConfig();
-	void WriteCustomConfig();
-	
-	void EndGame(const char *message, ...);
-	void Error(char *error, ...);
-	
-	void FindMaxClients();
-	void GetConsoleCommands();
-	
-	bool IsInitialized();
-private:
 	CConsole *mpConsole;
 	CLocalClient *mpLocalClient; // it's local client so the right choice is to call it so
 	CGameServer *mpLocalServer; // mpGameServer, but it's local too...
@@ -111,3 +112,5 @@ private:
 	
 	bool bInitialized; // True if into command execution
 };
+
+#endif // OGS_HOST_H

@@ -26,51 +26,22 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
+#ifndef INST_BASELINE_H
+#define INST_BASELINE_H
 #ifdef _WIN32
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "entity_state.h"
 
-class IEngine
+#define NUM_BASELINES 64
+
+/* <7469c> ../engine/inst_baseline.h:9 */
+typedef struct extra_baselines_s
 {
-public:
-	enum
-	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
+	int number;
+	int classname[NUM_BASELINES];
+	entity_state_t baseline[NUM_BASELINES];
+} extra_baselines_t;
 
-	virtual			~IEngine(){}
-	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
-	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
-	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
-	
-	virtual int		Frame() = 0;
-	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
-	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
-	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int &buttons, int &key) = 0;
-	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
-};
-
-extern IEngine *engine; // eng
-
-#endif // IENGINE_H
+#endif // INST_BASELINE_H

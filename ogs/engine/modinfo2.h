@@ -26,51 +26,39 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
+#ifndef MODINFO_H
+#define MODINFO_H
 #ifdef _WIN32
 #pragma once
 #endif
 
 #include "maintypes.h"
 
-class IEngine
+
+/* <8eef1> ../engine/modinfo.h:7 */
+typedef enum
 {
-public:
-	enum
-	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
+	BOTH = 0,
+	SINGLEPLAYER_ONLY,
+	MULTIPLAYER_ONLY,
+} MOD_GAMEPLAY_TYPE_E;
 
-	virtual			~IEngine(){}
-	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
-	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
-	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
-	
-	virtual int		Frame() = 0;
-	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
-	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
-	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int &buttons, int &key) = 0;
-	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
-};
+/* <8ef1b> ../engine/modinfo.h:10 */
+typedef struct modinfo_s
+{
+	qboolean bIsMod;
+	char szInfo[256];
+	char szDL[256];
+	char szHLVersion[32];
+	int version;
+	int size;
+	qboolean svonly;
+	qboolean cldll;
+	qboolean secure;
+	MOD_GAMEPLAY_TYPE_E type;
+	int num_edicts;
+	int clientDllCRC;
+} modinfo_t;
 
-extern IEngine *engine; // eng
 
-#endif // IENGINE_H
+#endif // MODINFO_H

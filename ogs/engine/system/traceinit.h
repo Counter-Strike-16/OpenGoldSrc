@@ -26,51 +26,59 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
+#ifndef TRACEINIT_H
+#define TRACEINIT_H
 #ifdef _WIN32
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "utlvector.h"
 
-class IEngine
+#ifndef HOOK_ENGINE
+#define CInitTracker_construct CInitTracker
+#define CInitTracker_destruct ~CInitTracker
+#endif
+
+/* <d7004> ../engine/traceinit.cpp:16 */
+class CInitTracker
 {
 public:
 	enum
 	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
+		NUM_LISTS = 4,
 	};
 
-	virtual			~IEngine(){}
-	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
-	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
-	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
-	
-	virtual int		Frame() = 0;
-	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
-	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
-	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int &buttons, int &key) = 0;
-	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
+	class InitFunc
+	{
+	public:
+		const char *initname;
+		const char *shutdownname;
+		int referencecount;
+		int sequence;
+		bool warningprinted;
+
+		double inittime;
+		double shutdowntime;
+	};
+
+	CInitTracker(void);
+	~CInitTracker(void);
+
+	void Init(const char *init, const char *shutdown, int listnum);
+	void Shutdown(const char *shutdown, int listnum);
+
+private:
+	int m_nNumFuncs[NUM_LISTS];
+	CUtlVector<InitFunc *> m_Funcs[NUM_LISTS];
 };
 
-extern IEngine *engine; // eng
+#ifdef HOOK_ENGINE
+#define g_InitTracker (*pg_InitTracker)
+#endif
 
-#endif // IENGINE_H
+extern CInitTracker g_InitTracker;
+
+void TraceInit(const char *i, const char *s, int listnum);
+void TraceShutdown(const char *s, int listnum);
+
+#endif // TRACEINIT_H

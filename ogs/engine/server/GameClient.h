@@ -26,11 +26,11 @@
 *
 */
 
+// GameClient.h - Representation of a client connected to server (+ OOP wrapper)
+
 #pragma once
 
 //=============================================================================
-
-// Representation of a client connected to server
 
 // a client can leave the server in one of four ways:
 // dropping properly by quiting or disconnecting
@@ -49,10 +49,103 @@ enum client_state_t
 	cs_spawned		// client is fully in game
 };
 
-class CGameClient
+/* <2eb23> ../engine/server.h:177 */
+// Note: we can't change these structs because some of them are exported to "hidden" GS api's
+// So we need binary compat for them
+typedef struct client_s
+{
+	qboolean active;
+	qboolean spawned;
+	qboolean fully_connected;
+	qboolean connected;
+	qboolean uploading;
+	qboolean hasusrmsgs;
+	qboolean has_force_unmodified;
+	
+	netchan_t netchan;
+	
+	int chokecount;
+	int delta_sequence;
+	
+	qboolean fakeclient;	// Client is a bot
+	qboolean proxy;			// Client is a HLTV proxy
+	
+	usercmd_t lastcmd;
+	
+	double connecttime;
+	double cmdtime;
+	double ignorecmdtime;
+	
+	float latency;
+	float packet_loss;
+	
+	double localtime;
+	double nextping;
+	double svtimebase;
+	
+	sizebuf_t datagram;
+	byte datagram_buf[MAX_DATAGRAM];
+	
+	double connection_started;
+	double next_messagetime;
+	double next_messageinterval;
+	
+	// WTF WITH THESE TWO BELOW?
+	qboolean send_message;
+	qboolean skip_message;
+	
+	client_frame_t *frames;
+	
+	event_state_t events;
+	
+	edict_t *edict;
+	const edict_t *pViewEntity;
+	
+	int userid;
+	USERID_t network_userid;
+	
+	char userinfo[MAX_INFO_STRING];
+	
+	qboolean sendinfo;
+	float sendinfo_time;
+	
+	char hashedcdkey[64];
+	char name[32];
+	
+	int topcolor;
+	int bottomcolor;
+	
+	int entityId;
+	
+	resource_t resourcesonhand;
+	resource_t resourcesneeded;
+	
+	FileHandle_t upload;
+	qboolean uploaddoneregistering;
+	
+	customization_t customdata;
+	
+	int crcValue;
+	
+	int lw;
+	int lc;
+	
+	char physinfo[MAX_INFO_STRING];
+	
+	qboolean m_bLoopback;
+	
+	uint32 m_VoiceStreams[2];
+	double m_lastvoicetime;
+	
+	int m_sendrescount;
+} client_t;
+
+// ReHLDS provides some OOP interfaces from itself
+// But we want to use OOP in the engine too (by wrapping already present code to preserve (bug/back)ward-compat)
+class CGameClient : public IGameClient
 {
 public:
-	CGameClient(int id);
+	CGameClient(int id, client_t *apPODClient);
 	~CGameClient();
 	
 	void Disconnect(const char *reason, ...);
@@ -91,10 +184,16 @@ public:
 	
 	void FullUpdate(sizebuf_t *sb);
 	
-	const char *GetName();
-	int GetID();
-	edict_t *GetEdict(){return edict;}
+	const char *GetName(){return mpPODClient->name;}
+	int GetID(){return mpPODClient->userid;}
+	edict_t *GetEdict(){return mpPODClient->edict;}
 private:
+	client_t *mpPODClient;
+};
+
+/*
+struct oldclient
+{
 	client_state_t	state;
 	
 	bool active;				// false = client is free
@@ -200,3 +299,4 @@ private:
 	int				delta_sequence;		// -1 = no compression
 	netchan_t		netchan;
 };
+*/

@@ -1,31 +1,3 @@
-/*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
-#pragma once
 
 #include "maintypes.h"
 #include "common.h"
@@ -90,18 +62,14 @@ void Cbuf_AddText(char *text);
 void Cbuf_InsertText(char *text);
 void Cbuf_InsertTextLines(char *text);
 void Cbuf_Execute(void);
-void Cmd_StuffCmds_f(void);
+
 void Cmd_Exec_f(void);
 void Cmd_Echo_f(void);
 char *CopyString(char *in);
 void Cmd_Alias_f(void);
 struct cmd_function_s *Cmd_GetFirstCmd(void);
-void Cmd_Init(void);
 void Cmd_Shutdown(void);
-int Cmd_Argc(void);
-const char *Cmd_Argv(int arg);
-const char *Cmd_Args(void);
-void Cmd_TokenizeString(char *text);
+
 NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name);
 NOXREF cmd_function_t *Cmd_FindCmdPrev(char *cmd_name);
 void Cmd_AddCommand(char *cmd_name, xcommand_t function);

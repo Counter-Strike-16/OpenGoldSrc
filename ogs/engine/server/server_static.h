@@ -68,10 +68,10 @@ typedef struct server_stats_s
 typedef struct server_static_s
 {
 	qboolean dll_initialized;
-	struct client_s *clients;
+	struct client_s *clients; // GameClient *clients; // [maxclients->value]
 	int maxclients;
 	int maxclientslimit;
-	int spawncount;
+	int spawncount; // number of servers spawned since start, used to check late spawns
 	int serverflags;
 	server_log_t log;
 	double next_cleartime;
@@ -79,6 +79,5 @@ typedef struct server_static_s
 	server_stats_t stats;
 	qboolean isSecure;
 } server_static_t;
-
 
 #endif // SERVER_STATIC_H

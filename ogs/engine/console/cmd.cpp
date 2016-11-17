@@ -1,3 +1,31 @@
+/*
+*
+*    This program is free software; you can redistribute it and/or modify it
+*    under the terms of the GNU General Public License as published by the
+*    Free Software Foundation; either version 2 of the License, or (at
+*    your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful, but
+*    WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software Foundation,
+*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*    In addition, as a special exception, the author gives permission to
+*    link the code of this program with the Half-Life Game Engine ("HL
+*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*    L.L.C ("Valve").  You must obey the GNU General Public License in all
+*    respects for all of the code used other than the HL Engine and MODs
+*    from Valve.  If you modify this file, you may extend this exception
+*    to your version of the file, but you are not obligated to do so.  If
+*    you do not wish to do so, delete this exception statement from your
+*    version.
+*
+*/
+
 #include "console/cmd.h"
 
 /*
@@ -22,20 +50,12 @@ static char		cmd_args[MAX_STRING_CHARS];
 
 static cmd_function_t *cmd_functions; // possible commands to execute
 
-CCmdSystem::CCmdSystem()
-{
-};
-
-CCmdSystem::CCmdSystem()
-{
-};
-
 /*
 ============
 Cmd_Init
 ============
 */
-void CCmdSystem::Init()
+void Cmd_Init()
 {
 	//
 	// register our commands
@@ -51,13 +71,31 @@ void CCmdSystem::Init()
 #endif
 };
 
+/* <5521> ../engine/cmd.c:663 */
+void Cmd_Shutdown(void)
+{
+	for (int i = 0; i < cmd_argc; i++)
+		Z_Free(cmd_argv[i]);
+	
+	Q_memset(cmd_argv, 0, sizeof(cmd_argv));
+	cmd_argc = 0;
+	cmd_args = NULL;
+
+	cmd_functions = NULL;	// TODO: Check that memory from functions is released too
+}
+
 /*
 ============
 Cmd_Argc
 ============
 */
-int CCmdSystem::GetArgCount()
+/* <5536> ../engine/cmd.c:677 */
+int EXT_FUNC Cmd_GetArgCount()
 {
+#ifndef SWDS
+	g_engdstAddrs->Cmd_Argc();
+#endif
+	
 	return cmd_argc;
 };
 
@@ -66,7 +104,7 @@ int CCmdSystem::GetArgCount()
 Cmd_Argv
 ============
 */
-char *CCmdSystem::GetArgValue(int arg)
+char *Cmd_GetArgValue(int arg)
 {
 	if(arg >= cmd_argc)
 		return cmd_null_string;
@@ -81,8 +119,13 @@ Cmd_Args
 Returns a single string containing argv(1) to argv(argc()-1)
 ============
 */
-char *CCmdSystem::GetArgString()
+/* <5565> ../engine/cmd.c:703 */
+/*const*/ char * EXT_FUNC Cmd_GetArgString()
 {
+#ifndef SWDS
+	g_engdstAddrs->Cmd_Args();
+#endif
+	
 	if(!cmd_args)
 		return cmd_null_string;
 	
@@ -94,7 +137,7 @@ char *CCmdSystem::GetArgString()
 Cmd_AddCommand
 ============
 */
-void CCmdSystem::AddCommand(char *cmd_name, xcommand_t function)
+void Cmd_AddCommand(char *cmd_name, xcommand_t function)
 {
 	// because hunk allocation would get stomped
 	if(host_initialized)
@@ -131,7 +174,8 @@ void CCmdSystem::AddCommand(char *cmd_name, xcommand_t function)
 Cmd_Exists
 ============
 */
-bool CCmdSystem::IsCmdExists(char *cmd_name)
+/* <5af2> ../engine/cmd.c:1035 */
+/*qboolean*/ bool Cmd_Exists(/*const*/ char *cmd_name)
 {
 	for(cmd_function_t *cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
@@ -147,8 +191,11 @@ bool CCmdSystem::IsCmdExists(char *cmd_name)
 Cmd_CompleteCommand
 ============
 */
-char *CCmdSystem::CompleteCommand(char *partial)
+/* <5b30> ../engine/cmd.c:1055 */
+NOXREF char *Cmd_CompleteCommand(char *partial)
 {
+	NOXREFCHECK;
+	
 	int len = Q_strlen(partial);
 	
 	if(!len)

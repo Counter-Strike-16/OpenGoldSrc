@@ -26,20 +26,45 @@
 *
 */
 
-#ifndef EVENT_H
-#define EVENT_H
-#ifdef _WIN32
-#pragma once
-#endif
+#include "precompiled.h"
 
+static char *date = __BUILD_DATE__;
+static char *mon[12] =
+{ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+static char mond[12] =
+{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-/* <75ae> ../engine/event.h:6 */
-typedef struct event_s
+int build_number(void)
 {
-	unsigned short	index;
-	const char		*filename;
-	int				filesize;
-	const char		*pszScript;
-} event_t;
+	int m = 0;
+	int d = 0;
+	int y = 0;
+	static int b = 0;
 
-#endif // EVENT_H
+	if (b != 0)
+		return b;
+
+	for (m = 0; m < 11; m++)
+	{
+		if (Q_strnicmp(&date[0], mon[m], 3) == 0)
+			break;
+		d += mond[m];
+	}
+
+	d += Q_atoi(&date[4]) - 1;
+	y = Q_atoi(&date[7]) - 1900;
+	b = d + (int)((y - 1) * 365.25);
+
+	if (((y % 4) == 0) && m > 1)
+	{
+		b += 1;
+	}
+
+#ifdef REHLDS_FIXES
+	b -= 41374; // return days since initial commit on Apr 12 2014 (Happy Cosmonautics Day!)
+#else // REHLDS_FIXES
+	b -= 34995; // return days since Oct 24 1996
+#endif // REHLDS_FIXES
+
+	return b;
+}

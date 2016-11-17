@@ -26,51 +26,60 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "maintypes.h"
+#include "igame.h"
 
-class IEngine
-{
+class CGame : public IGame {
+private:
+	bool m_bActiveApp;         /*     4     1 */
+
 public:
-	enum
-	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
 
-	virtual			~IEngine(){}
-	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
-	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
-	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
-	
-	virtual int		Frame() = 0;
-	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
-	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
-	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int &buttons, int &key) = 0;
-	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
+	CGame();
+
+	virtual ~CGame();
+
+	virtual bool Init(void *pvInstance);
+	bool Init_noVirt(void *pvInstance);
+
+	virtual bool Shutdown();
+	bool Shutdown_noVirt();
+
+	virtual bool CreateGameWindow();
+	bool CreateGameWindow_noVirt();
+
+	virtual void SleepUntilInput(int time);
+	void SleepUntilInput_noVirt(int time);
+
+	virtual HWND GetMainWindow();
+	HWND GetMainWindow_noVirt();
+
+	virtual HWND * GetMainWindowAddress();
+	HWND * GetMainWindowAddress_noVirt();
+
+	virtual void SetWindowXY(int x, int y);
+	void SetWindowXY_noVirt(int x, int y);
+
+	virtual void SetWindowSize(int w, int h);
+	void SetWindowSize_noVirt(int w, int h);
+
+	virtual void GetWindowRect(int *x, int *y, int *w, int *h);
+	void GetWindowRect_noVirt(int *x, int *y, int *w, int *h);
+
+	virtual bool IsActiveApp();
+	bool IsActiveApp_noVirt();
+
+	virtual bool IsMultiplayer();
+	bool IsMultiplayer_noVirt();
+
+	virtual void PlayStartupVideos();
+	void PlayStartupVideos_noVirt();
+
+	virtual void PlayAVIAndWait(const char *aviFile);
+	void PlayAVIAndWait_noVirt(const char *aviFile);
+
+	virtual void SetCursorVisible(bool vis);
+	void SetCursorVisible_noVirt(bool vis);
 };
-
-extern IEngine *engine; // eng
-
-#endif // IENGINE_H

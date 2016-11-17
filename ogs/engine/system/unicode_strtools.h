@@ -26,51 +26,43 @@
 *
 */
 
-#ifndef IENGINE_H
-#define IENGINE_H
+#ifndef UNICODE_STR_TOOLS_H
+#define UNICODE_STR_TOOLS_H
 #ifdef _WIN32
 #pragma once
 #endif
 
 #include "maintypes.h"
 
-class IEngine
-{
-public:
-	enum
-	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
 
-	virtual			~IEngine(){}
-	
-	virtual bool	Load(bool dedicated, char *basedir, char *cmdline) = 0;
-	virtual void	Unload() = 0;
-	
-	virtual void	SetState(int iState) = 0;
-	virtual int		GetState() = 0;
-	
-	virtual void	SetSubState(int iSubState) = 0;
-	virtual int		GetSubState() = 0;
-	
-	virtual int		Frame() = 0;
-	
-	virtual double	GetFrameTime() = 0;
-	virtual double	GetCurTime() = 0;
-	
-	virtual void	TrapKey_Event(int key, bool down) = 0;
-	virtual void	TrapMouse_Event(int buttons, bool down) = 0;
-	
-	virtual void	StartTrapMode() = 0;
-	virtual bool	IsTrapping() = 0;
-	virtual bool	CheckDoneTrapping(int &buttons, int &key) = 0;
-	
-	virtual int		GetQuitting() = 0;
-	virtual void	SetQuitting(int quittype) = 0;
+#ifdef _WIN32
+typedef wchar_t uchar16;
+typedef unsigned int uchar32;
+#else
+typedef unsigned short uchar16;
+typedef wchar_t uchar32;
+#endif
+
+enum EStringConvertErrorPolicy {
+	_STRINGCONVERTFLAG_SKIP = 1,
+	_STRINGCONVERTFLAG_FAIL = 2,
+	_STRINGCONVERTFLAG_ASSERT = 4,
+	STRINGCONVERT_REPLACE = 0,
+	STRINGCONVERT_SKIP = 1,
+	STRINGCONVERT_FAIL = 2,
+	STRINGCONVERT_ASSERT_REPLACE = 4,
+	STRINGCONVERT_ASSERT_SKIP = 5,
+	STRINGCONVERT_ASSERT_FAIL = 6,
 };
 
-extern IEngine *engine; // eng
+qboolean Q_IsValidUChar32(uchar32 uVal);
+int Q_UTF8ToUChar32(const char *pUTF8_, uchar32 &uValueOut, bool &bErrorOut);
+int Q_UChar32ToUTF8(uchar32 uVal, char * pUTF8Out);
+int Q_UChar32ToUTF8Len(uchar32 uVal);
+qboolean Q_UnicodeValidate(const char *pUTF8);
+char *Q_UnicodeAdvance(char *pUTF8, int nChars);
+qboolean Q_StripUnprintableAndSpace(char *pch);;
+qboolean V_UTF8ToUChar32(const char *pUTF8_, uchar32 *uValueOut);
+int Q_UnicodeRepair(char *pUTF8);
 
-#endif // IENGINE_H
+#endif // UNICODE_STR_TOOLS_H
