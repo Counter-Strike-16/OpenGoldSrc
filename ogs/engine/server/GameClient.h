@@ -148,14 +148,15 @@ public:
 	CGameClient(int id, client_t *apPODClient);
 	~CGameClient();
 	
-	void Disconnect(const char *reason, ...);
+	void Disconnect(const char *asReason, ...);
 	void Drop();
 	
 	// Most valuable funcs
 	// Usually provided by amx plugins
-	void Kick();
+	void Kick(const char *asReason, ...);
 	void Ban();
-	void TimeBan();
+	void BanEx(const char *asReason, ...);
+	void TimeBan(uint anTimeInMins);
 	
 	void SetConnected(bool connected);
 	bool IsConnected();

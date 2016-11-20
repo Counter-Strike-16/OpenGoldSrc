@@ -26,39 +26,37 @@
 *
 */
 
-#ifndef MODINFO_H
-#define MODINFO_H
+#ifndef PR_DLLS_H
+#define PR_DLLS_H
 #ifdef _WIN32
 #pragma once
 #endif
 
 #include "maintypes.h"
+#include "eiface.h"
 
 
-/* <8eef1> ../engine/modinfo.h:7 */
-typedef enum
+/* <8a763> ../engine/pr_dlls.h:42 */
+typedef struct functiontable_s
 {
-	BOTH = 0,
-	SINGLEPLAYER_ONLY,
-	MULTIPLAYER_ONLY,
-} MOD_GAMEPLAY_TYPE_E;
+	uint32 pFunction;
+	char *pFunctionName;
+} functiontable_t;
 
-/* <8ef1b> ../engine/modinfo.h:10 */
-typedef struct modinfo_s
+/* 572 */
+/* <8a793> ../engine/pr_dlls.h:48 */
+typedef struct extensiondll_s
 {
-	qboolean bIsMod;
-	char szInfo[256];
-	char szDL[256];
-	char szHLVersion[32];
-	int version;
-	int size;
-	qboolean svonly;
-	qboolean cldll;
-	qboolean secure;
-	MOD_GAMEPLAY_TYPE_E type;
-	int num_edicts;
-	int clientDllCRC;
-} modinfo_t;
+	void *lDLLHandle;
+	functiontable_t *functionTable;
+	int functionCount;
+} extensiondll_t;
 
+/* <8a7db> ../engine/pr_dlls.h:63 */
+typedef void(*ENTITYINIT)(struct entvars_s *);
+/* <8a7f8> ../engine/pr_dlls.h:64 */
+typedef void(*DISPATCHFUNCTION)(struct entvars_s *, void *);
+/* <8a81a> ../engine/pr_dlls.h:65 */
+typedef void(*FIELDIOFUNCTION)(SAVERESTOREDATA *, const char *, void *, TYPEDESCRIPTION *, int);
 
-#endif // MODINFO_H
+#endif // PR_DLLS_H

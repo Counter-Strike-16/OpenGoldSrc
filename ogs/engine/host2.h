@@ -92,8 +92,10 @@ void Host_ClearClients(qboolean bFramesOnly);
 
 void Host_CheckDyanmicStructures(void);
 void Host_ClearMemory(qboolean bQuiet);
+
 qboolean Master_IsLanGame(void);
 void Master_Heartbeat_f(void);
+
 void Host_ComputeFPS(double frametime);
 void Host_GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
 void Host_Speeds(double *time);

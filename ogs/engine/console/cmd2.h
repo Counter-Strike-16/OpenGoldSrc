@@ -57,11 +57,7 @@ extern cmd_function_t *cmd_functions;
 extern cmdalias_t *cmd_alias;
 
 void Cmd_Wait_f(void);
-void Cbuf_Init(void);
-void Cbuf_AddText(char *text);
-void Cbuf_InsertText(char *text);
 void Cbuf_InsertTextLines(char *text);
-void Cbuf_Execute(void);
 
 void Cmd_Exec_f(void);
 void Cmd_Echo_f(void);

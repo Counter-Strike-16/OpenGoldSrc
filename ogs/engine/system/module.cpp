@@ -26,42 +26,11 @@
 *
 */
 
-#pragma once
+#include "precompiled.h"
 
-#include "maintypes.h"
 
-enum MOD_GAMEPLAY_TYPE_E
-{
-	BOTH = 0,
-	SINGLEPLAYER_ONLY,
-	MULTIPLAYER_ONLY
-};
+// TODO: Implement security module
+cl_enginefunc_dst_t *pg_engdstAddrs;
 
-struct modinfo_t
-{
-	qboolean bIsMod;
-	char szInfo[256];
-	char szDL[256];
-	char szHLVersion[32];
-	int version;
-	int size;
-	qboolean svonly;
-	qboolean cldll;
-	qboolean secure;
-	MOD_GAMEPLAY_TYPE_E type;
-	int num_edicts;
-	int clientDllCRC;
-};
-
-class CModInfo
-{
-public:
-	CModInfo();
-	~CModInfo();
-	
-	void LoadFromFile();
-	
-	void SetModKey(char *pkey, char *pvalue);
-private:
-	modinfo_t *mpPODInfo;
-};
+modfuncs_t g_modfuncs;
+module_t g_module;

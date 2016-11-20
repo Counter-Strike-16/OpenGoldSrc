@@ -35,6 +35,9 @@ The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
 
 //===========================================================================
 
+extern sizebuf_t cmd_text;
+//byte cmd_text_buf[8192];
+
 // Allocates an initial text buffer that will grow as needed
 void Cbuf_Init();
 
@@ -52,6 +55,3 @@ void Cbuf_InsertText(char *text);
 // Normally called once per frame, but may be explicitly invoked.
 // Do not call inside a command function!
 void Cbuf_Execute();
-
-CNetBuffer cmd_text;
-//byte cmd_text_buf[8192];
