@@ -69,6 +69,7 @@ struct svstats_t
 };
 
 /* <75f3> ../engine/server.h:75 */
+// Note: don't touch this struct - it must remain backward-compat
 typedef struct server_s
 {
 	qboolean active;
@@ -176,7 +177,10 @@ public:
 	CGameClient *GetClientByName(const char *name);
 	CGameClient *GetClientByIndex(int id);
 private:
-	bool mbInitialized; // sv_init has completed
+	server_t *mpStateData;
+	server_static_t *mpStaticData;
+	
+	/*bool mbInitialized; // sv_init has completed
 	
 	server_state_t state; // some actions are only valid during load
 	//tGameServerStateVec mvStates; // mvStates[state]->Frame();
@@ -205,9 +209,9 @@ private:
 	int			lastcheck;			// used by PF_checkclient
 	double		lastchecktime; // for monster ai
 	
-	svstats_t stats;
+	svstats_t stats;*/
 	
-	/*int*/ double last_heartbeat;
+	/*int*/ /*double last_heartbeat;
 	int heartbeat_sequence;
 	
 	struct model_s *models[MAX_MODELS];
@@ -221,7 +225,7 @@ private:
 	
 	bool changelevel_issued; // cleared when at SV_SpawnServer
 	
-	challenge_t	challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
+	challenge_t	challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting*/
 };
 
 delta_t *SV_LookupDelta(char *name);

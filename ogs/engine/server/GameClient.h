@@ -90,7 +90,6 @@ typedef struct client_s
 	double next_messagetime;
 	double next_messageinterval;
 	
-	// WTF WITH THESE TWO BELOW?
 	qboolean send_message;
 	qboolean skip_message;
 	

@@ -596,47 +596,6 @@ void EXT_FUNC Cmd_TokenizeString(char *text)
 	}
 }
 
-/* <55be> ../engine/cmd.c:773 */
-NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name)
-{
-	NOXREFCHECK;
-
-	cmd_function_t *cmd;
-
-	for (cmd = cmd_functions; cmd; cmd = cmd->next)
-	{
-		if (!Q_stricmp(cmd_name, cmd->name))
-		{
-			return cmd;
-		}
-	}
-
-	return NULL;
-}
-
-/* <5611> ../engine/cmd.c:791 */
-NOXREF cmd_function_t *Cmd_FindCmdPrev(char *cmd_name)
-{
-	NOXREFCHECK;
-
-	cmd_function_t *cmd = NULL;
-
-	if (cmd_functions == NULL)
-	{
-		return NULL;
-	}
-
-	for (cmd = cmd_functions; cmd->next; cmd = cmd->next)
-	{
-		if (!Q_stricmp(cmd_name, cmd->next->name))
-		{
-			return cmd;
-		}
-	}
-
-	return NULL;
-}
-
 void Cmd_InsertCommand(cmd_function_t *cmd)
 {
 	cmd_function_t *c, **p;
@@ -662,7 +621,7 @@ void Cmd_InsertCommand(cmd_function_t *cmd)
 	*p = cmd;
 }
 
-/* <5664> ../engine/cmd.c:812 */
+
 // Use this for engine inside call only, not from user code, because it doesn't alloc string for the name.
 void Cmd_AddCommand(char *cmd_name, xcommand_t function)
 {

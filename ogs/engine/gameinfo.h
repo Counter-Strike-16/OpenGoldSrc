@@ -57,11 +57,11 @@ typedef struct GameInfo_s // modinfo_s
 	int clientDllCRC;
 } GameInfo_t; // modinfo_t
 
-class CModInfo
+class CGameInfo
 {
 public:
-	CModInfo();
-	~CModInfo();
+	CGameInfo();
+	~CGameInfo();
 	
 	void LoadFromFile();
 	

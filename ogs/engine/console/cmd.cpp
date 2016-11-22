@@ -132,11 +132,43 @@ Returns a single string containing argv(1) to argv(argc()-1)
 	return cmd_args;
 };
 
+/* <55be> ../engine/cmd.c:773 */
+NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name)
+{
+	NOXREFCHECK;
+	
+	for(cmd_function_t *cmd = cmd_functions; cmd; cmd = cmd->next)
+	{
+		if(!Q_stricmp(cmd_name, cmd->name))
+			return cmd;
+	};
+	
+	return nullptr;
+};
+
+/* <5611> ../engine/cmd.c:791 */
+NOXREF cmd_function_t *Cmd_FindCmdPrev(char *cmd_name)
+{
+	NOXREFCHECK;
+	
+	if(cmd_functions == nullptr)
+		return nullptr;
+	
+	for(cmd_function_t *cmd = cmd_functions; cmd->next; cmd = cmd->next)
+	{
+		if(!Q_stricmp(cmd_name, cmd->next->name))
+			return cmd;
+	};
+	
+	return nullptr;
+};
+
 /*
 ============
 Cmd_AddCommand
 ============
 */
+/* <5664> ../engine/cmd.c:812 */
 void Cmd_AddCommand(char *cmd_name, xcommand_t function)
 {
 	// because hunk allocation would get stomped
@@ -180,10 +212,10 @@ Cmd_Exists
 	for(cmd_function_t *cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
 		if(!Q_strcmp(cmd_name,cmd->name))
-			return true;
+			return true; // TRUE
 	};
 	
-	return false;
+	return false; // FALSE
 };
 
 /*
