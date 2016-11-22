@@ -50,6 +50,296 @@ static char		cmd_args[MAX_STRING_CHARS];
 
 static cmd_function_t *cmd_functions; // possible commands to execute
 
+/* <4e74> ../engine/cmd.c:271 */
+void Cmd_StuffCmds_f(void)
+{
+	int i;
+	int s;
+	char *build;
+
+	if (Cmd_Argc() != 1)
+	{
+		Con_Printf("stuffcmds : execute command line parameters\n");
+		return;
+	}
+
+	if (com_argc <= 1)
+	{
+		return;
+	}
+
+	// Get total length for the command line parameters
+	s = 0;
+	for (i = 1; i < com_argc; i++)
+	{
+		if (com_argv[i])
+		{
+			s += Q_strlen(com_argv[i]) + 1;
+		}
+	}
+
+	if (s == 0)
+	{
+		return;
+	}
+
+	// Create buffer able to get all arguments
+	build = (char *)Z_Malloc(s + com_argc * 2);
+	build[0] = 0;
+
+	//  Iterate thru arguments searching for ones starting with +
+	for (i = 1; i < com_argc; i++)
+	{
+		if (com_argv[i] && com_argv[i][0] == '+')
+		{
+			// Add command or cvar
+			Q_strcat(build, &com_argv[i][1]);
+			// Then add all following parameters till we meet argument with + or -, which means next command/cvar/parameter
+			i++;
+			while (com_argv[i] && com_argv[i][0] != '+' && com_argv[i][0] != '-')
+			{
+				Q_strcat(build, " ");
+				Q_strcat(build, com_argv[i]);
+				i++;
+			}
+			// End up with new line which split commands for command processor
+			Q_strcat(build, "\n");
+			i--;
+		}
+	}
+
+	if (build[0] != 0)
+	{
+		Cbuf_InsertText(build);
+	}
+
+	// Free buffers
+	Z_Free(build);
+}
+
+/* <5e43> ../engine/cmd.c:347 */
+void Cmd_Exec_f(void)
+{
+	const char *pszFileName;
+	const char *pszFileExt;
+	char *pszFileData;
+	int nAddLen;
+	FileHandle_t hFile;
+
+	if (Cmd_Argc() != 2)
+	{
+		Con_Printf("exec <filename> : execute a script file\n");
+		return;
+	}
+
+	pszFileName = Cmd_Argv(1);
+	if (!pszFileName || pszFileName[0] == 0)
+	{
+		return;
+	}
+
+	if (Q_strstr(pszFileName, "\\")
+		|| Q_strstr(pszFileName, ":")
+		|| Q_strstr(pszFileName, "~")
+		|| Q_strstr(pszFileName, "..")
+		|| *pszFileName == '/')
+	{
+		Con_Printf("exec %s: invalid path.\n", pszFileName);
+		return;
+	}
+
+	pszFileExt = COM_FileExtension((char *)pszFileName);
+	if (Q_stricmp(pszFileExt, "cfg") && Q_stricmp(pszFileExt, "rc"))
+	{
+		Con_Printf("exec %s: not a .cfg or .rc file\n", pszFileName);
+		return;
+	}
+
+	hFile = FS_OpenPathID(pszFileName, "rb", "GAMECONFIG");
+	if (!hFile)
+	{
+		hFile = FS_OpenPathID(pszFileName, "rb", "GAME");
+	}
+	if (!hFile)
+	{
+		hFile = FS_Open(pszFileName, "rb");
+	}
+
+	if (!hFile)
+	{
+		if (!Q_strstr(pszFileName, "autoexec.cfg")
+			&& !Q_strstr(pszFileName, "userconfig.cfg")
+			&& !Q_strstr(pszFileName, "hw/opengl.cfg")
+			&& !Q_strstr(pszFileName, "joystick.cfg")
+			&& !Q_strstr(pszFileName, "game.cfg"))
+		{
+			Con_Printf("couldn't exec %s\n", pszFileName);
+		}
+
+		return;
+	}
+
+	nAddLen = FS_Size(hFile);
+	pszFileData = (char *)Mem_Malloc(nAddLen + 1);
+
+	if (!pszFileData)
+	{
+		Con_Printf("exec: not enough space for %s", pszFileName);
+		FS_Close(hFile);
+		return;
+	}
+
+	FS_Read(pszFileData, nAddLen, 1, hFile);
+	pszFileData[nAddLen] = 0;
+	FS_Close(hFile);
+
+	Con_DPrintf("execing %s\n", pszFileName);
+
+	if (cmd_text.cursize + nAddLen + 2 < cmd_text.maxsize)
+	{
+		Cbuf_InsertTextLines(pszFileData);
+	}
+	else
+	{
+		char *pszDataPtr = pszFileData;
+		while (true)
+		{
+			Cbuf_Execute();	// TODO: This doesn't obey the rule to first execute commands from the file, and then the others in the buffer
+			pszDataPtr = COM_ParseLine(pszDataPtr);
+
+			if (com_token[0] == 0)
+			{
+				break;
+			}
+
+			Cbuf_InsertTextLines(com_token);
+		}
+	}
+
+	Mem_Free(pszFileData);
+}
+
+/* <4ac1> ../engine/cmd.c:493 */
+void Cmd_Echo_f(void)
+{
+	int i;
+	int c = Cmd_Argc();
+
+	for (i = 1; i < c; i++)
+	{
+		Con_Printf("%s ", Cmd_Argv(i));
+	}
+
+	Con_Printf("\n");
+}
+
+/* <4c38> ../engine/cmd.c:510 */
+char *CopyString(char *in)
+{
+	char *out = (char *)Z_Malloc(Q_strlen(in) + 1);
+	Q_strcpy(out, in);
+	return out;
+}
+
+/* <4c63> ../engine/cmd.c:521 */
+void Cmd_Alias_f(void)
+{
+	cmdalias_t *a;
+	const char *s;
+	char cmd[MAX_CMD_LINE];
+	int i, c;
+
+	if (Cmd_Argc() == 1)
+	{
+		// Output all aliases
+		Con_Printf("Current alias commands:\n");
+
+		for (a = cmd_alias; a; a = a->next)
+		{
+			Con_Printf("%s : %s", a->name, a->value);	// Don't need \n here, because each alias value is appended with it
+		}
+
+		return;
+	}
+
+	s = Cmd_Argv(1);
+
+	if (Q_strlen(s) >= MAX_ALIAS_NAME)
+	{
+		Con_Printf("Alias name is too long\n");
+		return;
+	}
+
+	if (Cvar_FindVar(s))
+	{
+		Con_Printf("Alias name is invalid\n");
+		return;
+	}
+
+	SetCStrikeFlags();	// TODO: Do this once somewhere at the server start
+
+	if ((g_bIsCStrike || g_bIsCZero) &&
+		(!Q_stricmp(s, "cl_autobuy")
+		|| !Q_stricmp(s, "cl_rebuy")
+		|| !Q_stricmp(s, "gl_ztrick")
+		|| !Q_stricmp(s, "gl_ztrick_old")
+		|| !Q_stricmp(s, "gl_d3dflip")))
+	{
+		Con_Printf("Alias name is invalid\n");
+		return;
+	}
+
+	// Say hello to my little friend! (c)
+	if (g_bIsTFC && (!Q_stricmp(s, "_special") || !Q_stricmp(s, "special")))
+	{
+		Con_Printf("Alias name is invalid\n");
+		return;
+	}
+
+	// Gather arguments into one string
+	cmd[0] = 0;
+	c = Cmd_Argc();
+	for (i = 2; i <= c; i++)
+	{
+		Q_strncat(cmd, Cmd_Argv(i), MAX_CMD_LINE - 2 - Q_strlen(cmd));	// always have a space for \n or ' ' and \0
+
+		if (i != c)
+		{
+			Q_strcat(cmd, " ");
+		}
+	}
+	Q_strcat(cmd, "\n");
+
+	// Search for existing alias
+	for (a = cmd_alias; a; a = a->next)
+	{
+		if (!Q_stricmp(a->name, s))
+		{
+			if (!Q_strcmp(a->value, cmd))
+			{
+				// Same value on the alias, return
+				return;
+			}
+			// Release value, will realloc
+			Z_Free(a->value);
+			break;
+		}
+	}
+
+	if (!a)
+	{
+		// Alloc new alias
+		a = (cmdalias_t *)Z_Malloc(sizeof(cmdalias_t));
+		a->next = cmd_alias;
+		cmd_alias = a;
+
+		Q_strncpy(a->name, s, ARRAYSIZE(a->name) - 1);
+		a->name[ARRAYSIZE(a->name) - 1] = 0;
+	}
+
+	a->value = CopyString(cmd);
+}
+
 /*
 ============
 Cmd_Init
@@ -60,14 +350,14 @@ void Cmd_Init()
 	//
 	// register our commands
 	//
-	AddCommand("stuffcmds", Cmd_StuffCmds_f);
-	AddCommand("exec", Cmd_Exec_f);
-	AddCommand("echo", Cmd_Echo_f);
-	AddCommand("alias", Cmd_Alias_f);
-	AddCommand("wait", Cmd_Wait_f);
+	Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
+	Cmd_AddCommand("exec", Cmd_Exec_f);
+	Cmd_AddCommand("echo", Cmd_Echo_f);
+	Cmd_AddCommand("alias", Cmd_Alias_f);
+	Cmd_AddCommand("wait", Cmd_Wait_f);
 	
 #ifndef SERVERONLY
-	AddCommand("cmd", Cmd_ForwardToServer_f);
+	Cmd_AddCommand("cmd", Cmd_ForwardToServer_f);
 #endif
 };
 
@@ -90,7 +380,7 @@ Cmd_Argc
 ============
 */
 /* <5536> ../engine/cmd.c:677 */
-int EXT_FUNC Cmd_GetArgCount()
+int EXT_FUNC Cmd_Argc()
 {
 #ifndef SWDS
 	g_engdstAddrs->Cmd_Argc();
@@ -104,12 +394,12 @@ int EXT_FUNC Cmd_GetArgCount()
 Cmd_Argv
 ============
 */
-char *Cmd_GetArgValue(int arg)
+char *Cmd_Argv(int arg)
 {
 	if(arg >= cmd_argc)
 		return cmd_null_string;
 	
-	return cmd_argv[arg];	
+	return cmd_argv[arg];
 };
 
 /*
@@ -120,7 +410,7 @@ Returns a single string containing argv(1) to argv(argc()-1)
 ============
 */
 /* <5565> ../engine/cmd.c:703 */
-/*const*/ char * EXT_FUNC Cmd_GetArgString()
+/*const*/ char * EXT_FUNC Cmd_Args()
 {
 #ifndef SWDS
 	g_engdstAddrs->Cmd_Args();
@@ -131,6 +421,12 @@ Returns a single string containing argv(1) to argv(argc()-1)
 	
 	return cmd_args;
 };
+
+/* <5079> ../engine/cmd.c:632 */
+struct cmd_function_s *Cmd_GetFirstCmd(void)
+{
+	return cmd_functions;
+}
 
 /* <55be> ../engine/cmd.c:773 */
 NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name)

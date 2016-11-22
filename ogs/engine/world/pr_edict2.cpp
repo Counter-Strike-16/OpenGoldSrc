@@ -606,46 +606,6 @@ edict_t* EXT_FUNC FindEntityByVars(entvars_t *pvars)
 	return NULL;
 }
 
-/* <7fb75> ../engine/pr_edict.c:747 */
-float EXT_FUNC CVarGetFloat(const char *szVarName)
-{
-	return Cvar_VariableValue(szVarName);
-}
-
-/* <7fba2> ../engine/pr_edict.c:753 */
-const char* EXT_FUNC CVarGetString(const char *szVarName)
-{
-	return Cvar_VariableString(szVarName);
-}
-
-/* <7fbcf> ../engine/pr_edict.c:759 */
-cvar_t* EXT_FUNC CVarGetPointer(const char *szVarName)
-{
-	return Cvar_FindVar(szVarName);
-}
-
-/* <7fbfc> ../engine/pr_edict.c:765 */
-void EXT_FUNC CVarSetFloat(const char *szVarName, float flValue)
-{
-	Cvar_SetValue(szVarName, flValue);
-}
-
-/* <7fc34> ../engine/pr_edict.c:771 */
-void EXT_FUNC CVarSetString(const char *szVarName, const char *szValue)
-{
-	Cvar_Set(szVarName, szValue);
-}
-
-/* <7fc6c> ../engine/pr_edict.c:777 */
-void EXT_FUNC CVarRegister(cvar_t *pCvar)
-{
-	if (pCvar)
-	{
-		pCvar->flags |= FCVAR_EXTDLL;
-		Cvar_RegisterVariable(pCvar);
-	}
-}
-
 /* <7fc95> ../engine/pr_edict.c:794 */
 int EXT_FUNC AllocEngineString(const char *szValue)
 {

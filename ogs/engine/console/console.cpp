@@ -167,3 +167,15 @@ void EXT_FUNC Con_DPrintf(const char *fmt, ...)
 }
 
 #endif // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
+
+void Con_NPrintf(int pos, char *fmt, ...)
+{
+};
+
+void Con_NXPrintf(struct con_nprint_s *info, char *fmt, ...)
+{
+};
+
+int Con_IsVisible()
+{
+};

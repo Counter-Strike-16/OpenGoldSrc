@@ -565,28 +565,6 @@ void ClearIOStates(void)
 #endif // SWDS
 }
 
-
-/* <8f74a> ../engine/sys_dll2.cpp:982 */
-class CEngineAPI : public IEngineAPI
-{
-public:
-	/* <8f797> ../engine/sys_dll2.cpp:1004 */
-	int Run(void *instance, char *basedir, char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
-	{
-		return 0;
-	}
-};
-
-static CEngineAPI g_CEngineAPI;
-
-/* <8ff0c> ../engine/sys_dll2.cpp:1034 */
-IBaseInterface *CreateCEngineAPI(void)
-{
-	return &g_CEngineAPI;
-};
-
-InterfaceReg g_CreateCEngineAPI = InterfaceReg(CreateCEngineAPI, "VENGINE_LAUNCHER_API_VERSION002");
-
 /* <908b7> ../engine/sys_dll2.cpp:1070 */
 /* Needs rechecking
 NOXREF int BuildMapCycleListHints(char **hints)
@@ -696,64 +674,3 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 
 	return false;
 }
-
-int CDedicatedServerAPI::Shutdown(void)
-{
-	return Shutdown_noVirt();
-}
-
-int CDedicatedServerAPI::Shutdown_noVirt(void)
-{
-	eng->Unload();
-	game->Shutdown();
-
-	TraceShutdown("FileSystem_Shutdown()", 0);
-	FileSystem_Shutdown();
-
-	registry->Shutdown();
-
-	TraceShutdown("Sys_ShutdownArgv()", 0);
-	dedicated_ = NULL;
-	return giActive;
-}
-
-bool CDedicatedServerAPI::RunFrame(void)
-{
-	return RunFrame_noVirt();
-}
-
-bool CDedicatedServerAPI::RunFrame_noVirt(void)
-{
-	if (eng->GetQuitting())
-		return false;
-
-	eng->Frame();
-	return true;
-}
-
-void CDedicatedServerAPI::AddConsoleText(char *text)
-{
-	AddConsoleText_noVirt(text);
-}
-
-void CDedicatedServerAPI::AddConsoleText_noVirt(char *text)
-{
-	Cbuf_AddText(text);
-}
-
-void CDedicatedServerAPI::UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
-{
-	UpdateStatus_noVirt(fps, nActive, nMaxPlayers, pszMap);
-}
-
-void CDedicatedServerAPI::UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
-{
-	Host_GetHostInfo(fps, nActive, NULL, nMaxPlayers, pszMap);
-}
-
-#ifndef HOOK_ENGINE
-
-EXPOSE_SINGLE_INTERFACE(CDedicatedServerAPI, IDedicatedServerAPI, VENGINE_HLDS_API_VERSION);
-
-#endif //HOOK_ENGINE
-

@@ -1287,60 +1287,10 @@ NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname,
 #endif // _WIN32
 }
 
-/* <8d0c6> ../engine/sys_dll.c:2344 */
-void Con_Debug_f(void)
-{
-	if (con_debuglog)
-	{
-		Con_Printf("condebug disabled\n");
-		con_debuglog = FALSE;
-	}
-	else
-	{
-		con_debuglog = TRUE;
-		Con_Printf("condebug enabled\n");
-	}
-}
-
-/* <8e069> ../engine/sys_dll.c:2364 */
 void Con_Init(void)
 {
-	con_debuglog = COM_CheckParm("-condebug");
-	Con_DPrintf("Console initialized.\n");
-
 #ifdef HOOK_ENGINE
 	Cmd_AddCommand("condebug", (xcommand_t)GetOriginalFuncAddrOrDefault("Con_Debug_f", (void *)Con_Debug_f));
-#else
-	Cmd_AddCommand("condebug", Con_Debug_f);
-#endif
-}
-
-/* <8dc81> ../engine/sys_dll.c:2385 */
-void Con_DebugLog(const char *file, const char *fmt, ...)
-{
-	va_list argptr;
-	static char data[8192];
-
-	va_start(argptr, fmt);
-	Q_vsnprintf(data, sizeof(data), fmt, argptr);
-	va_end(argptr);
-
-	data[sizeof(data) - 1] = 0;
-
-#ifdef _WIN32
-
-	int fd = _open(file, _O_WRONLY | _O_APPEND | _O_CREAT, _S_IREAD | _S_IWRITE);
-	int len = Q_strlen(data);
-	_write(fd, data, len);
-	_close(fd);
-
-#else // _WIN32
-
-	FILE *fd = FS_Open(file, "at");
-	FS_FPrintf(fd, "%s", data);
-	FS_Close(fd);
-
-#endif // _WIN32
 }
 
 /* <8dcfd> ../engine/sys_dll.c:2407 */
@@ -1387,24 +1337,6 @@ void EXT_FUNC Con_Printf(const char *fmt, ...)
 		}
 #endif // SWDS
 	}
-}
-
-/* <8dfae> ../engine/sys_dll.c:2442 */
-void Con_SafePrintf(const char *fmt, ...)
-{
-	va_list argptr;
-	va_start(argptr, fmt);
-
-#ifdef _WIN32
-	char Dest[1024];
-	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
-	va_end(argptr);
-	Con_Printf("%s", Dest);
-#else
-	vfprintf(stdout, fmt, argptr);
-	va_end(argptr);
-	fflush(stdout);
-#endif // _WIN32
 }
 
 /* <8e00b> ../engine/sys_dll.c:2459 */
