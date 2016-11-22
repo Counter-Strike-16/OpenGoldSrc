@@ -26,7 +26,11 @@
 *
 */
 
-// cvar.c -- dynamic variable tracking
+// cvar.c - dynamic variable tracking
+
+// All cvar names are case insensitive! Values not
+
+//#include "precompiled.h"
 
 #ifdef SERVERONLY 
 	#include "qwsvdef.h"
@@ -37,7 +41,6 @@
 cvar_t *cvar_vars;
 const char *cvar_null_string = "";
 
-/* <1853e> ../engine/cvar.c:26 */
 void Cvar_Init(void)
 {
 #ifndef SWDS
@@ -45,7 +48,6 @@ void Cvar_Init(void)
 #endif
 }
 
-/* <18552> ../engine/cvar.c:30 */
 void Cvar_Shutdown(void)
 {
 	// TODO: Check memory releasing
@@ -57,7 +59,6 @@ void Cvar_Shutdown(void)
 Cvar_FindVar
 ============
 */
-/* <18566> ../engine/cvar.c:40 */
 cvar_t *Cvar_FindVar(/*const*/ char *var_name) // CVarGetPointer
 {
 #ifndef SWDS
@@ -76,7 +77,6 @@ cvar_t *Cvar_FindVar(/*const*/ char *var_name) // CVarGetPointer
 Cvar_VariableValue
 ============
 */
-/* <18606> ../engine/cvar.c:78 */
 float Cvar_VariableValue(/*const*/ char *var_name)
 {
 	cvar_t *var = Cvar_FindVar(var_name);
@@ -87,7 +87,6 @@ float Cvar_VariableValue(/*const*/ char *var_name)
 	return Q_atof(var->string);
 };
 
-/* <18666> ../engine/cvar.c:94 */
 NOXREF int Cvar_VariableInt(const char *var_name)
 {
 	NOXREFCHECK;
@@ -105,7 +104,6 @@ NOXREF int Cvar_VariableInt(const char *var_name)
 Cvar_VariableString
 ============
 */
-/* <186c6> ../engine/cvar.c:110 */
 char *Cvar_VariableString(/*const*/ char *var_name)
 {
 	cvar_t *var = Cvar_FindVar(var_name);
@@ -140,7 +138,7 @@ char *Cvar_CompleteVariable(char *partial)
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
 		if (!Q_strncmp (partial,cvar->name, len))
 			return cvar->name;
-
+	
 	return NULL;
 }
 
@@ -151,17 +149,15 @@ Cvar_Set
 */
 void Cvar_Set(char *var_name, char *value)
 {
-	cvar_t	*var;
-	qboolean changed;
+	cvar_t *var = Cvar_FindVar (var_name);
 	
-	var = Cvar_FindVar (var_name);
 	if (!var)
 	{	// there is an error in C code if this happens
 		Con_Printf ("Cvar_Set: variable %s not found\n", var_name);
 		return;
 	}
 
-	changed = Q_strcmp(var->string, value);
+	qboolean changed = Q_strcmp(var->string, value);
 	
 	Z_Free (var->string);	// free the old value string
 	
@@ -234,14 +230,13 @@ Handles variable inspection and changing from the console
 */
 bool Cvar_Command()
 {
-	cvar_t *v;
-
-// check variables
-	v = Cvar_FindVar (Cmd_Argv(0));
+	cvar_t *v = Cvar_FindVar(Cmd_Argv(0));
+	
+	// check variables
 	if (!v)
 		return false;
 		
-// perform a variable print or set
+	// perform a variable print or set
 	if (Cmd_Argc() == 1)
 	{
 		Con_Printf ("\"%s\" is \"%s\"\n", v->name, v->string);
@@ -268,3 +263,45 @@ void Cvar_WriteVariables(FILE *f)
 		if (var->archive)
 			fprintf (f, "%s \"%s\"\n", var->name, var->string);
 };
+
+/* <18e0f> ../engine/cvar.c:806 */
+NOXREF int Cvar_CountServerVariables(void)
+{
+	NOXREFCHECK;
+
+	int i;
+	cvar_t *var;
+
+	for (i = 0, var = cvar_vars; var; var = var->next)
+	{
+		if (var->flags & FCVAR_SERVER)
+		{
+			++i;
+		}
+	}
+	return i;
+}
+
+/* <18e4a> ../engine/cvar.c:829 */
+void Cvar_UnlinkExternals(void)
+{
+	cvar_t *pVar;
+	cvar_t **pList;
+
+	pVar = cvar_vars;
+	pList = &cvar_vars;
+
+	while (pVar)
+	{
+		if (pVar->flags & FCVAR_EXTDLL)
+		{
+			*pList = pVar->next;
+		}
+		else
+		{
+			pList = &pVar->next;
+		}
+
+		pVar = *pList;
+	}
+}

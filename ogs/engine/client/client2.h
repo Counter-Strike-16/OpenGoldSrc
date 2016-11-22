@@ -1,27 +1,4 @@
-
-
-#include "maintypes.h"
-#include "common.h"
-#include "custom.h"
-#include "cl_entity.h"
-#include "consistency.h"
-#include "delta_packet.h"
-#include "dlight.h"
-#include "entity_state.h"
-#include "event.h"
-#include "info.h"
-#include "net.h"
-#include "keys.h"
-#include "sound.h"
-#include "screenfade.h"
-#include "usercmd.h"
-#include "model.h"
-#include "kbutton.h"
-
-#define MAX_SCOREBOARDNAME	32
-#define MAX_DEMOS		32
-
-typedef enum cactive_e
+enum cactive_e
 {
 	ca_dedicated,
 	ca_disconnected,
@@ -29,31 +6,7 @@ typedef enum cactive_e
 	ca_connected,
 	ca_uninitialized,
 	ca_active,
-} cactive_t;
-
-#ifdef HOOK_ENGINE
-#define g_pcls (*pcls)
-#define g_pcl (*pcl)
-#define key_dest (*pkey_dest)
-
-#define g_clmove (*pg_clmove)
-#define cl_inmovie (*pcl_inmovie)
-
-#define cl_name (*pcl_name)
-#define rate_ (*prate)
-#define console (*pconsole)
-#endif // HOOK_ENGINE
-
-extern keydest_t key_dest;
-extern client_static_t g_pcls;
-extern client_state_t g_pcl;
-
-extern playermove_t g_clmove;
-extern qboolean cl_inmovie;
-
-extern cvar_t cl_name;
-extern cvar_t rate_;
-extern cvar_t console;
+} ;
 
 void CL_RecordHUDCommand(char *cmdname);
 void R_DecalRemoveAll(int textureIndex);

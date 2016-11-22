@@ -36,6 +36,8 @@
 =============================================================================
 */
 
+sizebuf_t cmd_text;
+
 /*
 ============
 Cbuf_Init
@@ -43,7 +45,7 @@ Cbuf_Init
 */
 void Cbuf_Init()
 {
-	SZ_Alloc (&cmd_text, 8192);		// space for commands and script files
+	SZ_Alloc("cmd_text", &cmd_text, MAX_CMD_BUFFER); // space for commands and script files
 }
 
 /*
@@ -56,17 +58,16 @@ As new commands are generated from the console or keybindings,
 the text is added to the end of the command buffer.
 ============
 */
-/* <4d80> ../engine/cmd.c:83 */
-void CCmdBuffer::AddText(char *text)
+void Cbuf_AddText(char *text)
 {
 	int len = Q_strlen(text);
-
+	
 	if(cmd_text.cursize + len >= cmd_text.maxsize)
 	{
 		Con_Printf("Cbuf_AddText: overflow\n");
 		return;
 	}
-
+	
 	SZ_Write(&cmd_text, text, len);
 }
 
@@ -77,28 +78,38 @@ Cbuf_InsertText
 Adds command text immediately after the current command
 Adds a \n to the text
 FIXME: actually change the command buffer to do less copying
+
+// When a command wants to issue other commands immediately, the text is
+// inserted at the beginning of the buffer, before any remaining unexecuted
+// commands.
 ============
 */
-void CCmdBuffer::InsertText(char *text)
+void Cbuf_InsertText(char *text)
 {
 	char *temp = NULL;
-	int templen;
-
-	// copy off any commands still remaining in the exec buffer
-	templen = cmd_text.cursize;
-	if (templen)
+	int addLen = Q_strlen(text);
+	int templen = cmd_text.cursize; // currLen
+	
+	if(cmd_text.cursize + addLen >= cmd_text.maxsize)
 	{
-		temp = Z_Malloc (templen);
-		Q_memcpy (temp, cmd_text.data, templen);
-		SZ_Clear (&cmd_text);
+		Con_Printf(__FUNCTION__ ": overflow\n");
+		return;
+	}
+	
+	// copy off any commands still remaining in the exec buffer
+	if(templen)
+	{
+		temp = (char*)Z_Malloc(templen); // // TODO: Optimize: better use memmove without need for a temp buffer
+		Q_memcpy(temp, cmd_text.data, templen);
+		SZ_Clear(&cmd_text);
 	};
-		
+	
 	// add the entire text of the file
-	AddText(text);
+	Cbuf_AddText(text);
 	//SZ_Write(&cmd_text, "\n", 1);
 	
 	// add the copied off data
-	if (templen)
+	if(templen)
 	{
 		SZ_Write (&cmd_text, temp, templen);
 		Z_Free (temp);
@@ -107,14 +118,67 @@ void CCmdBuffer::InsertText(char *text)
 
 /*
 ============
-Cbuf_Execute
+Cbuf_InsertTextLines
 ============
 */
-void CCmdBuffer::Execute()
+void Cbuf_InsertTextLines(char *text)
+{
+	int addLen = Q_strlen(text);
+	int currLen = cmd_text.cursize;
+	
+	if (cmd_text.cursize + addLen + 2 >= cmd_text.maxsize)
+	{
+		Con_Printf(__FUNCTION__ ": overflow\n");
+		return;
+	}
+	
+#ifdef REHLDS_FIXES
+	if (currLen)
+		Q_memmove(cmd_text.data + addLen + 2, cmd_text.data, currLen);
+	
+	cmd_text.data[0] = '\n'; // TODO: Why we need leading \n, if there is no commands in the start?
+	Q_memcpy(&cmd_text.data[1], text, addLen);
+	cmd_text.data[addLen + 1] = '\n';
+	
+	cmd_text.cursize += addLen + 2;
+#else
+	char *temp = NULL;
+	
+	if (currLen)
+	{
+		
+		temp = (char *)Z_Malloc(currLen);
+		Q_memcpy(temp, cmd_text.data, currLen);
+		SZ_Clear(&cmd_text);
+	}
+	
+	Cbuf_AddText("\n");	// TODO: Why we need leading \n, if there is no commands in the start?
+	Cbuf_AddText(text);
+	Cbuf_AddText("\n");
+	
+	if (currLen)
+	{
+		SZ_Write(&cmd_text, temp, currLen);
+		Z_Free(temp);
+	}
+#endif // REHLDS_FIXES
+}
+
+/*
+============
+Cbuf_Execute
+
+// Pulls off \n terminated lines of text from the command buffer and sends
+// them through Cmd_ExecuteString.  Stops when the buffer is empty.
+// Normally called once per frame, but may be explicitly invoked.
+// Do not call inside a command function!
+============
+*/
+void Cbuf_Execute()
 {
 	int		i;
 	char	*text;
-	char	line[1024];
+	char	line[MAX_CMD_LINE]; // 1024
 	int		quotes;
 	
 	while (cmd_text.cursize)

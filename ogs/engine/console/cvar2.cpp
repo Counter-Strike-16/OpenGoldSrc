@@ -1,13 +1,5 @@
 
 
-#include "precompiled.h"
-
-
-
-/*
-	All cvar names are case insensitive! Values not.
-*/
-
 /* <185b6> ../engine/cvar.c:58 */
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 {
@@ -592,47 +584,7 @@ void Cmd_CvarList_f(void)
 	}
 }
 
-/* <18e0f> ../engine/cvar.c:806 */
-NOXREF int Cvar_CountServerVariables(void)
-{
-	NOXREFCHECK;
 
-	int i;
-	cvar_t *var;
-
-	for (i = 0, var = cvar_vars; var; var = var->next)
-	{
-		if (var->flags & FCVAR_SERVER)
-		{
-			++i;
-		}
-	}
-	return i;
-}
-
-/* <18e4a> ../engine/cvar.c:829 */
-void Cvar_UnlinkExternals(void)
-{
-	cvar_t *pVar;
-	cvar_t **pList;
-
-	pVar = cvar_vars;
-	pList = &cvar_vars;
-
-	while (pVar)
-	{
-		if (pVar->flags & FCVAR_EXTDLL)
-		{
-			*pList = pVar->next;
-		}
-		else
-		{
-			pList = &pVar->next;
-		}
-
-		pVar = *pList;
-	}
-}
 
 /* <18e8a> ../engine/cvar.c:853 */
 void Cvar_CmdInit(void)

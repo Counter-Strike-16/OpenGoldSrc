@@ -6,7 +6,6 @@ char *cmd_argv[80];
 // Complete arguments string
 char *cmd_args;
 
-sizebuf_t cmd_text;
 cmd_source_t cmd_source;
 qboolean cmd_wait;
 cmdalias_t *cmd_alias;
@@ -24,27 +23,9 @@ void Cmd_Wait_f(void)
 	cmd_wait = 1;
 }
 
-/* <4d6b> ../engine/cmd.c:69 */
-void Cbuf_Init(void)
-{
-	SZ_Alloc("cmd_text", &cmd_text, MAX_CMD_BUFFER);
-}
-
-/* <4dcf> ../engine/cmd.c:109 */
-// When a command wants to issue other commands immediately, the text is
-// inserted at the beginning of the buffer, before any remaining unexecuted
-// commands.
 void Cbuf_InsertText(char *text)
 {
-
-	int addLen = Q_strlen(text);
 	int currLen = cmd_text.cursize;
-
-	if (cmd_text.cursize + addLen >= cmd_text.maxsize)
-	{
-		Con_Printf(__FUNCTION__ ": overflow\n");
-		return;
-	}
 
 #ifdef REHLDS_FIXES
 	if (currLen)
@@ -54,82 +35,14 @@ void Cbuf_InsertText(char *text)
 	cmd_text.cursize += addLen;
 
 #else
-	char *temp = NULL;
-	if (currLen)
-	{
-		
-		temp = (char *)Z_Malloc(currLen);	// TODO: Optimize: better use memmove without need for a temp buffer
-		Q_memcpy(temp, cmd_text.data, currLen);
-		SZ_Clear(&cmd_text);
-	}
-
-	Cbuf_AddText(text);
-
-	if (currLen)
-	{
-		SZ_Write(&cmd_text, temp, currLen);
-		Z_Free(temp);
-	}
+	
 #endif // REHLDS_FIXES
 }
 
-/* <4f05> ../engine/cmd.c:148 */
-void Cbuf_InsertTextLines(char *text)
-{
-	int addLen = Q_strlen(text);
-	int currLen = cmd_text.cursize;
 
-	if (cmd_text.cursize + addLen + 2 >= cmd_text.maxsize)
-	{
-		Con_Printf(__FUNCTION__ ": overflow\n");
-		return;
-	}
 
-#ifdef REHLDS_FIXES
-	if (currLen)
-		Q_memmove(cmd_text.data + addLen + 2, cmd_text.data, currLen);
-
-	cmd_text.data[0] = '\n'; // TODO: Why we need leading \n, if there is no commands in the start?
-	Q_memcpy(&cmd_text.data[1], text, addLen);
-	cmd_text.data[addLen + 1] = '\n';
-
-	cmd_text.cursize += addLen + 2;
-
-#else
-
-	char *temp = NULL;
-	if (currLen)
-	{
-		
-		temp = (char *)Z_Malloc(currLen);
-		Q_memcpy(temp, cmd_text.data, currLen);
-		SZ_Clear(&cmd_text);
-	}
-
-	Cbuf_AddText("\n");	// TODO: Why we need leading \n, if there is no commands in the start?
-	Cbuf_AddText(text);
-	Cbuf_AddText("\n");
-
-	if (currLen)
-	{
-		SZ_Write(&cmd_text, temp, currLen);
-		Z_Free(temp);
-	}
-#endif // REHLDS_FIXES
-}
-
-/* <5d96> ../engine/cmd.c:193 */
-// Pulls off \n terminated lines of text from the command buffer and sends
-// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Normally called once per frame, but may be explicitly invoked.
-// Do not call inside a command function!
 void Cbuf_Execute(void)
 {
-	int i;
-	char *text;
-	char line[MAX_CMD_LINE];
-	int quotes;
-
 	while (cmd_text.cursize)
 	{
 		// find a \n or ; line break

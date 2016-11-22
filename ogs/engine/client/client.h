@@ -32,7 +32,58 @@
 #ifndef OGS_CLIENT_H
 #define OGS_CLIENT_H
 
-enum cactive_t
+#include "maintypes.h"
+#include "common.h"
+#include "custom.h"
+#include "cl_entity.h"
+#include "consistency.h"
+#include "delta_packet.h"
+#include "dlight.h"
+#include "entity_state.h"
+#include "event.h"
+#include "info.h"
+#include "net.h"
+#include "keys.h"
+#include "sound.h"
+#include "screenfade.h"
+#include "usercmd.h"
+#include "model.h"
+#include "kbutton.h"
+
+#define MAX_SCOREBOARDNAME	32
+#define MAX_DEMOS			32
+
+//
+
+#ifdef HOOK_ENGINE
+#define g_pcls (*pcls)
+#define g_pcl (*pcl)
+#define key_dest (*pkey_dest)
+
+#define g_clmove (*pg_clmove)
+#define cl_inmovie (*pcl_inmovie)
+
+#define cl_name (*pcl_name)
+#define rate_ (*prate)
+#define console (*pconsole)
+#endif // HOOK_ENGINE
+
+//
+
+extern keydest_t key_dest;
+extern client_static_t g_pcls;
+extern client_state_t g_pcl;
+
+extern playermove_t g_clmove;
+extern qboolean cl_inmovie;
+
+extern cvar_t cl_name;
+extern cvar_t rate_;
+extern cvar_t console;
+
+//
+
+typedef enum cactive_e
 {
 	ca_dedicated,
 	ca_disconnected, 	// full screen console with no connection
@@ -40,7 +91,7 @@ enum cactive_t
 	ca_connected,		// netchan_t established, waiting for svc_serverdata
 	ca_onserver,		// processing data lists, donwloading, etc
 	ca_active			// everything is in, so frames can be rendered
-};
+} cactive_t;
 
 struct
 {
@@ -154,7 +205,7 @@ typedef struct player_info_s
 	uint64 m_nSteamID;
 } player_info_t;
 
-/* <277f5> ../engine/client.h:208 */
+// Sound fade data
 typedef struct soundfade_s
 {
 	int nStartPercent;
@@ -165,7 +216,7 @@ typedef struct soundfade_s
 	int soundFadeInTime;
 } soundfade_t;
 
-/* <1f23> ../engine/client.h:223 */
+// Static client data
 typedef struct client_static_s
 {
 	cactive_t state;
@@ -221,7 +272,7 @@ typedef struct client_static_s
 	int build_num;
 } client_static_t;
 
-/* <1bda4> ../engine/client.h:320 */
+// Client state data
 typedef struct client_state_s
 {
 	int max_edicts;

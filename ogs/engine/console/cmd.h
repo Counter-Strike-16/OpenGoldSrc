@@ -26,7 +26,7 @@
 *
 */
 
-// cmd.h -- Console command system
+// cmd.h - Console command system
 
 #pragma once
 
@@ -38,7 +38,6 @@
 All command/alias names are case insensitive! Arguments not.
 */
 
-#define MAX_CMD_BUFFER	16384
 #define MAX_CMD_TOKENS	80
 #define MAX_CMD_LINE	1024
 
@@ -165,14 +164,14 @@ extern qboolean cmd_wait;
 extern cmd_function_t *cmd_functions;
 extern cmdalias_t *cmd_alias;
 
-void Cmd_Wait_f(void);
-void Cbuf_InsertTextLines(char *text);
+void Cmd_Wait_f();
+void Cmd_Exec_f();
+void Cmd_Echo_f();
+void Cmd_Alias_f();
 
-void Cmd_Exec_f(void);
-void Cmd_Echo_f(void);
 char *CopyString(char *in);
-void Cmd_Alias_f(void);
-struct cmd_function_s *Cmd_GetFirstCmd(void);
+
+struct cmd_function_s *Cmd_GetFirstCmd();
 
 NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name);
 NOXREF cmd_function_t *Cmd_FindCmdPrev(char *cmd_name);
