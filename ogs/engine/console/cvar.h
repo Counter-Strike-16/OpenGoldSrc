@@ -138,7 +138,6 @@ void EngFunc_Cvar_DirectSet(struct cvar_s *var, char *value);
 #include "cvardef.h"
 #include "FileSystem.h"
 
-
 #define MAX_CVAR_VALUE 1024
 
 #ifdef HOOK_ENGINE

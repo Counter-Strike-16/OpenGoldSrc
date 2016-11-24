@@ -1,32 +1,6 @@
-/*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
 
-#include "precompiled.h"
+
+
 
 double realtime;
 double rolling_fps;
@@ -95,15 +69,9 @@ cvar_t suitvolume;
 #endif //HOOK_ENGINE
 
 /* <3617e> ../engine/host.c:201 */
-NOXREF void Host_EndGame(const char *message, ...)
+ void Host_EndGame(const char *message, ...)
 {
 	int oldn;
-	va_list argptr;
-	char string[1024];
-
-	va_start(argptr,message);
-	Q_vsnprintf(string, sizeof(string), message, argptr);
-	va_end(argptr);
 
 	Con_DPrintf(__FUNCTION__ ": %s\n", string);
 
@@ -134,19 +102,14 @@ NOXREF void Host_EndGame(const char *message, ...)
 }
 
 /* <36123> ../engine/host.c:255 */
-void __declspec(noreturn) Host_Error(const char *error, ...)
+void  Host_Error(const char *error, ...)
 {
-	va_list argptr;
-	char string[1024];
-	static qboolean inerror = FALSE;
 
 	va_start(argptr, error);
 
 	if (inerror)
 		Sys_Error(__FUNCTION__ ": recursively entered");
 
-	inerror = TRUE;
-	SCR_EndLoadingPlaque();
 	Q_vsnprintf(string, sizeof(string), error, argptr);
 	va_end(argptr);
 
@@ -170,30 +133,6 @@ void __declspec(noreturn) Host_Error(const char *error, ...)
 /* <35d12> ../engine/host.c:297 */
 void Host_InitLocal(void)
 {
-	Host_InitCommands();
-	Cvar_RegisterVariable(&host_killtime);
-	Cvar_RegisterVariable(&sys_ticrate);
-	Cvar_RegisterVariable(&fps_max);
-	Cvar_RegisterVariable(&fps_override);
-	Cvar_RegisterVariable(&host_name);
-	Cvar_RegisterVariable(&host_limitlocal);
-
-	sys_timescale.value = 1.0f;
-
-	Cvar_RegisterVariable(&host_framerate);
-	Cvar_RegisterVariable(&host_speeds);
-	Cvar_RegisterVariable(&host_profile);
-	Cvar_RegisterVariable(&mp_logfile);
-	Cvar_RegisterVariable(&mp_logecho);
-	Cvar_RegisterVariable(&sv_log_onefile);
-	Cvar_RegisterVariable(&sv_log_singleplayer);
-	Cvar_RegisterVariable(&sv_logsecret);
-	Cvar_RegisterVariable(&sv_stats);
-	Cvar_RegisterVariable(&developer);
-	Cvar_RegisterVariable(&deathmatch);
-	Cvar_RegisterVariable(&coop);
-	Cvar_RegisterVariable(&pausable);
-	Cvar_RegisterVariable(&skill);
 
 	SV_SetMaxclients();
 }
@@ -1255,18 +1194,9 @@ int Host_Init(quakeparms_t *parms)
 /* <368c2> ../engine/host.c:1977 */
 void Host_Shutdown(void)
 {
-	static qboolean isdown = FALSE;
-
 	int i;
 	client_t *pclient;
 
-	if (isdown)
-	{
-		printf("recursive shutdown\n");
-		return;
-	}
-
-	isdown = TRUE;
 	if (host_initialized) // Client-side
 		Host_WriteConfiguration();
 

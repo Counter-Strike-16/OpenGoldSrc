@@ -2,7 +2,7 @@
 *
 *    This program is free software; you can redistribute it and/or modify it
 *    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or(at
+*    Free Software Foundation; either version 2 of the License, or (at
 *    your option) any later version.
 *
 *    This program is distributed in the hope that it will be useful, but
@@ -15,9 +15,9 @@
 *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 *    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine("HL
-*    Engine") and Modified Game Libraries("MODs") developed by Valve,
-*    L.L.C("Valve").  You must obey the GNU General Public License in all
+*    link the code of this program with the Half-Life Game Engine ("HL
+*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*    L.L.C ("Valve").  You must obey the GNU General Public License in all
 *    respects for all of the code used other than the HL Engine and MODs
 *    from Valve.  If you modify this file, you may extend this exception
 *    to your version of the file, but you are not obligated to do so.  If
@@ -28,11 +28,12 @@
 
 // Host.cpp -- coordinates spawning and killing of local servers
 
-#include "Host.h"
-#include "console/CmdBuffer.h"
+//#include "precompiled.h"
+#include "host.h"
+#include "console/cbuf.h"
 #include "network/Network.h"
-#include "sound/Sound.h"
-#include "input/Input.h"
+#include "sound/sound.h"
+#include "input/input.h"
 #include "quakedef.h"
 #include "r_local.h"
 
@@ -91,7 +92,7 @@ cvar_t pausable = {"pausable", "1", FCVAR_SERVER, 0.0f, NULL};
 Host_Init
 ====================
 */
-void CHost::Init(quakeparms_t *parms)
+void Host_Init(quakeparms_t *parms)
 {
 	//if(standard_quake)
 		//minimum_memory = MINIMUM_MEMORY;
@@ -206,9 +207,9 @@ void CHost::Init(quakeparms_t *parms)
 Host_InitLocal
 ======================
 */
-void CHost::InitLocal()
+void Host_InitLocal()
 {
-	InitCommands();
+	Host_InitCommands();
 	
 	Cvar_RegisterVariable(&host_killtime);
 	
@@ -219,7 +220,6 @@ void CHost::InitLocal()
 	
 	Cvar_RegisterVariable(&host_name);
 	Cvar_RegisterVariable(&host_limitlocal);
-	
 	Cvar_RegisterVariable(&host_framerate);
 	Cvar_RegisterVariable(&host_speeds);
 	Cvar_RegisterVariable(&host_profile);
@@ -236,13 +236,17 @@ void CHost::InitLocal()
 	
 	Cvar_RegisterVariable(&fraglimit);
 	Cvar_RegisterVariable(&timelimit);
+	
 	Cvar_RegisterVariable(&teamplay);
 	Cvar_RegisterVariable(&samelevel);
 	Cvar_RegisterVariable(&noexit);
+	
 	Cvar_RegisterVariable(&skill);
 	Cvar_RegisterVariable(&developer);
+	
 	Cvar_RegisterVariable(&deathmatch);
 	Cvar_RegisterVariable(&coop);
+	
 	Cvar_RegisterVariable(&pausable);
 	
 	sys_timescale.value = 1.0f;
@@ -260,7 +264,7 @@ FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better
 to run quit through here before the final handoff to the sys code.
 ===============
 */
-void CHost::Shutdown()
+void Host_Shutdown()
 {
 	static bool bShuttingDown = false;
 	
@@ -275,7 +279,7 @@ void CHost::Shutdown()
 	// Keep Con_Printf from trying to update the screen
 	//scr_disabled_for_loading = true;
 	
-	WriteConfig();
+	Host_WriteConfig();
 	
 	if(mpLocalClient->GetState() != ca_dedicated)
 		mpClientDLL->pfnShutdown();
@@ -298,13 +302,13 @@ Host_EndGame
 Call this to drop to a console without exiting
 ================
 */
-void CHost::EndGame(char *message, ...)
+NOXREF void Host_EndGame(char *message, ...)
 {
 	va_list argptr;
 	char string[1024];
 	
-	va_start(argptr,message);
-	vsprintf(string,message,argptr); // Q_vsnprintf(string, sizeof(string), message, argptr);
+	va_start(argptr, message);
+	vsprintf(string, message, argptr); // Q_vsnprintf(string, sizeof(string), message, argptr);
 	va_end(argptr);
 	
 	Con_Printf ("\n===========================\n");
@@ -332,7 +336,7 @@ Host_Error
 This shuts down both the client and server and exits
 ================
 */
-void CHost::Error(char *error, ...)
+void __declspec(noreturn) Host_Error(/*const*/ char *error, ...)
 {
 	static bool inerror = false;
 	
@@ -375,7 +379,7 @@ void CHost::Error(char *error, ...)
 Host_FindMaxClients
 ================
 */
-void CHost::FindMaxClients()
+void Host_FindMaxClients()
 {
 	mpLocalServer->SetMaxClients(1);
 	
@@ -431,7 +435,7 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void CHost::WriteConfig()
+void Host_WriteConfig()
 {
 	// dedicated servers initialize the host but don't parse 
 	// and set the config.cfg cvars
@@ -479,7 +483,7 @@ Host_ShutdownServer
 This only happens at the end of a game, not between levels
 ==================
 */
-void CHost::ShutdownServer(bool crash)
+void Host_ShutdownServer(bool crash)
 {
 	int		i;
 	int		count;
@@ -554,7 +558,7 @@ This clears all the memory used by both the client and server, but does
 not reinitialize anything.
 ================
 */
-void CHost::ClearMemory()
+void Host_ClearMemory()
 {
 	Con_DPrintf("Clearing memory\n");
 	D_FlushCaches();
@@ -577,7 +581,7 @@ Host_FilterTime
 Returns false if the time is too short to run a frame
 ===================
 */
-bool CHost::FilterTime(float time)
+bool Host_FilterTime(float time)
 {
 	realtime += time;
 	
@@ -611,7 +615,7 @@ Host_GetConsoleCommands
 Add them exactly as if they had been typed at the console
 ===================
 */
-void CHost::GetConsoleCommands()
+void Host_GetConsoleCommands()
 {
 	char *cmd = NULL;
 	
@@ -634,7 +638,7 @@ Host_ServerFrame
 */
 #ifdef FPS_20
 
-void Host::_ServerFrame(void)
+void _Host_ServerFrame(void)
 {
 // run the world state	
 	gpGlobals->frametime = host_frametime;
@@ -648,7 +652,7 @@ void Host::_ServerFrame(void)
 		SV_Physics();
 }
 
-void CHost::ServerFrame(void)
+void Host_ServerFrame(void)
 {
 	float	save_host_frametime;
 	float	temp_host_frametime;
@@ -680,7 +684,7 @@ void CHost::ServerFrame(void)
 
 #else
 
-void CHost::ServerFrame(void)
+void Host_ServerFrame(void)
 {
 // run the world state	
 	gpGlobals->frametime = host_frametime;
@@ -712,7 +716,7 @@ Host_Frame
 Runs all active servers
 ==================
 */
-void CHost::_Frame(float time)
+void _Host_Frame(float time)
 {
 	static double		time1 = 0;
 	static double		time2 = 0;
@@ -806,7 +810,7 @@ void CHost::_Frame(float time)
 	host_framecount++;
 };
 
-void CHost::Frame(float time)
+void Host_Frame(float time)
 {
 	double	time1, time2;
 	static double	timetotal;
