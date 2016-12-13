@@ -168,6 +168,7 @@ void __declspec(noreturn) Host_Error(const char *error, ...)
 void Host_InitLocal()
 {
 	Host_InitCommands();
+	
 	Cvar_RegisterVariable(&host_killtime);
 	Cvar_RegisterVariable(&sys_ticrate);
 	Cvar_RegisterVariable(&fps_max);
@@ -1115,9 +1116,12 @@ int Host_Init(quakeparms_t *parms)
 
 	Voice_RegisterCvars();
 	Cvar_RegisterVariable(&console);
+	
 	if (COM_CheckParm("-console") || COM_CheckParm("-toconsole") || COM_CheckParm("-dev"))
 		Cvar_DirectSet(&console, "1.0");
+	
 	Host_InitLocal();
+	
 	if (COM_CheckParm("-dev"))
 		Cvar_SetValue("developer", 1.0);
 
@@ -1158,7 +1162,6 @@ int Host_Init(quakeparms_t *parms)
 	//Rehlds Security
 	Rehlds_Security_Init();
 
-
 	Q_snprintf(versionString, sizeof(versionString), "%s,%i,%i", gpszVersionString, PROTOCOL_VERSION, build_number());
 	Cvar_Set("sv_version", versionString);
 	Con_DPrintf("%4.1f Mb heap\n", (double)parms->memsize / (1024.0f * 1024.0f));
@@ -1191,11 +1194,13 @@ int Host_Init(quakeparms_t *parms)
 		CL_InitEventSystem();
 		ClientDLL_Init();
 		//VGui_Startup();
-		if (!VID_Init(host_basepal))
+		
+		if(!VID_Init(host_basepal))
 		{
 			//VGui_Shutdown();
 			return 0;
 		}
+		
 		Draw_Init();
 		SCR_Init();
 		R_Init();
@@ -1206,15 +1211,18 @@ int Host_Init(quakeparms_t *parms)
 		CL_Init();
 	}
 	else
-	{
 		Cvar_RegisterVariable(&suitvolume);
-	}
+	
 	Cbuf_InsertText("exec valve.rc\n");
 	Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark();
 	giActive = DLL_ACTIVE;
 	scr_skipupdate = FALSE;
+	
 	CheckGore();
+	
+	Con_Printf ("!!! Fuckin' GoldSrc Initialized !!!\n");
+	
 	host_initialized = TRUE;
 	return 1;
 }

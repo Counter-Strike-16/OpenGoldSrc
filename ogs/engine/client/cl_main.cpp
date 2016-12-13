@@ -64,14 +64,14 @@ static qboolean allowremotecmd = true;
 //
 cvar_t	password = {"password", "", false, true};
 cvar_t	spectator = {"spectator", "", false, true};
-cvar_t	name = {"name","unnamed", true, true};
-cvar_t	team = {"team","", true, true};
-cvar_t	skin = {"skin","", true, true};
-cvar_t	topcolor = {"topcolor","0", true, true};
-cvar_t	bottomcolor = {"bottomcolor","0", true, true};
-cvar_t	rate = {"rate","2500", true, true};
-cvar_t	noaim = {"noaim","0", true, true};
-cvar_t	msg = {"msg","1", true, true};
+cvar_t	name = {"name", "unnamed", true, true};
+cvar_t	team = {"team", "", true, true};
+cvar_t	skin = {"skin", "", true, true};
+cvar_t	topcolor = {"topcolor", "0", true, true};
+cvar_t	bottomcolor = {"bottomcolor", "0", true, true};
+cvar_t	rate = {"rate", "2500", true, true};
+cvar_t	noaim = {"noaim", "0", true, true};
+cvar_t	msg = {"msg", "1", true, true};
 
 extern cvar_t cl_hightrack;
 
@@ -705,14 +705,16 @@ void CL_Reconnect_f ()
 
 	S_StopAllSounds (true);
 
-	if (cls.state == ca_connected) {
+	if (cls.state == ca_connected)
+	{
 		Con_Printf ("reconnecting...\n");
 		MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
 		MSG_WriteString (&cls.netchan.message, "new");
 		return;
 	}
 
-	if (!*cls.servername) {
+	if (!*cls.servername)
+	{
 		Con_Printf("No server to reconnect to...\n");
 		return;
 	}
@@ -1284,5 +1286,5 @@ void Host_Init (quakeparms_t *parms)
 
 	Con_Printf ("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
 
-	Con_Printf ("ÄÅÅÅÅÅÅ QuakeWorld Initialized ÅÅÅÅÅÅÇ\n");	
+	
 }

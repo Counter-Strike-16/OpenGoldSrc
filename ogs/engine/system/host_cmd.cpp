@@ -2966,17 +2966,20 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("setmaster", (xcommand_t)GetOriginalFuncAddrOrDefault("Master_SetMaster_f", (void *)Master_SetMaster_f));
 	Cmd_AddCommand("heartbeat", (xcommand_t)GetOriginalFuncAddrOrDefault("Master_Heartbeat_f", (void *)Master_Heartbeat_f));
 #else // HOOK_ENGINE
+
 #ifndef SWDS
 	Cmd_AddCommand("cd", CD_Command_f);
 	Cmd_AddCommand("mp3", MP3_Command_f);
 	Cmd_AddCommand("_careeraudio", CareerAudio_Command_f);
 #endif // SWDS
+	
 	Cmd_AddCommand("shutdownserver", Host_KillServer_f);
 	Cmd_AddCommand("soundfade", Host_Soundfade_f);
 	Cmd_AddCommand("status", Host_Status_f);
 	Cmd_AddCommand("stat", Host_Status_Formatted_f);
 	Cmd_AddCommand("quit", Host_Quit_f);
 	Cmd_AddCommand("_restart", Host_Quit_Restart_f);
+	
 #ifndef SWDS
 	Cmd_AddCommand("_setrenderer", Host_SetRenderer_f);
 	Cmd_AddCommand("_setvideomode", Host_SetVideoMode_f);
@@ -2985,6 +2988,7 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("_setaddons_folder", Host_SetAddonsFolder_f);
 	Cmd_AddCommand("_set_vid_level", Host_SetVideoLevel_f);
 #endif // SWDS
+	
 	Cmd_AddCommand("exit", Host_Quit_f);
 	Cmd_AddCommand("map", Host_Map_f);
 	Cmd_AddCommand("career", Host_Career_f);
@@ -3011,15 +3015,18 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("save", Host_Savegame_f);
 	Cmd_AddCommand("autosave", Host_AutoSave_f);
 	Cmd_AddCommand("writecfg", Host_WriteCustomConfig);
+	
 #ifndef SWDS
 	Cmd_AddCommand("+voicerecord", Host_VoiceRecordStart_f);
 	Cmd_AddCommand("-voicerecord", Host_VoiceRecordStop_f);
 #endif // SWDS
+	
 	Cmd_AddCommand("startdemos", Host_Startdemos_f);
 	Cmd_AddCommand("demos", Host_Demos_f);
 	Cmd_AddCommand("stopdemo", Host_Stopdemo_f);
 	Cmd_AddCommand("setinfo", Host_SetInfo_f);
 	Cmd_AddCommand("fullinfo", Host_FullInfo_f);
+	
 #ifndef SWDS
 	Cmd_AddCommand("god", Host_God_f);
 	Cmd_AddCommand("notarget", Host_Notarget_f);
@@ -3030,6 +3037,7 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("viewnext", Host_Viewnext_f);
 	Cmd_AddCommand("viewprev", Host_Viewprev_f);
 #endif // SWDS
+	
 	Cmd_AddCommand("mcache", Mod_Print);
 	Cmd_AddCommand("interp", Host_Interp_f);
 	Cmd_AddCommand("setmaster", Master_SetMaster_f);
