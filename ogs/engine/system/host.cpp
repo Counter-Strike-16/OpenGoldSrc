@@ -865,9 +865,17 @@ void Host_CheckConnectionFailure()
 	}
 }
 
+/*
+==================
+Host_Frame
+
+Runs all active servers
+==================
+*/
 void _Host_Frame(float time)
 {
 	static double host_times[6];
+	
 	if (setjmp(host_enddemo))
 		return;
 
@@ -877,9 +885,8 @@ void _Host_Frame(float time)
 
 #ifdef REHLDS_FLIGHT_REC
 	static long frameCounter = 0;
-	if (rehlds_flrec_frame.string[0] != '0') {
+	if (rehlds_flrec_frame.string[0] != '0')
 		FR_StartFrame(frameCounter);
-	}
 #endif //REHLDS_FLIGHT_REC
 
 	//SystemWrapper_RunFrame(host_frametime);
@@ -890,7 +897,10 @@ void _Host_Frame(float time)
 	Host_ComputeFPS(host_frametime);
 	R_SetStackBase();
 	CL_CheckClientState();
+	
+	// process console commands
 	Cbuf_Execute();
+	
 	ClientDLL_UpdateClientData();
 
 	if (g_psv.active)
@@ -898,15 +908,19 @@ void _Host_Frame(float time)
 
 	host_times[1] = Sys_FloatTime();
 	SV_Frame();
+	
 	host_times[2] = Sys_FloatTime();
 	SV_CheckForRcon();
 
-	if (!g_psv.active)
+	if(!g_psv.active)
 		CL_Move();
 
 	ClientDLL_Frame(host_frametime);
 	CL_SetLastUpdate();
+	
+	// fetch results from server
 	CL_ReadPackets();
+	
 	CL_RedoPrediction();
 	CL_VoiceIdle();
 	CL_EmitEntities();
@@ -914,39 +928,46 @@ void _Host_Frame(float time)
 
 	while (CL_RequestMissingResources())
 		;
+	
 	CL_UpdateSoundFade();
 	Host_CheckConnectionFailure();
 	//CL_HTTPUpdate();
 	Steam_ClientRunFrame();
 	ClientDLL_CAM_Think();
 	CL_MoveSpectatorCamera();
+	
 	host_times[3] = Sys_FloatTime();
-	Host_UpdateScreen();
+	
+	Host_UpdateScreen(); // SCR_Update
+	
 	host_times[4] = Sys_FloatTime();
+	
 	CL_DecayLights();
+	
 	Host_UpdateSounds();
+	
 	host_times[0] = host_times[5];
 	host_times[5] = Sys_FloatTime();
 
 	Host_Speeds(host_times);
+	
 	++host_framecount;
+	
 	CL_AdjustClock();
 
 	if (sv_stats.value == 1.0f)
 		Host_UpdateStats();
 
 	if (host_killtime.value != 0.0 && host_killtime.value < g_psv.time)
-	{
 		Host_Quit_f();
-	}
 
 	//Rehlds Security
 	Rehlds_Security_Frame();
 
 #ifdef REHLDS_FLIGHT_REC
-	if (rehlds_flrec_frame.string[0] != '0') {
+	if (rehlds_flrec_frame.string[0] != '0')
 		FR_EndFrame(frameCounter);
-	}
+	
 	frameCounter++;
 #endif //REHLDS_FLIGHT_REC
 }

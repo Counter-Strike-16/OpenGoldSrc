@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#include "precompiled.h"
 #include "quakedef.h"
 #include "winquake.h"
 #ifdef _WIN32
@@ -524,7 +525,6 @@ CL_FullInfo_f
 
 Allow clients to change userinfo
 ==================
-Casey was here :)
 */
 void CL_FullInfo_f ()
 {
@@ -585,11 +585,13 @@ void CL_SetInfo_f ()
 		Info_Print (cls.userinfo);
 		return;
 	}
+	
 	if (Cmd_Argc() != 3)
 	{
 		Con_Printf ("usage: setinfo [ <key> <value> ]\n");
 		return;
 	}
+	
 	if (!stricmp(Cmd_Argv(1), pmodel_name) || !strcmp(Cmd_Argv(1), emodel_name))
 		return;
 
@@ -856,7 +858,8 @@ void CL_ConnectionlessPacket ()
 	}
 
 #if 0
-	if (c == svc_disconnect) {
+	if (c == svc_disconnect)
+	{
 		Con_Printf ("disconnect\n");
 
 		Host_EndGame ("Server disconnected");
@@ -975,7 +978,8 @@ void CL_Download_f ()
 CL_Minimize_f
 =================
 */
-void CL_Windows_f () {
+void CL_Windows_f ()
+{
 //	if (modestate == MS_WINDOWED)
 //		ShowWindow(mainwindow, SW_MINIMIZE);
 //	else
@@ -1035,7 +1039,6 @@ void CL_Init ()
 	Cvar_RegisterVariable (&msg);
 	Cvar_RegisterVariable (&noaim);
 
-
 	Cmd_AddCommand ("version", CL_Version_f);
 
 	Cmd_AddCommand ("changing", CL_Changing_f);
@@ -1064,9 +1067,9 @@ void CL_Init ()
 	Cmd_AddCommand ("nextul", CL_NextUpload);
 	Cmd_AddCommand ("stopul", CL_StopUpload);
 
-//
-// forward to server commands
-//
+	//
+	// forward to server commands
+	//
 	Cmd_AddCommand ("kill", NULL);
 	Cmd_AddCommand ("pause", NULL);
 	Cmd_AddCommand ("say", NULL);
@@ -1110,14 +1113,6 @@ qboolean Host_SimulationTime(float time)
 }
 #endif
 
-
-/*
-==================
-Host_Frame
-
-Runs all active servers
-==================
-*/
 int		nopacketcount;
 void Host_Frame (float time)
 {
@@ -1152,18 +1147,16 @@ void Host_Frame (float time)
 
 	// allow mice or other external controllers to add commands
 	IN_Commands ();
-
-	// process console commands
+	
 	Cbuf_Execute ();
-
-	// fetch results from server
+	
 	CL_ReadPackets ();
 
 	// send intentions now
 	// resend a connection request if necessary
-	if (cls.state == ca_disconnected) {
+	if (cls.state == ca_disconnected)
 		CL_CheckForResend ();
-	} else
+	else
 		CL_SendCmd ();
 
 	// Set up prediction for other players

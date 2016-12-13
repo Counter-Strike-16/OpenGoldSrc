@@ -36,9 +36,7 @@
 #include "interface.h"
 #include "tier0/platform.h"
 
-#include "engine_hlds_api.h"
 #include "engine_launcher_api.h"
-#include "idedicatedexports.h"
 
 #define FIFTEEN_MB			(15 * 1024 * 1024)
 #define MINIMUM_WIN_MEMORY		0x0e00000
@@ -57,34 +55,12 @@
 #define szReslistsExt (*pszReslistsExt)
 #endif
 
-extern IDedicatedExports *dedicated_;
 extern qboolean g_bIsWin95;
 extern qboolean g_bIsWin98;
 extern double g_flLastSteamProgressUpdateTime;
 extern char *szCommonPreloads;
 extern char *szReslistsBaseDir;
 extern char *szReslistsExt;
-
-class CDedicatedServerAPI: public IDedicatedServerAPI
-{
-private:
-	char m_OrigCmd[1024];
-
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	virtual int Shutdown();
-	virtual bool RunFrame();
-	virtual void AddConsoleText(char *text);
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
-
-	// non-virtual function's of wrap for hooks a virtual
-	// Only need to HOOK_ENGINE
-	bool Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown_noVirt();
-	bool RunFrame_noVirt();
-	void AddConsoleText_noVirt(char *text);
-	void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
-};
 
 const char *GetCurrentSteamAppName();
 NOXREF void SetRateRegistrySetting(const char *pchRate);
