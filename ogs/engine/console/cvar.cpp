@@ -26,25 +26,19 @@
 *
 */
 
-// cvar.c - dynamic variable tracking
+#include "precompiled.h"
 
-// All cvar names are case insensitive! Values not
-
-//#include "precompiled.h"
-
-#ifdef SERVERONLY 
-	#include "qwsvdef.h"
-#else
-	#include "quakedef.h"
-#endif
+/*
+	All cvar names are case insensitive! Values not.
+*/
 
 cvar_t *cvar_vars;
-const char *cvar_null_string = "";
+char cvar_null_string[] = "";
 
 void Cvar_Init(void)
 {
 #ifndef SWDS
-	// TODO: add client code, possibly none
+	// TODO: add client code, possibly none.
 #endif
 }
 
@@ -54,116 +48,138 @@ void Cvar_Shutdown(void)
 	cvar_vars = NULL;
 }
 
-/*
-============
-Cvar_FindVar
-============
-*/
-cvar_t *Cvar_FindVar(/*const*/ char *var_name) // CVarGetPointer
+cvar_t *Cvar_FindVar(const char *var_name)
 {
+	cvar_t *var;
+
 #ifndef SWDS
 	g_engdstAddrs->pfnGetCvarPointer(&var_name);
 #endif
-	
-	for(cvar_t *var = cvar_vars; var; var = var->next)
-		if(!Q_strcmp(var_name, var->name)) // Q_stricmp
-			return var;
-	
-	return NULL;
+
+	for (var = cvar_vars; var; var = var->next)
+	{
+		if (!Q_stricmp(var_name, var->name))
+			break;
+	}
+	return var;
 }
 
-/* <185b6> ../engine/cvar.c:58 */
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 {
 	NOXREFCHECK;
-	
-	for(cvar_t *var = cvar_vars; var && var->next; var = var->next)
+
+	cvar_t *var;
+
+	for (var = cvar_vars; var && var->next; var = var->next)
 	{
-		if(!Q_stricmp(var_name, var->next->name))
+		if (!Q_stricmp(var_name, var->next->name))
 			return var;
-	};
-	
+	}
 	return NULL;
 }
 
-/*
-============
-Cvar_VariableValue
-============
-*/
-float Cvar_VariableValue(/*const*/ char *var_name)
+float Cvar_VariableValue(const char *var_name)
 {
 	cvar_t *var = Cvar_FindVar(var_name);
-	
-	if(!var)
-		return 0.0f;
-	
-	return Q_atof(var->string);
-};
+
+	if (var)
+	{
+		return (float)Q_atof(var->string);
+	}
+
+	return 0.0f;
+}
 
 NOXREF int Cvar_VariableInt(const char *var_name)
 {
 	NOXREFCHECK;
-	
+
 	cvar_t *var = Cvar_FindVar(var_name);
-	
-	if(!var)
-		return 0;
-	
-	return Q_atoi(var->string);
+
+	if (var)
+	{
+		return Q_atoi(var->string);
+	}
+
+	return 0;
 }
 
-/*
-============
-Cvar_VariableString
-============
-*/
-char *Cvar_VariableString(/*const*/ char *var_name)
+char *Cvar_VariableString(const char *var_name)
 {
 	cvar_t *var = Cvar_FindVar(var_name);
-	
-	if(!var)
-		return cvar_null_string;
-	
-	return var->string;
-};
 
-/*
-============
-Cvar_CompleteVariable
-============
-*/
-/* <1872a> ../engine/cvar.c:126 */
-NOXREF /*const*/ char *Cvar_CompleteVariable(char *partial)
+	if (var)
+	{
+		return var->string;
+	}
+
+	return cvar_null_string;
+}
+
+NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 {
 	NOXREFCHECK;
-	
+
+	// TODO: We have a cvar name length limit here: prepare for unforeseen consequences!
+	static char lastpartial[256];
+	char partial[256];
 	cvar_t *cvar;
-	int len = Q_strlen(partial);
-	
-	if(!len)
+	int len;
+	char *pPartial;
+
+	Q_strncpy(partial, search, 255);
+	partial[255] = 0;
+	len = Q_strlen(partial);
+
+	// Trim tail spaces
+	for (pPartial = partial + len - 1; pPartial >= partial && *pPartial == ' '; pPartial--, len--)
+	{
+		*pPartial = 0;
+	}
+
+	if (!len)
+	{
 		return NULL;
-	
-	/*
-	// check exact match
-	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!strcmp (partial,cvar->name))
+	}
+
+	if (!Q_stricmp(partial, lastpartial))
+	{
+		// Same partial, find this then next/prev cvar, if any.
+		// TODO: But where it match for entered by user partial? Because we store full name
+		cvar = Cvar_FindVar(partial);
+		if (cvar)
+		{
+			cvar = forward == 1 ? cvar->next : Cvar_FindPrevVar(cvar->name);
+			if (cvar)
+			{
+				Q_strncpy(lastpartial, cvar->name, 255);
+				lastpartial[255] = 0;
+				return cvar->name;
+			}
+		}
+	}
+
+	// Find first matching cvar
+	for (cvar = cvar_vars; cvar != NULL; cvar = cvar->next)
+	{
+		if (!Q_strnicmp(partial, cvar->name, len))
+		{
+			// Store matched cvar name
+			Q_strncpy(lastpartial, cvar->name, 255);
+			lastpartial[255] = 0;
 			return cvar->name;
-	*/
-		
-	// check partial match
-	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!Q_strncmp (partial,cvar->name, len))
-			return cvar->name;
-	
+		}
+	}
+
 	return NULL;
 }
 
-/* <18805> ../engine/cvar.c:198 */
 void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 {
 	if (!var || !value)
+	{
 		return;
+	}
 
 	const char *pszValue = value;
 	char szNew[MAX_CVAR_VALUE];
@@ -287,95 +303,88 @@ void Cvar_DirectSet(struct cvar_s *var, const char *value)
 	g_RehldsHookchains.m_Cvar_DirectSet.callChain(Cvar_DirectSet_internal, var, value);
 }
 
-/*
-============
-Cvar_Set
-============
-*/
-/* <188e9> ../engine/cvar.c:347 */
-void Cvar_Set(char *var_name, char *value)
+void Cvar_Set(const char *var_name, const char *value)
 {
-	cvar_t *var = Cvar_FindVar (var_name);
-	
-	// there is an error in C code if this happens
+	cvar_t *var = Cvar_FindVar(var_name);
+
 	if (!var)
 	{
-		Con_Printf ("Cvar_Set: variable %s not found\n", var_name);
+		Con_DPrintf(__FUNCTION__ ": variable \"%s\" not found\n", var_name);
 		return;
 	}
 
-	qboolean changed = Q_strcmp(var->string, value);
-	
-	Z_Free (var->string);	// free the old value string
-	
-	var->string = Z_Malloc (Q_strlen(value)+1);
-	Q_strcpy (var->string, value);
-	var->value = Q_atof (var->string);
-	
-	if (var->server && changed)
-	{
-		if (sv.active)
-			SV_BroadcastPrintf ("\"%s\" changed to \"%s\"\n", var->name, var->string);
-	}
+	Cvar_DirectSet(var, value);
 }
 
-/*
-============
-Cvar_SetValue
-============
-*/
-/* <1893e> ../engine/cvar.c:365 */
-void Cvar_SetValue(/*const*/ char *var_name, float value)
+void Cvar_SetValue(const char *var_name, float value)
 {
+	char val[32];
+
 #ifndef SWDS
 	g_engdstAddrs->Cvar_SetValue(&var_name, &value);
 #endif
-	
-	char val[32];
-	
-	sprintf(val, "%f",value);
-	
+
+	if (fabs(value - (double)(signed int)value) >= 0.000001)
+	{
+		Q_snprintf(val, ARRAYSIZE(val) - 1, "%f", value);
+	}
+	else
+	{
+		Q_snprintf(val, ARRAYSIZE(val) - 1, "%d", (signed int)value);
+	}
 	val[ARRAYSIZE(val) - 1] = 0;
+
 	Cvar_Set(var_name, val);
-};
-
-/*
-============
-Cvar_RegisterVariable
-
-Adds a freestanding variable to the variable list.
-============
-*/
-/* <189df> ../engine/cvar.c:391 */
-void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
-{
-	// first check to see if it has already been defined
-	if (Cvar_FindVar (variable->name))
-	{
-		Con_Printf ("Can't register variable \"%s\", already defined\n", variable->name);
-		return;
-	}
-	
-	// check for overlap with a command
-	if (Cmd_Exists (variable->name))
-	{
-		Con_Printf (__FUNCTION__ ": \"%s\" is a command\n", variable->name);
-		return;
-	}
-		
-	// copy the value off, because future sets will Z_Free it
-	char *oldstr = variable->string;
-	
-	variable->string = Z_Malloc (Q_strlen(variable->string)+1);	
-	Q_strcpy (variable->string, oldstr);
-	variable->value = Q_atof (variable->string);
-	
-	// link the variable in
-	variable->next = cvar_vars;
-	cvar_vars = variable;
 }
 
-/* <18a7e> ../engine/cvar.c:452 */
+void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
+{
+	char *oldstr;
+	cvar_t *v, *c;
+	cvar_t dummyvar;
+
+	if (Cvar_FindVar(variable->name))
+	{
+		Con_Printf("Can't register variable \"%s\", already defined\n", variable->name);
+		return;
+	}
+
+	if (Cmd_Exists(variable->name))
+	{
+		Con_Printf(__FUNCTION__ ": \"%s\" is a command\n", variable->name);
+		return;
+	}
+
+	oldstr = variable->string;
+
+	// Alloc string, so it will not dissapear on side modules unloading and to maintain the same name during run
+	variable->string = (char *)Z_Malloc(Q_strlen(variable->string) + 1);
+	Q_strcpy(variable->string, oldstr);
+	variable->value = (float)Q_atof(oldstr);
+
+	dummyvar.name = " ";
+	dummyvar.next = cvar_vars;
+
+	v = cvar_vars;
+	c = &dummyvar;
+
+	// Insert with alphabetic order
+	while (v)
+	{
+		if (Q_stricmp(v->name, variable->name) > 0)
+		{
+			break;
+		}
+
+		c = v;
+		v = v->next;
+	}
+
+	c->next = variable;
+	variable->next = v;
+	cvar_vars = dummyvar.next;
+}
+
 NOXREF void Cvar_RemoveHudCvars(void)
 {
 	NOXREFCHECK;
@@ -395,13 +404,14 @@ NOXREF void Cvar_RemoveHudCvars(void)
 			Z_Free(pVar);
 		}
 		else
+		{
 			pList = &pVar->next;
+		}
 
 		pVar = *pList;
 	}
 }
 
-/* <18ac9> ../engine/cvar.c:499 */
 // Returns first token if there is more than one, else returns NULL.
 const char *Cvar_IsMultipleTokens(const char *varname)
 {
@@ -416,10 +426,13 @@ const char *Cvar_IsMultipleTokens(const char *varname)
 	name = COM_Parse(name);
 
 	if (com_token[0] == 0)
+	{
 		return NULL;	// original function returns firstToken in this situation, which is "", not NULL, but it should be ok this way
-	
+	}
 	if (name == NULL)
+	{
 		return NULL;	// only one token
+	}
 
 	// Store first token
 	Q_strncpy(firstToken, com_token, ARRAYSIZE(firstToken) - 1);
@@ -429,56 +442,71 @@ const char *Cvar_IsMultipleTokens(const char *varname)
 	name = COM_Parse(name);
 
 	if (com_token[0] == 0)
+	{
 		return NULL;	// only one token
+	}
 
 	return firstToken;	// multiple tokens, return first one
 }
 
-/*
-============
-Cvar_Command
-
-Handles variable inspection and changing from the console
-============
-*/
-/*qboolean*/ bool Cvar_Command()
+qboolean Cvar_Command(void)
 {
-	cvar_t *v = Cvar_FindVar(Cmd_Argv(0));
-	
-	// check variables
-	if (!v)
-		return false;
-		
-	// perform a variable print or set
-	if (Cmd_Argc() == 1)
+	cvar_t *v;
+	const char *arg0 = Cmd_Argv(0);
+	const char *firstToken = Cvar_IsMultipleTokens(arg0);
+
+	if (firstToken)
 	{
-		Con_Printf ("\"%s\" is \"%s\"\n", v->name, v->string);
-		return true;
+		v = Cvar_FindVar(firstToken);
+		if (v)
+		{
+			Con_Printf("\"%s\" is \"%s\"\n", v->name, v->string);
+			return TRUE;
+		}
+	}
+	else
+	{
+		v = Cvar_FindVar(arg0);
+		if (v)
+		{
+			if (Cmd_Argc() == 1)
+			{
+				Con_Printf("\"%s\" is \"%s\"\n", v->name, v->string);
+			}
+			else
+			{
+				if (v->flags & FCVAR_SPONLY && g_pcls.state >= ca_connecting && g_pcl.maxclients > 1)
+				{
+					Con_Printf("Can't set %s in multiplayer\n", v->name);
+				}
+				else
+				{
+					Cvar_Set(v->name, Cmd_Argv(1));
+				}
+			}
+
+			return TRUE;
+		}
 	}
 
-	Cvar_Set (v->name, Cmd_Argv(1));
-	return true;
-};
+	return FALSE;
+}
 
-/*
-============
-Cvar_WriteVariables
-
-Writes lines containing "set variable value" for all variables
-with the archive flag set to true.
-============
-*/
-/* <18ca4> ../engine/cvar.c:601 */
-NOXREF void Cvar_WriteVariables(FILE *f) // FileHandle_t f
+NOXREF void Cvar_WriteVariables(FileHandle_t f)
 {
 	NOXREFCHECK;
-	
-	for(cvar_t *var = cvar_vars ; var ; var = var->next)
-		if(var->flags & FCVAR_ARCHIVE)
-			FS_FPrintf(f, "%s \"%s\"\n", var->name, var->string);
-};
 
-/* <18cdc> ../engine/cvar.c:627 */
+	cvar_t *var;
+
+	for (var = cvar_vars; var; var = var->next)
+	{
+		if (var->flags & FCVAR_ARCHIVE)
+		{
+			FS_FPrintf(f, "%s \"%s\"\n", var->name, var->string);
+		}
+	}
+}
+
 void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
 {
 	char szOutstr[256];
@@ -521,7 +549,6 @@ void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
 	}
 }
 
-/* <18d23> ../engine/cvar.c:671 */
 void Cmd_CvarList_f(void)
 {
 	cvar_t *var;
@@ -647,7 +674,6 @@ void Cmd_CvarList_f(void)
 	}
 }
 
-/* <18e0f> ../engine/cvar.c:806 */
 NOXREF int Cvar_CountServerVariables(void)
 {
 	NOXREFCHECK;
@@ -665,7 +691,6 @@ NOXREF int Cvar_CountServerVariables(void)
 	return i;
 }
 
-/* <18e4a> ../engine/cvar.c:829 */
 void Cvar_UnlinkExternals(void)
 {
 	cvar_t *pVar;
@@ -687,4 +712,9 @@ void Cvar_UnlinkExternals(void)
 
 		pVar = *pList;
 	}
+}
+
+void Cvar_CmdInit(void)
+{
+	Cmd_AddCommand("cvarlist", Cmd_CvarList_f);
 }

@@ -1,11 +1,37 @@
+/*
+*
+*    This program is free software; you can redistribute it and/or modify it
+*    under the terms of the GNU General Public License as published by the
+*    Free Software Foundation; either version 2 of the License, or (at
+*    your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful, but
+*    WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software Foundation,
+*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*    In addition, as a special exception, the author gives permission to
+*    link the code of this program with the Half-Life Game Engine ("HL
+*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*    L.L.C ("Valve").  You must obey the GNU General Public License in all
+*    respects for all of the code used other than the HL Engine and MODs
+*    from Valve.  If you modify this file, you may extend this exception
+*    to your version of the file, but you are not obligated to do so.  If
+*    you do not wish to do so, delete this exception statement from your
+*    version.
+*
+*/
 
+#include "precompiled.h"
 
+IDedicatedExports *dedicated_;
 qboolean g_bIsWin95;
 qboolean g_bIsWin98;
 double g_flLastSteamProgressUpdateTime;
-
-//CEngineAPI __g_CEngineAPI_singleton;
-//InterfaceReg __g_CreateCEngineAPIIEngineAPI_reg;
 
 /*
 * Globals initialization
@@ -16,18 +42,14 @@ char *szCommonPreloads = "multiplayer_preloads";
 char *szReslistsBaseDir = "reslists";
 char *szReslistsExt = ".lst";
 
-#else //HOOK_ENGINE
+#else // HOOK_ENGINE
 
 char *szCommonPreloads;
 char *szReslistsBaseDir;
 char *szReslistsExt;
 
-#endif //HOOK_ENGINE
+#endif // HOOK_ENGINE
 
-//CDedicatedServerAPI __g_CDedicatedServerAPI_singleton;
-//InterfaceReg __g_CreateCDedicatedServerAPIIDedicatedServerAPI_reg
-
-/* <8fce7> ../engine/sys_dll2.cpp:150 */
 const char *GetCurrentSteamAppName(void)
 {
 	if (!Q_stricmp(com_gamedir, "cstrike") || !Q_stricmp(com_gamedir, "cstrike_beta"))
@@ -54,19 +76,16 @@ const char *GetCurrentSteamAppName(void)
 	return "Half-Life";
 }
 
-/* <90345> ../engine/sys_dll2.cpp:184 */
 NOXREF void SetRateRegistrySetting(const char *pchRate)
 {
 	registry->WriteString("rate", pchRate);
 }
 
-/* <9036c> ../engine/sys_dll2.cpp:189 */
 NOXREF const char *GetRateRegistrySetting(const char *pchDef)
 {
 	return registry->ReadString("rate", pchDef);
 }
 
-/* <90397> ../engine/sys_dll2.cpp:198 */
 void EXPORT F(IEngineAPI **api)
 {
 	CreateInterfaceFn fn;
@@ -74,7 +93,6 @@ void EXPORT F(IEngineAPI **api)
 	*api = (IEngineAPI *)fn("VENGINE_LAUNCHER_API_VERSION002", NULL);
 }
 
-/* <903c2> ../engine/sys_dll2.cpp:245 */
 void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 {
 	char key[65];
@@ -114,12 +132,10 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 		*bDedicated = 0;
 }
 
-/* <9049d> ../engine/sys_dll2.cpp:287 */
 NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage)
 {
 }
 
-/* <90286> ../engine/sys_dll2.cpp:291 */
 void Legacy_Sys_Printf(char *fmt, ...)
 {
 	va_list argptr;
@@ -133,17 +149,14 @@ void Legacy_Sys_Printf(char *fmt, ...)
 		dedicated_->Sys_Printf(text);
 }
 
-/* <904d8> ../engine/sys_dll2.cpp:307 */
 NOXREF void Legacy_MP3subsys_Suspend_Audio(void)
 {
 }
 
-/* <904f0> ../engine/sys_dll2.cpp:311 */
 NOXREF void Legacy_MP3subsys_Resume_Audio(void)
 {
 }
 
-/* <90508> ../engine/sys_dll2.cpp:315 */
 void Sys_SetupLegacyAPIs(void)
 {
 #ifndef SWDS
@@ -153,7 +166,6 @@ void Sys_SetupLegacyAPIs(void)
 	Launcher_ConsolePrintf = Legacy_Sys_Printf;
 }
 
-/* <90518> ../engine/sys_dll2.cpp:335 */
 NOXREF int Sys_IsWin95(void)
 {
 #ifdef _WIN32
@@ -164,7 +176,6 @@ NOXREF int Sys_IsWin95(void)
 #endif // _WIN32
 }
 
-/* <90534> ../engine/sys_dll2.cpp:340 */
 NOXREF int Sys_IsWin98(void)
 {
 #ifdef _WIN32
@@ -175,7 +186,6 @@ NOXREF int Sys_IsWin98(void)
 #endif // _WIN32
 }
 
-/* <90550> ../engine/sys_dll2.cpp:348 */
 #ifdef _WIN32
 NOXREF void Sys_CheckOSVersion(void)
 {
@@ -202,7 +212,6 @@ NOXREF void Sys_CheckOSVersion(void)
 }
 #endif // _WIN32
 
-/* <8fd53> ../engine/sys_dll2.cpp:397 */
 void Sys_Init(void)
 {
 #ifndef SWDS
@@ -210,7 +219,6 @@ void Sys_Init(void)
 #endif
 }
 
-/* <8fd7b> ../engine/sys_dll2.cpp:445 */
 void Sys_Shutdown(void)
 {
 #ifndef SWDS
@@ -231,7 +239,6 @@ void Sys_Shutdown(void)
 #endif // _WIN32
 }
 
-/* <90588> ../engine/sys_dll2.cpp:475 */
 void Sys_InitArgv(char *lpCmdLine)
 {
 	static char *argv[MAX_COMMAND_LINE_PARAMS];
@@ -308,12 +315,10 @@ void Sys_InitArgv(char *lpCmdLine)
 	host_parms.argv = com_argv;
 }
 
-/* <8fd20> ../engine/sys_dll2.cpp:514 */
 NOXREF void Sys_ShutdownArgv(void)
 {
 }
 
-/* <9066a> ../engine/sys_dll2.cpp:530 */
 void Sys_InitMemory(void)
 {
 	int i;
@@ -363,7 +368,6 @@ void Sys_InitMemory(void)
 		Sys_Error("Unable to allocate %.2f MB\n", (float)host_parms.memsize / (1024.0f * 1024.0f));
 }
 
-/* <906c2> ../engine/sys_dll2.cpp:626 */
 void Sys_ShutdownMemory(void)
 {
 #ifdef _WIN32
@@ -375,7 +379,6 @@ void Sys_ShutdownMemory(void)
 	host_parms.memsize = 0;
 }
 
-/* <906dd> ../engine/sys_dll2.cpp:644 */
 void Sys_InitLauncherInterface(void)
 {
 #ifdef _WIN32
@@ -390,23 +393,19 @@ void Sys_InitLauncherInterface(void)
 #endif // _WIN32
 }
 
-/* <90702> ../engine/sys_dll2.cpp:666 */
 NOXREF void Sys_ShutdownLauncherInterface(void)
 {
 }
 
-/* <90712> ../engine/sys_dll2.cpp:673 */
 void Sys_InitAuthentication(void)
 {
 	Sys_Printf("STEAM Auth Server\r\n");
 }
 
-/* <8fd71> ../engine/sys_dll2.cpp:678 */
 NOXREF void Sys_ShutdownAuthentication(void)
 {
 }
 
-/* <9073d> ../engine/sys_dll2.cpp:694 */
 void Sys_ShowProgressTicks(char *specialProgressMsg)
 {
 	static bool recursionGuard = false;
@@ -456,7 +455,6 @@ void Sys_ShowProgressTicks(char *specialProgressMsg)
 	}
 }
 
-/* <907de> ../engine/sys_dll2.cpp:748 */
 int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated)
 {
 	host_initialized = FALSE;
@@ -531,7 +529,6 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 	return 1;
 }
 
-/* <90871> ../engine/sys_dll2.cpp:841 */
 void Sys_ShutdownGame(void)
 {
 	if (!g_bIsDedicatedServer)
@@ -551,7 +548,6 @@ void Sys_ShutdownGame(void)
 	Sys_Shutdown();
 }
 
-/* <9089f> ../engine/sys_dll2.cpp:869 */
 void ClearIOStates(void)
 {
 #ifndef SWDS
@@ -565,8 +561,28 @@ void ClearIOStates(void)
 #endif // SWDS
 }
 
-/* <908b7> ../engine/sys_dll2.cpp:1070 */
-/* Needs rechecking
+
+class CEngineAPI : public IEngineAPI
+{
+public:
+
+	int Run(void *instance, char *basedir, char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
+	{
+		return 0;
+	}
+};
+
+CEngineAPI g_CEngineAPI;
+
+IBaseInterface *CreateCEngineAPI(void)
+{
+	return &g_CEngineAPI;
+};
+
+InterfaceReg g_CreateCEngineAPI = InterfaceReg(CreateCEngineAPI, "VENGINE_LAUNCHER_API_VERSION002");
+
+// TODO: Needs rechecking
+/*
 NOXREF int BuildMapCycleListHints(char **hints)
 {
 	char szMap[262];
@@ -634,3 +650,104 @@ NOXREF int BuildMapCycleListHints(char **hints)
 	return 1;
 }
 */
+
+bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
+{
+	return Init_noVirt(basedir, cmdline, launcherFactory, filesystemFactory);
+}
+
+bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
+{
+	dedicated_ = (IDedicatedExports *)launcherFactory(VENGINE_DEDICATEDEXPORTS_API_VERSION, NULL);
+	if (!dedicated_)
+		return false;
+
+#ifdef REHLDS_CHECKS
+	Q_strncpy(this->m_OrigCmd, cmdline, ARRAYSIZE(this->m_OrigCmd));
+	this->m_OrigCmd[ARRAYSIZE(this->m_OrigCmd) - 1] = 0;
+#else
+	Q_strcpy(this->m_OrigCmd, cmdline);
+#endif
+	if (!Q_strstr(cmdline, "-nobreakpad"))
+	{
+		CRehldsPlatformHolder::get()->SteamAPI_UseBreakpadCrashHandler(va("%d", build_number()), __BUILD_DATE__, __BUILD_TIME__, 0, 0, 0);
+	}
+	TraceInit("Sys_InitArgv( m_OrigCmd )", "Sys_ShutdownArgv()", 0);
+	Sys_InitArgv(m_OrigCmd);
+	eng->SetQuitting(IEngine::QUIT_NOTQUITTING);
+	registry->Init();
+
+	g_bIsDedicatedServer = TRUE;
+	TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
+	if (FileSystem_Init(basedir, filesystemFactory) && game->Init(0) && eng->Load(true, basedir, cmdline))
+	{
+		char text[256];
+		Q_snprintf(text, ARRAYSIZE(text), "exec %s\n", servercfgfile.string);
+		text[255] = 0;
+		Cbuf_InsertText(text);
+		return true;
+	}
+
+	return false;
+}
+
+int CDedicatedServerAPI::Shutdown(void)
+{
+	return Shutdown_noVirt();
+}
+
+int CDedicatedServerAPI::Shutdown_noVirt(void)
+{
+	eng->Unload();
+	game->Shutdown();
+
+	TraceShutdown("FileSystem_Shutdown()", 0);
+	FileSystem_Shutdown();
+
+	registry->Shutdown();
+
+	TraceShutdown("Sys_ShutdownArgv()", 0);
+	dedicated_ = NULL;
+	return giActive;
+}
+
+bool CDedicatedServerAPI::RunFrame(void)
+{
+	return RunFrame_noVirt();
+}
+
+bool CDedicatedServerAPI::RunFrame_noVirt(void)
+{
+	if (eng->GetQuitting())
+		return false;
+
+	eng->Frame();
+	return true;
+}
+
+void CDedicatedServerAPI::AddConsoleText(char *text)
+{
+	AddConsoleText_noVirt(text);
+}
+
+void CDedicatedServerAPI::AddConsoleText_noVirt(char *text)
+{
+	Cbuf_AddText(text);
+}
+
+void CDedicatedServerAPI::UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
+{
+	UpdateStatus_noVirt(fps, nActive, nMaxPlayers, pszMap);
+}
+
+void CDedicatedServerAPI::UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
+{
+	Host_GetHostInfo(fps, nActive, NULL, nMaxPlayers, pszMap);
+}
+
+#ifndef HOOK_ENGINE
+
+EXPOSE_SINGLE_INTERFACE(CDedicatedServerAPI, IDedicatedServerAPI, VENGINE_HLDS_API_VERSION);
+
+#endif // HOOK_ENGINE
+

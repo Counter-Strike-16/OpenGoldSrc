@@ -1,13 +1,18 @@
 # Visual Studio files
 ipch/
+.vs/
 *.db
 *.user
 *.suo
 *.sdf
 *.opensdf
+*.opensuo
 
 # Local environment
-bin
-build
-merge
-projects
+[Bb]in/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+[Mm]erge/
+[Pp]rojects/
+*.tmp

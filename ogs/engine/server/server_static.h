@@ -35,8 +35,6 @@
 #include "maintypes.h"
 #include "netadr.h"
 
-
-/* <2e957> ../engine/server_static.h:13 */
 typedef struct server_log_s
 {
 	qboolean active;
@@ -45,7 +43,6 @@ typedef struct server_log_s
 	void *file;
 } server_log_t;
 
-/* <2e9a3> ../engine/server_static.h:22 */
 typedef struct server_stats_s
 {
 	int num_samples;
@@ -64,14 +61,13 @@ typedef struct server_stats_s
 	float average_latency;
 } server_stats_t;
 
-/* <2ea7b> ../engine/server_static.h:43 */
 typedef struct server_static_s
 {
 	qboolean dll_initialized;
-	struct client_s *clients; // GameClient *clients; // [maxclients->value]
+	struct client_s *clients;
 	int maxclients;
 	int maxclientslimit;
-	int spawncount; // number of servers spawned since start, used to check late spawns
+	int spawncount;
 	int serverflags;
 	server_log_t log;
 	double next_cleartime;

@@ -150,7 +150,7 @@ int Sys_Main()
 		
 		g_blobfootprintClient.m_hDll = NULL;
 		
-		IEngine *engineAPI = nullptr;
+		IEngineAPI *engineAPI = nullptr;
 		HINTERFACEMODULE hEngine;
 		bool bUseBlobDLL = false;
 		
@@ -174,7 +174,7 @@ int Sys_Main()
 			};
 			
 			CreateInterfaceFn engineCreateInterface = (CreateInterfaceFn)Sys_GetFactory(hEngine);
-			engineAPI = (IEngine*)engineCreateInterface(VENGINE_LAUNCHER_API_VERSION, NULL);
+			engineAPI = (IEngineAPI*)engineCreateInterface(VENGINE_LAUNCHER_API_VERSION, NULL);
 			
 			if(!engineCreateInterface || !engineAPI)
 				Sys_FreeModule(hEngine);
