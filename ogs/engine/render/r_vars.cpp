@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // r_vars.cpp - global refresh variables
 
 #include "precompiled.h"
-#include	"quakedef.h"
+#include "quakedef.h"
 
 #if	!id386
 
@@ -38,4 +38,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int	r_bmodelactive;
 
 #endif	// !id386
-

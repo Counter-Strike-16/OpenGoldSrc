@@ -92,7 +92,7 @@ static float vlen(vec3_t v)
 }
 
 // returns true if weapon model should be drawn in camera mode
-qboolean Cam_DrawViewModel(void)
+qboolean Cam_DrawViewModel()
 {
 	if (!cl.spectator)
 		return true;
@@ -111,9 +111,10 @@ qboolean Cam_DrawPlayer(int playernum)
 	return true;
 }
 
-void Cam_Unlock(void)
+void Cam_Unlock()
 {
-	if (autocam) {
+	if (autocam)
+	{
 		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
 		MSG_WriteString (&cls.netchan.message, "ptrack");
 		autocam = CAM_NONE;
@@ -290,7 +291,7 @@ static qboolean InitFlyby(player_state_t *self, player_state_t *player, int chec
 	return true;
 }
 
-static void Cam_CheckHighTarget(void)
+static void Cam_CheckHighTarget()
 {
 	int i, j, max;
 	player_info_t	*s;
@@ -432,7 +433,7 @@ static float adjustang(float current, float ideal, float speed)
 #endif
 
 #if 0
-void Cam_SetView(void)
+void Cam_SetView()
 {
 	return;
 	player_state_t *player, *self;
@@ -559,13 +560,13 @@ void Cam_FinishMove(usercmd_t *cmd)
 	autocam = locked = false;
 }
 
-void Cam_Reset(void)
+void Cam_Reset()
 {
 	autocam = CAM_NONE;
 	spec_track = 0;
 }
 
-void CL_InitCam(void)
+void CL_InitCam()
 {
 	Cvar_RegisterVariable (&cl_hightrack);
 	Cvar_RegisterVariable (&cl_chasecam);

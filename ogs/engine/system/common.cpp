@@ -33,13 +33,14 @@ char serverinfo[MAX_INFO_STRING];
 char gpszVersionString[32];
 char gpszProductString[32];
 
-char* strcpy_safe(char* dst, char* src) {
+char* strcpy_safe(char* dst, char* src)
+{
 	int len = Q_strlen(src);
 	Q_memmove(dst, src, len + 1);
 	return dst;
 }
 
-char *Info_Serverinfo(void)
+char *Info_Serverinfo()
 {
 	return serverinfo;
 }
@@ -431,7 +432,7 @@ bf_read_t bfread;
 ALIGN16 bf_write_t bfwrite;
 
 
-void COM_BitOpsInit(void)
+void COM_BitOpsInit()
 {
 	Q_memset(&bfwrite, 0, sizeof(bf_write_t));
 	Q_memset(&bfread, 0, sizeof(bf_read_t));
@@ -591,7 +592,7 @@ void MSG_WriteBits(uint32 data, int numbits)
 
 #endif //defined(REHLDS_FIXES)
 
-NOXREF qboolean MSG_IsBitWriting(void)
+NOXREF qboolean MSG_IsBitWriting()
 {
 	NOXREFCHECK;
 
@@ -667,7 +668,7 @@ float MSG_ReadBitAngle(int numbits)
 	return (float)(MSG_ReadBits(numbits) * (360.0 / (1 << numbits)));
 }
 
-int MSG_CurrentBit(void)
+int MSG_CurrentBit()
 {
 	int nbits;
 
@@ -682,7 +683,7 @@ int MSG_CurrentBit(void)
 	return nbits;
 }
 
-NOXREF qboolean MSG_IsBitReading(void)
+NOXREF qboolean MSG_IsBitReading()
 {
 	NOXREFCHECK;
 
@@ -719,7 +720,7 @@ void MSG_EndBitReading(sizebuf_t *buf)
 	bfread.pbuf = 0;
 }
 
-int MSG_ReadOneBit(void)
+int MSG_ReadOneBit()
 {
 	int nValue;
 
@@ -842,7 +843,7 @@ int MSG_ReadSBits(int numbits)
 	return result;
 }
 
-NOXREF char *MSG_ReadBitString(void)
+NOXREF char *MSG_ReadBitString()
 {
 	NOXREFCHECK;
 
@@ -885,7 +886,7 @@ int MSG_ReadBitData(void *dest, int length)
 	return length;
 }
 
-NOXREF float MSG_ReadBitCoord(void)
+NOXREF float MSG_ReadBitCoord()
 {
 	NOXREFCHECK;
 
@@ -972,7 +973,7 @@ void MSG_WriteBitVec3Coord(const vec3_t fa)
 		MSG_WriteBitCoord(fa[2]);
 }
 
-NOXREF float MSG_ReadCoord(void)
+NOXREF float MSG_ReadCoord()
 {
 	NOXREFCHECK;
 
@@ -1009,13 +1010,13 @@ NOXREF void MSG_WriteVec3Coord(sizebuf_t *sb, const vec3_t fa)
 	MSG_EndBitWriting(sb);
 }
 
-void MSG_BeginReading(void)
+void MSG_BeginReading()
 {
 	msg_readcount = 0;
 	msg_badread = 0;
 }
 
-int MSG_ReadChar(void)
+int MSG_ReadChar()
 {
 	int c;
 
@@ -1033,7 +1034,7 @@ int MSG_ReadChar(void)
 	return c;
 }
 
-int MSG_ReadByte(void)
+int MSG_ReadByte()
 {
 	int c;
 
@@ -1051,7 +1052,7 @@ int MSG_ReadByte(void)
 	return c;
 }
 
-int MSG_ReadShort(void)
+int MSG_ReadShort()
 {
 	int c;
 
@@ -1069,7 +1070,7 @@ int MSG_ReadShort(void)
 	return c;
 }
 
-NOXREF int MSG_ReadWord(void)
+NOXREF int MSG_ReadWord()
 {
 	NOXREFCHECK;
 
@@ -1089,7 +1090,7 @@ NOXREF int MSG_ReadWord(void)
 	return c;
 }
 
-int MSG_ReadLong(void)
+int MSG_ReadLong()
 {
 	int c;
 
@@ -1107,7 +1108,7 @@ int MSG_ReadLong(void)
 	return c;
 }
 
-NOXREF float MSG_ReadFloat(void)
+NOXREF float MSG_ReadFloat()
 {
 	NOXREFCHECK;
 
@@ -1141,7 +1142,7 @@ int MSG_ReadBuf(int iSize, void *pbuf)
 	return -1;
 }
 
-char *MSG_ReadString(void)
+char *MSG_ReadString()
 {
 	int c = 0, l = 0;
 	static char string[8192];
@@ -1155,7 +1156,7 @@ char *MSG_ReadString(void)
 	return string;
 }
 
-char *MSG_ReadStringLine(void)
+char *MSG_ReadStringLine()
 {
 	int c = 0, l = 0;
 	static char string[2048];
@@ -1169,7 +1170,7 @@ char *MSG_ReadStringLine(void)
 	return string;
 }
 
-NOXREF float MSG_ReadAngle(void)
+NOXREF float MSG_ReadAngle()
 {
 	NOXREFCHECK;
 
@@ -1183,7 +1184,7 @@ NOXREF float MSG_ReadAngle(void)
 	return (float)(c * (360.0 / 256));
 }
 
-NOXREF float MSG_ReadHiresAngle(void)
+NOXREF float MSG_ReadHiresAngle()
 {
 	NOXREFCHECK;
 
@@ -1518,7 +1519,7 @@ void COM_DefaultExtension(char *path, char *extension)
 	Q_strcat(path, extension);
 }
 
-void COM_UngetToken(void)
+void COM_UngetToken()
 {
 	s_com_token_unget = 1;
 }
@@ -2190,7 +2191,7 @@ NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, i
 	return COM_LoadFile(path, 4, length);
 }
 
-void COM_Shutdown(void)
+void COM_Shutdown()
 {
 	// Do nothing.
 }
@@ -2259,7 +2260,7 @@ void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char 
 }
 
 // TODO: finish me!
-qboolean COM_SetupDirectories(void)
+qboolean COM_SetupDirectories()
 {
 	char pDirName[512];
 

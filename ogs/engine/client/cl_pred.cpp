@@ -36,7 +36,7 @@ try nudging slightly on all axis to
 allow for the cut precision of the net coordinates
 =================
 */
-void CL_NudgePosition (void)
+void CL_NudgePosition ()
 {
 	vec3_t	base;
 	int		x, y;
@@ -111,7 +111,7 @@ void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, 
 CL_PredictMove
 ==============
 */
-void CL_PredictMove (void)
+void CL_PredictMove ()
 {
 	int			i;
 	float		f;
@@ -219,7 +219,7 @@ void CL_PredictMove (void)
 CL_InitPrediction
 ==============
 */
-void CL_InitPrediction (void)
+void CL_InitPrediction ()
 {
 	Cvar_RegisterVariable (&cl_pushlatency);
 	Cvar_RegisterVariable (&cl_nopred);

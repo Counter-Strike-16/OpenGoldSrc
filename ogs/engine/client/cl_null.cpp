@@ -53,7 +53,6 @@ cvar_t console;
 #endif //HOOK_ENGINE
 
 void CL_RecordHUDCommand(char *cmdname){}
-void R_DecalRemoveAll(int textureIndex){}
 void CL_CheckForResend(){}
 qboolean CL_CheckFile(sizebuf_t *msg, char *filename) { return 1; }
 void CL_ClearClientState(){}

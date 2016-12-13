@@ -111,7 +111,7 @@ static long X11_buffersize;
 int vid_surfcachesize;
 void *vid_surfcache;
 
-void (*vid_menudrawfn)(void);
+void (*vid_menudrawfn)();
 void (*vid_menukeyfn)(int key);
 void VID_MenuKey (int key);
 
@@ -214,7 +214,7 @@ static Cursor CreateNullCursor(Display *display, Window root)
     return cursor;
 }
 
-void ResetFrameBuffer(void)
+void ResetFrameBuffer()
 {
 	int mem;
 	int pwidth;
@@ -271,7 +271,7 @@ void ResetFrameBuffer(void)
 
 }
 
-void ResetSharedFrameBuffers(void)
+void ResetSharedFrameBuffers()
 {
 
 	int size;
@@ -636,7 +636,7 @@ void VID_SetPalette(unsigned char *palette)
 
 // Called at shutdown
 
-void	VID_Shutdown (void)
+void	VID_Shutdown ()
 {
 	Con_Printf("VID_Shutdown\n");
 	XAutoRepeatOn(x_disp);
@@ -786,7 +786,7 @@ int config_notify=0;
 int config_notify_width;
 int config_notify_height;
 						      
-void GetEvent(void)
+void GetEvent()
 {
 	XEvent x_event;
 	int b;
@@ -950,7 +950,7 @@ void	VID_Update (vrect_t *rects)
 
 static int dither;
 
-void VID_DitherOn(void)
+void VID_DitherOn()
 {
     if (dither == 0)
     {
@@ -959,7 +959,7 @@ void VID_DitherOn(void)
     }
 }
 
-void VID_DitherOff(void)
+void VID_DitherOff()
 {
     if (dither)
     {
@@ -968,7 +968,7 @@ void VID_DitherOff(void)
     }
 }
 
-int Sys_OpenWindow(void)
+int Sys_OpenWindow()
 {
 	return 0;
 }
@@ -985,7 +985,7 @@ void Sys_DisplayWindow(int window)
 {
 }
 
-void Sys_SendKeyEvents(void)
+void Sys_SendKeyEvents()
 {
 // get events from x server
 	if (x_disp)
@@ -1000,7 +1000,7 @@ void Sys_SendKeyEvents(void)
 }
 
 #if 0
-char *Sys_ConsoleInput (void)
+char *Sys_ConsoleInput ()
 {
 
 	static char	text[256];
@@ -1040,7 +1040,7 @@ void D_EndDirectRect (int x, int y, int width, int height)
 // direct drawing of the "accessing disk" icon isn't supported under Linux
 }
 
-void IN_Init (void)
+void IN_Init ()
 {
 	Cvar_RegisterVariable (&_windowed_mouse);
 	Cvar_RegisterVariable (&m_filter);
@@ -1050,12 +1050,12 @@ void IN_Init (void)
    mouse_avail = 1;
 }
 
-void IN_Shutdown (void)
+void IN_Shutdown ()
 {
    mouse_avail = 0;
 }
 
-void IN_Commands (void)
+void IN_Commands ()
 {
 	int i;
    
@@ -1109,11 +1109,11 @@ void IN_Move (usercmd_t *cmd)
 	mouse_x = mouse_y = 0.0;
 }
 
-void VID_LockBuffer (void)
+void VID_LockBuffer ()
 {
 }
 
-void VID_UnlockBuffer (void)
+void VID_UnlockBuffer ()
 {
 }
 

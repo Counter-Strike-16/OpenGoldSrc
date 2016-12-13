@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // current entity info
 //
 qboolean		insubmodel;
-entity_t		*currententity;
+cl_entity_t		*currententity;
 vec3_t			modelorg, base_modelorg;
 								// modelorg is the viewpoint reletive to
 								// the currently rendering entity
@@ -78,7 +78,7 @@ void R_EntityRotate (vec3_t vec)
 R_RotateBmodel
 ================
 */
-void R_RotateBmodel (void)
+void R_RotateBmodel ()
 {
 	float	angle, s, c, temp1[3][3], temp2[3][3], temp3[3][3];
 
@@ -647,7 +647,7 @@ void R_RecursiveWorldNode (mnode_t *node, int clipflags)
 R_RenderWorld
 ================
 */
-void R_RenderWorld (void)
+void R_RenderWorld ()
 {
 	int			i;
 	model_t		*clmodel;

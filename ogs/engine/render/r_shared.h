@@ -58,7 +58,7 @@ extern int	intsintable[1280];
 extern	vec3_t	vup, base_vup;
 extern	vec3_t	vpn, base_vpn;
 extern	vec3_t	vright, base_vright;
-extern	entity_t		*currententity;
+extern	cl_entity_t		*currententity;
 
 #define NUMSTACKEDGES		2000
 #define	MINEDGES			NUMSTACKEDGES
@@ -88,7 +88,7 @@ typedef struct surf_s
 									//  start)
 	int			flags;				// currentface flags
 	void		*data;				// associated data like msurface_t
-	entity_t	*entity;
+	cl_entity_t	*entity;
 	float		nearzi;				// nearest 1/z on surface, for mipmapping
 	qboolean	insubmodel;
 	float		d_ziorigin, d_zistepu, d_zistepv;
@@ -123,7 +123,7 @@ extern void SetUpForLineScan(fixed8_t startvertu, fixed8_t startvertv,
 	fixed8_t endvertu, fixed8_t endvertv);
 
 extern int	r_skymade;
-extern void R_MakeSky (void);
+extern void R_MakeSky ();
 
 extern int	ubasestep, errorterm, erroradjustup, erroradjustdown;
 

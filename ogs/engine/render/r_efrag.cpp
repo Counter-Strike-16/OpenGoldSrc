@@ -41,7 +41,7 @@ efrag_t		**lastlink;
 
 vec3_t		r_emins, r_emaxs;
 
-entity_t	*r_addent;
+cl_entity_t	*r_addent;
 
 
 /*
@@ -51,7 +51,7 @@ R_RemoveEfrags
 Call when removing an object from the world or moving it to another position
 ================
 */
-void R_RemoveEfrags (entity_t *ent)
+void R_RemoveEfrags (cl_entity_t *ent)
 {
 	efrag_t		*ef, *old, *walk, **prev;
 	
@@ -201,7 +201,7 @@ void R_SplitEntityOnNode2 (mnode_t *node)
 R_AddEfrags
 ===========
 */
-void R_AddEfrags (entity_t *ent)
+void R_AddEfrags (cl_entity_t *ent)
 {
 	model_t		*entmodel;
 	int			i;
@@ -240,7 +240,7 @@ R_StoreEfrags
 */
 void R_StoreEfrags (efrag_t **ppefrag)
 {
-	entity_t	*pent;
+	cl_entity_t	*pent;
 	model_t		*clmodel;
 	efrag_t		*pefrag;
 

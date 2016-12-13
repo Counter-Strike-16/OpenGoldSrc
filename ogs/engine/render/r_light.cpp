@@ -32,7 +32,7 @@ int	r_dlightframecount;
 R_AnimateLight
 ==================
 */
-void R_AnimateLight (void)
+void R_AnimateLight ()
 {
 	int			i,j,k;
 	
@@ -114,7 +114,7 @@ void R_MarkLights (dlight_t *light, int bit, mnode_t *node)
 R_PushDlights
 =============
 */
-void R_PushDlights (void)
+void R_PushDlights ()
 {
 	int		i;
 	dlight_t	*l;

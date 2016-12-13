@@ -113,7 +113,7 @@ int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 float	dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
 float	se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
 
-void R_MarkLeaves (void);
+void R_MarkLeaves ();
 
 cvar_t	r_draworder = {"r_draworder","0"};
 cvar_t	r_speeds = {"r_speeds","0"};
@@ -141,18 +141,18 @@ cvar_t	r_aliastransadj = {"r_aliastransadj", "100"};
 
 extern cvar_t	scr_fov;
 
-void CreatePassages (void);
-void SetVisibilityByPassages (void);
+void CreatePassages ();
+void SetVisibilityByPassages ();
 
-void R_NetGraph (void);
-void R_ZGraph (void);
+void R_NetGraph ();
+void R_ZGraph ();
 
 /*
 ==================
 R_InitTextures
 ==================
 */
-void	R_InitTextures (void)
+void	R_InitTextures ()
 {
 	int		x,y, m;
 	byte	*dest;
@@ -185,7 +185,7 @@ void	R_InitTextures (void)
 R_Init
 ===============
 */
-void R_Init (void)
+void R_Init ()
 {
 	int		dummy;
 	
@@ -250,7 +250,7 @@ void R_Init (void)
 R_NewMap
 ===============
 */
-void R_NewMap (void)
+void R_NewMap ()
 {
 	int		i;
 	
@@ -510,7 +510,7 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 R_MarkLeaves
 ===============
 */
-void R_MarkLeaves (void)
+void R_MarkLeaves ()
 {
 	byte	*vis;
 	mnode_t	*node;
@@ -546,7 +546,7 @@ void R_MarkLeaves (void)
 R_DrawEntitiesOnList
 =============
 */
-void R_DrawEntitiesOnList (void)
+void R_DrawEntitiesOnList ()
 {
 	int			i, j;
 	int			lnum;
@@ -622,7 +622,7 @@ void R_DrawEntitiesOnList (void)
 R_DrawViewModel
 =============
 */
-void R_DrawViewModel (void)
+void R_DrawViewModel ()
 {
 // FIXME: remove and do real lighting
 	float		lightvec[3] = {-1, 0, 0};
@@ -756,7 +756,7 @@ int R_BmodelCheckBBox (model_t *clmodel, float *minmaxs)
 R_DrawBEntitiesOnList
 =============
 */
-void R_DrawBEntitiesOnList (void)
+void R_DrawBEntitiesOnList ()
 {
 	int			i, j, k, clipflags;
 	vec3_t		oldorigin;
@@ -888,7 +888,7 @@ void R_DrawBEntitiesOnList (void)
 R_EdgeDrawing
 ================
 */
-void R_EdgeDrawing (void)
+void R_EdgeDrawing ()
 {
 	edge_t	ledges[NUMSTACKEDGES +
 				((CACHE_SIZE - 1) / sizeof(edge_t)) + 1];
@@ -965,7 +965,7 @@ R_RenderView
 r_refdef must be set before the first call
 ================
 */
-void R_RenderView_ (void)
+void R_RenderView_ ()
 {
 	byte	warpbuffer[WARP_WIDTH * WARP_HEIGHT];
 
@@ -1067,7 +1067,7 @@ SetVisibilityByPassages ();
 	Sys_HighFPPrecision ();
 }
 
-void R_RenderView (void)
+void R_RenderView ()
 {
 	int		dummy;
 	int		delta;
@@ -1093,7 +1093,7 @@ void R_RenderView (void)
 R_InitTurb
 ================
 */
-void R_InitTurb (void)
+void R_InitTurb ()
 {
 	int		i;
 	
@@ -1104,3 +1104,6 @@ void R_InitTurb (void)
 	}
 }
 
+void R_DecalRemoveAll(int textureIndex)
+{
+};

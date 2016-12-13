@@ -39,7 +39,7 @@ void	VID_Init (unsigned char *palette)
 	D_InitCaches (surfcache, sizeof(surfcache));
 }
 
-void	VID_Shutdown (void)
+void	VID_Shutdown ()
 {
 }
 

@@ -187,7 +187,7 @@ TYPEDESCRIPTION gLightstyleDescription[2];
 
 #endif // HOOK_ENGINE
 
-void SV_GetPlayerHulls(void)
+void SV_GetPlayerHulls()
 {
 	int i;
 	for (i = 0; i < 4; i++)
@@ -197,7 +197,7 @@ void SV_GetPlayerHulls(void)
 	}
 }
 
-void Host_InitializeGameDLL(void)
+void Host_InitializeGameDLL()
 {
 	Cbuf_Execute();
 	NET_Config(g_psvs.maxclients > 1);
@@ -221,7 +221,7 @@ void Host_InitializeGameDLL(void)
 	Cbuf_Execute();
 }
 
-void Host_Motd_f(void)
+void Host_Motd_f()
 {
 	int length;
 	FileHandle_t pFile;
@@ -267,7 +267,7 @@ void Host_Motd_f(void)
 	FS_Close(pFile);
 }
 
-void Host_Motd_Write_f(void)
+void Host_Motd_Write_f()
 {
 	char newFile[2048] = "";
 	unsigned int i;
@@ -311,12 +311,12 @@ void Host_Motd_Write_f(void)
 	Con_Printf("Done.\n");
 }
 
-int Host_GetStartTime(void)
+int Host_GetStartTime()
 {
 	return startTime;
 }
 
-void Host_UpdateStats(void)
+void Host_UpdateStats()
 {
 	uint32 runticks = 0;
 	uint32 cputicks = 0;
@@ -466,14 +466,14 @@ void GetStatsString(char *buf, int bufSize)
 	buf[bufSize - 1] = 0;
 }
 
-void Host_Stats_f(void)
+void Host_Stats_f()
 {
 	char stats[512];
 	GetStatsString(stats, sizeof(stats));
 	Con_Printf("CPU   In    Out   Uptime  Users   FPS    Players\n%s\n", stats);
 }
 
-void Host_Quit_f(void)
+void Host_Quit_f()
 {
 	if (Cmd_Argc() == 1)
 	{
@@ -493,7 +493,7 @@ void Host_Quit_f(void)
 	}
 }
 
-void Host_Quit_Restart_f(void)
+void Host_Quit_Restart_f()
 {
 	giActive = DLL_RESTART;
 	giStateInfo = 4;
@@ -541,7 +541,7 @@ void Host_Status_Printf(qboolean conprint, qboolean log, char *fmt, ...)
 	}
 }
 
-void Host_Status_f(void)
+void Host_Status_f()
 {
 	client_t *client;
 	int seconds;
@@ -679,7 +679,7 @@ void Host_Status_f(void)
 	Host_Status_Printf(conprint, log, "%i users\n", nClients);
 }
 
-void Host_Status_Formatted_f(void)
+void Host_Status_Formatted_f()
 {
 	client_t *client;
 	int seconds;
@@ -772,7 +772,7 @@ void Host_Status_Formatted_f(void)
 	Host_Status_Printf(conprint, log, "%i users\n", nClients);
 }
 
-void Host_Ping_f(void)
+void Host_Ping_f()
 {
 	int i;
 	client_t *client;
@@ -851,7 +851,7 @@ void Host_Map(qboolean bIsDemo, char *mapstring, char *mapName, qboolean loadGam
 	}
 }
 
-void Host_Map_f(void)
+void Host_Map_f()
 {
 	int i;
 	char mapstring[64];
@@ -942,7 +942,7 @@ void Host_Map_f(void)
 		SetCareerAudioState(0);
 }
 
-void Host_Career_f(void)
+void Host_Career_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -951,7 +951,7 @@ void Host_Career_f(void)
 	}
 }
 
-void Host_Maps_f(void)
+void Host_Maps_f()
 {
 	char *pszSubString;
 	if (Cmd_Argc() != 2)
@@ -968,7 +968,7 @@ void Host_Maps_f(void)
 	}
 }
 
-void Host_Changelevel_f(void)
+void Host_Changelevel_f()
 {
 	char _level[64];
 	char _startspot[64];
@@ -1051,7 +1051,7 @@ const char *Host_FindRecentSave(char *pNameBuf)
 	return found != 0 ? pNameBuf : NULL;
 }
 
-void Host_Restart_f(void)
+void Host_Restart_f()
 {
 	char name[MAX_PATH];
 	if (g_pcls.demoplayback || !g_psv.active || cmd_source != src_command)
@@ -1070,7 +1070,7 @@ void Host_Restart_f(void)
 	SV_ActivateServer(1);
 }
 
-void Host_Reload_f(void)
+void Host_Reload_f()
 {
 	const char *pSaveName;
 	char name[MAX_PATH];
@@ -1090,7 +1090,7 @@ void Host_Reload_f(void)
 	}
 }
 
-void Host_Reconnect_f(void)
+void Host_Reconnect_f()
 {
 	char cmdString[128];
 	if (g_pcls.state < ca_connected)
@@ -1114,7 +1114,7 @@ void Host_Reconnect_f(void)
 	MSG_WriteString(&g_pcls.netchan.message, "new");
 }
 
-char *Host_SaveGameDirectory(void)
+char *Host_SaveGameDirectory()
 {
 	static char szDirectory[MAX_PATH];
 	Q_memset(szDirectory, 0, sizeof(szDirectory));
@@ -1170,7 +1170,7 @@ void Host_SaveAgeList(const char *pName, int count)
 	}
 }
 
-int Host_ValidSave(void)
+int Host_ValidSave()
 {
 	if (cmd_source != src_command)
 		return 0;
@@ -1355,7 +1355,7 @@ qboolean SaveGameSlot(const char *pSaveName, const char *pSaveComment)
 	return TRUE;
 }
 
-void Host_Savegame_f(void)
+void Host_Savegame_f()
 {
 	char szComment[80];
 	char szTemp[80];
@@ -1379,7 +1379,7 @@ void Host_Savegame_f(void)
 	CL_HudMessage("GAMESAVED");
 }
 
-void Host_AutoSave_f(void)
+void Host_AutoSave_f()
 {
 	char szComment[80];
 	char szTemp[80];
@@ -1479,7 +1479,7 @@ void SaveReadComment(FileHandle_t f, char *name)
 		Q_strcpy(name, gameHeader.comment);
 }
 
-void Host_Loadgame_f(void)
+void Host_Loadgame_f()
 {
 	if (cmd_source != src_command)
 		return;
@@ -1575,7 +1575,7 @@ int Host_Load(const char *pName)
 	return 1;
 }
 
-SAVERESTOREDATA *SaveGamestate(void)
+SAVERESTOREDATA *SaveGamestate()
 {
 	char name[256];
 	char *pTableData;
@@ -2259,7 +2259,7 @@ int DirectoryCount(const char *pPath)
 	return count;
 }
 
-void Host_ClearSaveDirectory(void)
+void Host_ClearSaveDirectory()
 {
 	char szName[MAX_PATH];
 	const char *pfn;
@@ -2285,7 +2285,7 @@ void Host_ClearSaveDirectory(void)
 	Sys_FindClose();
 }
 
-void Host_ClearGameState(void)
+void Host_ClearGameState()
 {
 	S_StopAllSounds(TRUE);
 	Host_ClearSaveDirectory();
@@ -2293,7 +2293,7 @@ void Host_ClearGameState(void)
 		gEntityInterface.pfnResetGlobalState();
 }
 
-void Host_Changelevel2_f(void)
+void Host_Changelevel2_f()
 {
 	char level[64];
 	char oldlevel[64];
@@ -2368,7 +2368,7 @@ void Host_Changelevel2_f(void)
 	SV_ActivateServer(0);
 }
 
-void Host_Version_f(void)
+void Host_Version_f()
 {
 	Con_Printf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
 
@@ -2382,7 +2382,7 @@ void Host_Version_f(void)
 
 }
 
-void Host_FullInfo_f(void)
+void Host_FullInfo_f()
 {
 	char key[512];
 	char value[512];
@@ -2431,12 +2431,12 @@ void Host_FullInfo_f(void)
 	}
 }
 
-NOXREF void Host_KillVoice_f(void)
+NOXREF void Host_KillVoice_f()
 {
 	Voice_Deinit();
 }
 
-void Host_SetInfo_f(void)
+void Host_SetInfo_f()
 {
 	if (Cmd_Argc() == 1)
 	{
@@ -2534,17 +2534,17 @@ void Host_Say(qboolean teamonly)
 	Log_Printf("Server say \"%s\"\n", p);
 }
 
-void Host_Say_f(void)
+void Host_Say_f()
 {
 	Host_Say(FALSE);
 }
 
-void Host_Say_Team_f(void)
+void Host_Say_Team_f()
 {
 	Host_Say(TRUE);
 }
 
-void Host_Tell_f(void)
+void Host_Tell_f()
 {
 	client_t *client;
 	client_t *save;
@@ -2604,7 +2604,7 @@ void Host_Tell_f(void)
 	host_client = save;
 }
 
-void Host_Kill_f(void)
+void Host_Kill_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -2620,7 +2620,7 @@ void Host_Kill_f(void)
 	gEntityInterface.pfnClientKill(sv_player);
 }
 
-void Host_TogglePause_f(void)
+void Host_TogglePause_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -2654,7 +2654,7 @@ void Host_TogglePause_f(void)
 #endif // REHLDS_FIXES
 }
 
-void Host_Pause_f(void)
+void Host_Pause_f()
 {
 	// pause only singleplayer when console or main menu opens
 	if (!g_pcl.levelname[0])
@@ -2683,7 +2683,7 @@ void Host_Pause_f(void)
 #endif // REHLDS_FIXES
 }
 
-void Host_Unpause_f(void)
+void Host_Unpause_f()
 {
 	// unpause only singleplayer when console or main menu opens
 	if (!g_pcl.levelname[0])
@@ -2712,7 +2712,7 @@ void Host_Unpause_f(void)
 #endif // REHLDS_FIXES
 }
 
-void Host_Interp_f(void)
+void Host_Interp_f()
 {
 	r_dointerp ^= 1;
 	if(!r_dointerp)
@@ -2721,7 +2721,7 @@ void Host_Interp_f(void)
 		Con_Printf("Frame Interpolation ON\n");
 }
 
-void Host_NextDemo(void)
+void Host_NextDemo()
 {
 	char str[1024];
 	if (g_pcls.demonum == -1)
@@ -2745,7 +2745,7 @@ void Host_NextDemo(void)
 	g_pcls.demonum = -1;
 }
 
-void Host_Startdemos_f(void)
+void Host_Startdemos_f()
 {
 	int i;
 	int c;
@@ -2778,7 +2778,7 @@ void Host_Startdemos_f(void)
 	}
 }
 
-void Host_Demos_f(void)
+void Host_Demos_f()
 {
 	if (g_pcls.state != ca_dedicated)
 	{
@@ -2789,7 +2789,7 @@ void Host_Demos_f(void)
 	}
 }
 
-void Host_Stopdemo_f(void)
+void Host_Stopdemo_f()
 {
 	if (g_pcls.state != ca_dedicated)
 	{
@@ -2823,7 +2823,7 @@ NOXREF void Host_EndSection(const char *pszSection)
 	Cbuf_AddText("\ndisconnect\n");
 }
 
-void Host_Soundfade_f(void)
+void Host_Soundfade_f()
 {
 	int percent;
 	int inTime;
@@ -2870,7 +2870,7 @@ void Host_Soundfade_f(void)
 	g_pcls.soundfade.soundFadeInTime = inTime;
 }
 
-void Host_KillServer_f(void)
+void Host_KillServer_f()
 {
 	if (g_pcls.state != ca_dedicated)
 		CL_Disconnect_f();
@@ -2884,7 +2884,7 @@ void Host_KillServer_f(void)
 	}
 }
 
-void Host_VoiceRecordStart_f(void)
+void Host_VoiceRecordStart_f()
 {
 	const char *pUncompressedFile = NULL;
 	const char *pDecompressedFile = NULL;
@@ -2903,7 +2903,7 @@ void Host_VoiceRecordStart_f(void)
 	Voice_RecordStart(pUncompressedFile, pDecompressedFile, pInputFile);
 }
 
-void Host_VoiceRecordStop_f(void)
+void Host_VoiceRecordStop_f()
 {
 	if (g_pcls.state != ca_active)
 		return;
@@ -2915,13 +2915,13 @@ void Host_VoiceRecordStop_f(void)
 	}
 }
 
-void Host_Crash_f(void)
+void Host_Crash_f()
 {
 	int *p = NULL;
 	*p = 0xffffffff;
 }
 
-void Host_InitCommands(void)
+void Host_InitCommands()
 {
 #ifdef HOOK_ENGINE
 	Cmd_AddCommand("shutdownserver", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_KillServer_f", (void *)Host_KillServer_f));
@@ -3049,7 +3049,7 @@ void Host_InitCommands(void)
 	Cvar_RegisterVariable(&voice_inputfromfile);
 }
 
-void SV_CheckBlendingInterface(void)
+void SV_CheckBlendingInterface()
 {
 	int i;
 	SV_BLENDING_INTERFACE_FUNC studio_interface;
@@ -3073,7 +3073,7 @@ void SV_CheckBlendingInterface(void)
 	}
 }
 
-void SV_CheckSaveGameCommentInterface(void)
+void SV_CheckSaveGameCommentInterface()
 {
 	int i;
 	SV_SAVEGAMECOMMENT_FUNC pTemp = NULL;

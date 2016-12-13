@@ -88,7 +88,7 @@ qboolean cl_inmovie;
 
 entity_state_t	cl_baselines[MAX_EDICTS];
 efrag_t			cl_efrags[MAX_EFRAGS];
-entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
+cl_entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 dlight_t		cl_dlights[MAX_DLIGHTS];
 
@@ -96,8 +96,8 @@ dlight_t		cl_dlights[MAX_DLIGHTS];
 // this is double buffered so the last frame
 // can be scanned for oldorigins of trailing objects
 int				cl_numvisedicts, cl_oldnumvisedicts;
-entity_t		*cl_visedicts, *cl_oldvisedicts;
-entity_t		cl_visedicts_list[2][MAX_VISEDICTS];
+cl_entity_t		*cl_visedicts, *cl_oldvisedicts;
+cl_entity_t		cl_visedicts_list[2][MAX_VISEDICTS];
 
 double			connect_time = -1;		// for connection retransmits
 	
@@ -158,7 +158,6 @@ void CL_Version_f ()
 	Con_Printf ("Version %4.2f\n", VERSION);
 	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
 }
-
 
 /*
 =======================

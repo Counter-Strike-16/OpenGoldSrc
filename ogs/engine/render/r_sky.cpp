@@ -96,7 +96,7 @@ void R_InitSky (texture_t *mt)
 R_MakeSky
 =================
 */
-void R_MakeSky (void)
+void R_MakeSky ()
 {
 	int			x, y;
 	int			ofs, baseofs;
@@ -260,7 +260,7 @@ void R_GenSkyTile16 (void *pdest)
 R_SetSkyFrame
 ==============
 */
-void R_SetSkyFrame (void)
+void R_SetSkyFrame ()
 {
 	int		g, s1, s2;
 	float	temp;
@@ -275,8 +275,5 @@ void R_SetSkyFrame (void)
 
 	skytime = cl.time - ((int)(cl.time / temp) * temp);
 	
-
 	r_skymade = 0;
 }
-
-

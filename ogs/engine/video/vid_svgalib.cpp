@@ -236,7 +236,7 @@ VID_Gamma_f
 Keybinding command
 =================
 */
-void VID_Gamma_f (void)
+void VID_Gamma_f ()
 {
 	float	gamma, f, inf;
 	unsigned char	palette[768];
@@ -263,7 +263,7 @@ void VID_Gamma_f (void)
 	}
 }
 
-void VID_DescribeMode_f (void)
+void VID_DescribeMode_f ()
 {
 	int modenum;
 	
@@ -277,7 +277,7 @@ void VID_DescribeMode_f (void)
 		Con_Printf("%d bpp\n", modes[modenum].bytesperpixel<<3);
 }
 
-void VID_DescribeModes_f (void)
+void VID_DescribeModes_f ()
 {
 	int i;
 	
@@ -305,12 +305,12 @@ int VID_NumModes ()
 	return (i1);
 }
 
-void VID_NumModes_f (void)
+void VID_NumModes_f ()
 {
 	Con_Printf("%d modes\n",VID_NumModes());
 }
 
-void VID_Debug_f (void)
+void VID_Debug_f ()
 {
 	Con_Printf("mode: %d\n",current_mode);
 	Con_Printf("height x width: %d x %d\n",vid.height,vid.width);
@@ -320,7 +320,7 @@ void VID_Debug_f (void)
 
 
 
-void VID_InitModes(void)
+void VID_InitModes()
 {
 
 	int i;
@@ -426,7 +426,7 @@ void keyhandler(int scancode, int state)
 
 }
 
-void VID_Shutdown(void)
+void VID_Shutdown()
 {
 
 	if (!svgalib_inited) return;
@@ -802,7 +802,7 @@ void VID_Update(vrect_t *rects)
 
 static int dither;
 
-void VID_DitherOn(void)
+void VID_DitherOn()
 {
     if (dither == 0)
     {
@@ -811,7 +811,7 @@ void VID_DitherOn(void)
     }
 }
 
-void VID_DitherOff(void)
+void VID_DitherOff()
 {
     if (dither)
     {
@@ -820,7 +820,7 @@ void VID_DitherOff(void)
     }
 }
 
-void Sys_SendKeyEvents(void)
+void Sys_SendKeyEvents()
 {
 	if (!svgalib_inited)
 		return;
@@ -829,7 +829,7 @@ void Sys_SendKeyEvents(void)
 		while (keyboard_update());
 }
 
-void Force_CenterView_f (void)
+void Force_CenterView_f ()
 {
 	cl.viewangles[PITCH] = 0;
 }
@@ -842,7 +842,7 @@ void mousehandler(int buttonstate, int dx, int dy)
 	my += dy;
 }
 
-void IN_Init(void)
+void IN_Init()
 {
 
 	int mtype;
@@ -886,7 +886,7 @@ void IN_Init(void)
 
 }
 
-void IN_Shutdown(void)
+void IN_Shutdown()
 {
 	if (UseMouse)
 		mouse_close();
@@ -897,7 +897,7 @@ void IN_Shutdown(void)
 IN_Commands
 ===========
 */
-void IN_Commands (void)
+void IN_Commands ()
 {
 	if (UseMouse /*&& cls.state != ca_dedicated*/)
 	{
@@ -1016,11 +1016,11 @@ char *VID_ModeInfo (int modenum)
 	}
 }
 
-void VID_LockBuffer (void)
+void VID_LockBuffer ()
 {
 }
 
-void VID_UnlockBuffer (void)
+void VID_UnlockBuffer ()
 {
 }
 

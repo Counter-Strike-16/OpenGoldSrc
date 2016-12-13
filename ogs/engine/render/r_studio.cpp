@@ -84,7 +84,7 @@ server_studio_api_t server_studio_api;
 
 #endif // HOOK_ENGINE
 
-void SV_InitStudioHull(void)
+void SV_InitStudioHull()
 {
 	if (studio_hull[0].planes == NULL)
 	{
@@ -683,7 +683,7 @@ int SV_HitgroupForStudioHull(int index)
 	return studio_hull_hitgroup[index];
 }
 
-NOXREF void R_InitStudioCache(void)
+NOXREF void R_InitStudioCache()
 {
 	Q_memset(rgStudioCache, 0, sizeof(rgStudioCache));
 
@@ -692,7 +692,7 @@ NOXREF void R_InitStudioCache(void)
 	nCurrentPlane = 0;
 }
 
-NOXREF void R_FlushStudioCache(void)
+NOXREF void R_FlushStudioCache()
 {
 	R_InitStudioCache();
 }
@@ -1148,7 +1148,7 @@ int R_GetStudioBounds(const char *filename, float *mins, float *maxs)
 	return iret;
 }
 
-void R_ResetSvBlending(void)
+void R_ResetSvBlending()
 {
 	g_pSvBlendingAPI = &svBlending;
 }

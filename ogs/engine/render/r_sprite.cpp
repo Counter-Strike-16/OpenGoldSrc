@@ -285,7 +285,7 @@ mspriteframe_t *R_GetSpriteframe (msprite_t *psprite)
 R_DrawSprite
 ================
 */
-void R_DrawSprite (void)
+void R_DrawSprite ()
 {
 	int				i;
 	msprite_t		*psprite;

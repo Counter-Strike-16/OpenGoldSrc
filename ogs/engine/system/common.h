@@ -1,4 +1,3 @@
-#pragma once
 /*
 *
 *    This program is free software; you can redistribute it and/or modify it
@@ -26,6 +25,9 @@
 *    version.
 *
 */
+
+#pragma once
+
 #include "common_rehlds.h"
 #include "bspfile.h"
 #include "FileSystem.h"
@@ -215,8 +217,8 @@ NOBODY uint64 Q_strtoull(char *str);
 //strcpy that works correctly with overlapping src and dst buffers
 char* strcpy_safe(char* dst, char* src);
 
-int build_number(void);
-char *Info_Serverinfo(void);
+int build_number();
+char *Info_Serverinfo();
 
 unsigned char COM_Nibble(char c);
 void COM_HexConvert(const char *pszInput, int nInputLength, unsigned char *pOutput);
@@ -242,10 +244,10 @@ void MSG_WriteBuf(sizebuf_t *sb, int iSize, void *buf);
 void MSG_WriteAngle(sizebuf_t *sb, float f);
 void MSG_WriteHiresAngle(sizebuf_t *sb, float f);
 void MSG_WriteUsercmd(sizebuf_t *buf, usercmd_t *to, usercmd_t *from);
-void COM_BitOpsInit(void);
+void COM_BitOpsInit();
 void MSG_WriteOneBit(int nValue);
 void MSG_StartBitWriting(sizebuf_t *buf);
-NOXREF qboolean MSG_IsBitWriting(void);
+NOXREF qboolean MSG_IsBitWriting();
 void MSG_EndBitWriting(sizebuf_t *buf);
 void MSG_WriteBits(uint32 data, int numbits);
 void MSG_WriteSBits(int data, int numbits);
@@ -253,36 +255,36 @@ void MSG_WriteBitString(const char *p);
 void MSG_WriteBitData(void *src, int length);
 void MSG_WriteBitAngle(float fAngle, int numbits);
 float MSG_ReadBitAngle(int numbits);
-int MSG_CurrentBit(void);
-NOXREF qboolean MSG_IsBitReading(void);
+int MSG_CurrentBit();
+NOXREF qboolean MSG_IsBitReading();
 void MSG_StartBitReading(sizebuf_t *buf);
 void MSG_EndBitReading(sizebuf_t *buf);
-int MSG_ReadOneBit(void);
+int MSG_ReadOneBit();
 uint32 MSG_ReadBits(int numbits);
 NOXREF uint32 MSG_PeekBits(int numbits);
 int MSG_ReadSBits(int numbits);
-NOXREF char *MSG_ReadBitString(void);
+NOXREF char *MSG_ReadBitString();
 int MSG_ReadBitData(void *dest, int length);
-NOXREF float MSG_ReadBitCoord(void);
+NOXREF float MSG_ReadBitCoord();
 void MSG_WriteBitCoord(const float f);
 NOXREF void MSG_ReadBitVec3Coord(vec3_t fa);
 void MSG_WriteBitVec3Coord(const vec3_t fa);
-NOXREF float MSG_ReadCoord(void);
+NOXREF float MSG_ReadCoord();
 void MSG_WriteCoord(sizebuf_t *sb, const float f);
 NOXREF void MSG_ReadVec3Coord(sizebuf_t *sb, vec3_t fa);
 NOXREF void MSG_WriteVec3Coord(sizebuf_t *sb, const vec3_t fa);
-void MSG_BeginReading(void);
-int MSG_ReadChar(void);
-int MSG_ReadByte(void);
-int MSG_ReadShort(void);
-NOXREF int MSG_ReadWord(void);
-int MSG_ReadLong(void);
-NOXREF float MSG_ReadFloat(void);
+void MSG_BeginReading();
+int MSG_ReadChar();
+int MSG_ReadByte();
+int MSG_ReadShort();
+NOXREF int MSG_ReadWord();
+int MSG_ReadLong();
+NOXREF float MSG_ReadFloat();
 int MSG_ReadBuf(int iSize, void *pbuf);
-char *MSG_ReadString(void);
-char *MSG_ReadStringLine(void);
-NOXREF float MSG_ReadAngle(void);
-NOXREF float MSG_ReadHiresAngle(void);
+char *MSG_ReadString();
+char *MSG_ReadStringLine();
+NOXREF float MSG_ReadAngle();
+NOXREF float MSG_ReadHiresAngle();
 void MSG_ReadUsercmd(usercmd_t *to, usercmd_t *from);
 
 void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize);
@@ -296,7 +298,7 @@ void COM_StripExtension(char *in, char *out);
 char *COM_FileExtension(char *in);
 void COM_FileBase(const char *in, char *out);
 void COM_DefaultExtension(char *path, char *extension);
-void COM_UngetToken(void);
+void COM_UngetToken();
 char *COM_Parse(char *data);
 char *COM_ParseLine(char *data);
 int COM_TokenWaiting(char *buffer);
@@ -320,12 +322,12 @@ unsigned char *COM_LoadHunkFile(char *path);
 unsigned char *COM_LoadTempFile(char *path, int *pLength);
 void COM_LoadCacheFile(char *path, struct cache_user_s *cu);
 NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length);
-void COM_Shutdown(void);
+void COM_Shutdown();
 NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName);
 void COM_AddDefaultDir(char *pszDir);
 void COM_StripTrailingSlash(char *ppath);
 void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault);
-qboolean COM_SetupDirectories(void);
+qboolean COM_SetupDirectories();
 void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOutdated);
 void COM_ListMaps(char *pszSubString);
 void COM_Log(char *pszFile, char *fmt, ...);

@@ -73,7 +73,7 @@ texture_t	*r_notexture_mip;
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 
-void R_MarkLeaves (void);
+void R_MarkLeaves ();
 
 cvar_t	r_norefresh = {"r_norefresh","0"};
 cvar_t	r_drawentities = {"r_drawentities","1"};
@@ -121,7 +121,7 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 }
 
 
-void R_RotateForEntity (entity_t *e)
+void R_RotateForEntity (cl_entity_t *e)
 {
     glTranslatef (e->origin[0],  e->origin[1],  e->origin[2]);
 
@@ -144,7 +144,7 @@ void R_RotateForEntity (entity_t *e)
 R_GetSpriteFrame
 ================
 */
-mspriteframe_t *R_GetSpriteFrame (entity_t *currententity)
+mspriteframe_t *R_GetSpriteFrame (cl_entity_t *currententity)
 {
 	msprite_t		*psprite;
 	mspritegroup_t	*pspritegroup;
@@ -197,7 +197,7 @@ R_DrawSpriteModel
 
 =================
 */
-void R_DrawSpriteModel (entity_t *e)
+void R_DrawSpriteModel (cl_entity_t *e)
 {
 	vec3_t	point;
 	mspriteframe_t	*frame;
@@ -438,7 +438,7 @@ R_DrawAliasModel
 
 =================
 */
-void R_DrawAliasModel (entity_t *e)
+void R_DrawAliasModel (cl_entity_t *e)
 {
 	int			i;
 	int			lnum;
@@ -496,12 +496,13 @@ void R_DrawAliasModel (entity_t *e)
 		shadelight = 192 - ambientlight;
 
 	// ZOID: never allow players to go totally black
-	if (!strcmp(clmodel->name, "progs/player.mdl")) {
+	if (!strcmp(clmodel->name, "models/player.mdl"))
+	{
 		if (ambientlight < 8)
 			ambientlight = shadelight = 8;
 
-	} else if (!strcmp (clmodel->name, "progs/flame2.mdl")
-		|| !strcmp (clmodel->name, "progs/flame.mdl") )
+	} else if (!strcmp (clmodel->name, "models/flame2.mdl")
+		|| !strcmp (clmodel->name, "models/flame.mdl") )
 		// HACK HACK HACK -- no fullbright colors, so make torches full light
 		ambientlight = shadelight = 256;
 
@@ -595,7 +596,7 @@ void R_DrawAliasModel (entity_t *e)
 R_DrawEntitiesOnList
 =============
 */
-void R_DrawEntitiesOnList (void)
+void R_DrawEntitiesOnList ()
 {
 	int		i;
 
@@ -643,7 +644,7 @@ void R_DrawEntitiesOnList (void)
 R_DrawViewModel
 =============
 */
-void R_DrawViewModel (void)
+void R_DrawViewModel ()
 {
 	float		ambient[4], diffuse[4];
 	int			j;
@@ -711,7 +712,7 @@ void R_DrawViewModel (void)
 R_PolyBlend
 ============
 */
-void R_PolyBlend (void)
+void R_PolyBlend ()
 {
 	if (!gl_polyblend.value)
 		return;
@@ -764,7 +765,7 @@ int SignbitsForPlane (mplane_t *out)
 }
 
 
-void R_SetFrustum (void)
+void R_SetFrustum ()
 {
 	int		i;
 
@@ -783,10 +784,13 @@ void R_SetFrustum (void)
 
 		// rotate VPN right by FOV_X/2 degrees
 		RotatePointAroundVector( frustum[0].normal, vup, vpn, -(90-r_refdef.fov_x / 2 ) );
+		
 		// rotate VPN left by FOV_X/2 degrees
 		RotatePointAroundVector( frustum[1].normal, vup, vpn, 90-r_refdef.fov_x / 2 );
+		
 		// rotate VPN up by FOV_X/2 degrees
 		RotatePointAroundVector( frustum[2].normal, vright, vpn, 90-r_refdef.fov_y / 2 );
+		
 		// rotate VPN down by FOV_X/2 degrees
 		RotatePointAroundVector( frustum[3].normal, vright, vpn, -( 90 - r_refdef.fov_y / 2 ) );
 	}
@@ -799,14 +803,12 @@ void R_SetFrustum (void)
 	}
 }
 
-
-
 /*
 ===============
 R_SetupFrame
 ===============
 */
-void R_SetupFrame (void)
+void R_SetupFrame ()
 {
 // don't allow cheats in multiplayer
 	r_fullbright.value = 0;
@@ -837,9 +839,7 @@ void R_SetupFrame (void)
 
 }
 
-
-void MYgluPerspective( GLdouble fovy, GLdouble aspect,
-		     GLdouble zNear, GLdouble zFar )
+void MYgluPerspective( GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar )
 {
    GLdouble xmin, xmax, ymin, ymax;
 
@@ -852,13 +852,12 @@ void MYgluPerspective( GLdouble fovy, GLdouble aspect,
    glFrustum( xmin, xmax, ymin, ymax, zNear, zFar );
 }
 
-
 /*
 =============
 R_SetupGL
 =============
 */
-void R_SetupGL (void)
+void R_SetupGL ()
 {
 	float	screenaspect;
 	extern	int glwidth, glheight;
@@ -944,7 +943,7 @@ R_RenderScene
 r_refdef must be set before the first call
 ================
 */
-void R_RenderScene (void)
+void R_RenderScene ()
 {
 	R_SetupFrame ();
 
@@ -978,7 +977,7 @@ void R_RenderScene (void)
 R_Clear
 =============
 */
-void R_Clear (void)
+void R_Clear ()
 {
 	if (r_mirroralpha.value != 1.0)
 	{
@@ -1031,11 +1030,11 @@ void R_Clear (void)
 R_Mirror
 =============
 */
-void R_Mirror (void)
+void R_Mirror ()
 {
 	float		d;
 	msurface_t	*s;
-	entity_t	*ent;
+	cl_entity_t	*ent;
 
 	if (!mirror)
 		return;
@@ -1102,7 +1101,7 @@ R_RenderView
 r_refdef must be set before the first call
 ================
 */
-void R_RenderView (void)
+void R_RenderView ()
 {
 	double	time1 = 0, time2;
 

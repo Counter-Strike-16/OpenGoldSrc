@@ -30,9 +30,9 @@
 
 void(*Launcher_ConsolePrintf)(char *, ...);
 char *(*Launcher_GetLocalizedString)(unsigned int);
-int(*Launcher_MP3subsys_Suspend_Audio)(void);
-void(*Launcher_MP3subsys_Resume_Audio)(void);
-void(*VID_FlipScreen)(void);
+int(*Launcher_MP3subsys_Suspend_Audio)();
+void(*Launcher_MP3subsys_Resume_Audio)();
+void(*VID_FlipScreen)();
 
 //double curtime;
 //double lastcurtime;
@@ -349,7 +349,7 @@ const char *Sys_FindNext(char *basename)
 	return psz;
 }
 
-void Sys_FindClose(void)
+void Sys_FindClose()
 {
 	if (g_hfind != -1)
 	{
@@ -397,23 +397,23 @@ NOXREF void Sys_MakeCodeWriteable(uint32 startaddr, uint32 length)
 #endif // _WIN32
 }
 
-NOBODY void Sys_SetFPCW(void);
+NOBODY void Sys_SetFPCW();
 //{
 //}
 
-NOBODY void Sys_PushFPCW_SetHigh(void);
+NOBODY void Sys_PushFPCW_SetHigh();
 //{
 //}
 
-NOBODY void Sys_PopFPCW(void);
+NOBODY void Sys_PopFPCW();
 //{
 //}
 
-NOBODY void MaskExceptions(void);
+NOBODY void MaskExceptions();
 //{
 //}
 
-NOBODY void Sys_Init(void);
+NOBODY void Sys_Init();
 
 NOXREF void Sys_Sleep(int msec)
 {
@@ -532,14 +532,14 @@ void Sys_Printf(const char *fmt, ...)
 
 }
 
-void Sys_Quit(void)
+void Sys_Quit()
 {
 	giActive = DLL_CLOSE;
 }
 
 #ifdef _WIN32
 
-double EXT_FUNC Sys_FloatTime(void)
+double EXT_FUNC Sys_FloatTime()
 {
 	unsigned int currentTime;
 	int savedOldTime;
@@ -600,7 +600,7 @@ double EXT_FUNC Sys_FloatTime(void)
 
 #else // not _WIN32
 
-double Sys_FloatTime(void)
+double Sys_FloatTime()
 {
 	static struct timespec start_time;
 	static bool bInitialized;
@@ -1084,7 +1084,7 @@ IgnoreThisDLL:
 	}
 }
 
-void ReleaseEntityDlls(void)
+void ReleaseEntityDlls()
 {
 	extensiondll_t *pextdll;
 	extensiondll_t *pextdllMac;
@@ -1245,32 +1245,6 @@ NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname,
 	}
 
 #endif // _WIN32
-}
-
-void Con_Debug_f(void)
-{
-	if (con_debuglog)
-	{
-		Con_Printf("condebug disabled\n");
-		con_debuglog = FALSE;
-	}
-	else
-	{
-		con_debuglog = TRUE;
-		Con_Printf("condebug enabled\n");
-	}
-}
-
-void Con_Init(void)
-{
-	con_debuglog = COM_CheckParm("-condebug");
-	Con_DPrintf("Console initialized.\n");
-
-#ifdef HOOK_ENGINE
-	Cmd_AddCommand("condebug", (xcommand_t)GetOriginalFuncAddrOrDefault("Con_Debug_f", (void *)Con_Debug_f));
-#else
-	Cmd_AddCommand("condebug", Con_Debug_f);
-#endif
 }
 
 void Con_DebugLog(const char *file, const char *fmt, ...)

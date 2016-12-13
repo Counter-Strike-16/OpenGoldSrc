@@ -39,7 +39,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define NO_MODE					(MODE_WINDOWED - 1)
 #define MODE_FULLSCREEN_DEFAULT	(MODE_WINDOWED + 1)
 
-typedef struct {
+typedef struct
+{
 	modestate_t	type;
 	int			width;
 	int			height;
@@ -51,7 +52,8 @@ typedef struct {
 	char		modedesc[17];
 } vmode_t;
 
-typedef struct {
+typedef struct
+{
 	int			width;
 	int			height;
 } lmode_t;
@@ -82,7 +84,7 @@ static qboolean	windowed, leavecurrentmode;
 static qboolean vid_canalttab = false;
 static qboolean vid_wassuspended = false;
 static int		windowed_mouse;
-extern qboolean	mouseactive;  // from in_win.c
+extern qboolean	mouseactive;  // from in_win.cpp
 static HICON	hIcon;
 
 int			DIBWidth, DIBHeight;
@@ -98,7 +100,7 @@ static int	windowed_default;
 unsigned char	vid_curpal[256*3];
 static qboolean fullsbardraw = false;
 
-static float vid_gamma = 1.0;
+static float vid_gamma = 1.0f;
 
 HGLRC	baseRC;
 HDC		maindc;
