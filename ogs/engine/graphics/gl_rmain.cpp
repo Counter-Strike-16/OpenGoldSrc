@@ -17,16 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// r_main.c
 
+// r_main.cpp
+
+#include "precompiled.h"
 #include "quakedef.h"
 
-entity_t	r_worldentity;
+cl_entity_t r_worldentity;
 
 qboolean	r_cache_thrash;		// compatability
 
 vec3_t		modelorg, r_entorigin;
-entity_t	*currententity;
+cl_entity_t *currententity;
 
 int			r_visframecount;	// bumped when going to a new PVS
 int			r_framecount;		// used for dlight push checking

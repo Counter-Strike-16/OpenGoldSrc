@@ -17,7 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// r_vars.c: global refresh variables
+
+// r_vars.cpp - global refresh variables
+
+#include "precompiled.h"
 
 #if	!id386
 

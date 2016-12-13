@@ -40,8 +40,8 @@ qboolean cl_inmovie;
 */
 #ifndef HOOK_ENGINE
 
-cvar_t cl_name = { "name", "0", FCVAR_ARCHIVE | FCVAR_USERINFO, 0.0f, NULL };
-cvar_t rate_ = { "rate", "30000", FCVAR_USERINFO, 0.0f, NULL };
+cvar_t cl_name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO, 0.0f, NULL };
+cvar_t rate_ = { "rate", "2500", FCVAR_USERINFO, 0.0f, NULL };
 cvar_t console = { "console", "1.0", FCVAR_ARCHIVE, 0.0f, NULL };
 
 #else //HOOK_ENGINE

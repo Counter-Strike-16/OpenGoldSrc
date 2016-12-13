@@ -17,8 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// r_misc.c
 
+// r_misc.cpp
+
+#include "precompiled.h"
 #include "quakedef.h"
 
 extern void R_InitBubble();

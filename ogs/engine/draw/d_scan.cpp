@@ -17,10 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// d_scan.c
+
+// d_scan.cpp
 //
 // Portable C scan-level rasterization code, all pixel depths.
 
+#include "precompiled.h"
 #include "quakedef.h"
 #include "r_local.h"
 #include "d_local.h"

@@ -17,9 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// d_polyset.c: routines for drawing sets of polygons sharing the same
+
+// d_polyset.cpp - routines for drawing sets of polygons sharing the same
 // texture (used for Alias models)
 
+#include "precompiled.h"
 #include "quakedef.h"
 #include "r_local.h"
 #include "d_local.h"

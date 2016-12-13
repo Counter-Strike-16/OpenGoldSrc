@@ -17,8 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// d_clear: clears a specified rectangle to the specified color
 
+// d_fill.cpp - clears a specified rectangle to the specified color
+
+#include "precompiled.h"
 #include "quakedef.h"
 
 

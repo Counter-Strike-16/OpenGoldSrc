@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 /* ZOID
  *
  * Player camera tracking in Spectator mode
@@ -25,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * Player moves as a spectator, but the camera tracks and enemy player
  */
 
+#include "precompiled.h"
 #include "quakedef.h"
 #include "winquake.h"
 

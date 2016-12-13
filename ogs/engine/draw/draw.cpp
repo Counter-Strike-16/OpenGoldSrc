@@ -18,9 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// draw.c -- this is the only file outside the refresh that touches the
+// draw.cpp - this is the only file outside the refresh that touches the
 // vid buffer
 
+#include "precompiled.h"
 #include "quakedef.h"
 
 typedef struct {

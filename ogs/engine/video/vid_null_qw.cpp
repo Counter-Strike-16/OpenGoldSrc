@@ -1,5 +1,6 @@
-// vid_null.c -- null video driver to aid porting efforts
+// vid_null.cpp - null video driver to aid porting efforts
 
+#include "precompiled.h"
 #include "quakedef.h"
 #include "d_local.h"
 

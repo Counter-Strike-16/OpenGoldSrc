@@ -73,10 +73,17 @@ cvar_t	rate = {"rate", "2500", true, true};
 cvar_t	noaim = {"noaim", "0", true, true};
 cvar_t	msg = {"msg", "1", true, true};
 
+cvar_t console = { "console", "1", FCVAR_ARCHIVE, 0.0f, NULL };
+
 extern cvar_t cl_hightrack;
 
 client_static_t	cls;
 client_state_t	cl;
+
+keydest_t key_dest;
+
+playermove_t g_clmove;
+qboolean cl_inmovie;
 
 entity_state_t	cl_baselines[MAX_EDICTS];
 efrag_t			cl_efrags[MAX_EFRAGS];
@@ -100,7 +107,7 @@ byte		*host_colormap;
 
 netadr_t	master_adr;				// address of the master server
 
-cvar_t	show_fps = {"show_fps","0"};			// set for running times
+cvar_t	show_fps = {"show_fps", "0"};			// set for running times
 
 int			fps_count;
 

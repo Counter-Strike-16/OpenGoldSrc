@@ -17,8 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// cl_ents.c -- entity parsing and management
 
+// cl_ents.cpp - entity parsing and management
+
+#include "precompiled.h"
 #include "quakedef.h"
 
 extern	cvar_t	cl_predict_players;
