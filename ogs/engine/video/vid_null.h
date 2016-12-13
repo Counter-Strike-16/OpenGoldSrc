@@ -44,19 +44,23 @@ void VID_SetPalette(unsigned char *palette);
 void VID_ShiftPalette(unsigned char *palette);
 void VID_WriteBuffer(const char *pFilename);
 NOBODY int VID_Init(unsigned short *palette);
-void D_FlushCaches(void);
-void R_SetStackBase(void);
-void SCR_UpdateScreen(void);
-void V_Init(void);
-void Draw_Init(void);
-void SCR_Init(void);
-void R_Init(void);
+
+void D_FlushCaches();
+void R_SetStackBase();
+void SCR_UpdateScreen();
+void V_Init();
+void Draw_Init();
+void SCR_Init();
+void R_Init();
 void R_ForceCVars(qboolean multiplayer);
+
 void SCR_BeginLoadingPlaque(qboolean reconnect);
-void SCR_EndLoadingPlaque(void);
-void R_InitSky(void);
-void R_MarkLeaves(void);
-void R_InitTextures(void);
+void SCR_EndLoadingPlaque();
+
+void R_InitSky();
+void R_MarkLeaves();
+void R_InitTextures();
+
 void StartLoadingProgressBar(const char *loadingType, int numProgressPoints);
 void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction);
 void SetLoadingProgressBarStatusText(const char *statusText);

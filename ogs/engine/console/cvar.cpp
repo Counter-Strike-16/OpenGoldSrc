@@ -35,14 +35,14 @@
 cvar_t *cvar_vars;
 char cvar_null_string[] = "";
 
-void Cvar_Init(void)
+void Cvar_Init()
 {
 #ifndef SWDS
 	// TODO: add client code, possibly none.
 #endif
 }
 
-void Cvar_Shutdown(void)
+void Cvar_Shutdown()
 {
 	// TODO: Check memory releasing
 	cvar_vars = NULL;
@@ -385,7 +385,7 @@ void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 	cvar_vars = dummyvar.next;
 }
 
-NOXREF void Cvar_RemoveHudCvars(void)
+NOXREF void Cvar_RemoveHudCvars()
 {
 	NOXREFCHECK;
 
@@ -449,7 +449,7 @@ const char *Cvar_IsMultipleTokens(const char *varname)
 	return firstToken;	// multiple tokens, return first one
 }
 
-qboolean Cvar_Command(void)
+qboolean Cvar_Command()
 {
 	cvar_t *v;
 	const char *arg0 = Cmd_Argv(0);
@@ -549,7 +549,7 @@ void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
 	}
 }
 
-void Cmd_CvarList_f(void)
+void Cmd_CvarList_f()
 {
 	cvar_t *var;
 	int iCvars;
@@ -674,7 +674,7 @@ void Cmd_CvarList_f(void)
 	}
 }
 
-NOXREF int Cvar_CountServerVariables(void)
+NOXREF int Cvar_CountServerVariables()
 {
 	NOXREFCHECK;
 
@@ -691,7 +691,7 @@ NOXREF int Cvar_CountServerVariables(void)
 	return i;
 }
 
-void Cvar_UnlinkExternals(void)
+void Cvar_UnlinkExternals()
 {
 	cvar_t *pVar;
 	cvar_t **pList;
@@ -714,7 +714,7 @@ void Cvar_UnlinkExternals(void)
 	}
 }
 
-void Cvar_CmdInit(void)
+void Cvar_CmdInit()
 {
 	Cmd_AddCommand("cvarlist", Cmd_CvarList_f);
 }

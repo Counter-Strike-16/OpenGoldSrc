@@ -35,12 +35,12 @@ bool bLowViolenceBuild;
 CSysModule *g_pFileSystemModule;
 CreateInterfaceFn g_FileSystemFactory;
 
-const char *GetBaseDirectory(void)
+const char *GetBaseDirectory()
 {
 	return s_pBaseDir;
 }
 
-NOXREF void *GetFileSystemFactory(void)
+NOXREF void *GetFileSystemFactory()
 {
 	NOXREFCHECK;
 
@@ -54,9 +54,7 @@ bool FileSystem_LoadDLL(CreateInterfaceFn filesystemFactory)
 		g_pFileSystemModule = Sys_LoadModule(FILESYSTEM_DLL_NAME);
 
 		if (g_pFileSystemModule)
-		{
 			filesystemFactory = Sys_GetFactory(g_pFileSystemModule);
-		}
 	}
 
 	if (filesystemFactory)
@@ -70,7 +68,7 @@ bool FileSystem_LoadDLL(CreateInterfaceFn filesystemFactory)
 	return false;
 }
 
-void FileSystem_UnloadDLL(void)
+void FileSystem_UnloadDLL()
 {
 	if (g_pFileSystemModule)
 	{
@@ -81,27 +79,23 @@ void FileSystem_UnloadDLL(void)
 	}
 }
 
-bool BEnabledHDAddon(void)
+bool BEnabledHDAddon()
 {
 	if (COM_CheckParm("-nohdmodels"))
-	{
 		return false;
-	}
 
 	return (registry->ReadInt("hdmodels", 1) > 0);
 }
 
-bool BEnableAddonsFolder(void)
+bool BEnableAddonsFolder()
 {
 	if (COM_CheckParm("-addons"))
-	{
 		return false;
-	}
 
 	return (registry->ReadInt("addons_folder", 0) > 0);
 }
 
-void Host_SetHDModels_f(void)
+void Host_SetHDModels_f()
 {
 	if (g_pcls.state && Cmd_Argc() == 2)
 	{
@@ -110,13 +104,11 @@ void Host_SetHDModels_f(void)
 		registry->WriteInt("hdmodels", !Q_stricmp(Cmd_Argv(1), "1") ? 1 : 0);
 
 		if (bEnabled != BEnabledHDAddon())
-		{
 			COM_SetupDirectories();
-		}
 	}
 }
 
-void Host_SetAddonsFolder_f(void)
+void Host_SetAddonsFolder_f()
 {
 	if (g_pcls.state && Cmd_Argc() == 2)
 	{
@@ -125,21 +117,17 @@ void Host_SetAddonsFolder_f(void)
 		registry->WriteInt("addons_folder", !Q_stricmp(Cmd_Argv(1), "1") ? 1 : 0);
 
 		if (bEnabled != BEnableAddonsFolder())
-		{
 			COM_SetupDirectories();
-		}
 	}
 }
 
-void Host_SetVideoLevel_f(void)
+void Host_SetVideoLevel_f()
 {
 	if (g_pcls.state && Cmd_Argc() == 2)
-	{
 		registry->WriteInt("vid_level", !Q_stricmp(Cmd_Argv(1), "1") ? 1 : 0);
-	}
 }
 
-int Host_GetVideoLevel(void)
+int Host_GetVideoLevel()
 {
 	return registry->ReadInt("vid_level", 0);
 }
@@ -307,9 +295,7 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 	if (!bLowViolenceBuild)
 	{
 		if (CRehldsPlatformHolder::get()->SteamApps() && GetGameAppID() == 70)
-		{
 			bLowViolenceBuild = CRehldsPlatformHolder::get()->SteamApps()->BIsLowViolence();
-		}
 	}
 
 	pchLang = CRehldsPlatformHolder::get()->SteamApps() ? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage() : NULL;
@@ -471,6 +457,7 @@ int FileSystem_AddFallbackGameDir(const char *pGameDir)
 		Q_sprintf(temp, "%s/%s_%s", GetBaseDirectory(), pGameDir, language);
 		g_pFileSystem->AddSearchPath(temp, "GAME");
 	}
+	
 	g_pFileSystem->AddSearchPath(pGameDir, "GAME");
 	return 1;
 }
@@ -487,14 +474,12 @@ int FileSystem_Init(char *basedir, void *voidfilesystemFactory)
 	host_parms.basedir = s_pBaseDir;
 
 	if (FileSystem_LoadDLL((CreateInterfaceFn)voidfilesystemFactory))
-	{
 		return COM_SetupDirectories() != 0;
-	}
 
 	return 0;
 }
 
-void FileSystem_Shutdown(void)
+void FileSystem_Shutdown()
 {
 	FS_RemoveAllSearchPaths();
 	FileSystem_UnloadDLL();

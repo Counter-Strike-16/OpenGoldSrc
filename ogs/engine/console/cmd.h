@@ -25,15 +25,14 @@
 *    version.
 *
 */
+
 #pragma once
 
 #include "maintypes.h"
 #include "common.h"
 #include "cmd_rehlds.h"
 
-/*
-All command/alias names are case insensitive! Arguments not.
-*/
+// All command/alias names are case insensitive! Arguments not
 
 #define MAX_CMD_BUFFER	16384
 #define MAX_CMD_TOKENS	80
@@ -84,23 +83,23 @@ extern qboolean cmd_wait;
 extern cmd_function_t *cmd_functions;
 extern cmdalias_t *cmd_alias;
 
-void Cmd_Wait_f(void);
-void Cbuf_Init(void);
+void Cmd_Wait_f();
+void Cbuf_Init();
 void Cbuf_AddText(char *text);
 void Cbuf_InsertText(char *text);
 void Cbuf_InsertTextLines(char *text);
-void Cbuf_Execute(void);
-void Cmd_StuffCmds_f(void);
-void Cmd_Exec_f(void);
-void Cmd_Echo_f(void);
+void Cbuf_Execute();
+void Cmd_StuffCmds_f();
+void Cmd_Exec_f();
+void Cmd_Echo_f();
 char *CopyString(char *in);
-void Cmd_Alias_f(void);
-struct cmd_function_s *Cmd_GetFirstCmd(void);
-void Cmd_Init(void);
-void Cmd_Shutdown(void);
-int Cmd_Argc(void);
+void Cmd_Alias_f();
+struct cmd_function_s *Cmd_GetFirstCmd();
+void Cmd_Init();
+void Cmd_Shutdown();
+int Cmd_Argc();
 const char *Cmd_Argv(int arg);
-const char *Cmd_Args(void);
+const char *Cmd_Args();
 void Cmd_TokenizeString(char *text);
 NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name);
 NOXREF cmd_function_t *Cmd_FindCmdPrev(char *cmd_name);
@@ -110,14 +109,14 @@ NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function);
 NOXREF void Cmd_AddWrapperCommand(char *cmd_name, xcommand_t function);
 void Cmd_AddGameCommand(char *cmd_name, xcommand_t function);
 void Cmd_RemoveMallocedCmds(int flag);
-NOXREF void Cmd_RemoveHudCmds(void);
-void Cmd_RemoveGameCmds(void);
-void Cmd_RemoveWrapperCmds(void);
+NOXREF void Cmd_RemoveHudCmds();
+void Cmd_RemoveGameCmds();
+void Cmd_RemoveWrapperCmds();
 qboolean Cmd_Exists(const char *cmd_name);
 NOXREF char *Cmd_CompleteCommand(char *search, int forward);
 void Cmd_ExecuteString(char *text, cmd_source_t src);
 qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf);
-void Cmd_ForwardToServer(void);
-qboolean Cmd_ForwardToServerUnreliable(void);
+void Cmd_ForwardToServer();
+qboolean Cmd_ForwardToServerUnreliable();
 NOXREF int Cmd_CheckParm(char *parm);
-void Cmd_CmdList_f(void);
+void Cmd_CmdList_f();

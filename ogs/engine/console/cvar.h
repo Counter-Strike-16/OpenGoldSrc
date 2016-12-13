@@ -36,7 +36,6 @@
 #include "cvardef.h"
 #include "FileSystem.h"
 
-
 #define MAX_CVAR_VALUE 1024
 
 #ifdef HOOK_ENGINE
@@ -45,9 +44,8 @@
 
 extern cvar_t *cvar_vars;
 
-
-void Cvar_Init(void);
-void Cvar_Shutdown(void);
+void Cvar_Init();
+void Cvar_Shutdown();
 cvar_t *Cvar_FindVar(const char *var_name);
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name);
 float Cvar_VariableValue(const char *var_name);
@@ -58,14 +56,14 @@ void Cvar_DirectSet(struct cvar_s *var, const char *value);
 void Cvar_Set(const char *var_name, const char *value);
 void Cvar_SetValue(const char *var_name, float value);
 void Cvar_RegisterVariable(cvar_t *variable);
-NOXREF void Cvar_RemoveHudCvars(void);
+NOXREF void Cvar_RemoveHudCvars();
 const char *Cvar_IsMultipleTokens(const char *varname);
-qboolean Cvar_Command(void);
+qboolean Cvar_Command();
 NOXREF void Cvar_WriteVariables(FileHandle_t f);
 void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f);
-void Cmd_CvarList_f(void);
-NOXREF int Cvar_CountServerVariables(void);
-void Cvar_UnlinkExternals(void);
-void Cvar_CmdInit(void);
+void Cmd_CvarList_f();
+NOXREF int Cvar_CountServerVariables();
+void Cvar_UnlinkExternals();
+void Cvar_CmdInit();
 
 #endif // CVAR_H

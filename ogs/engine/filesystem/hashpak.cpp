@@ -199,7 +199,7 @@ void HPAK_AddToQueue(char *pakname, struct resource_s *pResource, void *pData, F
 	}
 }
 
-void HPAK_FlushHostQueue(void)
+void HPAK_FlushHostQueue()
 {
 	for (hash_pack_queue_t *p = gp_hpak_queue; gp_hpak_queue != NULL; p = gp_hpak_queue)
 	{
@@ -667,7 +667,7 @@ qboolean HPAK_ResourceForHash(char *pakname, unsigned char *hash, struct resourc
 	return bFound;
 }
 
-void HPAK_List_f(void)
+void HPAK_List_f()
 {
 	hash_pack_header_t header;
 	hash_pack_directory_t directory;
@@ -856,7 +856,7 @@ void HPAK_CreatePak(char *pakname, struct resource_s *pResource, void *pData, Fi
 	FS_Close(fp);
 }
 
-void HPAK_Remove_f(void)
+void HPAK_Remove_f()
 {
 	int nIndex;
 	char *pakname;
@@ -881,7 +881,7 @@ void HPAK_Remove_f(void)
 	else Con_Printf("Could not locate resource %i in %s\n", nIndex, pakname);
 }
 
-void HPAK_Validate_f(void)
+void HPAK_Validate_f()
 {
 	hash_pack_header_t header;
 	hash_pack_directory_t directory;
@@ -1012,7 +1012,7 @@ void HPAK_Validate_f(void)
 	Mem_Free(directory.p_rgEntries);
 }
 
-void HPAK_Extract_f(void)
+void HPAK_Extract_f()
 {
 	hash_pack_header_t header;
 	hash_pack_directory_t directory;
@@ -1157,7 +1157,7 @@ void HPAK_Extract_f(void)
 	Mem_Free(directory.p_rgEntries);
 }
 
-void HPAK_Init(void)
+void HPAK_Init()
 {
 #ifdef HOOK_ENGINE
 	Cmd_AddCommand("hpklist", (xcommand_t)GetOriginalFuncAddrOrDefault("HPAK_List_f", (void *)HPAK_List_f));
@@ -1353,6 +1353,7 @@ void HPAK_ValidatePak(char *fullpakname)
 			return;
 		}
 	}
+	
 	FS_Close(fp);
 	Mem_Free(directory.p_rgEntries);
 }

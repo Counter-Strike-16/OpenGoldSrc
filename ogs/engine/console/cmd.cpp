@@ -45,12 +45,12 @@ cmdalias_t *cmd_alias;
 cmd_function_t *cmd_functions;
 char *const cmd_null_string = "";
 
-void Cmd_Wait_f(void)
+void Cmd_Wait_f()
 {
 	cmd_wait = 1;
 }
 
-void Cbuf_Init(void)
+void Cbuf_Init()
 {
 	SZ_Alloc("cmd_text", &cmd_text, MAX_CMD_BUFFER);
 }
@@ -160,7 +160,7 @@ void Cbuf_InsertTextLines(char *text)
 // them through Cmd_ExecuteString.  Stops when the buffer is empty.
 // Normally called once per frame, but may be explicitly invoked.
 // Do not call inside a command function!
-void Cbuf_Execute(void)
+void Cbuf_Execute()
 {
 	int i;
 	char *text;
@@ -237,7 +237,7 @@ void Cbuf_Execute(void)
 	}
 }
 
-void Cmd_StuffCmds_f(void)
+void Cmd_StuffCmds_f()
 {
 	int i;
 	int s;
@@ -303,7 +303,7 @@ void Cmd_StuffCmds_f(void)
 	Z_Free(build);
 }
 
-void Cmd_Exec_f(void)
+void Cmd_Exec_f()
 {
 	const char *pszFileName;
 	const char *pszFileExt;
@@ -404,7 +404,7 @@ void Cmd_Exec_f(void)
 	Mem_Free(pszFileData);
 }
 
-void Cmd_Echo_f(void)
+void Cmd_Echo_f()
 {
 	int i;
 	int c = Cmd_Argc();
@@ -424,7 +424,7 @@ char *CopyString(char *in)
 	return out;
 }
 
-void Cmd_Alias_f(void)
+void Cmd_Alias_f()
 {
 	cmdalias_t *a;
 	const char *s;
@@ -522,12 +522,12 @@ void Cmd_Alias_f(void)
 	a->value = CopyString(cmd);
 }
 
-struct cmd_function_s *Cmd_GetFirstCmd(void)
+struct cmd_function_s *Cmd_GetFirstCmd()
 {
 	return cmd_functions;
 }
 
-void Cmd_Init(void)
+void Cmd_Init()
 {
 	Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
 	Cmd_AddCommand("exec", Cmd_Exec_f);
@@ -538,7 +538,7 @@ void Cmd_Init(void)
 	Cmd_AddCommand("cmdlist", Cmd_CmdList_f);
 }
 
-void Cmd_Shutdown(void)
+void Cmd_Shutdown()
 {
 	for (int i = 0; i < cmd_argc; i++)
 	{
@@ -551,7 +551,7 @@ void Cmd_Shutdown(void)
 	cmd_functions = NULL;	// TODO: Check that memory from functions is released too
 }
 
-int EXT_FUNC Cmd_Argc(void)
+int EXT_FUNC Cmd_Argc()
 {
 #ifndef SWDS
 	g_engdstAddrs->Cmd_Argc();
@@ -573,7 +573,7 @@ const char* EXT_FUNC Cmd_Argv(int arg)
 	return "";	// TODO: Possibly better to return NULL here, but require to check all usages
 }
 
-const char* EXT_FUNC Cmd_Args(void)
+const char* EXT_FUNC Cmd_Args()
 {
 #ifndef SWDS
 	g_engdstAddrs->Cmd_Args();
@@ -816,19 +816,19 @@ void Cmd_RemoveMallocedCmds(int flag)
 	}
 }
 
-NOXREF void Cmd_RemoveHudCmds(void)
+NOXREF void Cmd_RemoveHudCmds()
 {
 	NOXREFCHECK;
 
 	Cmd_RemoveMallocedCmds(FCMD_HUD_COMMAND);
 }
 
-void Cmd_RemoveGameCmds(void)
+void Cmd_RemoveGameCmds()
 {
 	Cmd_RemoveMallocedCmds(FCMD_GAME_COMMAND);
 }
 
-void Cmd_RemoveWrapperCmds(void)
+void Cmd_RemoveWrapperCmds()
 {
 	Cmd_RemoveMallocedCmds(FCMD_WRAPPER_COMMAND);
 }
@@ -1028,7 +1028,7 @@ qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
 	return FALSE;
 }
 
-void Cmd_ForwardToServer(void)
+void Cmd_ForwardToServer()
 {
 	if (Q_stricmp(Cmd_Argv(0), "cmd") || Q_stricmp(Cmd_Argv(1), "dlfile"))
 	{
@@ -1036,7 +1036,7 @@ void Cmd_ForwardToServer(void)
 	}
 }
 
-qboolean Cmd_ForwardToServerUnreliable(void)
+qboolean Cmd_ForwardToServerUnreliable()
 {
 	return Cmd_ForwardToServerInternal(&g_pcls.datagram);
 }
@@ -1065,7 +1065,7 @@ NOXREF int Cmd_CheckParm(char *parm)
 	return 0;
 }
 
-void Cmd_CmdList_f(void)
+void Cmd_CmdList_f()
 {
 	cmd_function_t *cmd;
 	int iCmds;

@@ -28,10 +28,10 @@
 
 #include "precompiled.h"
 
-double realtime;
+double realtime; // // without any filtering or bounding
 double rolling_fps;
 quakeparms_t host_parms;
-qboolean host_initialized;
+qboolean host_initialized; // true if into command execution
 double host_frametime;
 //unsigned short *host_basepal;
 int host_framecount;
@@ -39,7 +39,7 @@ int host_framecount;
 client_t *host_client;
 qboolean gfNoMasterServer;
 //qboolean g_bUsingInGameAdvertisements;
-double oldrealtime;
+double oldrealtime; // last frame run
 int host_hunklevel;
 jmp_buf host_abortserver;
 jmp_buf host_enddemo;
@@ -165,7 +165,7 @@ void __declspec(noreturn) Host_Error(const char *error, ...)
 	Sys_Error(__FUNCTION__ ": %s\n", string);
 }
 
-void Host_InitLocal(void)
+void Host_InitLocal()
 {
 	Host_InitCommands();
 	Cvar_RegisterVariable(&host_killtime);
@@ -245,7 +245,7 @@ NOXREF void Info_WriteVars(FileHandle_t fp)
 	}
 }
 
-void Host_WriteConfiguration(void)
+void Host_WriteConfiguration()
 {
 #ifndef SWDS
 	FILE *f;
@@ -318,7 +318,7 @@ void Host_WriteConfiguration(void)
 #endif // SWDS
 }
 
-void Host_WriteCustomConfig(void)
+void Host_WriteCustomConfig()
 {
 #ifndef SWDS
 	FILE *f;
@@ -608,7 +608,7 @@ void Host_ShutdownServer(qboolean crash)
 	Log_Close();
 }
 
-void SV_ClearClientStates(void)
+void SV_ClearClientStates()
 {
 	int i;
 	client_t *cl;
@@ -620,7 +620,7 @@ void SV_ClearClientStates(void)
 	}
 }
 
-void Host_CheckDyanmicStructures(void)
+void Host_CheckDyanmicStructures()
 {
 	int i;
 	client_t *cl;
@@ -734,12 +734,12 @@ qboolean Host_FilterTime(float time)
 	return TRUE;
 }
 
-qboolean Master_IsLanGame(void)
+qboolean Master_IsLanGame()
 {
 	return sv_lan.value != 0.0f;
 }
 
-void Master_Heartbeat_f(void)
+void Master_Heartbeat_f()
 {
 	//Steam_ForceHeartbeat in move?
 	CRehldsPlatformHolder::get()->SteamGameServer()->ForceHeartbeat();
@@ -830,7 +830,7 @@ void Host_Speeds(double *time)
 #endif // SWDS
 }
 
-void Host_UpdateScreen(void)
+void Host_UpdateScreen()
 {
 	if (!gfBackground)
 	{
@@ -843,7 +843,7 @@ void Host_UpdateScreen(void)
 	}
 }
 
-void Host_UpdateSounds(void)
+void Host_UpdateSounds()
 {
 	if (!gfBackground)
 	{
@@ -851,7 +851,7 @@ void Host_UpdateSounds(void)
 	}
 }
 
-void Host_CheckConnectionFailure(void)
+void Host_CheckConnectionFailure()
 {
 	static int frames = 5;
 	if (g_pcls.state == ca_disconnected && (giSubState & 4 || console.value == 0.0f))
@@ -1004,7 +1004,7 @@ int Host_Frame(float time, int iState, int *stateInfo)
 	return giActive;
 }
 
-void CheckGore(void)
+void CheckGore()
 {
 	if (bLowViolenceBuild)
 	{
@@ -1022,7 +1022,7 @@ void CheckGore(void)
 	}
 }
 
-qboolean Host_IsSinglePlayerGame(void)
+qboolean Host_IsSinglePlayerGame()
 {
 	if (g_psv.active)
 		return g_psvs.maxclients == 1;
@@ -1031,12 +1031,12 @@ qboolean Host_IsSinglePlayerGame(void)
 
 }
 
-qboolean Host_IsServerActive(void)
+qboolean Host_IsServerActive()
 {
 	return g_psv.active;
 }
 
-void Host_Version(void)
+void Host_Version()
 {
 	char szFileName[MAX_PATH];
 
@@ -1219,7 +1219,7 @@ int Host_Init(quakeparms_t *parms)
 	return 1;
 }
 
-void Host_Shutdown(void)
+void Host_Shutdown()
 {
 	static qboolean isdown = FALSE;
 

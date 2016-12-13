@@ -42,8 +42,7 @@
 
 extern IFileSystem *g_pFileSystem;
 
-
-NOXREF void FS_RemoveAllSearchPaths(void);
+NOXREF void FS_RemoveAllSearchPaths();
 void FS_AddSearchPath(const char *pPath, const char *pathID);
 NOXREF int FS_RemoveSearchPath(const char *pPath);
 void FS_RemoveFile(const char *pRelativePath, const char *pathID);
@@ -75,7 +74,7 @@ const char *FS_GetLocalPath(const char *pFileName, char *pLocalPath, int localPa
 NOXREF char *FS_ParseFile(char *pFileBytes, char *pToken, int *pWasQuoted);
 NOXREF int FS_FullPathToRelativePath(const char *pFullpath, char *pRelative);
 NOXREF int FS_GetCurrentDirectory(char *pDirectory, int maxlen);
-NOXREF void FS_PrintOpenedFiles(void);
+NOXREF void FS_PrintOpenedFiles();
 NOXREF void FS_SetWarningFunc(void (*pfnWarning)(const char *, ...));
 NOXREF void FS_SetWarningLevel(FileWarningLevel_t level);
 NOXREF unsigned char FS_GetCharacter(FileHandle_t f);
@@ -90,4 +89,3 @@ void FS_Rename(const char *originalName, const char *newName);
 void *FS_LoadLibrary(const char *dllName);
 
 #endif // _FILESYSTEM_INTERNAL_H
-

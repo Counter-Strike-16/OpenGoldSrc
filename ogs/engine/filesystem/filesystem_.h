@@ -58,20 +58,26 @@ extern bool bLowViolenceBuild;
 extern CSysModule *g_pFileSystemModule;
 extern CreateInterfaceFn g_FileSystemFactory;
 
-const char *GetBaseDirectory(void);
-NOXREF void *GetFileSystemFactory(void);
+const char *GetBaseDirectory();
+NOXREF void *GetFileSystemFactory();
+
 bool FileSystem_LoadDLL(CreateInterfaceFn filesystemFactory);
-void FileSystem_UnloadDLL(void);
-bool BEnabledHDAddon(void);
-bool BEnableAddonsFolder(void);
-void Host_SetHDModels_f(void);
-void Host_SetAddonsFolder_f(void);
-void Host_SetVideoLevel_f(void);
-int Host_GetVideoLevel(void);
+void FileSystem_UnloadDLL();
+
+bool BEnabledHDAddon();
+bool BEnableAddonsFolder();
+
+void Host_SetHDModels_f();
+void Host_SetAddonsFolder_f();
+void Host_SetVideoLevel_f();
+
+int Host_GetVideoLevel();
+
 void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_);
+
 int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir);
 int FileSystem_AddFallbackGameDir(const char *pGameDir);
 int FileSystem_Init(char *basedir, void *voidfilesystemFactory);
-void FileSystem_Shutdown(void); 
+void FileSystem_Shutdown(); 
 
 #endif // FILESYSTEM__H

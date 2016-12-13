@@ -30,7 +30,7 @@
 
 IFileSystem *g_pFileSystem;
 
-NOXREF void FS_RemoveAllSearchPaths(void)
+NOXREF void FS_RemoveAllSearchPaths()
 {
 	//NOXREFCHECK;	// We call it
 
@@ -208,9 +208,7 @@ NOXREF char *FS_ParseFile(char *pFileBytes, char *pToken, int *pWasQuoted)
 	char *result = g_pFileSystem->ParseFile(pFileBytes, pToken, &wasquoted);
 
 	if (pWasQuoted)
-	{
 		*pWasQuoted = wasquoted;
-	}
 
 	return result;
 }
@@ -229,7 +227,7 @@ NOXREF int FS_GetCurrentDirectory(char *pDirectory, int maxlen)
 	return g_pFileSystem->GetCurrentDirectory(pDirectory, maxlen);
 }
 
-NOXREF void FS_PrintOpenedFiles(void)
+NOXREF void FS_PrintOpenedFiles()
 {
 	NOXREFCHECK;
 
