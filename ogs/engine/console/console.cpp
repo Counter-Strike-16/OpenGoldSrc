@@ -54,7 +54,7 @@ extern	int		key_linepos;
 qboolean	con_initialized;
 
 
-void Key_ClearTyping ()
+void Key_ClearTyping()
 {
 	key_lines[edit_line][1] = 0;	// clear any typing
 	key_linepos = 1;
@@ -65,9 +65,9 @@ void Key_ClearTyping ()
 Con_ToggleConsole_f
 ================
 */
-void Con_ToggleConsole_f ()
+void Con_ToggleConsole_f()
 {
-	Key_ClearTyping ();
+	Key_ClearTyping();
 
 	if (key_dest == key_console)
 	{
@@ -77,7 +77,7 @@ void Con_ToggleConsole_f ()
 	else
 		key_dest = key_console;
 	
-	Con_ClearNotify ();
+	Con_ClearNotify();
 }
 
 /*
@@ -85,9 +85,9 @@ void Con_ToggleConsole_f ()
 Con_ToggleChat_f
 ================
 */
-void Con_ToggleChat_f ()
+void Con_ToggleChat_f()
 {
-	Key_ClearTyping ();
+	Key_ClearTyping();
 
 	if (key_dest == key_console)
 	{
@@ -97,7 +97,7 @@ void Con_ToggleChat_f ()
 	else
 		key_dest = key_console;
 	
-	Con_ClearNotify ();
+	Con_ClearNotify();
 }
 
 /*
@@ -105,7 +105,7 @@ void Con_ToggleChat_f ()
 Con_Clear_f
 ================
 */
-void Con_Clear_f ()
+void Con_Clear_f()
 {
 	Q_memset (con_main.text, ' ', CON_TEXTSIZE);
 	Q_memset (con_chat.text, ' ', CON_TEXTSIZE);
@@ -117,7 +117,7 @@ void Con_Clear_f ()
 Con_ClearNotify
 ================
 */
-void Con_ClearNotify ()
+void Con_ClearNotify()
 {
 	int		i;
 	
@@ -131,7 +131,7 @@ void Con_ClearNotify ()
 Con_MessageMode_f
 ================
 */
-void Con_MessageMode_f ()
+void Con_MessageMode_f()
 {
 	chat_team = false;
 	key_dest = key_message;
@@ -142,7 +142,7 @@ void Con_MessageMode_f ()
 Con_MessageMode2_f
 ================
 */
-void Con_MessageMode2_f ()
+void Con_MessageMode2_f()
 {
 	chat_team = true;
 	key_dest = key_message;
@@ -214,7 +214,7 @@ void Con_Resize (console_t *con)
 			}
 		}
 
-		Con_ClearNotify ();
+		Con_ClearNotify();
 	}
 
 	con->current = con_totallines - 1;
@@ -229,7 +229,7 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-void Con_CheckResize ()
+void Con_CheckResize()
 {
 	Con_Resize (&con_main);
 	Con_Resize (&con_chat);
@@ -275,7 +275,7 @@ void Con_Init()
 Con_Linefeed
 ===============
 */
-void Con_Linefeed ()
+void Con_Linefeed()
 {
 	con->x = 0;
 	if (con->display == con->current)
@@ -332,7 +332,7 @@ void Con_Print (char *txt)
 		
 		if (!con->x)
 		{
-			Con_Linefeed ();
+			Con_Linefeed();
 		// mark time for transparent overlay
 			if (con->current >= 0)
 				con_times[con->current % NUM_CON_TIMES] = realtime;
@@ -402,7 +402,7 @@ void Con_Printf (char *fmt, ...)
 		if (!inupdate)
 		{
 			inupdate = true;
-			SCR_UpdateScreen ();
+			SCR_UpdateScreen();
 			inupdate = false;
 		}
 	}
@@ -446,7 +446,7 @@ Con_DrawInput
 The input line scrolls horizontally if typing goes beyond the right edge
 ================
 */
-void Con_DrawInput ()
+void Con_DrawInput()
 {
 	int		y;
 	int		i;
@@ -486,7 +486,7 @@ Con_DrawNotify
 Draws the last few lines of output transparently over the game top
 ================
 */
-void Con_DrawNotify ()
+void Con_DrawNotify()
 {
 	int		x, v;
 	char	*text;
@@ -649,7 +649,7 @@ void Con_DrawConsole (int lines)
 
 
 // draw the input prompt, user text, and cursor if desired
-	Con_DrawInput ();
+	Con_DrawInput();
 }
 
 
@@ -675,12 +675,13 @@ void Con_NotifyBox (char *text)
 
 	do
 	{
-		t1 = Sys_DoubleTime ();
-		SCR_UpdateScreen ();
-		Sys_SendKeyEvents ();
-		t2 = Sys_DoubleTime ();
+		t1 = Sys_DoubleTime();
+		SCR_UpdateScreen();
+		Sys_SendKeyEvents();
+		t2 = Sys_DoubleTime();
 		realtime += t2-t1;		// make the cursor blink
-	} while (key_count < 0);
+	}
+	while (key_count < 0);
 
 	Con_Printf ("\n");
 	key_dest = key_game;
@@ -710,4 +711,3 @@ void Con_SafePrintf (char *fmt, ...)
 	Con_Printf ("%s", msg);
 	scr_disabled_for_loading = temp;
 }
-

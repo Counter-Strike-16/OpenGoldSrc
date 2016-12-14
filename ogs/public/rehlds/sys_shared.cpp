@@ -25,28 +25,48 @@
 *    version.
 *
 */
+#include "sys_shared.h"
 
-#pragma once
+#if defined(__GNUC__)
+#include <cpuid.h>
+#endif
 
-#include "public/rehlds/maintypes.h"
+#define SSE3_FLAG		(1<<0)
+#define SSSE3_FLAG		(1<<9)
+#define SSE4_1_FLAG		(1<<19)
+#define SSE4_2_FLAG		(1<<20)
+#define POPCNT_FLAG		(1<<23)
+#define AVX_FLAG		(1<<28)
+#define AVX2_FLAG		(1<<5)
 
-class IGame {
-public:
-	virtual ~IGame() { }
+cpuinfo_t cpuinfo;
 
-	virtual bool Init(void *pvInstance) = 0;
-	virtual bool Shutdown() = 0;
-	virtual bool CreateGameWindow() = 0;
-	virtual void SleepUntilInput(int time) = 0;
-	virtual HWND GetMainWindow() = 0;
-	virtual HWND *GetMainWindowAddress() = 0;
-	virtual void SetWindowXY(int x, int y) = 0;
-	virtual void SetWindowSize(int w, int h) = 0;
-	virtual void GetWindowRect(int *x, int *y, int *w, int *h) = 0;
-	virtual bool IsActiveApp() = 0;
-	virtual bool IsMultiplayer() = 0;
-	virtual void PlayStartupVideos() = 0;
-	virtual void PlayAVIAndWait(const char *aviFile) = 0;
-	virtual void SetCursorVisible(bool bState) = 0;
+void Sys_CheckCpuInstructionsSupport(void)
+{
+	unsigned int cpuid_data[4];
 
-};
+#if defined ASMLIB_H
+	cpuid_ex((int *)cpuid_data, 1, 0);
+#elif defined(__GNUC__)
+	__get_cpuid(0x1, &cpuid_data[0], &cpuid_data[1], &cpuid_data[2], &cpuid_data[3]);
+#else
+	__cpuidex((int *)cpuid_data, 1, 0);
+#endif
+
+	cpuinfo.sse3 = (cpuid_data[2] & SSE3_FLAG) ? 1 : 0; // ecx
+	cpuinfo.ssse3 = (cpuid_data[2] & SSSE3_FLAG) ? 1 : 0;
+	cpuinfo.sse4_1 = (cpuid_data[2] & SSE4_1_FLAG) ? 1 : 0;
+	cpuinfo.sse4_2 = (cpuid_data[2] & SSE4_2_FLAG) ? 1 : 0;
+	cpuinfo.popcnt = (cpuid_data[2] & POPCNT_FLAG) ? 1 : 0;
+	cpuinfo.avx = (cpuid_data[2] & AVX_FLAG) ? 1 : 0;
+
+#if defined ASMLIB_H
+	cpuid_ex((int *)cpuid_data, 7, 0);
+#elif defined(__GNUC__)
+	__get_cpuid(0x7, &cpuid_data[0], &cpuid_data[1], &cpuid_data[2], &cpuid_data[3]);
+#else
+	__cpuidex((int *)cpuid_data, 7, 0);
+#endif
+
+	cpuinfo.avx2 = (cpuid_data[1] & AVX2_FLAG) ? 1 : 0; // ebx
+}

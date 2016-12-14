@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 D_EndParticles
 ==============
 */
-void D_EndParticles (void)
+void D_EndParticles ()
 {
 // not used by software driver
 }
@@ -41,7 +41,7 @@ void D_EndParticles (void)
 D_StartParticles
 ==============
 */
-void D_StartParticles (void)
+void D_StartParticles ()
 {
 // not used by software driver
 }

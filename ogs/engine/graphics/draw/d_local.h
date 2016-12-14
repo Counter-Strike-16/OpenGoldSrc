@@ -80,15 +80,15 @@ void D_SpriteDrawSpans (sspan_t *pspan);
 void D_DrawSkyScans8 (espan_t *pspan);
 void D_DrawSkyScans16 (espan_t *pspan);
 
-void R_ShowSubDiv (void);
-void (*prealspandrawer)(void);
+void R_ShowSubDiv ();
+void (*prealspandrawer)();
 surfcache_t	*D_CacheSurface (msurface_t *surface, int miplevel);
 
 extern int D_MipLevelForScale (float scale);
 
 #if id386
-extern void D_PolysetAff8Start (void);
-extern void D_PolysetAff8End (void);
+extern void D_PolysetAff8Start ();
+extern void D_PolysetAff8End ();
 #endif
 
 extern short *d_pzbuffer;

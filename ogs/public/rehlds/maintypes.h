@@ -26,27 +26,27 @@
 *
 */
 
+#ifndef MAINTYPES_H
+#define MAINTYPES_H
+#ifdef _WIN32
 #pragma once
+#endif
 
-#include "public/rehlds/maintypes.h"
 
-class IGame {
-public:
-	virtual ~IGame() { }
+#include "osconfig.h"
+#include "mathlib.h"
 
-	virtual bool Init(void *pvInstance) = 0;
-	virtual bool Shutdown() = 0;
-	virtual bool CreateGameWindow() = 0;
-	virtual void SleepUntilInput(int time) = 0;
-	virtual HWND GetMainWindow() = 0;
-	virtual HWND *GetMainWindowAddress() = 0;
-	virtual void SetWindowXY(int x, int y) = 0;
-	virtual void SetWindowSize(int w, int h) = 0;
-	virtual void GetWindowRect(int *x, int *y, int *w, int *h) = 0;
-	virtual bool IsActiveApp() = 0;
-	virtual bool IsMultiplayer() = 0;
-	virtual void PlayStartupVideos() = 0;
-	virtual void PlayAVIAndWait(const char *aviFile) = 0;
-	virtual void SetCursorVisible(bool bState) = 0;
 
-};
+// Has no references on server side.
+#define NOXREF
+// Function body is not implemented.
+#define NOBODY
+// Function is not tested at all.
+#define UNTESTED
+
+#define BIT(n) (1<<(n))
+
+
+typedef unsigned int string_t;		// from engine's pr_comp.h;
+
+#endif // MAINTYPES_H

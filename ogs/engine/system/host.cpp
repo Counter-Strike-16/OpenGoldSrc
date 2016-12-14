@@ -1242,8 +1242,6 @@ int Host_Init(quakeparms_t *parms)
 	
 	CheckGore();
 	
-	Con_Printf ("!!! Fuckin' GoldSrc Initialized !!!\n");
-	
 	host_initialized = TRUE;
 	return 1;
 }

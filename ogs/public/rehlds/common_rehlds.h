@@ -25,28 +25,57 @@
 *    version.
 *
 */
-
 #pragma once
 
-#include "public/rehlds/maintypes.h"
+#include "const.h"
+#include "qlimits.h"
 
-class IGame {
-public:
-	virtual ~IGame() { }
+#ifdef REHLDS_FIXES
+#define COM_TOKEN_LEN	2048
+#else
+#define COM_TOKEN_LEN	1024
+#endif
 
-	virtual bool Init(void *pvInstance) = 0;
-	virtual bool Shutdown() = 0;
-	virtual bool CreateGameWindow() = 0;
-	virtual void SleepUntilInput(int time) = 0;
-	virtual HWND GetMainWindow() = 0;
-	virtual HWND *GetMainWindowAddress() = 0;
-	virtual void SetWindowXY(int x, int y) = 0;
-	virtual void SetWindowSize(int w, int h) = 0;
-	virtual void GetWindowRect(int *x, int *y, int *w, int *h) = 0;
-	virtual bool IsActiveApp() = 0;
-	virtual bool IsMultiplayer() = 0;
-	virtual void PlayStartupVideos() = 0;
-	virtual void PlayAVIAndWait(const char *aviFile) = 0;
-	virtual void SetCursorVisible(bool bState) = 0;
+// Don't allow overflow
+#define SIZEBUF_CHECK_OVERFLOW	0
+#define SIZEBUF_ALLOW_OVERFLOW	BIT(0)
+#define SIZEBUF_OVERFLOWED		BIT(1)
 
-};
+#define MAX_NUM_ARGVS	50
+#define NUM_SAFE_ARGVS	7
+
+#define COM_COPY_CHUNK_SIZE 1024
+#define COM_MAX_CMD_LINE 256
+
+/* <6ae> ../common/common.h:82 */
+typedef struct sizebuf_s
+{
+	const char *buffername;
+	uint16 flags;
+	byte *data;
+	int maxsize;
+	int cursize;
+} sizebuf_t;
+
+/* <270aa> ../common/common.h:297 */
+typedef struct downloadtime_s
+{
+	qboolean bUsed;
+	float fTime;
+	int nBytesRemaining;
+} downloadtime_t;
+
+/* <19fa2> ../common/common.h:303 */
+typedef struct incomingtransfer_s
+{
+	qboolean doneregistering;
+	int percent;
+	qboolean downloadrequested;
+	downloadtime_t rgStats[8];
+	int nCurStat;
+	int nTotalSize;
+	int nTotalToTransfer;
+	int nRemainingToTransfer;
+	float fLastStatusUpdate;
+	qboolean custom;
+} incomingtransfer_t;

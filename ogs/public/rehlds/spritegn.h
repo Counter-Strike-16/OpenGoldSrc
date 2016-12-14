@@ -26,27 +26,65 @@
 *
 */
 
+#ifndef SPRITEGN_H
+#define SPRITEGN_H
+#ifdef _WIN32
 #pragma once
+#endif
 
-#include "public/rehlds/maintypes.h"
+#include "modelgen.h"
 
-class IGame {
-public:
-	virtual ~IGame() { }
 
-	virtual bool Init(void *pvInstance) = 0;
-	virtual bool Shutdown() = 0;
-	virtual bool CreateGameWindow() = 0;
-	virtual void SleepUntilInput(int time) = 0;
-	virtual HWND GetMainWindow() = 0;
-	virtual HWND *GetMainWindowAddress() = 0;
-	virtual void SetWindowXY(int x, int y) = 0;
-	virtual void SetWindowSize(int w, int h) = 0;
-	virtual void GetWindowRect(int *x, int *y, int *w, int *h) = 0;
-	virtual bool IsActiveApp() = 0;
-	virtual bool IsMultiplayer() = 0;
-	virtual void PlayStartupVideos() = 0;
-	virtual void PlayAVIAndWait(const char *aviFile) = 0;
-	virtual void SetCursorVisible(bool bState) = 0;
+#define IDSPRITEHEADER	(('P'<<24)+('S'<<16)+('D'<<8)+'I')
+#define SPRITE_VERSION	2
 
-};
+
+typedef enum spriteframetype_e
+{
+	SPR_SINGLE = 0,
+	SPR_GROUP,
+	SPR_ANGLED
+} spriteframetype_t;
+
+/* <4aea6> ../engine/spritegn.h:50 */
+typedef struct dsprite_s
+{
+	int				ident;
+	int				version;
+	int				type;
+	int				texFormat;
+	float			boundingradius;
+	int				width;
+	int				height;
+	int				numframes;
+	float			beamlength;
+	synctype_t		synctype;
+} dsprite_t;
+
+/* <4af46> ../engine/spritegn.h:74 */
+typedef struct dspriteframe_s
+{
+	int				origin[2];
+	int				width;
+	int				height;
+} dspriteframe_t;
+
+/* <4af84> ../engine/spritegn.h:80 */
+typedef struct dspritegroup_s
+{
+	int				numframes;
+} dspritegroup_t;
+
+/* <4afa6> ../engine/spritegn.h:84 */
+typedef struct dspriteinterval_s
+{
+	float			interval;
+} dspriteinterval_t;
+
+/* <4afe8> ../engine/spritegn.h:90 */
+typedef struct dspriteframetype_s
+{
+	spriteframetype_t type;
+} dspriteframetype_t;
+
+#endif // SPRITEGN_H

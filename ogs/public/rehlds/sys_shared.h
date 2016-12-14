@@ -25,28 +25,15 @@
 *    version.
 *
 */
-
 #pragma once
 
-#include "public/rehlds/maintypes.h"
+#include <archtypes.h>
 
-class IGame {
-public:
-	virtual ~IGame() { }
+typedef struct cpuinfo_s
+{
+	uint8 sse3, ssse3, sse4_1, sse4_2, avx, avx2, popcnt;
+} cpuinfo_t;
 
-	virtual bool Init(void *pvInstance) = 0;
-	virtual bool Shutdown() = 0;
-	virtual bool CreateGameWindow() = 0;
-	virtual void SleepUntilInput(int time) = 0;
-	virtual HWND GetMainWindow() = 0;
-	virtual HWND *GetMainWindowAddress() = 0;
-	virtual void SetWindowXY(int x, int y) = 0;
-	virtual void SetWindowSize(int w, int h) = 0;
-	virtual void GetWindowRect(int *x, int *y, int *w, int *h) = 0;
-	virtual bool IsActiveApp() = 0;
-	virtual bool IsMultiplayer() = 0;
-	virtual void PlayStartupVideos() = 0;
-	virtual void PlayAVIAndWait(const char *aviFile) = 0;
-	virtual void SetCursorVisible(bool bState) = 0;
+extern cpuinfo_t cpuinfo;
 
-};
+void Sys_CheckCpuInstructionsSupport(void);

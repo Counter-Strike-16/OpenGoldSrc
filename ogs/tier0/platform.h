@@ -19,7 +19,7 @@
 #pragma once
 #endif
 
-#include "osconfig.h"
+#include "public/rehlds/osconfig.h"
 
 // need this for _alloca
 #include <malloc.h>
@@ -27,7 +27,7 @@
 // need this for memset
 #include <string.h>
 
-#include "archtypes.h"
+#include "public/archtypes.h"
 
 typedef float  float32;
 typedef double float64;

@@ -25,28 +25,37 @@
 *    version.
 *
 */
-
 #pragma once
 
-#include "public/rehlds/maintypes.h"
+#include "archtypes.h"
 
-class IGame {
+class IRehldsFlightRecorder
+{
 public:
-	virtual ~IGame() { }
+	virtual ~IRehldsFlightRecorder() { }
 
-	virtual bool Init(void *pvInstance) = 0;
-	virtual bool Shutdown() = 0;
-	virtual bool CreateGameWindow() = 0;
-	virtual void SleepUntilInput(int time) = 0;
-	virtual HWND GetMainWindow() = 0;
-	virtual HWND *GetMainWindowAddress() = 0;
-	virtual void SetWindowXY(int x, int y) = 0;
-	virtual void SetWindowSize(int w, int h) = 0;
-	virtual void GetWindowRect(int *x, int *y, int *w, int *h) = 0;
-	virtual bool IsActiveApp() = 0;
-	virtual bool IsMultiplayer() = 0;
-	virtual void PlayStartupVideos() = 0;
-	virtual void PlayAVIAndWait(const char *aviFile) = 0;
-	virtual void SetCursorVisible(bool bState) = 0;
+	virtual uint16 RegisterMessage(const char* module, const char *message, unsigned int version, bool inOut) = 0;
+	
+	virtual void StartMessage(uint16 msg, bool entrance) = 0;
+	virtual void EndMessage(uint16 msg, bool entrance) = 0;
+	
+	virtual void WriteInt8(int8 v) = 0;
+	virtual void WriteUInt8(uint8 v) = 0;
+	
+	virtual void WriteInt16(int16 v) = 0;
+	virtual void WriteUInt16(uint16 v) = 0;
+
+	virtual void WriteInt32(int32 v) = 0;
+	virtual void WriteUInt32(uint32 v) = 0;
+
+	virtual void WriteInt64(int64 v) = 0;
+	virtual void WriteUInt64(uint64 v) = 0;
+
+	virtual void WriteFloat(float v) = 0;
+	virtual void WriteDouble(double v) = 0;
+
+	virtual void WriteString(const char* s) = 0;
+
+	virtual void WriteBuffer(const void* data ,unsigned int len) = 0;
 
 };

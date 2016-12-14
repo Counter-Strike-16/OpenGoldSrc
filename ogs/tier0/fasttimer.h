@@ -11,8 +11,8 @@
 #pragma once
 #endif
 
-#include "osconfig.h"
-#include "tier0/platform.h"
+#include "public/rehlds/osconfig.h"
+#include "platform.h"
 
 
 PLATFORM_INTERFACE __int64 g_ClockSpeed;
