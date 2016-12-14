@@ -27,7 +27,7 @@
 */
 
 #include "precompiled.h"
-#include "system/dedicatedserverpi.h"
+#include "system/dedicatedserverapi.h"
 
 IDedicatedExports *dedicated_;
 
@@ -41,12 +41,7 @@ bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn l
 	if(!dedicated_)
 		return false;
 	
-#ifdef REHLDS_CHECKS
-	Q_strncpy(this->m_OrigCmd, cmdline, ARRAYSIZE(this->m_OrigCmd));
-	this->m_OrigCmd[ARRAYSIZE(this->m_OrigCmd) - 1] = 0;
-#else
-	Q_strcpy(this->m_OrigCmd, cmdline);
-#endif
+	Q_strncpy(m_OrigCmd, cmdline, charsmax(m_OrigCmd));
 	
 	if(!Q_strstr(cmdline, "-nobreakpad"))
 		CRehldsPlatformHolder::get()->SteamAPI_UseBreakpadCrashHandler(va("%d", build_number()), __BUILD_DATE__, __BUILD_TIME__, 0, 0, 0);
