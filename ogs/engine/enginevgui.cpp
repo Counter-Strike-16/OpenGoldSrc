@@ -3,16 +3,23 @@
 IGameUI *gpGameUI = nullptr;
 IGameConsole *gpGameConsole = nullptr;
 
+static CEngineVGui gEngineVGuiImp;
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CEngineVGui, IEngineVGui, VENGINE_VGUI_VERSION, g_EngineVGuiImp);
+
+IEngineVGuiInternal *EngineVGui()
+{
+	return &gEngineVGuiImp;
+}
+
 CEngineVGui::CEngineVGui()
 {
 };
 
-CEngineVGui::~CEngineVGui()
-{
-};
-
+// Setup the base vgui panels
 void CEngineVGui::Init()
 {
+	COM_TimestampedLog("Loading gameui dll");
+	
 	gpGameUI = (IGameUI*)fnLauncherFactory(GAMEUI_INTERFACE_VERSION, nullptr);
 	
 	if(!gpGameUI)
@@ -36,12 +43,7 @@ void CEngineVGui::Shutdown()
 	gpGameUI->Shutdown();
 };
 
-void CEngineVGui::Update()
-{
-	gpGameUI->RunFrame();
-};
-
-void CEngineVGui::SetMenuActive(bool bActive)
+void CEngineVGui::SetGameUIActive(bool bActive)
 {
 	if(bActive)
 		gpGameUI->ActivateGameUI();
@@ -49,19 +51,26 @@ void CEngineVGui::SetMenuActive(bool bActive)
 		gpGameUI->HideGameUI();
 };
 
-bool CEngineVGui::IsMenuActive()
+bool CEngineVGui::IsGameUIActive()
 {
-	return gpGameUI->IsGameUIActive();
+	//return gpGameUI && gpGameUI->IsGameUIActive();
+	return false;
 };
 
+// Show/hide the console
 void CEngineVGui::SetConsoleVisible(bool bVisible)
 {
-	gpGameUI->ActivateGameUI();
-	
-	if(bVisible)
-		gpGameConsole->Activate();
-	else
-		gpGameConsole->Hide();
+	if(gpGameConsole)
+	{
+		if(bVisible)
+		{
+			SetGameUIActive(true);
+			
+			gpGameConsole->Activate();
+		}
+		else
+			gpGameConsole->Hide();
+	};
 };
 
 bool CEngineVGui::IsConsoleVisible()
@@ -69,7 +78,14 @@ bool CEngineVGui::IsConsoleVisible()
 	return gpGameConsole->IsConsoleVisible();
 };
 
+// Clear all text from the console
 void CEngineVGui::ClearConsole()
 {
-	gpGameConsole->Clear();
+	if(gpGameConsole)
+		gpGameConsole->Clear();
+};
+
+void CEngineVGui::Simulate()
+{
+	gpGameUI->RunFrame();
 };

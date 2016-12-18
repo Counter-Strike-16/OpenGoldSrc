@@ -7,7 +7,7 @@
 // enumeration of level loading progress bar spots
 enum LevelLoadingProgress_e
 {
-	PROGRESS_NONE,
+	PROGRESS_NONE = 0,
 	PROGRESS_CHANGELEVEL,				// Server is changing level
 	PROGRESS_SPAWNSERVER,				//
 	PROGRESS_LOADWORLDMODEL,			//
@@ -122,18 +122,26 @@ class CEngineVGui : public IEngineVGuiInternal
 {
 public:
 	CEngineVGui();
-	~CEngineVGui();
+	~CEngineVGui() = default;
+	
+	VPANEL GetPanel(VGUIPANEL type);
 	
 	void Init();
 	void Connect();
 	void Shutdown();
 	
-	VPANEL GetPanel(VGUIPANEL type);
+	bool SetVGUIDirectories();
 	
-	void SetMenuActive(bool bActive);
-	bool IsMenuActive();
+	bool IsInitialized() const;
+	
+	CreateInterfaceFn GetGameUIFactory();
+	
+	void SetGameUIActive(bool bActive);
+	bool IsGameUIActive();
 	
 	void SetConsoleVisible(bool bVisible);
 	bool IsConsoleVisible();
 	void ClearConsole();
+	
+	void Simulate();
 };

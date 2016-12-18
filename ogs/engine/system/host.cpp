@@ -831,25 +831,53 @@ void Host_Speeds(double *time)
 #endif // SWDS
 }
 
+/*
+==================
+Host_UpdateScreen
+
+Refresh the screen
+==================
+*/
 void Host_UpdateScreen()
 {
-	if (!gfBackground)
+	if(!gfBackground)
 	{
 		SCR_UpdateScreen();
-		if (cl_inmovie)
+		if(cl_inmovie)
 		{
-			if (*(float *)&scr_con_current == 0.0f)
+			if(*(float *)&scr_con_current == 0.0f)
 				VID_WriteBuffer(NULL);
 		}
 	}
 }
 
+/*
+==================
+Host_UpdateSounds
+
+Update sound subsystem and cd audio
+==================
+*/
 void Host_UpdateSounds()
 {
-	if (!gfBackground)
+	if(!gfBackground)
 	{
 		//S_PrintStats();
 	}
+	
+	/*
+		#if defined( _WIN32 ) && !defined( SWDS )
+		// update audio
+		if ( cl.IsActive() )
+		{
+			S_Update( &s_AudioState );	
+		}
+		else
+		{
+			S_Update( NULL );
+		}
+		#endif
+	*/
 }
 
 void Host_CheckConnectionFailure()

@@ -118,8 +118,8 @@ float           scr_disabled_time;
 
 qboolean        block_drawing;
 
-void SCR_ScreenShot_f (void);
-void SCR_RSShot_f (void);
+void SCR_ScreenShot_f ();
+void SCR_RSShot_f ();
 
 /*
 ===============================================================================
@@ -161,7 +161,7 @@ void SCR_CenterPrint (char *str)
 }
 
 
-void SCR_DrawCenterString (void)
+void SCR_DrawCenterString ()
 {
 	char    *start;
 	int             l;
@@ -208,7 +208,7 @@ void SCR_DrawCenterString (void)
 	} while (1);
 }
 
-void SCR_CheckDrawCenterString (void)
+void SCR_CheckDrawCenterString ()
 {
 	scr_copytop = 1;
 	if (scr_center_lines > scr_erase_lines)
@@ -256,7 +256,7 @@ Must be called whenever vid changes
 Internal use only
 =================
 */
-static void SCR_CalcRefdef (void)
+static void SCR_CalcRefdef ()
 {
 	float           size;
 	int             h;
@@ -347,7 +347,7 @@ SCR_SizeUp_f
 Keybinding command
 =================
 */
-void SCR_SizeUp_f (void)
+void SCR_SizeUp_f ()
 {
 	Cvar_SetValue ("viewsize",scr_viewsize.value+10);
 	vid.recalc_refdef = 1;
@@ -361,7 +361,7 @@ SCR_SizeDown_f
 Keybinding command
 =================
 */
-void SCR_SizeDown_f (void)
+void SCR_SizeDown_f ()
 {
 	Cvar_SetValue ("viewsize",scr_viewsize.value-10);
 	vid.recalc_refdef = 1;
@@ -374,7 +374,7 @@ void SCR_SizeDown_f (void)
 SCR_Init
 ==================
 */
-void SCR_Init (void)
+void SCR_Init ()
 {
 	Cvar_RegisterVariable (&scr_fov);
 	Cvar_RegisterVariable (&scr_viewsize);
@@ -386,12 +386,14 @@ void SCR_Init (void)
 	Cvar_RegisterVariable (&scr_printspeed);
 	Cvar_RegisterVariable (&scr_allowsnap);
 	Cvar_RegisterVariable (&gl_triplebuffer);
-
-//
-// register our commands
-//
+	
+	//
+	// register our commands
+	//
 	Cmd_AddCommand ("screenshot",SCR_ScreenShot_f);
 	Cmd_AddCommand ("snap",SCR_RSShot_f);
+	
+	// This two funcs do nothing in GS
 	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
 
@@ -409,7 +411,7 @@ void SCR_Init (void)
 SCR_DrawRam
 ==============
 */
-void SCR_DrawRam (void)
+void SCR_DrawRam ()
 {
 	if (!scr_showram.value)
 		return;
@@ -425,7 +427,7 @@ void SCR_DrawRam (void)
 SCR_DrawTurtle
 ==============
 */
-void SCR_DrawTurtle (void)
+void SCR_DrawTurtle ()
 {
 	static int      count;
 	
@@ -450,7 +452,7 @@ void SCR_DrawTurtle (void)
 SCR_DrawNet
 ==============
 */
-void SCR_DrawNet (void)
+void SCR_DrawNet ()
 {
 	if (cls.netchan.outgoing_sequence - cls.netchan.incoming_acknowledged < UPDATE_BACKUP-1)
 		return;
@@ -460,7 +462,7 @@ void SCR_DrawNet (void)
 	Draw_Pic (scr_vrect.x+64, scr_vrect.y, scr_net);
 }
 
-void SCR_DrawFPS (void)
+void SCR_DrawFPS ()
 {
 	extern cvar_t show_fps;
 	static double lastframetime;
@@ -493,7 +495,7 @@ void SCR_DrawFPS (void)
 DrawPause
 ==============
 */
-void SCR_DrawPause (void)
+void SCR_DrawPause ()
 {
 	qpic_t  *pic;
 
@@ -508,14 +510,12 @@ void SCR_DrawPause (void)
 		(vid.height - 48 - pic->height)/2, pic);
 }
 
-
-
 /*
 ==============
 SCR_DrawLoading
 ==============
 */
-void SCR_DrawLoading (void)
+void SCR_DrawLoading ()
 {
 	qpic_t  *pic;
 
@@ -527,17 +527,14 @@ void SCR_DrawLoading (void)
 		(vid.height - 48 - pic->height)/2, pic);
 }
 
-
-
 //=============================================================================
-
 
 /*
 ==================
 SCR_SetUpToDrawConsole
 ==================
 */
-void SCR_SetUpToDrawConsole (void)
+void SCR_SetUpToDrawConsole ()
 {
 	Con_CheckResize ();
 	
@@ -585,7 +582,7 @@ void SCR_SetUpToDrawConsole (void)
 SCR_DrawConsole
 ==================
 */
-void SCR_DrawConsole (void)
+void SCR_DrawConsole ()
 {
 	if (scr_con_current)
 	{
@@ -623,7 +620,7 @@ typedef struct _TargaHeader {
 SCR_ScreenShot_f
 ================== 
 */  
-void SCR_ScreenShot_f (void) 
+void SCR_ScreenShot_f () 
 {
 	byte            *buffer;
 	char            pcxname[80]; 
@@ -829,7 +826,7 @@ void SCR_DrawStringToSnap (const char *s, byte *buf, int x, int y, int width)
 SCR_RSShot_f
 ================== 
 */  
-void SCR_RSShot_f (void) 
+void SCR_RSShot_f () 
 { 
 	int     i, x, y;
 	unsigned char		*src, *dest;
@@ -961,7 +958,7 @@ void SCR_RSShot_f (void)
 char    *scr_notifystring;
 qboolean        scr_drawdialog;
 
-void SCR_DrawNotifyString (void)
+void SCR_DrawNotifyString ()
 {
 	char    *start;
 	int             l;
@@ -1035,7 +1032,7 @@ SCR_BringDownConsole
 Brings the console down and fades the palettes back to normal
 ================
 */
-void SCR_BringDownConsole (void)
+void SCR_BringDownConsole ()
 {
 	int             i;
 	
@@ -1048,7 +1045,7 @@ void SCR_BringDownConsole (void)
 	VID_SetPalette (host_basepal);
 }
 
-void SCR_TileClear (void)
+void SCR_TileClear ()
 {
 	if (r_refdef.vrect.x > 0) {
 		// left
@@ -1085,7 +1082,7 @@ WARNING: be very careful calling this from elsewhere, because the refresh
 needs almost the entire 256k of stack space!
 ==================
 */
-void SCR_UpdateScreen (void)
+void SCR_UpdateScreen ()
 {
 	if (block_drawing)
 		return;
@@ -1105,12 +1102,15 @@ void SCR_UpdateScreen (void)
 		else
 			return;
 	}
-
-	if (!scr_initialized || !con_initialized)
-		return;                         // not initialized yet
-
-
-	if (oldsbar != cl_sbar.value) {
+	
+	// not initialized yet
+	if(!scr_initialized || !con_initialized)
+		return;
+	
+	EngineVGui()->Simulate();
+	
+	if (oldsbar != cl_sbar.value)
+	{
 		oldsbar = cl_sbar.value;
 		vid.recalc_refdef = true;
 	}

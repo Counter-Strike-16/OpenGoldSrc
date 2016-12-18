@@ -14,5 +14,11 @@ int AppMain();
 
 int AppMain()
 {
+	LibUtil::LoadLibrary("engine");
+	
+	while(1)
+	{
+	};
+	
 	return EXIT_SUCCESS;
 };
