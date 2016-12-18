@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="resource">
+      <UniqueIdentifier>{60df4480-88a9-4c2d-82f0-e65954a92328}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\conproc.cpp" />
+    <ClCompile Include="..\engine.cpp" />
+    <ClCompile Include="..\sys_ded.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\conproc.h" />
+    <ClInclude Include="..\..\common\crc.h" />
+    <ClInclude Include="..\dedicated.h" />
+    <ClInclude Include="..\resource.h" />
+    <ClInclude Include="..\sys_ded.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\NetGame.ico">
+      <Filter>resource</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\dedicated.rc">
+      <Filter>resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

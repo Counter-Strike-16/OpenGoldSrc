@@ -1,3 +1,5 @@
+#include "public/platform.h"
+
 int AppMain();
 
 #ifdef WIN32
