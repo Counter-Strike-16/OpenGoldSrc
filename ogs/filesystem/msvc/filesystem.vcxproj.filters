@@ -14,4 +14,16 @@
       <UniqueIdentifier>{f07e0a27-bb0f-40fe-81bd-53e5f0a52bbf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\tier1\interface.cpp" />
+    <ClCompile Include="..\stdio\FileSystemImpl.cpp">
+      <Filter>stdio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\null\FileSystemImpl.cpp">
+      <Filter>null</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\FileSystemImpl.h" />
+  </ItemGroup>
 </Project>

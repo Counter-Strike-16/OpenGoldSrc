@@ -19,7 +19,7 @@
 #endif
 
 #include "public/rehlds/osconfig.h"
-#include "tier0/dbg.h"
+#include "dbg/dbg.h"
 #include <string.h>
 #include "tier0/platform.h"
 

@@ -27,7 +27,7 @@
 
 // valve libs stuff
 #include "tier0/platform.h"
-#include "tier0/dbg.h"
+#include "dbg/dbg.h"
 
 #include "public/interface.h"
 #include "public/iregistry.h"

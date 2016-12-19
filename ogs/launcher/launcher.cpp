@@ -8,7 +8,7 @@ IFileSystem *gpFileSystem = NULL;
 
 int AppMain(void *hInstance);
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(_DEBUG)
 	int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
 		return AppMain(hInstance);
@@ -16,7 +16,13 @@ int AppMain(void *hInstance);
 #else
 	int main(int argc, char **argv)
 	{
-		return AppMain();
+		void *hInstance = NULL;
+
+#ifdef _WIN32
+		hInstance = GetModuleHandle(NULL); // Any better idea?
+#endif
+
+		return AppMain(hInstance);
 	};
 #endif
 
@@ -27,7 +33,10 @@ CSysModule *LoadFilesystemModule() // put name in args?
 	if(!hFSModule)
 	{
 		//Plat_MessageBox(eMsgBoxType_Error, "Fatal Error", "Could not load filesystem dll.\nFileSystem crashed during construction.");
-		return NULL;
+		
+		// fallback to null impl (tracing)
+		if(!(hFSModule = Sys_LoadModule("filesystem_null")))
+			return NULL;
 	};
 	
 	return hFSModule;
@@ -157,7 +166,7 @@ int AppMain(void *hInstance) // Sys_Main
 			nResult = pEngineAPI->Run(hInstance, Sys_GetLongPathName(), (char*)CommandLine()->GetCmdLine(), sNewCommandParams, Sys_GetFactoryThis(), Sys_GetFactory(hFileSystemLib));
 			//MH_ExitGame(iResult);
 
-			if(1 > 2) //if(bUseBlobDLL)
+			if(bUseBlobDLL)
 				int a = 5; //FreeBlob(&g_blobfootprintClient);
 			else
 				Sys_UnloadModule(hEngineLib);

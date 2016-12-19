@@ -34,7 +34,7 @@
 
 
 #include "osconfig.h"
-#include "mathlib.h"
+#include "common/mathlib.h"
 
 
 // Has no references on server side.
