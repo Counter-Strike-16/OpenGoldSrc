@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 
 #define ZONE_DYNAMIC_SIZE 0x20000
 

@@ -27,9 +27,15 @@
 */
 
 #include "precompiled.h"
+#include "system/common.h"
 #include "system/dedicatedserverapi.h"
+#include "system/host.h"
+#include "console/cmd.h"
+#include "system/traceinit.h"
+#include "system/sys_dll2.h"
 
 IDedicatedExports *dedicated_;
+qboolean g_bIsDedicatedServer;
 
 #ifndef HOOK_ENGINE
 	EXPOSE_SINGLE_INTERFACE(CDedicatedServerAPI, IDedicatedServerAPI, VENGINE_HLDS_API_VERSION);

@@ -4,6 +4,8 @@
 
 #include "public/rehlds/osconfig.h"
 
+#include "common/commontypes.h"
+
 #include "public/archtypes.h"
 //#include "asmlib.h"
 #include "math/sse_mathfun.h"

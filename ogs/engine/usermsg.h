@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 #include "quakedef.h"
 
 typedef struct _UserMsg

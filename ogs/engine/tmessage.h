@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 
 #define DEMO_MESSAGE		"__DEMOMESSAGE__"
 #define NETWORK_MESSAGE1	"__NETMESSAGE__1"

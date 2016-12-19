@@ -15,10 +15,11 @@
 *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #pragma once
-#include "studio.h"
+
+#include "engine/studio.h"
 #include "model.h"
 #include "r_studioint.h"
-#include "cvardef.h"
+#include "common/cvardef.h"
 
 typedef struct r_studiocache_s r_studiocache_t;
 

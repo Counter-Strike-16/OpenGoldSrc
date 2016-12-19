@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 
 // TODO: I think this defines must be in /common/
 #define NUM_EDICTS				900
@@ -40,24 +40,24 @@
 #define MAX_PACKET_ENTITIES		256
 
 #include "custom_int.h"
-#include "crc.h"
-#include "cvar.h"
-#include "dll_state.h"
+#include "common/crc.h"
+#include "console/cvar.h"
+#include "common/dll_state.h"
 #include "consistency.h"
 #include "event.h"
-#include "entity_state.h"
-#include "delta.h"
+#include "common/entity_state.h"
+#include "network/delta.h"
 #include "delta_packet.h"
 #include "model.h"
-#include "net.h"
-#include "progs.h"
+#include "network/net.h"
+#include "engine/progs.h"
 #include "filter.h"
 #include "server_static.h"
 #include "usermsg.h"
 #include "userid.h"
 #include "pm_defs.h"
-#include "inst_baseline.h"
-#include "net_ws.h"
+#include "world/inst_baseline.h"
+#include "network/net_ws.h"
 
 #define DEFAULT_SOUND_PACKET_VOLUME			255
 #define DEFAULT_SOUND_PACKET_ATTENUATION	1.0f

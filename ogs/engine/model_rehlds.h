@@ -25,6 +25,7 @@
 *    version.
 *
 */
+
 #pragma once
 
 /*
@@ -40,10 +41,9 @@
 
 #include "model.h"
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 #include "bspfile.h"
-#include "crc.h"
-
+#include "common/crc.h"
 
 #ifdef HOOK_ENGINE
 #define loadmodel (*ploadmodel)

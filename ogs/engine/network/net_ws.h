@@ -32,10 +32,10 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 #include "enums.h"
-#include "common.h"
-#include "netadr.h"
+#include "system/common.h"
+#include "common/netadr.h"
 
 #ifndef _WIN32
 

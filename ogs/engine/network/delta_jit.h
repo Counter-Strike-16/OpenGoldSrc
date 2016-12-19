@@ -1,6 +1,6 @@
 #pragma once
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 
 #define DELTAJIT_MAX_BLOCKS 32
 #define DELTAJIT_MAX_FIELDS 56

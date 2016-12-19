@@ -32,23 +32,23 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "common.h"
+#include "rehlds/maintypes.h"
+#include "system/common.h"
 #include "custom.h"
-#include "cl_entity.h"
+#include "common/cl_entity.h"
 #include "consistency.h"
 #include "delta_packet.h"
-#include "dlight.h"
-#include "entity_state.h"
+#include "common/dlight.h"
+#include "common/entity_state.h"
 #include "event.h"
 #include "info.h"
 #include "net.h"
-#include "keys.h"
-#include "sound.h"
+#include "input/keys.h"
+#include "sound/sound.h"
 #include "screenfade.h"
-#include "usercmd.h"
+#include "common/usercmd.h"
 #include "model.h"
-#include "kbutton.h"
+#include "common/kbutton.h"
 
 #define MAX_SCOREBOARDNAME	32
 #define MAX_DEMOS		32

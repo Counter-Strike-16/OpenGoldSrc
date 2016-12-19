@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "FileSystem.h"
+#include "rehlds/maintypes.h"
+#include "public/FileSystem.h"
 
 
 #ifdef HOOK_ENGINE

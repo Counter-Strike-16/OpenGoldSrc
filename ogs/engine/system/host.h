@@ -32,10 +32,10 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "filesystem_internal.h"
-#include "sys_dll.h"
-#include "server.h"
+#include "rehlds/maintypes.h"
+#include "filesystem/filesystem_internal.h"
+#include "system/sys_dll.h"
+#include "server/server.h"
 #include "rehlds_api.h"
 
 #define MAX_COMMAND_LINE_PARAMS 50

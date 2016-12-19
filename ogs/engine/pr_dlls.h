@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "eiface.h"
+#include "rehlds/maintypes.h"
+#include "engine/eiface.h"
 
 typedef struct functiontable_s
 {
@@ -48,8 +48,8 @@ typedef struct extensiondll_s
 	int functionCount;
 } extensiondll_t;
 
-typedef void(*ENTITYINIT)(struct entvars_s *);
-typedef void(*DISPATCHFUNCTION)(struct entvars_s *, void *);
-typedef void(*FIELDIOFUNCTION)(SAVERESTOREDATA *, const char *, void *, TYPEDESCRIPTION *, int);
+typedef void (*ENTITYINIT)(struct entvars_s *);
+typedef void (*DISPATCHFUNCTION)(struct entvars_s *, void *);
+typedef void (*FIELDIOFUNCTION)(SAVERESTOREDATA *, const char *, void *, TYPEDESCRIPTION *, int);
 
 #endif // PR_DLLS_H

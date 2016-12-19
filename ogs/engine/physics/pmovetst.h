@@ -32,10 +32,10 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "pm_defs.h"
+#include "rehlds/maintypes.h"
+#include "pm_shared/pm_defs.h"
 #include "model.h"
-#include "world.h"
+#include "world/world.h"
 
 
 #ifdef HOOK_ENGINE

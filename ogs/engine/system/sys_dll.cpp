@@ -51,7 +51,6 @@ char gszDisconnectReason[MAX_DISCONNECT_REASON];
 char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON];
 
 qboolean gfExtendedError;
-qboolean g_bIsDedicatedServer;
 
 int giSubState;
 int giActive;

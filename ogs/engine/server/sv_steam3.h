@@ -32,13 +32,13 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "common.h"
+#include "rehlds/maintypes.h"
+#include "system/common.h"
 #include "common/SteamCommon.h"
 #include "public/steam/steam_api.h"
 #include "public/steam/steam_gameserver.h"
 #include "public/steam/steamclientpublic.h"
-#include "server.h"
+#include "server/server.h"
 
 class CSteamID;
 class CSteam3

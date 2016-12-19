@@ -32,8 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-
+#include "rehlds/maintypes.h"
 
 qboolean SV_CheckFile(sizebuf_t *msg, char *filename);
 void SV_ClearResourceLists(client_t *cl);

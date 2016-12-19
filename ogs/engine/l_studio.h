@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 #include "studio_rehlds.h"
 #include "commonmacros.h"
 

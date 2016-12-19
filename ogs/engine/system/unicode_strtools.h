@@ -32,8 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-
+#include "rehlds/maintypes.h"
 
 #ifdef _WIN32
 typedef wchar_t uchar16;

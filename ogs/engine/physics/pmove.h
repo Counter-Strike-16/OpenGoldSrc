@@ -32,10 +32,10 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "cvar.h"
-#include "pm_defs.h"
-#include "pm_movevars.h"
+#include "rehlds/maintypes.h"
+#include "console/cvar.h"
+#include "pm_shared/pm_defs.h"
+#include "pm_shared/pm_movevars.h"
 
 
 #ifdef HOOK_ENGINE

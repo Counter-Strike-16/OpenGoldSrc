@@ -32,10 +32,10 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "cvar.h"
-#include "pm_defs.h"
-#include "progdefs.h"
+#include "rehlds/maintypes.h"
+#include "console/cvar.h"
+#include "pm_shared/pm_defs.h"
+#include "engine/progdefs.h"
 
 
 void ED_ClearEdict(edict_t *e);

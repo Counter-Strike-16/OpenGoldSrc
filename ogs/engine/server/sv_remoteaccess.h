@@ -27,7 +27,7 @@
 */
 #pragma once
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 #include "IGameServerData.h"
 #include "utlbuffer.h"
 #include "utllinkedlist.h"

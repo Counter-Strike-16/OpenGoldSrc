@@ -29,9 +29,10 @@
 #pragma once
 
 #include "rehlds/maintypes.h"
-#include "igame.h"
+#include "system/igame.h"
 
-class CGame: public IGame {
+class CGame: public IGame
+{
 private:
 	bool m_bActiveApp;
 

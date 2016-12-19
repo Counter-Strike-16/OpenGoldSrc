@@ -27,15 +27,14 @@
 */
 #pragma once
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 #include "modinfo.h"
-#include "FileSystem.h"
+#include "public/FileSystem.h"
 #include "pr_dlls.h"
 
 //vmodes.h must be included before cdll_int.h (wrect_t declaration)
 #include "vmodes.h"
-#include "cdll_int.h"
-
+#include "engine/cdll_int.h"
 
 #ifdef _WIN32
 #define NOXREFCHECK		__asm { push [ebp + 4] } Sys_Error(__FUNCTION__ " NOXREF, but called from 0x%.08x")
@@ -43,9 +42,7 @@
 #define NOXREFCHECK		int *a = 0; *a = 0
 #endif
 
-
 #define MAX_DISCONNECT_REASON 256
-
 
 #ifdef HOOK_ENGINE
 #define g_hfind (*pg_hfind)
@@ -84,7 +81,7 @@ extern char gszDisconnectReason[MAX_DISCONNECT_REASON];
 extern char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON];
 
 extern qboolean gfExtendedError;
-extern qboolean g_bIsDedicatedServer;
+
 extern int giSubState;
 extern int giActive;
 extern int giStateInfo;
@@ -186,9 +183,3 @@ void ReleaseEntityDlls(void);
 void EngineFprintf(void *pfile, const char *szFmt, ...);
 void AlertMessage(ALERT_TYPE atype, const char *szFmt, ...);
 NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname, char *ext);
-void Con_Debug_f(void);
-void Con_Init(void);
-void Con_DebugLog(const char *file, const char *fmt, ...);
-void Con_Printf(const char *fmt, ...);
-void Con_SafePrintf(const char *fmt, ...);
-void Con_DPrintf(const char *fmt, ...);

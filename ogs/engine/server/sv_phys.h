@@ -32,9 +32,9 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 #include "model.h"
-#include "cvar.h"
+#include "console/cvar.h"
 
 
 #ifdef HOOK_ENGINE

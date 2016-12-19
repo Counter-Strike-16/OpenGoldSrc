@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "server.h"
+#include "rehlds/maintypes.h"
+#include "server/server.h"
 
 #define DI_NODIR	-1
 

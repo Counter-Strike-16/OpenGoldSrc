@@ -32,6 +32,7 @@
 #include "idedicatedexports.h"
 
 extern IDedicatedExports *dedicated_;
+extern qboolean g_bIsDedicatedServer;
 
 class CDedicatedServerAPI : public IDedicatedServerAPI
 {

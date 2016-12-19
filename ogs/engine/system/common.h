@@ -30,9 +30,9 @@
 
 #include "common_rehlds.h"
 #include "bspfile.h"
-#include "FileSystem.h"
+#include "public/FileSystem.h"
 #include "quakedef.h"
-#include "usercmd.h"
+#include "common/usercmd.h"
 #include "info.h"
 #include "com_model.h"
 

@@ -32,9 +32,9 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "server.h"
-#include "world.h"
+#include "rehlds/maintypes.h"
+#include "server/server.h"
+#include "world/world.h"
 #include "pm_defs.h"
 
 #define CMD_MAXBACKUP 64

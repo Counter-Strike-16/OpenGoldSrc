@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 #include "public/interface.h"
 #include "tier0/platform.h"
 

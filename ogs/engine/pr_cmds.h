@@ -32,12 +32,12 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "const.h"
-#include "eiface.h"
+#include "rehlds/maintypes.h"
+#include "common/const.h"
+#include "engine/eiface.h"
 #include "model.h"
-#include "common.h"
-#include "server.h"
+#include "system/common.h"
+#include "server/server.h"
 
 
 #define MAX_RANDOM_RANGE 0x7FFFFFFFUL

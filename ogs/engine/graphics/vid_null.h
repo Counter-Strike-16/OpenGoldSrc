@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "maintypes.h"
+#include "rehlds/maintypes.h"
 
 #ifdef HOOK_ENGINE
 #define r_pixbytes (*pr_pixbytes)

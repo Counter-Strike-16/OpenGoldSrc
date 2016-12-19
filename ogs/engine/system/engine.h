@@ -28,9 +28,9 @@
 
 #pragma once
 
-#include "maintypes.h"
-#include "igame.h"
-#include "iengine.h"
+#include "rehlds/maintypes.h"
+#include "system/igame.h"
+#include "system/iengine.h"
 
 // sleep time when not focus
 #define NOT_FOCUS_SLEEP	50
