@@ -11,9 +11,8 @@
 #pragma once
 #endif
 
-#include "public/rehlds/osconfig.h"
+#include "rehlds/osconfig.h"
 #include "platform.h"
-
 
 PLATFORM_INTERFACE __int64 g_ClockSpeed;
 PLATFORM_INTERFACE unsigned long g_dwClockSpeed;

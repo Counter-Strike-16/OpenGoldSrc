@@ -17,7 +17,7 @@
 
 #include "memory.h"
 //#include "engine.h"
-#include "tier0/platform.h"
+#include "public/tier0/platform.h"
 //#include "RehldsRuntimeConfig.h"
 //#include "rehlds_debug.h"
 

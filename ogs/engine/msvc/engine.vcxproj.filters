@@ -25,9 +25,6 @@
     <Filter Include="input">
       <UniqueIdentifier>{5c1b8b4a-063b-4d01-99b9-ae674cadf66e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="draw">
-      <UniqueIdentifier>{4cbef3c8-4b60-494e-a209-efdc8cc13114}</UniqueIdentifier>
-    </Filter>
     <Filter Include="graphics">
       <UniqueIdentifier>{5b8dbd8a-1bd4-4178-bce8-2b864ad78325}</UniqueIdentifier>
     </Filter>
@@ -62,45 +59,6 @@
     </ClCompile>
     <ClCompile Include="..\filesystem\wad.cpp">
       <Filter>filesystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_edge.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_fill.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_init.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_modech.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_part.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_polyse.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_scan.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_sky.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_sprite.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_surf.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_vars.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\d_zpoint.cpp">
-      <Filter>draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\draw\draw.cpp">
-      <Filter>draw</Filter>
     </ClCompile>
     <ClCompile Include="..\input\in_win.cpp">
       <Filter>input</Filter>
@@ -393,18 +351,6 @@
     </ClInclude>
     <ClInclude Include="..\filesystem\wad.h">
       <Filter>filesystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\draw\d_iface.h">
-      <Filter>draw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\draw\d_ifacea.h">
-      <Filter>draw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\draw\d_local.h">
-      <Filter>draw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\draw\draw.h">
-      <Filter>draw</Filter>
     </ClInclude>
     <ClInclude Include="..\input\keys.h">
       <Filter>input</Filter>

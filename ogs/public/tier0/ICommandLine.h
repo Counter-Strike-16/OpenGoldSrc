@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#include "tier0/platform.h"
+
 class ICommandLine
 {
 public:
@@ -17,5 +19,10 @@ public:
 	virtual void SetParm(const char *pszParm, int iValue) = 0;
 };
 
-ICommandLine *CommandLine(void);
-#endif
+//-----------------------------------------------------------------------------
+// Gets a singleton to the commandline interface
+// NOTE: this interface used to lie in the vstdlib library
+//-----------------------------------------------------------------------------
+PLATFORM_INTERFACE ICommandLine *CommandLine(void);
+
+#endif // ICOMMANDLINE_H

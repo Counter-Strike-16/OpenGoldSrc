@@ -80,7 +80,7 @@
 	#include <sys/sysinfo.h>
 	#include <unistd.h>
 
-	// Deail with stupid macro in kernel.h
+	// Deal with stupid macro in kernel.h
 	#undef __FUNCTION__
 #endif // _WIN32
 

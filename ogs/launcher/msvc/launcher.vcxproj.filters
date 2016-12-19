@@ -2,6 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\launcher.cpp" />
-    <ClCompile Include="..\launcher_mini_temp.cpp" />
+    <ClCompile Include="..\..\tier1\interface.cpp" />
   </ItemGroup>
 </Project>

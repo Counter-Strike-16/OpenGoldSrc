@@ -19,7 +19,7 @@
 #pragma once
 #endif
 
-#include "public/rehlds/osconfig.h"
+#include "rehlds/osconfig.h"
 
 // need this for _alloca
 #include <malloc.h>

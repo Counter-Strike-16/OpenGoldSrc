@@ -1,5 +1,6 @@
-#include "interface.h"
-
+#include <stdio.h>
+#include <string.h>
+#include "tier1/interface.h"
 
 #if !defined ( _WIN32 )
 // Linux doesn't have this function so this emulates its functionality

@@ -11,7 +11,7 @@
 // The main debug library implementation
 //=============================================================================
 
-#include "precompiled.h"
+#include "dbg/dbg.h"
 
 //-----------------------------------------------------------------------------
 // internal structures

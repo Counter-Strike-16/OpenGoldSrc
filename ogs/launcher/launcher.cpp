@@ -1,217 +1,183 @@
-#include <stdio.h>
-#include <windows.h>
-
-//#include "metahook.h"
+#include "tier0/platform.h"
+#include "public/interface.h"
+#include "public/FileSystem.h"
+#include "tier0/ICommandLine.h"
 #include "engine_launcher_api.h"
-#include "LoadBlob.h"
-#include "ExceptHandle.h"
-//#include "sys.h"
-#include "IFileSystem.h"
-#include "ICommandLine.h"
-#include "IRegistry.h"
 
-#pragma warning(disable : 4733)
+IFileSystem *gpFileSystem = NULL;
 
-IFileSystem *g_pFileSystem = NULL;
+int AppMain(void *hInstance);
 
-HINTERFACEMODULE LoadFilesystemModule()
+#ifdef _WIN32
+	int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+	{
+		return AppMain(hInstance);
+	};
+#else
+	int main(int argc, char **argv)
+	{
+		return AppMain();
+	};
+#endif
+
+CSysModule *LoadFilesystemModule() // put name in args?
 {
-	HINTERFACEMODULE hModule = Sys_LoadModule("filesystem_stdio");
+	CSysModule *hFSModule = Sys_LoadModule("filesystem_stdio");
 	
-	if(!hModule)
+	if(!hFSModule)
 	{
 		//Plat_MessageBox(eMsgBoxType_Error, "Fatal Error", "Could not load filesystem dll.\nFileSystem crashed during construction.");
 		return NULL;
 	};
 	
-	return hModule;
+	return hFSModule;
 };
 
-void SetEngineDLL(const char *&pszEngineDLL)
+char *Sys_GetLongPathName()
 {
-	pszEngineDLL = "hw.dll";
-	
-	registry->WriteString("EngineDLL", pszEngineDLL);
-};
+	char szShortPath[MAX_PATH];
+	static char szLongPath[MAX_PATH];
+	char *pszPath;
 
-BOOL OnVideoModeFailed()
-{
-	registry->WriteInt("ScreenWidth", 640);
-	registry->WriteInt("ScreenHeight", 480);
-	registry->WriteInt("ScreenBPP", 16);
-	registry->WriteString("EngineDLL", "sw.dll");
-	
-	return (Plat_MessageBox(eMsgBoxType_Warning, "Video mode change failure", "The specified video mode is not supported.\nThe game will now run in software mode.") == IDOK);
-};
+	szShortPath[0] = 0;
+	szLongPath[0] = 0;
 
-BlobFootprint_t g_blobfootprintClient;
-
-#ifdef WIN32
-	int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+	if(GetModuleFileName(NULL, szShortPath, sizeof(szShortPath)))
 	{
-		return Sys_Main();
-	};
-#else
-	int main(int argc, char **argv)
-	{
-		return Sys_Main();
-	};
-#endif
+		GetLongPathName(szShortPath, szLongPath, sizeof(szLongPath));
+		pszPath = strrchr(szLongPath, '\\');
 
-int Sys_Main()
-{
-	Plat_Init();
-	
-	HANDLE hObject = NULL;
-	BOOL (*IsDebuggerPresent)() = (BOOL (*)())GetProcAddress(GetModuleHandle("kernel32.dll"), "IsDebuggerPresent");
-	
-	if(!IsDebuggerPresent())
-	{
-		hObject = CreateMutex(NULL, FALSE, "ValveHalfLifeLauncherMutex");
-		DWORD dwStatus = WaitForSingleObject(hObject, 0);
-		
-		if(dwStatus && dwStatus != WAIT_ABANDONED)
+		if(pszPath[0])
+			pszPath[1] = 0;
+
+		int len = strlen(szLongPath);
+
+		if(len > 0)
 		{
-			Plat_MessageBox(eMsgBoxType_Error, "Error", "Could not launch game.\nOnly one instance of this game can be run at a time.");
-			return 0;
+			if(szLongPath[len - 1] == '\\' || szLongPath[len - 1] == '/')
+				szLongPath[len - 1] = 0;
 		};
 	};
+
+	return szLongPath;
+};
+
+bool OnVideoModeFailed()
+{
+	//registry->WriteInt("ScreenWidth", 640);
+	//registry->WriteInt("ScreenHeight", 480);
+	//registry->WriteInt("ScreenBPP", 16);
+	//registry->WriteString("EngineDLL", "sw.dll");
 	
-	registry->Init();
-	
+	return true; //(Plat_MessageBox(eMsgBoxType_Warning, "Video mode change failure", "The specified video mode is not supported.\nThe game will now run in software mode.") == IDOK);
+};
+
+int AppMain(void *hInstance) // Sys_Main
+{
+	//Plat_Init();
+
+	//registry->Init();
+
 	CommandLine()->CreateCmdLine(GetCommandLine());
 	CommandLine()->AppendParm("-nomaster", NULL);
 	
-	char szFileName[256];
-	Sys_GetExecutableName(szFileName, sizeof(szFileName));
-	char *szExeName = strrchr(szFileName, '\\') + 1;
-	
-	if(stricmp(szExeName, "hl.exe") && CommandLine()->CheckParm("-game") == NULL)
-	{
-		szExeName[strlen(szExeName) - 4] = '\0';
-		CommandLine()->AppendParm("-game", szExeName);
-	};
-	
-	const char *_szGameName = "";
-	static char szGameName[32];
-	const char *szGameStr = CommandLine()->CheckParm("-game", &_szGameName);
-	strcpy(szGameName, _szGameName);
-	
-	if(szGameStr && !strnicmp(&szGameStr[6], "czero", 5))
-		CommandLine()->AppendParm("-forcevalve", NULL);
-	
-	if(registry->ReadInt("CrashInitializingVideoMode", 0))
-	{
-		registry->WriteInt("CrashInitializingVideoMode", 0);
-		
-		if(strcmp(registry->ReadString("EngineDLL", "hw.dll"), "hw.dll"))
-		{
-			if(registry->ReadInt("EngineD3D", 0))
-			{
-				registry->WriteInt("EngineD3D", 0);
-				
-				if(MessageBox(NULL, "The game has detected that the previous attempt to start in D3D video mode failed.\nThe game will now run attempt to run in openGL mode.", "Video mode change failure", MB_OKCANCEL | MB_ICONWARNING) != IDOK)
-					return 0;
-			}
-			else
-			{
-				registry->WriteString("EngineDLL", "sw.dll");
-				
-				if(MessageBox(NULL, "The game has detected that the previous attempt to start in openGL video mode failed.\nThe game will now run in software mode.", "Video mode change failure", MB_OKCANCEL | MB_ICONWARNING) != IDOK)
-					return 0;
-			};
-			
-			registry->WriteInt("ScreenWidth", 640);
-			registry->WriteInt("ScreenHeight", 480);
-			registry->WriteInt("ScreenBPP", 16);
-		};
-	};
-	
 	while(1)
 	{
-		HINTERFACEMODULE hFileSystem = LoadFilesystemModule();
-		
-		if(!hFileSystem)
+		static char sNewCommandParams[2048];
+		sNewCommandParams[0] = 0;
+
+		CSysModule *hFileSystemLib = LoadFilesystemModule();
+
+		if(!hFileSystemLib)
 			break;
-		
+
 		//MH_Init(szGameName);
-		
-		CreateInterfaceFn fsCreateInterface = (CreateInterfaceFn)Sys_GetFactory(hFileSystem);
-		g_pFileSystem = (IFileSystem*)fsCreateInterface(FILESYSTEM_INTERFACE_VERSION, nullptr);
-		g_pFileSystem->Mount();
-		g_pFileSystem->AddSearchPath(Sys_GetLongPathName(), "ROOT");
-		
-		static char szNewCommandParams[2048];
-		const char *pszEngineDLL = nullptr;
-		int iResult = ENGINE_RESULT_NONE;
-		
-		szNewCommandParams[0] = 0;
-		SetEngineDLL(pszEngineDLL);
-		
-		g_blobfootprintClient.m_hDll = NULL;
-		
-		IEngineAPI *engineAPI = nullptr;
-		HINTERFACEMODULE hEngine;
+
+		CreateInterfaceFn fnFileSystemFactory = Sys_GetFactory(hFileSystemLib);
+
+		if(!fnFileSystemFactory)
+			return EXIT_FAILURE;
+
+		gpFileSystem = (IFileSystem*)fnFileSystemFactory(FILESYSTEM_INTERFACE_VERSION, NULL);
+
+		if(!gpFileSystem)
+			break;
+
+		gpFileSystem->Mount();
+		gpFileSystem->AddSearchPath(Sys_GetLongPathName(), "ROOT");
+
+		IEngineAPI *pEngineAPI = NULL;
+		CSysModule *hEngineLib = NULL;
 		bool bUseBlobDLL = false;
-		
-		if(FIsBlob(pszEngineDLL))
+
+		if(1 > 3) //if(FIsBlob(pszEngineDLL))
 		{
-			Sys_CloseDEP();
-			SetupExceptHandler3();
-			NLoadBlobFile(pszEngineDLL, &g_blobfootprintClient, (void **)&engineAPI);
+			//Sys_CloseDEP();
+			//SetupExceptHandler3();
+			//NLoadBlobFile(pszEngineDLL, &g_blobfootprintClient, (void **)&pEngineAPI);
 			bUseBlobDLL = true;
 		}
 		else
 		{
-			hEngine = Sys_LoadModule(pszEngineDLL);
-			
-			if(!hEngine)
+			hEngineLib = Sys_LoadModule("engine");
+
+			if(!hEngineLib)
 			{
-				static char msg[512];
-				wsprintf(msg, "Could not load %s.\nPlease try again at a later time.", pszEngineDLL);
-				MessageBox(NULL, msg, "Fatal Error", MB_ICONERROR);
+				//static char msg[512];
+				//wsprintf(msg, "Could not load %s.\nPlease try again at a later time.", pszEngineDLL);
+				//MessageBox(NULL, msg, "Fatal Error", MB_ICONERROR);
 				break;
 			};
-			
-			CreateInterfaceFn engineCreateInterface = (CreateInterfaceFn)Sys_GetFactory(hEngine);
-			engineAPI = (IEngineAPI*)engineCreateInterface(VENGINE_LAUNCHER_API_VERSION, NULL);
-			
-			if(!engineCreateInterface || !engineAPI)
-				Sys_FreeModule(hEngine);
+
+			CreateInterfaceFn fnEngineFactory = Sys_GetFactory(hEngineLib);
+
+			if(!fnEngineFactory)
+			{
+				Sys_UnloadModule(hEngineLib);
+				break;
+			};
+
+			pEngineAPI = (IEngineAPI*)fnEngineFactory(VENGINE_LAUNCHER_API_VERSION, NULL);
+
+			if(!pEngineAPI)
+			{
+				Sys_UnloadModule(hEngineLib);
+				break;
+			};
+
+			//if(!fnEngineFactory || !pEngineAPI)
+				//Sys_UnloadModule(hEngineLib);
 		};
-		
-		if(engineAPI)
+
+		int nResult = ENGINE_RESULT_NONE;
+
+		if(pEngineAPI)
 		{
 			//MH_LoadEngine(bUseBlobDLL ? NULL : (HMODULE)hEngine);
-			iResult = engineAPI->Run(hInstance, Sys_GetLongPathName(), CommandLine()->GetCmdLine(), szNewCommandParams, Sys_GetFactoryThis(), Sys_GetFactory(hFileSystem));
+			nResult = pEngineAPI->Run(hInstance, Sys_GetLongPathName(), (char*)CommandLine()->GetCmdLine(), sNewCommandParams, Sys_GetFactoryThis(), Sys_GetFactory(hFileSystemLib));
 			//MH_ExitGame(iResult);
-			
-			if(bUseBlobDLL)
-				FreeBlob(&g_blobfootprintClient);
+
+			if(1 > 2) //if(bUseBlobDLL)
+				int a = 5; //FreeBlob(&g_blobfootprintClient);
 			else
-				Sys_FreeModule(hEngine);
+				Sys_UnloadModule(hEngineLib);
 		};
-		
-		if(iResult == ENGINE_RESULT_NONE || iResult > ENGINE_RESULT_UNSUPPORTEDVIDEO)
+
+		if(nResult == ENGINE_RESULT_NONE || nResult > ENGINE_RESULT_UNSUPPORTEDVIDEO)
 			break;
-		
+
 		bool bContinue = false;
-		
-		switch(iResult)
+
+		switch(nResult)
 		{
-			case ENGINE_RESULT_RESTART:
-			{
-				bContinue = true;
-				break;
-			};
-			
-			case ENGINE_RESULT_UNSUPPORTEDVIDEO:
-			{
-				bContinue = OnVideoModeFailed();
-				break;
-			};
+		case ENGINE_RESULT_RESTART:
+			bContinue = true;
+			break;
+		case ENGINE_RESULT_UNSUPPORTEDVIDEO:
+			bContinue = OnVideoModeFailed();
+			break;
 		};
-		
+
 		CommandLine()->RemoveParm("-sw");
 		CommandLine()->RemoveParm("-startwindowed");
 		CommandLine()->RemoveParm("-windowed");
@@ -227,34 +193,36 @@ int Sys_Main()
 		CommandLine()->RemoveParm("-h");
 		CommandLine()->RemoveParm("-height");
 		CommandLine()->RemoveParm("-novid");
-		
-		if(strstr(szNewCommandParams, "-game"))
+
+		if(strstr(sNewCommandParams, "-game"))
 			CommandLine()->RemoveParm("-game");
-		
-		if(strstr(szNewCommandParams, "+load"))
+
+		if(strstr(sNewCommandParams, "+load"))
 			CommandLine()->RemoveParm("+load");
-		
-		CommandLine()->AppendParm(szNewCommandParams, NULL);
-		
-		g_pFileSystem->Unmount();
-		Sys_FreeModule(hFileSystem);
+
+		CommandLine()->AppendParm(sNewCommandParams, NULL);
+
+		gpFileSystem->Unmount();
+		Sys_UnloadModule(hFileSystemLib);
 		//MH_Shutdown();
-		
+
 		if(!bContinue)
 			break;
 	};
-	
-	registry->Shutdown();
-	
+
+	//registry->Shutdown();
+
+	/*
 	if(hObject)
 	{
 		ReleaseMutex(hObject);
 		CloseHandle(hObject);
 	};
-	
+	*/
+
 	//MH_Shutdown();
 	TerminateProcess(GetCurrentProcess(), 1);
-	
-	Plat_Shutdown();
-	return 1;
+
+	//Plat_Shutdown();
+	return EXIT_SUCCESS;
 };
