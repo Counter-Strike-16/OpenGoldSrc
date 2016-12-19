@@ -148,6 +148,9 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>../;../../../../../games/hlsdk-core/;../../public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug (Null)|Win32'">
     <ClCompile>
@@ -156,6 +159,9 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>../;../../public/;../../../../../games/hlsdk-core/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

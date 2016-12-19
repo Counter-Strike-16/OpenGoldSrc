@@ -33,7 +33,7 @@
 #endif
 
 #include "maintypes.h"
-#include "interface.h"
+#include "public/interface.h"
 #include "tier0/platform.h"
 
 #include "engine_launcher_api.h"

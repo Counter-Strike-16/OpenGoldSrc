@@ -211,6 +211,7 @@ int AppMain(void *hInstance) // Sys_Main
 
 		CommandLine()->AppendParm(sNewCommandParams, NULL);
 
+		// Move after while?
 		gpFileSystem->Unmount();
 		Sys_UnloadModule(hFileSystemLib);
 		//MH_Shutdown();

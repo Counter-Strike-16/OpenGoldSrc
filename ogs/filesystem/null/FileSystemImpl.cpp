@@ -14,12 +14,13 @@ void TRACE(const char *asMsg, ...)
 	va_list ArgList;
 	char sMsg[512];
 
-	va_start(ArgList, asMsg, 2);
+	va_start(ArgList, asMsg);
 	vsnprintf(sMsg, sizeof(sMsg), asMsg, ArgList);
 	va_end(ArgList);
 
 	sprintf(sMsg, "%s\n", sMsg);
 	fputs(sMsg, ghLogFile);
+	fflush(ghLogFile);
 };
 #else
 void TRACE(const char *asMsg, ...){};
@@ -39,7 +40,7 @@ CFileSystemNull::~CFileSystemNull()
 void CFileSystemNull::Mount()
 {
 #ifdef _DEBUG
-	ghLogFile = fopen("TRACE.log", "a+");
+	ghLogFile = fopen("TRACE.log", "w+");
 #endif
 
 	TRACE("CFileSystem::Mount");
@@ -62,7 +63,7 @@ void CFileSystemNull::RemoveAllSearchPaths()
 
 void CFileSystemNull::AddSearchPath(const char *pPath, const char *pathID)
 {
-	TRACE("CFileSystem::AddSearchPath");
+	TRACE("CFileSystem::AddSearchPath(%s, %s)", pPath, pathID);
 };
 
 bool CFileSystemNull::RemoveSearchPath(const char *pPath)

@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include "maintypes.h"
-#include "interface.h"
+#include "rehlds/maintypes.h"
+#include "public/interface.h"
 
 
 /* <8f5d0> ../public/engine_hlds_api.h:11 */
