@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_parse.cpp - parse a message received from the server
 
 #include "precompiled.h"
-#include "quakedef.h"
 
 char *svc_strings[] =
 {
@@ -710,8 +709,6 @@ void CL_ParseBaseline (entity_state_t *es)
 	}
 }
 
-
-
 /*
 =====================
 CL_ParseStatic
@@ -1229,6 +1226,7 @@ void CL_ParseServerMessage ()
 		case svc_signonnum:
 			break;
 		case svc_centerprint:
+			SCR_CenterPrint (MSG_ReadString ());
 			break;
 		case svc_killedmonster:
 			cl.stats[STAT_MONSTERS]++;
@@ -1280,7 +1278,10 @@ void CL_ParseServerMessage ()
 		case svc_deltapacketentities:
 			CL_ParsePacketEntities (true);
 			break;
-		case svc_choke:
+		case svc_choke: // some preceding packets were choked
+			i = MSG_ReadByte ();
+			for (j=0 ; j<i ; j++)
+				cl.frames[ (cls.netchan.incoming_acknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
 			break;
 		case svc_resourcelist:
 			//CL_ParseResourceList();
@@ -1323,10 +1324,6 @@ void CL_ParseServerMessage ()
 			Host_EndGame ("CL_ParseServerMessage: Illegible server message");
 			break;
 		// Old QW protocol
-			
-		case svc_centerprint:
-			SCR_CenterPrint (MSG_ReadString ());
-			break;
 		
 		case svc_updatefrags:
 			Sbar_Changed ();
@@ -1398,12 +1395,6 @@ void CL_ParseServerMessage ()
 
 		case svc_nails:
 			CL_ParseProjectiles ();
-			break;
-
-		case svc_chokecount:		// some preceding packets were choked
-			i = MSG_ReadByte ();
-			for (j=0 ; j<i ; j++)
-				cl.frames[ (cls.netchan.incoming_acknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
 			break;
 
 		case svc_setpause:

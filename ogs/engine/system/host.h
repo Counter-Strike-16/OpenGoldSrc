@@ -26,6 +26,16 @@
 *
 */
 
+// host.h - primary header for host
+
+//=============================================================================
+
+// the host system specifies the base of the directory tree, the
+// command line parms passed to the program, and the amount of memory
+// available for the program to use
+
+//=============================================================================
+
 #ifndef HOST_H
 #define HOST_H
 #ifdef _WIN32
@@ -104,16 +114,21 @@ extern cvar_t suitvolume;
 
 extern double realtime;
 extern double rolling_fps;
+
 extern quakeparms_t host_parms;
-extern qboolean host_initialized;
+
+extern qboolean host_initialized; // true if into command execution
 extern double host_frametime;
+
 extern int host_framecount;
 extern client_t *host_client;
 extern qboolean gfNoMasterServer;
 extern double oldrealtime;
 extern int host_hunklevel;
+
 extern jmp_buf host_abortserver;
 extern jmp_buf host_enddemo;
+
 extern unsigned short *host_basepal;
 
 NOXREF void Host_EndGame(const char *message, ...);
