@@ -1150,6 +1150,11 @@ void Host_Version()
 	}
 }
 
+/*
+====================
+Host_Init
+====================
+*/
 int Host_Init(quakeparms_t *parms)
 {
 	char versionString[256];
@@ -1238,7 +1243,7 @@ int Host_Init(quakeparms_t *parms)
 			disk_basepal++;
 		}
 
-		//GL_Init();
+		GL_Init();
 		PM_Init(&g_clmove);
 		CL_InitEventSystem();
 		ClientDLL_Init();
@@ -1250,6 +1255,7 @@ int Host_Init(quakeparms_t *parms)
 			return 0;
 		}
 		
+		//IN_Init ();
 		Draw_Init();
 		SCR_Init();
 		R_Init();
@@ -1257,6 +1263,8 @@ int Host_Init(quakeparms_t *parms)
 		//CDAudio_Init();
 		//Voice_Init("voice_speex", 1);
 		//DemoPlayer_Init();
+		//cls.state = ca_disconnected;
+		//Sbar_Init ();
 		CL_Init();
 	}
 	else
@@ -1338,7 +1346,7 @@ void Host_Shutdown()
 	COM_Shutdown();
 	CL_Shutdown();
 	DELTA_Shutdown();
-	//Key_Shutdown();
+	Key_Shutdown();
 	realtime = 0.0f;
 	g_psv.time = 0.0f;
 	g_pcl.time = 0.0f;

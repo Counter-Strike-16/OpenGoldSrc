@@ -108,7 +108,7 @@ byte		*host_colormap;
 
 netadr_t	master_adr;				// address of the master server
 
-cvar_t	show_fps = {"show_fps", "0"};			// set for running times
+cvar_t	show_fps = {"cl_showfps", "0"};			// set for running times
 
 int			fps_count;
 
@@ -131,33 +131,6 @@ char modellist_name[] =
 char soundlist_name[] = 
 	{ 's'^0xff, 'o'^0xff, 'u'^0xff, 'n'^0xff, 'd'^0xff, 'l'^0xff, 'i'^0xff, 's'^0xff, 't'^0xff, 
 		' '^0xff, '%'^0xff, 'i'^0xff, ' '^0xff, '%'^0xff, 'i'^0xff, 0 };
-
-/*
-==================
-CL_Quit_f
-==================
-*/
-void CL_Quit_f ()
-{
-	if (1 /* key_dest != key_console */ /* && cls.state != ca_dedicated */)
-	{
-		M_Menu_Quit_f ();
-		return;
-	}
-	CL_Disconnect ();
-	Sys_Quit ();
-}
-
-/*
-=======================
-CL_Version_f
-======================
-*/
-void CL_Version_f ()
-{
-	Con_Printf ("Version %4.2f\n", VERSION);
-	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
-}
 
 /*
 =======================
@@ -270,19 +243,17 @@ CL_Connect_f
 */
 void CL_Connect_f ()
 {
-	char	*server;
-
-	if (Cmd_Argc() != 2)
+	if(Cmd_Argc() != 2)
 	{
 		Con_Printf ("usage: connect <server>\n");
 		return;	
 	}
 	
-	server = Cmd_Argv (1);
+	char *server = Cmd_Argv (1);
 
-	CL_Disconnect ();
+	CL_Disconnect();
 
-	strncpy (cls.servername, server, sizeof(cls.servername)-1);
+	strncpy(cls.servername, server, sizeof(cls.servername) - 1);
 	CL_BeginServerConnect();
 }
 
@@ -422,7 +393,7 @@ void CL_User_f ()
 			return;
 		}
 	}
-	Con_Printf ("User not in server.\n");
+	Con_Printf ("User not on server\n");
 }
 
 /*
@@ -454,7 +425,6 @@ void CL_Users_f ()
 
 void CL_Color_f ()
 {
-	// just for quake compatability...
 	int		top, bottom;
 	char	num[16];
 
@@ -508,7 +478,7 @@ void CL_FullServerinfo_f ()
 
 	strcpy (cl.serverinfo, Cmd_Argv(1));
 
-	if ((p = Info_ValueForKey(cl.serverinfo, "*vesion")) && *p) {
+	if ((p = Info_ValueForKey(cl.serverinfo, "*version")) && *p) {
 		v = Q_atof(p);
 		if (v) {
 			if (!server_version)
@@ -1038,15 +1008,11 @@ void CL_Init ()
 	Cvar_RegisterVariable (&msg);
 	Cvar_RegisterVariable (&noaim);
 
-	Cmd_AddCommand ("version", CL_Version_f);
-
 	Cmd_AddCommand ("changing", CL_Changing_f);
 	Cmd_AddCommand ("rerecord", CL_ReRecord_f);
 
 	Cmd_AddCommand ("skins", Skin_Skins_f);
 	Cmd_AddCommand ("allskins", Skin_AllSkins_f);
-
-	Cmd_AddCommand ("quit", CL_Quit_f);
 
 	Cmd_AddCommand ("connect", CL_Connect_f);
 	Cmd_AddCommand ("reconnect", CL_Reconnect_f);
@@ -1221,11 +1187,6 @@ void Host_FixupModelNames()
 
 //============================================================================
 
-/*
-====================
-Host_Init
-====================
-*/
 void Host_Init (quakeparms_t *parms)
 {
 	COM_InitArgv (parms->argc, parms->argv);
@@ -1253,35 +1214,6 @@ void Host_Init (quakeparms_t *parms)
 	host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
 	if (!host_colormap)
 		Sys_Error ("Couldn't load gfx/colormap.lmp");
-#ifdef __linux__
-	IN_Init ();
-	CDAudio_Init ();
-	VID_Init (host_basepal);
-	Draw_Init ();
-	SCR_Init ();
-	R_Init ();
-
-//	S_Init ();		// S_Init is now done as part of VID. Sigh.
-	
-	cls.state = ca_disconnected;
-	Sbar_Init ();
-	CL_Init ();
-#else
-	VID_Init (host_basepal);
-	Draw_Init ();
-	SCR_Init ();
-	R_Init ();
-//	S_Init ();		// S_Init is now done as part of VID. Sigh.
-#ifdef GLQUAKE
-	S_Init();
-#endif
-
-	cls.state = ca_disconnected;
-	CDAudio_Init ();
-	Sbar_Init ();
-	CL_Init ();
-	IN_Init ();
-#endif
 
 	Con_Printf ("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
 

@@ -30,7 +30,7 @@ typedef struct vrect_s
 {
 	int				x,y,width,height;
 	struct vrect_s	*pnext;
-} vrect_t;
+} vrect_t; // currently wrect_t
 
 typedef struct
 {

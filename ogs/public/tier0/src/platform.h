@@ -21,23 +21,6 @@
 #define COMPILER_CLANG 1
 #endif
 
-#if defined( _X360 )
-	#define NO_STEAM
-	#define NO_VOICE
-	// for the 360, the ppc platform and the rtos are tightly coupled
-	// setup the 360 environment here !once! for much less leaf module include wackiness
-	// these are critical order and purposely appear *before* anything else
-	#define _XBOX
-#include <xtl.h>
-	#include <xaudio2.h>
-	#include <xbdm.h>
-#include <Xgraphics.h>
-	#include <xui.h>
-	#include <pmcpbsetup.h>
-#include <XMAHardwareAbstraction.h>
-	#undef _XBOX
-#endif
-
 #include "wchartypes.h"
 #include "basetypes.h"
 #include "tier0/valve_off.h"
@@ -174,13 +157,6 @@ typedef signed char int8;
 	#else
 		typedef __int32 intp;
 		typedef unsigned __int32 uintp;
-	#endif
-
-	#if defined( _X360 )
-		#ifdef __m128
-			#undef __m128
-		#endif
-		#define __m128				__vector4
 	#endif
 
 	// Use this to specify that a function is an override of a virtual function.

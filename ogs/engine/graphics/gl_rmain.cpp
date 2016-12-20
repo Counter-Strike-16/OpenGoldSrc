@@ -86,7 +86,8 @@ cvar_t	r_mirroralpha = {"r_mirroralpha","1"};
 cvar_t	r_wateralpha = {"r_wateralpha","1"};
 cvar_t	r_dynamic = {"r_dynamic","1"};
 cvar_t	r_novis = {"r_novis","0"};
-cvar_t	r_netgraph = {"r_netgraph","0"};
+
+cvar_t	r_netgraph = {"net_graph","0"};
 
 cvar_t	gl_clear = {"gl_clear","0"};
 cvar_t	gl_cull = {"gl_cull","1"};
@@ -107,7 +108,7 @@ extern	cvar_t	scr_fov;
 =================
 R_CullBox
 
-Returns true if the box is completely outside the frustom
+Returns true if the box is completely outside the frustum
 =================
 */
 qboolean R_CullBox (vec3_t mins, vec3_t maxs)

@@ -41,7 +41,7 @@
 #include "common/dlight.h"
 #include "common/entity_state.h"
 #include "event.h"
-#include "info.h"
+#include "system/info.h"
 #include "net.h"
 #include "input/keys.h"
 #include "sound/sound.h"

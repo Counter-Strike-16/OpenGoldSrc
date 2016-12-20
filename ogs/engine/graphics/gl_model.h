@@ -50,31 +50,13 @@ BRUSH MODELS
 ==============================================================================
 */
 
-
 //
 // in memory representation
 //
-// !!! if this is changed, it must be changed in asm_draw.h too !!!
-typedef struct
-{
-	vec3_t		position;
-} mvertex_t;
 
 #define	SIDE_FRONT	0
 #define	SIDE_BACK	1
 #define	SIDE_ON		2
-
-
-// plane_t structure
-// !!! if this is changed, it must be changed in asm_i386.h too !!!
-typedef struct mplane_s
-{
-	vec3_t	normal;
-	float	dist;
-	byte	type;			// for texture axis selection and fast side tests
-	byte	signbits;		// signx + signy<<1 + signz<<1
-	byte	pad[2];
-} mplane_t;
 
 typedef struct texture_s
 {
@@ -98,21 +80,6 @@ typedef struct texture_s
 #define SURF_DRAWBACKGROUND	0x40
 #define SURF_UNDERWATER		0x80
 #define SURF_DONTWARP		0x100
-
-// !!! if this is changed, it must be changed in asm_draw.h too !!!
-typedef struct
-{
-	unsigned short	v[2];
-	unsigned int	cachededgeoffset;
-} medge_t;
-
-typedef struct
-{
-	float		vecs[2][4];
-	float		mipadjust;
-	texture_t	*texture;
-	int			flags;
-} mtexinfo_t;
 
 #define	VERTEXSIZE	7
 

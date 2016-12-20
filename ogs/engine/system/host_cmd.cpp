@@ -473,12 +473,23 @@ void Host_Stats_f()
 	Con_Printf("CPU   In    Out   Uptime  Users   FPS    Players\n%s\n", stats);
 }
 
+/*
+==================
+Host_Quit_f
+==================
+*/
 void Host_Quit_f()
 {
 	if (Cmd_Argc() == 1)
 	{
 		giActive = DLL_CLOSE;
 		g_iQuitCommandIssued = 1;
+		
+		if (1 /* key_dest != key_console */ /* && cls.state != ca_dedicated */)
+		{
+			M_Menu_Quit_f ();
+			return;
+		}
 
 		if (g_pcls.state)
 			CL_Disconnect();
@@ -2995,8 +3006,10 @@ void Host_InitCommands()
 	Cmd_AddCommand("maps", Host_Maps_f);
 	Cmd_AddCommand("restart", Host_Restart_f);
 	Cmd_AddCommand("reload", Host_Reload_f);
+	
 	Cmd_AddCommand("changelevel", Host_Changelevel_f);
 	Cmd_AddCommand("changelevel2", Host_Changelevel2_f);
+	
 	Cmd_AddCommand("reconnect", Host_Reconnect_f);
 	Cmd_AddCommand("version", Host_Version_f);
 	Cmd_AddCommand("say", Host_Say_f);

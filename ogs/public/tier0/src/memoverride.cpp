@@ -462,14 +462,6 @@ void *__cdecl _malloc_dbg( size_t nSize, int nBlockUse,
 	return g_pMemAlloc->Alloc(nSize, pFileName, nLine);
 }
 
-#if defined( _X360 )
-void *__cdecl _calloc_dbg_impl( size_t nNum, size_t nSize, int nBlockUse, 
-								const char * szFileName, int nLine, int * errno_tmp )
-{
-	return _calloc_dbg( nNum, nSize, nBlockUse, szFileName, nLine );
-}
-#endif
-
 void *__cdecl _calloc_dbg( size_t nNum, size_t nSize, int nBlockUse,
 							const char *pFileName, int nLine )
 {

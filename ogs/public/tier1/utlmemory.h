@@ -129,17 +129,6 @@ public:
 protected:
 	void ValidateGrowSize()
 	{
-#ifdef _X360
-		if ( m_nGrowSize && m_nGrowSize != EXTERNAL_BUFFER_MARKER )
-		{
-			// Max grow size at 128 bytes on XBOX
-			const int MAX_GROW = 128;
-			if ( m_nGrowSize * sizeof(T) > MAX_GROW )
-			{
-				m_nGrowSize = max( 1, MAX_GROW / sizeof(T) );
-			}
-		}
-#endif
 	}
 
 	enum
@@ -675,15 +664,7 @@ inline int UtlMemory_CalcNewAllocationCount( int nAllocationCount, int nGrowSize
 
 		while (nAllocationCount < nNewSize)
 		{
-#ifndef _X360
 			nAllocationCount *= 2;
-#else
-			int nNewAllocationCount = ( nAllocationCount * 9) / 8; // 12.5 %
-			if ( nNewAllocationCount > nAllocationCount )
-				nAllocationCount = nNewAllocationCount;
-			else
-				nAllocationCount *= 2;
-#endif
 		}
 	}
 

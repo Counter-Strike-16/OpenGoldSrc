@@ -18,8 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// draw.cpp - this is the only file outside the refresh that touches the
-// vid buffer
+// draw.cpp - this is the only file outside the refresh that touches the vid buffer
 
 #include "precompiled.h"
 #include "quakedef.h"
@@ -161,7 +160,7 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 
 int	scrap_uploads;
 
-void Scrap_Upload (void)
+void Scrap_Upload ()
 {
 	scrap_uploads++;
 	GL_Bind(scrap_texnum);
@@ -310,7 +309,8 @@ typedef struct
 	int	minimize, maximize;
 } glmode_t;
 
-glmode_t modes[] = {
+glmode_t modes[] =
+{
 	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
 	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
 	{"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
@@ -324,7 +324,7 @@ glmode_t modes[] = {
 Draw_TextureMode_f
 ===============
 */
-void Draw_TextureMode_f (void)
+void Draw_TextureMode_f ()
 {
 	int		i;
 	gltexture_t	*glt;
@@ -372,7 +372,7 @@ void Draw_TextureMode_f (void)
 Draw_Init
 ===============
 */
-void Draw_Init (void)
+void Draw_Init ()
 {
 	int		i;
 	qpic_t	*cb;
@@ -559,7 +559,7 @@ void Draw_Alt_String (int x, int y, char *str)
 	}
 }
 
-void Draw_Crosshair(void)
+void Draw_Crosshair()
 {
 	int x, y;
 	extern vrect_t		scr_vrect;
@@ -788,12 +788,9 @@ void Draw_ConsoleBackground (int lines)
 	// hack the version number directly into the pic
 //	y = lines-186;
 	y = lines-14;
-	if (!cls.download) {
-#ifdef __linux__
-		sprintf (ver, "LinuxGL (%4.2f) QuakeWorld", LINUX_VERSION);
-#else
-		sprintf (ver, "GL (%4.2f) QuakeWorld", GLQUAKE_VERSION);
-#endif
+	if (!cls.download)
+	{
+		sprintf (ver, "OpenGoldSrc (%4.2f)", OGS_VERSION);
 		x = vid.conwidth - (strlen(ver)*8 + 11) - (vid.conwidth*8/320)*7;
 		for (i=0 ; i<strlen(ver) ; i++)
 			Draw_Character (x + i * 8, y, ver[i] | 0x80);
@@ -859,7 +856,7 @@ Draw_FadeScreen
 
 ================
 */
-void Draw_FadeScreen (void)
+void Draw_FadeScreen ()
 {
 	glEnable (GL_BLEND);
 	glDisable (GL_TEXTURE_2D);
@@ -889,7 +886,7 @@ Draws the little blue disc in the corner of the screen.
 Call before beginning any disc IO.
 ================
 */
-void Draw_BeginDisc (void)
+void Draw_BeginDisc ()
 {
 	if (!draw_disc)
 		return;
@@ -907,7 +904,7 @@ Erases the disc icon.
 Call after completing any disc IO
 ================
 */
-void Draw_EndDisc (void)
+void Draw_EndDisc ()
 {
 }
 
@@ -918,7 +915,7 @@ GL_Set2D
 Setup as if the screen was 320*200
 ================
 */
-void GL_Set2D (void)
+void GL_Set2D ()
 {
 	glViewport (glx, gly, glwidth, glheight);
 

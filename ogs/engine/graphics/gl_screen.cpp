@@ -629,7 +629,7 @@ void SCR_ScreenShot_f ()
 // 
 // find a file name to save it to 
 // 
-	strcpy(pcxname,"quake00.tga");
+	strcpy(pcxname,"ogs00.tga");
 		
 	for (i=0 ; i<=99 ; i++) 
 	{ 
