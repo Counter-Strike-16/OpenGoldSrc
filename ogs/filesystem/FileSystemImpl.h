@@ -2,11 +2,11 @@
 
 #include "public/FileSystem.h"
 
-class CFileSystemNull : public IFileSystem
+class CFileSystemImpl : public IFileSystem
 {
 public:
-	CFileSystemNull();
-	~CFileSystemNull();
+	CFileSystemImpl();
+	~CFileSystemImpl();
 	
 	void Mount();
 	void Unmount();

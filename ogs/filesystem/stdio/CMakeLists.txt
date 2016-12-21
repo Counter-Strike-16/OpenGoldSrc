@@ -3,4 +3,4 @@ project(ogs-filesystem_stdio)
 
 include_directories(.)
 
-add_library(filesystem_stdio SHARED .)
+add_library(filesystem_stdio SHARED FileSystemImpl.cpp)
