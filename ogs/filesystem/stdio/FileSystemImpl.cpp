@@ -58,10 +58,12 @@ FileHandle_t CFileSystemNull::Open(const char *pFileName, const char *pOptions, 
 
 void CFileSystemNull::Close(FileHandle_t file)
 {
+	close(file);
 };
 
 void CFileSystemNull::Seek(FileHandle_t file, int pos, FileSystemSeek_t seekType)
 {
+	lseek(file, pos, SEEK_SET);
 };
 
 unsigned int CFileSystemNull::Tell(FileHandle_t file)
@@ -79,9 +81,21 @@ unsigned int CFileSystemNull::Size(const char *pFileName)
 	return 0;
 };
 
+/*
+============
+Sys_FileTime
+
+returns -1 if not present
+============
+*/
 long CFileSystemNull::GetFileTime(const char *pFileName)
 {
-	return 0;
+	struct stat buf;
+	
+	if(stat(pFileName, &buf) == -1)
+		return -1;
+	
+	return buf.st_mtime;
 };
 
 void CFileSystemNull::FileTimeToString(char* pStrip, int maxCharsIncludingTerminator, long fileTime)
@@ -102,14 +116,14 @@ bool CFileSystemNull::EndOfFile(FileHandle_t file)
 	return false;
 };
 
-int CFileSystemNull::Read(void* pOutput, int size, FileHandle_t file)
+int CFileSystemNull::Read(void *pOutput, int size, FileHandle_t file)
 {
-	return 0;
+	return read(file, pOutput, size);
 };
 
-int CFileSystemNull::Write(void const* pInput, int size, FileHandle_t file)
+int CFileSystemNull::Write(void const *pInput, int size, FileHandle_t file)
 {
-	return 0;
+	return write(file, pInput, size);
 };
 
 char *CFileSystemNull::ReadLine(char *pOutput, int maxChars, FileHandle_t file)

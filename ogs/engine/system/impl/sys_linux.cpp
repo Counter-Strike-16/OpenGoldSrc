@@ -165,25 +165,7 @@ void Sys_Warn (char *warning, ...)
     vsprintf (string,warning,argptr);
     va_end (argptr);
 	fprintf(stderr, "Warning: %s", string);
-} 
-
-/*
-============
-Sys_FileTime
-
-returns -1 if not present
-============
-*/
-int	Sys_FileTime (char *path)
-{
-	struct	stat	buf;
-	
-	if (stat (path,&buf) == -1)
-		return -1;
-	
-	return buf.st_mtime;
 }
-
 
 void Sys_mkdir (char *path)
 {
@@ -220,26 +202,6 @@ int Sys_FileOpenWrite (char *path)
 		Sys_Error ("Error opening %s: %s", path,strerror(errno));
 
 	return handle;
-}
-
-int Sys_FileWrite (int handle, void *src, int count)
-{
-	return write (handle, src, count);
-}
-
-void Sys_FileClose (int handle)
-{
-	close (handle);
-}
-
-void Sys_FileSeek (int handle, int position)
-{
-	lseek (handle, position, SEEK_SET);
-}
-
-int Sys_FileRead (int handle, void *dest, int count)
-{
-    return read (handle, dest, count);
 }
 
 void Sys_DebugLog(char *file, char *fmt, ...)

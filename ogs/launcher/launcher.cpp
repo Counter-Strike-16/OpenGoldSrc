@@ -9,7 +9,7 @@ IFileSystem *gpFileSystem = NULL;
 int AppMain(void *hInstance);
 
 #if defined(_WIN32) && !defined(_DEBUG)
-	int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+	int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
 		return AppMain(hInstance);
 	};

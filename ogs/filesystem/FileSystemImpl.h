@@ -41,7 +41,7 @@ public:
 	bool EndOfFile(FileHandle_t file);
 	
 	int Read(void* pOutput, int size, FileHandle_t file);
-	int Write(void const* pInput, int size, FileHandle_t file);
+	int Write(void const* pInput, int size, FileHandle_t file); // void const
 	char *ReadLine(char *pOutput, int maxChars, FileHandle_t file);
 	int FPrintf(FileHandle_t file, char *pFormat, ...);
 	
