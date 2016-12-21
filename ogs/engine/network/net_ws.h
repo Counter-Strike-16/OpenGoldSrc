@@ -33,7 +33,7 @@
 #endif
 
 #include "rehlds/maintypes.h"
-#include "enums.h"
+#include "common/enums.h"
 #include "system/common.h"
 #include "common/netadr.h"
 

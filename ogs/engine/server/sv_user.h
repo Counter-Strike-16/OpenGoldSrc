@@ -35,7 +35,7 @@
 #include "rehlds/maintypes.h"
 #include "server/server.h"
 #include "world/world.h"
-#include "pm_defs.h"
+#include "pm_shared/pm_defs.h"
 
 #define CMD_MAXBACKUP 64
 

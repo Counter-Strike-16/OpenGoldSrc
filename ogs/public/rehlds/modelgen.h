@@ -40,6 +40,8 @@ typedef enum synctype_e
 	ST_RAND = 1,
 } synctype_t;
 
+#define SYNCTYPE_T
+
 /* <4abae> ../engine/modelgen.h:40 */
 typedef enum aliasframetype_s
 {

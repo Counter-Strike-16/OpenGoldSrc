@@ -28,22 +28,16 @@
 
 #pragma once
 
-#include "common_rehlds.h"
-#include "bspfile.h"
+#include "rehlds/common_rehlds.h"
+#include "common/bspfile.h"
 #include "public/FileSystem.h"
-#include "quakedef.h"
 #include "common/usercmd.h"
 #include "info.h"
-#include "com_model.h"
+#include "common/com_model.h"
 
 #ifndef REHLDS_FIXES
-#ifdef _WIN32
-	#define __BUILD_TIME__ "11:17:23"
-	#define __BUILD_DATE__ "Aug  8 2013"
-#else
-	#define __BUILD_TIME__ "13:14:09"
-	#define __BUILD_DATE__ "Aug 29 2013"
-#endif
+	#define __BUILD_TIME__ __TIME__
+	#define __BUILD_DATE__ __DATE__
 #else // REHLDS_FIXES
 	#define __BUILD_TIME__ APP_COMMIT_TIME
 	#define __BUILD_DATE__ APP_COMMIT_DATE

@@ -27,9 +27,10 @@
 */
 
 #include "precompiled.h"
+#include "client/client.h"
 
-client_static_t g_pcls;
-client_state_t g_pcl;
+client_static_t cls;
+client_state_t cl;
 keydest_t key_dest;
 
 playermove_t g_clmove;

@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "precompiled.h"
+#include "system/common.h"
+#include "client/client.h"
+#include "console/console.h"
 
 void CL_FinishTimeDemo (void);
 
@@ -85,8 +88,9 @@ void CL_WriteDemoCmd (usercmd_t *pcmd)
 	// correct for byte order, bytes don't matter
 	cmd = *pcmd;
 
-	for (i = 0; i < 3; i++)
-		cmd.angles[i] = LittleFloat(cmd.angles[i]);
+	//for (i = 0; i < 3; i++)
+		//cmd.angles[i] = LittleFloat(cmd.angles[i]);
+
 	cmd.forwardmove = LittleShort(cmd.forwardmove);
 	cmd.sidemove    = LittleShort(cmd.sidemove);
 	cmd.upmove      = LittleShort(cmd.upmove);
@@ -191,7 +195,8 @@ qboolean CL_GetDemoMessage (void)
 	// get the msg type
 	fread (&c, sizeof(c), 1, cls.demofile);
 	
-	switch (c) {
+	switch(c)
+	{
 	case dem_cmd :
 		// user sent input
 		i = cls.netchan.outgoing_sequence & UPDATE_MASK;
@@ -239,8 +244,7 @@ qboolean CL_GetDemoMessage (void)
 		fread (&i, 4, 1, cls.demofile);
 		cls.netchan.incoming_sequence = LittleLong(i);
 		break;
-
-	default :
+	default:
 		Con_Printf("Corrupted demo.\n");
 		CL_StopPlayback ();
 		return 0;
@@ -363,9 +367,6 @@ void CL_WriteSetDemoMessage (void)
 	fflush (cls.demofile);
 }
 
-
-
-
 /*
 ====================
 CL_Record_f
@@ -407,7 +408,7 @@ void CL_Record_f (void)
 //
 // open the demo file
 //
-	COM_DefaultExtension (name, ".qwd");
+	COM_DefaultExtension (name, ".dem");
 
 	cls.demofile = fopen (name, "wb");
 	if (!cls.demofile)
@@ -693,7 +694,7 @@ void CL_ReRecord_f (void)
 //
 // open the demo file
 //
-	COM_DefaultExtension (name, ".qwd");
+	COM_DefaultExtension (name, ".dem");
 
 	cls.demofile = fopen (name, "wb");
 	if (!cls.demofile)
@@ -736,7 +737,7 @@ void CL_PlayDemo_f (void)
 // open the demo file
 //
 	strcpy (name, Cmd_Argv(1));
-	COM_DefaultExtension (name, ".qwd");
+	COM_DefaultExtension (name, ".dem");
 
 	Con_Printf ("Playing demo from %s.\n", name);
 	COM_FOpenFile (name, &cls.demofile);
@@ -802,4 +803,3 @@ void CL_TimeDemo_f (void)
 	cls.td_startframe = host_framecount;
 	cls.td_lastframe = -1;		// get a new message this frame
 }
-

@@ -27,6 +27,7 @@
 */
 
 #include "precompiled.h"
+#include "console/cvar.h"
 
 /*
 	All cvar names are case insensitive! Values not.

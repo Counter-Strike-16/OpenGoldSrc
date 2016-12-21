@@ -27,6 +27,7 @@
 */
 
 #include "precompiled.h"
+#include "system/common.h"
 
 char serverinfo[MAX_INFO_STRING];
 

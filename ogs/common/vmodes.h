@@ -25,42 +25,10 @@
 *    version.
 *
 */
-
-#ifndef FILTER_H
-#define FILTER_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#include "common/userid.h"
-
-#ifdef REHLDS_FIXES
-#define MAX_IPFILTERS		4096
-#define MAX_USERFILTERS		4096
-#else
-#define MAX_IPFILTERS		32768
-#define MAX_USERFILTERS		32768
-#endif // REHLDS_FIXES
-
-typedef struct ipfilter_s
+/* <430ee> ../common/vmodes.h:40 */
+typedef struct rect_s
 {
-	unsigned int mask;
-	union {
-		uint32 u32;
-		uint8 octets[4];
-	} compare;
-	float banEndTime;
-	float banTime;
-#ifdef REHLDS_FIXES
-	int cidr;
-#endif // REHLDS_FIXES
-} ipfilter_t;
-
-typedef struct userfilter_s
-{
-	USERID_t userid;
-	float banEndTime;
-	float banTime;
-} userfilter_t;
-
-#endif // FILTER_H
+	int left, right, top, bottom;
+} wrect_t;

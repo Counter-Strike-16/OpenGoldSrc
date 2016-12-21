@@ -15,7 +15,7 @@
 
 // Customization.h
 #pragma once
-#include "custom.h"
+#include "rehlds/custom.h"
 
 void		COM_ClearCustomizationList( struct customization_s *pHead, qboolean bCleanDecals);
 qboolean	COM_CreateCustomization( struct customization_s *pListHead, struct resource_s *pResource, int playernumber, int flags, struct customization_s **pCustomization, int *nLumps ); 

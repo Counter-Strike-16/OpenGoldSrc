@@ -72,7 +72,9 @@
     <ClCompile Include="..\network\net_ws.cpp" />
     <ClCompile Include="..\physics\pmove.cpp" />
     <ClCompile Include="..\physics\pmovetst.cpp" />
-    <ClCompile Include="..\precompiled.cpp" />
+    <ClCompile Include="..\precompiled.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\pr_cmds.cpp" />
     <ClCompile Include="..\pr_edict.cpp" />
     <ClCompile Include="..\public_amalgamation.cpp" />
@@ -125,7 +127,6 @@
     <ClCompile Include="..\world\world.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\anorms.h" />
     <ClInclude Include="..\client\client.h" />
     <ClInclude Include="..\cmodel.h" />
     <ClInclude Include="..\com_custom.h" />
@@ -195,7 +196,6 @@
     <ClInclude Include="..\system\unicode_strtools.h" />
     <ClInclude Include="..\textures.h" />
     <ClInclude Include="..\tmessage.h" />
-    <ClInclude Include="..\userid.h" />
     <ClInclude Include="..\usermsg.h" />
     <ClInclude Include="..\video\vid.h" />
     <ClInclude Include="..\world\ed_strpool.h" />
@@ -262,6 +262,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>../;../../;../../public/;../../../../hlsdk-core/;../../../../../games/hlsdk-core/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

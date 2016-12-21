@@ -34,7 +34,7 @@
 
 #include "rehlds/maintypes.h"
 #include "system/common.h"
-#include "enums.h"
+#include "common/enums.h"
 #include "common/netadr.h"
 
 

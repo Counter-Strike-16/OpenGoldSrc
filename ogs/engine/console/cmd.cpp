@@ -27,6 +27,7 @@
 */
 
 #include "precompiled.h"
+#include "console/cmd.h"
 
 int cmd_argc;
 char *cmd_argv[80];

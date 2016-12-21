@@ -34,21 +34,23 @@
 
 #include "rehlds/maintypes.h"
 #include "system/common.h"
-#include "custom.h"
+#include "engine/custom.h"
 #include "common/cl_entity.h"
 #include "consistency.h"
-#include "delta_packet.h"
+#include "network/delta_packet.h"
 #include "common/dlight.h"
 #include "common/entity_state.h"
 #include "event.h"
 #include "system/info.h"
-#include "net.h"
+#include "network/net.h"
 #include "input/keys.h"
 #include "sound/sound.h"
-#include "screenfade.h"
+#include "common/screenfade.h"
 #include "common/usercmd.h"
-#include "model.h"
+#include "rehlds/model.h"
 #include "common/kbutton.h"
+#include "console/cvar.h"
+#include "server/server.h"
 
 #define MAX_SCOREBOARDNAME	32
 #define MAX_DEMOS		32
@@ -66,11 +68,14 @@ typedef enum cactive_e
 typedef struct cmd_s
 {
 	usercmd_t cmd;
+
 	float senttime;
 	float receivedtime;
 	float frame_lerp;
+
 	qboolean processedfuncs;
 	qboolean heldback;
+
 	int sendsize;
 } cmd_t;
 
@@ -78,13 +83,18 @@ typedef struct frame_s
 {
 	double receivedtime;
 	double latency;
+
 	qboolean invalid;
 	qboolean choked;
+
 	entity_state_t playerstate[32];
+
 	double time;
+
 	clientdata_t clientdata;
 	weapon_data_t weapondata[64];
 	packet_entities_t packet_entities;
+
 	uint16 clientbytes;
 	uint16 playerinfobytes;
 	uint16 packetentitybytes;
@@ -99,21 +109,31 @@ typedef struct frame_s
 typedef struct player_info_s
 {
 	int userid;
+
 	char userinfo[MAX_INFO_STRING];
 	char name[MAX_SCOREBOARDNAME];
+
 	int spectator;
 	int ping;
 	int packet_loss;
+
 	char model[MAX_QPATH];
+
 	int topcolor;
 	int bottomcolor;
+
 	int renderframe;
 	int gaitsequence;
+
 	float gaitframe;
 	float gaityaw;
+
 	vec3_t prevgaitorigin;
+
 	customization_t customdata;
+
 	char hashedcdkey[16];
+
 	uint64 m_nSteamID;
 } player_info_t;
 
@@ -121,7 +141,9 @@ typedef struct soundfade_s
 {
 	int nStartPercent;
 	int nClientSoundFadePercent;
+
 	double soundFadeStartTime;
+
 	int soundFadeOutTime;
 	int soundFadeHoldTime;
 	int soundFadeInTime;
@@ -279,8 +301,8 @@ typedef enum CareerStateType_e
 #endif // HOOK_ENGINE
 
 extern keydest_t key_dest;
-extern client_static_t g_pcls;
-extern client_state_t g_pcl;
+extern client_static_t cls;
+extern client_state_t cl;
 
 extern playermove_t g_clmove;
 extern qboolean cl_inmovie;

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "archtypes.h"
+#include "public/archtypes.h"
 
 // Authentication types
 enum AUTH_IDTYPE

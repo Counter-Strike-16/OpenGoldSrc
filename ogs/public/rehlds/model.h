@@ -27,12 +27,12 @@
 */
 #pragma once
 
-#include "const.h"
+#include "common/const.h"
+#include "common/com_model.h"
 #include "modelgen.h"
 #include "spritegn.h"
-#include "bspfile.h"
-#include "crc.h"
-#include "com_model.h"
+#include "common/crc.h"
+#include "common/bspfile.h"
 
 #define	SURF_PLANEBACK		2
 #define	SURF_DRAWSKY		4

@@ -15,7 +15,7 @@
 // Customization.h
 #pragma once
 
-#include "const.h"
+#include "common/const.h"
 
 #define MAX_QPATH 64    // Must match value in quakedefs.h
 #define MAX_RESOURCE_LIST	1280
@@ -59,7 +59,7 @@ typedef struct resourceinfo_s
 #define RES_UNK_6          (1<<6)   // TODO: what is it?
 #define RES_CHECKFILE	   (1<<7)	// check file on client
 
-#include "crc.h"
+#include "common/crc.h"
 
 typedef struct resource_s
 {

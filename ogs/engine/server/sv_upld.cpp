@@ -27,6 +27,7 @@
 */
 
 #include "precompiled.h"
+#include "server/sv_upld.h"
 
 // Checks MD5 of the resource against local cache and returns TRUE if resource was found or if downloads are disabled. Otherwise, if resource was requested from the player, it returns FALSE.
 qboolean SV_CheckFile(sizebuf_t *msg, char *filename)

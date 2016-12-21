@@ -18,59 +18,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-/*
-	Note: GS prediction:
-	
-	in loop on client:
-	* get latest ack client state
-	* get first cmd that goes after that state (that cmd is sent to server and
-	applied locally)
-	* apply this cmd to latest local state (run playermove as it's done on server)
-	* if this is the last cmd that present in queue then return from loop
-	* latest local state = predicted state with latest unack cmd
-	* latest unack cmd++ (= next unack cmd in queue)
-	* it's not ring buffer
-	* prediction ability is limited in time (it's ok since we only need an
-	instant reaction to our action on client side)
-	* prediction is disabled in sp
-	* prediction should be disabled on moving platforms?
-	* all moving things from server should be interpolated (but their anim should be predicted/extrapolated?)
-	
-	server:
-	* get cmd client
-	* get latest client state and apply this cmd on it (playermove) which
-	should get the same results as on client
-	(cmd with forwardmove=1.0 and time=100ms should get 32 units of move at 320 forwardspd cvar)
-	* client send a cmd and apply it locally instantly
-	* server applies that cmd after ping*0.5=latency
-	* so the command ack is coming back to client after 2*latency=ping
-	* and now this is the latest ack cmd (in couple with it's state) that should be used for prediction
-	* prediction error are smoothed in time (something like)
-	
-	double sound prevention:
-	* playermove code has a mech that is used to prevent step sound to play twice
-	("runcmds" or smthng like that)
-	
-	weapon prediction:
-	* protocol has a svc_weaponanim entry that should set client a new weapon animation;
-	this should be ignored (I think) when cl_lw is enabled; instead there is a local weapon simulation
-	should be applied (attack cmd -> server -> apply anim and muzzle locally if we can) -> ack from server
-	* just apply weapon anim if local weapon code allows us to do that
-	
-	
-	Prediction is enabled by default in GS now and there is no way to disable it
-	Pushlatency cvar has issues before and was removed from public access (and mb from the code too)
-	(Almost) all data for this mech is present inside hlsdk headers
-	This mech is similar to demo playback
-	GS periodically syncs client and server clocks
-*/
-
 #include "precompiled.h"
+#include "client/client.h"
+#include "console/console.h"
+#include "console/cvar.h"
 
 cvar_t	cl_nopred = {"cl_nopred","0"};
 cvar_t	cl_pushlatency = {"pushlatency","-999"};
 
-extern	frame_t		*view_frame;
+extern	frame_t *view_frame;
 
 /*
 =================
@@ -98,23 +54,24 @@ void CL_NudgePosition ()
 			pmove.origin[1] = base[1] + y * 1.0/8;
 			if (PM_HullPointContents (&cl.model_precache[1]->hulls[1], 0, pmove.origin) == CONTENTS_EMPTY)
 				return;
-		}
-	}
+		};
+	};
+
 	Con_DPrintf ("CL_NudgePosition: stuck\n");
-}
+};
 
 /*
 ==============
 CL_PredictUsercmd
 ==============
 */
-void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, qboolean spectator)
+void CL_PredictUsercmd (entity_state_t *from, entity_state_t *to, usercmd_t *u, qboolean spectator) // was player_state_t, but should be local_state_t i think
 {
 	// split up very long moves
 	if (u->msec > 50)
 	{
-		player_state_t	temp;
-		usercmd_t	split;
+		entity_state_t temp;
+		usercmd_t split;
 
 		split = *u;
 		split.msec /= 2;
@@ -122,12 +79,12 @@ void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, 
 		CL_PredictUsercmd (from, &temp, &split, spectator);
 		CL_PredictUsercmd (&temp, to, &split, spectator);
 		return;
-	}
+	};
 
-	VectorCopy (from->origin, pmove.origin);
-//	VectorCopy (from->viewangles, pmove.angles);
-	VectorCopy (u->angles, pmove.angles);
-	VectorCopy (from->velocity, pmove.velocity);
+	VectorCopy(from->origin, pmove.origin);
+	//VectorCopy(from->viewangles, pmove.angles);
+	VectorCopy(u->angles, pmove.angles);
+	VectorCopy(from->velocity, pmove.velocity);
 
 	pmove.oldbuttons = from->oldbuttons;
 	pmove.waterjumptime = from->waterjumptime;
@@ -136,9 +93,11 @@ void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, 
 
 	pmove.cmd = *u;
 
-	PlayerMove ();
-//for (i=0 ; i<3 ; i++)
-//pmove.origin[i] = ((int)(pmove.origin[i]*8))*0.125;
+	ClientDLL_MoveClient(&pmove);
+
+	//for (i=0 ; i<3 ; i++)
+	//pmove.origin[i] = ((int)(pmove.origin[i]*8))*0.125;
+
 	to->waterjumptime = pmove.waterjumptime;
 	to->oldbuttons = pmove.cmd.buttons;
 	VectorCopy (pmove.origin, to->origin);
@@ -147,16 +106,14 @@ void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, 
 	to->onground = onground;
 
 	to->weaponframe = from->weaponframe;
-}
-
-
+};
 
 /*
 ==============
 CL_PredictMove
 ==============
 */
-void CL_PredictMove ()
+void CL_PredictMove(qboolean repredicting)
 {
 	int			i;
 	float		f;
@@ -179,32 +136,27 @@ void CL_PredictMove ()
 	if (!cl.validsequence)
 		return;
 
-	if (cls.netchan.outgoing_sequence - cls.netchan.incoming_sequence >= UPDATE_BACKUP-1)
+	if (cls.netchan.outgoing_sequence - cls.netchan.incoming_sequence >= SV_UPDATE_BACKUP - 1)
 		return;
 
 	VectorCopy (cl.viewangles, cl.simangles);
 
 	// this is the last frame received from the server
-	from = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK];
+	from = &cl.frames[cls.netchan.incoming_sequence & SV_UPDATE_MASK];
 
 	// we can now render a frame
-	if (cls.state == ca_onserver)
-	{	// first update is the final signon stage
-		char		text[1024];
-
+	if (cls.state == ca_connected)
+	{
+		// first update is the final signon stage
 		cls.state = ca_active;
-		sprintf (text, "QuakeWorld: %s", cls.servername);
-#ifdef _WIN32
-		SetWindowText (mainwindow, text);
-#endif
-	}
+	};
 
 	if (cl_nopred.value)
 	{
 		VectorCopy (from->playerstate[cl.playernum].velocity, cl.simvel);
 		VectorCopy (from->playerstate[cl.playernum].origin, cl.simorg);
 		return;
-	}
+	};
 
 	// predict forward until cl.time <= to->senttime
 	oldphysent = pmove.numphysent;
@@ -212,20 +164,18 @@ void CL_PredictMove ()
 
 //	to = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK];
 
-	for (i=1 ; i<UPDATE_BACKUP-1 && cls.netchan.incoming_sequence+i <
-			cls.netchan.outgoing_sequence; i++)
+	for (i=1 ; i < SV_UPDATE_BACKUP-1 && cls.netchan.incoming_sequence+i < cls.netchan.outgoing_sequence; i++)
 	{
-		to = &cl.frames[(cls.netchan.incoming_sequence+i) & UPDATE_MASK];
-		CL_PredictUsercmd (&from->playerstate[cl.playernum]
-			, &to->playerstate[cl.playernum], &to->cmd, cl.spectator);
+		to = &cl.frames[(cls.netchan.incoming_sequence+i) & SV_UPDATE_MASK];
+		CL_PredictUsercmd (&from->playerstate[cl.playernum], &to->playerstate[cl.playernum], &to->cmd, cls.spectator);
 		if (to->senttime >= cl.time)
 			break;
 		from = to;
-	}
+	};
 
 	pmove.numphysent = oldphysent;
 
-	if (i == UPDATE_BACKUP-1 || !to)
+	if (i == SV_UPDATE_BACKUP - 1 || !to)
 		return;		// net hasn't deliver packets in a long time...
 
 	// now interpolate some fraction of the final frame
@@ -239,7 +189,7 @@ void CL_PredictMove ()
 			f = 0;
 		if (f > 1)
 			f = 1;
-	}
+	};
 
 	for (i=0 ; i<3 ; i++)
 		if ( fabs(from->playerstate[cl.playernum].origin[i] - to->playerstate[cl.playernum].origin[i]) > 128)
@@ -247,7 +197,7 @@ void CL_PredictMove ()
 			VectorCopy (to->playerstate[cl.playernum].velocity, cl.simvel);
 			VectorCopy (to->playerstate[cl.playernum].origin, cl.simorg);
 			return;
-		}
+		};
 		
 	for (i=0 ; i<3 ; i++)
 	{
@@ -255,9 +205,8 @@ void CL_PredictMove ()
 			+ f*(to->playerstate[cl.playernum].origin[i] - from->playerstate[cl.playernum].origin[i]);
 		cl.simvel[i] = from->playerstate[cl.playernum].velocity[i] 
 			+ f*(to->playerstate[cl.playernum].velocity[i] - from->playerstate[cl.playernum].velocity[i]);
-	}		
-}
-
+	};		
+};
 
 /*
 ==============
@@ -268,5 +217,8 @@ void CL_InitPrediction ()
 {
 	Cvar_RegisterVariable (&cl_pushlatency);
 	Cvar_RegisterVariable (&cl_nopred);
-}
+};
 
+void CL_RedoPrediction()
+{
+};

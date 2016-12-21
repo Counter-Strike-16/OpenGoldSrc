@@ -27,6 +27,10 @@
 */
 
 #include "precompiled.h"
+#include "system/host.h"
+#include "client/client.h"
+#include "console/console.h"
+#include "console/cmd.h"
 
 double realtime; // // without any filtering or bounding
 double rolling_fps;
@@ -106,14 +110,14 @@ NOXREF void Host_EndGame(const char *message, ...)
 
 	Con_DPrintf(__FUNCTION__ ": %s\n", string);
 
-	oldn = g_pcls.demonum;
+	oldn = cls.demonum;
 
 	if (g_psv.active)
 		Host_ShutdownServer(FALSE);
 
-	g_pcls.demonum = oldn;
+	cls.demonum = oldn;
 
-	if (!g_pcls.state)
+	if (!cls.state)
 	{
 		Sys_Error(__FUNCTION__ ": %s\n", string);
 	}
@@ -121,7 +125,7 @@ NOXREF void Host_EndGame(const char *message, ...)
 	if (oldn != -1)
 	{
 		CL_Disconnect_f();
-		g_pcls.demonum = oldn;
+		cls.demonum = oldn;
 		Host_NextDemo();
 		longjmp(host_enddemo, 1);
 	}
@@ -155,10 +159,10 @@ void __declspec(noreturn) Host_Error(const char *error, ...)
 	if (g_psv.active)
 		Host_ShutdownServer(FALSE);
 
-	if (g_pcls.state)
+	if (cls.state)
 	{
 		CL_Disconnect();
-		g_pcls.demonum = -1;
+		cls.demonum = -1;
 		inerror = FALSE;
 		longjmp(host_abortserver, 1);
 	}
@@ -208,7 +212,7 @@ NOXREF void Info_WriteVars(FileHandle_t fp)
 	char *o;
 
 	valueindex = (valueindex + 1) % 4;
-	s = &g_pcls.userinfo[0];
+	s = &cls.userinfo[0];
 
 	if (*s == '\\')
 		s++;
@@ -255,7 +259,7 @@ void Host_WriteConfiguration()
 	qboolean bSetFileToReadOnly;
 	char nameBuf[4096];
 
-	if (!host_initialized || g_pcls.state == ca_dedicated)
+	if (!host_initialized || cls.state == ca_dedicated)
 		return;
 
 #ifdef _WIN32
@@ -340,7 +344,7 @@ void Host_WriteCustomConfig()
 #ifndef SWDS
 	else
 	{
-		if (host_initialized && g_pcls.state != ca_dedicated)
+		if (host_initialized && cls.state != ca_dedicated)
 		{
 			if (Key_CountBindings() < 2)
 				Con_Printf("skipping config.cfg output, no keys bound\n");
@@ -883,7 +887,7 @@ void Host_UpdateSounds()
 void Host_CheckConnectionFailure()
 {
 	static int frames = 5;
-	if (g_pcls.state == ca_disconnected && (giSubState & 4 || console.value == 0.0f))
+	if (cls.state == ca_disconnected && (giSubState & 4 || console.value == 0.0f))
 	{
 		if (frames-- > 0)
 			return;

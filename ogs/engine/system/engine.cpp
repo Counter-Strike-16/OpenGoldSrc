@@ -27,6 +27,11 @@
 */
 
 #include "precompiled.h"
+#include "system/engine.h"
+#include "system/sys_dll2.h"
+#include "system/host.h"
+#include "console/cmd.h"
+#include "client/client.h"
 
 /*
 * Globals initialization
@@ -44,10 +49,10 @@ IEngine *eng;
 
 CEngine::CEngine()
 {
-	m_fFrameTime = 0.0;
+	m_fFrameTime = 0.0f;
 	m_nSubState = 0;
 	m_nDLLState = DLL_INACTIVE;
-	m_fOldTime = 0.0;
+	m_fOldTime = 0.0f;
 	m_bTrapMode = false;
 	m_bDoneTrapping = false;
 	m_nTrapKey = 0;
@@ -55,7 +60,7 @@ CEngine::CEngine()
 	m_nQuitting = QUIT_NOTQUITTING;
 
 #ifdef REHLDS_FIXES
-	m_fCurTime = 0.0;
+	m_fCurTime = 0.0f;
 #endif
 }
 
@@ -86,7 +91,7 @@ void ForceReloadProfile()
 	//Key_SetBinding(96, "toggleconsole");
 	//Key_SetBinding(27, "cancelselect");
 	//SDL_GL_SetSwapInterval((gl_vsync.value <= 0.0) - 1);
-	if (g_pcls.state != ca_dedicated)
+	if (cls.state != ca_dedicated)
 	{
 		Sys_Error("Only dedicated mode is supported");
 		/*

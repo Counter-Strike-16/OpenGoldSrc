@@ -25,10 +25,11 @@
 *    version.
 *
 */
+
 #pragma once
 
-#include "const.h"
-#include "qlimits.h"
+#include "common/const.h"
+#include "common/qlimits.h"
 
 #ifdef REHLDS_FIXES
 #define COM_TOKEN_LEN	2048

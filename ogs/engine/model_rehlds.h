@@ -39,10 +39,10 @@
 #include "crc.h"
 */
 
-#include "model.h"
+#include "rehlds/model.h"
 
 #include "rehlds/maintypes.h"
-#include "bspfile.h"
+#include "common/bspfile.h"
 #include "common/crc.h"
 
 #ifdef HOOK_ENGINE

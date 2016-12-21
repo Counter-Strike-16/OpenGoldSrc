@@ -499,7 +499,6 @@
     <ClInclude Include="..\system\unicode_strtools.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="..\anorms.h" />
     <ClInclude Include="..\cmodel.h" />
     <ClInclude Include="..\com_custom.h" />
     <ClInclude Include="..\consistency.h" />
@@ -517,7 +516,6 @@
     <ClInclude Include="..\studio_rehlds.h" />
     <ClInclude Include="..\textures.h" />
     <ClInclude Include="..\tmessage.h" />
-    <ClInclude Include="..\userid.h" />
     <ClInclude Include="..\usermsg.h" />
     <ClInclude Include="..\world\ed_strpool.h">
       <Filter>world</Filter>

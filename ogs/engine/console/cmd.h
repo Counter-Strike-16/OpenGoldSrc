@@ -30,7 +30,7 @@
 
 #include "rehlds/maintypes.h"
 #include "system/common.h"
-#include "cmd_rehlds.h"
+#include "rehlds/cmd_rehlds.h"
 
 // All command/alias names are case insensitive! Arguments not
 

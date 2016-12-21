@@ -27,6 +27,7 @@
 */
 
 #include "precompiled.h"
+#include "server/sv_user.h"
 
 typedef struct command_s
 {

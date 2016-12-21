@@ -33,7 +33,9 @@
 #endif
 
 #include "rehlds/maintypes.h"
-#include "quakedef.h"
+
+// user message
+#define MAX_USER_MSG_DATA 192
 
 typedef struct _UserMsg
 {
