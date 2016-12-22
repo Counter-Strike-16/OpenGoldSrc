@@ -1,10 +1,11 @@
-#include "enginevgui.h"
+#include "system/precompiled.h"
+#include "client/enginevgui.h"
 
 IGameUI *gpGameUI = nullptr;
 IGameConsole *gpGameConsole = nullptr;
 
 static CEngineVGui gEngineVGuiImp;
-EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CEngineVGui, IEngineVGui, VENGINE_VGUI_VERSION, g_EngineVGuiImp);
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CEngineVGui, IEngineVGui, VENGINE_VGUI_VERSION, gEngineVGuiImp);
 
 IEngineVGuiInternal *EngineVGui()
 {

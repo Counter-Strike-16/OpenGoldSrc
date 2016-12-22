@@ -26,7 +26,7 @@
 *
 */
 
-#include "precompiled.h"
+#include "system/precompiled.h"
 #include "client/client.h"
 
 client_static_t cls;

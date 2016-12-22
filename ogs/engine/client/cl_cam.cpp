@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * Player moves as a spectator, but the camera tracks and enemy player
  */
 
-#include "precompiled.h"
+#include "system/precompiled.h"
 #include "client/client.h"
 
 #define	PM_SPECTATORMAXSPEED	500
@@ -93,7 +93,7 @@ static float vlen(vec3_t v)
 // returns true if weapon model should be drawn in camera mode
 qboolean Cam_DrawViewModel()
 {
-	if (!cl.spectator)
+	if (!cls.spectator)
 		return true;
 
 	if (autocam && locked && cl_chasecam.value)
@@ -104,7 +104,7 @@ qboolean Cam_DrawViewModel()
 // returns true if we should draw this player, we don't if we are chase camming
 qboolean Cam_DrawPlayer(int playernum)
 {
-	if (cl.spectator && autocam && locked && cl_chasecam.value && 
+	if (cls.spectator && autocam && locked && cl_chasecam.value && 
 		spec_track == playernum)
 		return false;
 	return true;

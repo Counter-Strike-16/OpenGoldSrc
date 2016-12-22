@@ -112,7 +112,7 @@ extern cvar_t host_framerate;
 extern cvar_t pausable;
 extern cvar_t suitvolume;
 
-extern double realtime;
+extern double realtime; // not bounded in any way, changed at start of every frame, never reset
 extern double rolling_fps;
 
 extern quakeparms_t host_parms;

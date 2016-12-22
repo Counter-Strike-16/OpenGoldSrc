@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // cl.input.cpp - builds an intended movement command to send to the server
 
-#include "precompiled.h"
+#include "system/precompiled.h"
 #include "client/client.h"
 
 cvar_t	cl_nodelta = {"cl_nodelta","0"};

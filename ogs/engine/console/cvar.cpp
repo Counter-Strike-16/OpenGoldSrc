@@ -26,11 +26,14 @@
 *
 */
 
-#include "precompiled.h"
+#include "system/precompiled.h"
 #include "console/cvar.h"
+#include "console/cmd.h"
+#include "console/console.h"
+#include "client/client.h"
 
 /*
-	All cvar names are case insensitive! Values not.
+	All cvar names are case insensitive! Values not
 */
 
 cvar_t *cvar_vars;
@@ -39,7 +42,7 @@ char cvar_null_string[] = "";
 void Cvar_Init()
 {
 #ifndef SWDS
-	// TODO: add client code, possibly none.
+	// TODO: add client code, possibly none
 #endif
 }
 

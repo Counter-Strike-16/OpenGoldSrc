@@ -31,6 +31,8 @@
 #include "client/client.h"
 #include "console/console.h"
 #include "console/cmd.h"
+#include "filesystem/hashpak.h"
+#include "system/host_cmd.h"
 
 double realtime; // // without any filtering or bounding
 double rolling_fps;
@@ -616,21 +618,20 @@ void Host_ShutdownServer(qboolean crash)
 void SV_ClearClientStates()
 {
 	int i;
-	client_t *cl;
+	client_t *pcl;
 
-	for (i = 0, cl = g_psvs.clients; i < g_psvs.maxclients; i++, cl++)
+	for (i = 0, pcl = g_psvs.clients; i < g_psvs.maxclients; i++, pcl++)
 	{
-		COM_ClearCustomizationList(&cl->customdata, FALSE);
-		SV_ClearResourceLists(cl);
+		COM_ClearCustomizationList(&pcl->customdata, FALSE);
+		SV_ClearResourceLists(pcl);
 	}
 }
 
 void Host_CheckDyanmicStructures()
 {
 	int i;
-	client_t *cl;
-
-	cl = g_psvs.clients;
+	client_t *cl = g_psvs.clients;
+	
 	for (i = 0; i < g_psvs.maxclients; i++, cl++)
 	{
 		if (cl->frames)
@@ -660,7 +661,7 @@ void Host_ClearMemory(qboolean bQuiet)
 		Hunk_FreeToLowMark(host_hunklevel);
 	}
 
-	g_pcls.signon = 0;
+	cls.signon = 0;
 	SV_ClearCaches();
 	Q_memset(&g_psv, 0, sizeof(server_t));
 	CL_ClearClientState();
@@ -674,7 +675,7 @@ qboolean Host_FilterTime(float time)
 
 	if (host_framerate.value > 0.0f)
 	{
-		if (Host_IsSinglePlayerGame() || g_pcls.demoplayback)
+		if (Host_IsSinglePlayerGame() || cls.demoplayback)
 		{
 			host_frametime = sys_timescale.value * host_framerate.value;
 			realtime += host_frametime;
@@ -702,7 +703,7 @@ qboolean Host_FilterTime(float time)
 	else
 	{
 		fps = 31.0f;
-		if (g_psv.active || g_pcls.state == ca_disconnected || g_pcls.state == ca_active)
+		if (g_psv.active || cls.state == ca_disconnected || cls.state == ca_active)
 		{
 			fps = 0.5f;
 			if (fps_max.value >= 0.5f)
@@ -713,7 +714,7 @@ qboolean Host_FilterTime(float time)
 			if (fps > 100.0f)
 				fps = 100.0f;
 		}
-		if (g_pcl.maxclients > 1)
+		if (cl.maxclients > 1)
 		{
 			if (fps < 20.0f)
 				fps = 20.0f;
@@ -723,7 +724,7 @@ qboolean Host_FilterTime(float time)
 			if (!fps_override.value)
 				fps = 100.f;
 		}
-		if (!g_pcls.timedemo)
+		if (!cls.timedemo)
 		{
 			if (sys_timescale.value / (fps + 0.5f) > realtime - oldrealtime)
 				return FALSE;
@@ -1081,7 +1082,7 @@ qboolean Host_IsSinglePlayerGame()
 	if (g_psv.active)
 		return g_psvs.maxclients == 1;
 	else
-		return g_pcl.maxclients == 1;
+		return cl.maxclients == 1;
 
 }
 
@@ -1142,7 +1143,7 @@ void Host_Version()
 			Mem_Free(buffer);
 	}
 
-	if (g_pcls.state != ca_dedicated)
+	if (cls.state != ca_dedicated)
 	{
 		Con_DPrintf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
 		Con_DPrintf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
@@ -1226,7 +1227,7 @@ int Host_Init(quakeparms_t *parms)
 	R_InitTextures();
 	HPAK_CheckIntegrity("custom");
 	Q_memset(&g_module, 0, sizeof(g_module));
-	if (g_pcls.state != ca_dedicated)
+	if (cls.state != ca_dedicated)
 	{
 		//Sys_Error("Only dedicated server mode is supported");
 
@@ -1309,7 +1310,7 @@ void Host_Shutdown()
 
 	//CDAudio_Shutdown();
 	//VGui_Shutdown();
-	if (g_pcls.state != ca_dedicated)
+	if (cls.state != ca_dedicated)
 		ClientDLL_Shutdown();
 
 	//Rehlds Security
@@ -1340,7 +1341,7 @@ void Host_Shutdown()
 		wadpath = NULL;
 	}
 
-	if (g_pcls.state != ca_dedicated)
+	if (cls.state != ca_dedicated)
 		Draw_Shutdown();
 
 	Draw_DecalShutdown();
@@ -1353,5 +1354,5 @@ void Host_Shutdown()
 	Key_Shutdown();
 	realtime = 0.0f;
 	g_psv.time = 0.0f;
-	g_pcl.time = 0.0f;
+	cl.time = 0.0f;
 }

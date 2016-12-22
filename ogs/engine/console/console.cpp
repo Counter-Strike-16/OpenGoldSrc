@@ -20,8 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // console.cpp
 
-#include "precompiled.h"
+#include "system/precompiled.h"
 #include "console/console.h"
+#include "input/keys.h"
+#include "client/client.h"
 
 int			con_ormask;
 console_t	con_main;

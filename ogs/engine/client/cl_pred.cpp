@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include "precompiled.h"
+#include "system/precompiled.h"
 #include "client/client.h"
 #include "console/console.h"
 #include "console/cvar.h"

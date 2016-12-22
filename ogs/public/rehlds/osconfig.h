@@ -47,6 +47,8 @@
 #include <deque>
 #include <functional>
 
+#include <fcntl.h>
+
 #ifdef _WIN32 // WINDOWS
 	#include <windows.h>
 	#include <winsock.h>
@@ -54,7 +56,6 @@
 	#define PSAPI_VERSION 1
 	#include <psapi.h>
 	#include <nmmintrin.h>
-	#include <fcntl.h>
 	#include <sys/types.h>
 	#include <sys/stat.h>
 	#include <io.h>
@@ -65,7 +66,6 @@
 	#include <dlfcn.h>
 	#include <elf.h>
 	#include <errno.h>
-	#include <fcntl.h>
 	#include <limits.h>
 	#include <link.h>
 	#include <netdb.h>

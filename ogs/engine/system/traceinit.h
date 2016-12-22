@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "utlvector.h"
+#include "tier1/utlvector.h"
 
 #ifndef HOOK_ENGINE
 #define CInitTracker_construct CInitTracker

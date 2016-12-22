@@ -5,14 +5,13 @@
 #define strcasecmp _stricmp
 #endif
 
-#include <setjmp.h>
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
-#include <fcntl.h>
 #include <direct.h>
 #include <sys/stat.h>
 #include <io.h>
+
+#include "rehlds/osconfig.h"
+
+#include "maintypes.h"
 
 #include "common/commontypes.h"
 #include "common/mathlib.h"
@@ -73,8 +72,6 @@
 
 //#include "version/appversion.h"
 
-#include "rehlds/osconfig.h"
-
 #include "public/archtypes.h"
 //#include "asmlib.h"
 #include "math/sse_mathfun.h"
@@ -87,7 +84,6 @@
 //#include "ed_strpool.h"
 
 #include "memory.h"
-#include "system/engine.h"
 #include "tier0/platform.h"
 //#include "RehldsRuntimeConfig.h"
 //#include "rehlds_debug.h"
@@ -103,8 +99,8 @@
 #include "public/interface.h"
 #include "iregistry.h"
 
-#include "utlbuffer.h"
-#include "utlrbtree.h"
+#include "tier1/utlbuffer.h"
+#include "tier1/utlrbtree.h"
 
 #include "iosutil.h"
 
@@ -133,7 +129,3 @@
 */
 
 #include "dlls/cdll_dll.h"
-
-#ifndef max
-#define max(a, b) ((a > b) ? (a) : (b))
-#endif

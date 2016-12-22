@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "engine/eiface.h"
 #include "public/FileSystem.h"
 

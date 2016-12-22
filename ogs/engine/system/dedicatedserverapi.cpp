@@ -26,7 +26,7 @@
 *
 */
 
-#include "precompiled.h"
+#include "system/precompiled.h"
 #include "system/common.h"
 #include "system/dedicatedserverapi.h"
 #include "system/host.h"

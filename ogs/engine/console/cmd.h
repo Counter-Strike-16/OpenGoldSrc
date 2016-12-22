@@ -31,6 +31,7 @@
 #include "maintypes.h"
 #include "system/common.h"
 #include "rehlds/cmd_rehlds.h"
+#include "engine/cdll_int.h"
 
 // All command/alias names are case insensitive! Arguments not
 

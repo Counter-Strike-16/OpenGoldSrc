@@ -26,7 +26,7 @@
 *
 */
 
-#include "precompiled.h"
+#include "system/precompiled.h"
 
 char gNetworkTextMessageBuffer[MAX_NETMESSAGE][512];
 client_textmessage_t gMessageParms;

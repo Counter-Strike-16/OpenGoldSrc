@@ -42,7 +42,6 @@
 #define SURF_DRAWBACKGROUND	0x40 
 #define ALIAS_MODEL_VERSION	0x006
 
-
 #define MAX_KNOWN_MODELS	1024
 
 #define	TEX_SPECIAL		1		// sky or slime, no lightmap or 256 subdivision
@@ -137,42 +136,6 @@ typedef struct aliashdr_s
 	maliasframedesc_t frames[1];
 } aliashdr_t;
 
-/* <1de30> ../engine/model.h:315 */
-typedef enum modtype_e
-{
-	mod_brush,
-	mod_sprite,
-	mod_alias,
-	mod_studio,
-} modtype_t;
-
-/* <1de5e> ../engine/model.h:331 */
-typedef struct model_s
-{
-	char			name[MAX_MODEL_NAME];
-
-	//TODO: qboolean? seriously?
-	int		needload;		// bmodels and sprites don't cache normally
-	
-	modtype_t		type;
-	int				numframes;
-	synctype_t		synctype;
-
-	int				flags;
-
-	//
-	// volume occupied by the model
-	//
-	vec3_t			mins, maxs;
-	
-	int				firstmodelsurface, nummodelsurfaces;
-
-	dmodel_t		*submodels;
-
-
-	cache_user_t	cache;			// only access through Mod_Extradata
-} model_t;
-
 typedef struct cachepic_s
 {
 	char			name[64];
@@ -207,4 +170,3 @@ typedef struct mod_known_info_s
 	qboolean		firstCRCDone;
 	CRC32_t			initialCRC;
 } mod_known_info_t;
-

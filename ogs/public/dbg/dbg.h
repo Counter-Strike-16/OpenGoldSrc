@@ -20,7 +20,7 @@
 #endif
 
 #include "rehlds/osconfig.h"
-#include "basetypes.h"
+#include "tier0/basetypes.h"
 #include "tier0/platform.h"
 #include <math.h>
 #include <stdio.h>

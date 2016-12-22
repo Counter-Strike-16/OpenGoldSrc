@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
-#include "custom.h"
+#include "maintypes.h"
+#include "engine/custom.h"
 #include "public/FileSystem.h"
 
 #define HASHPAK_EXTENSION	".hpk"

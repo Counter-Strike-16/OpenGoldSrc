@@ -1,21 +1,5 @@
-/***
-*
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
-*
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
-*
-****/
-// Customization.h
-#pragma once
 
-#include "common/const.h"
+
 
 #define MAX_QPATH 64    // Must match value in quakedefs.h
 #define MAX_RESOURCE_LIST	1280
@@ -38,12 +22,6 @@ typedef enum
 	rt_max
 } resourcetype_t;
 
-
-typedef struct
-{
-	int				size;
-} _resourceinfo_t;
-
 typedef struct resourceinfo_s
 {
 	_resourceinfo_t info[ rt_max ];
@@ -59,7 +37,6 @@ typedef struct resourceinfo_s
 #define RES_UNK_6          (1<<6)   // TODO: what is it?
 #define RES_CHECKFILE	   (1<<7)	// check file on client
 
-#include "common/crc.h"
 
 typedef struct resource_s
 {
@@ -78,19 +55,3 @@ typedef struct resource_s
 	struct resource_s *pPrev;
 } resource_t;
 
-typedef struct customization_s
-{
-	qboolean bInUse;     // Is this customization in use;
-	resource_t resource; // The resource_t for this customization
-	qboolean bTranslated; // Has the raw data been translated into a useable format?  
-						   //  (e.g., raw decal .wad make into texture_t *)
-	int        nUserData1; // Customization specific data
-	int        nUserData2; // Customization specific data
-	void *pInfo;          // Buffer that holds the data structure that references the data (e.g., the cachewad_t)
-	void *pBuffer;       // Buffer that holds the data for the customization (the raw .wad data)
-	struct customization_s *pNext; // Next in chain
-} customization_t;
-
-#define FCUST_FROMHPAK		( 1<<0 )
-#define FCUST_WIPEDATA		( 1<<1 )
-#define FCUST_IGNOREINIT	( 1<<2 )

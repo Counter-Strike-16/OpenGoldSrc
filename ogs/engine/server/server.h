@@ -39,7 +39,7 @@
 #define MAX_NAME				32
 #define MAX_PACKET_ENTITIES		256
 
-#include "resources/custom_int.h"
+#include "rehlds/custom.h"
 #include "common/crc.h"
 #include "console/cvar.h"
 #include "common/dll_state.h"

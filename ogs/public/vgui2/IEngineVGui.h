@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include <vgui/VGUI.h>
-#include "interface.h"
+#include "vgui/VGUI.h"
+#include "public/interface.h"
 
 namespace vgui
 {
