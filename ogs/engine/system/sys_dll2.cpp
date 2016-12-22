@@ -49,7 +49,7 @@ char *szReslistsExt;
 
 #endif // HOOK_ENGINE
 
-const char *GetCurrentSteamAppName(void)
+const char *GetCurrentSteamAppName()
 {
 	if (!Q_stricmp(com_gamedir, "cstrike") || !Q_stricmp(com_gamedir, "cstrike_beta"))
 		return "Counter-Strike";
@@ -148,15 +148,15 @@ void Legacy_Sys_Printf(char *fmt, ...)
 		dedicated_->Sys_Printf(text);
 }
 
-NOXREF void Legacy_MP3subsys_Suspend_Audio(void)
+NOXREF void Legacy_MP3subsys_Suspend_Audio()
 {
 }
 
-NOXREF void Legacy_MP3subsys_Resume_Audio(void)
+NOXREF void Legacy_MP3subsys_Resume_Audio()
 {
 }
 
-void Sys_SetupLegacyAPIs(void)
+void Sys_SetupLegacyAPIs()
 {
 #ifndef SWDS
 	VID_FlipScreen = Sys_VID_FlipScreen;
@@ -165,7 +165,7 @@ void Sys_SetupLegacyAPIs(void)
 	Launcher_ConsolePrintf = Legacy_Sys_Printf;
 }
 
-NOXREF int Sys_IsWin95(void)
+NOXREF int Sys_IsWin95()
 {
 #ifdef _WIN32
 	return g_bIsWin95;
@@ -175,7 +175,7 @@ NOXREF int Sys_IsWin95(void)
 #endif // _WIN32
 }
 
-NOXREF int Sys_IsWin98(void)
+NOXREF int Sys_IsWin98()
 {
 #ifdef _WIN32
 	return g_bIsWin98;
@@ -186,7 +186,7 @@ NOXREF int Sys_IsWin98(void)
 }
 
 #ifdef _WIN32
-NOXREF void Sys_CheckOSVersion(void)
+NOXREF void Sys_CheckOSVersion()
 {
 	struct _OSVERSIONINFOA verInfo;
 
@@ -211,14 +211,14 @@ NOXREF void Sys_CheckOSVersion(void)
 }
 #endif // _WIN32
 
-void Sys_Init(void)
+void Sys_Init()
 {
 #ifndef SWDS
 	Sys_InitFloatTime();
 #endif
 }
 
-void Sys_Shutdown(void)
+void Sys_Shutdown()
 {
 #ifndef SWDS
 	Sys_ShutdownFloatTime();
@@ -314,11 +314,11 @@ void Sys_InitArgv(char *lpCmdLine)
 	host_parms.argv = com_argv;
 }
 
-NOXREF void Sys_ShutdownArgv(void)
+NOXREF void Sys_ShutdownArgv()
 {
 }
 
-void Sys_InitMemory(void)
+void Sys_InitMemory()
 {
 	int i;
 
@@ -367,7 +367,7 @@ void Sys_InitMemory(void)
 		Sys_Error("Unable to allocate %.2f MB\n", (float)host_parms.memsize / (1024.0f * 1024.0f));
 }
 
-void Sys_ShutdownMemory(void)
+void Sys_ShutdownMemory()
 {
 #ifdef _WIN32
 	GlobalFree((HGLOBAL)host_parms.membase);
@@ -378,7 +378,7 @@ void Sys_ShutdownMemory(void)
 	host_parms.memsize = 0;
 }
 
-void Sys_InitLauncherInterface(void)
+void Sys_InitLauncherInterface()
 {
 #ifdef _WIN32
 	//TODO: client-side code
@@ -392,16 +392,16 @@ void Sys_InitLauncherInterface(void)
 #endif // _WIN32
 }
 
-NOXREF void Sys_ShutdownLauncherInterface(void)
+NOXREF void Sys_ShutdownLauncherInterface()
 {
 }
 
-void Sys_InitAuthentication(void)
+void Sys_InitAuthentication()
 {
 	Sys_Printf("STEAM Auth Server\r\n");
 }
 
-NOXREF void Sys_ShutdownAuthentication(void)
+NOXREF void Sys_ShutdownAuthentication()
 {
 }
 
@@ -528,7 +528,7 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 	return 1;
 }
 
-void Sys_ShutdownGame(void)
+void Sys_ShutdownGame()
 {
 	if (!g_bIsDedicatedServer)
 		ClientDLL_DeactivateMouse();
@@ -547,7 +547,7 @@ void Sys_ShutdownGame(void)
 	Sys_Shutdown();
 }
 
-void ClearIOStates(void)
+void ClearIOStates()
 {
 #ifndef SWDS
 	int i;
@@ -559,26 +559,6 @@ void ClearIOStates(void)
 	ClientDLL_ClearStates();
 #endif // SWDS
 }
-
-
-class CEngineAPI : public IEngineAPI
-{
-public:
-
-	int Run(void *instance, char *basedir, char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
-	{
-		return 0;
-	}
-};
-
-CEngineAPI g_CEngineAPI;
-
-IBaseInterface *CreateCEngineAPI(void)
-{
-	return &g_CEngineAPI;
-};
-
-InterfaceReg g_CreateCEngineAPI = InterfaceReg(CreateCEngineAPI, "VENGINE_LAUNCHER_API_VERSION002");
 
 // TODO: Needs rechecking
 /*

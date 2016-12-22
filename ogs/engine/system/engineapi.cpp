@@ -4,7 +4,7 @@
 static CEngineAPI g_CEngineAPI;
 
 /*
-IBaseInterface *CreateCEngineAPI(void)
+IBaseInterface *CreateCEngineAPI()
 {
 	return &g_CEngineAPI;
 };

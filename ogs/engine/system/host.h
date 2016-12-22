@@ -133,37 +133,36 @@ extern unsigned short *host_basepal;
 
 NOXREF void Host_EndGame(const char *message, ...);
 void __declspec(noreturn) Host_Error(const char *error, ...);
-void Host_InitLocal(void);
+void Host_InitLocal();
 NOBODY void Info_WriteVars(FileHandle_t fp);
-void Host_WriteConfiguration(void);
-void Host_WriteCustomConfig(void);
-void SV_ClientPrintf(const char *fmt, ...);
-void SV_BroadcastPrintf(const char *fmt, ...);
+void Host_WriteConfiguration();
+void Host_WriteCustomConfig();
+
 void Host_ClientCommands(const char *fmt, ...);
-void SV_DropClient_api(IGameClient* cl, bool crash, const char* fmt, ...);
-void SV_DropClient(client_t *cl, qboolean crash, const char *fmt, ...);
-void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string);
 void Host_ClearClients(qboolean bFramesOnly);
 void Host_ShutdownServer(qboolean crash);
-void SV_ClearClientStates(void);
-void Host_CheckDyanmicStructures(void);
+
+void Host_CheckDyanmicStructures();
 void Host_ClearMemory(qboolean bQuiet);
 qboolean Host_FilterTime(float time);
-qboolean Master_IsLanGame(void);
-void Master_Heartbeat_f(void);
+
 void Host_ComputeFPS(double frametime);
 void Host_GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
 void Host_Speeds(double *time);
-void Host_UpdateScreen(void);
-void Host_UpdateSounds(void);
-void Host_CheckConnectionFailure(void);
+void Host_UpdateScreen();
+void Host_UpdateSounds();
+void Host_CheckConnectionFailure();
 void _Host_Frame(float time);
 int Host_Frame(float time, int iState, int *stateInfo);
-void CheckGore(void);
-qboolean Host_IsSinglePlayerGame(void);
-qboolean Host_IsServerActive(void);
-void Host_Version(void);
+void CheckGore();
+qboolean Host_IsSinglePlayerGame();
+qboolean Host_IsServerActive();
+void Host_Version();
 int Host_Init(quakeparms_t *parms);
-void Host_Shutdown(void);
+void Host_Shutdown();
+
+int GetGameAppID();
+qboolean IsGameSubscribed(const char *gameName);
+NOXREF qboolean BIsValveGame();
 
 #endif // HOST_H

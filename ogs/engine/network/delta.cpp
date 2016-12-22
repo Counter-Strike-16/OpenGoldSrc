@@ -963,18 +963,18 @@ int DELTA_ParseDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 			break;
 		case DT_TIMEWINDOW_8:
 			addt = MSG_ReadSBits(8);
-			t = (float)((g_pcl.mtime[0] * 100.0 - addt) / 100.0);
+			t = (float)((cl.mtime[0] * 100.0 - addt) / 100.0);
 			*(float *)&to[pTest->fieldOffset] = t;
 			break;
 		case DT_TIMEWINDOW_BIG:
 			addt = MSG_ReadSBits(pTest->significant_bits);
 			if (pTest->premultiply <= 0.9999 || pTest->premultiply >= 1.0001)
 			{
-				t = (float)((g_pcl.mtime[0] * pTest->premultiply - addt) / pTest->premultiply);
+				t = (float)((cl.mtime[0] * pTest->premultiply - addt) / pTest->premultiply);
 			}
 			else
 			{
-				t = (float)(g_pcl.mtime[0] - addt);
+				t = (float)(cl.mtime[0] - addt);
 			}
 			*(float *)&to[pTest->fieldOffset] = t;
 			break;

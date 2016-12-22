@@ -150,7 +150,7 @@ pmtrace_t Cam_DoTrace(vec3_t vec1, vec3_t vec2)
 }
 	
 // Returns distance or 9999 if invalid for some reason
-static float Cam_TryFlyby(player_state_t *self, player_state_t *player, vec3_t vec, qboolean checkvis)
+static float Cam_TryFlyby(entity_state_t *self, entity_state_t *player, vec3_t vec, qboolean checkvis)
 {
 	vec3_t v;
 	pmtrace_t trace;
@@ -183,7 +183,7 @@ static float Cam_TryFlyby(player_state_t *self, player_state_t *player, vec3_t v
 }
 
 // Is player visible?
-static qboolean Cam_IsVisible(player_state_t *player, vec3_t vec)
+static qboolean Cam_IsVisible(entity_state_t *player, vec3_t vec)
 {
 	pmtrace_t trace;
 	vec3_t v;
@@ -200,7 +200,7 @@ static qboolean Cam_IsVisible(player_state_t *player, vec3_t vec)
 	return true;
 }
 
-static qboolean InitFlyby(player_state_t *self, player_state_t *player, int checkvis) 
+static qboolean InitFlyby(entity_state_t *self, entity_state_t *player, int checkvis) 
 {
     float f, max;
     vec3_t vec, vec2;
@@ -316,7 +316,7 @@ static void Cam_CheckHighTarget()
 // We find a nice position to watch the player and move there
 void Cam_Track(usercmd_t *cmd)
 {
-	player_state_t *player, *self;
+	entity_state_t *player, *self;
 	frame_t *frame;
 	vec3_t vec;
 	float len;
@@ -572,5 +572,3 @@ void CL_InitCam()
 //	Cvar_RegisterVariable (&cl_camera_maxpitch);
 //	Cvar_RegisterVariable (&cl_camera_maxyaw);
 }
-
-

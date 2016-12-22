@@ -1008,7 +1008,7 @@ qboolean NET_QueuePacket(netsrc_t sock)
 				}
 				else
 				{
-					if (g_pcls.state != ca_dedicated)
+					if (cls.state != ca_dedicated)
 						Sys_Error("NET_QueuePacket: %s", NET_ErrorString(err));
 					else
 						Con_Printf("NET_QueuePacket: %s\n", NET_ErrorString(err));
@@ -1492,7 +1492,7 @@ void NET_SendPacket(netsrc_t sock, int length, void *data, const netadr_t& to)
 			return;
 
 		// let dedicated servers continue after errors
-		if (g_pcls.state == ca_dedicated)
+		if (cls.state == ca_dedicated)
 		{
 			Con_Printf(__FUNCTION__ " ERROR: %s\n", NET_ErrorString(err));
 		}
@@ -1638,7 +1638,7 @@ void NET_OpenIP(void)
 	static qboolean bFirst = TRUE;
 
 	port = 0;
-	dedicated = g_pcls.state == ca_dedicated;
+	dedicated = cls.state == ca_dedicated;
 
 	NET_ThreadLock();
 
@@ -1791,7 +1791,7 @@ void NET_OpenIPX(void)
 	int port;
 	int dedicated;
 
-	dedicated = g_pcls.state == ca_dedicated;
+	dedicated = cls.state == ca_dedicated;
 	NET_ThreadLock();
 	if (!ipx_sockets[NS_SERVER])
 	{

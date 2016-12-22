@@ -286,7 +286,7 @@ void CSteam3Server::Activate()
 			gamePort = (int)hostport.value;
 
 		int nAppId = GetGameAppID();
-		if (nAppId > 0 && g_pcls.state == ca_dedicated)
+		if (nAppId > 0 && cls.state == ca_dedicated)
 		{
 			FILE* f = fopen("steam_appid.txt", "w+");
 			if (f)
@@ -301,7 +301,7 @@ void CSteam3Server::Activate()
 
 		CRehldsPlatformHolder::get()->SteamGameServer()->SetProduct(gpszProductString);
 		CRehldsPlatformHolder::get()->SteamGameServer()->SetModDir(gamedir);
-		CRehldsPlatformHolder::get()->SteamGameServer()->SetDedicatedServer(g_pcls.state == ca_dedicated);
+		CRehldsPlatformHolder::get()->SteamGameServer()->SetDedicatedServer(cls.state == ca_dedicated);
 		CRehldsPlatformHolder::get()->SteamGameServer()->SetGameDescription(gEntityInterface.pfnGetGameDescription());
 		CRehldsPlatformHolder::get()->SteamGameServer()->LogOnAnonymous();
 		m_bLogOnResult = false;

@@ -58,7 +58,7 @@ sfx_t			*cl_sfx_r_exp3;
 CL_ParseTEnts
 =================
 */
-void CL_InitTEnts (void)
+void CL_InitTEnts ()
 {
 	cl_sfx_wizhit = S_PrecacheSound ("wizard/hit.wav");
 	cl_sfx_knighthit = S_PrecacheSound ("hknight/hit.wav");
@@ -74,7 +74,7 @@ void CL_InitTEnts (void)
 CL_ClearTEnts
 =================
 */
-void CL_ClearTEnts (void)
+void CL_ClearTEnts ()
 {
 	memset (&cl_beams, 0, sizeof(cl_beams));
 	memset (&cl_explosions, 0, sizeof(cl_explosions));
@@ -85,7 +85,7 @@ void CL_ClearTEnts (void)
 CL_AllocExplosion
 =================
 */
-explosion_t *CL_AllocExplosion (void)
+explosion_t *CL_AllocExplosion ()
 {
 	int		i;
 	float	time;
@@ -162,7 +162,7 @@ void CL_ParseBeam (model_t *m)
 CL_ParseTEnt
 =================
 */
-void CL_ParseTEnt (void)
+void CL_ParseTEnt ()
 {
 	int		type;
 	vec3_t	pos;
@@ -326,13 +326,13 @@ void CL_ParseTEnt (void)
 CL_NewTempEntity
 =================
 */
-entity_t *CL_NewTempEntity (void)
+cl_entity_t *CL_NewTempEntity ()
 {
-	entity_t	*ent;
-
 	if (cl_numvisedicts == MAX_VISEDICTS)
 		return NULL;
-	ent = &cl_visedicts[cl_numvisedicts];
+	
+	cl_entity_t *ent = &cl_visedicts[cl_numvisedicts];
+	
 	cl_numvisedicts++;
 	ent->keynum = 0;
 	
@@ -348,13 +348,13 @@ entity_t *CL_NewTempEntity (void)
 CL_UpdateBeams
 =================
 */
-void CL_UpdateBeams (void)
+void CL_UpdateBeams ()
 {
 	int			i;
 	beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
-	entity_t	*ent;
+	cl_entity_t	*ent;
 	float		yaw, pitch;
 	float		forward;
 
@@ -421,12 +421,12 @@ void CL_UpdateBeams (void)
 CL_UpdateExplosions
 =================
 */
-void CL_UpdateExplosions (void)
+void CL_UpdateExplosions ()
 {
 	int			i;
 	int			f;
 	explosion_t	*ex;
-	entity_t	*ent;
+	cl_entity_t	*ent;
 
 	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
 	{
@@ -453,7 +453,7 @@ void CL_UpdateExplosions (void)
 CL_UpdateTEnts
 =================
 */
-void CL_UpdateTEnts (void)
+void CL_UpdateTEnts ()
 {
 	CL_UpdateBeams ();
 	CL_UpdateExplosions ();

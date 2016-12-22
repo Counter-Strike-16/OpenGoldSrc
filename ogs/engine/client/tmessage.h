@@ -80,8 +80,8 @@ void TrimSpace(const char *source, char *dest);
 NOXREF int IsToken(const char *pText, const char *pTokenName);
 NOXREF int ParseDirective(const char *pText);
 NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize);
-NOXREF void TextMessageShutdown(void);
-NOXREF void TextMessageInit(void);
+NOXREF void TextMessageShutdown();
+NOXREF void TextMessageInit();
 NOXREF client_textmessage_t *TextMessageGet(const char *pName);
 
 #endif // TMESSAGE_H

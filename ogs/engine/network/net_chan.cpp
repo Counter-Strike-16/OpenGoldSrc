@@ -102,7 +102,7 @@ void Netchan_OutOfBand(netsrc_t sock, netadr_t adr, int length, byte *data)
 	MSG_WriteLong(&send, -1);
 	SZ_Write(&send, data, length);
 
-	if (!g_pcls.demoplayback)
+	if (!cls.demoplayback)
 	{
 		NET_SendPacket(sock, send.cursize, send.data, adr);
 	}
@@ -327,7 +327,7 @@ void Netchan_Transmit(netchan_t *chan, int length, byte *data)
 #ifdef REHLDS_FIXES
 		if (chan->message.cursize > MAX_MSGLEN)
 		{
-			Netchan_CreateFragments_(chan == &g_pcls.netchan ? 1 : 0, chan, &chan->message);
+			Netchan_CreateFragments_(chan == &cls.netchan ? 1 : 0, chan, &chan->message);
 			SZ_Clear(&chan->message);
 		}
 #endif
@@ -358,7 +358,7 @@ void Netchan_Transmit(netchan_t *chan, int length, byte *data)
 			//
 			if (chan->message.cursize > MAX_RELIABLE_PAYLOAD)
 			{
-				Netchan_CreateFragments_(chan == &g_pcls.netchan ? 1 : 0, chan, &chan->message);
+				Netchan_CreateFragments_(chan == &cls.netchan ? 1 : 0, chan, &chan->message);
 				SZ_Clear(&chan->message);
 			}
 		}
@@ -539,7 +539,7 @@ void Netchan_Transmit(netchan_t *chan, int length, byte *data)
 	chan->flow[FLOW_OUTGOING].current++;
 	Netchan_UpdateFlow(chan);
 
-	if (!g_pcls.demoplayback)
+	if (!cls.demoplayback)
 	{
 		COM_Munge2(sb_send.data + 8, sb_send.cursize - 8, (unsigned char)(chan->outgoing_sequence - 1));
 
@@ -561,7 +561,7 @@ void Netchan_Transmit(netchan_t *chan, int length, byte *data)
 	chan->cleartime += (sb_send.cursize + UDP_HEADER_SIZE) * fRate;
 
 	if (net_showpackets.value != 0.0f && net_showpackets.value != 2.0f) {
-		char c = (chan == &g_pcls.netchan) ? 'c' : 's';
+		char c = (chan == &cls.netchan) ? 'c' : 's';
 
 		Con_Printf(" %c --> sz=%i seq=%i ack=%i rel=%i tm=%f\n"
 				   , c
@@ -569,7 +569,7 @@ void Netchan_Transmit(netchan_t *chan, int length, byte *data)
 				   , chan->outgoing_sequence - 1
 				   , chan->incoming_sequence
 				   , send_reliable ? 1 : 0
-				   , (float)(chan == &g_pcls.netchan ? g_pcl.time : g_psv.time));
+				   , (float)(chan == &cls.netchan ? cl.time : g_psv.time));
 	}
 }
 
@@ -617,7 +617,7 @@ void Netchan_CheckForCompletion(netchan_t *chan, int stream, int intotalbuffers)
 		c++;
 
 		id = FRAG_GETID(p->bufferid);
-		if (id != c && chan == &g_pcls.netchan)
+		if (id != c && chan == &cls.netchan)
 		{
 			if (chan->sock == NS_MULTICAST)
 			{
@@ -700,7 +700,7 @@ qboolean Netchan_Process(netchan_t *chan)
 	qboolean		message_contains_fragments;
 
 
-	if (!g_pcls.demoplayback && !g_pcls.passive)
+	if (!cls.demoplayback && !cls.passive)
 	{
 		if (!NET_CompareAdr(net_from, chan->remote_address))
 			return FALSE;
@@ -754,7 +754,7 @@ qboolean Netchan_Process(netchan_t *chan)
 
 	if (net_showpackets.value != 0.0 && net_showpackets.value != 3.0)
 	{
-		char c = (chan == &g_pcls.netchan) ? 'c' : 's';
+		char c = (chan == &cls.netchan) ? 'c' : 's';
 
 		Con_Printf(
 			" %c <-- sz=%i seq=%i ack=%i rel=%i tm=%f\n",
@@ -763,7 +763,7 @@ qboolean Netchan_Process(netchan_t *chan)
 			sequence,
 			sequence_ack,
 			reliable_message,
-			(chan == &g_pcls.netchan) ? g_pcl.time : g_psv.time);
+			(chan == &cls.netchan) ? cl.time : g_psv.time);
 	}
 
 	if (sequence <= (unsigned)chan->incoming_sequence)
@@ -1565,7 +1565,7 @@ qboolean Netchan_CopyFileFragments(netchan_t *chan)
 		return FALSE;
 	}
 	// This prohibits to write files to FS on server
-	if (g_pcls.state == ca_dedicated && filename[0] != '!')
+	if (cls.state == ca_dedicated && filename[0] != '!')
 	{
 		Con_Printf("File fragment received with bad path, ignoring (2)\n");
 		Netchan_FlushIncoming(chan, 1);

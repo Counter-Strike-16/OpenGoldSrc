@@ -27,6 +27,7 @@
 */
 
 #include "precompiled.h"
+#include "system/game.h"
 
 /*
 * Globals initialization

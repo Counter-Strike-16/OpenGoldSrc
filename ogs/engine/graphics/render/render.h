@@ -33,7 +33,7 @@ typedef struct efrag_s
 	struct efrag_s		*entnext;
 } efrag_t;
 
-typedef struct entity_s
+typedef struct cl_entity_s
 {
 	int						keynum;			// for matching entities in different frames
 	vec3_t					origin;

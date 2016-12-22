@@ -310,7 +310,7 @@ model_t *Mod_LoadModel(model_t *mod, qboolean crash, qboolean trackCRC)
 				p->initialCRC = currentCRC;
 				SetCStrikeFlags();
 
-				if (!IsGameSubscribed("czero") && g_bIsCStrike && IsCZPlayerModel(currentCRC, mod->name) && g_pcls.state)
+				if (!IsGameSubscribed("czero") && g_bIsCStrike && IsCZPlayerModel(currentCRC, mod->name) && cls.state)
 				{
 					COM_ExplainDisconnection(TRUE, "Cannot continue with altered model %s, disconnecting.", mod->name);
 					CL_Disconnect();

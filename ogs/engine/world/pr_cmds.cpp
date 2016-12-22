@@ -802,7 +802,7 @@ edict_t* EXT_FUNC PVSFindEntities(edict_t *pplayer)
 
 	}
 
-	if (g_pcl.worldmodel)
+	if (cl.worldmodel)
 	{
 		//r_oldviewleaf = NULL; //clientside only
 		R_MarkLeaves();
@@ -1006,7 +1006,7 @@ int EXT_FUNC GetEntityIllum(edict_t *pEnt)
 	}
 	else
 	{
-		if (g_pcls.state == ca_connected || g_pcls.state == ca_uninitialized || g_pcls.state == ca_active)
+		if (cls.state == ca_connected || cls.state == ca_uninitialized || cls.state == ca_active)
 			return 0x80;
 		else
 			return 0;

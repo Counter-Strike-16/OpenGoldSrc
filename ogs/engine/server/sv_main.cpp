@@ -70,7 +70,6 @@ playermove_t g_svmove;
 
 qboolean g_bOutOfDateRestart;
 
-
 delta_info_t *g_sv_delta;
 delta_t *g_peventdelta;
 
@@ -327,7 +326,7 @@ delta_t *SV_LookupDelta(char *name)
 	return NULL;
 }
 
-NOXREF void SV_DownloadingModules(void)
+NOXREF void SV_DownloadingModules()
 {
 	NOXREFCHECK;
 
@@ -339,7 +338,7 @@ NOXREF void SV_DownloadingModules(void)
 #endif // SWDS
 }
 
-void SV_GatherStatistics(void)
+void SV_GatherStatistics()
 {
 	int players = 0;
 
@@ -404,7 +403,7 @@ void SV_GatherStatistics(void)
 		g_psvs.stats.average_session_len = g_psvs.stats.cumulative_sessiontime / g_psvs.stats.num_sessions;
 }
 
-void SV_DeallocateDynamicData(void)
+void SV_DeallocateDynamicData()
 {
 	if (g_moved_edict)
 		Mem_Free(g_moved_edict);
@@ -414,7 +413,7 @@ void SV_DeallocateDynamicData(void)
 	g_moved_from = NULL;
 }
 
-void SV_ReallocateDynamicData(void)
+void SV_ReallocateDynamicData()
 {
 	if (!g_psv.max_edicts)
 	{
@@ -443,7 +442,7 @@ void SV_ReallocateDynamicData(void)
 	g_moved_from = (vec3_t *)Mem_ZeroMalloc(sizeof(vec3_t) * nSize);
 }
 
-void SV_AllocClientFrames(void)
+void SV_AllocClientFrames()
 {
 	client_t *cl = g_psvs.clients;
 
@@ -537,7 +536,7 @@ void SV_ClearFrames(client_frame_t **frames)
 	}
 }
 
-void SV_Serverinfo_f(void)
+void SV_Serverinfo_f()
 {
 	if (Cmd_Argc() == 1)
 	{
@@ -573,7 +572,7 @@ void SV_Serverinfo_f(void)
 	SV_BroadcastCommand("fullserverinfo \"%s\"\n", Info_Serverinfo());
 }
 
-void SV_Localinfo_f(void)
+void SV_Localinfo_f()
 {
 	if (Cmd_Argc() == 1)
 	{
@@ -595,7 +594,7 @@ void SV_Localinfo_f(void)
 	Info_SetValueForKey(localinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING * 128);
 }
 
-void SV_User_f(void)
+void SV_User_f()
 {
 	if (!g_psv.active)
 	{
@@ -629,7 +628,7 @@ void SV_User_f(void)
 	Con_Printf("User not in server.\n");
 }
 
-void SV_Users_f(void)
+void SV_Users_f()
 {
 	if (!g_psv.active)
 	{
@@ -687,7 +686,7 @@ void SV_CountProxies(int *proxies)
 	}
 }
 
-void SV_FindModelNumbers(void)
+void SV_FindModelNumbers()
 {
 	sv_playermodel = -1;
 
@@ -894,7 +893,7 @@ int EXT_FUNC SV_LookupSoundIndex(const char *sample)
 	return 0;
 }
 
-void SV_BuildHashedSoundLookupTable(void)
+void SV_BuildHashedSoundLookupTable()
 {
 	Q_memset(g_psv.sound_precache_hashedlookup, 0, sizeof(g_psv.sound_precache_hashedlookup));
 
@@ -1092,7 +1091,7 @@ void EXT_FUNC SV_WriteDeltaDescriptionsToClient(sizebuf_t *msg)
 	}
 }
 
-void EXT_FUNC SV_SetMoveVars(void)
+void EXT_FUNC SV_SetMoveVars()
 {
 	movevars.entgravity			= 1.0f;
 	movevars.gravity			= sv_gravity.value;
@@ -1124,7 +1123,7 @@ void EXT_FUNC SV_SetMoveVars(void)
 	movevars.skyName[sizeof(movevars.skyName) - 1] = 0;
 }
 
-void SV_QueryMovevarsChanged(void)
+void SV_QueryMovevarsChanged()
 {
 	if (movevars.entgravity				!= 1.0f
 		|| sv_maxspeed.value			!= movevars.maxspeed
@@ -1520,7 +1519,7 @@ void EXT_FUNC SV_SendUserReg(sizebuf_t *msg)
 	}
 }
 
-void SV_New_f(void)
+void SV_New_f()
 {
 	int i;
 	client_t *client;
@@ -1609,7 +1608,7 @@ void SV_New_f(void)
 	Netchan_FragSend(&host_client->netchan);
 }
 
-void SV_SendRes_f(void)
+void SV_SendRes_f()
 {
 	unsigned char data[NET_MAX_PAYLOAD];
 	sizebuf_t msg;
@@ -1633,12 +1632,12 @@ void SV_SendRes_f(void)
 	}
 }
 
-void SV_Spawn_f(void)
+void SV_Spawn_f()
 {
 	g_RehldsHookchains.m_SV_Spawn_f.callChain(SV_Spawn_f_internal);
 }
 
-void EXT_FUNC SV_Spawn_f_internal(void)
+void EXT_FUNC SV_Spawn_f_internal()
 {
 	unsigned char data[NET_MAX_PAYLOAD];
 	sizebuf_t msg;
@@ -2245,12 +2244,12 @@ int SV_FindEmptySlot(netadr_t *adr, int *pslot, client_t ** ppClient)
 	return 0;
 }
 
-void SV_ConnectClient(void)
+void SV_ConnectClient()
 {
 	g_RehldsHookchains.m_SV_ConnectClient.callChain(SV_ConnectClient_internal);
 }
 
-void EXT_FUNC SV_ConnectClient_internal(void)
+void EXT_FUNC SV_ConnectClient_internal()
 {
 	client_t *client;
 	netadr_t adr;
@@ -2490,7 +2489,7 @@ void EXT_FUNC SV_ConnectClient_internal(void)
 	g_RehldsHookchains.m_ClientConnected.callChain(NULL, GetRehldsApiClient(host_client));
 }
 
-void SVC_Ping(void)
+void SVC_Ping()
 {
 	char data[6] = "\xff\xff\xff\xffj";
 	NET_SendPacket(NS_SERVER, sizeof(data), data, net_from);
@@ -2541,7 +2540,7 @@ int EXT_FUNC SV_GetChallenge(const netadr_t& adr)
 	return g_rg_sv_challenges[i].challenge;
 }
 
-void SVC_GetChallenge(void)
+void SVC_GetChallenge()
 {
 	char data[1024];
 	qboolean steam = (Cmd_Argc() == 2 && !Q_stricmp(Cmd_Argv(1), "steam"));
@@ -2560,7 +2559,7 @@ void SVC_GetChallenge(void)
 	NET_SendPacket(NS_SERVER, Q_strlen(data) + 1, data, net_from);
 }
 
-void SVC_ServiceChallenge(void)
+void SVC_ServiceChallenge()
 {
 	char data[128];
 	const char *type;
@@ -2583,7 +2582,7 @@ void SVC_ServiceChallenge(void)
 	NET_SendPacket(NS_SERVER, Q_strlen(data) + 1, data, net_from);
 }
 
-void SV_ResetModInfo(void)
+void SV_ResetModInfo()
 {
 	FileHandle_t hLibListFile;
 	unsigned int nFileSize;
@@ -2645,7 +2644,7 @@ void SV_ResetModInfo(void)
 	FS_Close(hLibListFile);
 }
 
-int SV_GetFakeClientCount(void)
+int SV_GetFakeClientCount()
 {
 	int i;
 	int fakeclients = 0;
@@ -2783,7 +2782,7 @@ NOXREF qboolean ValidChallenge(netadr_t *adr, int challengeNr)
 	return FALSE;
 }
 
-NOXREF void SVC_InfoString(void)
+NOXREF void SVC_InfoString()
 {
 	int i;
 	int count = 0;
@@ -3008,7 +3007,7 @@ typedef struct entcount_s
 
 //entcount_t ent_datacounts[32];
 
-NOXREF void SVC_PlayerInfo(void)
+NOXREF void SVC_PlayerInfo()
 {
 	int i;
 	int count = 0;
@@ -3056,7 +3055,7 @@ NOXREF void SVC_PlayerInfo(void)
 	NET_SendPacket(NS_SERVER, buf.cursize, (char *)buf.data, net_from);
 }
 
-NOXREF void SVC_RuleInfo(void)
+NOXREF void SVC_RuleInfo()
 {
 	int nNumRules;
 	cvar_t *var;
@@ -3124,7 +3123,7 @@ int SVC_GameDllQuery(const char *s)
 	return valid;
 }
 
-void SV_FlushRedirect(void)
+void SV_FlushRedirect()
 {
 	unsigned char *data;
 	sizebuf_t buf;
@@ -3159,7 +3158,7 @@ void SV_FlushRedirect(void)
 	}
 }
 
-void SV_EndRedirect(void)
+void SV_EndRedirect()
 {
 	SV_FlushRedirect();
 	sv_redirected = RD_NONE;
@@ -3187,7 +3186,7 @@ typedef struct rcon_failure_s
 
 rcon_failure_t g_rgRconFailures[MAX_RCON_FAILURES_STORAGE];
 
-void SV_ResetRcon_f(void)
+void SV_ResetRcon_f()
 {
 	Q_memset(g_rgRconFailures, 0, sizeof(g_rgRconFailures));
 }
@@ -3320,7 +3319,7 @@ qboolean SV_CheckRconFailure(netadr_t *adr)
 	return FALSE;
 }
 
-int SV_Rcon_Validate(void)
+int SV_Rcon_Validate()
 {
 	if (Cmd_Argc() < 3 || Q_strlen(rcon_password.string) == 0)
 		return 1;
@@ -3407,7 +3406,7 @@ void SV_Rcon(netadr_t *net_from_)
 	SV_EndRedirect();
 }
 
-void SV_ConnectionlessPacket(void)
+void SV_ConnectionlessPacket()
 {
 	char *args;
 	const char *c;
@@ -3546,7 +3545,7 @@ void SV_ProcessFile(client_t *cl, char *filename)
 		Con_Printf("Error parsing custom decal from %s\n", cl->name);
 }
 
-qboolean SV_FilterPacket(void)
+qboolean SV_FilterPacket()
 {
 	for (int i = numipfilters - 1; i >= 0; i--)
 	{
@@ -3567,7 +3566,7 @@ qboolean SV_FilterPacket(void)
 	return sv_filterban.value == 0.0f;
 }
 
-void SV_SendBan(void)
+void SV_SendBan()
 {
 	char szMessage[64];
 	Q_snprintf(szMessage, sizeof(szMessage), "You have been banned from this server.\n");
@@ -3587,7 +3586,7 @@ bool EXT_FUNC NET_GetPacketPreprocessor(uint8* data, unsigned int len, const net
 	return true;
 }
 
-void SV_ReadPackets(void)
+void SV_ReadPackets()
 {
 	while (NET_GetPacket(NS_SERVER))
 	{
@@ -3657,7 +3656,7 @@ void SV_ReadPackets(void)
 	}
 }
 
-void SV_CheckTimeouts(void)
+void SV_CheckTimeouts()
 {
 	int i;
 	client_t *cl;
@@ -4129,7 +4128,7 @@ void SV_WriteDeltaHeader(int num, qboolean remove, qboolean custom, int *numbase
 	}
 }
 
-void SV_InvokeCallback(void)
+void SV_InvokeCallback()
 {
 	SV_WriteDeltaHeader(
 		g_svdeltacallback.num,
@@ -4565,7 +4564,7 @@ void SV_WriteEntitiesToClient(client_t *client, sizebuf_t *msg)
 		SV_EmitPings(client, msg);
 }
 
-void SV_CleanupEnts(void)
+void SV_CleanupEnts()
 {
 	for (int e = 1; e < g_psv.num_edicts; e++)
 	{
@@ -4628,7 +4627,7 @@ void SV_UpdateUserInfo(client_t *client)
 	SV_SendFullClientUpdateForAll(client);
 }
 
-void SV_UpdateToReliableMessages(void)
+void SV_UpdateToReliableMessages()
 {
 	int i;
 	client_t *client;
@@ -4760,7 +4759,7 @@ void SV_UpdateToReliableMessages(void)
 	SZ_Clear(&g_psv.spectator);
 }
 
-void SV_SkipUpdates(void)
+void SV_SkipUpdates()
 {
 	for (int i = 0; i < g_psvs.maxclients; i++)
 	{
@@ -4773,7 +4772,7 @@ void SV_SkipUpdates(void)
 	}
 }
 
-void SV_SendClientMessages(void)
+void SV_SendClientMessages()
 {
 	SV_UpdateToReliableMessages();
 
@@ -5075,7 +5074,7 @@ void PrecacheMapSpecifiedResources()
 }
 #endif // REHLDS_FIXES
 
-void SV_CreateGenericResources(void)
+void SV_CreateGenericResources()
 {
 	char filename[MAX_PATH];
 	char *buffer;
@@ -5144,7 +5143,7 @@ void SV_CreateGenericResources(void)
 	COM_FreeFile(buffer);
 }
 
-void SV_CreateResourceList(void)
+void SV_CreateResourceList()
 {
 	char const ** s;
 	int ffirstsent = 0;
@@ -5229,7 +5228,7 @@ void SV_CreateResourceList(void)
 	}
 }
 
-void SV_ClearCaches(void)
+void SV_ClearCaches()
 {
 	int i;
 	event_t *ep;
@@ -5247,7 +5246,7 @@ void SV_ClearCaches(void)
 }
 
 // Sends customizations from all active players to the current player.
-void SV_PropagateCustomizations(void)
+void SV_PropagateCustomizations()
 {
 	client_t *pHost;
 	customization_t *pCust;
@@ -5329,7 +5328,7 @@ void __invokeValvesBuggedCreateBaseline(void* func, int player, int eindex, stru
 	}
 }
 
-void SV_CreateBaseline(void)
+void SV_CreateBaseline()
 {
 	edict_t *svent;
 	int entnum;
@@ -5436,7 +5435,7 @@ void SV_BuildReconnect(sizebuf_t *msg)
 	MSG_WriteString(msg, "reconnect\n");
 }
 
-NOXREF void SV_ReconnectAllClients(void)
+NOXREF void SV_ReconnectAllClients()
 {
 	int i;
 	char message[34];
@@ -5462,7 +5461,7 @@ NOXREF void SV_ReconnectAllClients(void)
 
 }
 
-void SetCStrikeFlags(void)
+void SetCStrikeFlags()
 {
 	if (!g_bCS_CZ_Flags_Initialized)	// TODO: Convert these to enum
 	{
@@ -5702,7 +5701,7 @@ void EXT_FUNC SV_ActivateServer_internal(int runPhysics)
 	}
 }
 
-void SV_ServerShutdown(void)
+void SV_ServerShutdown()
 {
 	Steam_NotifyOfLevelChange();
 	gGlobalVariables.time = g_psv.time;
@@ -5975,12 +5974,12 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 	return 1;
 }
 
-void SV_LoadEntities(void)
+void SV_LoadEntities()
 {
 	ED_LoadFromFile(g_psv.worldmodel->entities);
 }
 
-void SV_ClearEntities(void)
+void SV_ClearEntities()
 {
 	int i;
 	edict_t *pEdict;
@@ -6242,7 +6241,7 @@ void SV_SerializeSteamid(USERID_t* id, USERID_t* serialized)
 	*serialized = *id;
 }
 
-void SV_BanId_f(void)
+void SV_BanId_f()
 {
 	char szreason[256];
 	char idstring[64];
@@ -6446,7 +6445,7 @@ void ReplaceEscapeSequences(char *str)
 }
 #endif // REHLDS_FIXES
 
-void Host_Kick_f(void)
+void Host_Kick_f()
 {
 	const char *p;
 	char idstring[64];
@@ -6613,7 +6612,7 @@ void Host_Kick_f(void)
 	host_client = save;
 }
 
-void SV_RemoveId_f(void)
+void SV_RemoveId_f()
 {
 	if (Cmd_Argc() != 2 && Cmd_Argc() != 6)
 	{
@@ -6694,7 +6693,7 @@ void SV_RemoveId_f(void)
 	}
 }
 
-void SV_WriteId_f(void)
+void SV_WriteId_f()
 {
 	char name[MAX_PATH];
 	Q_snprintf(name, MAX_PATH, "%s", bannedcfgfile.string);
@@ -6718,7 +6717,7 @@ void SV_WriteId_f(void)
 	FS_Close(f);
 }
 
-void SV_ListId_f(void)
+void SV_ListId_f()
 {
 	if (numuserfilters <= 0)
 	{
@@ -6740,7 +6739,7 @@ void SV_ListId_f(void)
 	}
 }
 
-void SV_AddIP_f(void)
+void SV_AddIP_f()
 {
 	if (Cmd_Argc() != 3)
 	{
@@ -6840,7 +6839,7 @@ ipaddress A.B.C.D/24 is equivalent to A.B.C.0 and A.B.C\n");
 	}
 }
 
-void SV_RemoveIP_f(void)
+void SV_RemoveIP_f()
 {
 #ifdef REHLDS_FIXES
 	int argCount = Cmd_Argc();
@@ -6911,7 +6910,7 @@ Use removeAll to delete all ip filters which ipaddress or ipaddress/CIDR include
 	}
 }
 
-void SV_ListIP_f(void)
+void SV_ListIP_f()
 {
 	if (numipfilters <= 0)
 	{
@@ -6965,7 +6964,7 @@ void SV_ListIP_f(void)
 	}
 }
 
-void SV_WriteIP_f(void)
+void SV_WriteIP_f()
 {
 	char name[MAX_PATH];
 #ifdef REHLDS_FIXES
@@ -7035,7 +7034,7 @@ void SV_KickPlayer(int nPlayerSlot, int nReason)
 	SV_DropClient(&g_psvs.clients[nPlayerSlot], FALSE, "Automatically dropped by cheat detector");
 }
 
-void SV_InactivateClients(void)
+void SV_InactivateClients()
 {
 	int i;
 	client_t *cl;
@@ -7170,7 +7169,7 @@ qboolean IsSafeFileToDownload(const char *filename)
 	return TRUE;
 }
 
-void SV_BeginFileDownload_f(void)
+void SV_BeginFileDownload_f()
 {
 	const char *name;
 	char szModuleC[13] = "!ModuleC.dll";
@@ -7254,7 +7253,7 @@ void SV_BeginFileDownload_f(void)
 #endif // REHLDS_FIXES
 }
 
-void SV_SetMaxclients(void)
+void SV_SetMaxclients()
 {
 	int i;
 	client_t *cl;
@@ -7315,7 +7314,7 @@ void SV_SetMaxclients(void)
 	Rehlds_Interfaces_InitClients();
 }
 
-void SV_HandleRconPacket(void)
+void SV_HandleRconPacket()
 {
 	MSG_BeginReading();
 	MSG_ReadLong();
@@ -7336,7 +7335,7 @@ void SV_HandleRconPacket(void)
 	}
 }
 
-void SV_CheckCmdTimes(void)
+void SV_CheckCmdTimes()
 {
 	static double lastreset;
 
@@ -7368,7 +7367,7 @@ void SV_CheckCmdTimes(void)
 	}
 }
 
-void SV_CheckForRcon(void)
+void SV_CheckForRcon()
 {
 	if (g_psv.active || g_pcls.state != ca_dedicated || giActive == DLL_CLOSE || !host_initialized)
 		return;
@@ -7387,7 +7386,7 @@ void SV_CheckForRcon(void)
 	}
 }
 
-qboolean SV_IsSimulating(void)
+qboolean SV_IsSimulating()
 {
 	if (g_psv.paused)
 		return FALSE;
@@ -7401,7 +7400,7 @@ qboolean SV_IsSimulating(void)
 	return FALSE;
 }
 
-void SV_CheckMapDifferences(void)
+void SV_CheckMapDifferences()
 {
 	static double lastcheck;
 
@@ -7423,7 +7422,7 @@ void SV_CheckMapDifferences(void)
 	}
 }
 
-void SV_Frame(void)
+void SV_Frame()
 {
 	if (!g_psv.active)
 		return;
@@ -7446,7 +7445,7 @@ void SV_Frame(void)
 	Steam_RunFrame();
 }
 
-void SV_Drop_f(void)
+void SV_Drop_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -7478,7 +7477,7 @@ void SV_RegisterDelta(char *name, char *loadfile)
 #endif
 }
 
-void SV_InitDeltas(void)
+void SV_InitDeltas()
 {
 	Con_DPrintf("Initializing deltas\n");
 	SV_RegisterDelta("clientdata_t", "delta.lst");
@@ -7524,7 +7523,7 @@ void SV_InitDeltas(void)
 #endif
 }
 
-void SV_InitEncoders(void)
+void SV_InitEncoders()
 {
 	delta_t *pdesc;
 	delta_info_t *p;
@@ -7536,7 +7535,7 @@ void SV_InitEncoders(void)
 	}
 }
 
-void SV_Init(void)
+void SV_Init()
 {
 #ifdef HOOK_ENGINE
 
@@ -7717,7 +7716,7 @@ void SV_Init(void)
 	SV_InitDeltas();
 }
 
-void SV_Shutdown(void)
+void SV_Shutdown()
 {
 	g_DeltaJitRegistry.Cleanup();
 	delta_info_t *p = g_sv_delta;
@@ -7870,7 +7869,7 @@ GameToAppIDMapItem_t g_GameToAppIDMap[11] = {
 	0x96, "cstrike_beta",
 };
 
-int GetGameAppID(void)
+int GetGameAppID()
 {
 	char arg[260];
 	char gd[260];
@@ -7903,7 +7902,7 @@ qboolean IsGameSubscribed(const char *gameName)
 #endif
 }
 
-NOXREF qboolean BIsValveGame(void)
+NOXREF qboolean BIsValveGame()
 {
 	for (int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
 	{

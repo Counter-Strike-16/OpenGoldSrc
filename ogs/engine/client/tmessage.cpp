@@ -436,7 +436,7 @@ NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize)
 	gMessageTableCount = messageCount;
 }
 
-NOXREF void TextMessageShutdown(void)
+NOXREF void TextMessageShutdown()
 {
 	if (gMessageTable)
 	{
@@ -445,7 +445,7 @@ NOXREF void TextMessageShutdown(void)
 	}
 }
 
-NOXREF void TextMessageInit(void)
+NOXREF void TextMessageInit()
 {
 	int fileSize;
 	unsigned char *pMemFile;

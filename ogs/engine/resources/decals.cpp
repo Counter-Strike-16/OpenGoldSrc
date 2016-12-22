@@ -354,9 +354,9 @@ NOXREF texture_t *Draw_DecalTexture(int index)
 		retval = (texture_t *)Draw_CacheGet(decal_wad, index);
 	else
 	{
-		pCust = g_pcl.players[~index].customdata.pNext;
+		pCust = cl.players[~index].customdata.pNext;
 		if (!pCust || !pCust->bInUse || !pCust->pInfo || !pCust->pBuffer)
-			Sys_Error("Failed to load custom decal for player #%i:%s using default decal 0.\n",~index,g_pcl.players[~index].name);
+			Sys_Error("Failed to load custom decal for player #%i:%s using default decal 0.\n",~index, cl.players[~index].name);
 
 		retval = (texture_t *)Draw_CustomCacheGet((cachewad_t *)pCust->pInfo, pCust->pBuffer, pCust->resource.nDownloadSize, pCust->nUserData1);
 		if (!retval)

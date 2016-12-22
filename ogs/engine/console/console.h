@@ -58,7 +58,7 @@ void Con_Clear_f ();
 void Con_DrawNotify ();
 void Con_ClearNotify ();
 void Con_ToggleConsole_f ();
-void Con_Debug_f(void);
+void Con_Debug_f();
 
 void Con_DebugLog(const char *file, const char *fmt, ...);
 

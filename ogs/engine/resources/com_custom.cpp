@@ -51,7 +51,7 @@ void COM_ClearCustomizationList(customization_t *pHead, qboolean bCleanDecals)
 			{
 				if (pCurrent->resource.type == t_decal)
 				{
-					if (bCleanDecals && g_pcls.state == ca_active)
+					if (bCleanDecals && cls.state == ca_active)
 					{
 						R_DecalRemoveAll(-1 - pCurrent->resource.playernum);
 					}

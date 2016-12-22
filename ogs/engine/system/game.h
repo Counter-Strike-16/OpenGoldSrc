@@ -33,9 +33,6 @@
 
 class CGame: public IGame
 {
-private:
-	bool m_bActiveApp;
-
 public:
 	CGame();
 	virtual ~CGame();
@@ -71,4 +68,6 @@ public:
 	void PlayStartupVideos_noVirt();
 	void PlayAVIAndWait_noVirt(const char *aviFile);
 	void SetCursorVisible_noVirt(bool bState);
+private:
+	bool m_bActiveApp;
 };

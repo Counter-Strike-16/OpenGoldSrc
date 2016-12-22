@@ -243,7 +243,7 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 
 	if (var->flags & FCVAR_USERINFO)
 	{
-		if (g_pcls.state == ca_dedicated)
+		if (cls.state == ca_dedicated)
 		{
 			char *info = Info_Serverinfo();
 			Info_SetValueForKey(info, var->name, pszValue, MAX_INFO_STRING);
@@ -252,12 +252,12 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 #ifndef SWDS
 		else
 		{
-			Info_SetValueForKey(g_pcls.userinfo, var->name, pszValue, MAX_INFO_STRING);
+			Info_SetValueForKey(cls.userinfo, var->name, pszValue, MAX_INFO_STRING);
 
-			if (changed && g_pcls.state >= ca_connected)
+			if (changed && cls.state >= ca_connected)
 			{
-				MSG_WriteByte(&g_pcls.netchan.message, clc_stringcmd);
-				SZ_Print(&g_pcls.netchan.message, va("setinfo \"%s\" \"%s\"\n", var->name, pszValue));
+				MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
+				SZ_Print(&cls.netchan.message, va("setinfo \"%s\" \"%s\"\n", var->name, pszValue));
 			}
 		}
 #endif
@@ -476,7 +476,7 @@ qboolean Cvar_Command()
 			}
 			else
 			{
-				if (v->flags & FCVAR_SPONLY && g_pcls.state >= ca_connecting && g_pcl.maxclients > 1)
+				if (v->flags & FCVAR_SPONLY && cls.state >= ca_connecting && cl.maxclients > 1)
 				{
 					Con_Printf("Can't set %s in multiplayer\n", v->name);
 				}

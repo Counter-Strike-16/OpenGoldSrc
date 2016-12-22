@@ -1136,9 +1136,10 @@ void CL_ParseServerMessage ()
 		{
 		// GS protocol entries
 		case svc_bad:
-			// Host_Error?
+			//Host_Error( "svc_bad\n" );
 			break;
 		case svc_nop:
+			// this does nothing
 			//Con_Printf("svc_nop\n");
 			break;
 		case svc_disconnect:
@@ -1154,11 +1155,15 @@ void CL_ParseServerMessage ()
 		case svc_version:
 			break;
 		case svc_setview:
+			cl.refdef.viewentity = BF_ReadWord( msg );
 			break;
 		case svc_sound:
 			CL_ParseStartSoundPacket();
 			break;
 		case svc_time:
+			// shuffle timestamps
+			cl.mtime[1] = cl.mtime[0];
+			cl.mtime[0] = BF_ReadFloat( msg );
 			break;
 		case svc_print:
 			i = MSG_ReadByte ();
@@ -1181,9 +1186,12 @@ void CL_ParseServerMessage ()
 //			cl.viewangles[PITCH] = cl.viewangles[ROLL] = 0;
 			break;
 		case svc_serverinfo:
-			Cbuf_Execute ();		// make sure any stuffed commands are done
-			CL_ParseServerData ();
-			vid.recalc_refdef = true;	// leave full screen intermission
+			CL_ServerInfo ();
+			
+			//from svc_serverdata
+			//Cbuf_Execute ();		// make sure any stuffed commands are done
+			//CL_ParseServerData ();
+			//vid.recalc_refdef = true;	// leave full screen intermission
 			break;
 		case svc_lightstyle:
 			i = MSG_ReadByte ();
@@ -1198,14 +1206,20 @@ void CL_ParseServerMessage ()
 		case svc_deltadescription:
 			break;
 		case svc_clientdata:
+			CL_ParseClientData( msg );
 			break;
 		case svc_stopsound:
 			i = MSG_ReadShort();
 			S_StopSound(i>>3, i&7);
 			break;
 		case svc_pings:
+			i = MSG_ReadByte ();
+			if (i >= MAX_CLIENTS)
+				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_SCOREBOARD");
+			cl.players[i].ping = MSG_ReadShort ();
 			break;
 		case svc_particle:
+			CL_ParseParticles( msg );
 			break;
 		case svc_damage:
 			V_ParseDamage ();
@@ -1223,6 +1237,7 @@ void CL_ParseServerMessage ()
 			CL_ParseTEnt ();
 			break;
 		case svc_setpause:
+			cl.refdef.paused = ( BF_ReadOneBit( msg ) != 0 );
 			break;
 		case svc_signonnum:
 			break;
@@ -1263,13 +1278,19 @@ void CL_ParseServerMessage ()
 		case svc_cutscene:
 			break;
 		case svc_weaponanim:
-			CL_MuzzleFlash ();
+			//CL_ParseWeaponAnim();
+			param1 = BF_ReadByte( msg );	// iAnim
+			param2 = BF_ReadByte( msg );	// body
+			CL_WeaponAnim( param1, param2 );
 			break;
 		case svc_decalname:
 			break;
 		case svc_roomtype:
+			param1 = BF_ReadShort( msg );
+			Cvar_SetFloat( "room_type", param1 );
 			break;
 		case svc_addangle:
+			CL_ParseAddAngle( msg );
 			break;
 		case svc_newusermsg:
 			break;
@@ -1285,7 +1306,7 @@ void CL_ParseServerMessage ()
 				cl.frames[ (cls.netchan.incoming_acknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
 			break;
 		case svc_resourcelist:
-			//CL_ParseResourceList();
+			//CL_ParseResourceList( msg );
 			CL_ParseModellist ();
 			CL_ParseSoundlist ();
 			break;
@@ -1296,16 +1317,19 @@ void CL_ParseServerMessage ()
 		case svc_resourcerequest:
 			break;
 		case svc_customization:
+			CL_ParseCustomization( msg );
 			break;
 		case svc_crosshairangle:
 			break;
 		case svc_soundfade:
+			CL_ParseSoundFade( msg );
 			break;
 		case svc_filetxferfailed:
 			break;
 		case svc_hltv:
 			break;
 		case svc_director:
+			CL_ParseDirector( msg );
 			break;
 		case svc_voiceinit:
 			break;
@@ -1318,8 +1342,10 @@ void CL_ParseServerMessage ()
 		case svc_resourcelocation:
 			break;
 		case svc_sendcvarvalue:
+			CL_ParseCvarValue( msg );
 			break;
 		case svc_sendcvarvalue2:
+			CL_ParseCvarValue2( msg );
 			break;
 		default:
 			Host_EndGame ("CL_ParseServerMessage: Illegible server message");
@@ -1333,13 +1359,6 @@ void CL_ParseServerMessage ()
 				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
 			cl.players[i].frags = MSG_ReadShort ();
 			break;			
-
-		case svc_updateping:
-			i = MSG_ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_SCOREBOARD");
-			cl.players[i].ping = MSG_ReadShort ();
-			break;
 			
 		case svc_updatepl:
 			i = MSG_ReadByte ();
@@ -1366,10 +1385,6 @@ void CL_ParseServerMessage ()
 			j = MSG_ReadLong ();
 			CL_SetStat (i, j);
 			break;
-			
-		case svc_sellscreen:
-			Cmd_ExecuteString ("help");
-			break;
 
 		case svc_smallkick:
 			cl.punchangle = -2;
@@ -1380,10 +1395,6 @@ void CL_ParseServerMessage ()
 
 		case svc_setinfo:
 			CL_SetInfo ();
-			break;
-
-		case svc_serverinfo:
-			CL_ServerInfo ();
 			break;
 
 		case svc_download:

@@ -84,17 +84,16 @@ dlight_t *CL_AllocDlight (int key)
 CL_NewDlight
 ===============
 */
-void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
-				   int type)
+void CL_NewDlight (int key, float x, float y, float z, float radius, float time, int type)
 {
-	dlight_t	*dl;
-
-	dl = CL_AllocDlight (key);
+	dlight_t *dl = CL_AllocDlight (key);
+	
 	dl->origin[0] = x;
 	dl->origin[1] = y;
 	dl->origin[2] = z;
 	dl->radius = radius;
 	dl->die = cl.time + time;
+	
 	if (type == 0) {
 		dl->color[0] = 0.2;
 		dl->color[1] = 0.1;
@@ -125,13 +124,11 @@ CL_DecayLights
 
 ===============
 */
-void CL_DecayLights (void)
+void CL_DecayLights ()
 {
-	int			i;
-	dlight_t	*dl;
-
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
+	dlight_t *dl = cl_dlights;
+	
+	for (int i=0 ; i<MAX_DLIGHTS ; i++, dl++)
 	{
 		if (dl->die < cl.time || !dl->radius)
 			continue;
@@ -141,7 +138,6 @@ void CL_DecayLights (void)
 			dl->radius = 0;
 	}
 }
-
 
 /*
 =========================================================================
@@ -221,18 +217,17 @@ void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int bits)
 	}
 }
 
-
 /*
 =================
-FlushEntityPacket
+CL_FlushEntityPacket
 =================
 */
-void FlushEntityPacket (void)
+void CL_FlushEntityPacket ()
 {
 	int			word;
 	entity_state_t	olde, newe;
 
-	Con_DPrintf ("FlushEntityPacket\n");
+	Con_DPrintf ("CL_FlushEntityPacket\n");
 
 	memset (&olde, 0, sizeof(olde));
 
@@ -294,7 +289,7 @@ void CL_ParsePacketEntities (qboolean delta)
 	{
 		if (cls.netchan.outgoing_sequence - oldpacket >= UPDATE_BACKUP-1)
 		{	// we can't use this, it is too old
-			FlushEntityPacket ();
+			CL_FlushEntityPacket ();
 			return;
 		}
 		cl.validsequence = cls.netchan.incoming_sequence;
@@ -342,7 +337,7 @@ void CL_ParsePacketEntities (qboolean delta)
 			if (full)
 			{
 				Con_Printf ("WARNING: oldcopy on full update");
-				FlushEntityPacket ();
+				CL_FlushEntityPacket ();
 				return;
 			}
 
@@ -365,7 +360,7 @@ void CL_ParsePacketEntities (qboolean delta)
 				{
 					cl.validsequence = 0;
 					Con_Printf ("WARNING: U_REMOVE on full update\n");
-					FlushEntityPacket ();
+					CL_FlushEntityPacket ();
 					return;
 				}
 				continue;
@@ -407,9 +402,9 @@ CL_LinkPacketEntities
 
 ===============
 */
-void CL_LinkPacketEntities (void)
+void CL_LinkPacketEntities ()
 {
-	entity_t			*ent;
+	cl_entity_t			*ent;
 	packet_entities_t	*pack;
 	entity_state_t		*s1, *s2;
 	float				f;
@@ -549,7 +544,6 @@ void CL_LinkPacketEntities (void)
 	}
 }
 
-
 /*
 =========================================================================
 
@@ -571,7 +565,7 @@ int				cl_num_projectiles;
 
 extern int cl_spikeindex;
 
-void CL_ClearProjectiles (void)
+void CL_ClearProjectiles ()
 {
 	cl_num_projectiles = 0;
 }
@@ -583,7 +577,7 @@ CL_ParseProjectiles
 Nails are passed as efficient temporary entities
 =====================
 */
-void CL_ParseProjectiles (void)
+void CL_ParseProjectiles ()
 {
 	int		i, c, j;
 	byte	bits[6];
@@ -616,11 +610,11 @@ CL_LinkProjectiles
 
 =============
 */
-void CL_LinkProjectiles (void)
+void CL_LinkProjectiles ()
 {
 	int		i;
 	projectile_t	*pr;
-	entity_t		*ent;
+	cl_entity_t		*ent;
 
 	for (i=0, pr=cl_projectiles ; i<cl_num_projectiles ; i++, pr++)
 	{
@@ -645,9 +639,9 @@ void CL_LinkProjectiles (void)
 
 //========================================
 
-extern	int		cl_spikeindex, cl_playerindex, cl_flagindex;
+extern int cl_spikeindex, cl_playerindex, cl_flagindex;
 
-entity_t *CL_NewTempEntity (void);
+cl_entity_t *CL_NewTempEntity ();
 
 /*
 ===================
@@ -656,12 +650,12 @@ CL_ParsePlayerinfo
 */
 extern int parsecountmod;
 extern double parsecounttime;
-void CL_ParsePlayerinfo (void)
+void CL_ParsePlayerinfo ()
 {
 	int			msec;
 	int			flags;
 	player_info_t	*info;
-	player_state_t	*state;
+	entity_state_t	*state;
 	int			num;
 	int			i;
 
@@ -739,7 +733,7 @@ void CL_AddFlagModels (entity_t *ent, int team)
 	int		i;
 	float	f;
 	vec3_t	v_forward, v_right, v_up;
-	entity_t	*newent;
+	cl_entity_t	*newent;
 
 	if (cl_flagindex == -1)
 		return;
@@ -790,14 +784,14 @@ Create visible entities in the correct position
 for all current players
 =============
 */
-void CL_LinkPlayers (void)
+void CL_LinkPlayers ()
 {
 	int				j;
 	player_info_t	*info;
-	player_state_t	*state;
-	player_state_t	exact;
+	entity_state_t	*state;
+	entity_state_t	exact;
 	double			playertime;
-	entity_t		*ent;
+	cl_entity_t		*ent;
 	int				msec;
 	frame_t			*frame;
 	int				oldphysent;
@@ -905,7 +899,7 @@ CL_SetSolid
 Builds all the pmove physents for the current frame
 ===============
 */
-void CL_SetSolidEntities (void)
+void CL_SetSolidEntities ()
 {
 	int		i;
 	frame_t	*frame;
@@ -936,7 +930,6 @@ void CL_SetSolidEntities (void)
 			pmove.numphysent++;
 		}
 	}
-
 }
 
 /*
@@ -952,23 +945,21 @@ This sets up the first phase.
 void CL_SetUpPlayerPrediction(qboolean dopred)
 {
 	int				j;
-	player_state_t	*state;
-	player_state_t	exact;
+	entity_state_t	*state;
+	entity_state_t	exact;
 	double			playertime;
 	int				msec;
 	frame_t			*frame;
 	struct predicted_player *pplayer;
 
-	playertime = realtime - cls.latency + 0.02;
+	playertime = realtime - cls.latency + 0.02f;
 	if (playertime > realtime)
 		playertime = realtime;
 
 	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
 
-	for (j=0, pplayer = predicted_players, state=frame->playerstate; 
-		j < MAX_CLIENTS;
-		j++, pplayer++, state++) {
-
+	for (j=0, pplayer = predicted_players, state=frame->playerstate; j < MAX_CLIENTS; j++, pplayer++, state++)
+	{
 		pplayer->active = false;
 
 		if (state->messagenum != cl.parsecount)
@@ -1022,19 +1013,18 @@ pmove must be setup with world and solid entity hulls before calling
 */
 void CL_SetSolidPlayers (int playernum)
 {
+	if (!cl_solid_players.value)
+		return;
+	
 	int		j;
 	extern	vec3_t	player_mins;
 	extern	vec3_t	player_maxs;
 	struct predicted_player *pplayer;
-	physent_t *pent;
+	
+	physent_t *pent = pmove.physents + pmove.numphysent;
 
-	if (!cl_solid_players.value)
-		return;
-
-	pent = pmove.physents + pmove.numphysent;
-
-	for (j=0, pplayer = predicted_players; j < MAX_CLIENTS;	j++, pplayer++) {
-
+	for (j=0, pplayer = predicted_players; j < MAX_CLIENTS;	j++, pplayer++)
+	{
 		if (!pplayer->active)
 			continue;	// not present this frame
 
@@ -1054,7 +1044,6 @@ void CL_SetSolidPlayers (int playernum)
 	}
 }
 
-
 /*
 ===============
 CL_EmitEntities
@@ -1064,10 +1053,11 @@ Builds the visedicts array for cl.time
 Made up of: clients, packet_entities, nails, and tents
 ===============
 */
-void CL_EmitEntities (void)
+void CL_EmitEntities ()
 {
 	if (cls.state != ca_active)
 		return;
+	
 	if (!cl.validsequence)
 		return;
 
@@ -1082,4 +1072,3 @@ void CL_EmitEntities (void)
 	CL_LinkProjectiles ();
 	CL_UpdateTEnts ();
 }
-

@@ -922,7 +922,7 @@ void EXT_FUNC Cmd_ExecuteString_internal(const char* cmdName, cmd_source_t src, 
 		{
 			cmd->function();
 
-			if (g_pcls.demorecording && (cmd->flags & FCMD_HUD_COMMAND) && !g_pcls.spectator)
+			if (cls.demorecording && (cmd->flags & FCMD_HUD_COMMAND) && !cls.spectator)
 			{
 				CL_RecordHUDCommand(cmd->name);
 			}
@@ -951,7 +951,7 @@ void EXT_FUNC Cmd_ExecuteString_internal(const char* cmdName, cmd_source_t src, 
 	if (!Cvar_Command())
 	{
 		// Send to a server if nothing processed locally and connected
-		if (g_pcls.state >= ca_connected)
+		if (cls.state >= ca_connected)
 			Cmd_ForwardToServer();
 #ifdef REHLDS_FIXES
 		else if (sv_echo_unknown_cmd.string[0] == '1' && src == src_command)
@@ -981,7 +981,7 @@ qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
 {
 	const char *cmd_name = Cmd_Argv(0);
 
-	if (g_pcls.state <= ca_disconnected)
+	if (cls.state <= ca_disconnected)
 	{
 		if (Q_stricmp(cmd_name, "setinfo"))
 		{
@@ -991,7 +991,7 @@ qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
 		return FALSE;
 	}
 
-	if (g_pcls.demoplayback || g_bIsDedicatedServer)
+	if (cls.demoplayback || g_bIsDedicatedServer)
 	{
 		return FALSE;
 	}
@@ -1033,13 +1033,13 @@ void Cmd_ForwardToServer()
 {
 	if (Q_stricmp(Cmd_Argv(0), "cmd") || Q_stricmp(Cmd_Argv(1), "dlfile"))
 	{
-		Cmd_ForwardToServerInternal(&g_pcls.netchan.message);
+		Cmd_ForwardToServerInternal(&cls.netchan.message);
 	}
 }
 
 qboolean Cmd_ForwardToServerUnreliable()
 {
-	return Cmd_ForwardToServerInternal(&g_pcls.datagram);
+	return Cmd_ForwardToServerInternal(&cls.datagram);
 }
 
 // Returns the position (1 to argc-1) in the command's argument list

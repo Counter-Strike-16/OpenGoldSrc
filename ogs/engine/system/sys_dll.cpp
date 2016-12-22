@@ -419,7 +419,7 @@ NOXREF void Sys_Sleep(int msec)
 #ifdef _WIN32
 	Sleep(msec);
 #else
-	usleep(1000 *msec);
+	usleep(1000 * msec);
 #endif // _WIN32
 }
 

@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client/client.h"
 #include "console/console.h"
 
-void CL_FinishTimeDemo (void);
+void CL_FinishTimeDemo ();
 
 /*
 ==============================================================================
@@ -45,7 +45,7 @@ CL_StopPlayback
 Called when a demo file runs out, or the user starts a game
 ==============
 */
-void CL_StopPlayback (void)
+void CL_StopPlayback ()
 {
 	if (!cls.demoplayback)
 		return;
@@ -144,7 +144,7 @@ CL_GetDemoMessage
   FIXME...
 ====================
 */
-qboolean CL_GetDemoMessage (void)
+qboolean CL_GetDemoMessage ()
 {
 	int		r, i, j;
 	float	f;
@@ -260,7 +260,7 @@ CL_GetMessage
 Handles recording and playback of demos, on top of NET_ code
 ====================
 */
-qboolean CL_GetMessage (void)
+qboolean CL_GetMessage ()
 {
 	if	(cls.demoplayback)
 		return CL_GetDemoMessage ();
@@ -281,7 +281,7 @@ CL_Stop_f
 stop recording a demo
 ====================
 */
-void CL_Stop_f (void)
+void CL_Stop_f ()
 {
 	if (!cls.demorecording)
 	{
@@ -342,7 +342,7 @@ void CL_WriteRecordDemoMessage (sizebuf_t *msg, int seq)
 }
 
 
-void CL_WriteSetDemoMessage (void)
+void CL_WriteSetDemoMessage ()
 {
 	int		len;
 	float	fl;
@@ -374,7 +374,7 @@ CL_Record_f
 record <demoname> <server>
 ====================
 */
-void CL_Record_f (void)
+void CL_Record_f ()
 {
 	int		c;
 	char	name[MAX_OSPATH];
@@ -382,7 +382,7 @@ void CL_Record_f (void)
 	char	buf_data[MAX_MSGLEN];
 	int n, i, j;
 	char *s;
-	entity_t *ent;
+	cl_entity_t *ent;
 	entity_state_t *es, blankes;
 	player_info_t *player;
 	extern	char gamedirfile[];
@@ -669,7 +669,7 @@ CL_ReRecord_f
 record <demoname>
 ====================
 */
-void CL_ReRecord_f (void)
+void CL_ReRecord_f ()
 {
 	int		c;
 	char	name[MAX_OSPATH];
@@ -718,7 +718,7 @@ CL_PlayDemo_f
 play [demoname]
 ====================
 */
-void CL_PlayDemo_f (void)
+void CL_PlayDemo_f ()
 {
 	char	name[256];
 
@@ -760,7 +760,7 @@ CL_FinishTimeDemo
 
 ====================
 */
-void CL_FinishTimeDemo (void)
+void CL_FinishTimeDemo ()
 {
 	int		frames;
 	float	time;
@@ -782,7 +782,7 @@ CL_TimeDemo_f
 timedemo [demoname]
 ====================
 */
-void CL_TimeDemo_f (void)
+void CL_TimeDemo_f ()
 {
 	if (Cmd_Argc() != 2)
 	{
