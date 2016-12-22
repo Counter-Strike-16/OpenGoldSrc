@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "public/interface.h"
 
 

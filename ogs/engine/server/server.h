@@ -32,29 +32,29 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 
 // TODO: I think this defines must be in /common/
 #define NUM_EDICTS				900
 #define MAX_NAME				32
 #define MAX_PACKET_ENTITIES		256
 
-#include "custom_int.h"
+#include "resources/custom_int.h"
 #include "common/crc.h"
 #include "console/cvar.h"
 #include "common/dll_state.h"
-#include "consistency.h"
-#include "event.h"
+#include "resources/consistency.h"
+#include "world/event.h"
 #include "common/entity_state.h"
 #include "network/delta.h"
 #include "network/delta_packet.h"
 #include "rehlds/model.h"
 #include "network/net.h"
 #include "engine/progs.h"
-#include "filter.h"
+#include "network/filter.h"
 #include "server/server_static.h"
-#include "usermsg.h"
-#include "common/userid.h"
+#include "network/usermsg.h"
+#include "userid.h"
 #include "pm_shared/pm_defs.h"
 #include "world/inst_baseline.h"
 #include "network/net_ws.h"

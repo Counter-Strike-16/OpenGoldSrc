@@ -27,7 +27,7 @@
 */
 #pragma once
 
-#include "archtypes.h"
+#include "public/archtypes.h"
 
 class IRehldsFlightRecorder
 {

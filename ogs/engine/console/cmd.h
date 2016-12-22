@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "system/common.h"
 #include "rehlds/cmd_rehlds.h"
 

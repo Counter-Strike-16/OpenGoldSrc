@@ -11,7 +11,7 @@
 #pragma once
 #endif
 
-#include "public/rehlds/osconfig.h"
+#include "rehlds/osconfig.h"
 #include "protected_things.h"
 #include "commonmacros.h"
 

@@ -29,7 +29,7 @@
 #pragma once
 
 #include "common/const.h"
-#include "common/qlimits.h"
+#include "qlimits.h"
 
 #ifdef REHLDS_FIXES
 #define COM_TOKEN_LEN	2048

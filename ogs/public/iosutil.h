@@ -2,15 +2,11 @@
 
 #include <ios>
 
-class IosFlagSaver {
+class IosFlagSaver
+{
 public:
-	explicit IosFlagSaver(std::ostream& _ios) :
-		ios(_ios),
-		f(_ios.flags()) {
-	}
-	~IosFlagSaver() {
-		ios.flags(f);
-	}
+	explicit IosFlagSaver(std::ostream& _ios) : ios(_ios), f(_ios.flags()){}
+	~IosFlagSaver(){ios.flags(f);}
 
 	IosFlagSaver(const IosFlagSaver &rhs) = delete;
 	IosFlagSaver& operator= (const IosFlagSaver& rhs) = delete;

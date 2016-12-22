@@ -46,9 +46,9 @@ template <> inline bool CDefOps<char *>::LessFunc( char * const &lhs, char * con
 template <typename RBTREE_T>
 void SetDefLessFunc( RBTREE_T &RBTree )
 {
-#ifdef _WIN32
+#ifdef _MSC_VER
 	RBTree.SetLessFunc( DefLessFunc( RBTREE_T::KeyType_t ) );
-#elif _LINUX
+#elif defined(_LINUX) || defined(__MINGW32__)
 	RBTree.SetLessFunc( DefLessFunc( typename RBTREE_T::KeyType_t ) );
 #endif
 }

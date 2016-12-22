@@ -19,7 +19,7 @@
 #pragma once
 #endif
 
-#include "public/rehlds/osconfig.h"
+#include "rehlds/osconfig.h"
 #include "basetypes.h"
 #include "tier0/platform.h"
 #include <math.h>

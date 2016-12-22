@@ -32,11 +32,10 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "system/common.h"
 #include "common/enums.h"
 #include "common/netadr.h"
-
 
 #define PROTOCOL_VERSION		48
 

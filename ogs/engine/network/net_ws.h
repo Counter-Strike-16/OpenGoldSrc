@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "common/enums.h"
 #include "system/common.h"
 #include "common/netadr.h"

@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "common/userid.h"
+#include "userid.h"
 
 #ifdef REHLDS_FIXES
 #define MAX_IPFILTERS		4096

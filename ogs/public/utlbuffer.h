@@ -14,7 +14,7 @@
 #ifndef UTLBUFFER_H
 #define UTLBUFFER_H
 
-#include "public/rehlds/osconfig.h"
+#include "rehlds/osconfig.h"
 #include "utlmemory.h"
 #include <stdarg.h>
 

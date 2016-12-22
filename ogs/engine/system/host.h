@@ -42,11 +42,11 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "filesystem/filesystem_internal.h"
 #include "system/sys_dll.h"
 #include "server/server.h"
-#include "rehlds_api.h"
+#include "rehlds/rehlds_api.h"
 
 #define MAX_COMMAND_LINE_PARAMS 50
 

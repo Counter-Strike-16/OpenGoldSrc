@@ -30,15 +30,15 @@
 class INetChan;
 class IGameClient;
 
-#include "archtypes.h"
-#include "const.h"
-#include "netadr.h"
+#include "public/archtypes.h"
+#include "common/const.h"
+#include "common/netadr.h"
 
-#include "common_rehlds.h"
+#include "rehlds/common_rehlds.h"
 #include "userid_rehlds.h"
 
 #ifdef REHLDS_SELF
-#include "server.h"
+#include "server/server.h"
 #endif
 
 class INetChan;

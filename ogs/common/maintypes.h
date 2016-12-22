@@ -33,7 +33,7 @@
 #endif
 
 
-#include "osconfig.h"
+#include "rehlds/osconfig.h"
 #include "common/mathlib.h"
 
 
@@ -43,9 +43,6 @@
 #define NOBODY
 // Function is not tested at all.
 #define UNTESTED
-
-#define BIT(n) (1<<(n))
-
 
 typedef unsigned int string_t;		// from engine's pr_comp.h;
 

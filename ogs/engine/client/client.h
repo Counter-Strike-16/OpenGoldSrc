@@ -32,15 +32,15 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "system/common.h"
 #include "engine/custom.h"
 #include "common/cl_entity.h"
-#include "consistency.h"
+#include "resources/consistency.h"
 #include "network/delta_packet.h"
 #include "common/dlight.h"
 #include "common/entity_state.h"
-#include "event.h"
+#include "world/event.h"
 #include "system/info.h"
 #include "network/net.h"
 #include "input/keys.h"
@@ -312,7 +312,9 @@ extern cvar_t rate_;
 extern cvar_t console;
 
 void CL_RecordHUDCommand(char *cmdname);
+
 void R_DecalRemoveAll(int textureIndex);
+
 void CL_CheckForResend();
 qboolean CL_CheckFile(sizebuf_t *msg, char *filename);
 void CL_ClearClientState();
@@ -336,42 +338,55 @@ void CL_AdjustClock();
 void CL_Save(const char *name);
 void CL_HudMessage(const char *pMessage);
 
-int Key_CountBindings();
-void Key_WriteBindings(FileHandle_t f);
 extern "C" void ClientDLL_UpdateClientData();
 extern "C" void ClientDLL_HudVidInit();
+
 void Chase_Init();
-void Key_Init();
+
 extern "C" void ClientDLL_Init();
+
 void Con_Shutdown();
+
 int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf);
+
 void CL_ShutDownUsrMessages();
 void CL_ShutDownClientStatic();
+
 extern "C" void ClientDLL_MoveClient(struct playermove_s *ppmove);
+
 void CL_Shutdown();
+
 extern "C" void ClientDLL_Frame(double time);
 extern "C" void ClientDLL_CAM_Think();
+
 void CL_InitEventSystem();
 void CL_CheckClientState();
 void CL_RedoPrediction();
 void CL_SetLastUpdate();
+
 void Con_NPrintf(int idx, const char *fmt, ...);
+
 void CL_WriteMessageHistory(int starting_count, int cmd);
 void CL_MoveSpectatorCamera();
 void CL_AddVoiceToDatagram(qboolean bFinal);
 void CL_VoiceIdle();
+
 void PollDInputDevices();
+
 void CL_KeepConnectionActive();
 void CL_UpdateModuleC();
+
 int VGuiWrap2_IsInCareerMatch();
 void VguiWrap2_GetCareerUI();
 int VGuiWrap2_GetLocalizedStringLength(const char *label);
 void VGuiWrap2_LoadingStarted(const char *resourceType, const char *resourceName);
+
 void ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength);
 void ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength);
 int GetTimesTutorMessageShown(int id);
 void RegisterTutorMessageShown(int mid);
 void ResetTutorMessageDecayData();
+
 void SetCareerAudioState(int state);
 
 #endif // CLIENT_H

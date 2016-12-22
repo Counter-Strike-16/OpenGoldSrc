@@ -20,6 +20,10 @@
 
 #include "common/usercmd.h"
 #include "engine/eiface.h"
+
+#include "rehlds/modelgen.h"
+#include "rehlds/spritegn.h"
+
 #include "common/com_model.h"
 #include "engine/studio.h"
 #include "engine/shake.h"
@@ -69,7 +73,7 @@
 
 //#include "version/appversion.h"
 
-#include "public/rehlds/osconfig.h"
+#include "rehlds/osconfig.h"
 
 #include "public/archtypes.h"
 //#include "asmlib.h"
@@ -84,7 +88,7 @@
 
 #include "memory.h"
 #include "system/engine.h"
-#include "public/tier0/platform.h"
+#include "tier0/platform.h"
 //#include "RehldsRuntimeConfig.h"
 //#include "rehlds_debug.h"
 
@@ -97,12 +101,12 @@
 #include "dbg/dbg.h"
 
 #include "public/interface.h"
-#include "public/iregistry.h"
+#include "iregistry.h"
 
-#include "public/utlbuffer.h"
-#include "public/utlrbtree.h"
+#include "utlbuffer.h"
+#include "utlrbtree.h"
 
-#include "public/iosutil.h"
+#include "iosutil.h"
 
 // testsuite
 /*
@@ -115,14 +119,13 @@
 
 //#include "bzip2/bzlib.h"
 #include "system/igame.h"
-#include "system/sys_linuxwnd.h"
 
 #include "system/iengine.h"
+//#include "hookchains_impl.h"
+#include "rehlds/rehlds_interfaces.h"
+//#include "rehlds/rehlds_interfaces_impl.h"
+#include "rehlds/rehlds_api.h"
 /*
-#include "hookchains_impl.h"
-#include "rehlds_interfaces.h"
-#include "rehlds_interfaces_impl.h"
-#include "rehlds_api.h"
 #include "rehlds_api_impl.h"
 #include "FlightRecorderImpl.h"
 #include "flight_recorder.h"

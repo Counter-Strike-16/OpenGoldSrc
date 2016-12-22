@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "system/igame.h"
 #include "system/iengine.h"
 
@@ -46,18 +46,6 @@ extern IEngine* eng;
 
 class CEngine: public IEngine
 {
-private:
-	int m_nQuitting;
-	int m_nDLLState;
-	int m_nSubState;
-	double m_fCurTime;
-	double m_fFrameTime;
-	double m_fOldTime;
-	bool m_bTrapMode;
-	bool m_bDoneTrapping;
-	int m_nTrapKey;
-	int m_nTrapButtons;
-
 public:
 	CEngine();
 	virtual ~CEngine();
@@ -97,4 +85,15 @@ public:
 	bool CheckDoneTrapping_noVirt(int& buttons, int& keys);
 	int GetQuitting_noVirt();
 	void SetQuitting_noVirt(int quittype);
+private:
+	int m_nQuitting;
+	int m_nDLLState;
+	int m_nSubState;
+	double m_fCurTime;
+	double m_fFrameTime;
+	double m_fOldTime;
+	bool m_bTrapMode;
+	bool m_bDoneTrapping;
+	int m_nTrapKey;
+	int m_nTrapButtons;
 };

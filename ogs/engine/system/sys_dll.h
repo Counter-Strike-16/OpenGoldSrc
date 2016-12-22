@@ -27,10 +27,10 @@
 */
 #pragma once
 
-#include "rehlds/maintypes.h"
-#include "modinfo.h"
+#include "maintypes.h"
+#include "resources/modinfo.h"
 #include "public/FileSystem.h"
-#include "pr_dlls.h"
+#include "world/pr_dlls.h"
 
 //vmodes.h must be included before cdll_int.h (wrect_t declaration)
 #include "vmodes.h"

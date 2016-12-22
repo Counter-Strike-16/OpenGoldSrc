@@ -245,6 +245,8 @@ inline void CCycleCount::Init(float initTimeMsec)
 inline void CCycleCount::Sample()
 {
 	unsigned long* pSample = (unsigned long *)&m_Int64;
+	
+#ifdef _MSC_VER
 	__asm
 	{
 		// force the cpu to synchronize the instruction queue
@@ -257,8 +259,17 @@ inline void CCycleCount::Sample()
 			mov[ecx], eax
 			mov[ecx + 4], edx
 	}
+#else
+	asm(".intel_syntax noprefix\n");
+	
+	asm("mov ecx, %1\n" : "=r"(pSample));
+	asm(
+	"rdtsc\n"
+	"mov[ecx], eax\n"
+	"mov[ecx + 4], edx\n"
+	);
+#endif
 }
-
 
 inline CCycleCount& CCycleCount::operator+=(CCycleCount const &other)
 {

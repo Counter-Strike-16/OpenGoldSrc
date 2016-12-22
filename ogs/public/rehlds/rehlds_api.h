@@ -26,13 +26,13 @@
 *
 */
 #pragma once
-#include "archtypes.h"
+#include "public/archtypes.h"
 #include "cmd_rehlds.h"
 #include "rehlds_interfaces.h"
 #include "hookchains.h"
 #include "FlightRecorder.h"
-#include "interface.h"
-#include "model.h"
+#include "public/interface.h"
+#include "rehlds/model.h"
 
 #define REHLDS_API_VERSION_MAJOR 3
 #define REHLDS_API_VERSION_MINOR 0
