@@ -5,7 +5,8 @@
 #define DELTAJIT_MAX_BLOCKS 32
 #define DELTAJIT_MAX_FIELDS 56
 
-struct deltajit_field {
+struct deltajit_field
+{
 	unsigned int id;
 	unsigned int offset;
 	unsigned int length;
@@ -14,7 +15,8 @@ struct deltajit_field {
 	unsigned int significantBits;
 };
 
-struct deltajit_memblock_field {
+struct deltajit_memblock_field
+{
 	deltajit_field* field;
 	uint16 mask; // one bit for each memblock byte
 	bool first;

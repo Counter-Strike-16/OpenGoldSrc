@@ -42,13 +42,12 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "filesystem/filesystem_internal.h"
-#include "system/system.h"
-#include "server/server.h"
-#include "rehlds/rehlds_api.h"
+#include "common/commontypes.h"
+#include "common/cvardef.h"
 
 #define MAX_COMMAND_LINE_PARAMS 50
+
+typedef struct client_s client_t;
 
 typedef struct quakeparms_s
 {
