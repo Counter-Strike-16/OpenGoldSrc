@@ -32,8 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-
 class IEngine
 {
 public:
@@ -44,7 +42,7 @@ public:
 		QUIT_RESTART
 	};
 
-	virtual ~IEngine() {}
+	virtual ~IEngine(){}
 
 	virtual bool Load(bool dedicated, char *basedir, char *cmdline) = 0;
 	virtual void Unload() = 0;

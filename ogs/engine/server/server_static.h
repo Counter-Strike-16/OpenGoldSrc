@@ -32,6 +32,7 @@
 #pragma once
 #endif
 
+#include "common/commontypes.h"
 #include "common/netadr.h"
 
 typedef struct server_log_s

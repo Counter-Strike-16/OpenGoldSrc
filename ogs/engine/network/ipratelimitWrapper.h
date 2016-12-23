@@ -25,11 +25,10 @@
 *    version.
 *
 */
+
 #pragma once
 
-#include "maintypes.h"
-#include "network/net.h"
-#include "network/ipratelimit.h"
+typedef struct netadr_s netadr_t;
 
 #ifdef HOOK_ENGINE
 #define rateChecker (*prateChecker)
@@ -39,8 +38,4 @@ extern int(*pCheckIP)(netadr_t adr);
 
 extern class CIPRateLimit rateChecker;
 
-
 int CheckIP(netadr_t adr);
-
-
-

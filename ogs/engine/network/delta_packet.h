@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "common/entity_state.h"
+typedef struct entity_state_s entity_state_t;
 
 typedef struct packet_entities_s
 {

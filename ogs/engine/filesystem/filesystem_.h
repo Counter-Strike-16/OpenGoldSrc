@@ -33,7 +33,7 @@
 #endif
 
 #include "maintypes.h"
-#include "iregistry.h"
+#include "public/interface.h"
 #include "tier1/utlvector.h"
 
 #ifdef _WIN32

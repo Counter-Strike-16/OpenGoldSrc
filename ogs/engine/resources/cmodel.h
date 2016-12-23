@@ -35,10 +35,8 @@
 #include "maintypes.h"
 #include "rehlds/model.h"
 
-
 // Looks like no more than 8096 visibility leafs per world model
 #define MODEL_MAX_PVS 1024
-
 
 #ifdef HOOK_ENGINE
 #define gPAS (*pgPAS)
@@ -47,12 +45,10 @@
 #define mod_novis (*pmod_novis)
 #endif // HOOK_ENGINE
 
-
 extern unsigned char *gPAS;
 extern unsigned char *gPVS;
 extern int gPVSRowBytes;
 extern unsigned char mod_novis[MODEL_MAX_PVS];
-
 
 void Mod_Init(void);
 unsigned char *Mod_DecompressVis(unsigned char *in, model_t *model);

@@ -32,9 +32,15 @@
 #pragma once
 #endif
 
+#include "maintypes.h"
+#include "public/archtypes.h"
+#include "public/FileSystem.h"
+
 #ifdef HOOK_ENGINE
 #define g_pFileSystem (*pg_pFileSystem)
 #endif // HOOK_ENGINE
+
+class IFileSystem;
 
 extern IFileSystem *g_pFileSystem;
 

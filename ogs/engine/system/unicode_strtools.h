@@ -32,6 +32,8 @@
 #pragma once
 #endif
 
+#include "common/commontypes.h"
+
 #ifdef _WIN32
 typedef wchar_t uchar16;
 typedef unsigned int uchar32;

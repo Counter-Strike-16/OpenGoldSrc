@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "server/server_static.h"
 
 typedef struct loglist
 {

@@ -33,10 +33,11 @@
 #endif
 
 #include "maintypes.h"
-#include "console/cvar.h"
-#include "pm_shared/pm_defs.h"
-#include "engine/progdefs.h"
+#include "public/archtypes.h"
 
+typedef struct edict_s edict_t;
+typedef struct entvars_s entvars_t;
+typedef struct cvar_s cvar_t;
 
 void ED_ClearEdict(edict_t *e);
 edict_t *ED_Alloc(void);

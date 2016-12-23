@@ -32,11 +32,16 @@
 #pragma once
 #endif
 
+#include "maintypes.h"
+#include "common/commontypes.h"
+
 #define MAX_CVAR_VALUE 1024
 
 #ifdef HOOK_ENGINE
 #define cvar_vars (*pcvar_vars)
 #endif // HOOK_ENGINE
+
+typedef struct cvar_s cvar_t;
 
 extern cvar_t *cvar_vars;
 

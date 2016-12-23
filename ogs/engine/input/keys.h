@@ -1,5 +1,7 @@
 #pragma once
 
+#include "public/FileSystem.h"
+
 typedef enum
 {
 	key_game = 0,

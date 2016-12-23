@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "common/commontypes.h"
 #include "engine_hlds_api.h"
 #include "idedicatedexports.h"
 

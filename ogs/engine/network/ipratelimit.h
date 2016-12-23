@@ -32,10 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "network/net.h"
-#include "tier1/utlrbtree.h"
-
 class CIPRateLimit
 {
 public:
@@ -43,7 +39,6 @@ public:
 	~CIPRateLimit() {}
 
 	bool CheckIP(netadr_t adr);
-
 private:
 	enum
 	{

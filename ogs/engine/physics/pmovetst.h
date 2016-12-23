@@ -50,8 +50,6 @@ extern hull_t box_hull_0;
 extern box_clipnodes_t box_clipnodes_0;
 extern box_planes_t box_planes_0;
 
-
-
 float PM_TraceModel(physent_t *pEnt, vec_t *start, vec_t *end, trace_t *trace);
 void PM_GetModelBounds(struct model_s *mod, vec_t *mins, vec_t *maxs);
 int PM_GetModelType(struct model_s *mod);

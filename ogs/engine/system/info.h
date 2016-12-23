@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
+#include "common/commontypes.h"
 
 // Max key/value length (with a NULL char)
 #define MAX_KV_LEN 127

@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "common/commontypes.h"
+
 #define DELTA_MAX_FIELDS		56		// 7*8
 
 #define DT_BYTE				BIT(0)		// A byte
@@ -43,7 +45,7 @@
 #define FDT_MARK			BIT(0)		// Delta mark for sending
 
 typedef struct delta_s delta_t;
-typedef void(*encoder_t)(delta_t *, const unsigned char *, const unsigned char *);
+typedef void (*encoder_t)(delta_t *, const unsigned char *, const unsigned char *);
 
 typedef struct delta_stats_s
 {

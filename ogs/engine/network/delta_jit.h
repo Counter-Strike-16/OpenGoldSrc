@@ -23,18 +23,21 @@ struct deltajit_memblock_field
 	bool last;
 };
 
-struct deltajit_memblock {
+struct deltajit_memblock
+{
 	unsigned int numFields;
 	deltajit_memblock_field fields[24];
 };
 
-struct deltajit_memblock_itr_t {
+struct deltajit_memblock_itr_t
+{
 	int memblockId;
 	deltajit_memblock* memblock;
 	int prefetchBlockId;
 };
 
-struct deltajitdata_t {
+struct deltajitdata_t
+{
 	unsigned int numblocks;
 	deltajit_memblock blocks[DELTAJIT_MAX_BLOCKS];
 
@@ -47,7 +50,8 @@ struct deltajitdata_t {
 
 class CDeltaJit;
 
-class CDeltaJitRegistry {
+class CDeltaJitRegistry
+{
 private:
 #ifndef REHLDS_FIXES
 	CStaticMap<void*, CDeltaJit*, 4, 64> m_DeltaToJITMap;
@@ -61,12 +65,12 @@ public:
 	void Cleanup();
 };
 
-union delta_marked_mask_t {
+union delta_marked_mask_t
+{
 	uint8 u8[8];
 	uint32 u32[2];
 	uint64 u64;
 };
-
 
 extern CDeltaJitRegistry g_DeltaJitRegistry;
 

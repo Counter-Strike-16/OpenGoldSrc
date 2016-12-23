@@ -32,6 +32,9 @@
 #pragma once
 #endif
 
+#include "public/archtypes.h"
+#include "userid.h"
+
 #ifdef REHLDS_FIXES
 #define MAX_IPFILTERS		4096
 #define MAX_USERFILTERS		4096
@@ -43,10 +46,13 @@
 typedef struct ipfilter_s
 {
 	unsigned int mask;
-	union {
+	
+	union
+	{
 		uint32 u32;
 		uint8 octets[4];
 	} compare;
+	
 	float banEndTime;
 	float banTime;
 #ifdef REHLDS_FIXES

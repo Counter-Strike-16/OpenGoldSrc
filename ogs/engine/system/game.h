@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "system/igame.h"
 
 class CGame: public IGame

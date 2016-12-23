@@ -32,10 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "engine/custom.h"
-
-
 void COM_ClearCustomizationList(customization_t *pHead, qboolean bCleanDecals);
 qboolean COM_CreateCustomization(customization_t *pListHead, resource_t *pResource, int playernumber, int flags, customization_t **pCustomization, int *nLumps);
 int COM_SizeofResourceList(resource_t *pList, resourceinfo_t *ri);

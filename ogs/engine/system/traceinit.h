@@ -65,7 +65,6 @@ public:
 
 	void Init(const char *init, const char *shutdown, int listnum);
 	void Shutdown(const char *shutdown, int listnum);
-
 private:
 	int m_nNumFuncs[NUM_LISTS];
 	CUtlVector<InitFunc *> m_Funcs[NUM_LISTS];

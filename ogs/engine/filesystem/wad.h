@@ -33,6 +33,7 @@
 #endif
 
 #include "maintypes.h"
+#include "common/commontypes.h"
 
 typedef struct qpic_s
 {

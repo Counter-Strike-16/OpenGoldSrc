@@ -28,11 +28,18 @@
 
 #pragma once
 
+#include "maintypes.h"
+#include "common/commontypes.h"
+#include "rehlds/cmd_rehlds.h"
+
 // All command/alias names are case insensitive! Arguments not
 
 #define MAX_CMD_BUFFER	16384
 #define MAX_CMD_TOKENS	80
 #define MAX_CMD_LINE	1024
+
+typedef struct sizebuf_s sizebuf_t;
+typedef struct cmdalias_s cmdalias_t;
 
 /*
 
