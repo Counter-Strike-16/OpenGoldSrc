@@ -27,9 +27,7 @@
 */
 
 #include "system/precompiled.h"
-#include "console/cmd.h"
-#include "console/console.h"
-#include "client/client.h"
+#include "system/quakedef.h"
 
 int cmd_argc;
 char *cmd_argv[80];

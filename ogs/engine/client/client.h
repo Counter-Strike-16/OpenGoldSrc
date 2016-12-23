@@ -34,7 +34,7 @@
 
 #include "maintypes.h"
 #include "system/common.h"
-#include "engine/custom.h"
+#include "common/com_model.h"
 #include "common/cl_entity.h"
 #include "resources/consistency.h"
 #include "network/delta_packet.h"
@@ -52,7 +52,6 @@
 #include "console/cvar.h"
 #include "server/server.h"
 
-#define MAX_SCOREBOARDNAME	32
 #define MAX_DEMOS		32
 
 typedef enum cactive_e
@@ -105,37 +104,6 @@ typedef struct frame_s
 	uint16 voicebytes;
 	uint16 msgbytes;
 } frame_t;
-
-typedef struct player_info_s
-{
-	int userid;
-
-	char userinfo[MAX_INFO_STRING];
-	char name[MAX_SCOREBOARDNAME];
-
-	int spectator;
-	int ping;
-	int packet_loss;
-
-	char model[MAX_QPATH];
-
-	int topcolor;
-	int bottomcolor;
-
-	int renderframe;
-	int gaitsequence;
-
-	float gaitframe;
-	float gaityaw;
-
-	vec3_t prevgaitorigin;
-
-	customization_t customdata;
-
-	char hashedcdkey[16];
-
-	uint64 m_nSteamID;
-} player_info_t;
 
 typedef struct soundfade_s
 {

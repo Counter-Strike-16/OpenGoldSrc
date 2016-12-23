@@ -417,13 +417,14 @@ Con_DPrintf
 A Con_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void Con_DPrintf (char *fmt, ...)
+void EXT_FUNC Con_DPrintf(const char *fmt, ...)
 {
+	// don't confuse non-developers with techie stuff...
+	if(!developer.value)
+		return;
+	
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
-		
-	if (!developer.value)
-		return;			// don't confuse non-developers with techie stuff...
 
 	va_start (argptr,fmt);
 	vsprintf (msg,fmt,argptr);

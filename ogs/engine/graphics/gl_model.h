@@ -21,8 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __MODEL__
 #define __MODEL__
 
-#include "modelgen.h"
-#include "spritegn.h"
+#include "rehlds/modelgen.h"
+#include "rehlds/spritegn.h"
 
 /*
 
@@ -298,8 +298,6 @@ extern	trivertx_t	*poseverts[MAXALIASFRAMES];
 // Whole model
 //
 
-typedef enum {mod_brush, mod_sprite, mod_alias} modtype_t;
-
 #define	EF_ROCKET	1			// leave a trail
 #define	EF_GRENADE	2			// leave a trail
 #define	EF_GIB		4			// leave a trail
@@ -309,22 +307,9 @@ typedef enum {mod_brush, mod_sprite, mod_alias} modtype_t;
 #define	EF_TRACER2	64			// orange split trail + rotate
 #define	EF_TRACER3	128			// purple trail
 
+/*
 typedef struct model_s
 {
-	char		name[MAX_QPATH];
-	qboolean	needload;		// bmodels and sprites don't cache normally
-
-	modtype_t	type;
-	int			numframes;
-	synctype_t	synctype;
-	
-	int			flags;
-
-//
-// volume occupied by the model graphics
-//		
-	vec3_t		mins, maxs;
-	float		radius;
 
 //
 // solid volume for clipping 
@@ -336,48 +321,8 @@ typedef struct model_s
 // brush model
 //
 	int			firstmodelsurface, nummodelsurfaces;
-
-	int			numsubmodels;
-	dmodel_t	*submodels;
-
-	int			numplanes;
-	mplane_t	*planes;
-
-	int			numleafs;		// number of visible leafs, not counting 0
-	mleaf_t		*leafs;
-
-	int			numvertexes;
-	mvertex_t	*vertexes;
-
-	int			numedges;
-	medge_t		*edges;
-
-	int			numnodes;
-	mnode_t		*nodes;
-
-	int			numtexinfo;
-	mtexinfo_t	*texinfo;
-
-	int			numsurfaces;
-	msurface_t	*surfaces;
-
-	int			numsurfedges;
-	int			*surfedges;
-
-	int			numclipnodes;
-	dclipnode_t	*clipnodes;
-
-	int			nummarksurfaces;
-	msurface_t	**marksurfaces;
-
-	hull_t		hulls[MAX_MAP_HULLS];
-
-	int			numtextures;
-	texture_t	**textures;
-
-	byte		*visdata;
-	byte		*lightdata;
-	char		*entities;
+	
+	//...
 
 	unsigned	checksum;
 	unsigned	checksum2;
@@ -388,6 +333,7 @@ typedef struct model_s
 	cache_user_t	cache;		// only access through Mod_Extradata
 
 } model_t;
+*/
 
 //============================================================================
 

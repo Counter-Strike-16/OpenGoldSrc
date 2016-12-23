@@ -39,7 +39,7 @@
 #define MAX_NAME				32
 #define MAX_PACKET_ENTITIES		256
 
-#include "rehlds/custom.h"
+#include "engine/custom.h"
 #include "common/crc.h"
 #include "console/cvar.h"
 #include "common/dll_state.h"
@@ -92,6 +92,8 @@
 #define HL_MODEL_MAX 512
 #define HL_GENERIC_MAX 512
 #define HL_EVENT_MAX 256
+
+#define MAX_RESOURCE_LIST	1280
 
 typedef enum redirect_e
 {

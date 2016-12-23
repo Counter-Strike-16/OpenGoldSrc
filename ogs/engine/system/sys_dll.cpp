@@ -27,6 +27,7 @@
 */
 
 #include "precompiled.h"
+#include "system/system.h"
 
 void (*Launcher_ConsolePrintf)(char *, ...);
 char *(*Launcher_GetLocalizedString)(unsigned int);
@@ -1362,10 +1363,8 @@ void EXT_FUNC Con_DPrintf(const char *fmt, ...)
 
 #else // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
 
-void EXT_FUNC Con_DPrintf(const char *fmt, ...)
+void  Con_DPrintf(const char *fmt, ...)
 {
-	va_list argptr;
-
 	va_start(argptr, fmt);
 	if (developer.value != 0.0f)
 	{

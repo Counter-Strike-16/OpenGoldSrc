@@ -31,6 +31,11 @@
 #include "console/cmd.h"
 #include "console/console.h"
 #include "client/client.h"
+#include "filesystem/filesystem_internal.h"
+#include "system/unicode_strtools.h"
+#include "system/system.h"
+#include "memory/zone.h"
+#include "server/sv_steam3.h"
 
 /*
 	All cvar names are case insensitive! Values not

@@ -28,7 +28,6 @@
 #include "engine/shake.h"
 #include "engine/customentity.h"
 #include "engine/custom.h"
-#include "engine/sprite.h"
 #include "engine/edict.h"
 #include "engine/progs.h"
 #include "engine/progdefs.h"
@@ -84,7 +83,6 @@
 //#include "ed_strpool.h"
 
 #include "memory.h"
-#include "tier0/platform.h"
 //#include "RehldsRuntimeConfig.h"
 //#include "rehlds_debug.h"
 

@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 
 typedef struct qpic_s
 {

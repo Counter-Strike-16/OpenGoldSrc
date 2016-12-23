@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 
 #define VID_CBITS	6
 #define VID_GRADES	(1 << VID_CBITS)

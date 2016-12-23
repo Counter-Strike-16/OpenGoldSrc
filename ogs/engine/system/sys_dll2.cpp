@@ -27,6 +27,7 @@
 */
 
 #include "precompiled.h"
+#include "system/system.h"
 
 qboolean g_bIsWin95;
 qboolean g_bIsWin98;
@@ -83,13 +84,6 @@ NOXREF void SetRateRegistrySetting(const char *pchRate)
 NOXREF const char *GetRateRegistrySetting(const char *pchDef)
 {
 	return registry->ReadString("rate", pchDef);
-}
-
-void EXPORT F(IEngineAPI **api)
-{
-	CreateInterfaceFn fn;
-	fn = Sys_GetFactoryThis();
-	*api = (IEngineAPI *)fn("VENGINE_LAUNCHER_API_VERSION002", NULL);
 }
 
 void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)

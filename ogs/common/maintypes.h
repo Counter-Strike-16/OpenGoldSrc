@@ -32,16 +32,16 @@
 #pragma once
 #endif
 
-
 #include "rehlds/osconfig.h"
 #include "common/mathlib.h"
 
-
-// Has no references on server side.
+// Has no references on server side
 #define NOXREF
-// Function body is not implemented.
+
+// Function body is not implemented
 #define NOBODY
-// Function is not tested at all.
+
+// Function is not tested at all
 #define UNTESTED
 
 typedef unsigned int string_t;		// from engine's pr_comp.h;
