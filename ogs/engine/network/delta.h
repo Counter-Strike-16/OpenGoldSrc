@@ -25,9 +25,8 @@
 *    version.
 *
 */
-#pragma once
 
-#include "maintypes.h"
+#pragma once
 
 #define DELTA_MAX_FIELDS		56		// 7*8
 

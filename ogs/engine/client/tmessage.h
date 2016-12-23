@@ -32,8 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-
 #define DEMO_MESSAGE		"__DEMOMESSAGE__"
 #define NETWORK_MESSAGE1	"__NETMESSAGE__1"
 #define NETWORK_MESSAGE2	"__NETMESSAGE__2"

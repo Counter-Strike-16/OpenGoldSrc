@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
-#include "custom.h"
+#include "maintypes.h"
+#include "engine/custom.h"
 
 
 void COM_ClearCustomizationList(customization_t *pHead, qboolean bCleanDecals);

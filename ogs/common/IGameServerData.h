@@ -1,7 +1,7 @@
 #pragma once
 
 #include "maintypes.h"
-#include "interface.h"
+#include "public/interface.h"
 
 class IGameServerData : public IBaseInterface
 {

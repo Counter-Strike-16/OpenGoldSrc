@@ -32,9 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "engine/eiface.h"
-
 typedef struct functiontable_s
 {
 	uint32 pFunction;

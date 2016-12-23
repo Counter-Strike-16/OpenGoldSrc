@@ -27,11 +27,6 @@
 */
 #pragma once
 
-#include "rehlds/maintypes.h"
-#include "IGameServerData.h"
-#include "utlbuffer.h"
-#include "utllinkedlist.h"
-
 class CServerRemoteAccess: public IGameServerData {
 public:
 	struct DataResponse_t {

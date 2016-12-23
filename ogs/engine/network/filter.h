@@ -32,8 +32,6 @@
 #pragma once
 #endif
 
-#include "userid.h"
-
 #ifdef REHLDS_FIXES
 #define MAX_IPFILTERS		4096
 #define MAX_USERFILTERS		4096

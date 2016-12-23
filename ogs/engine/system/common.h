@@ -28,13 +28,6 @@
 
 #pragma once
 
-#include "rehlds/common_rehlds.h"
-#include "common/bspfile.h"
-#include "public/FileSystem.h"
-#include "common/usercmd.h"
-#include "info.h"
-#include "common/com_model.h"
-
 #ifndef REHLDS_FIXES
 	#define __BUILD_TIME__ __TIME__
 	#define __BUILD_DATE__ __DATE__

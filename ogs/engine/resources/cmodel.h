@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
-#include "model.h"
+#include "maintypes.h"
+#include "rehlds/model.h"
 
 
 // Looks like no more than 8096 visibility leafs per world model

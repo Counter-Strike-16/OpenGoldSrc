@@ -32,10 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "engine/eiface.h"
-#include "public/FileSystem.h"
-
 #define FILETIME_TO_QWORD(ft) \
 		((((uint64)ft.dwHighDateTime) << 32) + ft.dwLowDateTime)
 

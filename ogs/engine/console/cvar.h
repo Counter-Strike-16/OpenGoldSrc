@@ -32,10 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "common/cvardef.h"
-#include "public/FileSystem.h"
-
 #define MAX_CVAR_VALUE 1024
 
 #ifdef HOOK_ENGINE

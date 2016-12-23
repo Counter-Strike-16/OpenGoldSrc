@@ -72,7 +72,7 @@
 //#include "version/appversion.h"
 
 #include "public/archtypes.h"
-//#include "asmlib.h"
+#include "asmlib.h"
 #include "math/sse_mathfun.h"
 #include "common/mathlib.h"
 
@@ -83,6 +83,8 @@
 //#include "ed_strpool.h"
 
 #include "memory.h"
+#include "engine_pch.h"
+#include "platform.h"
 //#include "RehldsRuntimeConfig.h"
 //#include "rehlds_debug.h"
 
@@ -115,15 +117,13 @@
 #include "system/igame.h"
 
 #include "system/iengine.h"
-//#include "hookchains_impl.h"
+#include "hookchains_impl.h"
 #include "rehlds/rehlds_interfaces.h"
-//#include "rehlds/rehlds_interfaces_impl.h"
+#include "rehlds_interfaces_impl.h"
 #include "rehlds/rehlds_api.h"
-/*
 #include "rehlds_api_impl.h"
-#include "FlightRecorderImpl.h"
-#include "flight_recorder.h"
-#include "rehlds_security.h"
-*/
+//#include "FlightRecorderImpl.h"
+//#include "flight_recorder.h"
+//#include "rehlds_security.h"
 
 #include "dlls/cdll_dll.h"

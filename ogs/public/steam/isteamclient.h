@@ -11,7 +11,7 @@
 #pragma once
 #endif
 
-#include "steamtypes.h"
+#include "public/steam/steamtypes.h"
 #include "steamclientpublic.h"
 
 // Define compile time assert macros to let us validate the structure sizes.

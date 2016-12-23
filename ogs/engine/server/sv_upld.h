@@ -32,8 +32,6 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
-
 qboolean SV_CheckFile(sizebuf_t *msg, char *filename);
 void SV_ClearResourceLists(client_t *cl);
 void SV_CreateCustomizationList(client_t *pHost);

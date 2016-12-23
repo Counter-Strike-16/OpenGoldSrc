@@ -32,11 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "cvar.h"
-#include "net.h"
-
-
 #ifdef HOOK_ENGINE
 
 #define gDownloadFile (*pgDownloadFile)

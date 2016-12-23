@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "server/server.h"
 #include "world/world.h"
 #include "pm_shared/pm_defs.h"

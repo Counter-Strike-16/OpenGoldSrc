@@ -17,8 +17,8 @@
 #pragma once
 
 #include "engine/studio.h"
-#include "model.h"
-#include "r_studioint.h"
+#include "rehlds/model.h"
+#include "common/r_studioint.h"
 #include "common/cvardef.h"
 
 typedef struct r_studiocache_s r_studiocache_t;

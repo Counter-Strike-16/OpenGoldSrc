@@ -32,11 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "common/enums.h"
-#include "system/common.h"
-#include "common/netadr.h"
-
 #ifndef _WIN32
 
 #define WSAEWOULDBLOCK		EWOULDBLOCK	// Operation would block EAGAIN (11)

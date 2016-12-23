@@ -32,9 +32,9 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
-#include "model.h"
-#include "wad.h"
+#include "maintypes.h"
+#include "rehlds/model.h"
+#include "filesystem/wad.h"
 
 #define MAX_DECALS				512
 #define DECAL_EXTRASIZE				sizeof(texture_t) - sizeof(miptex_t)

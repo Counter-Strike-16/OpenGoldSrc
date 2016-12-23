@@ -32,9 +32,9 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
-#include "net.h"
-#include "utlrbtree.h"
+#include "maintypes.h"
+#include "network/net.h"
+#include "tier1/utlrbtree.h"
 
 class CIPRateLimit
 {

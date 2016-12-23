@@ -32,10 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "engine/custom.h"
-#include "public/FileSystem.h"
-
 #define HASHPAK_EXTENSION	".hpk"
 #define HASHPAK_VERSION		0x0001
 

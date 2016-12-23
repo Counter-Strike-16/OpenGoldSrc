@@ -24,12 +24,6 @@
 #include "isteamunifiedmessages.h"
 #include "isteamcontroller.h"
 
-#if defined( _PS3 )
-#include "steamps3params.h"
-#endif
-
-
-
 // Steam API export macro
 #if defined( _WIN32 ) && !defined( _X360 )
 	#if defined( STEAM_API_EXPORTS )
@@ -409,9 +403,6 @@ public:
 	ISteamScreenshots*	SteamScreenshots()					{ return m_pSteamScreenshots; }
 	ISteamHTTP*			SteamHTTP()							{ return m_pSteamHTTP; }
 	ISteamUnifiedMessages*	SteamUnifiedMessages()			{ return m_pSteamUnifiedMessages; }
-#ifdef _PS3
-	ISteamPS3OverlayRender* SteamPS3OverlayRender()		{ return m_pSteamPS3OverlayRender; }
-#endif
 
 private:
 	ISteamUser		*m_pSteamUser;
@@ -427,9 +418,6 @@ private:
 	ISteamHTTP			*m_pSteamHTTP;
 	ISteamUnifiedMessages*m_pSteamUnifiedMessages;
 	ISteamController	*m_pController;
-#ifdef _PS3
-	ISteamPS3OverlayRender *m_pSteamPS3OverlayRender;
-#endif
 };
 
 inline CSteamAPIContext::CSteamAPIContext()
@@ -451,9 +439,6 @@ inline void CSteamAPIContext::Clear()
 	m_pSteamHTTP = NULL;
 	m_pSteamScreenshots = NULL;
 	m_pSteamUnifiedMessages = NULL;
-#ifdef _PS3
-	m_pSteamPS3OverlayRender = NULL;
-#endif
 }
 
 // This function must be inlined so the module using steam_api.dll gets the version names they want.
@@ -512,10 +497,6 @@ inline bool CSteamAPIContext::Init()
 	m_pSteamUnifiedMessages = SteamClient()->GetISteamUnifiedMessages( hSteamUser, hSteamPipe, STEAMUNIFIEDMESSAGES_INTERFACE_VERSION );
 	if ( !m_pSteamUnifiedMessages )
 		return false;
-
-#ifdef _PS3
-	m_pSteamPS3OverlayRender = SteamClient()->GetISteamPS3OverlayRender();
-#endif
 
 	return true;
 }

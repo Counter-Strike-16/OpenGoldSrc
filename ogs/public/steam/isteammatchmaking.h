@@ -10,7 +10,7 @@
 #pragma once
 #endif
 
-#include "steamtypes.h"
+#include "public/steam/steamtypes.h"
 #include "steamclientpublic.h"
 #include "matchmakingtypes.h" 
 #include "isteamclient.h"

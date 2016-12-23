@@ -32,9 +32,9 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
-#include "studio_rehlds.h"
-#include "commonmacros.h"
+#include "maintypes.h"
+#include "resources/studio_rehlds.h"
+#include "tier0/commonmacros.h"
 
 // header
 #define STUDIO_VERSION	10

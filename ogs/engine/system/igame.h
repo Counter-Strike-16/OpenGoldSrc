@@ -28,11 +28,10 @@
 
 #pragma once
 
-#include "maintypes.h"
-
-class IGame {
+class IGame
+{
 public:
-	virtual ~IGame() { }
+	virtual ~IGame(){}
 
 	virtual bool Init(void *pvInstance) = 0;
 	virtual bool Shutdown() = 0;
@@ -48,5 +47,4 @@ public:
 	virtual void PlayStartupVideos() = 0;
 	virtual void PlayAVIAndWait(const char *aviFile) = 0;
 	virtual void SetCursorVisible(bool bState) = 0;
-
 };

@@ -19,7 +19,7 @@
 // including or requiring other header files if possible.  This header should only describe the 
 // interface layer, no need to include anything about the implementation.
 
-#include "steamtypes.h"
+#include "public/steam/steamtypes.h"
 
 
 // General result codes

@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
-#include "model.h"
+#include "maintypes.h"
+#include "rehlds/model.h"
 
 // up / down
 #define	PITCH	0

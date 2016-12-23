@@ -41,7 +41,7 @@
 
 #include "rehlds/model.h"
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "common/bspfile.h"
 #include "common/crc.h"
 

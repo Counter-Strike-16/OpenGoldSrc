@@ -27,9 +27,9 @@
 */
 #pragma once
 
-#include "rehlds/maintypes.h"
-#include "net.h"
-#include "ipratelimit.h"
+#include "maintypes.h"
+#include "network/net.h"
+#include "network/ipratelimit.h"
 
 #ifdef HOOK_ENGINE
 #define rateChecker (*prateChecker)

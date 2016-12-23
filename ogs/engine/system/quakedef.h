@@ -39,8 +39,8 @@
 #ifdef GLQUAKE
 #include "graphics/gl_model.h"
 #else
-#include "model.h"
-#include "d_iface.h"
+#include "rehlds/model.h"
+#include "graphics/draw/d_iface.h"
 #endif
 
 //#include "input/input.h"

@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#define MAX_CONSISTENCY_LIST	512
+#define MAX_CONSISTENCY_LIST 512
 
 typedef struct consistency_s
 {

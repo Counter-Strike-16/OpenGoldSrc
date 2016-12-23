@@ -44,12 +44,6 @@
 // a pixel can be one, two, or four bytes
 typedef byte pixel_t;
 
-typedef struct vrect_s
-{
-	int				x,y,width,height;
-	struct vrect_s	*pnext;
-} vrect_t; // currently wrect_t
-
 typedef struct
 {
 	pixel_t			*buffer;		// invisible buffer

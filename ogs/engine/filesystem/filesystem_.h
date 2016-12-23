@@ -32,9 +32,9 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "iregistry.h"
-#include "utlvector.h"
+#include "tier1/utlvector.h"
 
 #ifdef _WIN32
 #define FILESYSTEM_DLL_NAME "filesystem_stdio.dll"

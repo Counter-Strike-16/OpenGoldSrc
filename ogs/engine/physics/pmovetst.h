@@ -32,9 +32,9 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "pm_shared/pm_defs.h"
-#include "model.h"
+#include "rehlds/model.h"
 #include "world/world.h"
 
 

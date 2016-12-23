@@ -44,7 +44,7 @@
 
 #include "maintypes.h"
 #include "filesystem/filesystem_internal.h"
-#include "system/sys_dll.h"
+#include "system/system.h"
 #include "server/server.h"
 #include "rehlds/rehlds_api.h"
 

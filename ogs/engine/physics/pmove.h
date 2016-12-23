@@ -32,7 +32,7 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "console/cvar.h"
 #include "pm_shared/pm_defs.h"
 #include "pm_shared/pm_movevars.h"

@@ -32,10 +32,10 @@
 #pragma once
 #endif
 
-#include "rehlds/maintypes.h"
+#include "maintypes.h"
 #include "common/const.h"
 #include "engine/eiface.h"
-#include "model.h"
+#include "rehlds/model.h"
 #include "system/common.h"
 #include "server/server.h"
 

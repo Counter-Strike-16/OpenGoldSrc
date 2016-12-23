@@ -32,25 +32,16 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "system/common.h"
+#include "common/commontypes.h"
+#include "common/cvardef.h"
+#include "common/entity_state.h"
 #include "common/com_model.h"
 #include "common/cl_entity.h"
-#include "resources/consistency.h"
-#include "network/delta_packet.h"
-#include "common/dlight.h"
-#include "common/entity_state.h"
-#include "world/event.h"
-#include "system/info.h"
-#include "network/net.h"
-#include "input/keys.h"
-#include "sound/sound.h"
-#include "common/screenfade.h"
 #include "common/usercmd.h"
-#include "rehlds/model.h"
-#include "common/kbutton.h"
-#include "console/cvar.h"
-#include "server/server.h"
+#include "common/netadr.h"
+#include "filesystem/filesystem_internal.h"
+#include "network/net_chan.h"
+#include "input/keys.h"
 
 #define MAX_DEMOS		32
 
