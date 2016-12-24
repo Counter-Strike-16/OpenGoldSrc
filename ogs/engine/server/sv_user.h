@@ -32,14 +32,16 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "server/server.h"
-#include "world/world.h"
-#include "pm_shared/pm_defs.h"
+#include "common/commontypes.h"
 
 #define CMD_MAXBACKUP 64
 
 typedef struct command_s command_t;
+typedef struct edict_s edict_t;
+typedef struct client_s client_t;
+typedef struct usercmd_s usercmd_t;
+typedef struct pmtrace_s pmtrace_t;
+typedef struct entity_state_s entity_state_t;
 
 typedef struct sv_adjusted_positions_s
 {

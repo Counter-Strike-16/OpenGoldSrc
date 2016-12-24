@@ -32,13 +32,8 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "common/const.h"
-#include "engine/eiface.h"
-#include "rehlds/model.h"
-#include "system/common.h"
-#include "server/server.h"
-
+#include "common/commontypes.h"
+#include "public/archtypes.h"
 
 #define MAX_RANDOM_RANGE 0x7FFFFFFFUL
 
@@ -51,7 +46,6 @@
 #define AMBIENT_SOUND_NOT_LOOPING		32
 
 #define SPEAKER_START_SILENT			1	// wait for trigger 'on' to start announcements
-
 
 #ifdef HOOK_ENGINE
 #define gMsgData (*pgMsgData)
@@ -73,6 +67,7 @@
 #define r_visframecount (*pr_visframecount)
 #endif // HOOK_ENGINE
 
+typedef struct edict_s edict_t;
 
 extern unsigned char gMsgData[512];
 extern sizebuf_t gMsgBuffer;

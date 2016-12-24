@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8) # <- TODO: detect absolute minimum
-project(ogs-filesystem)
+project(OGS-filesystem)
 
 # Mostly for common IFileSystem interface
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../hlsdk-base/)

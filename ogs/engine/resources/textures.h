@@ -32,8 +32,8 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
 #include "filesystem/wad.h"
+#include "public/FileSystem.h"
 
 #define MAX_MAP_TEXTURES 512
 

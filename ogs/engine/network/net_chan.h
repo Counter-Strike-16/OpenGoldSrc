@@ -32,6 +32,8 @@
 #pragma once
 #endif
 
+#include "common/commontypes.h"
+
 #ifdef HOOK_ENGINE
 
 #define gDownloadFile (*pgDownloadFile)
@@ -47,9 +49,13 @@
 
 #endif // HOOK_ENGINE
 
+typedef struct cvar_s cvar_t;
+typedef struct fragbuf_s fragbuf_t;
+
 extern char gDownloadFile[256];
 
 extern int net_drop;
+
 extern cvar_t net_log;
 extern cvar_t net_showpackets;
 extern cvar_t net_showdrop;
@@ -57,8 +63,6 @@ extern cvar_t net_drawslider;
 extern cvar_t net_chokeloopback;
 extern cvar_t sv_filetransfercompression;
 extern cvar_t sv_filetransfermaxsize;
-
-
 
 void Netchan_UnlinkFragment(fragbuf_t *buf, fragbuf_t **list);
 void Netchan_OutOfBand(netsrc_t sock, netadr_t adr, int length, byte *data);

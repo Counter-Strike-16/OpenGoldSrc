@@ -74,7 +74,6 @@
 #include "common/crc.h"
 #include "server/sv_remoteaccess.h"
 #include "server/sv_upld.h"
-#include "resources/com_custom.h"
 #include "filesystem/hashpak.h"
 #include "network/ipratelimit.h"
 #include "network/ipratelimitWrapper.h"

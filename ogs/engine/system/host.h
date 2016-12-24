@@ -42,11 +42,14 @@
 #pragma once
 #endif
 
+#include <csetjmp>
+#include "maintypes.h"
 #include "common/commontypes.h"
-#include "common/cvardef.h"
+#include "public/FileSystem.h"
 
 #define MAX_COMMAND_LINE_PARAMS 50
 
+typedef struct cvar_s cvar_t;
 typedef struct client_s client_t;
 
 typedef struct quakeparms_s

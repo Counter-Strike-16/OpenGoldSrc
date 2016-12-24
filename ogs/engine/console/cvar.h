@@ -34,6 +34,7 @@
 
 #include "maintypes.h"
 #include "common/commontypes.h"
+#include "public/FileSystem.h"
 
 #define MAX_CVAR_VALUE 1024
 

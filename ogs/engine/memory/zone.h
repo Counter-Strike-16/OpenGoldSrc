@@ -33,9 +33,11 @@
 #endif
 
 #include "maintypes.h"
+#include "common/commontypes.h"
 
 #define ZONE_DYNAMIC_SIZE 0x20000
 
+typedef struct cvar_s cvar_t;
 typedef struct memblock_s memblock_t;
 typedef struct memzone_s memzone_t;
 typedef struct hunk_s hunk_t;

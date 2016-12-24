@@ -4,10 +4,7 @@
 
 // #include "client/client.h"
 // #include "client/enginevgui.h"
-// #include "client/tmessage.h"
-
-// #include "console/console.h"
-//#include "console/cvar.h"
+//#include "client/tmessage.h"
 
 // #include "graphics/draw.h"
 // #include "graphics/gl_model.h"
@@ -24,8 +21,6 @@
 
 // #include "math/mathlib_e.h"
 
-// #include "memory/zone.h"
-
 // #include "network/delta_jit.h"
 // #include "network/ipratelimit.h"
 // #include "network/net.h"
@@ -37,38 +32,27 @@
 // #include "physics/pmovetst.h"
 
 // #include "resources/cmodel.h"
-// #include "resources/com_custom.h"
-// #include "resources/consistency.h"
 // #include "resources/decal.h"
-// #include "resources/l_studio.h"
-// #include "resources/model_rehlds.h"
-// #include "resources/modinfo.h"
+//#include "resources/model_rehlds.h"
 // #include "resources/studio_rehlds.h"
 // #include "resources/textures.h"
 
 // #include "server/server.h"
-// #include "server/sv_move.h"
 // #include "server/sv_phys.h"
-// #include "server/sv_pmove.h"
-// #include "server/sv_remoteaccess.h"
 // #include "server/sv_steam3.h"
-// #include "server/sv_upld.h"
-// #include "server/sv_user.h"
+//#include "server/sv_user.h"
 
 // #include "sound/sound.h"
 
 // #include "system/common.h"
 // #include "system/engine.h"
-// #include "system/engineapi.h"
-// #include "system/host.h"
 // #include "system/host_cmd.h"
 // #include "system/quakedef.h"
 // #include "system/sys.h"
 // #include "system/system.h"
 
-//#include "world/inst_baseline.h"
 // #include "world/pr_cmds.h"
-// #include "world/world.h"
+//#include "world/world.h"
 
 //======================================
 // STAGE #2
@@ -123,7 +107,6 @@
 // #include "physics/pmovetst.h"
 
 // #include "resources/cmodel.h"
-// #include "resources/com_custom.h"
 // #include "resources/consistency.h"
 // #include "resources/decal.h"
 // #include "resources/l_studio.h"

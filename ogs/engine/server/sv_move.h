@@ -33,7 +33,7 @@
 #endif
 
 #include "maintypes.h"
-#include "server/server.h"
+#include "common/commontypes.h"
 
 #define DI_NODIR	-1
 
@@ -43,6 +43,8 @@
 #define c_no (*pc_no)
 
 #endif // HOOK_ENGINE
+
+typedef struct edict_s edict_t;
 
 extern int c_yes;
 extern int c_no;

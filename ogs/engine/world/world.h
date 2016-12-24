@@ -33,7 +33,7 @@
 #endif
 
 #include "maintypes.h"
-#include "rehlds/model.h"
+#include "common/commontypes.h"
 
 typedef struct areanode_s
 {

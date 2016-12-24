@@ -25,19 +25,24 @@
 *    version.
 *
 */
+
 #pragma once
 
-class CServerRemoteAccess: public IGameServerData {
+#include "IGameServerData.h"
+#include "tier1/utlbuffer.h"
+#include "tier1/utllinkedlist.h"
+
+class CServerRemoteAccess: public IGameServerData
+{
 public:
-	struct DataResponse_t {
+	struct DataResponse_t
+	{
 		CUtlBuffer packet;
 	};
-
 private:
 	CUtlLinkedList<DataResponse_t, int> m_ResponsePackets;
 	int m_iBytesSent;
 	int m_iBytesReceived;
-
 public:
 	CServerRemoteAccess();
 

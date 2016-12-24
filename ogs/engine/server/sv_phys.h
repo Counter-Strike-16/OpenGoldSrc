@@ -36,7 +36,6 @@
 #include "rehlds/model.h"
 #include "console/cvar.h"
 
-
 #ifdef HOOK_ENGINE
 #define sv_maxvelocity (*psv_maxvelocity)
 #define sv_gravity (*psv_gravity)
@@ -57,7 +56,6 @@ extern cvar_t sv_stopspeed;
 
 extern vec3_t *g_moved_from;
 extern edict_t **g_moved_edict;
-
 
 NOXREF void SV_CheckAllEnts(void);
 void SV_CheckVelocity(edict_t *ent);

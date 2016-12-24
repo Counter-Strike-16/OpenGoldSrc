@@ -32,6 +32,7 @@
 #pragma once
 #endif
 
+#include "common/commontypes.h"
 #include "common/entity_state.h"
 
 #define NUM_BASELINES 64

@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+#include "common/commontypes.h"
+
 #define CON_TEXTSIZE 16384
 
 typedef struct

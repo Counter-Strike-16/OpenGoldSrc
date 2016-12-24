@@ -32,10 +32,6 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "resources/studio_rehlds.h"
-#include "tier0/commonmacros.h"
-
 // header
 #define STUDIO_VERSION	10
 #define IDSTUDIOHEADER	MAKEID('I', 'D', 'S', 'T') // little-endian "IDST"
@@ -45,8 +41,9 @@
 //#define giTextureSize (*pgiTextureSize)
 #endif //HOOK_ENGINE
 
-//extern int giTextureSize;
+typedef struct model_s model_t;
 
+//extern int giTextureSize;
 
 void Mod_LoadStudioModel(model_t * mod, void * buffer);
 

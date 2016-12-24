@@ -32,6 +32,8 @@
 #pragma once
 #endif
 
+#include "common/commontypes.h"
+
 typedef enum
 {
 	BOTH = 0,

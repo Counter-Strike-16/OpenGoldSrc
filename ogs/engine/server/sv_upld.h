@@ -32,6 +32,12 @@
 #pragma once
 #endif
 
+#include "common/commontypes.h"
+
+typedef struct client_s client_t;
+typedef struct sizebuf_s sizebuf_t;
+typedef struct resource_s resource_t;
+
 qboolean SV_CheckFile(sizebuf_t *msg, char *filename);
 void SV_ClearResourceLists(client_t *cl);
 void SV_CreateCustomizationList(client_t *pHost);
@@ -46,6 +52,6 @@ void SV_RequestMissingResourcesFromClients(void);
 qboolean SV_UploadComplete(client_t *cl);
 void SV_BatchUploadRequest(client_t *cl);
 qboolean SV_RequestMissingResources(void);
- void SV_ParseResourceList(client_t *pSenderClient);
+void SV_ParseResourceList(client_t *pSenderClient);
 
 #endif // SV_UPLD__H
