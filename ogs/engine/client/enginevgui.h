@@ -136,12 +136,68 @@ public:
 	
 	CreateInterfaceFn GetGameUIFactory();
 	
-	void SetGameUIActive(bool bActive);
-	bool IsGameUIActive();
+	bool Key_Event(const InputEvent_t &event);
 	
+	void BackwardCompatibility_Paint();
+	
+	void UpdateButtonState(const InputEvent_t &event);
+	
+	void PostInit();
+
+    void Paint(PaintMode_t mode);
+
+	// handlers for game UI (main menu)
+	//void ActivateGameUI();
+	//bool HideGameUI();
+	void SetGameUIActive(bool bActive);
+	bool IsGameUIVisible();
+
+	// console
 	void SetConsoleVisible(bool bVisible);
 	bool IsConsoleVisible();
 	void ClearConsole();
+
+	void HideDebugSystem();
+
+	// level loading
+	void OnLevelLoadingStarted();
+	void OnLevelLoadingFinished();
 	
+	void NotifyOfServerConnect(const char *game, int IP, int connectionPort, int queryPort);
+	void NotifyOfServerDisconnect();
+	
+	void EnabledProgressBarForNextLoad();
+	
+	void UpdateProgressBar(LevelLoadingProgress_e progress);
+	void UpdateCustomProgressBar( float progress, const wchar_t *desc );
+	
+	void StartCustomProgress();
+	void FinishCustomProgress();
+	
+	void ShowErrorMessage();
+
+	// Should pause?
+	bool ShouldPause();
+	
+	void SetGameDLLPanelsVisible(bool show);
+	void ShowNewGameDialog(int chapter);
+
 	void Simulate();
+
+	void SetNotAllowedToHideGameUI(bool bNotAllowedToHide);
+	void SetNotAllowedToShowGameUI(bool bNotAllowedToShow);
+
+	// Xbox 360
+	void SessionNotification( const int notification, const int param = 0 );
+	void SystemNotification( const int notification );
+	void ShowMessageDialog( const uint nType, vgui::Panel *pOwner = NULL );
+	void UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost );
+	void SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping );
+	void OnCreditsFinished( void );
+
+	// Storage device validation:
+	//		returns true right away if storage device has been previously selected.
+	//		otherwise returns false and will set the variable pointed by pStorageDeviceValidated to 1
+	//				  once the storage device is selected by user.
+	bool ValidateStorageDevice( int *pStorageDeviceValidated );
 };

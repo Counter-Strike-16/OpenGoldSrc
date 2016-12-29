@@ -43,7 +43,7 @@
 #include "network/net_chan.h"
 #include "input/keys.h"
 
-#define MAX_DEMOS		32
+#define MAX_DEMOS 32
 
 typedef enum cactive_e
 {
@@ -111,74 +111,111 @@ typedef struct soundfade_s
 typedef struct client_static_s
 {
 	cactive_t state;
+	
 	netchan_t netchan;
+	
 	sizebuf_t datagram;
 	byte datagram_buf[MAX_DATAGRAM];
+	
 	double connect_time;
+	
 	int connect_retry;
 	int challenge;
+	
 	byte authprotocol;
+	
 	int userid;
+	
 	char trueaddress[32];
+	
 	float slist_time;
+	
 	int signon;
+	
 	char servername[MAX_PATH];
 	char mapstring[64];
 	char spawnparms[2048];
 	char userinfo[256];
+	
 	float nextcmdtime;
+	
 	int lastoutgoingcommand;
 	int demonum;
+	
 	char demos[MAX_DEMOS][16];
+	
 	qboolean demorecording;
 	qboolean demoplayback;
 	qboolean timedemo;
+	
 	float demostarttime; 
 	int demostartframe;
+	
 	int forcetrack;
+	
 	FileHandle_t demofile;
 	FileHandle_t demoheader;
+	
 	qboolean demowaiting;
 	qboolean demoappending;
+	
 	char demofilename[MAX_PATH];
 	int demoframecount;
+	
 	int td_lastframe;
 	int td_startframe;
 	float td_starttime;
+	
 	incomingtransfer_t dl;
+	
 	float packet_loss;
 	double packet_loss_recalc_time;
+	
 	int playerbits;
+	
 	soundfade_t soundfade;
+	
 	char physinfo[MAX_PHYSINFO_STRING];
+	
 	unsigned char md5_clientdll[16];
+	
 	netadr_t game_stream;
 	netadr_t connect_stream;
+	
 	qboolean passive;
 	qboolean spectator;
 	qboolean director;
 	qboolean fSecureClient;
 	qboolean isVAC2Secure;
+	
 	uint64 GameServerSteamID;
+	
 	int build_num;
 } client_static_t;
 
 typedef struct client_state_s
 {
 	int max_edicts;
+	
 	resource_t resourcesonhand;
 	resource_t resourcesneeded;
 	resource_t resourcelist[MAX_RESOURCE_LIST];
+	
 	int num_resources;
+	
 	qboolean need_force_consistency_response;
+	
 	char serverinfo[512];
+	
 	int servercount;
 	int validsequence;
 	int parsecount;
 	int parsecountmod;
 	int stats[32];
 	int weapons;
+	
 	usercmd_t cmd;
+	
 	vec3_t viewangles;
 	vec3_t punchangle;
 	vec3_t crosshairangle;
@@ -187,55 +224,86 @@ typedef struct client_state_s
 	vec3_t simangles;
 	vec3_t predicted_origins[64];
 	vec3_t prediction_error;
+	
 	float idealpitch;
+	
 	vec3_t viewheight;
+	
 	screenfade_t sf;
+	
 	qboolean paused;
+	
 	int onground;
 	int moving;
 	int waterlevel;
 	int usehull;
+	
 	float maxspeed;
+	
 	int pushmsec;
 	int light_level;
 	int intermission;
+	
 	double mtime[2];
 	double time;
 	double oldtime;
+	
 	frame_t frames[64];
 	cmd_t commands[64];
 	local_state_t predicted_frames[64];
+	
 	int delta_sequence;
 	int playernum;
+	
 	event_t event_precache[HL_EVENT_MAX];
+	
 	model_t *model_precache[HL_MODEL_MAX];
 	int model_precache_count;
+	
 	sfx_s *sound_precache[HL_SOUND_MAX];
+	
 	consistency_t consistency_list[MAX_CONSISTENCY_LIST];
 	int num_consistency;
+	
 	int highentity;
+	
 	char levelname[40];
+	
 	int maxclients;
 	int gametype;
 	int viewentity;
+	
 	model_t *worldmodel;
 	efrag_t *free_efrags;
+	
 	int num_entities;
 	int num_statics;
+	
 	cl_entity_t viewent;
+	
 	int cdtrack;
 	int looptrack;
+	
 	CRC32_t serverCRC;
+	
 	unsigned char clientdllmd5[16];
+	
 	float weaponstarttime;
 	int weaponsequence;
+	
 	int fPrecaching;
+	
 	dlight_t *pLight;
+	
 	player_info_t players[32];
+	
 	entity_state_t instanced_baseline[64];
 	int instanced_baseline_number;
+	
 	CRC32_t mapCRC;
+	
 	event_state_t events;
+	
 	char downloadUrl[128];
 } client_state_t;
 
@@ -304,8 +372,6 @@ void Chase_Init();
 
 extern "C" void ClientDLL_Init();
 
-void Con_Shutdown();
-
 int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf);
 
 void CL_ShutDownUsrMessages();
@@ -322,8 +388,6 @@ void CL_InitEventSystem();
 void CL_CheckClientState();
 void CL_RedoPrediction();
 void CL_SetLastUpdate();
-
-void Con_NPrintf(int idx, const char *fmt, ...);
 
 void CL_WriteMessageHistory(int starting_count, int cmd);
 void CL_MoveSpectatorCamera();

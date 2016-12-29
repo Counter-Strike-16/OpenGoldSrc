@@ -28,6 +28,12 @@
 
 #pragma once
 
+#include "maintypes.h"
+#include "rehlds/common_rehlds.h"
+#include "public/FileSystem.h"
+#include "rehlds/bspfile.h"
+#include "system/info.h"
+
 #ifndef REHLDS_FIXES
 	#define __BUILD_TIME__ __TIME__
 	#define __BUILD_DATE__ __DATE__
@@ -71,7 +77,6 @@
 #define loadsize (*ploadsize)
 #endif // HOOK_ENGINE
 
-
 extern char serverinfo[MAX_INFO_STRING];
 
 extern char gpszVersionString[32];
@@ -106,10 +111,14 @@ extern char com_clientfallback[MAX_PATH];
 extern char com_gamedir[MAX_PATH];
 extern char com_cmdline[COM_MAX_CMD_LINE];
 
+typedef struct cache_user_s cache_user_t;
+
 extern cache_user_t *loadcache;
 extern unsigned char *loadbuf;
 extern int loadsize;
 
+typedef struct sizebuf_s sizebuf_t;
+typedef struct usercmd_s usercmd_t;
 
 //#define Q_functions
 #ifndef Q_functions

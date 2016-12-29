@@ -32,7 +32,7 @@
 #include "modelgen.h"
 #include "spritegn.h"
 #include "common/crc.h"
-#include "common/bspfile.h"
+#include "rehlds/bspfile.h"
 
 #define	SURF_PLANEBACK		2
 #define	SURF_DRAWSKY		4

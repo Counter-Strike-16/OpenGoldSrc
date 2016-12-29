@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include "common/const.h"
-#include "qlimits.h"
+#include "common/commontypes.h"
+#include "public/archtypes.h"
 
 #ifdef REHLDS_FIXES
 #define COM_TOKEN_LEN	2048

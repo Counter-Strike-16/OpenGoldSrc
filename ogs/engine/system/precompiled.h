@@ -32,7 +32,7 @@
 #include "engine/progs.h"
 #include "engine/progdefs.h"
 
-#include "common/bspfile.h"
+#include "rehlds/bspfile.h"
 #include "common/con_nprint.h"
 #include "common/cvardef.h"
 #include "common/kbutton.h"
@@ -48,7 +48,6 @@
 #include "common/triangleapi.h"
 #include "common/particledef.h"
 #include "common/dlight.h"
-#include "common/wadfile.h" // access decal size
 #include "common/enums.h"
 #include "common/netadr.h"
 #include "common/net_api.h"
@@ -61,7 +60,6 @@
 #include "common/weaponinfo.h"
 #include "common/demo_api.h"
 #include "common/ivoicetweak.h"
-#include "common/lightstyle.h"
 
 #include "public/keydefs.h"
 

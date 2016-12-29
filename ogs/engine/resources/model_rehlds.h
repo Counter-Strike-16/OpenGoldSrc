@@ -42,7 +42,7 @@
 #include "rehlds/model.h"
 
 #include "maintypes.h"
-#include "common/bspfile.h"
+#include "rehlds/bspfile.h"
 #include "common/crc.h"
 
 #ifdef HOOK_ENGINE

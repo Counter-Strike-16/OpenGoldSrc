@@ -31,6 +31,7 @@
 
 qboolean g_bIsWin95;
 qboolean g_bIsWin98;
+
 double g_flLastSteamProgressUpdateTime;
 
 /*

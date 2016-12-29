@@ -3,7 +3,7 @@
 //======================================
 
 // #include "client/client.h"
-// #include "client/enginevgui.h"
+//#include "client/enginevgui.h"
 //#include "client/tmessage.h"
 
 // #include "graphics/draw.h"
@@ -23,7 +23,6 @@
 
 // #include "network/delta_jit.h"
 // #include "network/ipratelimit.h"
-// #include "network/net.h"
 // #include "network/net_chan.h"
 // #include "network/net_ws.h"
 //#include "network/usermsg.h"
@@ -44,7 +43,6 @@
 
 // #include "sound/sound.h"
 
-// #include "system/common.h"
 // #include "system/engine.h"
 // #include "system/host_cmd.h"
 // #include "system/quakedef.h"

@@ -18,9 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-//
-// console
-//
+// console.h
 
 #pragma once
 
@@ -51,10 +49,12 @@ void Con_DrawCharacter (int cx, int line, int num);
 
 void Con_CheckResize ();
 void Con_Init ();
+void Con_Shutdown();
 void Con_DrawConsole (int lines);
 void Con_Print (const char *txt);
 void Con_Printf (const char *fmt, ...);
 void Con_DPrintf (const char *fmt, ...);
+void Con_NPrintf(int idx, const char *fmt, ...);
 void Con_SafePrintf (const char *fmt, ...);
 void Con_Clear_f ();
 void Con_DrawNotify ();
