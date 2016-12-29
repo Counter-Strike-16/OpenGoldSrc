@@ -12,14 +12,12 @@
 #pragma once
 #endif
 
-#include "vstdlib/vstdlib.h"
+#include "vstdlib.h"
 #include "icvar.h"
-
 
 //-----------------------------------------------------------------------------
 // Returns a CVar dictionary for tool usage
 //-----------------------------------------------------------------------------
 VSTDLIB_INTERFACE CreateInterfaceFn VStdLib_GetICVarFactory();
-
 
 #endif // CVAR_H
