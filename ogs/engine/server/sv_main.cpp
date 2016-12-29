@@ -98,7 +98,7 @@ char outputbuf[MAX_ROUTEABLE_PACKET];
 redirect_t sv_redirected;
 netadr_t sv_redirectto;
 
-// TODO: make one global var with mods enum.
+// TODO: make one global var with mods enum
 int g_bCS_CZ_Flags_Initialized;
 int g_bIsCZero;
 int g_bIsCZeroRitual;

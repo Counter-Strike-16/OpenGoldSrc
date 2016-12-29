@@ -28,46 +28,24 @@ cvar_t	cl_nodelta = {"cl_nodelta","0"};
 /*
 ================
 CL_BaseMove initially
-CL_CreateMove now and moved to client dll code
 TODO: remove
 
 Send the intended movement message to the server
 ================
 */
-void CL_BaseMove (usercmd_t *cmd)
-{	
-	CL_AdjustAngles ();
+void CL_CreateMove (usercmd_t *cmd)
+{
+	// QW
 	
-	memset (cmd, 0, sizeof(*cmd));
+	//VectorCopy (cl.viewangles, cmd->angles);
 	
-	VectorCopy (cl.viewangles, cmd->angles);
-	if (in_strafe.state & 1)
-	{
-		cmd->sidemove += cl_sidespeed.value * CL_KeyState (&in_right);
-		cmd->sidemove -= cl_sidespeed.value * CL_KeyState (&in_left);
-	}
+	// GS
+	
+	gEngfuncs.GetViewAngles( (float *)viewangles );
 
-	cmd->sidemove += cl_sidespeed.value * CL_KeyState (&in_moveright);
-	cmd->sidemove -= cl_sidespeed.value * CL_KeyState (&in_moveleft);
-
-	cmd->upmove += cl_upspeed.value * CL_KeyState (&in_up);
-	cmd->upmove -= cl_upspeed.value * CL_KeyState (&in_down);
-
-	if (! (in_klook.state & 1) )
-	{	
-		cmd->forwardmove += cl_forwardspeed.value * CL_KeyState (&in_forward);
-		cmd->forwardmove -= cl_backspeed.value * CL_KeyState (&in_back);
-	}	
-
-//
-// adjust for speed key
-//
-	if (in_speed.state & 1)
-	{
-		cmd->forwardmove *= cl_movespeedkey.value;
-		cmd->sidemove *= cl_movespeedkey.value;
-		cmd->upmove *= cl_movespeedkey.value;
-	}	
+	CL_AdjustAngles ( frametime, viewangles );
+		
+	gEngfuncs.SetViewAngles( (float *)viewangles );
 }
 
 int MakeChar (int i)
@@ -150,7 +128,9 @@ void CL_SendCmd ()
 
 	// save this command off for prediction
 	i = cls.netchan.outgoing_sequence & UPDATE_MASK;
+	
 	cmd = &cl.frames[i].cmd;
+	
 	cl.frames[i].senttime = realtime;
 	cl.frames[i].receivedtime = -1;		// we haven't gotten a reply yet
 
@@ -158,7 +138,7 @@ void CL_SendCmd ()
 	seq_hash = cls.netchan.outgoing_sequence;
 
 	// get basic movement from keyboard
-	CL_BaseMove (cmd);
+	ClientDLL_CreateMove(host_frametime, cmd, IDUNNO); // cl.active?
 
 	// allow mice or other external controllers to add to the move
 	IN_Move (cmd);

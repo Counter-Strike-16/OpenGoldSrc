@@ -118,6 +118,7 @@ public:
 // Singleton accessor
 extern IEngineVGuiInternal *EngineVGui();
 
+// Centerpoint for handling all user interface in the engine
 class CEngineVGui : public IEngineVGuiInternal
 {
 public:

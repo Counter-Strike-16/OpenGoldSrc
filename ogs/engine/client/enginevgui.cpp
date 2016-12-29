@@ -55,16 +55,18 @@ bool CEngineVGui::SetVGUIDirectories()
 	char temp[ 512 ];
 	char skin[128];
 	skin[0] = 0;
+	
 	Sys_GetRegKeyValue("Software\\Valve\\Steam", "Skin", skin, sizeof(skin), "");
+	
 	if (strlen(skin) > 0)
 	{
 		sprintf( temp, "%s/platform/skins/%s", GetBaseDirectory(), skin );
-		g_pFileSystem->AddSearchPath( temp, "SKIN" );
-	}
+		gpFileSystem->AddSearchPath( temp, "SKIN" );
+	};
 #endif
 
 	return true;
-}
+};
 
 //-----------------------------------------------------------------------------
 // Are we initialized?
@@ -72,12 +74,12 @@ bool CEngineVGui::SetVGUIDirectories()
 bool CEngineVGui::IsInitialized() const
 {
 	return staticPanel != NULL;
-}
+};
 
 CreateInterfaceFn CEngineVGui::GetGameUIFactory()
 {
 	return m_GameUIFactory;
-}
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns 1 if the key event is handled, 0 if the engine should handle it
@@ -93,19 +95,15 @@ bool CEngineVGui::Key_Event( const InputEvent_t &event )
 		{
 		case KEY_F1:
 			if ( bDown )
-			{
 				Cbuf_AddText( "debugsystemui" );
-			}
 			return true;
 
 		case KEY_F2:
 			if ( bDown )
-			{
 				Cbuf_AddText( "demoui" );
-			}
 			return true;
-		}
-	}
+		};
+	};
 
 #if defined( _WIN32 )
 	// Ignore alt tilde, since the Japanese IME uses this to toggle itself on/off
@@ -127,24 +125,15 @@ bool CEngineVGui::Key_Event( const InputEvent_t &event )
 				{
 					Cbuf_AddText( "gameui_hide" );
 					if ( IsDebugSystemVisible() )
-					{
 						Cbuf_AddText( "debugsystemui 0" );
-					}
-				}
+				};
 			}
 			else
-			{
 				Cbuf_AddText( "gameui_activate" );
-			}
+			
 			return true;
-		}
-		if ( IsX360() && !IsGameUIVisible() )
-		{
-			// 360 UI does not toggle, engine does "show", but UI needs to handle "hide"
-			Cbuf_AddText( "gameui_activate" );
-			return true;
-		}
-	}
+		};
+	};
 
 	if ( g_pMatSystemSurface && g_pMatSystemSurface->HandleInputEvent( event ) )
 	{
@@ -154,14 +143,15 @@ bool CEngineVGui::Key_Event( const InputEvent_t &event )
 		if ( IsPC() && ( code == KEY_BACKQUOTE ) )
 			return false;
 		return true;
-	}
+	};
+	
 	return false;
-}
+};
 
 void CEngineVGui::BackwardCompatibility_Paint()
 {
 	Paint( (PaintMode_t)(PAINT_UIPANELS | PAINT_INGAMEPANELS) );
-}
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns 1 if the key event is handled, 0 if the engine should handle it
@@ -169,15 +159,12 @@ void CEngineVGui::BackwardCompatibility_Paint()
 void CEngineVGui::UpdateButtonState( const InputEvent_t &event )
 {
 	m_pInputInternal->UpdateButtonState( event );
-}
+};
 
 void CEngineVGui::PostInit()
 {
-	staticGameUIFuncs->PostInit();
-#if defined( _X360 )
-	g_pMatSystemSurface->ClearTemporaryFontCache();
-#endif
-}
+	gpGameUI->PostInit();
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: paints all the vgui elements
@@ -198,14 +185,10 @@ void CEngineVGui::Paint( PaintMode_t mode )
 
 	// Don't draw the console at all if vgui is off during a time demo
 	if ( demoplayer->IsPlayingTimeDemo() && !drawVgui )
-	{
 		return;
-	}
 
 	if ( !drawVgui || m_bNoShaderAPI )
-	{
 		return;
-	}
 
 	// Force engine's root panel (staticPanel) to be full screen size
 	RECT rect;
@@ -237,7 +220,7 @@ void CEngineVGui::Paint( PaintMode_t mode )
 
 		staticClientDLLPanel->SetVisible( saveVisible );
 		staticClientDLLToolsPanel->SetVisible( saveToolsVisible );
-	}
+	};
 	
 	if ( mode & PAINT_INGAMEPANELS )
 	{
@@ -262,10 +245,10 @@ void CEngineVGui::Paint( PaintMode_t mode )
 		vgui::ipanel()->SetParent( ingameToolsRoot, saveToolParent );
 
 		vgui::ipanel()->SetVisible( pVPanel, bSaveVisible );
-	}
+	};
 
 	toolframework->VGui_PostRenderAllTools( mode );
-}
+};
 
 void CEngineVGui::SetGameUIActive(bool bActive)
 {
@@ -316,15 +299,15 @@ void CEngineVGui::HideDebugSystem( void )
 	{
 		staticDebugSystemPanel->SetVisible( false );
 		SetEngineVisible( true );
-	}
-}
+	};
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: transition handler
 //-----------------------------------------------------------------------------
 void CEngineVGui::OnLevelLoadingStarted()
 {
-	if (!staticGameUIFuncs)
+	if (!gpGameUI)
 		return;
 
 	ConVar *pSyncReportConVar = g_pCVar->FindVar( "fs_report_sync_opens" );
@@ -333,19 +316,11 @@ void CEngineVGui::OnLevelLoadingStarted()
 		// If convar is set to 2, suppress warnings during level load
 		g_syncReportLevel = pSyncReportConVar->GetInt();
 		if ( g_syncReportLevel > 1 )
-		{
 			pSyncReportConVar->SetValue( 0 );
-		}
-	}
-	
-	if ( IsX360() )
-	{
-		// TCR requirement, always!!!
-		m_bShowProgressDialog = true;
-	}
+	};
 
 	// we've starting loading a level/connecting to a server
-	staticGameUIFuncs->OnLevelLoadingStarted( m_bShowProgressDialog );
+	gpGameUI->OnLevelLoadingStarted( m_bShowProgressDialog );
 
 	// reset progress bar timers
 	m_flLoadingStartTime = Plat_FloatTime();
@@ -361,27 +336,23 @@ void CEngineVGui::OnLevelLoadingStarted()
 		g_pLoadingProgressDescriptions = g_RemoteConnectLoadingProgressDescriptions;
 	}
 	else
-	{
 		g_pLoadingProgressDescriptions = g_ListenServerLoadingProgressDescriptions;
-	}
 
 	if ( m_bShowProgressDialog )
-	{
 		ActivateGameUI();
-	}
 
 	m_bShowProgressDialog = false;
-}
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: transition handler
 //-----------------------------------------------------------------------------
 void CEngineVGui::OnLevelLoadingFinished()
 {
-	if (!staticGameUIFuncs)
+	if (!gpGameUI)
 		return;
 
-	staticGameUIFuncs->OnLevelLoadingFinished( gfExtendedError, gszDisconnectReason, gszExtendedDisconnectReason );
+	gpGameUI->OnLevelLoadingFinished( gfExtendedError, gszDisconnectReason, gszExtendedDisconnectReason );
 	m_eLastProgressPoint = PROGRESS_NONE;
 
 	// clear any error message
@@ -392,10 +363,12 @@ void CEngineVGui::OnLevelLoadingFinished()
 #if defined(ENABLE_LOADING_PROGRESS_PROFILING)
 	// display progress bar stats (for debugging/tuning progress bar)
 	float flEndTime = (float)Plat_FloatTime();
+	
 	// add a finished entry
 	LoadingProgressEntry_t &entry = m_LoadingProgress[m_LoadingProgress.AddToTail()];
 	entry.flTime = flEndTime - m_flLoadingStartTime;
 	entry.eProgress = PROGRESS_HIGHESTITEM;
+	
 	// dump the info
 	Msg("Level load timings:\n");
 	float flTotalTime = flEndTime - m_flLoadingStartTime;
@@ -416,7 +389,7 @@ void CEngineVGui::OnLevelLoadingFinished()
 			}
 			++nRepeatCount;
 			continue;
-		}
+		};
 
 		// work out the time it took to do this
 		if (nRepeatCount == 0)
@@ -434,7 +407,7 @@ void CEngineVGui::OnLevelLoadingFinished()
 		// reset accumlated vars
 		nRepeatCount = 0;
 		flTimeTaken = 0.0f;
-	}
+	};
 #endif // ENABLE_LOADING_PROGRESS_PROFILING
 
 	HideGameUI();
@@ -447,43 +420,43 @@ void CEngineVGui::OnLevelLoadingFinished()
 		{
 			pSyncReportConVar->SetValue( g_syncReportLevel );
 		}
-	}
-}
+	};
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: notification
 //-----------------------------------------------------------------------------
 void CEngineVGui::NotifyOfServerConnect(const char *game, int IP, int connectionPort, int queryPort)
 {
-	if (!staticGameUIFuncs)
+	if (!gpGameUI)
 		return;
 
-	staticGameUIFuncs->OnConnectToServer2(game, IP, connectionPort, queryPort);
-}
+	gpGameUI->OnConnectToServer2(game, IP, connectionPort, queryPort);
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: notification
 //-----------------------------------------------------------------------------
 void CEngineVGui::NotifyOfServerDisconnect()
 {
-	if (!staticGameUIFuncs)
+	if (!gpGameUI)
 		return;
 
-	staticGameUIFuncs->OnDisconnectFromServer( g_eSteamLoginFailure );
+	gpGameUI->OnDisconnectFromServer( g_eSteamLoginFailure );
 	g_eSteamLoginFailure = 0;
-}
+};
 
 void CEngineVGui::EnabledProgressBarForNextLoad()
 {
 	m_bShowProgressDialog = true;
-}
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: Updates progress
 //-----------------------------------------------------------------------------
 void CEngineVGui::UpdateProgressBar(LevelLoadingProgress_e progress)
 {
-	if (!staticGameUIFuncs)
+	if (!gpGameUI)
 		return;
 
 	if ( !ThreadInMainThread() )
@@ -528,69 +501,69 @@ void CEngineVGui::UpdateProgressBar(LevelLoadingProgress_e progress)
 
 		// move along partially towards the next tick
 		flPerc += (flNextPerc - flPerc) * ((float)m_nLastProgressPointRepeatCount / desc.nRepeat);
-	}
+	};
 
 	// the bias allows the loading bar to have an optional reserved initial band
 	// isolated from the normal progress descriptions
 	flPerc = flPerc * ( 1.0f - m_ProgressBias ) + m_ProgressBias;
 
-	if ( staticGameUIFuncs->UpdateProgressBar( flPerc, desc.pszDesc ) )
+	if ( gpGameUI->UpdateProgressBar( flPerc, desc.pszDesc ) )
 	{
 		// re-render vgui on screen
 		extern void V_RenderVGuiOnly();
 		V_RenderVGuiOnly();
-	}
+	};
 
 	m_eLastProgressPoint = progress;
-}
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: Updates progress
 //-----------------------------------------------------------------------------
 void CEngineVGui::UpdateCustomProgressBar( float progress, const wchar_t *desc )
 {
-	if (!staticGameUIFuncs)
+	if (!gpGameUI)
 		return;
 
 	char ansi[1024];
 	g_pVGuiLocalize->ConvertUnicodeToANSI( desc, ansi, sizeof( ansi ) );
 
-	if ( staticGameUIFuncs->UpdateProgressBar( progress, ansi ) )
+	if ( gpGameUI->UpdateProgressBar( progress, ansi ) )
 	{
 		// re-render vgui on screen
 		extern void V_RenderVGuiOnly();
 		V_RenderVGuiOnly();
-	}
-}
+	};
+};
 
 void CEngineVGui::StartCustomProgress()
 {
-	if (!staticGameUIFuncs)
+	if (!gpGameUI)
 		return;
 
 	// we've starting loading a level/connecting to a server
-	staticGameUIFuncs->OnLevelLoadingStarted(true);
-	m_bSaveProgress = staticGameUIFuncs->SetShowProgressText( true );
-}
+	gpGameUI->OnLevelLoadingStarted(true);
+	m_bSaveProgress = gpGameUI->SetShowProgressText( true );
+};
 
 void CEngineVGui::FinishCustomProgress()
 {
-	if (!staticGameUIFuncs)
+	if (!gpGameUI)
 		return;
 
-	staticGameUIFuncs->SetShowProgressText( m_bSaveProgress );
-	staticGameUIFuncs->OnLevelLoadingFinished( false, "", "" );
-}
+	gpGameUI->SetShowProgressText( m_bSaveProgress );
+	gpGameUI->OnLevelLoadingFinished( false, "", "" );
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: transition handler
 //-----------------------------------------------------------------------------
 void CEngineVGui::ShowErrorMessage()
 {
-	if (!staticGameUIFuncs || !gfExtendedError)
+	if(!gpGameUI || !gfExtendedError)
 		return;
 
-	staticGameUIFuncs->OnLevelLoadingFinished( gfExtendedError, gszDisconnectReason, gszExtendedDisconnectReason );
+	gpGameUI->OnLevelLoadingFinished( gfExtendedError, gszDisconnectReason, gszExtendedDisconnectReason );
 	m_eLastProgressPoint = PROGRESS_NONE;
 
 	// clear any error message
@@ -599,7 +572,7 @@ void CEngineVGui::ShowErrorMessage()
 	gszExtendedDisconnectReason[0] = 0;
 
 	HideGameUI();
-}
+};
 
 //-----------------------------------------------------------------------------
 // Should pause?
@@ -610,22 +583,20 @@ bool CEngineVGui::ShouldPause()
 		return bugreporter->ShouldPause() || perftools->ShouldPause();
 	
 	return false;
-}
+};
 
 void CEngineVGui::SetGameDLLPanelsVisible( bool show )
 {
 	if ( !staticGameDLLPanel )
-	{
 		return;
-	}
 
 	staticGameDLLPanel->SetVisible( show );
-}
+};
 
 void CEngineVGui::ShowNewGameDialog( int chapter )
 {
-	staticGameUIFuncs->ShowNewGameDialog( chapter );
-}
+	gpGameUI->ShowNewGameDialog( chapter );
+};
 
 void CEngineVGui::Simulate()
 {
@@ -661,7 +632,7 @@ void CEngineVGui::Simulate()
 
 		vgui::surface()->CalculateMouseVisible();
 		VGui_ActivateMouse();
-	}
+	};
 
 	toolframework->VGui_PostSimulateAllTools();
 };
