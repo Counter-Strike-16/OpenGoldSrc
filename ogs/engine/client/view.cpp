@@ -247,9 +247,6 @@ void V_DriftPitch (void)
 }
 
 
-
-
-
 /*
 ============================================================================== 
  
@@ -324,6 +321,8 @@ V_ParseDamage
 */
 void V_ParseDamage (void)
 {
+	// Deprecated
+	
 	int		armor, blood;
 	vec3_t	from;
 	int		i;
@@ -331,10 +330,10 @@ void V_ParseDamage (void)
 	float	side;
 	float	count;
 	
-	armor = MSG_ReadByte ();
-	blood = MSG_ReadByte ();
+	armor = 0;
+	blood = 0;
 	for (i=0 ; i<3 ; i++)
-		from[i] = MSG_ReadCoord ();
+		from[i] = 0;
 
 	count = blood*0.5 + armor*0.5;
 	if (count < 10)

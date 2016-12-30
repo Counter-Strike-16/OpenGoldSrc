@@ -46,7 +46,7 @@ char *svc_strings[] =
 	"svc_stopsound",		// <see code>
 	"svc_pings",	// [byte] [byte]
 	"svc_particle",		// [vec3] <variable>
-	"svc_damage",			// [byte] impact [byte] blood [vec3] from
+	"svc_damage",			// deprecated
 	
 	"svc_spawnstatic",
 	"svc_event_reliable",
@@ -700,6 +700,8 @@ ACTION MESSAGES
 
 void CL_HandleDisconnect()
 {
+	char *sReason = MSG_ReadString();
+	
 	if(cls.state == ca_connected)
 		Host_EndGame("Server disconnected\n"
 					"Server version may not be compatible");
@@ -781,6 +783,12 @@ void CL_ParseStartSoundPacket()
 
 void CL_ParseTime()
 {
+/*
+	Notifies clients about the current server time
+
+	Note: This message is sent every frame by the server
+*/
+	
 	// shuffle timestamps
 	cl.mtime[1] = cl.mtime[0];
 	cl.mtime[0] = MSG_ReadFloat();
@@ -1640,6 +1648,10 @@ void CL_HandlePause()
 
 void CL_ParseSignOnNum()
 {
+	// Called just after client_putinserver
+	// Signals the client that the server has marked it as "active"
+	
+	byte nSignOn = MSG_ReadByte();
 };
 
 void CL_ParseCenterPrint()
@@ -1649,11 +1661,15 @@ void CL_ParseCenterPrint()
 
 void CL_ParseKilledMonster()
 {
+	// Deprecated
+	
 	cl.stats[STAT_MONSTERS]++;
 };
 
 void CL_ParseFoundSecret()
 {
+	// Deprecated
+	
 	cl.stats[STAT_SECRETS]++;
 };
 
@@ -1714,6 +1730,14 @@ void CL_ParseRestore()
 
 void CL_ParseCutscene()
 {
+/*
+	Shows the intermission camera view, and writes-out text passed in first parameter.
+
+	Note: Intermission mode 3
+	Note: This text will keep showing on clients in future intermissions
+*/
+	
+	char *sText = MSG_ReadString();
 };
 
 void CL_ParseWeaponAnim()
@@ -1729,6 +1753,18 @@ void CL_ParseWeaponAnim()
 
 void CL_ParseDecalName()
 {
+/*
+	Allows to set, into the client's decals array and at specific position index (0->511), a decal name.
+	E.g: let's say you send a message to set a decal "{break" at index 200.
+	As result, when a message TE_ will be used to show a decal at index 200, we will see "{break".
+
+	Note: If there is already an existing decal at the provided index, it will be overwritten.
+	Note: It appears we can play only with decals from decals.wad. 
+*/
+	
+	byte nPosIndex = MSG_ReadByte();
+	
+	char *sDecalName = MSG_ReadString();
 };
 
 void CL_ParseRoomType()
@@ -1772,9 +1808,11 @@ void CL_ParsePacketEntities(bool bDelta)
 
 void CL_HandleChoke()
 {
-	i = MSG_ReadByte ();
-	for (j=0 ; j<i ; j++)
-		cl.frames[ (cls.netchan.incoming_acknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
+	// Notify the client that some outgoing datagrams were not transmitted due to exceeding bandwidth rate limits
+	
+	//i = MSG_ReadByte ();
+	//for (j=0 ; j<i ; j++)
+	//	cl.frames[ (cls.netchan.incoming_acknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
 };
 
 void CL_ParseResourceList()
@@ -1809,8 +1847,9 @@ void CL_HandleFileTransferFailed()
 {
 };
 
-void CL_ParseHLTVMsg()
+void CL_ParseHLTVMode()
 {
+	byte nMode = MSG_ReadByte();
 };
 
 void CL_ParseDirectorMsg()
@@ -1831,10 +1870,13 @@ void CL_ParseExtraInfo()
 
 void CL_ParseTimeScale()
 {
+	float fTimeScale = MSG_ReadFloat();
 };
 
 void CL_ParseResouceLocation()
 {
+	// sv_downloadurl
+	char *sURL = MSG_ReadString();
 };
 
 void CL_ParseCvarValue()
@@ -2259,7 +2301,7 @@ void CL_ParseServerMessage ()
 			CL_HandleFileTransferFailed();
 			break;
 		case svc_hltv:
-			CL_ParseHLTVMsg();
+			CL_ParseHLTVMode();
 			break;
 		case svc_director:
 			CL_ParseDirectorMsg();
