@@ -691,60 +691,6 @@ void CL_ParseModellist ()
 }
 
 /*
-==================
-CL_ParseBaseline
-==================
-*/
-void CL_ParseBaseline (entity_state_t *es)
-{
-	int			i;
-	
-	es->modelindex = MSG_ReadByte ();
-	es->frame = MSG_ReadByte ();
-	es->colormap = MSG_ReadByte();
-	es->skinnum = MSG_ReadByte();
-	for (i=0 ; i<3 ; i++)
-	{
-		es->origin[i] = MSG_ReadCoord ();
-		es->angles[i] = MSG_ReadAngle ();
-	}
-}
-
-/*
-=====================
-CL_ParseStatic
-
-Static entities are non-interactive world objects
-like torches
-=====================
-*/
-void CL_ParseStatic ()
-{
-	entity_t *ent;
-	int		i;
-	entity_state_t	es;
-
-	CL_ParseBaseline (&es);
-		
-	i = cl.num_statics;
-	if (i >= MAX_STATIC_ENTITIES)
-		Host_EndGame ("Too many static entities");
-	ent = &cl_static_entities[i];
-	cl.num_statics++;
-
-// copy it to the current state
-	ent->model = cl.model_precache[es.modelindex];
-	ent->frame = es.frame;
-	ent->colormap = vid.colormap;
-	ent->skinnum = es.skinnum;
-
-	VectorCopy (es.origin, ent->origin);
-	VectorCopy (es.angles, ent->angles);
-	
-	R_AddEfrags (ent);
-}
-
-/*
 =====================================================================
 
 ACTION MESSAGES
@@ -759,22 +705,6 @@ void CL_HandleDisconnect()
 					"Server version may not be compatible");
 	else
 		Host_EndGame("Server disconnected");
-};
-
-void CL_ParseEventData(bool bReliable)
-{
-/*
-	Note: This message can be dropped if the client already has too much content in its unreliable buffer.
-	Note: Events can be precached using pfnPrecacheEvent routine.
-	Note: Events are queued and grouped together every frame, if there's any.
-	Note: EventArgs are always inherited from "null" event args.
-	Note: Only a max of 31 events can be queued and subsequently sent this way.
-	Note: This message has its arguments in bit-packed form.
-*/
-	
-	if(bReliable)
-	{
-	};
 };
 
 void CL_ParseVersion()
@@ -838,6 +768,77 @@ void CL_ParseTime()
 	// shuffle timestamps
 	cl.mtime[1] = cl.mtime[0];
 	cl.mtime[0] = MSG_ReadFloat();
+};
+
+/*
+=====================
+CL_ParseStatic
+
+Static entities are non-interactive world objects
+like torches
+=====================
+*/
+void CL_ParseStatic ()
+{
+	entity_t *ent;
+	int		i;
+	entity_state_t	es;
+
+	CL_ParseBaseline (&es);
+		
+	i = cl.num_statics;
+	
+	if (i >= MAX_STATIC_ENTITIES)
+		Host_EndGame ("Too many static entities");
+	
+	ent = &cl_static_entities[i];
+	cl.num_statics++;
+
+// copy it to the current state
+	ent->model = cl.model_precache[es.modelindex];
+	ent->frame = es.frame;
+	ent->colormap = vid.colormap;
+	ent->skinnum = es.skinnum;
+
+	VectorCopy (es.origin, ent->origin);
+	VectorCopy (es.angles, ent->angles);
+	
+	R_AddEfrags (ent);
+};
+
+void CL_ParseEventData(bool bReliable)
+{
+/*
+	Note: This message can be dropped if the client already has too much content in its unreliable buffer.
+	Note: Events can be precached using pfnPrecacheEvent routine.
+	Note: Events are queued and grouped together every frame, if there's any.
+	Note: EventArgs are always inherited from "null" event args.
+	Note: Only a max of 31 events can be queued and subsequently sent this way.
+	Note: This message has its arguments in bit-packed form.
+*/
+	
+	if(bReliable)
+	{
+	};
+};
+
+/*
+==================
+CL_ParseBaseline
+==================
+*/
+void CL_ParseBaseline (entity_state_t *es)
+{
+	es->modelindex = MSG_ReadByte ();
+	es->frame = MSG_ReadByte ();
+	es->colormap = MSG_ReadByte();
+	es->skinnum = MSG_ReadByte();
+	
+	for(int i = 0; i < 3; i++)
+	{
+		es->origin[i] = MSG_ReadCoord ();
+		es->angles[i] = MSG_ReadAngle ();
+	};
 };
 
 void CL_ParseTempEntity()
@@ -1338,7 +1339,7 @@ void CL_ParseTempEntity()
 		float fMinPos[3] = {0};
 		for(int i = 0; i < 3; ++i)
 			fMinPos[i] = MSG_ReadCoord();
-			
+		
 		float fMaxPos[3] = {0};
 		for(int i = 0; i < 3; ++i)
 			fMaxPos[i] = MSG_ReadCoord();
@@ -1355,7 +1356,7 @@ void CL_ParseTempEntity()
 		float fMinPos[3] = {0};
 		for(int i = 0; i < 3; ++i)
 			fMinPos[i] = MSG_ReadCoord();
-			
+		
 		float fMaxPos[3] = {0};
 		for(int i = 0; i < 3; ++i)
 			fMaxPos[i] = MSG_ReadCoord();
@@ -1382,7 +1383,7 @@ void CL_ParseTempEntity()
 	case TE_WORLDDECAL:
 		coord, coord, coord (x,y,z), decal position (center of texture in world)
 		
-		byte (texture index of precached decal texture name)
+		byte nTextureIndex = MSG_ReadByte();
 		break;
 	case TE_WORLDDECALHIGH:
 		coord, coord, coord (x,y,z), decal position (center of texture in world)
@@ -1392,7 +1393,7 @@ void CL_ParseTempEntity()
 	case TE_DECALHIGH:
 		coord, coord, coord (x,y,z), decal position (center of texture in world)
 		
-		byte (texture index of precached decal texture name - 256)
+		byte nTextureIndex = MSG_ReadByte();
 		
 		short nEntIndex = MSG_ReadShort();
 		break;
@@ -1440,25 +1441,25 @@ void CL_ParseTempEntity()
 		short nRadius = MSG_ReadShort();
 		
 		byte nParticleColor = MSG_ReadByte();
-		byte (duration * 10) (will be randomized a bit)
+		byte nDuration = MSG_ReadByte();
 		break;
 	case TE_FIREFIELD:
 		float fOrigin = MSG_ReadCoord();
 		
-		short nRadius (fire is made in a square around origin. -radius, -radius to radius, radius)
+		short nRadius = MSG_ReadShort();
 		short nModelIndex = MSG_ReadShort();
 		
 		byte nCount = MSG_ReadByte();
 		byte nFlags = MSG_ReadByte();
-		byte (duration (in seconds) * 10) (will be randomized a bit)
+		byte nDuration = MSG_ReadByte();
 		break;
 	case TE_PLAYERATTACHMENT:
-		byte (entity index of player) = MSG_ReadByte();
+		byte nPlayerEntIndex = MSG_ReadByte();
 		
-		coord (vertical offset) ( attachment origin.z = player origin.z + vertical offset )
+		float fVerticalOffset = MSG_ReadCoord();
 		
 		short nModelIndex = MSG_ReadShort();
-		short (life * 10 ) = MSG_ReadShort();
+		short nLifeTime = MSG_ReadShort();
 		break;
 	case TE_KILLPLAYERATTACHMENTS:
 		byte nPlayerEntIndex = MSG_ReadByte();
@@ -1491,9 +1492,9 @@ void CL_ParseTempEntity()
 		for(int i = 0; i < 3; ++i)
 			fVelocity[i] = MSG_ReadCoord();
 		
-		byte ( life * 10 ) = MSG_ReadByte();
-		byte ( color ) this is an index into an array of color vectors in the engine. (0 - )
-		byte ( length * 10 ) = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nColorIndex = MSG_ReadByte();
+		byte nLength = MSG_ReadByte();
 		break;
 	default:
 		break;
@@ -2036,7 +2037,7 @@ void CL_ParseServerMessage ()
 			cl.players[i].ping = MSG_ReadShort ();
 			break;
 		case svc_particle:
-			CL_ParseParticles( msg );
+			CL_ParseParticle();
 			break;
 		case svc_damage:
 			V_ParseDamage ();

@@ -18,8 +18,6 @@ svc_stopsound// <see code>
 svc_pings// [byte] [byte]
 svc_particle// [vec3] <variable>
 svc_damage// [byte] impact [byte] blood [vec3] from
-svc_spawnstatic
-svc_event_reliable
 svc_spawnbaseline
 svc_spawnstaticsound
 svc_intermission
