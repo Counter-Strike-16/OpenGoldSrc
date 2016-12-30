@@ -707,6 +707,22 @@ void CL_HandleDisconnect()
 		Host_EndGame("Server disconnected");
 };
 
+void CL_ParseEventData(bool bReliable)
+{
+/*
+	Note: This message can be dropped if the client already has too much content in its unreliable buffer.
+	Note: Events can be precached using pfnPrecacheEvent routine.
+	Note: Events are queued and grouped together every frame, if there's any.
+	Note: EventArgs are always inherited from "null" event args.
+	Note: Only a max of 31 events can be queued and subsequently sent this way.
+	Note: This message has its arguments in bit-packed form.
+*/
+	
+	if(bReliable)
+	{
+	};
+};
+
 void CL_ParseVersion()
 {
 	// Seems to be unused
@@ -770,6 +786,138 @@ void CL_ParseTime()
 	cl.mtime[0] = MSG_ReadFloat();
 };
 
+void CL_ParsePrint()
+{
+	i = MSG_ReadByte ();
+	
+	if (i == PRINT_CHAT)
+	{
+		S_LocalSound ("misc/talk.wav");
+		con_ormask = 128;
+	};
+	
+	Con_Printf ("%s", MSG_ReadString ());
+	con_ormask = 0;
+};
+
+void CL_ParseStuffText()
+{
+	s = MSG_ReadString ();
+	Con_DPrintf ("stufftext: %s\n", s);
+	Cbuf_AddText (s);
+};
+
+void CL_ParseSetAngle()
+{
+	for (i = 0; i < 3; i++)
+		cl.viewangles[i] = MSG_ReadAngle ();
+	
+	//cl.viewangles[PITCH] = cl.viewangles[ROLL] = 0;
+};
+
+/*
+==============
+CL_ServerInfo
+==============
+*/
+void CL_ParseServerInfo()
+{
+	int		slot;
+	player_info_t	*player;
+	char key[MAX_MSGLEN];
+	char value[MAX_MSGLEN];
+
+	strncpy (key, MSG_ReadString(), sizeof(key) - 1);
+	key[sizeof(key) - 1] = 0;
+	strncpy (value, MSG_ReadString(), sizeof(value) - 1);
+	key[sizeof(value) - 1] = 0;
+
+	Con_DPrintf("SERVERINFO: %s=%s\n", key, value);
+
+	Info_SetValueForKey (cl.serverinfo, key, value, MAX_SERVERINFO_STRING);
+};
+
+void CL_ParseLightStyle()
+{
+	i = MSG_ReadByte ();
+	
+	if (i >= MAX_LIGHTSTYLES)
+		Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES");
+	
+	Q_strcpy (cl_lightstyle[i].map,  MSG_ReadString());
+	cl_lightstyle[i].length = Q_strlen(cl_lightstyle[i].map);
+};
+
+void CL_ParseUserinfo()
+{
+};
+
+void CL_ParseDeltaDescription()
+{
+};
+
+/*
+==================
+CL_ParseClientdata
+
+Server information pertaining to this client only, sent every frame
+==================
+*/
+void CL_ParseClientdata ()
+{
+	int				i;
+	float		latency;
+	frame_t		*frame;
+
+// calculate simulated time of message
+	oldparsecountmod = parsecountmod;
+
+	i = cls.netchan.incoming_acknowledged;
+	cl.parsecount = i;
+	i &= UPDATE_MASK;
+	parsecountmod = i;
+	frame = &cl.frames[i];
+	parsecounttime = cl.frames[i].senttime;
+
+	frame->receivedtime = realtime;
+
+// calculate latency
+	latency = frame->receivedtime - frame->senttime;
+
+	if (latency < 0 || latency > 1.0f)
+	{
+//		Con_Printf ("Odd latency: %5.2f\n", latency);
+	}
+	else
+	{
+	// drift the average latency towards the observed latency
+		if (latency < cls.latency)
+			cls.latency = latency;
+		else
+			cls.latency += 0.001f;	// drift up, so correction are needed
+	};
+};
+
+void CL_HandleStopSound()
+{
+	i = MSG_ReadShort();
+	S_StopSound(i >> 3, i & 7);
+};
+
+void CL_ParsePings()
+{
+	i = MSG_ReadByte ();
+	
+	if (i >= MAX_CLIENTS)
+		Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_SCOREBOARD");
+	
+	cl.players[i].ping = MSG_ReadShort ();
+};
+
+void CL_ParseParticle()
+{
+};
+
 /*
 =====================
 CL_ParseStatic
@@ -780,7 +928,7 @@ like torches
 */
 void CL_ParseStatic ()
 {
-	entity_t *ent;
+	cl_entity_t *ent;
 	int		i;
 	entity_state_t	es;
 
@@ -804,22 +952,6 @@ void CL_ParseStatic ()
 	VectorCopy (es.angles, ent->angles);
 	
 	R_AddEfrags (ent);
-};
-
-void CL_ParseEventData(bool bReliable)
-{
-/*
-	Note: This message can be dropped if the client already has too much content in its unreliable buffer.
-	Note: Events can be precached using pfnPrecacheEvent routine.
-	Note: Events are queued and grouped together every frame, if there's any.
-	Note: EventArgs are always inherited from "null" event args.
-	Note: Only a max of 31 events can be queued and subsequently sent this way.
-	Note: This message has its arguments in bit-packed form.
-*/
-	
-	if(bReliable)
-	{
-	};
 };
 
 /*
@@ -1638,47 +1770,80 @@ void CL_ParsePacketEntities(bool bDelta)
 	};
 };
 
-/*
-==================
-CL_ParseClientdata
-
-Server information pertaining to this client only, sent every frame
-==================
-*/
-void CL_ParseClientdata ()
+void CL_HandleChoke()
 {
-	int				i;
-	float		latency;
-	frame_t		*frame;
+	i = MSG_ReadByte ();
+	for (j=0 ; j<i ; j++)
+		cl.frames[ (cls.netchan.incoming_acknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
+};
 
-// calculate simulated time of message
-	oldparsecountmod = parsecountmod;
+void CL_ParseResourceList()
+{
+	CL_ParseModellist ();
+	CL_ParseSoundlist ();
+};
 
-	i = cls.netchan.incoming_acknowledged;
-	cl.parsecount = i;
-	i &= UPDATE_MASK;
-	parsecountmod = i;
-	frame = &cl.frames[i];
-	parsecounttime = cl.frames[i].senttime;
+void CL_ParseNewMoveVars()
+{
+	movevars.maxspeed = MSG_ReadFloat();
+	movevars.entgravity = MSG_ReadFloat();
+};
 
-	frame->receivedtime = realtime;
+void CL_ParseResourceRequest()
+{
+};
 
-// calculate latency
-	latency = frame->receivedtime - frame->senttime;
+void CL_ParseCustomization()
+{
+};
 
-	if (latency < 0 || latency > 1.0)
-	{
-//		Con_Printf ("Odd latency: %5.2f\n", latency);
-	}
-	else
-	{
-	// drift the average latency towards the observed latency
-		if (latency < cls.latency)
-			cls.latency = latency;
-		else
-			cls.latency += 0.001;	// drift up, so correction are needed
-	}	
-}
+void CL_ParseCrosshairAngle()
+{
+};
+
+void CL_ParseSoundFade()
+{
+};
+
+void CL_HandleFileTransferFailed()
+{
+};
+
+void CL_ParseHLTVMsg()
+{
+};
+
+void CL_ParseDirectorMsg()
+{
+};
+
+void CL_HandleVoiceInit()
+{
+};
+
+void CL_ParseVoiceData()
+{
+};
+
+void CL_ParseExtraInfo()
+{
+};
+
+void CL_ParseTimeScale()
+{
+};
+
+void CL_ParseResouceLocation()
+{
+};
+
+void CL_ParseCvarValue()
+{
+};
+
+void CL_ParseCvarValue2()
+{
+};
 
 /*
 =====================
@@ -1816,28 +1981,6 @@ void CL_SetInfo ()
 	Info_SetValueForKey (player->userinfo, key, value, MAX_INFO_STRING);
 
 	CL_ProcessUserInfo (slot, player);
-}
-
-/*
-==============
-CL_ServerInfo
-==============
-*/
-void CL_ServerInfo ()
-{
-	int		slot;
-	player_info_t	*player;
-	char key[MAX_MSGLEN];
-	char value[MAX_MSGLEN];
-
-	strncpy (key, MSG_ReadString(), sizeof(key) - 1);
-	key[sizeof(key) - 1] = 0;
-	strncpy (value, MSG_ReadString(), sizeof(value) - 1);
-	key[sizeof(value) - 1] = 0;
-
-	Con_DPrintf("SERVERINFO: %s=%s\n", key, value);
-
-	Info_SetValueForKey (cl.serverinfo, key, value, MAX_SERVERINFO_STRING);
 }
 
 /*
@@ -1984,27 +2127,16 @@ void CL_ParseServerMessage ()
 			CL_ParseTime();
 			break;
 		case svc_print:
-			i = MSG_ReadByte ();
-			if (i == PRINT_CHAT)
-			{
-				S_LocalSound ("misc/talk.wav");
-				con_ormask = 128;
-			}
-			Con_Printf ("%s", MSG_ReadString ());
-			con_ormask = 0;
+			CL_ParsePrint();
 			break;
 		case svc_stufftext:
-			s = MSG_ReadString ();
-			Con_DPrintf ("stufftext: %s\n", s);
-			Cbuf_AddText (s);
+			CL_ParseStuffText();
 			break;
 		case svc_setangle:
-			for (i=0 ; i<3 ; i++)
-				cl.viewangles[i] = MSG_ReadAngle ();
-//			cl.viewangles[PITCH] = cl.viewangles[ROLL] = 0;
+			CL_ParseSetAngle();
 			break;
 		case svc_serverinfo:
-			CL_ServerInfo ();
+			CL_ParseServerInfo();
 			
 			//from svc_serverdata
 			//Cbuf_Execute ();		// make sure any stuffed commands are done
@@ -2012,29 +2144,22 @@ void CL_ParseServerMessage ()
 			//vid.recalc_refdef = true;	// leave full screen intermission
 			break;
 		case svc_lightstyle:
-			i = MSG_ReadByte ();
-			if (i >= MAX_LIGHTSTYLES)
-				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES");
-			Q_strcpy (cl_lightstyle[i].map,  MSG_ReadString());
-			cl_lightstyle[i].length = Q_strlen(cl_lightstyle[i].map);
+			CL_ParseLightStyle();
 			break;
 		case svc_updateuserinfo:
-			CL_UpdateUserinfo ();
+			CL_ParseUserinfo ();
 			break;
 		case svc_deltadescription:
+			CL_ParseDeltaDescription();
 			break;
 		case svc_clientdata:
 			CL_ParseClientData();
 			break;
 		case svc_stopsound:
-			i = MSG_ReadShort();
-			S_StopSound(i>>3, i&7);
+			CL_HandleStopSound();
 			break;
 		case svc_pings:
-			i = MSG_ReadByte ();
-			if (i >= MAX_CLIENTS)
-				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_SCOREBOARD");
-			cl.players[i].ping = MSG_ReadShort ();
+			CL_ParsePings();
 			break;
 		case svc_particle:
 			CL_ParseParticle();
@@ -2110,51 +2235,55 @@ void CL_ParseServerMessage ()
 			CL_ParsePacketEntities (true);
 			break;
 		case svc_choke: // some preceding packets were choked
-			i = MSG_ReadByte ();
-			for (j=0 ; j<i ; j++)
-				cl.frames[ (cls.netchan.incoming_acknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
+			CL_HandleChoke();
 			break;
 		case svc_resourcelist:
-			//CL_ParseResourceList( msg );
-			CL_ParseModellist ();
-			CL_ParseSoundlist ();
+			CL_ParseResourceList();
 			break;
 		case svc_newmovevars:
-			movevars.maxspeed = MSG_ReadFloat();
-			movevars.entgravity = MSG_ReadFloat();
+			CL_ParseNewMoveVars();
 			break;
 		case svc_resourcerequest:
+			CL_ParseResourceRequest();
 			break;
 		case svc_customization:
-			CL_ParseCustomization( msg );
+			CL_ParseCustomization();
 			break;
 		case svc_crosshairangle:
+			CL_ParseCrosshairAngle();
 			break;
 		case svc_soundfade:
-			CL_ParseSoundFade( msg );
+			CL_ParseSoundFade();
 			break;
 		case svc_filetxferfailed:
+			CL_HandleFileTransferFailed();
 			break;
 		case svc_hltv:
+			CL_ParseHLTVMsg();
 			break;
 		case svc_director:
-			CL_ParseDirector( msg );
+			CL_ParseDirectorMsg();
 			break;
 		case svc_voiceinit:
+			CL_HandleVoiceInit();
 			break;
 		case svc_voicedata:
+			CL_ParseVoiceData();
 			break;
 		case svc_sendextrainfo:
+			CL_ParseExtraInfo();
 			break;
 		case svc_timescale:
+			CL_ParseTimeScale();
 			break;
 		case svc_resourcelocation:
+			CL_ParseResouceLocation();
 			break;
 		case svc_sendcvarvalue:
-			CL_ParseCvarValue( msg );
+			CL_ParseCvarValue();
 			break;
 		case svc_sendcvarvalue2:
-			CL_ParseCvarValue2( msg );
+			CL_ParseCvarValue2();
 			break;
 		default:
 			Host_EndGame ("CL_ParseServerMessage: Illegible server message");

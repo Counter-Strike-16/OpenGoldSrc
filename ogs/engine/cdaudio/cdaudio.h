@@ -18,30 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// view.h
-
-#pragma once
-
-extern	cvar_t		v_gamma;
-extern	cvar_t		lcd_x;
-#ifdef GLQUAKE
-extern float v_blend[4];
-#endif
-
-void V_Init();
-
-void V_StartPitchDrift();
-void V_StopPitchDrift();
-
-void V_RenderView();
-
-void V_UpdatePalette();
-
-void V_Register();
-
-void V_ParseDamage();
-
-void V_SetContentsColor(int contents);
-
-void V_CalcBlend();
-float V_CalcRoll(vec3_t angles, vec3_t velocity);
+int CDAudio_Init(void);
+void CDAudio_Play(byte track, qboolean looping);
+void CDAudio_Stop(void);
+void CDAudio_Pause(void);
+void CDAudio_Resume(void);
+void CDAudio_Shutdown(void);
+void CDAudio_Update(void);

@@ -1,46 +1,4 @@
 ///////////////////////////////////////////////////
-// STAGE 1
-// These entries needs to be at least implemented and handled in someway
-///////////////////////////////////////////////////
-
-svc_bad
-svc_nop
-svc_print// [string] null terminated string
-svc_stufftext// [string] stuffed into client's console buffer
-// the string should be \n terminated
-svc_setangle// [vec3] set the view angle to this absolute value
-svc_serverinfo// [long] version ...
-svc_lightstyle// [byte] [string]
-svc_updateuserinfo// [byte] [string]
-svc_deltadescription// [byte] [short]
-svc_clientdata// <shortbits + data>
-svc_stopsound// <see code>
-svc_pings// [byte] [byte]
-svc_particle// [vec3] <variable>
-svc_damage// [byte] impact [byte] blood [vec3] from
-svc_spawnbaseline
-svc_spawnstaticsound
-svc_intermission
-svc_finale
-svc_choke
-svc_resourcelist
-svc_newmovevars
-svc_resourcerequest
-svc_customization
-svc_crosshairangle
-svc_soundfade
-svc_filetxferfailed
-svc_hltv
-svc_director
-svc_voiceinit
-svc_voicedata
-svc_sendextrainfo
-svc_timescale
-svc_resourcelocation
-svc_sendcvarvalue
-svc_sendcvarvalue2
-
-///////////////////////////////////////////////////
 // STAGE 2
 // These entries need to be fully compatible with server protocol in write/read order and entry count
 ///////////////////////////////////////////////////

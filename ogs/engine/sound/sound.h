@@ -39,7 +39,7 @@
 
 typedef struct sfx_s
 {
-	char name[64];
+	char name[MAX_QPATH];
 	cache_user_t cache;
 	int servercount;
 } sfx_t;
@@ -63,11 +63,5 @@ void S_ExtraUpdate();
 void S_LocalSound(char * s);
 void S_BlockSound();
 void S_PrintStats();
-qboolean Voice_RecordStart(const char  * pUncompressedFile, const char  * pDecompressedFile, const char  * pMicInputFile);
-qboolean Voice_IsRecording();
-void Voice_RegisterCvars();
-void Voice_Deinit();
-void Voice_Idle(float frametime);
-qboolean Voice_RecordStop();
 
 #endif // SOUND_H
