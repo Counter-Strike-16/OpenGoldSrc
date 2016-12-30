@@ -761,7 +761,7 @@ void CL_HandleDisconnect()
 		Host_EndGame("Server disconnected");
 };
 
-void CL_ParseEventData()
+void CL_ParseEventData(bool bReliable)
 {
 /*
 	Note: This message can be dropped if the client already has too much content in its unreliable buffer.
@@ -771,6 +771,10 @@ void CL_ParseEventData()
 	Note: Only a max of 31 events can be queued and subsequently sent this way.
 	Note: This message has its arguments in bit-packed form.
 */
+	
+	if(bReliable)
+	{
+	};
 };
 
 void CL_ParseVersion()
@@ -795,20 +799,18 @@ CL_ParseStartSoundPacket
 void CL_ParseStartSoundPacket()
 {
     vec3_t  pos;
-    int 	volume;
-    float 	attenuation;
-	
+    
 	int flags = MSG_ReadWord();
+	
+	int volume = DEFAULT_SOUND_PACKET_VOLUME; // VOL_NORM
 
     if (flags & SND_FL_VOLUME)
 		volume = MSG_ReadByte ();
-	else
-		volume = DEFAULT_SOUND_PACKET_VOLUME; // VOL_NORM
+	
+	float attenuation = DEFAULT_SOUND_PACKET_ATTENUATION; // ATTN_NONE
 	
     if (flags & SND_FL_ATTENUATION)
 		attenuation = MSG_ReadByte () / 64.0f;
-	else
-		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION; // ATTN_NONE
 	
 	int channel = MSG_ReadShort();
 	int ent = MSG_ReadByte();
@@ -817,10 +819,10 @@ void CL_ParseStartSoundPacket()
 	for (int i = 0; i < 3; i++)
 		pos[i] = MSG_ReadCoord ();
 	
+	int pitch = DEFAULT_SOUND_PACKET_PITCH; // PITCH_NORM
+	
 	if(flags & SND_FL_PITCH)
 		pitch = MSG_ReadByte();
-	else
-		pitch = DEFAULT_SOUND_PACKET_PITCH; // PITCH_NORM
  
 	ent = (channel >> 3) & 1023;
 	channel &= 7;
@@ -857,17 +859,17 @@ void CL_ParseTempEntity()
 		short nSprIndex = MSG_ReadShort();
 		
 		byte nStartFrame = MSG_ReadByte();
-		byte fFrameRate = MSG_ReadByte();
-		byte fLifeTime = MSG_ReadByte();
-		byte fLine = MSG_ReadByte();
-		byte fNoise = MSG_ReadByte();
+		byte nFrameRate = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nLineWidth = MSG_ReadByte();
+		byte nNoise = MSG_ReadByte();
 		
-		byte Color[3] = {0};
+		byte nColor[3] = {0};
 		for(int i = 0; i < 3; ++i)
-			Color[i] = MSG_ReadByte();
+			nColor[i] = MSG_ReadByte();
 		
-		byte fBrightness = MSG_ReadByte();
-		byte fScrollSpeed = MSG_ReadByte();
+		byte nBrightness = MSG_ReadByte();
+		byte nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_BEAMENTPOINT:
 		short nStartEnt = MSG_ReadShort();
@@ -878,17 +880,17 @@ void CL_ParseTempEntity()
 		short nSprIndex = MSG_ReadShort();
 		
 		byte nStartFrame = MSG_ReadByte();
-		byte fFrameRate = MSG_ReadByte();
-		byte fLifeTime = MSG_ReadByte();
-		byte fLine = MSG_ReadByte();
-		byte fNoise = MSG_ReadByte();
+		byte nFrameRate = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nLineWidth = MSG_ReadByte();
+		byte nNoise = MSG_ReadByte();
 		
-		byte Color[3] = {0};
+		byte nColor[3] = {0};
 		for(int i = 0; i < 3; ++i)
-			Color[i] = MSG_ReadByte();
+			nColor[i] = MSG_ReadByte();
 		
-		byte fBrightness = MSG_ReadByte();
-		byte fScrollSpeed = MSG_ReadByte();
+		byte nBrightness = MSG_ReadByte();
+		byte nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_GUNSHOT:
 		for(int i = 0; i < 3; ++i)
@@ -900,8 +902,8 @@ void CL_ParseTempEntity()
 		
 		short nSprIndex = MSG_ReadShort();
 		
-		byte fScale = MSG_ReadByte();
-		byte fFrameRate = MSG_ReadByte();
+		byte nScale = MSG_ReadByte();
+		byte nFrameRate = MSG_ReadByte();
 		byte nFlags = MSG_ReadByte();
 		break;
 	case TE_TAREXPLOSION:
@@ -914,8 +916,8 @@ void CL_ParseTempEntity()
 		
 		short nSprIndex = MSG_ReadShort();
 		
-		byte fScale = MSG_ReadByte();
-		byte fFrameRate = MSG_ReadByte();
+		byte nScale = MSG_ReadByte();
+		byte nFrameRate = MSG_ReadByte();
 		break;
 	case TE_TRACER:
 		for(int i = 0; i < 3; ++i)
@@ -931,13 +933,29 @@ void CL_ParseTempEntity()
 		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
 		
-		byte fLifeTime = MSG_ReadByte();
-		byte fWidth = MSG_ReadByte();
-		byte fAmplitude = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nWidth = MSG_ReadByte();
+		byte nAmplitude = MSG_ReadByte();
 		
 		short nModelIndex = MSG_ReadShort();
 		break;
 	case TE_BEAMENTS:
+		short nStartEnt = MSG_ReadShort();
+		short nEndEnt = MSG_ReadShort();
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nStartFrame = MSG_ReadByte();
+		byte nFrameRate = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nLineWidth = MSG_ReadByte();
+		byte nNoiseAmpl = MSG_ReadByte();
+		
+		byte nColor[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
+		
+		byte nBrightness = MSG_ReadByte();
+		byte nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_SPARKS:
 		for(int i = 0; i < 3; ++i)
@@ -954,14 +972,28 @@ void CL_ParseTempEntity()
 	case TE_EXPLOSION2:
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
+		
+		byte nStartColor = MSG_ReadByte();
+		byte nColorCount = MSG_ReadByte();
 		break;
 	case TE_BSPDECAL:
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
+		
+		short nTextureIndex = MSG_ReadShort();
+		short nEntIndex = MSG_ReadShort();
+		short nEntModelIndex = 0;
+		
+		if(nEntIndex)
+			nEntModelIndex = MSG_ReadShort();
 		break;
 	case TE_IMPLOSION:
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
+		
+		byte nRadius = MSG_ReadByte();
+		byte nCount = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
 		break;
 	case TE_SPRITETRAIL:
 		for(int i = 0; i < 3; ++i)
@@ -969,13 +1001,26 @@ void CL_ParseTempEntity()
 		
 		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nCount = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nScale = MSG_ReadByte();
+		byte nVelocity = MSG_ReadByte();
+		byte nRandomness = MSG_ReadByte();
 		break;
 	case TE_BEAM:
-		// unused
+		// obsolete, unused
 		break;
 	case TE_SPRITE:
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nScale = MSG_ReadByte();
+		byte nBrightness = MSG_ReadByte();
 		break;
 	case TE_BEAMSPRITE:
 		for(int i = 0; i < 3; ++i)
@@ -983,90 +1028,472 @@ void CL_ParseTempEntity()
 		
 		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
+		
+		short nStartSprIndex = MSG_ReadShort();
+		short nEndSprIndex = MSG_ReadShort();
 		break;
 	case TE_BEAMTORUS:
+		coord coord coord (center position) 
+		coord coord coord (axis and radius) 
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nStartFrame = MSG_ReadByte();
+		byte nFrameRate = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nLineWidth = MSG_ReadByte();
+		byte nNoiseAmpl = MSG_ReadByte();
+		
+		byte nColor[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
+		
+		byte nBrightness = MSG_ReadByte();
+		byte nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_BEAMDISK:
+		coord coord coord (center position) 
+		coord coord coord (axis and radius)
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nStartingFrame = MSG_ReadByte();
+		byte nFrameRate = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nLineWidth = MSG_ReadByte();
+		byte nNoiseAmpl = MSG_ReadByte();
+		
+		byte nColor[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
+		
+		byte nBrightness = MSG_ReadByte();
+		byte nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_BEAMCYLINDER:
+		coord coord coord (center position) 
+		coord coord coord (axis and radius) 
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nStartFrame = MSG_ReadByte();
+		byte nFrameTate = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nLineWidth = MSG_ReadByte();
+		byte nNoiseAmpl = MSG_ReadByte();
+		
+		byte,byte,byte (color)
+		
+		byte nBrightness = MSG_ReadByte();
+		byte nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_BEAMFOLLOW:
+		short (entity:attachment to follow)
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nLifeTime = MSG_ReadByte();
+		byte nLineWidth = MSG_ReadByte();
+		
+		byte,byte,byte (color)
+		
+		byte nBrightness = MSG_ReadByte();
 		break;
 	case TE_GLOWSPRITE:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		short nModelIndex = MSG_ReadShort();
+		
+		byte (scale / 10) = MSG_ReadByte();
 		break;
 	case TE_BEAMRING:
+		short nStartEnt = MSG_ReadShort();
+		short nEndEnt = MSG_ReadShort();
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nStartFrame = MSG_ReadByte();
+		byte nFrameRate = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nLineWidth = MSG_ReadByte();
+		byte nNoiseAmpl = MSG_ReadByte();
+		
+		byte,byte,byte (color)
+		
+		byte nBrightness = MSG_ReadByte();
+		byte nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_STREAK_SPLASH:
+		coord coord coord (start position) 
+		coord coord coord (direction vector) 
+		
+		byte nColor = MSG_ReadByte();
+		
+		short nCount = MSG_ReadShort();
+		short nBaseSpeed = MSG_ReadShort();
+		short nVelocity = MSG_ReadShort();
 		break;
 	case TE_BEAMHOSE:
+		// obsolete, unused
 		break;
 	case TE_DLIGHT:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		byte (radius in 10's) = MSG_ReadByte();
+		
+		byte byte byte (color) = MSG_ReadByte();
+		
+		byte nBrightness = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nDecayRate = MSG_ReadByte();
 		break;
 	case TE_ELIGHT:
+		short (entity:attachment to follow)
+		
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		float fRadius = MSG_ReadCoord();
+		
+		byte byte byte (color)
+		
+		byte nLifeTime = MSG_ReadByte();
+		
+		coord (decay rate) = MSG_ReadCoord();
 		break;
 	case TE_TEXTMESSAGE:
+		short 1.2.13 x (-1 = center)
+		short 1.2.13 y (-1 = center)
+		
+		byte nEffect = MSG_ReadByte();
+		// 0 = fade in/fade out
+		// 1 is flickery credits
+		// 2 is write out (training room)
+		// 4 bytes r,g,b,a color1	(text color)
+		// 4 bytes r,g,b,a color2	(effect color)
+		
+		ushort nFadeInTime
+		ushort nFadeOutTime
+		ushort nHoldTime
+		
+		optional ushort nFXTime	(time the highlight lags behing the leading text in effect 2)
+		
+		string text message		(512 chars max sz string)
 		break;
 	case TE_LINE:
+		coord, coord, coord		startpos
+		coord, coord, coord		endpos
+		
+		short nLifeTime = MSG_ReadShort();
+		
+		3 bytes r, g, b
 		break;
 	case TE_BOX:
+		coord, coord, coord		boxmins
+		coord, coord, coord		boxmaxs
+		
+		short nLifeTime = MSG_ReadShort();
+		
+		3 bytes r, g, b
 		break;
 	case TE_KILLBEAM:
+		short nEnt = MSG_ReadShort();
 		break;
 	case TE_LARGEFUNNEL:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		short nSprIndex = MSG_ReadShort();
+		short nFlags = MSG_ReadShort();
 		break;
 	case TE_BLOODSTREAM:
+		coord coord coord (start position)
+		coord coord coord (spray vector)
+		
+		byte nColor = MSG_ReadByte();
+		byte nSpeed = MSG_ReadByte();
 		break;
 	case TE_SHOWLINE:
+		coord coord coord (start position)
+		coord coord coord (end position)
 		break;
 	case TE_BLOOD:
+		coord coord coord (start position)
+		coord coord coord (spray vector)
+		
+		byte nColor = MSG_ReadByte();
+		byte nSpeed = MSG_ReadByte();
 		break;
 	case TE_DECAL:
+		coord, coord, coord (x,y,z), decal position (center of texture in world)
+		
+		byte (texture index of precached decal texture name)
+		
+		short nEntIndex = MSG_ReadShort();
 		break;
 	case TE_FIZZ:
+		short nEntity = MSG_ReadShort();
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nDensity = MSG_ReadByte();
 		break;
 	case TE_MODEL:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		float fVelocity[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fVelocity[i] = MSG_ReadCoord();
+		
+		angle (initial yaw)
+		
+		short nModelIndex = MSG_ReadShort();
+		
+		byte (bounce sound type) = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
 		break;
 	case TE_EXPLODEMODEL:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		float fVelocity = MSG_ReadCoord();
+		
+		short nModelIndex = MSG_ReadShort();
+		short nCount = MSG_ReadShort();
+		
+		byte nLifeTime = MSG_ReadByte();
 		break;
 	case TE_BREAKMODEL:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		float fSize[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fSize[i] = MSG_ReadCoord();
+		
+		float fVelocity[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fVelocity[i] = MSG_ReadCoord();
+		
+		byte nVelocity = MSG_ReadByte();
+		
+		short nModelIndex = MSG_ReadShort();
+		
+		byte nCount = MSG_ReadByte();
+		byte nLifeTime = MSG_ReadByte();
+		byte nFlags = MSG_ReadByte();
 		break;
 	case TE_GUNSHOTDECAL:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		short nEntIndex = MSG_ReadShort();
+		
+		byte (decal???) = MSG_ReadByte();
 		break;
 	case TE_SPRITE_SPRAY:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		float fVelocity[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fVelocity[i] = MSG_ReadCoord();
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nCount = MSG_ReadByte();
+		byte nSpeed = MSG_ReadByte();
+		byte nNoise = MSG_ReadByte();
 		break;
 	case TE_ARMOR_RICOCHET:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		byte nScale = MSG_ReadByte();
 		break;
 	case TE_PLAYERDECAL:
+		byte nPlayerIndex = MSG_ReadByte();
+		
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		short (entity???) = MSG_ReadShort();
+		
+		byte nDecalNum = MSG_ReadByte();
+		
+		[optional] short (model index???)
 		break;
 	case TE_BUBBLES:
+		float fMinPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fMinPos[i] = MSG_ReadCoord();
+			
+		float fMaxPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fMaxPos[i] = MSG_ReadCoord();
+		
+		float fHeight = MSG_ReadCoord();
+		
+		short nModelIndex = MSG_ReadShort();
+		
+		byte nCount = MSG_ReadByte();
+		
+		float fSpeed = MSG_ReadCoord();
 		break;
 	case TE_BUBBLETRAIL:
+		float fMinPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fMinPos[i] = MSG_ReadCoord();
+			
+		float fMaxPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fMaxPos[i] = MSG_ReadCoord();
+		
+		float fHeight = MSG_ReadCoord();
+		
+		short nModelIndex = MSG_ReadShort();
+		
+		byte nCount = MSG_ReadByte();
+		
+		float fSpeed = MSG_ReadCoord();
 		break;
 	case TE_BLOODSPRITE:
+		float fPosition[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPosition[i] = MSG_ReadCoord();
+		
+		short nSpr1Index = MSG_ReadShort();
+		short nSpr2Index = MSG_ReadShort();
+		
+		byte nColor = MSG_ReadByte();
+		byte nScale = MSG_ReadByte();
 		break;
 	case TE_WORLDDECAL:
+		coord, coord, coord (x,y,z), decal position (center of texture in world)
+		
+		byte (texture index of precached decal texture name)
 		break;
 	case TE_WORLDDECALHIGH:
+		coord, coord, coord (x,y,z), decal position (center of texture in world)
+		
+		byte (texture index of precached decal texture name - 256)
 		break;
 	case TE_DECALHIGH:
+		coord, coord, coord (x,y,z), decal position (center of texture in world)
+		
+		byte (texture index of precached decal texture name - 256)
+		
+		short nEntIndex = MSG_ReadShort();
 		break;
 	case TE_PROJECTILE:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		float fVelocity[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fVelocity[i] = MSG_ReadCoord();
+		
+		short nModelIndex = MSG_ReadShort();
+		
+		byte nLife = MSG_ReadByte();
+		byte nOwner = MSG_ReadByte();
 		break;
 	case TE_SPRAY:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		float fDir[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fDir[i] = MSG_ReadCoord();
+		
+		short nModelIndex = MSG_ReadShort();
+		
+		byte nCount = MSG_ReadByte();
+		byte nSpeed = MSG_ReadByte();
+		byte nNoise = MSG_ReadByte();
+		byte nRenderMode = MSG_ReadByte();
 		break;
 	case TE_PLAYERSPRITES:
+		byte nPlayerNum = MSG_ReadByte();
+		
+		short nSprModelIndex = MSG_ReadShort();
+		
+		byte nCount = MSG_ReadByte();
+		byte nVariance (0 = no variance in size) (10 = 10% variance in size)
 		break;
 	case TE_PARTICLEBURST:
+		float fOrigin = MSG_ReadCoord();
+		
+		short nRadius = MSG_ReadShort();
+		
+		byte nParticleColor = MSG_ReadByte();
+		byte (duration * 10) (will be randomized a bit)
 		break;
 	case TE_FIREFIELD:
+		float fOrigin = MSG_ReadCoord();
+		
+		short nRadius (fire is made in a square around origin. -radius, -radius to radius, radius)
+		short nModelIndex = MSG_ReadShort();
+		
+		byte nCount = MSG_ReadByte();
+		byte nFlags = MSG_ReadByte();
+		byte (duration (in seconds) * 10) (will be randomized a bit)
 		break;
 	case TE_PLAYERATTACHMENT:
+		byte (entity index of player) = MSG_ReadByte();
+		
+		coord (vertical offset) ( attachment origin.z = player origin.z + vertical offset )
+		
+		short nModelIndex = MSG_ReadShort();
+		short (life * 10 ) = MSG_ReadShort();
 		break;
 	case TE_KILLPLAYERATTACHMENTS:
+		byte nPlayerEntIndex = MSG_ReadByte();
 		break;
 	case TE_MULTIGUNSHOT:
+		// This message is used to make a client approximate a 'spray' of gunfire.
+		// Any weapon that fires more than one bullet per frame and fires in a bit of a spread is
+		// a good candidate for MULTIGUNSHOT use. (shotguns)
+		//
+		// NOTE: This effect makes the client do traces for each bullet, these client traces ignore
+		//		 entities that have studio models.Traces are 4096 long.
+		//
+		// coord (origin)
+		// coord (origin)
+		// coord (origin)
+		// coord (direction)
+		// coord (direction)
+		// coord (direction)
+		// coord (x noise * 100)
+		// coord (y noise * 100)
+		// byte (count)
+		// byte (bullethole decal texture index)
 		break;
 	case TE_USERTRACER:
+		float fPos[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+		
+		float fVelocity[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			fVelocity[i] = MSG_ReadCoord();
+		
+		byte ( life * 10 ) = MSG_ReadByte();
+		byte ( color ) this is an index into an array of color vectors in the engine. (0 - )
+		byte ( length * 10 ) = MSG_ReadByte();
 		break;
 	default:
 		break;
@@ -1541,7 +1968,7 @@ void CL_ParseServerMessage ()
 			CL_HandleDisconnect();
 			break;
 		case svc_event:
-			CL_ParseEventData();
+			CL_ParseEventData(false);
 			break;
 		case svc_version:
 			CL_ParseVersion();
@@ -1618,6 +2045,7 @@ void CL_ParseServerMessage ()
 			CL_ParseStatic ();
 			break;
 		case svc_event_reliable:
+			CL_ParseEventData(true);
 			break;
 		case svc_spawnbaseline:
 			i = MSG_ReadShort ();
