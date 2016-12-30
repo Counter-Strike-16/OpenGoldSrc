@@ -135,7 +135,7 @@ bool CEngineVGui::Key_Event( const InputEvent_t &event )
 		};
 	};
 
-	if ( g_pMatSystemSurface && g_pMatSystemSurface->HandleInputEvent( event ) )
+	if ( gpMatSystemSurface && gpMatSystemSurface->HandleInputEvent( event ) )
 	{
 		// always let the engine handle the console keys
 		// FIXME: Do a lookup of the key bound to toggleconsole
@@ -194,9 +194,8 @@ void CEngineVGui::Paint( PaintMode_t mode )
 	RECT rect;
 	::GetClientRect(*pmainwindow, &rect);
 
-	int w, h;
-	w = rect.right;
-	h = rect.bottom;
+	int w = rect.right;
+	int h = rect.bottom;
 
 	// draw from the main panel down
 	vgui::Panel *panel = staticPanel;
@@ -207,19 +206,20 @@ void CEngineVGui::Paint( PaintMode_t mode )
 
 	// Paint both ( backward compatibility support )
 
-	// It's either the full screen, or just the client .dll stuff
+	// It's either the full screen, or just the client dll stuff
 	if ( mode & PAINT_UIPANELS )
 	{
-		// Hide the client .dll, and paint everything else
-		bool saveVisible = staticClientDLLPanel->IsVisible();
-		bool saveToolsVisible = staticClientDLLToolsPanel->IsVisible();
+		// Hide the client dll, and paint everything else
+		bool bSaveVisible = staticClientDLLPanel->IsVisible();
+		bool bSaveToolsVisible = staticClientDLLToolsPanel->IsVisible();
+		
 		staticClientDLLPanel->SetVisible( false );
 		staticClientDLLToolsPanel->SetVisible( false );
 
 		vgui::surface()->PaintTraverseEx(pVPanel, true );
 
-		staticClientDLLPanel->SetVisible( saveVisible );
-		staticClientDLLToolsPanel->SetVisible( saveToolsVisible );
+		staticClientDLLPanel->SetVisible( bSaveVisible );
+		staticClientDLLToolsPanel->SetVisible( bSaveToolsVisible );
 	};
 	
 	if ( mode & PAINT_INGAMEPANELS )
@@ -227,17 +227,17 @@ void CEngineVGui::Paint( PaintMode_t mode )
 		bool bSaveVisible = vgui::ipanel()->IsVisible( pVPanel );
 		vgui::ipanel()->SetVisible( pVPanel, false );
 
-		// Remove the client .dll from the main hierarchy so that popups will only paint for the client .dll here
+		// Remove the client dll from the main hierarchy so that popups will only paint for the client .dll here
 		// NOTE: Disconnect each surface one at a time so that we don't draw popups twice
 
-		// Paint the client .dll only
+		// Paint the client dll only
 		vgui::VPANEL ingameRoot = staticClientDLLPanel->GetVPanel();
 		vgui::VPANEL saveParent = vgui::ipanel()->GetParent( ingameRoot );
 		vgui::ipanel()->SetParent( ingameRoot, 0 );
 		vgui::surface()->PaintTraverseEx( ingameRoot, true );
 		vgui::ipanel()->SetParent( ingameRoot, saveParent );
 
-		// Overlay the client .dll tools next
+		// Overlay the client dll tools next
 		vgui::VPANEL ingameToolsRoot = staticClientDLLToolsPanel->GetVPanel();
 		vgui::VPANEL saveToolParent = vgui::ipanel()->GetParent( ingameToolsRoot );
 		vgui::ipanel()->SetParent( ingameToolsRoot, 0 );
@@ -302,15 +302,13 @@ void CEngineVGui::HideDebugSystem( void )
 	};
 };
 
-//-----------------------------------------------------------------------------
-// Purpose: transition handler
-//-----------------------------------------------------------------------------
+// Transition handler
 void CEngineVGui::OnLevelLoadingStarted()
 {
 	if (!gpGameUI)
 		return;
 
-	ConVar *pSyncReportConVar = g_pCVar->FindVar( "fs_report_sync_opens" );
+	ConVar *pSyncReportConVar = gpCVar->FindVar( "fs_report_sync_opens" );
 	if ( pSyncReportConVar )
 	{
 		// If convar is set to 2, suppress warnings during level load
@@ -320,84 +318,83 @@ void CEngineVGui::OnLevelLoadingStarted()
 	};
 
 	// we've starting loading a level/connecting to a server
-	gpGameUI->OnLevelLoadingStarted( m_bShowProgressDialog );
+	gpGameUI->OnLevelLoadingStarted( mbShowProgressDialog );
 
 	// reset progress bar timers
-	m_flLoadingStartTime = Plat_FloatTime();
+	mfLoadingStartTime = Plat_FloatTime();
 	m_LoadingProgress.RemoveAll();
-	m_eLastProgressPoint = PROGRESS_NONE;
-	m_nLastProgressPointRepeatCount = 0;
+	meLastProgressPoint = PROGRESS_NONE;
+	mnLastProgressPointRepeatCount = 0;
 	m_ProgressBias = 0;
 
 	// choose which progress bar to use
 	if (NET_IsMultiplayer())
 	{
 		// we're connecting
-		g_pLoadingProgressDescriptions = g_RemoteConnectLoadingProgressDescriptions;
+		gpLoadingProgressDescriptions = g_RemoteConnectLoadingProgressDescriptions;
 	}
 	else
-		g_pLoadingProgressDescriptions = g_ListenServerLoadingProgressDescriptions;
+		gpLoadingProgressDescriptions = g_ListenServerLoadingProgressDescriptions;
 
-	if ( m_bShowProgressDialog )
+	if ( mbShowProgressDialog )
 		ActivateGameUI();
 
 	m_bShowProgressDialog = false;
 };
 
-//-----------------------------------------------------------------------------
-// Purpose: transition handler
-//-----------------------------------------------------------------------------
+// Transition handler
 void CEngineVGui::OnLevelLoadingFinished()
 {
 	if (!gpGameUI)
 		return;
 
-	gpGameUI->OnLevelLoadingFinished( gfExtendedError, gszDisconnectReason, gszExtendedDisconnectReason );
-	m_eLastProgressPoint = PROGRESS_NONE;
+	gpGameUI->OnLevelLoadingFinished( gfExtendedError, gsDisconnectReason, gsExtendedDisconnectReason );
+	meLastProgressPoint = PROGRESS_NONE;
 
 	// clear any error message
 	gfExtendedError = false;
-	gszDisconnectReason[0] = 0;
-	gszExtendedDisconnectReason[0] = 0;
+	gsDisconnectReason[0] = 0;
+	gsExtendedDisconnectReason[0] = 0;
 
 #if defined(ENABLE_LOADING_PROGRESS_PROFILING)
 	// display progress bar stats (for debugging/tuning progress bar)
-	float flEndTime = (float)Plat_FloatTime();
+	float fEndTime = (float)Plat_FloatTime();
 	
 	// add a finished entry
 	LoadingProgressEntry_t &entry = m_LoadingProgress[m_LoadingProgress.AddToTail()];
-	entry.flTime = flEndTime - m_flLoadingStartTime;
+	entry.flTime = fEndTime - mfLoadingStartTime;
 	entry.eProgress = PROGRESS_HIGHESTITEM;
 	
 	// dump the info
 	Msg("Level load timings:\n");
-	float flTotalTime = flEndTime - m_flLoadingStartTime;
+	
+	float fTotalTime = fEndTime - mfLoadingStartTime;
+	
 	int nRepeatCount = 0;
-	float flTimeTaken = 0.0f;
-	float flFirstLoadProgressTime = 0.0f;
+	
+	float fTimeTaken = 0.0f;
+	float fFirstLoadProgressTime = 0.0f;
+	
 	for (int i = 0; i < m_LoadingProgress.Count() - 1; i++)
 	{
 		// keep track of time
-		flTimeTaken += (float)m_LoadingProgress[i+1].flTime - m_LoadingProgress[i].flTime;
+		fTimeTaken += (float)m_LoadingProgress[i+1].flTime - m_LoadingProgress[i].flTime;
 
 		// keep track of how often something is repeated
 		if (m_LoadingProgress[i+1].eProgress == m_LoadingProgress[i].eProgress)
 		{
 			if (nRepeatCount == 0)
-			{
-				flFirstLoadProgressTime = m_LoadingProgress[i].flTime;
-			}
+				fFirstLoadProgressTime = m_LoadingProgress[i].flTime;
+			
 			++nRepeatCount;
 			continue;
 		};
 
 		// work out the time it took to do this
 		if (nRepeatCount == 0)
-		{
-			flFirstLoadProgressTime = m_LoadingProgress[i].flTime;
-		}
+			fFirstLoadProgressTime = m_LoadingProgress[i].flTime;
 
-		int nPerc = (int)(100 * (flFirstLoadProgressTime / flTotalTime));
+		int nPerc = (int)(100 * (fFirstLoadProgressTime / fTotalTime));
 		int nTickPerc = (int)(100 * ((float)m_LoadingProgress[i].eProgress / (float)PROGRESS_HIGHESTITEM));
 		
 		// interpolated percentage is in between the real times and the most ticks
@@ -406,7 +403,7 @@ void CEngineVGui::OnLevelLoadingFinished()
 
 		// reset accumlated vars
 		nRepeatCount = 0;
-		flTimeTaken = 0.0f;
+		fTimeTaken = 0.0f;
 	};
 #endif // ENABLE_LOADING_PROGRESS_PROFILING
 
@@ -415,40 +412,32 @@ void CEngineVGui::OnLevelLoadingFinished()
 	// Restore convar setting after level load
 	if ( g_syncReportLevel > 1 )
 	{
-		ConVar *pSyncReportConVar = g_pCVar->FindVar( "fs_report_sync_opens" );
+		ConVar *pSyncReportConVar = gpCVar->FindVar( "fs_report_sync_opens" );
 		if ( pSyncReportConVar )
-		{
 			pSyncReportConVar->SetValue( g_syncReportLevel );
-		}
 	};
 };
 
-//-----------------------------------------------------------------------------
-// Purpose: notification
-//-----------------------------------------------------------------------------
+// Notification
 void CEngineVGui::NotifyOfServerConnect(const char *game, int IP, int connectionPort, int queryPort)
 {
-	if (!gpGameUI)
-		return;
-
-	gpGameUI->OnConnectToServer2(game, IP, connectionPort, queryPort);
+	if(gpGameUI)
+		gpGameUI->OnConnectToServer2(game, IP, connectionPort, queryPort);
 };
 
-//-----------------------------------------------------------------------------
-// Purpose: notification
-//-----------------------------------------------------------------------------
+// Notification
 void CEngineVGui::NotifyOfServerDisconnect()
 {
 	if (!gpGameUI)
 		return;
 
-	gpGameUI->OnDisconnectFromServer( g_eSteamLoginFailure );
-	g_eSteamLoginFailure = 0;
+	gpGameUI->OnDisconnectFromServer( geSteamLoginFailure );
+	geSteamLoginFailure = 0;
 };
 
 void CEngineVGui::EnabledProgressBarForNextLoad()
 {
-	m_bShowProgressDialog = true;
+	mbShowProgressDialog = true;
 };
 
 //-----------------------------------------------------------------------------
@@ -465,56 +454,52 @@ void CEngineVGui::UpdateProgressBar(LevelLoadingProgress_e progress)
 #if defined(ENABLE_LOADING_PROGRESS_PROFILING)
 	// track the progress times, for debugging & tuning
 	LoadingProgressEntry_t &entry = m_LoadingProgress[m_LoadingProgress.AddToTail()];
-	entry.flTime = Plat_FloatTime() - m_flLoadingStartTime;
+	entry.flTime = Plat_FloatTime() - mfLoadingStartTime;
 	entry.eProgress = progress;
 #endif
 
-	if (!g_pLoadingProgressDescriptions)
+	if (!gpLoadingProgressDescriptions)
 		return;
 
 	// don't go backwards
-	if (progress < m_eLastProgressPoint)
+	if (progress < meLastProgressPoint)
 		return;
 
 	// count progress repeats
 	if (progress == m_eLastProgressPoint)
-	{
-		++m_nLastProgressPointRepeatCount;
-	}
+		++mnLastProgressPointRepeatCount;
 	else
-	{
-		m_nLastProgressPointRepeatCount = 0;
-	}
+		mnLastProgressPointRepeatCount = 0;
 
 	// construct a string describing it
 	LoadingProgressDescription_t &desc = GetProgressDescription(progress);
 
 	// calculate partial progress
-	float flPerc = desc.nPercent / 100.0f;
-	if ( desc.nRepeat > 1 && m_nLastProgressPointRepeatCount )
+	float fPerc = desc.nPercent / 100.0f;
+	if ( desc.nRepeat > 1 && mnLastProgressPointRepeatCount )
 	{
 		// cap the repeat count
-		m_nLastProgressPointRepeatCount = min(m_nLastProgressPointRepeatCount, desc.nRepeat);
+		mnLastProgressPointRepeatCount = min(mnLastProgressPointRepeatCount, desc.nRepeat);
 
 		// next progress point
-		float flNextPerc = GetProgressDescription(progress + 1).nPercent / 100.0f;
+		float fNextPerc = GetProgressDescription(progress + 1).nPercent / 100.0f;
 
 		// move along partially towards the next tick
-		flPerc += (flNextPerc - flPerc) * ((float)m_nLastProgressPointRepeatCount / desc.nRepeat);
+		fPerc += (fNextPerc - fPerc) * ((float)mnLastProgressPointRepeatCount / desc.nRepeat);
 	};
 
 	// the bias allows the loading bar to have an optional reserved initial band
 	// isolated from the normal progress descriptions
-	flPerc = flPerc * ( 1.0f - m_ProgressBias ) + m_ProgressBias;
+	fPerc = fPerc * ( 1.0f - m_ProgressBias ) + m_ProgressBias;
 
-	if ( gpGameUI->UpdateProgressBar( flPerc, desc.pszDesc ) )
+	if ( gpGameUI->UpdateProgressBar( fPerc, desc.pszDesc ) )
 	{
 		// re-render vgui on screen
 		extern void V_RenderVGuiOnly();
 		V_RenderVGuiOnly();
 	};
 
-	m_eLastProgressPoint = progress;
+	meLastProgressPoint = progress;
 };
 
 //-----------------------------------------------------------------------------
@@ -526,7 +511,7 @@ void CEngineVGui::UpdateCustomProgressBar( float progress, const wchar_t *desc )
 		return;
 
 	char ansi[1024];
-	g_pVGuiLocalize->ConvertUnicodeToANSI( desc, ansi, sizeof( ansi ) );
+	gpVGuiLocalize->ConvertUnicodeToANSI( desc, ansi, sizeof( ansi ) );
 
 	if ( gpGameUI->UpdateProgressBar( progress, ansi ) )
 	{
@@ -543,7 +528,7 @@ void CEngineVGui::StartCustomProgress()
 
 	// we've starting loading a level/connecting to a server
 	gpGameUI->OnLevelLoadingStarted(true);
-	m_bSaveProgress = gpGameUI->SetShowProgressText( true );
+	mbSaveProgress = gpGameUI->SetShowProgressText( true );
 };
 
 void CEngineVGui::FinishCustomProgress()
@@ -551,7 +536,7 @@ void CEngineVGui::FinishCustomProgress()
 	if (!gpGameUI)
 		return;
 
-	gpGameUI->SetShowProgressText( m_bSaveProgress );
+	gpGameUI->SetShowProgressText( mbSaveProgress );
 	gpGameUI->OnLevelLoadingFinished( false, "", "" );
 };
 
@@ -563,20 +548,19 @@ void CEngineVGui::ShowErrorMessage()
 	if(!gpGameUI || !gfExtendedError)
 		return;
 
-	gpGameUI->OnLevelLoadingFinished( gfExtendedError, gszDisconnectReason, gszExtendedDisconnectReason );
-	m_eLastProgressPoint = PROGRESS_NONE;
+	gpGameUI->OnLevelLoadingFinished( gfExtendedError, gsDisconnectReason, gsExtendedDisconnectReason );
+	meLastProgressPoint = PROGRESS_NONE;
 
 	// clear any error message
 	gfExtendedError = false;
-	gszDisconnectReason[0] = 0;
-	gszExtendedDisconnectReason[0] = 0;
+	
+	gsDisconnectReason[0] = 0;
+	gsExtendedDisconnectReason[0] = 0;
 
 	HideGameUI();
 };
 
-//-----------------------------------------------------------------------------
 // Should pause?
-//-----------------------------------------------------------------------------
 bool CEngineVGui::ShouldPause()
 {
 	if ( IsPC() )
@@ -587,10 +571,8 @@ bool CEngineVGui::ShouldPause()
 
 void CEngineVGui::SetGameDLLPanelsVisible( bool show )
 {
-	if ( !staticGameDLLPanel )
-		return;
-
-	staticGameDLLPanel->SetVisible( show );
+	if(staticGameDLLPanel)
+		staticGameDLLPanel->SetVisible( show );
 };
 
 void CEngineVGui::ShowNewGameDialog( int chapter )

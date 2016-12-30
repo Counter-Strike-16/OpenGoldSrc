@@ -683,7 +683,7 @@ void CL_ParsePlayerinfo ()
 	if (flags & PF_MSEC)
 	{
 		msec = MSG_ReadByte ();
-		state->state_time = parsecounttime - msec*0.001;
+		state->state_time = parsecounttime - msec * 0.001f;
 	}
 	else
 		state->state_time = parsecounttime;

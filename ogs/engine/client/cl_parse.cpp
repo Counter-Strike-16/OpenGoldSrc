@@ -74,7 +74,7 @@ char *svc_strings[] =
 	"svc_addangle",
 	"svc_newusermsg",
 	"svc_packetentities",
- 	"svc_deltapacketentities",
+	"svc_deltapacketentities",
 	"svc_choke",
 	"svc_resourcelist",
 	"svc_newmovevars",
@@ -745,6 +745,359 @@ void CL_ParseStatic ()
 }
 
 /*
+=====================================================================
+
+ACTION MESSAGES
+
+=====================================================================
+*/
+
+void CL_HandleDisconnect()
+{
+	if(cls.state == ca_connected)
+		Host_EndGame("Server disconnected\n"
+					"Server version may not be compatible");
+	else
+		Host_EndGame("Server disconnected");
+};
+
+void CL_ParseEventData()
+{
+/*
+	Note: This message can be dropped if the client already has too much content in its unreliable buffer.
+	Note: Events can be precached using pfnPrecacheEvent routine.
+	Note: Events are queued and grouped together every frame, if there's any.
+	Note: EventArgs are always inherited from "null" event args.
+	Note: Only a max of 31 events can be queued and subsequently sent this way.
+	Note: This message has its arguments in bit-packed form.
+*/
+};
+
+void CL_ParseVersion()
+{
+	// Seems to be unused
+	
+	//long nServerProtocol = MSG_ReadLong();
+	//if(PROTOCOL_VERSION != nServerProtocol)
+		//Host_Error("CL_Parse_Version: Server is protocol %i instead of %i\n", nServerProtocol, PROTOCOL_VERSION);
+};
+
+void CL_ParseView()
+{
+	cl.refdef.viewentity = MSG_ReadWord();
+};
+
+/*
+==================
+CL_ParseStartSoundPacket
+==================
+*/
+void CL_ParseStartSoundPacket()
+{
+    vec3_t  pos;
+    int 	volume;
+    float 	attenuation;
+	
+	int flags = MSG_ReadWord();
+
+    if (flags & SND_FL_VOLUME)
+		volume = MSG_ReadByte ();
+	else
+		volume = DEFAULT_SOUND_PACKET_VOLUME; // VOL_NORM
+	
+    if (flags & SND_FL_ATTENUATION)
+		attenuation = MSG_ReadByte () / 64.0f;
+	else
+		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION; // ATTN_NONE
+	
+	int channel = MSG_ReadShort();
+	int ent = MSG_ReadByte();
+	int sound_num = MSG_ReadByte ();
+
+	for (int i = 0; i < 3; i++)
+		pos[i] = MSG_ReadCoord ();
+	
+	if(flags & SND_FL_PITCH)
+		pitch = MSG_ReadByte();
+	else
+		pitch = DEFAULT_SOUND_PACKET_PITCH; // PITCH_NORM
+ 
+	ent = (channel >> 3) & 1023;
+	channel &= 7;
+
+	if (ent > MAX_EDICTS)
+		Host_EndGame ("CL_ParseStartSoundPacket: ent = %i", ent);
+	
+    S_StartSound (ent, channel, cl.sound_precache[sound_num], pos, volume/255.0, attenuation);
+};
+
+void CL_ParseTime()
+{
+	// shuffle timestamps
+	cl.mtime[1] = cl.mtime[0];
+	cl.mtime[0] = MSG_ReadFloat();
+};
+
+void CL_ParseTempEntity()
+{
+	byte nEntType = MSG_ReadByte();
+	
+	vec3_t vStartPos = vec3_origin;
+	vec3_t vEndPos = vec3_origin;
+	
+	switch(nEntType)
+	{
+	case TE_BEAMPOINTS:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		
+		for(int i = 0; i < 3; ++i)
+			vEndPos[i] = MSG_ReadCoord();
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nStartFrame = MSG_ReadByte();
+		byte fFrameRate = MSG_ReadByte();
+		byte fLifeTime = MSG_ReadByte();
+		byte fLine = MSG_ReadByte();
+		byte fNoise = MSG_ReadByte();
+		
+		byte Color[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			Color[i] = MSG_ReadByte();
+		
+		byte fBrightness = MSG_ReadByte();
+		byte fScrollSpeed = MSG_ReadByte();
+		break;
+	case TE_BEAMENTPOINT:
+		short nStartEnt = MSG_ReadShort();
+		
+		for(int i = 0; i < 3; ++i)
+			vEndPos[i] = MSG_ReadCoord();
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte nStartFrame = MSG_ReadByte();
+		byte fFrameRate = MSG_ReadByte();
+		byte fLifeTime = MSG_ReadByte();
+		byte fLine = MSG_ReadByte();
+		byte fNoise = MSG_ReadByte();
+		
+		byte Color[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			Color[i] = MSG_ReadByte();
+		
+		byte fBrightness = MSG_ReadByte();
+		byte fScrollSpeed = MSG_ReadByte();
+		break;
+	case TE_GUNSHOT:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		break;
+	case TE_EXPLOSION:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte fScale = MSG_ReadByte();
+		byte fFrameRate = MSG_ReadByte();
+		byte nFlags = MSG_ReadByte();
+		break;
+	case TE_TAREXPLOSION:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		break;
+	case TE_SMOKE:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		
+		short nSprIndex = MSG_ReadShort();
+		
+		byte fScale = MSG_ReadByte();
+		byte fFrameRate = MSG_ReadByte();
+		break;
+	case TE_TRACER:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		
+		for(int i = 0; i < 3; ++i)
+			vEndPos[i] = MSG_ReadCoord();
+		break;
+	case TE_LIGHTNING:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		
+		for(int i = 0; i < 3; ++i)
+			vEndPos[i] = MSG_ReadCoord();
+		
+		byte fLifeTime = MSG_ReadByte();
+		byte fWidth = MSG_ReadByte();
+		byte fAmplitude = MSG_ReadByte();
+		
+		short nModelIndex = MSG_ReadShort();
+		break;
+	case TE_BEAMENTS:
+		break;
+	case TE_SPARKS:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		break;
+	case TE_LAVASPLASH:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		break;
+	case TE_TELEPORT:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		break;
+	case TE_EXPLOSION2:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		break;
+	case TE_BSPDECAL:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		break;
+	case TE_IMPLOSION:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		break;
+	case TE_SPRITETRAIL:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		
+		for(int i = 0; i < 3; ++i)
+			vEndPos[i] = MSG_ReadCoord();
+		break;
+	case TE_BEAM:
+		// unused
+		break;
+	case TE_SPRITE:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		break;
+	case TE_BEAMSPRITE:
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		
+		for(int i = 0; i < 3; ++i)
+			vEndPos[i] = MSG_ReadCoord();
+		break;
+	case TE_BEAMTORUS:
+		break;
+	case TE_BEAMDISK:
+		break;
+	case TE_BEAMCYLINDER:
+		break;
+	case TE_BEAMFOLLOW:
+		break;
+	case TE_GLOWSPRITE:
+		break;
+	case TE_BEAMRING:
+		break;
+	case TE_STREAK_SPLASH:
+		break;
+	case TE_BEAMHOSE:
+		break;
+	case TE_DLIGHT:
+		break;
+	case TE_ELIGHT:
+		break;
+	case TE_TEXTMESSAGE:
+		break;
+	case TE_LINE:
+		break;
+	case TE_BOX:
+		break;
+	case TE_KILLBEAM:
+		break;
+	case TE_LARGEFUNNEL:
+		break;
+	case TE_BLOODSTREAM:
+		break;
+	case TE_SHOWLINE:
+		break;
+	case TE_BLOOD:
+		break;
+	case TE_DECAL:
+		break;
+	case TE_FIZZ:
+		break;
+	case TE_MODEL:
+		break;
+	case TE_EXPLODEMODEL:
+		break;
+	case TE_BREAKMODEL:
+		break;
+	case TE_GUNSHOTDECAL:
+		break;
+	case TE_SPRITE_SPRAY:
+		break;
+	case TE_ARMOR_RICOCHET:
+		break;
+	case TE_PLAYERDECAL:
+		break;
+	case TE_BUBBLES:
+		break;
+	case TE_BUBBLETRAIL:
+		break;
+	case TE_BLOODSPRITE:
+		break;
+	case TE_WORLDDECAL:
+		break;
+	case TE_WORLDDECALHIGH:
+		break;
+	case TE_DECALHIGH:
+		break;
+	case TE_PROJECTILE:
+		break;
+	case TE_SPRAY:
+		break;
+	case TE_PLAYERSPRITES:
+		break;
+	case TE_PARTICLEBURST:
+		break;
+	case TE_FIREFIELD:
+		break;
+	case TE_PLAYERATTACHMENT:
+		break;
+	case TE_KILLPLAYERATTACHMENTS:
+		break;
+	case TE_MULTIGUNSHOT:
+		break;
+	case TE_USERTRACER:
+		break;
+	default:
+		break;
+	};
+};
+
+void CL_HandlePause()
+{
+	cl.refdef.paused = ( MSG_ReadOneBit() != 0 );
+};
+
+void CL_ParseSignOnNum()
+{
+};
+
+void CL_ParseCenterPrint()
+{
+	SCR_CenterPrint (MSG_ReadString ());
+};
+
+void CL_ParseKilledMonster()
+{
+	cl.stats[STAT_MONSTERS]++;
+};
+
+void CL_ParseFoundSecret()
+{
+	cl.stats[STAT_SECRETS]++;
+};
+
+/*
 ===================
 CL_ParseStaticSound
 ===================
@@ -762,58 +1115,100 @@ void CL_ParseStaticSound ()
 	atten = MSG_ReadByte ();
 	
 	S_StaticSound (cl.sound_precache[sound_num], org, vol, atten);
-}
+};
 
-
-
-/*
-=====================================================================
-
-ACTION MESSAGES
-
-=====================================================================
-*/
-
-/*
-==================
-CL_ParseStartSoundPacket
-==================
-*/
-void CL_ParseStartSoundPacket()
+void CL_ParseIntermission()
 {
-    vec3_t  pos;
-    int 	channel, ent;
-    int 	sound_num;
-    int 	volume;
-    float 	attenuation;  
- 	int		i;
-	           
-    channel = MSG_ReadShort(); 
-
-    if (channel & SND_VOLUME)
-		volume = MSG_ReadByte ();
-	else
-		volume = DEFAULT_SOUND_PACKET_VOLUME;
+	cl.intermission = 1;
+	cl.completed_time = realtime;
+	vid.recalc_refdef = true;	// go to full screen
 	
-    if (channel & SND_ATTENUATION)
-		attenuation = MSG_ReadByte () / 64.0;
-	else
-		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;
-	
-	sound_num = MSG_ReadByte ();
-
 	for (i=0 ; i<3 ; i++)
-		pos[i] = MSG_ReadCoord ();
- 
-	ent = (channel>>3)&1023;
-	channel &= 7;
-
-	if (ent > MAX_EDICTS)
-		Host_EndGame ("CL_ParseStartSoundPacket: ent = %i", ent);
+		cl.simorg[i] = MSG_ReadCoord ();			
 	
-    S_StartSound (ent, channel, cl.sound_precache[sound_num], pos, volume/255.0, attenuation);
-}       
+	for (i=0 ; i<3 ; i++)
+		cl.simangles[i] = MSG_ReadAngle ();
+	
+	VectorCopy(vec3_origin, cl.simvel);
+};
 
+void CL_ParseFinale()
+{
+	cl.intermission = 2;
+	cl.completed_time = realtime;
+	vid.recalc_refdef = true;	// go to full screen
+	SCR_CenterPrint (MSG_ReadString ());
+};
+
+void CL_ParseCDTrack()
+{
+	cl.cdtrack = MSG_ReadByte();
+	cl.looptrack = MSG_ReadByte();
+	
+	CDAudio_Play((byte)cl.cdtrack, true);
+};
+
+void CL_ParseRestore()
+{
+};
+
+void CL_ParseCutscene()
+{
+};
+
+void CL_ParseWeaponAnim()
+{
+/*
+	Sended only if client weapon is disabled
+*/
+	
+	param1 = MSG_ReadByte();	// SequenceNumber
+	param2 = MSG_ReadByte();	// WeaponmodelBodygroup
+	CL_WeaponAnim( param1, param2 );
+};
+
+void CL_ParseDecalName()
+{
+};
+
+void CL_ParseRoomType()
+{
+	short nRoomType = MSG_ReadShort();
+	Cvar_SetFloat("room_type", nRoomType);
+};
+
+void CL_ParseAddAngle()
+{
+/*
+	Note: When pev->fixangle is set to 2, this message is called with pev->avelocity[1] as a value.
+	Note: The value needs to be scaled by (65536 / 360).
+*/
+	
+	short nAngle = MSG_ReadShort();
+};
+
+void CL_ParseNewUserMsg()
+{
+/*
+	Note: Sent every time a new message is registered on the server, but most games do this only once on the map change or server startup.
+	Note: Name can be represented as an array of 4 "longs".
+*/
+	
+	byte nIndex = MSG_ReadByte();
+	byte nSize = MSG_ReadByte();
+	char *sName = MSG_ReadString(); // 16 bits or bytes? (4 longs == 16 bytes on x86)
+	//MSG_ReadLong(msg, *(int *)&pMsg->szName[0]);
+	//MSG_ReadLong(msg, *(int *)&pMsg->szName[4]);
+	//MSG_ReadLong(msg, *(int *)&pMsg->szName[8]);
+	//MSG_ReadLong(msg, *(int *)&pMsg->szName[12]);
+};
+
+void CL_ParsePacketEntities(bool bDelta)
+{
+	if(bDelta)
+	{
+	};
+};
 
 /*
 ==================
@@ -1143,27 +1538,22 @@ void CL_ParseServerMessage ()
 			//Con_Printf("svc_nop\n");
 			break;
 		case svc_disconnect:
-			if(cls.state == ca_connected)
-				Host_EndGame("Server disconnected\n"
-					"Server version may not be compatible");
-			else
-				Host_EndGame("Server disconnected");
+			CL_HandleDisconnect();
 			break;
 		case svc_event:
 			CL_ParseEventData();
 			break;
 		case svc_version:
+			CL_ParseVersion();
 			break;
 		case svc_setview:
-			cl.refdef.viewentity = BF_ReadWord( msg );
+			CL_ParseView();
 			break;
 		case svc_sound:
 			CL_ParseStartSoundPacket();
 			break;
 		case svc_time:
-			// shuffle timestamps
-			cl.mtime[1] = cl.mtime[0];
-			cl.mtime[0] = BF_ReadFloat( msg );
+			CL_ParseTime();
 			break;
 		case svc_print:
 			i = MSG_ReadByte ();
@@ -1206,7 +1596,7 @@ void CL_ParseServerMessage ()
 		case svc_deltadescription:
 			break;
 		case svc_clientdata:
-			CL_ParseClientData( msg );
+			CL_ParseClientData();
 			break;
 		case svc_stopsound:
 			i = MSG_ReadShort();
@@ -1234,65 +1624,55 @@ void CL_ParseServerMessage ()
 			CL_ParseBaseline (&cl_baselines[i]);
 			break;
 		case svc_temp_entity:
-			CL_ParseTEnt ();
+			CL_ParseTempEntity();
 			break;
 		case svc_setpause:
-			cl.refdef.paused = ( BF_ReadOneBit( msg ) != 0 );
+			CL_HandlePause();
 			break;
 		case svc_signonnum:
+			CL_ParseSignOnNum();
 			break;
 		case svc_centerprint:
-			SCR_CenterPrint (MSG_ReadString ());
+			CL_ParseCenterPrint();
 			break;
 		case svc_killedmonster:
-			cl.stats[STAT_MONSTERS]++;
+			CL_ParseKilledMonster();
 			break;
 		case svc_foundsecret:
-			cl.stats[STAT_SECRETS]++;
+			CL_ParseFoundSecret();
 			break;
 		case svc_spawnstaticsound:
 			CL_ParseStaticSound ();
 			break;
 		case svc_intermission:
-			cl.intermission = 1;
-			cl.completed_time = realtime;
-			vid.recalc_refdef = true;	// go to full screen
-			for (i=0 ; i<3 ; i++)
-				cl.simorg[i] = MSG_ReadCoord ();			
-			for (i=0 ; i<3 ; i++)
-				cl.simangles[i] = MSG_ReadAngle ();
-			VectorCopy (vec3_origin, cl.simvel);
+			CL_ParseIntermission();
 			break;
 		case svc_finale:
-			cl.intermission = 2;
-			cl.completed_time = realtime;
-			vid.recalc_refdef = true;	// go to full screen
-			SCR_CenterPrint (MSG_ReadString ());
+			CL_ParseFinale();
 			break;
 		case svc_cdtrack:
-			cl.cdtrack = MSG_ReadByte ();
-			CDAudio_Play ((byte)cl.cdtrack, true);
+			CL_ParseCDTrack();
 			break;
 		case svc_restore:
+			CL_ParseRestore();
 			break;
 		case svc_cutscene:
+			CL_ParseCutscene();
 			break;
 		case svc_weaponanim:
-			//CL_ParseWeaponAnim();
-			param1 = BF_ReadByte( msg );	// iAnim
-			param2 = BF_ReadByte( msg );	// body
-			CL_WeaponAnim( param1, param2 );
+			CL_ParseWeaponAnim();
 			break;
 		case svc_decalname:
+			CL_ParseDecalName();
 			break;
 		case svc_roomtype:
-			param1 = BF_ReadShort( msg );
-			Cvar_SetFloat( "room_type", param1 );
+			CL_ParseRoomType();
 			break;
 		case svc_addangle:
-			CL_ParseAddAngle( msg );
+			CL_ParseAddAngle();
 			break;
 		case svc_newusermsg:
+			CL_ParseNewUserMsg();
 			break;
 		case svc_packetentities:
 			CL_ParsePacketEntities (false);
@@ -1351,7 +1731,7 @@ void CL_ParseServerMessage ()
 			Host_EndGame ("CL_ParseServerMessage: Illegible server message");
 			break;
 		// Old QW protocol
-		
+		/*
 		case svc_updatefrags:
 			Sbar_Changed ();
 			i = MSG_ReadByte ();
@@ -1416,7 +1796,7 @@ void CL_ParseServerMessage ()
 			else
 				CDAudio_Resume ();
 			break;
-
+		*/
 		}
 	}
 

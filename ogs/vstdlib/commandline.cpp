@@ -8,16 +8,14 @@
 
 static const int MAX_PARAMETER_LEN = 128;
 
-// Apparently this impl should be placed in vstdlib
-
 class CCommandLine : public ICommandLine
 {
 public:
-	CCommandLine(void);
-	~CCommandLine(void);
+	CCommandLine();
+	~CCommandLine();
 	
 	void CreateCmdLine(const char *commandline);
-	const char *GetCmdLine(void) const;
+	const char *GetCmdLine() const;
 	const char *CheckParm(const char *psz, const char **ppszValue = 0) const;
 	void RemoveParm(const char *parm);
 	void AppendParm(const char *pszParm, const char *pszValues);
@@ -38,17 +36,17 @@ private:
 CCommandLine g_CmdLine;
 ICommandLine *g_pCmdLine = (ICommandLine *)&g_CmdLine;
 
-ICommandLine *CommandLine(void)
+ICommandLine *CommandLine()
 {
 	return g_pCmdLine;
 }
 
-CCommandLine::CCommandLine(void)
+CCommandLine::CCommandLine()
 {
 	m_pszCmdLine = 0;
 }
 
-CCommandLine::~CCommandLine(void)
+CCommandLine::~CCommandLine()
 {
 	delete [] m_pszCmdLine;
 }
@@ -98,7 +96,7 @@ void CCommandLine::SetParm(const char *pszParm, const char *pszValues)
 	AppendParm(pszParm, pszValues);
 }
 
-const char *CCommandLine::GetCmdLine(void) const
+const char *CCommandLine::GetCmdLine() const
 {
 	return m_pszCmdLine;
 }

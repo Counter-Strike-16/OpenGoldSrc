@@ -130,7 +130,7 @@ D_SCAlloc
 */
 surfcache_t     *D_SCAlloc (int width, int size)
 {
-	surfcache_t             *new;
+	surfcache_t             *pnew;
 	qboolean                wrapped_this_time;
 
 	if ((width < 0) || (width > 256))
@@ -161,11 +161,11 @@ surfcache_t     *D_SCAlloc (int width, int size)
 	}
 		
 // colect and free surfcache_t blocks until the rover block is large enough
-	new = sc_rover;
+	pnew = sc_rover;
 	if (sc_rover->owner)
 		*sc_rover->owner = NULL;
 	
-	while (new->size < size)
+	while (pnew->size < size)
 	{
 	// free another
 		sc_rover = sc_rover->next;
@@ -174,30 +174,30 @@ surfcache_t     *D_SCAlloc (int width, int size)
 		if (sc_rover->owner)
 			*sc_rover->owner = NULL;
 			
-		new->size += sc_rover->size;
-		new->next = sc_rover->next;
+		pnew->size += sc_rover->size;
+		pnew->next = sc_rover->next;
 	}
 
 // create a fragment out of any leftovers
-	if (new->size - size > 256)
+	if (pnew->size - size > 256)
 	{
-		sc_rover = (surfcache_t *)( (byte *)new + size);
-		sc_rover->size = new->size - size;
-		sc_rover->next = new->next;
+		sc_rover = (surfcache_t *)( (byte *)pnew + size);
+		sc_rover->size = pnew->size - size;
+		sc_rover->next = pnew->next;
 		sc_rover->width = 0;
 		sc_rover->owner = NULL;
-		new->next = sc_rover;
-		new->size = size;
+		pnew->next = sc_rover;
+		pnew->size = size;
 	}
 	else
-		sc_rover = new->next;
+		sc_rover = pnew->next;
 	
-	new->width = width;
+	pnew->width = width;
 // DEBUG
 	if (width > 0)
-		new->height = (size - sizeof(*new) + sizeof(new->data)) / width;
+		pnew->height = (size - sizeof(*pnew) + sizeof(pnew->data)) / width;
 
-	new->owner = NULL;              // should be set properly after return
+	pnew->owner = NULL;              // should be set properly after return
 
 	if (d_roverwrapped)
 	{
@@ -210,7 +210,7 @@ surfcache_t     *D_SCAlloc (int width, int size)
 	}
 
 D_CheckCacheGuard ();   // DEBUG
-	return new;
+	return pnew;
 }
 
 
