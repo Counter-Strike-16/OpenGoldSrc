@@ -33,10 +33,10 @@
 #endif
 
 #include "maintypes.h"
+#include "common/commontypes.h"
 #include "pm_shared/pm_defs.h"
 #include "rehlds/model.h"
 #include "world/world.h"
-
 
 #ifdef HOOK_ENGINE
 #define g_contentsresult (*pg_contentsresult)

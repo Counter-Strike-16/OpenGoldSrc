@@ -46,6 +46,7 @@
 #include "resources/consistency.h"
 #include "world/event.h"
 #include "server/server.h"
+#include "common/screenfade.h"
 
 #define MAX_DEMOS 32
 

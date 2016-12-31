@@ -32,6 +32,12 @@
 #pragma once
 #endif
 
+#include "maintypes.h"
+#include "common/commontypes.h"
+#include "common/enums.h"
+#include "common/netadr.h"
+#include "network/net.h"
+
 #ifndef _WIN32
 
 #define WSAEWOULDBLOCK		EWOULDBLOCK	// Operation would block EAGAIN (11)
@@ -52,6 +58,9 @@
 // Create general message queues
 #define NUM_MSG_QUEUES 40
 #define MSG_QUEUE_SIZE 1536
+
+typedef struct sizebuf_s sizebuf_t;
+typedef struct cvar_s cvar_t;
 
 typedef struct loopmsg_s
 {

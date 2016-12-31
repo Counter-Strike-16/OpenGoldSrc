@@ -1,6 +1,6 @@
 #pragma once
 
-#include "archtypes.h"
+#include "public/archtypes.h"
 #include "crc32c.h"
 
 template<typename T_KEY, typename T_VAL, unsigned int ASSOC_2N, unsigned int MAX_VALS>

@@ -32,6 +32,8 @@
 #pragma once
 #endif
 
+#include "common/commontypes.h"
+
 /* <4abae> ../engine/modelgen.h:40 */
 typedef enum aliasframetype_s
 {

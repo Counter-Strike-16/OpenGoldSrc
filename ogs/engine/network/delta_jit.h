@@ -1,9 +1,13 @@
 #pragma once
 
-#include "maintypes.h"
+#include "common/commontypes.h"
+#include "public/archtypes.h"
+#include "rehlds/static_map.h"
 
 #define DELTAJIT_MAX_BLOCKS 32
 #define DELTAJIT_MAX_FIELDS 56
+
+typedef struct delta_s delta_t;
 
 struct deltajit_field
 {

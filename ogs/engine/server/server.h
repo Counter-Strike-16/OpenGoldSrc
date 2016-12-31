@@ -59,6 +59,7 @@
 #include "world/inst_baseline.h"
 #include "network/net_ws.h"
 #include "system/info.h"
+#include "qlimits.h"
 
 #define DEFAULT_SOUND_PACKET_VOLUME			255
 #define DEFAULT_SOUND_PACKET_ATTENUATION	1.0f

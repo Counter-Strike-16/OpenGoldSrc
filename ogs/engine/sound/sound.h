@@ -33,6 +33,7 @@
 #endif
 
 #include "common/commontypes.h"
+#include "common/com_model.h"
 
 // max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in dlls\util.h!!!
 #define CVOXFILESENTENCEMAX		1536

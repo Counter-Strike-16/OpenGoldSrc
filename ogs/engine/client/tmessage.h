@@ -60,6 +60,8 @@
 
 #endif // HOOK_ENGINE
 
+typedef struct client_textmessage_s client_textmessage_t;
+
 extern client_textmessage_t *gMessageTable;
 extern int gMessageTableCount;
 extern client_textmessage_t gMessageParms;

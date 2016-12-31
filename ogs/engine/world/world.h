@@ -35,6 +35,13 @@
 #include "maintypes.h"
 #include "common/commontypes.h"
 
+typedef struct cvar_s cvar_t;
+typedef struct trace_s trace_t;
+typedef struct mplane_s mplane_t;
+typedef struct hull_s hull_t;
+typedef struct dclipnode_s dclipnode_t;
+typedef struct mnode_s mnode_t;
+
 typedef struct areanode_s
 {
 	int axis;

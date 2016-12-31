@@ -39,9 +39,8 @@
 #include "crc.h"
 */
 
-#include "rehlds/model.h"
-
 #include "maintypes.h"
+#include "rehlds/model.h"
 #include "rehlds/bspfile.h"
 #include "common/crc.h"
 

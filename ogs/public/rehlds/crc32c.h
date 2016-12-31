@@ -11,8 +11,10 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
+
 #pragma once
-#include "archtypes.h"
+
+#include "public/archtypes.h"
 
 extern uint32 crc32c_t8_nosse(uint32 iCRC, uint8 u8);
 extern uint32 crc32c_t8_sse(uint32 iCRC, uint8 u8);
