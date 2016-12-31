@@ -32,6 +32,7 @@
 #pragma once
 #endif
 
+#include "maintypes.h"
 #include "common/commontypes.h"
 #include "public/archtypes.h"
 
@@ -68,6 +69,9 @@
 #endif // HOOK_ENGINE
 
 typedef struct edict_s edict_t;
+typedef struct client_s client_t;
+typedef struct event_args_s event_args_t;
+typedef struct sizebuf_s sizebuf_t;
 
 extern unsigned char gMsgData[512];
 extern sizebuf_t gMsgBuffer;

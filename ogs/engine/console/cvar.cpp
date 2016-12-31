@@ -44,11 +44,20 @@
 cvar_t *cvar_vars;
 char cvar_null_string[] = "";
 
+/*
+============
+Cvar_Init
+
+Reads in all archived cvars
+============
+*/
 void Cvar_Init()
 {
 #ifndef SWDS
 	// TODO: add client code, possibly none
 #endif
+	
+	Cvar_CmdInit();
 }
 
 void Cvar_Shutdown()
@@ -325,6 +334,11 @@ void Cvar_Set(const char *var_name, const char *value)
 	Cvar_DirectSet(var, value);
 }
 
+/*
+============
+Cvar_SetValue
+============
+*/
 void Cvar_SetValue(const char *var_name, float value)
 {
 	char val[32];
@@ -501,6 +515,14 @@ qboolean Cvar_Command()
 	return FALSE;
 }
 
+/*
+============
+Cvar_WriteVariables
+
+Appends lines containing "set variable value" for all variables
+with the archive flag set to true.
+============
+*/
 NOXREF void Cvar_WriteVariables(FileHandle_t f)
 {
 	NOXREFCHECK;

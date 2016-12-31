@@ -58,6 +58,9 @@ typedef struct texlumpinfo_s
 #define r_wadtextures (*pr_wadtextures)
 #endif
 
+typedef struct texture_s texture_t;
+typedef struct cvar_s cvar_t;
+
 extern texlumpinfo_t* lumpinfo;
 extern int nTexLumps;
 extern FILE* texfiles[128];

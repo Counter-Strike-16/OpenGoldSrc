@@ -66,16 +66,6 @@ typedef struct  lump_s
 	int				filelen;
 } lump_t;
 
-/* <a22c> ../engine/bspfile.h:64 */
-typedef struct dmodel_s
-{
-	float			mins[3], maxs[3];
-	float			origin[3];
-	int				headnode[MAX_MAP_HULLS];
-	int				visleafs;		// not including the solid leaf 0
-	int				firstface, numfaces;
-} dmodel_t;
-
 /* <a2c2> ../engine/bspfile.h:73 */
 typedef struct dheader_s
 {
@@ -123,13 +113,6 @@ typedef struct dnode_s
 	unsigned short	firstface;
 	unsigned short	numfaces;
 } dnode_t;
-
-/* <a332> ../engine/bspfile.h:142 */
-typedef struct dclipnode_s
-{
-	int				planenum;
-	short			children[2];	// negative numbers are contents
-} dclipnode_t;
 
 /* <4876a> ../engine/bspfile.h:149 */
 typedef struct texinfo_s

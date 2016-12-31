@@ -2,7 +2,7 @@
 // STAGE #1
 //======================================
 
-// #include "client/client.h"
+//#include "client/client.h"
 //#include "client/enginevgui.h"
 //#include "client/tmessage.h"
 
@@ -11,7 +11,6 @@
 // #include "graphics/glquake.h"
 // #include "graphics/vid.h"
 // #include "graphics/vid_null.h"
-// #include "graphics/warpsin.h"
 // #include "graphics/draw/d_iface.h"
 // #include "graphics/draw/d_ifacea.h"
 // #include "graphics/draw/d_local.h"
@@ -19,37 +18,31 @@
 // #include "graphics/render/r_shared.h"
 // #include "graphics/render/render.h"
 
-// #include "math/mathlib_e.h"
+//#include "math/mathlib_e.h"
 
 // #include "network/delta_jit.h"
-// #include "network/ipratelimit.h"
-// #include "network/net_chan.h"
+//#include "network/ipratelimit.h"
 // #include "network/net_ws.h"
 //#include "network/usermsg.h"
 
-// #include "physics/pmove.h"
-// #include "physics/pmovetst.h"
+//#include "physics/pmovetst.h"
 
-// #include "resources/cmodel.h"
-// #include "resources/decal.h"
 //#include "resources/model_rehlds.h"
-// #include "resources/studio_rehlds.h"
-// #include "resources/textures.h"
+//#include "resources/studio_rehlds.h"
 
-// #include "server/server.h"
-// #include "server/sv_phys.h"
-// #include "server/sv_steam3.h"
+//#include "server/server.h"
+//#include "server/sv_steam3.h"
 //#include "server/sv_user.h"
 
 // #include "sound/sound.h"
 
 // #include "system/engine.h"
-// #include "system/host_cmd.h"
+//#include "system/host_cmd.h"
 // #include "system/quakedef.h"
 // #include "system/sys.h"
 // #include "system/system.h"
 
-// #include "world/pr_cmds.h"
+//#include "world/pr_cmds.h"
 //#include "world/world.h"
 
 //======================================

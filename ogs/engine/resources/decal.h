@@ -33,11 +33,15 @@
 #endif
 
 #include "maintypes.h"
+#include "common/commontypes.h"
+#include "public/FileSystem.h"
 #include "rehlds/model.h"
-#include "filesystem/wad.h"
 
 #define MAX_DECALS				512
 #define DECAL_EXTRASIZE				sizeof(texture_t) - sizeof(miptex_t)
+
+typedef struct lumpinfo_s lumpinfo_t;
+typedef struct texture_s texture_t;
 
 typedef struct decalname_s
 {
@@ -85,13 +89,16 @@ const char *Draw_DecalName(int number);
 NOXREF texture_t *Draw_DecalTexture(int index);
 int Draw_CacheByIndex(cachewad_t *wad, int nIndex, int playernum);
 NOXREF int Draw_DecalIndexFromName(char *name);
+
 void Decal_ReplaceOrAppendLump(lumplist_t **ppList, lumpinfo_t *lump, qboolean bsecondlump);
 int Decal_CountLumps(lumplist_t *plist);
 int Decal_SizeLumps(lumplist_t *plist);
 void Decal_MergeInDecals(cachewad_t *pwad, const char  *pathID);
 void Decal_Init(void);
+
 qboolean CustomDecal_Validate(void *raw, int nFileSize);
 qboolean CustomDecal_Init(struct cachewad_s *wad, void *raw, int nFileSize, int playernum);
+
 NOXREF void *Draw_CacheGet(cachewad_t *wad, int index);
 void *Draw_CustomCacheGet(cachewad_t *wad, void *raw, int rawsize, int index);
 NOXREF qboolean Draw_CacheReload(cachewad_t *wad, int i, lumpinfo_t *pLump, cachepic_t *pic, char *clean, char *path);

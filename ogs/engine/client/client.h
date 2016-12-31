@@ -42,17 +42,25 @@
 #include "filesystem/filesystem_internal.h"
 #include "network/net_chan.h"
 #include "input/keys.h"
+#include "system/common.h"
+#include "resources/consistency.h"
+#include "world/event.h"
+#include "server/server.h"
 
 #define MAX_DEMOS 32
+
+typedef struct dlight_s dlight_t;
+typedef struct playermove_s playermove_t;
+typedef struct sfx_s sfx_t;
 
 typedef enum cactive_e
 {
 	ca_dedicated,
-	ca_disconnected,
-	ca_connecting,
-	ca_connected,
+	ca_disconnected,	// not talking to a server
+	ca_connecting,		// sending request packets to the server
+	ca_connected,		// netchan_t established, waiting for svc_serverdata
 	ca_uninitialized,
-	ca_active,
+	ca_active,			// game views should be displayed
 } cactive_t;
 
 typedef struct cmd_s
@@ -108,6 +116,14 @@ typedef struct soundfade_s
 	int soundFadeInTime;
 } soundfade_t;
 
+/*
+==================================================================
+
+the client_static_t structure is persistant through an arbitrary number
+of server connections
+
+==================================================================
+*/
 typedef struct client_static_s
 {
 	cactive_t state;
@@ -193,6 +209,10 @@ typedef struct client_static_s
 	int build_num;
 } client_static_t;
 
+//
+// the client_state_t structure is wiped completely at every
+// server signon
+//
 typedef struct client_state_s
 {
 	int max_edicts;
@@ -205,12 +225,14 @@ typedef struct client_state_s
 	
 	qboolean need_force_consistency_response;
 	
-	char serverinfo[512];
+	char serverinfo[512]; // MAX_SERVERINFO_STRING
 	
-	int servercount;
+	int servercount; // server identification for prespawns
 	int validsequence;
-	int parsecount;
+	
+	int parsecount; // server message counter
 	int parsecountmod;
+	
 	int stats[32];
 	int weapons;
 	
@@ -219,9 +241,11 @@ typedef struct client_state_s
 	vec3_t viewangles;
 	vec3_t punchangle;
 	vec3_t crosshairangle;
+	
 	vec3_t simorg;
 	vec3_t simvel;
 	vec3_t simangles;
+	
 	vec3_t predicted_origins[64];
 	vec3_t prediction_error;
 	
@@ -231,7 +255,7 @@ typedef struct client_state_s
 	
 	screenfade_t sf;
 	
-	qboolean paused;
+	qboolean paused; // send over by server
 	
 	int onground;
 	int moving;
@@ -328,6 +352,7 @@ typedef enum CareerStateType_e
 #endif // HOOK_ENGINE
 
 extern keydest_t key_dest;
+
 extern client_static_t cls;
 extern client_state_t cl;
 
@@ -353,7 +378,9 @@ void CL_EmitEntities();
 void CL_InitClosest();
 void CL_Init();
 void CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel);
+
 void CL_PredictMove(qboolean repredicting);
+
 void CL_PrintLogos();
 void CL_ReadPackets();
 qboolean CL_RequestMissingResources();
@@ -386,7 +413,9 @@ extern "C" void ClientDLL_CAM_Think();
 
 void CL_InitEventSystem();
 void CL_CheckClientState();
+
 void CL_RedoPrediction();
+
 void CL_SetLastUpdate();
 
 void CL_WriteMessageHistory(int starting_count, int cmd);

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "vgui2/IEngineVGui.h"
+#include "IEngineVGui.h"
 
 // enumeration of level loading progress bar spots
 enum LevelLoadingProgress_e

@@ -32,16 +32,6 @@
 #pragma once
 #endif
 
-
-/* <67f6> ../engine/modelgen.h:37 */
-typedef enum synctype_e
-{
-	ST_SYNC = 0,
-	ST_RAND = 1,
-} synctype_t;
-
-#define SYNCTYPE_T
-
 /* <4abae> ../engine/modelgen.h:40 */
 typedef enum aliasframetype_s
 {

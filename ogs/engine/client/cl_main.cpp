@@ -137,6 +137,7 @@ char soundlist_name[] =
 CL_SendConnectPacket
 
 called by CL_Connect_f and CL_CheckResend
+We have gotten a challenge from the server, so try and connect
 ======================
 */
 void CL_SendConnectPacket ()
@@ -144,6 +145,7 @@ void CL_SendConnectPacket ()
 	netadr_t	adr;
 	char	data[2048];
 	double t1, t2;
+	
 // JACK: Fixed bug where DNS lookups would cause two connects real fast
 //       Now, adds lookup time to the connect time.
 //		 Should I add it to realtime instead?!?!
@@ -156,7 +158,7 @@ void CL_SendConnectPacket ()
 	if (!NET_StringToAdr (cls.servername, &adr))
 	{
 		Con_Printf ("Bad server address\n");
-		connect_time = -1;
+		cls.connect_time = -1; // 0
 		return;
 	}
 
@@ -168,7 +170,8 @@ void CL_SendConnectPacket ()
 	}
 
 	if (adr.port == 0)
-		adr.port = BigShort (27500);
+		adr.port = BigShort(PORT_SERVER);
+	
 	t2 = Sys_DoubleTime ();
 
 	connect_time = realtime+t2-t1;	// for retransmit requests
@@ -188,7 +191,6 @@ void CL_SendConnectPacket ()
 CL_CheckForResend
 
 Resend a connect message if the last one has timed out
-
 =================
 */
 void CL_CheckForResend ()
@@ -197,11 +199,13 @@ void CL_CheckForResend ()
 	char	data[2048];
 	double t1, t2;
 
-	if (connect_time == -1)
+	if (cls.connect_time == -1)
 		return;
+	
 	if (cls.state != ca_disconnected)
 		return;
-	if (connect_time && realtime - connect_time < 5.0)
+	
+	if (cls.connect_time && realtime - cls.connect_time < 5.0)
 		return;
 
 	t1 = Sys_DoubleTime ();
@@ -247,13 +251,13 @@ void CL_Connect_f ()
 	{
 		Con_Printf ("usage: connect <server>\n");
 		return;	
-	}
+	};
 	
 	char *server = Cmd_Argv (1);
-
+	
 	CL_Disconnect();
-
-	strncpy(cls.servername, server, sizeof(cls.servername) - 1);
+	
+	strncpy(cls.servername, server, charsmax(cls.servername));
 	CL_BeginServerConnect();
 }
 

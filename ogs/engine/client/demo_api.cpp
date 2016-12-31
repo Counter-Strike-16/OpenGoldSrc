@@ -3,6 +3,7 @@
 
 namespace
 {
+
 int DemoAPI_IsRecording()
 {
 	return 0;
@@ -21,6 +22,7 @@ int DemoAPI_IsTimeDemo()
 void DemoAPI_WriteBuffer(int size, unsigned char *buffer)
 {
 };
+
 }; // namespace
 
 demo_api_t gDemoAPI =

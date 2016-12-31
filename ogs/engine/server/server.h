@@ -58,6 +58,7 @@
 #include "pm_shared/pm_defs.h"
 #include "world/inst_baseline.h"
 #include "network/net_ws.h"
+#include "system/info.h"
 
 #define DEFAULT_SOUND_PACKET_VOLUME			255
 #define DEFAULT_SOUND_PACKET_ATTENUATION	1.0f
@@ -94,6 +95,10 @@
 #define HL_EVENT_MAX 256
 
 #define MAX_RESOURCE_LIST	1280
+
+class IGameClient;
+
+typedef struct decalname_s decalname_t;
 
 typedef enum redirect_e
 {

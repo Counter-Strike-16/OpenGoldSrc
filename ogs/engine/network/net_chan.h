@@ -32,7 +32,9 @@
 #pragma once
 #endif
 
+#include "maintypes.h"
 #include "common/commontypes.h"
+#include "common/enums.h"
 
 #ifdef HOOK_ENGINE
 
@@ -51,6 +53,11 @@
 
 typedef struct cvar_s cvar_t;
 typedef struct fragbuf_s fragbuf_t;
+typedef struct sizebuf_s sizebuf_t;
+typedef struct netchan_s netchan_t;
+typedef struct fragbuf_s fragbuf_t;
+typedef struct fragbufwaiting_s fragbufwaiting_t;
+typedef struct netadr_s netadr_t;
 
 extern char gDownloadFile[256];
 

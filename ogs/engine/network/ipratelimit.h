@@ -32,6 +32,10 @@
 #pragma once
 #endif
 
+#include "tier1/utlrbtree.h"
+
+typedef struct netadr_s netadr_t;
+
 class CIPRateLimit
 {
 public:
@@ -55,9 +59,9 @@ private:
 		long lastTime;
 		int count;
 	} iprate_t;
-
 private:
-	class CUtlRBTree<CIPRateLimit::iprate_s, int> m_IPTree;
+	CUtlRBTree<CIPRateLimit::iprate_s, int> m_IPTree;
+	
 	int m_iGlobalCount;
 	long m_lLastTime;
 

@@ -14,12 +14,16 @@
 *    along with this program; if not, write to the Free Software Foundation,
 *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
 #pragma once
 
+#include "maintypes.h"
+#include "common/commontypes.h"
 #include "engine/studio.h"
 #include "rehlds/model.h"
 #include "common/r_studioint.h"
 #include "common/cvardef.h"
+#include "public/archtypes.h"
 
 typedef struct r_studiocache_s r_studiocache_t;
 

@@ -32,10 +32,11 @@
 #pragma once
 #endif
 
-#include "maintypes.h"
-#include "console/cvar.h"
-#include "pm_shared/pm_defs.h"
-#include "pm_shared/pm_movevars.h"
+//#include "maintypes.h"
+#include "common/commontypes.h"
+//#include "console/cvar.h"
+//#include "pm_shared/pm_defs.h"
+//#include "pm_shared/pm_movevars.h"
 
 #ifdef HOOK_ENGINE
 #define pm_showclip (*ppm_showclip)
@@ -46,6 +47,11 @@
 #define pmove (*ppmove)
 #define movevars (*pmovevars)
 #endif // HOOK_ENGINE
+
+typedef struct cvar_s cvar_t;
+typedef struct pmtrace_s pmtrace_t;
+typedef struct playermove_s playermove_t;
+typedef struct movevars_s movevars_t;
 
 extern cvar_t pm_showclip;
 
