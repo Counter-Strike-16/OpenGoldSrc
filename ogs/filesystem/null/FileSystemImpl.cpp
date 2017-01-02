@@ -1,7 +1,37 @@
+/*
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
+
+/// @file
+
 #include <stdio.h>
 #include <cstdarg>
 #include <string.h>
-#include "FileSystemImpl.h"
+#include "FileSystemImpl.hpp"
 
 #ifdef _DEBUG
 static FILE *ghLogFile = NULL;
@@ -12,7 +42,7 @@ void TRACE(const char *asMsg, ...)
 		return;
 
 	va_list ArgList;
-	char sMsg[512];
+	char    sMsg[512];
 
 	va_start(ArgList, asMsg);
 	vsnprintf(sMsg, sizeof(sMsg), asMsg, ArgList);
@@ -29,13 +59,9 @@ void TRACE(const char *asMsg, ...){};
 static CFileSystemNull gFileSystemNull;
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CFileSystemNull, IFileSystem, FILESYSTEM_INTERFACE_VERSION, gFileSystemNull);
 
-CFileSystemNull::CFileSystemNull()
-{
-};
+CFileSystemNull::CFileSystemNull(){};
 
-CFileSystemNull::~CFileSystemNull()
-{
-};
+CFileSystemNull::~CFileSystemNull(){};
 
 void CFileSystemNull::Mount()
 {
@@ -134,7 +160,7 @@ long CFileSystemNull::GetFileTime(const char *pFileName)
 	return 0;
 };
 
-void CFileSystemNull::FileTimeToString(char* pStrip, int maxCharsIncludingTerminator, long fileTime)
+void CFileSystemNull::FileTimeToString(char *pStrip, int maxCharsIncludingTerminator, long fileTime)
 {
 	TRACE("CFileSystem::FileTimeToString");
 };
@@ -156,13 +182,13 @@ bool CFileSystemNull::EndOfFile(FileHandle_t file)
 	return false;
 };
 
-int CFileSystemNull::Read(void* pOutput, int size, FileHandle_t file)
+int CFileSystemNull::Read(void *pOutput, int size, FileHandle_t file)
 {
 	TRACE("CFileSystem::Read");
 	return 0;
 };
 
-int CFileSystemNull::Write(void const* pInput, int size, FileHandle_t file)
+int CFileSystemNull::Write(void const *pInput, int size, FileHandle_t file)
 {
 	TRACE("CFileSystem::Write");
 	return 0;
@@ -225,7 +251,7 @@ const char *CFileSystemNull::GetLocalPath(const char *pFileName, char *pLocalPat
 	return "";
 };
 
-char *CFileSystemNull::ParseFile(char* pFileBytes, char* pToken, bool* pWasQuoted)
+char *CFileSystemNull::ParseFile(char *pFileBytes, char *pToken, bool *pWasQuoted)
 {
 	TRACE("CFileSystem::ParseFile");
 	return NULL;
@@ -248,7 +274,7 @@ void CFileSystemNull::PrintOpenedFiles()
 	TRACE("CFileSystem::PrintOpenedFiles");
 };
 
-void CFileSystemNull::SetWarningFunc(void (*pfnWarning)( const char *fmt, ... ))
+void CFileSystemNull::SetWarningFunc(void (*pfnWarning)(const char *fmt, ...))
 {
 	TRACE("CFileSystem::SetWarningFunc");
 };
@@ -309,7 +335,7 @@ WaitForResourcesHandle_t CFileSystemNull::WaitForResources(const char *resourcel
 	return 0;
 };
 
-bool CFileSystemNull::GetWaitForResourcesProgress(WaitForResourcesHandle_t handle, float *progress /* out */ , bool *complete /* out */)
+bool CFileSystemNull::GetWaitForResourcesProgress(WaitForResourcesHandle_t handle, float *progress /* out */, bool *complete /* out */)
 {
 	TRACE("CFileSystem::GetWaitForResourcesProgress");
 	return false;

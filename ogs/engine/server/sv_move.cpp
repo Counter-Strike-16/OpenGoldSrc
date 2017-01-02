@@ -1,30 +1,32 @@
 /*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
+
+/// @file
 
 #include "precompiled.h"
 
@@ -34,7 +36,7 @@
 #ifndef HOOK_ENGINE
 
 static int c_yes = 0;
-static int c_no = 0;
+static int c_no  = 0;
 
 #else //HOOK_ENGINE
 
@@ -45,31 +47,31 @@ int c_no;
 
 qboolean SV_CheckBottom(edict_t *ent)
 {
-	vec3_t mins;
-	vec3_t maxs;
-	vec3_t start;
-	vec3_t stop;                                                  //    29
-	trace_t trace;                                                //    30
-	int x;                                                        //    31
-	int y;                                                        //    31
-	float mid;                                                    //    32
-	float bottom;                                                 //    32
+	vec3_t   mins;
+	vec3_t   maxs;
+	vec3_t   start;
+	vec3_t   stop;   //    29
+	trace_t  trace;  //    30
+	int      x;      //    31
+	int      y;      //    31
+	float    mid;    //    32
+	float    bottom; //    32
 	qboolean monsterClip = (ent->v.flags & FL_MONSTERCLIP) ? 1 : 0;
 
 	_VectorAdd(ent->v.origin, ent->v.mins, mins);
 	_VectorAdd(ent->v.origin, ent->v.maxs, maxs);
 
 	start[2] = mins[2] - 1;
-	for (x = 0; x <= 1; x++)
+	for(x = 0; x <= 1; x++)
 	{
-		for (y = 0; y <= 1; y++)
+		for(y = 0; y <= 1; y++)
 		{
 			start[0] = x ? maxs[0] : mins[0];
 			start[1] = y ? maxs[1] : mins[1];
 
 			g_groupmask = ent->v.groupinfo;
 
-			if (SV_PointContents(start) != CONTENTS_SOLID)
+			if(SV_PointContents(start) != CONTENTS_SOLID)
 				goto realcheck;
 		}
 	}
@@ -82,26 +84,26 @@ realcheck:
 
 	start[0] = stop[0] = (mins[0] + maxs[0]) * 0.5f;
 	start[1] = stop[1] = (mins[1] + maxs[1]) * 0.5f;
-	stop[2] = start[2] - 2 * sv_stepsize.value;
-	trace = SV_Move(start, vec3_origin, vec3_origin, stop, 1, ent, monsterClip);
+	stop[2]            = start[2] - 2 * sv_stepsize.value;
+	trace              = SV_Move(start, vec3_origin, vec3_origin, stop, 1, ent, monsterClip);
 
-	if (trace.fraction == 1.0f)
+	if(trace.fraction == 1.0f)
 		return 0;
 
 	mid = bottom = trace.endpos[2];
 
-	for (x = 0; x <= 1; x++)
+	for(x = 0; x <= 1; x++)
 	{
-		for (y = 0; y <= 1; y++)
+		for(y = 0; y <= 1; y++)
 		{
 			start[0] = stop[0] = x ? maxs[0] : mins[0];
 			start[1] = stop[1] = y ? maxs[1] : mins[1];
 
 			trace = SV_Move(start, vec3_origin, vec3_origin, stop, 1, ent, monsterClip);
 
-			if (trace.fraction != 1.0f && trace.endpos[2] > bottom)
+			if(trace.fraction != 1.0f && trace.endpos[2] > bottom)
 				bottom = trace.endpos[2];
-			if (trace.fraction == 1.0f || mid - trace.endpos[2] > sv_stepsize.value)
+			if(trace.fraction == 1.0f || mid - trace.endpos[2] > sv_stepsize.value)
 				return 0;
 		}
 	}
@@ -111,9 +113,9 @@ realcheck:
 
 qboolean SV_movetest(edict_t *ent, vec_t *move, qboolean relink)
 {
-	vec3_t oldorg;
-	vec3_t neworg;
-	vec3_t end;
+	vec3_t  oldorg;
+	vec3_t  neworg;
+	vec3_t  end;
 	trace_t trace;
 
 	oldorg[0] = ent->v.origin[0];
@@ -123,30 +125,30 @@ qboolean SV_movetest(edict_t *ent, vec_t *move, qboolean relink)
 	neworg[0] = ent->v.origin[0] + move[0];
 	neworg[1] = ent->v.origin[1] + move[1];
 	neworg[2] = ent->v.origin[2] + move[2];
-	end[0] = neworg[0];
-	end[1] = neworg[1];
+	end[0]    = neworg[0];
+	end[1]    = neworg[1];
 
 	neworg[2] += sv_stepsize.value;
 	end[2] = neworg[2] - (2 * sv_stepsize.value);
-	trace = SV_MoveNoEnts(neworg, ent->v.mins, ent->v.maxs, end, 0, ent);
-	if (trace.allsolid)
+	trace  = SV_MoveNoEnts(neworg, ent->v.mins, ent->v.maxs, end, 0, ent);
+	if(trace.allsolid)
 		return 0;
 
-	if (trace.startsolid)
+	if(trace.startsolid)
 	{
 		neworg[2] -= sv_stepsize.value;
 		trace = SV_MoveNoEnts(neworg, ent->v.mins, ent->v.maxs, end, 0, ent);
-		if (trace.allsolid || trace.startsolid)
+		if(trace.allsolid || trace.startsolid)
 			return 0;
 	}
-	if (trace.fraction == 1.0f)
+	if(trace.fraction == 1.0f)
 	{
-		if (ent->v.flags & FL_PARTIALGROUND)
+		if(ent->v.flags & FL_PARTIALGROUND)
 		{
 			ent->v.origin[0] = *move + ent->v.origin[0];
 			ent->v.origin[1] = ent->v.origin[1] + move[1];
 			ent->v.origin[2] = ent->v.origin[2] + move[2];
-			if (relink)
+			if(relink)
 				SV_LinkEdict(ent, 1);
 
 			ent->v.flags &= ~FL_ONGROUND;
@@ -158,9 +160,9 @@ qboolean SV_movetest(edict_t *ent, vec_t *move, qboolean relink)
 	ent->v.origin[0] = trace.endpos[0];
 	ent->v.origin[1] = trace.endpos[1];
 	ent->v.origin[2] = trace.endpos[2];
-	if (SV_CheckBottom(ent) == 0)
+	if(SV_CheckBottom(ent) == 0)
 	{
-		if (!(ent->v.flags & FL_PARTIALGROUND))
+		if(!(ent->v.flags & FL_PARTIALGROUND))
 		{
 			ent->v.origin[0] = oldorg[0];
 			ent->v.origin[1] = oldorg[1];
@@ -170,14 +172,14 @@ qboolean SV_movetest(edict_t *ent, vec_t *move, qboolean relink)
 	}
 	else
 	{
-		if (ent->v.flags & FL_PARTIALGROUND)
+		if(ent->v.flags & FL_PARTIALGROUND)
 		{
 			ent->v.flags &= ~FL_PARTIALGROUND;
 		}
 		ent->v.groundentity = trace.ent;
 	}
 
-	if (relink)
+	if(relink)
 		SV_LinkEdict(ent, 1);
 
 	return 1;
@@ -185,61 +187,60 @@ qboolean SV_movetest(edict_t *ent, vec_t *move, qboolean relink)
 
 qboolean SV_movestep(edict_t *ent, vec_t *move, qboolean relink)
 {
-	trace_t trace;
-	vec3_t end;
-	vec3_t oldorg;
-	float dz;
+	trace_t  trace;
+	vec3_t   end;
+	vec3_t   oldorg;
+	float    dz;
 	qboolean monsterClipBrush;
-	vec3_t start;
+	vec3_t   start;
 
 	oldorg[0] = ent->v.origin[0];
 	oldorg[1] = ent->v.origin[1];
 	oldorg[2] = ent->v.origin[2];
 
-	start[0] = ent->v.origin[0] + move[0];
-	start[1] = ent->v.origin[1] + move[1];
-	start[2] = ent->v.origin[2] + move[2];
+	start[0]         = ent->v.origin[0] + move[0];
+	start[1]         = ent->v.origin[1] + move[1];
+	start[2]         = ent->v.origin[2] + move[2];
 	monsterClipBrush = (ent->v.flags & FL_MONSTERCLIP) != 0;
-	if (ent->v.flags & (FL_FLY | FL_SWIM))
+	if(ent->v.flags & (FL_FLY | FL_SWIM))
 	{
 		int i = 0;
-		while (i < 2)
+		while(i < 2)
 		{
-			start[0] = ent->v.origin[0] + move[0];
-			start[1] = ent->v.origin[1] + move[1];
-			start[2] = ent->v.origin[2] + move[2];
-			edict_t* enemy = ent->v.enemy;
+			start[0]       = ent->v.origin[0] + move[0];
+			start[1]       = ent->v.origin[1] + move[1];
+			start[2]       = ent->v.origin[2] + move[2];
+			edict_t *enemy = ent->v.enemy;
 
-
-			if (i == 0 && enemy)
+			if(i == 0 && enemy)
 			{
 				dz = ent->v.origin[2] - enemy->v.origin[2];
-				if (dz > 40.0)
+				if(dz > 40.0)
 					start[2] = start[2] - 8.0;
-				if (dz < 30.0)
+				if(dz < 30.0)
 					start[2] = start[2] + 8.0;
 			}
 			trace = SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, start, 0, ent, monsterClipBrush);
-			if (trace.fraction == 1.0f)
+			if(trace.fraction == 1.0f)
 				break;
 
-			if (!enemy)
+			if(!enemy)
 				return 0;
 
-			if (i == 1)
+			if(i == 1)
 				return 0;
 
 			i++;
 		}
 
 		g_groupmask = ent->v.groupinfo;
-		if ((ent->v.flags & FL_SWIM) && SV_PointContents(trace.endpos) == -1)
+		if((ent->v.flags & FL_SWIM) && SV_PointContents(trace.endpos) == -1)
 			return 0;
 
 		ent->v.origin[0] = trace.endpos[0];
 		ent->v.origin[1] = trace.endpos[1];
 		ent->v.origin[2] = trace.endpos[2];
-		if (relink)
+		if(relink)
 			SV_LinkEdict(ent, 1);
 
 		return 1;
@@ -249,26 +250,26 @@ qboolean SV_movestep(edict_t *ent, vec_t *move, qboolean relink)
 	end[0] = start[0];
 	end[1] = start[1];
 	end[2] = start[2] - (2 * sv_stepsize.value);
-	trace = SV_Move(start, ent->v.mins, ent->v.maxs, end, 0, ent, (ent->v.flags & FL_MONSTERCLIP) != 0);
-	if (trace.allsolid)
+	trace  = SV_Move(start, ent->v.mins, ent->v.maxs, end, 0, ent, (ent->v.flags & FL_MONSTERCLIP) != 0);
+	if(trace.allsolid)
 		return 0;
 
-	if (trace.startsolid)
+	if(trace.startsolid)
 	{
 		start[2] = start[2] - sv_stepsize.value;
-		trace = SV_Move(start, ent->v.mins, ent->v.maxs, end, 0, ent, monsterClipBrush);
-		if (trace.allsolid || trace.startsolid)
+		trace    = SV_Move(start, ent->v.mins, ent->v.maxs, end, 0, ent, monsterClipBrush);
+		if(trace.allsolid || trace.startsolid)
 			return 0;
 	}
 
-	if (trace.fraction != 1.0f)
+	if(trace.fraction != 1.0f)
 	{
 		ent->v.origin[0] = trace.endpos[0];
 		ent->v.origin[1] = trace.endpos[1];
 		ent->v.origin[2] = trace.endpos[2];
-		if (SV_CheckBottom(ent) == 0)
+		if(SV_CheckBottom(ent) == 0)
 		{
-			if (!(ent->v.flags & FL_PARTIALGROUND))
+			if(!(ent->v.flags & FL_PARTIALGROUND))
 			{
 				ent->v.origin[0] = oldorg[0];
 				ent->v.origin[1] = oldorg[1];
@@ -278,25 +279,25 @@ qboolean SV_movestep(edict_t *ent, vec_t *move, qboolean relink)
 		}
 		else
 		{
-			if (ent->v.flags & FL_PARTIALGROUND)
+			if(ent->v.flags & FL_PARTIALGROUND)
 				ent->v.flags &= ~FL_PARTIALGROUND;
 
 			ent->v.groundentity = trace.ent;
 		}
 
-		if (relink)
+		if(relink)
 			SV_LinkEdict(ent, 1);
 
 		return 1;
 	}
 
-	if (!(ent->v.flags & FL_PARTIALGROUND))
+	if(!(ent->v.flags & FL_PARTIALGROUND))
 		return 0;
 
 	ent->v.origin[0] += move[0];
 	ent->v.origin[1] += move[1];
 	ent->v.origin[2] += move[2];
-	if (relink)
+	if(relink)
 		SV_LinkEdict(ent, 1);
 
 	ent->v.flags &= ~FL_ONGROUND;
@@ -310,7 +311,7 @@ qboolean SV_StepDirection(edict_t *ent, float yaw, float dist)
 	move[0] = cos(yaw * (2 * M_PI) / 360.0) * dist;
 	move[1] = sin(yaw * (2 * M_PI) / 360.0) * dist;
 	move[2] = 0;
-	if (SV_movestep(ent, move, 0))
+	if(SV_movestep(ent, move, 0))
 	{
 		SV_LinkEdict(ent, 1);
 		return 1;
@@ -324,7 +325,7 @@ qboolean SV_StepDirection(edict_t *ent, float yaw, float dist)
 
 qboolean SV_FlyDirection(edict_t *ent, vec_t *direction)
 {
-	if (SV_movestep(ent, direction, 0))
+	if(SV_movestep(ent, direction, 0))
 	{
 		SV_LinkEdict(ent, 1);
 		return 1;
@@ -350,82 +351,82 @@ NOXREF void SV_NewChaseDir(edict_t *actor, edict_t *enemy, float dist)
 	float olddir;
 	float turnaround;
 
-	olddir = anglemod(45.0 * (int)(actor->v.ideal_yaw / 45.0));
+	olddir     = anglemod(45.0 * (int)(actor->v.ideal_yaw / 45.0));
 	turnaround = anglemod(olddir - 180.0);
 
 	deltax = enemy->v.origin[0] - actor->v.origin[0];
 	deltay = enemy->v.origin[1] - actor->v.origin[1];
 
-	if (deltax > 10.0)
+	if(deltax > 10.0)
 		d[1] = 0.0;
-	else if (deltax <- 10.0)
-		d[1]= 180.0;
+	else if(deltax < -10.0)
+		d[1] = 180.0;
 	else
-		d[1]= DI_NODIR;
-	if (deltay < -10.0)
+		d[1] = DI_NODIR;
+	if(deltay < -10.0)
 		d[2] = 270.0;
-	else if (deltay > 10.0)
+	else if(deltay > 10.0)
 		d[2] = 90.0;
 	else
-		d[2]= DI_NODIR;
+		d[2] = DI_NODIR;
 
-	if (d[1] != DI_NODIR && d[2] != DI_NODIR)
+	if(d[1] != DI_NODIR && d[2] != DI_NODIR)
 	{
-		if (d[1] == 0.0)
+		if(d[1] == 0.0)
 			tdir = d[2] == 90.0 ? 45.0 : 315.0;
 		else
 			tdir = d[2] == 90.0 ? 135.0 : 215.0;
 
-		if (tdir != turnaround && SV_StepDirection(actor, tdir, dist))
+		if(tdir != turnaround && SV_StepDirection(actor, tdir, dist))
 			return;
 	}
 
-	if (RandomLong(0, 1) ||  abs(deltay) > abs(deltax))
+	if(RandomLong(0, 1) || abs(deltay) > abs(deltax))
 	{
 		tdir = d[1];
 		d[1] = d[2];
 		d[2] = tdir;
 	}
 
-	if (d[1] != DI_NODIR && d[1] != turnaround && SV_StepDirection(actor, d[1], dist))
+	if(d[1] != DI_NODIR && d[1] != turnaround && SV_StepDirection(actor, d[1], dist))
 		return;
 
-	if (d[2] != DI_NODIR && d[2] != turnaround && SV_StepDirection(actor, d[2], dist))
+	if(d[2] != DI_NODIR && d[2] != turnaround && SV_StepDirection(actor, d[2], dist))
 		return;
 
-	if (olddir != DI_NODIR && SV_StepDirection(actor, olddir, dist))
+	if(olddir != DI_NODIR && SV_StepDirection(actor, olddir, dist))
 		return;
 
-	if (RandomLong(0, 1))
+	if(RandomLong(0, 1))
 	{
-		for (tdir = 0.0; tdir <= 315.0; tdir += 45.0)
-			if (tdir != turnaround && SV_StepDirection(actor, tdir, dist))
-					return;
+		for(tdir = 0.0; tdir <= 315.0; tdir += 45.0)
+			if(tdir != turnaround && SV_StepDirection(actor, tdir, dist))
+				return;
 	}
 	else
 	{
-		for (tdir = 315.0 ; tdir >= 0.0; tdir -= 45.0)
-			if (tdir != turnaround && SV_StepDirection(actor, tdir, dist))
-					return;
+		for(tdir = 315.0; tdir >= 0.0; tdir -= 45.0)
+			if(tdir != turnaround && SV_StepDirection(actor, tdir, dist))
+				return;
 	}
 
-	if (turnaround != DI_NODIR && SV_StepDirection(actor, turnaround, dist))
+	if(turnaround != DI_NODIR && SV_StepDirection(actor, turnaround, dist))
 		return;
 
 	actor->v.ideal_yaw = olddir;
 
-	if (!SV_CheckBottom(actor))
+	if(!SV_CheckBottom(actor))
 		SV_FixCheckBottom(actor);
 }
 
 NOXREF qboolean SV_CloseEnough(edict_t *ent, edict_t *goal, float dist)
 {
 	int i;
-	for (i = 0; i < 3; i++)
+	for(i = 0; i < 3; i++)
 	{
-		if (goal->v.absmin[i] > ent->v.absmax[i] + dist)
+		if(goal->v.absmin[i] > ent->v.absmax[i] + dist)
 			return FALSE;
-		if (goal->v.absmax[i] < ent->v.absmin[i] - dist)
+		if(goal->v.absmax[i] < ent->v.absmin[i] - dist)
 			return FALSE;
 	}
 	return TRUE;
@@ -434,11 +435,11 @@ NOXREF qboolean SV_CloseEnough(edict_t *ent, edict_t *goal, float dist)
 NOXREF qboolean SV_ReachedGoal(edict_t *ent, vec_t *vecGoal, float flDist)
 {
 	int i;
-	for (i = 0; i < 3; i++)
+	for(i = 0; i < 3; i++)
 	{
-		if (vecGoal[i] > ent->v.absmax[i] + flDist)
+		if(vecGoal[i] > ent->v.absmax[i] + flDist)
 			return FALSE;
-		if (vecGoal[i] < ent->v.absmin[i] - flDist)
+		if(vecGoal[i] < ent->v.absmin[i] - flDist)
 			return FALSE;
 	}
 	return TRUE;
@@ -453,75 +454,73 @@ void SV_NewChaseDir2(edict_t *actor, vec_t *vecGoal, float dist)
 	float olddir;
 	float turnaround;
 
-	olddir = anglemod(45 * (int)(actor->v.ideal_yaw / 45.0));
+	olddir     = anglemod(45 * (int)(actor->v.ideal_yaw / 45.0));
 	turnaround = anglemod(olddir - 180.0);
-	deltax = vecGoal[0] - actor->v.origin[0];
-	deltay = vecGoal[1] - actor->v.origin[1];
+	deltax     = vecGoal[0] - actor->v.origin[0];
+	deltay     = vecGoal[1] - actor->v.origin[1];
 
-	if (deltax > 10)
+	if(deltax > 10)
 		d_1 = 0;
-	else if (deltax < -10)
+	else if(deltax < -10)
 		d_1 = 180;
 	else
 		d_1 = DI_NODIR;
 
-	if (deltay < -10)
+	if(deltay < -10)
 		d_2 = 270;
-	else if (deltay > 10)
+	else if(deltay > 10)
 		d_2 = 90;
 	else
 		d_2 = DI_NODIR;
 
-	if (d_1 != DI_NODIR && d_2 != DI_NODIR)
+	if(d_1 != DI_NODIR && d_2 != DI_NODIR)
 	{
-		if (d_1 == 0.0)
+		if(d_1 == 0.0)
 			tdir = d_2 == 90 ? 45 : 315;
 		else
 			tdir = d_2 == 90 ? 135 : 215;
 
-		if (tdir != turnaround && SV_StepDirection(actor, tdir, dist))
+		if(tdir != turnaround && SV_StepDirection(actor, tdir, dist))
 			return;
 	}
 
-	if (RandomLong(0, 1) || abs(deltay) > abs(deltax))
+	if(RandomLong(0, 1) || abs(deltay) > abs(deltax))
 	{
 		tdir = d_1;
-		d_1 = d_2;
-		d_2 = tdir;
+		d_1  = d_2;
+		d_2  = tdir;
 	}
 
-	if (d_1 != DI_NODIR && d_1 != turnaround
-		&& SV_StepDirection(actor, d_1, dist))
+	if(d_1 != DI_NODIR && d_1 != turnaround && SV_StepDirection(actor, d_1, dist))
 		return;
 
-	if (d_2 != DI_NODIR && d_2 != turnaround
-		&& SV_StepDirection(actor, d_2, dist))
+	if(d_2 != DI_NODIR && d_2 != turnaround && SV_StepDirection(actor, d_2, dist))
 		return;
 
-	if (olddir != DI_NODIR && SV_StepDirection(actor, olddir, dist))
+	if(olddir != DI_NODIR && SV_StepDirection(actor, olddir, dist))
 		return;
 
-	if (RandomLong(0, 1))
+	if(RandomLong(0, 1))
 	{
-		for (tdir = 0; tdir <= 315; tdir += 45)
+		for(tdir = 0; tdir <= 315; tdir += 45)
 		{
-			if (tdir != turnaround && SV_StepDirection(actor, tdir, dist))
+			if(tdir != turnaround && SV_StepDirection(actor, tdir, dist))
 				return;
 		}
 	}
 	else
 	{
-		for (tdir = 315; tdir >= 0; tdir -= 45)
+		for(tdir = 315; tdir >= 0; tdir -= 45)
 		{
-			if (tdir != turnaround && SV_StepDirection(actor, tdir, dist))
+			if(tdir != turnaround && SV_StepDirection(actor, tdir, dist))
 				return;
 		}
 	}
 
-	if (turnaround == DI_NODIR || !SV_StepDirection(actor, turnaround, dist))
+	if(turnaround == DI_NODIR || !SV_StepDirection(actor, turnaround, dist))
 	{
 		actor->v.ideal_yaw = olddir;
-		if (!SV_CheckBottom(actor))
+		if(!SV_CheckBottom(actor))
 			SV_FixCheckBottom(actor);
 	}
 }
@@ -535,14 +534,14 @@ void EXT_FUNC SV_MoveToOrigin_I(edict_t *ent, const float *pflGoal, float dist, 
 	vecGoal[1] = pflGoal[1];
 	vecGoal[2] = pflGoal[2];
 
-	if (ent->v.flags & (FL_ONGROUND | FL_SWIM | FL_FLY))
+	if(ent->v.flags & (FL_ONGROUND | FL_SWIM | FL_FLY))
 	{
-		if (iStrafe)
+		if(iStrafe)
 		{
 			vecDir[0] = vecGoal[0] - ent->v.origin[0];
 			vecDir[1] = vecGoal[1] - ent->v.origin[1];
 			vecDir[2] = vecGoal[2] - ent->v.origin[2];
-			if (!(ent->v.flags & (FL_SWIM | FL_FLY)))
+			if(!(ent->v.flags & (FL_SWIM | FL_FLY)))
 				vecDir[2] = 0;
 
 			VectorNormalize(vecDir);
@@ -551,7 +550,7 @@ void EXT_FUNC SV_MoveToOrigin_I(edict_t *ent, const float *pflGoal, float dist, 
 		}
 		else
 		{
-			if (!SV_StepDirection(ent, ent->v.ideal_yaw, dist))
+			if(!SV_StepDirection(ent, ent->v.ideal_yaw, dist))
 				SV_NewChaseDir2(ent, vecGoal, dist);
 		}
 	}

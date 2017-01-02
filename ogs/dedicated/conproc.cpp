@@ -1,11 +1,13 @@
 //========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
 
-// conproc.c -- support for qhost
+/// @file
+/// @brief support for qhost
+
 #include "dedicated.h"
 #include "sys_ded.h"
 #include <stdio.h>
@@ -13,12 +15,12 @@
 #include <windows.h>
 #include "conproc.h"
 
-static HANDLE	heventDone;
-static HANDLE	hfileBuffer;
-static HANDLE	heventChildSend;
-static HANDLE	heventParentSend;
-static HANDLE	hStdout;
-static HANDLE	hStdin;
+static HANDLE heventDone;
+static HANDLE hfileBuffer;
+static HANDLE heventChildSend;
+static HANDLE heventParentSend;
+static HANDLE hStdout;
+static HANDLE hStdin;
 
 /*
 ==============
@@ -28,77 +30,77 @@ SetConsoleCXCY
 */
 BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
 {
-	CONSOLE_SCREEN_BUFFER_INFO	info;
-	COORD						coordMax;
- 
+	CONSOLE_SCREEN_BUFFER_INFO info;
+	COORD                      coordMax;
+
 	coordMax = GetLargestConsoleWindowSize(hStdout);
 
-	if (cy > coordMax.Y)
+	if(cy > coordMax.Y)
 		cy = coordMax.Y;
 
-	if (cx > coordMax.X)
+	if(cx > coordMax.X)
 		cx = coordMax.X;
- 
-	if (!GetConsoleScreenBufferInfo(hStdout, &info))
+
+	if(!GetConsoleScreenBufferInfo(hStdout, &info))
 		return FALSE;
 
-// height
-    info.srWindow.Left = 0;         
-    info.srWindow.Right = info.dwSize.X - 1;                
-    info.srWindow.Top = 0;
-    info.srWindow.Bottom = cy - 1;          
- 
-	if (cy < info.dwSize.Y)
+	// height
+	info.srWindow.Left   = 0;
+	info.srWindow.Right  = info.dwSize.X - 1;
+	info.srWindow.Top    = 0;
+	info.srWindow.Bottom = cy - 1;
+
+	if(cy < info.dwSize.Y)
 	{
-		if (!SetConsoleWindowInfo(hStdout, TRUE, &info.srWindow))
+		if(!SetConsoleWindowInfo(hStdout, TRUE, &info.srWindow))
 			return FALSE;
- 
+
 		info.dwSize.Y = cy;
- 
-		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
+
+		if(!SetConsoleScreenBufferSize(hStdout, info.dwSize))
 			return FALSE;
-    }
-    else if (cy > info.dwSize.Y)
-    {
+	}
+	else if(cy > info.dwSize.Y)
+	{
 		info.dwSize.Y = cy;
- 
-		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
+
+		if(!SetConsoleScreenBufferSize(hStdout, info.dwSize))
 			return FALSE;
- 
-		if (!SetConsoleWindowInfo(hStdout, TRUE, &info.srWindow))
+
+		if(!SetConsoleWindowInfo(hStdout, TRUE, &info.srWindow))
 			return FALSE;
-    }
- 
-	if (!GetConsoleScreenBufferInfo(hStdout, &info))
+	}
+
+	if(!GetConsoleScreenBufferInfo(hStdout, &info))
 		return FALSE;
- 
-// width
-	info.srWindow.Left = 0;         
-	info.srWindow.Right = cx - 1;
-	info.srWindow.Top = 0;
-	info.srWindow.Bottom = info.dwSize.Y - 1;               
- 
-	if (cx < info.dwSize.X)
+
+	// width
+	info.srWindow.Left   = 0;
+	info.srWindow.Right  = cx - 1;
+	info.srWindow.Top    = 0;
+	info.srWindow.Bottom = info.dwSize.Y - 1;
+
+	if(cx < info.dwSize.X)
 	{
-		if (!SetConsoleWindowInfo(hStdout, TRUE, &info.srWindow))
+		if(!SetConsoleWindowInfo(hStdout, TRUE, &info.srWindow))
 			return FALSE;
- 
+
 		info.dwSize.X = cx;
-    
-		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
+
+		if(!SetConsoleScreenBufferSize(hStdout, info.dwSize))
 			return FALSE;
 	}
-	else if (cx > info.dwSize.X)
+	else if(cx > info.dwSize.X)
 	{
 		info.dwSize.X = cx;
- 
-		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
+
+		if(!SetConsoleScreenBufferSize(hStdout, info.dwSize))
 			return FALSE;
- 
-		if (!SetConsoleWindowInfo(hStdout, TRUE, &info.srWindow))
+
+		if(!SetConsoleWindowInfo(hStdout, TRUE, &info.srWindow))
 			return FALSE;
 	}
- 
+
 	return TRUE;
 }
 
@@ -108,12 +110,12 @@ GetMappedBuffer
 
 ==============
 */
-LPVOID GetMappedBuffer (HANDLE hfileBuffer)
+LPVOID GetMappedBuffer(HANDLE hfileBuffer)
 {
 	LPVOID pBuffer;
 
-	pBuffer = MapViewOfFile (hfileBuffer,
-							FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+	pBuffer = MapViewOfFile(hfileBuffer,
+	                        FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
 	return pBuffer;
 }
@@ -124,9 +126,9 @@ ReleaseMappedBuffer
 
 ==============
 */
-void ReleaseMappedBuffer (LPVOID pBuffer)
+void ReleaseMappedBuffer(LPVOID pBuffer)
 {
-	UnmapViewOfFile (pBuffer);
+	UnmapViewOfFile(pBuffer);
 }
 
 /*
@@ -135,14 +137,14 @@ GetScreenBufferLines
 
 ==============
 */
-BOOL GetScreenBufferLines (int *piLines)
+BOOL GetScreenBufferLines(int *piLines)
 {
-	CONSOLE_SCREEN_BUFFER_INFO	info;							  
-	BOOL						bRet;
+	CONSOLE_SCREEN_BUFFER_INFO info;
+	BOOL                       bRet;
 
-	bRet = GetConsoleScreenBufferInfo (hStdout, &info);
-		
-	if (bRet)
+	bRet = GetConsoleScreenBufferInfo(hStdout, &info);
+
+	if(bRet)
 		*piLines = info.dwSize.Y;
 
 	return bRet;
@@ -154,9 +156,9 @@ SetScreenBufferLines
 
 ==============
 */
-BOOL SetScreenBufferLines (int iLines)
+BOOL SetScreenBufferLines(int iLines)
 {
-	return SetConsoleCXCY (hStdout, 80, iLines);
+	return SetConsoleCXCY(hStdout, 80, iLines);
 }
 
 /*
@@ -165,24 +167,24 @@ ReadText
 
 ==============
 */
-BOOL ReadText (LPTSTR pszText, int iBeginLine, int iEndLine)
+BOOL ReadText(LPTSTR pszText, int iBeginLine, int iEndLine)
 {
-	COORD	coord;
-	DWORD	dwRead;
-	BOOL	bRet;
+	COORD coord;
+	DWORD dwRead;
+	BOOL  bRet;
 
 	coord.X = 0;
 	coord.Y = iBeginLine;
 
 	bRet = ReadConsoleOutputCharacter(
-		hStdout,
-		pszText,
-		80 * (iEndLine - iBeginLine + 1),
-		coord,
-		&dwRead);
+	    hStdout,
+	    pszText,
+	    80 * (iEndLine - iBeginLine + 1),
+	    coord,
+	    &dwRead);
 
 	// Make sure it's null terminated.
-	if (bRet)
+	if(bRet)
 		pszText[dwRead] = '\0';
 
 	return bRet;
@@ -194,25 +196,25 @@ CharToCode
 
 ==============
 */
-int CharToCode (char c)
+int CharToCode(char c)
 {
 	char upper;
-		
+
 	upper = toupper(c);
 
-	switch (c)
+	switch(c)
 	{
-		case 13:
-			return 28;
+	case 13:
+		return 28;
 
-		default:
-			break;
+	default:
+		break;
 	}
 
-	if (isalpha(c))
-		return (30 + upper - 65); 
+	if(isalpha(c))
+		return (30 + upper - 65);
 
-	if (isdigit(c))
+	if(isdigit(c))
 		return (1 + upper - 47);
 
 	return c;
@@ -224,44 +226,44 @@ WriteText
 
 ==============
 */
-BOOL WriteText (LPCTSTR szText)
+BOOL WriteText(LPCTSTR szText)
 {
-	DWORD			dwWritten;
-	INPUT_RECORD	rec;
-	char			upper, *sz;
+	DWORD        dwWritten;
+	INPUT_RECORD rec;
+	char         upper, *sz;
 
-	sz = (LPTSTR) szText;
+	sz = (LPTSTR)szText;
 
-	while (*sz)
+	while(*sz)
 	{
-	// 13 is the code for a carriage return (\n) instead of 10.
-		if (*sz == 10)
+		// 13 is the code for a carriage return (\n) instead of 10.
+		if(*sz == 10)
 			*sz = 13;
 
 		upper = toupper(*sz);
 
-		rec.EventType = KEY_EVENT;
-		rec.Event.KeyEvent.bKeyDown = TRUE;
-		rec.Event.KeyEvent.wRepeatCount = 1;
-		rec.Event.KeyEvent.wVirtualKeyCode = upper;
-		rec.Event.KeyEvent.wVirtualScanCode = CharToCode (*sz);
-		rec.Event.KeyEvent.uChar.AsciiChar = *sz;
+		rec.EventType                        = KEY_EVENT;
+		rec.Event.KeyEvent.bKeyDown          = TRUE;
+		rec.Event.KeyEvent.wRepeatCount      = 1;
+		rec.Event.KeyEvent.wVirtualKeyCode   = upper;
+		rec.Event.KeyEvent.wVirtualScanCode  = CharToCode(*sz);
+		rec.Event.KeyEvent.uChar.AsciiChar   = *sz;
 		rec.Event.KeyEvent.uChar.UnicodeChar = *sz;
-		rec.Event.KeyEvent.dwControlKeyState = isupper(*sz) ? 0x80 : 0x0; 
+		rec.Event.KeyEvent.dwControlKeyState = isupper(*sz) ? 0x80 : 0x0;
 
 		WriteConsoleInput(
-			hStdin,
-			&rec,
-			1,
-			&dwWritten);
+		    hStdin,
+		    &rec,
+		    1,
+		    &dwWritten);
 
 		rec.Event.KeyEvent.bKeyDown = FALSE;
 
 		WriteConsoleInput(
-			hStdin,
-			&rec,
-			1,
-			&dwWritten);
+		    hStdin,
+		    &rec,
+		    1,
+		    &dwWritten);
 
 		sz++;
 	}
@@ -275,65 +277,65 @@ RequestProc
 
 ==============
 */
-unsigned _stdcall RequestProc (void *arg)
+unsigned _stdcall RequestProc(void *arg)
 {
-	int		*pBuffer;
-	DWORD	dwRet;
-	HANDLE	heventWait[2];
-	int		iBeginLine, iEndLine;
-	
+	int *  pBuffer;
+	DWORD  dwRet;
+	HANDLE heventWait[2];
+	int    iBeginLine, iEndLine;
+
 	heventWait[0] = heventParentSend;
 	heventWait[1] = heventDone;
 
-	while (1)
+	while(1)
 	{
-		dwRet = WaitForMultipleObjects (2, heventWait, FALSE, INFINITE);
+		dwRet = WaitForMultipleObjects(2, heventWait, FALSE, INFINITE);
 
-	// heventDone fired, so we're exiting.
-		if (dwRet == WAIT_OBJECT_0 + 1)	
+		// heventDone fired, so we're exiting.
+		if(dwRet == WAIT_OBJECT_0 + 1)
 			break;
 
-		pBuffer = (int *) GetMappedBuffer (hfileBuffer);
-		
-	// hfileBuffer is invalid.  Just leave.
-		if (!pBuffer)
+		pBuffer = (int *)GetMappedBuffer(hfileBuffer);
+
+		// hfileBuffer is invalid.  Just leave.
+		if(!pBuffer)
 		{
-			Sys_Printf ("Request Proc:  Invalid -HFILE handle\n");
+			Sys_Printf("Request Proc:  Invalid -HFILE handle\n");
 			break;
 		}
 
-		switch (pBuffer[0])
+		switch(pBuffer[0])
 		{
-			case CCOM_WRITE_TEXT:
+		case CCOM_WRITE_TEXT:
 			// Param1 : Text
-				pBuffer[0] = WriteText ((LPCTSTR) (pBuffer + 1));
-				break;
+			pBuffer[0] = WriteText((LPCTSTR)(pBuffer + 1));
+			break;
 
-			case CCOM_GET_TEXT:
+		case CCOM_GET_TEXT:
 			// Param1 : Begin line
 			// Param2 : End line
-				iBeginLine = pBuffer[1];
-				iEndLine = pBuffer[2];
-				pBuffer[0] = ReadText ((LPTSTR) (pBuffer + 1), iBeginLine, 
-									   iEndLine);
-				break;
+			iBeginLine = pBuffer[1];
+			iEndLine   = pBuffer[2];
+			pBuffer[0] = ReadText((LPTSTR)(pBuffer + 1), iBeginLine,
+			                      iEndLine);
+			break;
 
-			case CCOM_GET_SCR_LINES:
+		case CCOM_GET_SCR_LINES:
 			// No params
-				pBuffer[0] = GetScreenBufferLines (&pBuffer[1]);
-				break;
+			pBuffer[0] = GetScreenBufferLines(&pBuffer[1]);
+			break;
 
-			case CCOM_SET_SCR_LINES:
+		case CCOM_SET_SCR_LINES:
 			// Param1 : Number of lines
-				pBuffer[0] = SetScreenBufferLines (pBuffer[1]);
-				break;
+			pBuffer[0] = SetScreenBufferLines(pBuffer[1]);
+			break;
 		}
 
-		ReleaseMappedBuffer (pBuffer);
-		SetEvent (heventChildSend);
+		ReleaseMappedBuffer(pBuffer);
+		SetEvent(heventChildSend);
 	}
 
-	_endthreadex (0);
+	_endthreadex(0);
 	return 0;
 }
 
@@ -343,82 +345,82 @@ DeinitConProc
 
 ==============
 */
-void DeinitConProc (void)
+void DeinitConProc()
 {
-	if ( heventDone )
+	if(heventDone)
 	{
-		SetEvent ( heventDone );
+		SetEvent(heventDone);
 	}
 }
-  
+
 /*
 ==============
 InitConProc
 
 ==============
-*/   
-void InitConProc ( void )
+*/
+void InitConProc()
 {
-	unsigned	threadAddr;
-	HANDLE		hFile			= (HANDLE)0;
-	HANDLE		heventParent	= (HANDLE)0;
-	HANDLE		heventChild		= (HANDLE)0;
-	int			WantHeight = 50;
-	char		*p;
+	unsigned threadAddr;
+	HANDLE   hFile        = (HANDLE)0;
+	HANDLE   heventParent = (HANDLE)0;
+	HANDLE   heventChild  = (HANDLE)0;
+	int      WantHeight   = 50;
+	char *   p;
 
 	// give external front ends a chance to hook into the console
-	if ( CheckParm ( "-HFILE", &p ) && p )
+	if(CheckParm("-HFILE", &p) && p)
 	{
-		hFile = (HANDLE)atoi ( p );
+		hFile = (HANDLE)atoi(p);
 	}
 
-	if ( CheckParm ( "-HPARENT", &p ) && p )
+	if(CheckParm("-HPARENT", &p) && p)
 	{
-		heventParent = (HANDLE)atoi ( p );
+		heventParent = (HANDLE)atoi(p);
 	}
 
-	if ( CheckParm ( "-HCHILD", &p ) && p )
+	if(CheckParm("-HCHILD", &p) && p)
 	{
-		heventChild = (HANDLE)atoi ( p );
+		heventChild = (HANDLE)atoi(p);
 	}
 
 	// ignore if we don't have all the events.
-	if ( !hFile || !heventParent || !heventChild )
+	if(!hFile || !heventParent || !heventChild)
 	{
 		//Sys_Printf ("\n\nNo external front end present.\n" );
 		return;
 	}
 
-	Sys_Printf( "\n\nInitConProc:  Setting up external control.\n" );
+	Sys_Printf("\n\nInitConProc:  Setting up external control.\n");
 
-	hfileBuffer			= hFile;
-	heventParentSend	= heventParent;
-	heventChildSend		= heventChild;
+	hfileBuffer      = hFile;
+	heventParentSend = heventParent;
+	heventChildSend  = heventChild;
 
 	// So we'll know when to go away.
-	heventDone = CreateEvent (NULL, FALSE, FALSE, NULL);
-	if (!heventDone)
+	heventDone = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if(!heventDone)
 	{
-		Sys_Printf ("InitConProc:  Couldn't create heventDone\n");
+		Sys_Printf("InitConProc:  Couldn't create heventDone\n");
 		return;
 	}
 
-	if (!_beginthreadex (NULL, 0, RequestProc, NULL, 0, &threadAddr))
+	if(!_beginthreadex(NULL, 0, RequestProc, NULL, 0, &threadAddr))
 	{
-		CloseHandle (heventDone);
-		Sys_Printf ("InitConProc:  Couldn't create third party thread\n");
+		CloseHandle(heventDone);
+		Sys_Printf("InitConProc:  Couldn't create third party thread\n");
 		return;
 	}
 
 	// save off the input/output handles.
-	hStdout	= GetStdHandle (STD_OUTPUT_HANDLE);
-	hStdin	= GetStdHandle (STD_INPUT_HANDLE);
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	hStdin  = GetStdHandle(STD_INPUT_HANDLE);
 
-	if ( CheckParm( "-conheight", &p ) && p )
+	if(CheckParm("-conheight", &p) && p)
 	{
-		WantHeight = atoi( p );
+		WantHeight = atoi(p);
 	}
 
 	// Force 80 character width, at least 25 character height
-	SetConsoleCXCY( hStdout, 80, WantHeight );
+	SetConsoleCXCY(hStdout, 80, WantHeight);
 }

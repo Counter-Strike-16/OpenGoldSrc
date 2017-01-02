@@ -1,71 +1,73 @@
 /*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
+
+/// @file
 
 #include "precompiled.h"
 
 vec_t gHullMins[4][3] = {
-		{ 0.0f,   0.0f,   0.0f },
-		{ -16.0f, -16.0f, -36.0f },
-		{ -32.0f, -32.0f, -32.0f },
-		{ -16.0f, -16.0f, -18.0f },
+    {0.0f, 0.0f, 0.0f},
+    {-16.0f, -16.0f, -36.0f},
+    {-32.0f, -32.0f, -32.0f},
+    {-16.0f, -16.0f, -18.0f},
 };
 
 vec_t gHullMaxs[4][3] = {
-		{ 0.0f,   0.0f,   0.0f },
-		{ 16.0f,  16.0f,  36.0f },
-		{ 32.0f,  32.0f,  32.0f },
-		{ 16.0f,  16.0f,  18.0f },
+    {0.0f, 0.0f, 0.0f},
+    {16.0f, 16.0f, 36.0f},
+    {32.0f, 32.0f, 32.0f},
+    {16.0f, 16.0f, 18.0f},
 };
 
 unsigned char gMsgData[512];
 
-edict_t *gMsgEntity;
-int gMsgDest;
-int gMsgType;
-qboolean gMsgStarted;
-vec3_t gMsgOrigin;
-int32 idum;
-int g_groupop;
-int g_groupmask;
+edict_t *     gMsgEntity;
+int           gMsgDest;
+int           gMsgType;
+qboolean      gMsgStarted;
+vec3_t        gMsgOrigin;
+int32         idum;
+int           g_groupop;
+int           g_groupmask;
 unsigned char checkpvs[1024];
-int c_invis;
-int c_notvis;
+int           c_invis;
+int           c_notvis;
 
 // TODO: Move to sv_phys.cpp
 vec3_t vec_origin;
-int r_visframecount;
+int    r_visframecount;
 
 /*
 * Globals initialization
 */
 #ifndef HOOK_ENGINE
 
-sizebuf_t gMsgBuffer = { "MessageBegin/End", 0, gMsgData, sizeof(gMsgData), 0 };
+sizebuf_t gMsgBuffer = {"MessageBegin/End", 0, gMsgData, sizeof(gMsgData), 0};
 
 #else // HOOK_ENGINE
 
@@ -85,7 +87,7 @@ float EXT_FUNC PF_Time(void)
 
 void EXT_FUNC PF_setorigin_I(edict_t *e, const float *org)
 {
-	if (!e)
+	if(!e)
 		return;
 
 	e->v.origin[0] = org[0];
@@ -96,9 +98,9 @@ void EXT_FUNC PF_setorigin_I(edict_t *e, const float *org)
 
 void EXT_FUNC SetMinMaxSize(edict_t *e, const float *min, const float *max, qboolean rotate)
 {
-	for (int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 	{
-		if (min[i] > max[i])
+		if(min[i] > max[i])
 			Host_Error("backwards mins/maxs");
 	}
 
@@ -123,32 +125,31 @@ void EXT_FUNC PF_setsize_I(edict_t *e, const float *rgflMin, const float *rgflMa
 
 void EXT_FUNC PF_setmodel_I(edict_t *e, const char *m)
 {
-	const char** check = &g_psv.model_precache[0];
-	int i = 0;
+	const char **check = &g_psv.model_precache[0];
+	int          i     = 0;
 
 #ifdef REHLDS_CHECKS
-	for (; *check && i < HL_MODEL_MAX; i++, check++)
+	for(; *check && i < HL_MODEL_MAX; i++, check++)
 #else
-	for (; *check; i++, check++)
+	for(; *check; i++, check++)
 #endif
 	{
-
-		//use case-sensitive names to increase performance
+//use case-sensitive names to increase performance
 #ifdef REHLDS_FIXES
-		if (!Q_strcmp(*check, m))
+		if(!Q_strcmp(*check, m))
 #else
-		if (!Q_stricmp(*check, m))
+		if(!Q_stricmp(*check, m))
 #endif
 
 		{
 			e->v.modelindex = i;
-			model_t *mod = g_psv.models[i];
+			model_t *mod    = g_psv.models[i];
 #ifdef REHLDS_FIXES
 			e->v.model = *check - pr_strings;
-#else // REHLDS_FIXES
+#else  // REHLDS_FIXES
 			e->v.model = m - pr_strings;
 #endif // REHLDS_FIXES
-			if (mod)
+			if(mod)
 			{
 				SetMinMaxSize(e, mod->mins, mod->maxs, 1);
 			}
@@ -171,7 +172,7 @@ int EXT_FUNC PF_modelindex(const char *pstr)
 
 int EXT_FUNC ModelFrames(int modelIndex)
 {
-	if (modelIndex <= 0 || modelIndex >= 512)
+	if(modelIndex <= 0 || modelIndex >= 512)
 	{
 		Con_DPrintf("Bad sprite index!\n");
 		return 1;
@@ -187,18 +188,18 @@ void EXT_FUNC PF_bprint(char *s)
 
 void EXT_FUNC PF_sprint(char *s, int entnum)
 {
-	if (entnum <= 0 || entnum > g_psvs.maxclients)
+	if(entnum <= 0 || entnum > g_psvs.maxclients)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
 	}
 
-	client_t* client = &g_psvs.clients[entnum - 1];
-	if (!client->fakeclient)
+	client_t *client = &g_psvs.clients[entnum - 1];
+	if(!client->fakeclient)
 	{
 #ifdef REHLDS_FIXES
 		MSG_WriteByte(&client->netchan.message, svc_print);
-#else // REHLDS_FIXES
+#else  // REHLDS_FIXES
 		MSG_WriteChar(&client->netchan.message, svc_print);
 #endif // REHLDS_FIXES
 		MSG_WriteString(&client->netchan.message, s);
@@ -213,20 +214,20 @@ void EXT_FUNC ServerPrint(const char *szMsg)
 void EXT_FUNC ClientPrintf(edict_t *pEdict, PRINT_TYPE ptype, const char *szMsg)
 {
 	client_t *client;
-	int entnum;
+	int       entnum;
 
 	entnum = NUM_FOR_EDICT(pEdict);
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
 	}
 
 	client = &g_psvs.clients[entnum - 1];
-	if (client->fakeclient)
+	if(client->fakeclient)
 		return;
 
-	switch (ptype)
+	switch(ptype)
 	{
 	case print_center:
 		MSG_WriteChar(&client->netchan.message, svc_centerprint);
@@ -248,11 +249,11 @@ void EXT_FUNC ClientPrintf(edict_t *pEdict, PRINT_TYPE ptype, const char *szMsg)
 float EXT_FUNC PF_vectoyaw_I(const float *rgflVector)
 {
 	float yaw = 0.0f;
-	if (rgflVector[1] == 0.0f && rgflVector[0] == 0.0f)
+	if(rgflVector[1] == 0.0f && rgflVector[0] == 0.0f)
 		return 0.0f;
 
 	yaw = (float)(int)floor(atan2((double)rgflVector[1], (double)rgflVector[0]) * 180.0 / M_PI);
-	if (yaw < 0.0)
+	if(yaw < 0.0)
 		yaw = yaw + 360.0;
 
 	return yaw;
@@ -270,16 +271,16 @@ void EXT_FUNC PF_particle_I(const float *org, const float *dir, float color, flo
 
 void EXT_FUNC PF_ambientsound_I(edict_t *entity, float *pos, const char *samp, float vol, float attenuation, int fFlags, int pitch)
 {
-	int i;
-	int soundnum;
-	int ent;
+	int        i;
+	int        soundnum;
+	int        ent;
 	sizebuf_t *pout;
 
-	if (samp[0] == '!')
+	if(samp[0] == '!')
 	{
 		fFlags |= SND_FL_SENTENCE;
 		soundnum = Q_atoi(samp + 1);
-		if (soundnum >= CVOXFILESENTENCEMAX)
+		if(soundnum >= CVOXFILESENTENCEMAX)
 		{
 			Con_Printf("invalid sentence number: %s", &samp[1]);
 			return;
@@ -287,25 +288,25 @@ void EXT_FUNC PF_ambientsound_I(edict_t *entity, float *pos, const char *samp, f
 	}
 	else
 	{
-		for (i = 0; i < HL_SOUND_MAX; i++)
+		for(i = 0; i < HL_SOUND_MAX; i++)
 		{
-			if (g_psv.sound_precache[i] && !Q_stricmp(g_psv.sound_precache[i], samp))
+			if(g_psv.sound_precache[i] && !Q_stricmp(g_psv.sound_precache[i], samp))
 			{
 				soundnum = i;
 				break;
 			}
 		}
 
-		if (i == HL_SOUND_MAX)
+		if(i == HL_SOUND_MAX)
 		{
 			Con_Printf("no precache: %s\n", samp);
 			return;
 		}
 	}
 
-	ent = NUM_FOR_EDICT(entity);
+	ent  = NUM_FOR_EDICT(entity);
 	pout = &g_psv.signon;
-	if (!(fFlags & SND_FL_SPAWNING))
+	if(!(fFlags & SND_FL_SPAWNING))
 		pout = &g_psv.datagram;
 
 	MSG_WriteByte(pout, svc_spawnstaticsound);
@@ -323,13 +324,13 @@ void EXT_FUNC PF_ambientsound_I(edict_t *entity, float *pos, const char *samp, f
 
 void EXT_FUNC PF_sound_I(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch)
 {
-	if (volume < 0.0 || volume > 255.0)
+	if(volume < 0.0 || volume > 255.0)
 		Sys_Error("EMIT_SOUND: volume = %i", volume);
-	if (attenuation < 0.0 || attenuation > 4.0)
+	if(attenuation < 0.0 || attenuation > 4.0)
 		Sys_Error("EMIT_SOUND: attenuation = %f", attenuation);
-	if (channel < 0 || channel > 7)
+	if(channel < 0 || channel > 7)
 		Sys_Error("EMIT_SOUND: channel = %i", channel);
-	if (pitch < 0 || pitch > 255)
+	if(pitch < 0 || pitch > 255)
 		Sys_Error("EMIT_SOUND: pitch = %i", pitch);
 	SV_StartSound(0, entity, channel, sample, (int)(volume * 255), attenuation, fFlags, pitch);
 }
@@ -338,8 +339,8 @@ void EXT_FUNC PF_traceline_Shared(const float *v1, const float *v2, int nomonste
 {
 #ifdef REHLDS_OPT_PEDANTIC
 	trace_t trace = SV_Move_Point(v1, v2, nomonsters, ent);
-#else // REHLDS_OPT_PEDANTIC
-	trace_t trace = SV_Move(v1, vec3_origin, vec3_origin, v2, nomonsters, ent, 0);
+#else  // REHLDS_OPT_PEDANTIC
+	trace_t trace                                = SV_Move(v1, vec3_origin, vec3_origin, v2, nomonsters, ent, 0);
 #endif // REHLDS_OPT_PEDANTIC
 
 	gGlobalVariables.trace_flags = 0;
@@ -349,40 +350,40 @@ void EXT_FUNC PF_traceline_Shared(const float *v1, const float *v2, int nomonste
 void EXT_FUNC PF_traceline_DLL(const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr)
 {
 	PF_traceline_Shared(v1, v2, fNoMonsters, pentToSkip ? pentToSkip : &g_psv.edicts[0]);
-	ptr->fAllSolid = (int)gGlobalVariables.trace_allsolid;
-	ptr->fStartSolid = (int) gGlobalVariables.trace_startsolid;
-	ptr->fInOpen = (int)gGlobalVariables.trace_inopen;
-	ptr->fInWater = (int)gGlobalVariables.trace_inwater;
-	ptr->flFraction = gGlobalVariables.trace_fraction;
-	ptr->flPlaneDist = gGlobalVariables.trace_plane_dist;
-	ptr->pHit = gGlobalVariables.trace_ent;
-	ptr->vecEndPos[0] = gGlobalVariables.trace_endpos[0];
-	ptr->vecEndPos[1] = gGlobalVariables.trace_endpos[1];
-	ptr->vecEndPos[2] = gGlobalVariables.trace_endpos[2];
+	ptr->fAllSolid         = (int)gGlobalVariables.trace_allsolid;
+	ptr->fStartSolid       = (int)gGlobalVariables.trace_startsolid;
+	ptr->fInOpen           = (int)gGlobalVariables.trace_inopen;
+	ptr->fInWater          = (int)gGlobalVariables.trace_inwater;
+	ptr->flFraction        = gGlobalVariables.trace_fraction;
+	ptr->flPlaneDist       = gGlobalVariables.trace_plane_dist;
+	ptr->pHit              = gGlobalVariables.trace_ent;
+	ptr->vecEndPos[0]      = gGlobalVariables.trace_endpos[0];
+	ptr->vecEndPos[1]      = gGlobalVariables.trace_endpos[1];
+	ptr->vecEndPos[2]      = gGlobalVariables.trace_endpos[2];
 	ptr->vecPlaneNormal[0] = gGlobalVariables.trace_plane_normal[0];
 	ptr->vecPlaneNormal[1] = gGlobalVariables.trace_plane_normal[1];
 	ptr->vecPlaneNormal[2] = gGlobalVariables.trace_plane_normal[2];
-	ptr->iHitgroup = gGlobalVariables.trace_hitgroup;
+	ptr->iHitgroup         = gGlobalVariables.trace_hitgroup;
 }
 
 void EXT_FUNC TraceHull(const float *v1, const float *v2, int fNoMonsters, int hullNumber, edict_t *pentToSkip, TraceResult *ptr)
 {
 	hullNumber = hullNumber;
-	if (hullNumber < 0 || hullNumber > 3)
+	if(hullNumber < 0 || hullNumber > 3)
 		hullNumber = 0;
-	trace_t trace = SV_Move(v1, gHullMins[hullNumber], gHullMaxs[hullNumber], v2, fNoMonsters, pentToSkip, 0);
+	trace_t trace  = SV_Move(v1, gHullMins[hullNumber], gHullMaxs[hullNumber], v2, fNoMonsters, pentToSkip, 0);
 
-	ptr->fAllSolid = trace.allsolid;
-	ptr->fStartSolid = trace.startsolid;
-	ptr->fInOpen = trace.inopen;
-	ptr->fInWater = trace.inwater;
-	ptr->flFraction = trace.fraction;
-	ptr->flPlaneDist = trace.plane.dist;
-	ptr->pHit = trace.ent;
-	ptr->iHitgroup = trace.hitgroup;
-	ptr->vecEndPos[0] = trace.endpos[0];
-	ptr->vecEndPos[1] = trace.endpos[1];
-	ptr->vecEndPos[2] = trace.endpos[2];
+	ptr->fAllSolid         = trace.allsolid;
+	ptr->fStartSolid       = trace.startsolid;
+	ptr->fInOpen           = trace.inopen;
+	ptr->fInWater          = trace.inwater;
+	ptr->flFraction        = trace.fraction;
+	ptr->flPlaneDist       = trace.plane.dist;
+	ptr->pHit              = trace.ent;
+	ptr->iHitgroup         = trace.hitgroup;
+	ptr->vecEndPos[0]      = trace.endpos[0];
+	ptr->vecEndPos[1]      = trace.endpos[1];
+	ptr->vecEndPos[2]      = trace.endpos[2];
 	ptr->vecPlaneNormal[0] = trace.plane.normal[0];
 	ptr->vecPlaneNormal[1] = trace.plane.normal[1];
 	ptr->vecPlaneNormal[2] = trace.plane.normal[2];
@@ -397,71 +398,71 @@ void EXT_FUNC TraceModel(const float *v1, const float *v2, int hullNumber, edict
 {
 	int oldMovetype, oldSolid;
 
-	if (hullNumber < 0 || hullNumber > 3)
+	if(hullNumber < 0 || hullNumber > 3)
 		hullNumber = 0;
 
-	model_t* pmodel = g_psv.models[pent->v.modelindex];
-	if (pmodel && pmodel->type == mod_brush)
+	model_t *pmodel = g_psv.models[pent->v.modelindex];
+	if(pmodel && pmodel->type == mod_brush)
 	{
-		oldMovetype = pent->v.movetype;
-		oldSolid = pent->v.solid;
-		pent->v.solid = SOLID_BSP;
+		oldMovetype      = pent->v.movetype;
+		oldSolid         = pent->v.solid;
+		pent->v.solid    = SOLID_BSP;
 		pent->v.movetype = MOVETYPE_PUSH;
 	}
 	trace_t trace = SV_ClipMoveToEntity(pent, v1, gHullMins[hullNumber], gHullMaxs[hullNumber], v2);
-	if (pmodel && pmodel->type == mod_brush)
+	if(pmodel && pmodel->type == mod_brush)
 	{
-		pent->v.solid = oldSolid;
+		pent->v.solid    = oldSolid;
 		pent->v.movetype = oldMovetype;
 	}
 
-	ptr->fAllSolid = trace.allsolid;
-	ptr->fStartSolid = trace.startsolid;
-	ptr->fInOpen = trace.inopen;
-	ptr->fInWater = trace.inwater;
-	ptr->flFraction = trace.fraction;
-	ptr->flPlaneDist = trace.plane.dist;
-	ptr->pHit = trace.ent;
-	ptr->iHitgroup = trace.hitgroup;
-	ptr->vecEndPos[0] = trace.endpos[0];
-	ptr->vecEndPos[1] = trace.endpos[1];
-	ptr->vecEndPos[2] = trace.endpos[2];
+	ptr->fAllSolid         = trace.allsolid;
+	ptr->fStartSolid       = trace.startsolid;
+	ptr->fInOpen           = trace.inopen;
+	ptr->fInWater          = trace.inwater;
+	ptr->flFraction        = trace.fraction;
+	ptr->flPlaneDist       = trace.plane.dist;
+	ptr->pHit              = trace.ent;
+	ptr->iHitgroup         = trace.hitgroup;
+	ptr->vecEndPos[0]      = trace.endpos[0];
+	ptr->vecEndPos[1]      = trace.endpos[1];
+	ptr->vecEndPos[2]      = trace.endpos[2];
 	ptr->vecPlaneNormal[0] = trace.plane.normal[0];
 	ptr->vecPlaneNormal[1] = trace.plane.normal[1];
 	ptr->vecPlaneNormal[2] = trace.plane.normal[2];
 }
 
-msurface_t* EXT_FUNC SurfaceAtPoint(model_t *pModel, mnode_t *node, vec_t *start, vec_t *end)
+msurface_t *EXT_FUNC SurfaceAtPoint(model_t *pModel, mnode_t *node, vec_t *start, vec_t *end)
 {
-	mplane_t *plane;
-	int s;
-	int t;
+	mplane_t *  plane;
+	int         s;
+	int         t;
 	msurface_t *surf;
 	mtexinfo_t *tex;
-	int ds;
-	int dt;
-	vec3_t mid;
-	float back;
-	float front;
-	float frac;
+	int         ds;
+	int         dt;
+	vec3_t      mid;
+	float       back;
+	float       front;
+	float       frac;
 
-	if (node->contents < 0)
+	if(node->contents < 0)
 		return 0;
 
 	plane = node->plane;
 	front = _DotProduct(start, plane->normal) - plane->dist;
-	back = _DotProduct(end, plane->normal) - plane->dist;
-	s = (front < 0.0f) ? 1 : 0;
-	t = (back < 0.0f) ? 1 : 0;
-	if (t == s)
+	back  = _DotProduct(end, plane->normal) - plane->dist;
+	s     = (front < 0.0f) ? 1 : 0;
+	t     = (back < 0.0f) ? 1 : 0;
+	if(t == s)
 		return SurfaceAtPoint(pModel, node->children[s], start, end);
 
-	frac = front / (front - back);
+	frac   = front / (front - back);
 	mid[0] = (end[0] - start[0]) * frac + start[0];
 	mid[1] = (end[1] - start[1]) * frac + start[1];
 	mid[2] = (end[2] - start[2]) * frac + start[2];
-	surf = SurfaceAtPoint(pModel, node->children[s], start, mid);
-	if (surf)
+	surf   = SurfaceAtPoint(pModel, node->children[s], start, mid);
+	if(surf)
 		return surf;
 
 	/* Unreachable code
@@ -469,17 +470,17 @@ msurface_t* EXT_FUNC SurfaceAtPoint(model_t *pModel, mnode_t *node, vec_t *start
 		return NULL;
 	*/
 
-	for (int i = 0; i < node->numsurfaces; i++)
+	for(int i = 0; i < node->numsurfaces; i++)
 	{
 		surf = &pModel->surfaces[node->firstsurface + i];
-		tex = surf->texinfo;
-		ds = (int)(_DotProduct(mid, tex->vecs[0]) + tex->vecs[0][3]);
-		dt = (int)(_DotProduct(mid, tex->vecs[1]) + tex->vecs[1][3]);
-		if (ds >= surf->texturemins[0])
+		tex  = surf->texinfo;
+		ds   = (int)(_DotProduct(mid, tex->vecs[0]) + tex->vecs[0][3]);
+		dt   = (int)(_DotProduct(mid, tex->vecs[1]) + tex->vecs[1][3]);
+		if(ds >= surf->texturemins[0])
 		{
-			if (dt >= surf->texturemins[1])
+			if(dt >= surf->texturemins[1])
 			{
-				if (ds - surf->texturemins[0] <= surf->extents[0] && dt - surf->texturemins[1] <= surf->extents[1])
+				if(ds - surf->texturemins[0] <= surf->extents[0] && dt - surf->texturemins[1] <= surf->extents[1])
 					return surf;
 			}
 		}
@@ -488,67 +489,71 @@ msurface_t* EXT_FUNC SurfaceAtPoint(model_t *pModel, mnode_t *node, vec_t *start
 	return SurfaceAtPoint(pModel, node->children[s ^ 1], mid, end);
 }
 
-const char* EXT_FUNC TraceTexture(edict_t *pTextureEntity, const float *v1, const float *v2)
+const char *EXT_FUNC TraceTexture(edict_t *pTextureEntity, const float *v1, const float *v2)
 {
-	int firstnode;
-	model_t *pmodel;
-	hull_t *phull;
+	int         firstnode;
+	model_t *   pmodel;
+	hull_t *    phull;
 	msurface_t *psurf;
-	vec3_t up;
-	vec3_t right;
-	vec3_t forward;
-	vec3_t offset;
-	vec3_t temp;
-	vec3_t start;
-	vec3_t end;
+	vec3_t      up;
+	vec3_t      right;
+	vec3_t      forward;
+	vec3_t      offset;
+	vec3_t      temp;
+	vec3_t      start;
+	vec3_t      end;
 
 	firstnode = 0;
-	if (pTextureEntity)
+	if(pTextureEntity)
 	{
 		pmodel = g_psv.models[pTextureEntity->v.modelindex];
-		if (!pmodel || pmodel->type)
+		if(!pmodel || pmodel->type)
 			return NULL;
 
-		phull = SV_HullForBsp(pTextureEntity, vec3_origin, vec3_origin, offset);
+		phull    = SV_HullForBsp(pTextureEntity, vec3_origin, vec3_origin, offset);
 		start[0] = v1[0] - offset[0];
 		start[1] = v1[1] - offset[1];
 		start[2] = v1[2] - offset[2];
-		end[0] = v2[0] - offset[0];
-		end[1] = v2[1] - offset[1];
-		end[2] = v2[2] - offset[2];
+		end[0]   = v2[0] - offset[0];
+		end[1]   = v2[1] - offset[1];
+		end[2]   = v2[2] - offset[2];
 
 		firstnode = phull->firstclipnode;
-		if (pTextureEntity->v.angles[0] != 0.0 || pTextureEntity->v.angles[1] != 0.0 || pTextureEntity->v.angles[2] != 0.0)
+		if(pTextureEntity->v.angles[0] != 0.0 || pTextureEntity->v.angles[1] != 0.0 || pTextureEntity->v.angles[2] != 0.0)
 		{
 			AngleVectors(pTextureEntity->v.angles, forward, right, up);
 
-			temp[0] = start[0];	temp[1] = start[1]; temp[2] = start[2];
+			temp[0]  = start[0];
+			temp[1]  = start[1];
+			temp[2]  = start[2];
 			start[0] = _DotProduct(forward, temp);
 			start[1] = -_DotProduct(right, temp);
 			start[2] = _DotProduct(up, temp);
 
-			temp[0] = end[0]; temp[1] = end[1]; temp[2] = end[2];
-			end[0] = _DotProduct(forward, temp);
-			end[1] = -_DotProduct(right, temp);
-			end[2] = _DotProduct(up, temp);
+			temp[0] = end[0];
+			temp[1] = end[1];
+			temp[2] = end[2];
+			end[0]  = _DotProduct(forward, temp);
+			end[1]  = -_DotProduct(right, temp);
+			end[2]  = _DotProduct(up, temp);
 		}
 	}
 	else
 	{
-		pmodel = g_psv.worldmodel;
+		pmodel   = g_psv.worldmodel;
 		start[0] = v1[0];
 		start[1] = v1[1];
 		start[2] = v1[2];
-		end[0] = v2[0];
-		end[1] = v2[1];
-		end[2] = v2[2];
+		end[0]   = v2[0];
+		end[1]   = v2[1];
+		end[2]   = v2[2];
 	}
 
-	if (!pmodel || pmodel->type != mod_brush || !pmodel->nodes)
+	if(!pmodel || pmodel->type != mod_brush || !pmodel->nodes)
 		return NULL;
 
 	psurf = SurfaceAtPoint(pmodel, &pmodel->nodes[firstnode], start, end);
-	if (psurf)
+	if(psurf)
 		return psurf->texinfo->texture->name;
 
 	return NULL;
@@ -562,27 +567,27 @@ void EXT_FUNC PF_TraceToss_Shared(edict_t *ent, edict_t *ignore)
 
 void EXT_FUNC SV_SetGlobalTrace(trace_t *ptrace)
 {
-	gGlobalVariables.trace_fraction = ptrace->fraction;
-	gGlobalVariables.trace_allsolid = (float)ptrace->allsolid;
-	gGlobalVariables.trace_startsolid = (float)ptrace->startsolid;
-	gGlobalVariables.trace_endpos[0] = ptrace->endpos[0];
-	gGlobalVariables.trace_endpos[1] = ptrace->endpos[1];
-	gGlobalVariables.trace_endpos[2] = ptrace->endpos[2];
+	gGlobalVariables.trace_fraction        = ptrace->fraction;
+	gGlobalVariables.trace_allsolid        = (float)ptrace->allsolid;
+	gGlobalVariables.trace_startsolid      = (float)ptrace->startsolid;
+	gGlobalVariables.trace_endpos[0]       = ptrace->endpos[0];
+	gGlobalVariables.trace_endpos[1]       = ptrace->endpos[1];
+	gGlobalVariables.trace_endpos[2]       = ptrace->endpos[2];
 	gGlobalVariables.trace_plane_normal[0] = ptrace->plane.normal[0];
 	gGlobalVariables.trace_plane_normal[2] = ptrace->plane.normal[2];
 	gGlobalVariables.trace_plane_normal[1] = ptrace->plane.normal[1];
-	gGlobalVariables.trace_inwater = (float)ptrace->inwater;
-	gGlobalVariables.trace_inopen = (float)ptrace->inopen;
-	gGlobalVariables.trace_plane_dist = ptrace->plane.dist;
-	if (ptrace->ent)
+	gGlobalVariables.trace_inwater         = (float)ptrace->inwater;
+	gGlobalVariables.trace_inopen          = (float)ptrace->inopen;
+	gGlobalVariables.trace_plane_dist      = ptrace->plane.dist;
+	if(ptrace->ent)
 	{
-		gGlobalVariables.trace_ent = ptrace->ent;
+		gGlobalVariables.trace_ent      = ptrace->ent;
 		gGlobalVariables.trace_hitgroup = ptrace->hitgroup;
 	}
 	else
 	{
 		gGlobalVariables.trace_hitgroup = ptrace->hitgroup;
-		gGlobalVariables.trace_ent = &g_psv.edicts[0];
+		gGlobalVariables.trace_ent      = &g_psv.edicts[0];
 	}
 }
 
@@ -590,41 +595,41 @@ void EXT_FUNC PF_TraceToss_DLL(edict_t *pent, edict_t *pentToIgnore, TraceResult
 {
 	PF_TraceToss_Shared(pent, pentToIgnore ? pentToIgnore : &g_psv.edicts[0]);
 
-	ptr->fAllSolid = (int) gGlobalVariables.trace_allsolid;
-	ptr->fStartSolid = (int)gGlobalVariables.trace_startsolid;
-	ptr->fInOpen = (int)gGlobalVariables.trace_inopen;
-	ptr->fInWater = (int)gGlobalVariables.trace_inwater;
-	ptr->flFraction = gGlobalVariables.trace_fraction;
-	ptr->flPlaneDist = gGlobalVariables.trace_plane_dist;
-	ptr->pHit = gGlobalVariables.trace_ent;
-	ptr->vecEndPos[0] = gGlobalVariables.trace_endpos[0];
-	ptr->vecEndPos[1] = gGlobalVariables.trace_endpos[1];
-	ptr->vecEndPos[2] = gGlobalVariables.trace_endpos[2];
+	ptr->fAllSolid         = (int)gGlobalVariables.trace_allsolid;
+	ptr->fStartSolid       = (int)gGlobalVariables.trace_startsolid;
+	ptr->fInOpen           = (int)gGlobalVariables.trace_inopen;
+	ptr->fInWater          = (int)gGlobalVariables.trace_inwater;
+	ptr->flFraction        = gGlobalVariables.trace_fraction;
+	ptr->flPlaneDist       = gGlobalVariables.trace_plane_dist;
+	ptr->pHit              = gGlobalVariables.trace_ent;
+	ptr->vecEndPos[0]      = gGlobalVariables.trace_endpos[0];
+	ptr->vecEndPos[1]      = gGlobalVariables.trace_endpos[1];
+	ptr->vecEndPos[2]      = gGlobalVariables.trace_endpos[2];
 	ptr->vecPlaneNormal[0] = gGlobalVariables.trace_plane_normal[0];
 	ptr->vecPlaneNormal[1] = gGlobalVariables.trace_plane_normal[1];
 	ptr->vecPlaneNormal[2] = gGlobalVariables.trace_plane_normal[2];
-	ptr->iHitgroup = gGlobalVariables.trace_hitgroup;
+	ptr->iHitgroup         = gGlobalVariables.trace_hitgroup;
 }
 
 int EXT_FUNC TraceMonsterHull(edict_t *pEdict, const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr)
 {
 	qboolean monsterClip = (pEdict->v.flags & FL_MONSTERCLIP) ? 1 : 0;
-	trace_t trace = SV_Move(v1, pEdict->v.mins, pEdict->v.maxs, v2, fNoMonsters, pentToSkip, monsterClip);
-	if (ptr)
+	trace_t  trace       = SV_Move(v1, pEdict->v.mins, pEdict->v.maxs, v2, fNoMonsters, pentToSkip, monsterClip);
+	if(ptr)
 	{
-		ptr->fAllSolid = trace.allsolid;
-		ptr->fStartSolid = trace.startsolid;
-		ptr->fInOpen = trace.inopen;
-		ptr->fInWater = trace.inwater;
-		ptr->flPlaneDist = trace.plane.dist;
-		ptr->pHit = trace.ent;
-		ptr->iHitgroup = trace.hitgroup;
-		ptr->vecEndPos[0] = trace.endpos[0];
-		ptr->vecEndPos[1] = trace.endpos[1];
-		ptr->vecEndPos[2] = trace.endpos[2];
+		ptr->fAllSolid         = trace.allsolid;
+		ptr->fStartSolid       = trace.startsolid;
+		ptr->fInOpen           = trace.inopen;
+		ptr->fInWater          = trace.inwater;
+		ptr->flPlaneDist       = trace.plane.dist;
+		ptr->pHit              = trace.ent;
+		ptr->iHitgroup         = trace.hitgroup;
+		ptr->vecEndPos[0]      = trace.endpos[0];
+		ptr->vecEndPos[1]      = trace.endpos[1];
+		ptr->vecEndPos[2]      = trace.endpos[2];
 		ptr->vecPlaneNormal[0] = trace.plane.normal[0];
 		ptr->vecPlaneNormal[1] = trace.plane.normal[1];
-		ptr->flFraction = trace.fraction;
+		ptr->flFraction        = trace.fraction;
 		ptr->vecPlaneNormal[2] = trace.plane.normal[2];
 	}
 
@@ -633,62 +638,62 @@ int EXT_FUNC TraceMonsterHull(edict_t *pEdict, const float *v1, const float *v2,
 
 int EXT_FUNC PF_newcheckclient(int check)
 {
-	int i;
+	int            i;
 	unsigned char *pvs;
-	edict_t *ent;
-	mleaf_t *leaf;
-	vec3_t org;
+	edict_t *      ent;
+	mleaf_t *      leaf;
+	vec3_t         org;
 
-	if (check < 1)
+	if(check < 1)
 		check = 1;
-	if (check > g_psvs.maxclients)
+	if(check > g_psvs.maxclients)
 		check = g_psvs.maxclients;
-	i = 1;
-	if (check != g_psvs.maxclients)
+	i         = 1;
+	if(check != g_psvs.maxclients)
 		i = check + 1;
-	while (1)
+	while(1)
 	{
-		if (i == g_psvs.maxclients + 1)
+		if(i == g_psvs.maxclients + 1)
 			i = 1;
 
 		ent = &g_psv.edicts[i];
-		if (i == check)
+		if(i == check)
 			break;
-		if (!ent->free && ent->pvPrivateData && !(ent->v.flags & FL_NOTARGET))
+		if(!ent->free && ent->pvPrivateData && !(ent->v.flags & FL_NOTARGET))
 			break;
 		++i;
 	}
 	org[0] = ent->v.view_ofs[0] + ent->v.origin[0];
 	org[1] = ent->v.view_ofs[1] + ent->v.origin[1];
 	org[2] = ent->v.view_ofs[2] + ent->v.origin[2];
-	leaf = Mod_PointInLeaf(org, g_psv.worldmodel);
-	pvs = Mod_LeafPVS(leaf, g_psv.worldmodel);
+	leaf   = Mod_PointInLeaf(org, g_psv.worldmodel);
+	pvs    = Mod_LeafPVS(leaf, g_psv.worldmodel);
 	Q_memcpy(checkpvs, pvs, (g_psv.worldmodel->numleafs + 7) >> 3);
 	return i;
 }
 
-edict_t* EXT_FUNC PF_checkclient_I(edict_t *pEdict)
+edict_t *EXT_FUNC PF_checkclient_I(edict_t *pEdict)
 {
 	edict_t *ent;
 	mleaf_t *leaf;
-	int l;
-	vec3_t view;
+	int      l;
+	vec3_t   view;
 
-	if (g_psv.time - g_psv.lastchecktime >= 0.1)
+	if(g_psv.time - g_psv.lastchecktime >= 0.1)
 	{
-		g_psv.lastcheck = PF_newcheckclient(g_psv.lastcheck);
+		g_psv.lastcheck     = PF_newcheckclient(g_psv.lastcheck);
 		g_psv.lastchecktime = g_psv.time;
 	}
 
 	ent = &g_psv.edicts[g_psv.lastcheck];
-	if (!ent->free && ent->pvPrivateData)
+	if(!ent->free && ent->pvPrivateData)
 	{
 		view[0] = pEdict->v.view_ofs[0] + pEdict->v.origin[0];
 		view[1] = pEdict->v.view_ofs[1] + pEdict->v.origin[1];
 		view[2] = pEdict->v.view_ofs[2] + pEdict->v.origin[2];
-		leaf = Mod_PointInLeaf(view, g_psv.worldmodel);
-		l = (leaf - g_psv.worldmodel->leafs) - 1;
-		if (l >= 0 && ((1 << (l & 7)) & checkpvs[l >> 3]))
+		leaf    = Mod_PointInLeaf(view, g_psv.worldmodel);
+		l       = (leaf - g_psv.worldmodel->leafs) - 1;
+		if(l >= 0 && ((1 << (l & 7)) & checkpvs[l >> 3]))
 		{
 			++c_invis;
 			return ent;
@@ -702,29 +707,28 @@ edict_t* EXT_FUNC PF_checkclient_I(edict_t *pEdict)
 	return &g_psv.edicts[0];
 }
 
-mnode_t* EXT_FUNC PVSNode(mnode_t *node, vec_t *emins, vec_t *emaxs)
+mnode_t *EXT_FUNC PVSNode(mnode_t *node, vec_t *emins, vec_t *emaxs)
 {
 	mplane_t *splitplane;
-	int sides;
-	mnode_t *splitNode;
+	int       sides;
+	mnode_t * splitNode;
 
-	if (node->visframe != r_visframecount)
+	if(node->visframe != r_visframecount)
 		return NULL;
 
-	if (node->contents < 0)
+	if(node->contents < 0)
 		return node->contents != CONTENT_SOLID ? node : NULL;
 
-
 	splitplane = node->plane;
-	if (splitplane->type >= 3u)
+	if(splitplane->type >= 3u)
 	{
 		sides = BoxOnPlaneSide(emins, emaxs, splitplane);
 	}
 	else
 	{
-		if (splitplane->dist > emins[splitplane->type])
+		if(splitplane->dist > emins[splitplane->type])
 		{
-			if (splitplane->dist < emaxs[splitplane->type])
+			if(splitplane->dist < emaxs[splitplane->type])
 				sides = 3;
 			else
 				sides = 2;
@@ -735,14 +739,14 @@ mnode_t* EXT_FUNC PVSNode(mnode_t *node, vec_t *emins, vec_t *emaxs)
 		}
 	}
 
-	if (sides & 1)
+	if(sides & 1)
 	{
 		splitNode = PVSNode(node->children[0], emins, emaxs);
-		if (splitNode)
+		if(splitNode)
 			return splitNode;
 	}
 
-	if (sides & 2)
+	if(sides & 2)
 		return PVSNode(node->children[1], emins, emaxs);
 
 	return NULL;
@@ -751,58 +755,57 @@ mnode_t* EXT_FUNC PVSNode(mnode_t *node, vec_t *emins, vec_t *emaxs)
 void EXT_FUNC PVSMark(model_t *pmodel, unsigned char *ppvs)
 {
 	++r_visframecount;
-	for (int i = 0; i < pmodel->numleafs; i++)
+	for(int i = 0; i < pmodel->numleafs; i++)
 	{
-		if ((1 << (i & 7)) & ppvs[i >> 3])
+		if((1 << (i & 7)) & ppvs[i >> 3])
 		{
-			mnode_t *node = (mnode_t *) &pmodel->leafs[i + 1];
+			mnode_t *node = (mnode_t *)&pmodel->leafs[i + 1];
 			do
 			{
-				if (node->visframe == r_visframecount)
+				if(node->visframe == r_visframecount)
 					break;
 				node->visframe = r_visframecount;
-				node = node->parent;
-			} while (node);
+				node           = node->parent;
+			} while(node);
 		}
 	}
 }
 
-edict_t* EXT_FUNC PVSFindEntities(edict_t *pplayer)
+edict_t *EXT_FUNC PVSFindEntities(edict_t *pplayer)
 {
-	edict_t *pent;
-	edict_t *pchain;
-	edict_t *pentPVS;
-	vec3_t org;
+	edict_t *      pent;
+	edict_t *      pchain;
+	edict_t *      pentPVS;
+	vec3_t         org;
 	unsigned char *ppvs;
-	mleaf_t *pleaf;
+	mleaf_t *      pleaf;
 
 	org[0] = pplayer->v.view_ofs[0] + pplayer->v.origin[0];
 	org[1] = pplayer->v.view_ofs[1] + pplayer->v.origin[1];
 	org[2] = pplayer->v.view_ofs[2] + pplayer->v.origin[2];
-	pleaf = Mod_PointInLeaf(org, g_psv.worldmodel);
-	ppvs = Mod_LeafPVS(pleaf, g_psv.worldmodel);
+	pleaf  = Mod_PointInLeaf(org, g_psv.worldmodel);
+	ppvs   = Mod_LeafPVS(pleaf, g_psv.worldmodel);
 	PVSMark(g_psv.worldmodel, ppvs);
 	pchain = g_psv.edicts;
 
-	for (int i = 1; i < g_psv.num_edicts; i++)
+	for(int i = 1; i < g_psv.num_edicts; i++)
 	{
 		pent = &g_psv.edicts[i];
-		if (pent->free)
+		if(pent->free)
 			continue;
 
 		pentPVS = pent;
-		if (pent->v.movetype == MOVETYPE_FOLLOW && pent->v.aiment)
+		if(pent->v.movetype == MOVETYPE_FOLLOW && pent->v.aiment)
 			pentPVS = pent->v.aiment;
 
-		if (PVSNode(g_psv.worldmodel->nodes, pentPVS->v.absmin, pentPVS->v.absmax))
+		if(PVSNode(g_psv.worldmodel->nodes, pentPVS->v.absmin, pentPVS->v.absmax))
 		{
 			pent->v.chain = pchain;
-			pchain = pent;
+			pchain        = pent;
 		}
-
 	}
 
-	if (cl.worldmodel)
+	if(cl.worldmodel)
 	{
 		//r_oldviewleaf = NULL; //clientside only
 		R_MarkLeaves();
@@ -818,9 +821,9 @@ qboolean EXT_FUNC ValidCmd(const char *pCmd)
 
 void EXT_FUNC PF_stuffcmd_I(edict_t *pEdict, char *szFmt, ...)
 {
-	int entnum;
-	client_t *old;
-	va_list argptr;
+	int         entnum;
+	client_t *  old;
+	va_list     argptr;
 	static char szOut[1024];
 
 	va_start(argptr, szFmt);
@@ -829,19 +832,19 @@ void EXT_FUNC PF_stuffcmd_I(edict_t *pEdict, char *szFmt, ...)
 	va_end(argptr);
 
 	szOut[1023] = 0;
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 	{
 		Con_Printf(
-			"\n!!!\n\nStuffCmd:  Some entity tried to stuff '%s' to console buffer of entity %i when maxclients was set to %i, ignoring\n\n",
-			szOut,
-			entnum,
-			g_psvs.maxclients);
+		    "\n!!!\n\nStuffCmd:  Some entity tried to stuff '%s' to console buffer of entity %i when maxclients was set to %i, ignoring\n\n",
+		    szOut,
+		    entnum,
+		    g_psvs.maxclients);
 	}
 	else
 	{
-		if (ValidCmd(szOut))
+		if(ValidCmd(szOut))
 		{
-			old = host_client;
+			old         = host_client;
 			host_client = &g_psvs.clients[entnum - 1];
 			Host_ClientCommands("%s", szOut);
 			host_client = old;
@@ -855,7 +858,7 @@ void EXT_FUNC PF_stuffcmd_I(edict_t *pEdict, char *szFmt, ...)
 
 void EXT_FUNC PF_localcmd_I(char *str)
 {
-	if (ValidCmd(str))
+	if(ValidCmd(str))
 		Cbuf_AddText(str);
 	else
 		Con_Printf("Error, bad server command %s\n", str);
@@ -866,55 +869,54 @@ void EXT_FUNC PF_localexec_I(void)
 	Cbuf_Execute();
 }
 
-edict_t* EXT_FUNC FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *org, float rad)
+edict_t *EXT_FUNC FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *org, float rad)
 {
 	int e = pEdictStartSearchAfter ? NUM_FOR_EDICT(pEdictStartSearchAfter) : 0;
 
-	for (int i = e + 1; i < g_psv.num_edicts; i++)
+	for(int i = e + 1; i < g_psv.num_edicts; i++)
 	{
-		edict_t* ent = &g_psv.edicts[i];
-		if (ent->free || !ent->v.classname)
+		edict_t *ent = &g_psv.edicts[i];
+		if(ent->free || !ent->v.classname)
 			continue;
 
-		if (i <= g_psvs.maxclients && !g_psvs.clients[i - 1].active)
+		if(i <= g_psvs.maxclients && !g_psvs.clients[i - 1].active)
 			continue;
-
 
 		float distSquared = 0.0;
-		for (int j = 0; j < 3 && distSquared <= (rad * rad); j++)
+		for(int j = 0; j < 3 && distSquared <= (rad * rad); j++)
 		{
 			float eorg;
-			if (org[j] >= ent->v.absmin[j])
+			if(org[j] >= ent->v.absmin[j])
 				eorg = (org[j] <= ent->v.absmax[j]) ? 0.0f : org[j] - ent->v.absmax[j];
 			else
-				eorg = org[j] - ent->v.absmin[j];
+				eorg    = org[j] - ent->v.absmin[j];
 			distSquared = eorg * eorg + distSquared;
 		}
 
-		if (distSquared <= ((rad * rad)))
+		if(distSquared <= ((rad * rad)))
 			return ent;
 	}
 
 	return &g_psv.edicts[0];
 }
 
-edict_t* EXT_FUNC PF_Spawn_I(void)
+edict_t *EXT_FUNC PF_Spawn_I(void)
 {
 	return ED_Alloc();
 }
 
-edict_t* EXT_FUNC CreateNamedEntity(int className)
+edict_t *EXT_FUNC CreateNamedEntity(int className)
 {
-	edict_t *pedict;
+	edict_t *  pedict;
 	ENTITYINIT pEntityInit;
 
-	if (!className)
+	if(!className)
 		Sys_Error("Spawned a NULL entity!");
 
-	pedict = ED_Alloc();
+	pedict              = ED_Alloc();
 	pedict->v.classname = className;
-	pEntityInit = GetEntityInit(&pr_strings[className]);
-	if (pEntityInit)
+	pEntityInit         = GetEntityInit(&pr_strings[className]);
+	if(pEntityInit)
 	{
 		pEntityInit(&pedict->v);
 		return pedict;
@@ -937,21 +939,20 @@ void EXT_FUNC PF_Remove_I_internal(edict_t *ed)
 	ED_Free(ed);
 }
 
-edict_t* EXT_FUNC PF_find_Shared(int eStartSearchAfter, int iFieldToMatch, const char *szValueToFind)
+edict_t *EXT_FUNC PF_find_Shared(int eStartSearchAfter, int iFieldToMatch, const char *szValueToFind)
 {
-	for (int e = eStartSearchAfter + 1; e < g_psv.num_edicts; e++)
+	for(int e = eStartSearchAfter + 1; e < g_psv.num_edicts; e++)
 	{
-		edict_t* ed = &g_psv.edicts[e];
-		if (ed->free)
+		edict_t *ed = &g_psv.edicts[e];
+		if(ed->free)
 			continue;
 
-		char* t = &pr_strings[*(string_t*)((size_t)&ed->v + iFieldToMatch)];
-		if (t == 0 || t == &pr_strings[0])
+		char *t = &pr_strings[*(string_t *)((size_t)&ed->v + iFieldToMatch)];
+		if(t == 0 || t == &pr_strings[0])
 			continue;
 
-		if (!Q_strcmp(t, szValueToFind))
+		if(!Q_strcmp(t, szValueToFind))
 			return ed;
-
 	}
 	return &g_psv.edicts[0];
 }
@@ -964,7 +965,9 @@ int EXT_FUNC iGetIndex(const char *pszField)
 	sz[sizeof(sz) - 1] = 0;
 	Q_strlwr(sz);
 
-	#define IGETINDEX_CHECK_FIELD(f) 	if (!Q_strcmp(sz, #f)) return offsetof(entvars_t, f);
+#define IGETINDEX_CHECK_FIELD(f) \
+	if(!Q_strcmp(sz, #f))        \
+		return offsetof(entvars_t, f);
 
 	IGETINDEX_CHECK_FIELD(classname);
 	IGETINDEX_CHECK_FIELD(model);
@@ -983,13 +986,13 @@ int EXT_FUNC iGetIndex(const char *pszField)
 	return -1;
 }
 
-edict_t* EXT_FUNC FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue)
+edict_t *EXT_FUNC FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue)
 {
-	if (!pszValue)
+	if(!pszValue)
 		return NULL;
 
 	int iField = iGetIndex(pszField);
-	if (iField == -1)
+	if(iField == -1)
 		return NULL;
 
 	return PF_find_Shared(pEdictStartSearchAfter ? NUM_FOR_EDICT(pEdictStartSearchAfter) : 0, iField, pszValue);
@@ -997,16 +1000,16 @@ edict_t* EXT_FUNC FindEntityByString(edict_t *pEdictStartSearchAfter, const char
 
 int EXT_FUNC GetEntityIllum(edict_t *pEnt)
 {
-	if (!pEnt)
+	if(!pEnt)
 		return -1;
 
-	if (NUM_FOR_EDICT(pEnt) <= g_psvs.maxclients)
+	if(NUM_FOR_EDICT(pEnt) <= g_psvs.maxclients)
 	{
 		return pEnt->v.light_level;
 	}
 	else
 	{
-		if (cls.state == ca_connected || cls.state == ca_uninitialized || cls.state == ca_active)
+		if(cls.state == ca_connected || cls.state == ca_uninitialized || cls.state == ca_active)
 			return 0x80;
 		else
 			return 0;
@@ -1022,47 +1025,47 @@ int EXT_FUNC PF_precache_sound_I(const char *s)
 {
 	int i;
 
-	if (!s)
+	if(!s)
 		Host_Error("PF_precache_sound_I: NULL pointer");
 
-	if (PR_IsEmptyString(s))
+	if(PR_IsEmptyString(s))
 		Host_Error("PF_precache_sound_I: Bad string '%s'", s);
 
-	if (s[0] == '!')
+	if(s[0] == '!')
 		Host_Error("PF_precache_sound_I: '%s' do not precache sentence names!", s);
 
-	if (g_psv.state == ss_loading)
+	if(g_psv.state == ss_loading)
 	{
 		g_psv.sound_precache_hashedlookup_built = 0;
 
-		for (i = 0; i < HL_SOUND_MAX; i++)
+		for(i = 0; i < HL_SOUND_MAX; i++)
 		{
-			if (!g_psv.sound_precache[i])
+			if(!g_psv.sound_precache[i])
 			{
 #ifdef REHLDS_FIXES
 				// For more information, see EV_Precache
 				g_psv.sound_precache[i] = ED_NewString(s);
 #else
-				g_psv.sound_precache[i] = s;
+				g_psv.sound_precache[i]          = s;
 #endif // REHLDS_FIXES
 				return i;
 			}
 
-			if (!Q_stricmp(g_psv.sound_precache[i], s))
+			if(!Q_stricmp(g_psv.sound_precache[i], s))
 				return i;
 		}
 
 		Host_Error(
-			"PF_precache_sound_I: Sound '%s' failed to precache because the item count is over the %d limit.\nReduce the number of brush models and/or regular models in the map to correct this.",
-			s,
-			HL_SOUND_MAX);
+		    "PF_precache_sound_I: Sound '%s' failed to precache because the item count is over the %d limit.\nReduce the number of brush models and/or regular models in the map to correct this.",
+		    s,
+		    HL_SOUND_MAX);
 	}
 	else
 	{
 		// precaching not enabled. check if already exists.
-		for (i = 0; i < HL_SOUND_MAX; i++)
+		for(i = 0; i < HL_SOUND_MAX; i++)
 		{
-			if (g_psv.sound_precache[i] && !Q_stricmp(g_psv.sound_precache[i], s))
+			if(g_psv.sound_precache[i] && !Q_stricmp(g_psv.sound_precache[i], s))
 				return i;
 		}
 
@@ -1074,29 +1077,29 @@ int EXT_FUNC PF_precache_sound_I(const char *s)
 
 unsigned short EXT_FUNC EV_Precache(int type, const char *psz)
 {
-	if (!psz)
+	if(!psz)
 		Host_Error("EV_Precache: NULL pointer");
 
-	if (PR_IsEmptyString(psz))
+	if(PR_IsEmptyString(psz))
 		Host_Error("EV_Precache: Bad string '%s'", psz);
 
-	if (g_psv.state == ss_loading)
+	if(g_psv.state == ss_loading)
 	{
-		for (int i = 1; i < HL_EVENT_MAX; i++)
+		for(int i = 1; i < HL_EVENT_MAX; i++)
 		{
-			struct event_s* ev = &g_psv.event_precache[i];
-			if (!ev->filename)
+			struct event_s *ev = &g_psv.event_precache[i];
+			if(!ev->filename)
 			{
-				if (type != 1)
+				if(type != 1)
 					Host_Error("EV_Precache:  only file type 1 supported currently\n");
 
 				char szpath[MAX_PATH];
 				Q_snprintf(szpath, sizeof(szpath), "%s", psz);
 				COM_FixSlashes(szpath);
 
-				int scriptSize = 0;
-				char* evScript = (char*) COM_LoadFile(szpath, 5, &scriptSize);
-				if (!evScript)
+				int   scriptSize = 0;
+				char *evScript   = (char *)COM_LoadFile(szpath, 5, &scriptSize);
+				if(!evScript)
 					Host_Error("EV_Precache:  file %s missing from server\n", psz);
 #ifdef REHLDS_FIXES
 				// Many modders don't know that the resource names passed to precache functions must be a static strings.
@@ -1107,24 +1110,24 @@ unsigned short EXT_FUNC EV_Precache(int type, const char *psz)
 #else
 				g_psv.event_precache[i].filename = psz;
 #endif // REHLDS_FIXES
-				g_psv.event_precache[i].filesize = scriptSize;
+				g_psv.event_precache[i].filesize  = scriptSize;
 				g_psv.event_precache[i].pszScript = evScript;
-				g_psv.event_precache[i].index = i;
+				g_psv.event_precache[i].index     = i;
 
 				return i;
 			}
 
-			if (!Q_stricmp(ev->filename, psz))
+			if(!Q_stricmp(ev->filename, psz))
 				return i;
 		}
 		Host_Error("EV_Precache: '%s' overflow", psz);
 	}
 	else
 	{
-		for (int i = 1; i < HL_EVENT_MAX; i++)
+		for(int i = 1; i < HL_EVENT_MAX; i++)
 		{
-			struct event_s* ev = &g_psv.event_precache[i];
-			if (!Q_stricmp(ev->filename, psz))
+			struct event_s *ev = &g_psv.event_precache[i];
+			if(!Q_stricmp(ev->filename, psz))
 				return i;
 		}
 
@@ -1145,28 +1148,28 @@ void EV_PlayReliableEvent(client_t *cl, int entindex, unsigned short eventindex,
 void EV_PlayReliableEvent_internal(client_t *cl, int entindex, unsigned short eventindex, float delay, event_args_t *pargs)
 {
 	unsigned char data[1024];
-	event_args_t from;
-	event_args_t to;
-	sizebuf_t msg;
+	event_args_t  from;
+	event_args_t  to;
+	sizebuf_t     msg;
 
-	if (cl->fakeclient)
+	if(cl->fakeclient)
 		return;
 
 	Q_memset(&msg, 0, sizeof(msg));
 	msg.buffername = "Reliable Event";
-	msg.data = data;
-	msg.cursize = 0;
-	msg.maxsize = sizeof(data);
+	msg.data       = data;
+	msg.cursize    = 0;
+	msg.maxsize    = sizeof(data);
 
 	Q_memset(&from, 0, sizeof(from));
-	to = *pargs;
+	to          = *pargs;
 	to.entindex = entindex;
 
 	MSG_WriteByte(&msg, svc_event_reliable);
 	MSG_StartBitWriting(&msg);
 	MSG_WriteBits(eventindex, 10);
 	DELTA_WriteDelta((unsigned char *)&from, (unsigned char *)&to, 1, g_peventdelta, 0);
-	if (delay == 0.0)
+	if(delay == 0.0)
 	{
 		MSG_WriteBits(0, 1);
 	}
@@ -1177,7 +1180,7 @@ void EV_PlayReliableEvent_internal(client_t *cl, int entindex, unsigned short ev
 	}
 	MSG_EndBitWriting(&msg);
 
-	if (msg.cursize + cl->netchan.message.cursize <= cl->netchan.message.maxsize)
+	if(msg.cursize + cl->netchan.message.cursize <= cl->netchan.message.maxsize)
 		SZ_Write(&cl->netchan.message, msg.data, msg.cursize);
 	else
 		Netchan_CreateFragments(1, &cl->netchan, &msg);
@@ -1185,27 +1188,27 @@ void EV_PlayReliableEvent_internal(client_t *cl, int entindex, unsigned short ev
 
 void EXT_FUNC EV_Playback(int flags, const edict_t *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2)
 {
-	client_t *cl;
-	signed int j;
+	client_t *   cl;
+	signed int   j;
 	event_args_t eargs;
-	vec3_t event_origin;
-	int invoker;
-	int slot;
-	int leafnum;
+	vec3_t       event_origin;
+	int          invoker;
+	int          slot;
+	int          leafnum;
 
-	if (flags & FEV_CLIENT)
+	if(flags & FEV_CLIENT)
 		return;
 
 	invoker = -1;
 	Q_memset(&eargs, 0, sizeof(eargs));
-	if (!VectorCompare(origin, vec3_origin))
+	if(!VectorCompare(origin, vec3_origin))
 	{
 		eargs.origin[2] = origin[2];
 		eargs.origin[0] = origin[0];
 		eargs.origin[1] = origin[1];
 		eargs.flags |= FEVENT_ORIGIN;
 	}
-	if (!VectorCompare(angles, vec3_origin))
+	if(!VectorCompare(angles, vec3_origin))
 	{
 		eargs.angles[2] = angles[2];
 		eargs.angles[0] = angles[0];
@@ -1219,39 +1222,39 @@ void EXT_FUNC EV_Playback(int flags, const edict_t *pInvoker, unsigned short eve
 	eargs.bparam1 = bparam1;
 	eargs.bparam2 = bparam2;
 
-	if (eventindex < 1u || eventindex >= HL_EVENT_MAX)
+	if(eventindex < 1u || eventindex >= HL_EVENT_MAX)
 	{
 		Con_DPrintf("EV_Playback:  index out of range %i\n", eventindex);
 		return;
 	}
 
-	if (!g_psv.event_precache[eventindex].pszScript)
+	if(!g_psv.event_precache[eventindex].pszScript)
 	{
 		Con_DPrintf("EV_Playback:  no event for index %i\n", eventindex);
 		return;
 	}
 
-	if (pInvoker)
+	if(pInvoker)
 	{
 		event_origin[0] = pInvoker->v.origin[0];
 		event_origin[1] = pInvoker->v.origin[1];
 		event_origin[2] = pInvoker->v.origin[2];
-		invoker = NUM_FOR_EDICT(pInvoker);
-		if (invoker >= 1)
+		invoker         = NUM_FOR_EDICT(pInvoker);
+		if(invoker >= 1)
 		{
-			if (invoker <= g_psvs.maxclients)
+			if(invoker <= g_psvs.maxclients)
 			{
-				if (pInvoker->v.flags & FL_DUCKING)
+				if(pInvoker->v.flags & FL_DUCKING)
 					eargs.ducking = 1;
 			}
 		}
-		if (!(eargs.flags & FEVENT_ORIGIN))
+		if(!(eargs.flags & FEVENT_ORIGIN))
 		{
 			eargs.origin[0] = pInvoker->v.origin[0];
 			eargs.origin[1] = pInvoker->v.origin[1];
 			eargs.origin[2] = pInvoker->v.origin[2];
 		}
-		if (!(eargs.flags & FEVENT_ANGLES))
+		if(!(eargs.flags & FEVENT_ANGLES))
 		{
 			eargs.angles[0] = pInvoker->v.angles[0];
 			eargs.angles[1] = pInvoker->v.angles[1];
@@ -1267,63 +1270,63 @@ void EXT_FUNC EV_Playback(int flags, const edict_t *pInvoker, unsigned short eve
 
 	leafnum = SV_PointLeafnum(event_origin);
 
-	for (slot = 0; slot < g_psvs.maxclients; slot++)
+	for(slot = 0; slot < g_psvs.maxclients; slot++)
 	{
 		cl = &g_psvs.clients[slot];
-		if (!cl->active || !cl->spawned || !cl->connected || !cl->fully_connected || cl->fakeclient)
+		if(!cl->active || !cl->spawned || !cl->connected || !cl->fully_connected || cl->fakeclient)
 			continue;
 
-		if (pInvoker)
+		if(pInvoker)
 		{
-			if (pInvoker->v.groupinfo)
+			if(pInvoker->v.groupinfo)
 			{
-				if (cl->edict->v.groupinfo)
+				if(cl->edict->v.groupinfo)
 				{
-					if (g_groupop)
+					if(g_groupop)
 					{
-						if (g_groupop == GROUP_OP_NAND && (cl->edict->v.groupinfo & pInvoker->v.groupinfo))
+						if(g_groupop == GROUP_OP_NAND && (cl->edict->v.groupinfo & pInvoker->v.groupinfo))
 							continue;
 					}
 					else
 					{
-						if (!(cl->edict->v.groupinfo & pInvoker->v.groupinfo))
+						if(!(cl->edict->v.groupinfo & pInvoker->v.groupinfo))
 							continue;
 					}
 				}
 			}
 		}
 
-		if (pInvoker && !(flags & FEV_GLOBAL))
+		if(pInvoker && !(flags & FEV_GLOBAL))
 		{
-			if (!SV_ValidClientMulticast(cl, leafnum, 4))
+			if(!SV_ValidClientMulticast(cl, leafnum, 4))
 				continue;
 		}
 
-		if (cl == host_client && (flags & FEV_NOTHOST) && cl->lw || (flags & FEV_HOSTONLY) && cl->edict != pInvoker)
+		if(cl == host_client && (flags & FEV_NOTHOST) && cl->lw || (flags & FEV_HOSTONLY) && cl->edict != pInvoker)
 			continue;
 
-		if (flags & FEV_RELIABLE)
+		if(flags & FEV_RELIABLE)
 		{
 			EV_PlayReliableEvent(cl, pInvoker ? NUM_FOR_EDICT(pInvoker) : 0, eventindex, delay, &eargs);
 			continue;
 		}
 
-		if (flags & FEV_UPDATE)
+		if(flags & FEV_UPDATE)
 		{
-			for (j = 0; j < MAX_EVENT_QUEUE; j++)
+			for(j = 0; j < MAX_EVENT_QUEUE; j++)
 			{
 				event_info_s *ei = &cl->events.ei[j];
-				if (ei->index == eventindex && invoker != -1 && ei->entity_index == invoker)
+				if(ei->index == eventindex && invoker != -1 && ei->entity_index == invoker)
 					break;
 			}
 
-			if (j < MAX_EVENT_QUEUE)
+			if(j < MAX_EVENT_QUEUE)
 			{
 				event_info_s *ei = &cl->events.ei[j];
 				ei->entity_index = -1;
-				ei->index = eventindex;
+				ei->index        = eventindex;
 				ei->packet_index = -1;
-				if (pInvoker)
+				if(pInvoker)
 					ei->entity_index = invoker;
 				Q_memcpy(&ei->args, &eargs, sizeof(ei->args));
 				ei->fire_time = delay;
@@ -1331,20 +1334,20 @@ void EXT_FUNC EV_Playback(int flags, const edict_t *pInvoker, unsigned short eve
 			}
 		}
 
-		for (j = 0; j < MAX_EVENT_QUEUE; j++)
+		for(j = 0; j < MAX_EVENT_QUEUE; j++)
 		{
 			event_info_s *ei = &cl->events.ei[j];
-			if (ei->index == 0)
+			if(ei->index == 0)
 				break;
 		}
 
-		if (j < MAX_EVENT_QUEUE)
+		if(j < MAX_EVENT_QUEUE)
 		{
 			event_info_s *ei = &cl->events.ei[j];
 			ei->entity_index = -1;
-			ei->index = eventindex;
+			ei->index        = eventindex;
 			ei->packet_index = -1;
-			if (pInvoker)
+			if(pInvoker)
 				ei->entity_index = invoker;
 			Q_memcpy(&ei->args, &eargs, sizeof(ei->args));
 			ei->fire_time = delay;
@@ -1354,34 +1357,35 @@ void EXT_FUNC EV_Playback(int flags, const edict_t *pInvoker, unsigned short eve
 
 void EXT_FUNC EV_SV_Playback(int flags, int clientindex, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2)
 {
-	if (flags & FEV_CLIENT)
+	if(flags & FEV_CLIENT)
 		return;
 
-	if (clientindex < 0 || clientindex >= g_psvs.maxclients)
+	if(clientindex < 0 || clientindex >= g_psvs.maxclients)
 		Host_Error("EV_SV_Playback:  Client index %i out of range\n", clientindex);
 
 	edict_t *pEdict = g_psvs.clients[clientindex].edict;
-	EV_Playback(flags,pEdict, eventindex, delay, origin, angles, fparam1, fparam2, iparam1, iparam2, bparam1, bparam2);
+	EV_Playback(flags, pEdict, eventindex, delay, origin, angles, fparam1, fparam2, iparam1, iparam2, bparam1, bparam2);
 }
 
 #ifdef REHLDS_FIXES
 int SV_LookupModelIndex(const char *name)
 {
-	if (!name || !name[0])
+	if(!name || !name[0])
 		return 0;
 
 #ifdef REHLDS_OPT_PEDANTIC
 	auto node = g_rehlds_sv.modelsMap.get(name);
-	if (node) {
+	if(node)
+	{
 		return node->val;
 	}
-#else // REHLDS_OPT_PEDANTIC
-	for (int i = 0; i < HL_MODEL_MAX; i++)
+#else  // REHLDS_OPT_PEDANTIC
+	for(int i = 0; i < HL_MODEL_MAX; i++)
 	{
-		if (!g_psv.model_precache[i])
+		if(!g_psv.model_precache[i])
 			break;
 
-		if (!Q_stricmp(g_psv.model_precache[i], name))
+		if(!Q_stricmp(g_psv.model_precache[i], name))
 			return i;
 	};
 #endif // REHLDS_OPT_PEDANTIC
@@ -1393,29 +1397,29 @@ int SV_LookupModelIndex(const char *name)
 int EXT_FUNC PF_precache_model_I(const char *s)
 {
 	int iOptional = 0;
-	if (!s)
+	if(!s)
 		Host_Error("PF_precache_model_I: NULL pointer");
 
-	if (PR_IsEmptyString(s))
+	if(PR_IsEmptyString(s))
 		Host_Error("PF_precache_model_I: Bad string '%s'", s);
 
-	if (*s == '!')
+	if(*s == '!')
 	{
 		s++;
 		iOptional = 1;
 	}
 
-	if (g_psv.state == ss_loading)
+	if(g_psv.state == ss_loading)
 	{
-		for (int i = 0; i < HL_MODEL_MAX; i++)
+		for(int i = 0; i < HL_MODEL_MAX; i++)
 		{
-			if (!g_psv.model_precache[i])
+			if(!g_psv.model_precache[i])
 			{
 #ifdef REHLDS_FIXES
 				// For more information, see EV_Precache
 				g_psv.model_precache[i] = ED_NewString(s);
 #else
-				g_psv.model_precache[i] = s;
+				g_psv.model_precache[i]          = s;
 #endif // REHLDS_FIXES
 
 #ifdef REHLDS_OPT_PEDANTIC
@@ -1423,36 +1427,36 @@ int EXT_FUNC PF_precache_model_I(const char *s)
 #endif //REHLDS_OPT_PEDANTIC
 
 				g_psv.models[i] = Mod_ForName(s, 1, 1);
-				if (!iOptional)
+				if(!iOptional)
 					g_psv.model_precache_flags[i] |= 1u;
 
 				return i;
 			}
 
-			//use case-sensitive names to increase performance
+//use case-sensitive names to increase performance
 #ifdef REHLDS_FIXES
-			if (!Q_strcmp(g_psv.model_precache[i], s))
+			if(!Q_strcmp(g_psv.model_precache[i], s))
 				return i;
 #else
-			if (!Q_stricmp(g_psv.model_precache[i], s))
+			if(!Q_stricmp(g_psv.model_precache[i], s))
 				return i;
 #endif
 		}
 		Host_Error(
-			"PF_precache_model_I: Model '%s' failed to precache because the item count is over the %d limit.\nReduce the number of brush models and/or regular models in the map to correct this.",
-			s,
-			512);
+		    "PF_precache_model_I: Model '%s' failed to precache because the item count is over the %d limit.\nReduce the number of brush models and/or regular models in the map to correct this.",
+		    s,
+		    512);
 	}
 	else
 	{
-		for (int i = 0; i < HL_MODEL_MAX; i++)
+		for(int i = 0; i < HL_MODEL_MAX; i++)
 		{
-			//use case-sensitive names to increase performance
+//use case-sensitive names to increase performance
 #ifdef REHLDS_FIXES
-			if (!Q_strcmp(g_psv.model_precache[i], s))
+			if(!Q_strcmp(g_psv.model_precache[i], s))
 				return i;
 #else
-			if (!Q_stricmp(g_psv.model_precache[i], s))
+			if(!Q_stricmp(g_psv.model_precache[i], s))
 				return i;
 #endif
 		}
@@ -1464,10 +1468,10 @@ int EXT_FUNC PF_precache_model_I(const char *s)
 int EXT_FUNC PF_precache_generic_I(char *s)
 // TODO: Call to Con_Printf is replaced with Host_Error in 6153
 {
-	if (!s)
+	if(!s)
 		Host_Error("PF_precache_generic_I: NULL pointer");
 
-	if (PR_IsEmptyString(s))
+	if(PR_IsEmptyString(s))
 		Host_Error("PF_precache_generic_I: Bad string '%s'", s);
 
 	char resName[MAX_QPATH];
@@ -1476,68 +1480,68 @@ int EXT_FUNC PF_precache_generic_I(char *s)
 	ForwardSlashes(resName);
 
 	size_t soundPrefixLength = sizeof("sound/") - 1;
-	bool isSoundPrefixed = !Q_strnicmp(resName, "sound/", soundPrefixLength);
+	bool   isSoundPrefixed   = !Q_strnicmp(resName, "sound/", soundPrefixLength);
 
 	// TODO: check sound with index 0?
 	// UPD: no, not need, because engine do this: g_psv.sound_precache[0] = pr_strings;
-	if ((isSoundPrefixed && SV_LookupSoundIndex(&resName[soundPrefixLength])) ||
-		SV_LookupModelIndex(resName))
+	if((isSoundPrefixed && SV_LookupSoundIndex(&resName[soundPrefixLength])) ||
+	   SV_LookupModelIndex(resName))
 		return 0;
 
 	size_t resCount = g_rehlds_sv.precachedGenericResourceCount;
-	for (size_t i = 0; i < resCount; i++)
+	for(size_t i = 0; i < resCount; i++)
 	{
-		if (!Q_stricmp(g_rehlds_sv.precachedGenericResourceNames[i], resName))
+		if(!Q_stricmp(g_rehlds_sv.precachedGenericResourceNames[i], resName))
 			return i;
 	}
 
-	if (g_psv.state != ss_loading)
+	if(g_psv.state != ss_loading)
 		Host_Error("PF_precache_generic_I: '%s' Precache can only be done in spawn functions", resName);
 
-	if (resCount >= ARRAYSIZE(g_rehlds_sv.precachedGenericResourceNames))
+	if(resCount >= ARRAYSIZE(g_rehlds_sv.precachedGenericResourceNames))
 		Host_Error(
-			"PF_precache_generic_I: Generic item '%s' failed to precache because the item count is over the %d limit.\n\
+		    "PF_precache_generic_I: Generic item '%s' failed to precache because the item count is over the %d limit.\n\
 Reduce the number of brush models and/or regular models in the map to correct this.",
-			resName,
-			ARRAYSIZE(g_rehlds_sv.precachedGenericResourceNames));
+		    resName,
+		    ARRAYSIZE(g_rehlds_sv.precachedGenericResourceNames));
 
 	Q_strcpy(g_rehlds_sv.precachedGenericResourceNames[resCount], resName);
 
 	return g_rehlds_sv.precachedGenericResourceCount++;
 }
-#else // REHLDS_FIXES
+#else  // REHLDS_FIXES
 int EXT_FUNC PF_precache_generic_I(char *s)
 // TODO: Call to Con_Printf is replaced with Host_Error in 6153
 {
-	if (!s)
+	if(!s)
 		Host_Error("PF_precache_generic_I: NULL pointer");
 
-	if (PR_IsEmptyString(s))
+	if(PR_IsEmptyString(s))
 		Host_Error("PF_precache_generic_I: Bad string '%s'", s);
 
-	if (g_psv.state == ss_loading)
+	if(g_psv.state == ss_loading)
 	{
-		for (int i = 0; i < HL_GENERIC_MAX; i++)
+		for(int i = 0; i < HL_GENERIC_MAX; i++)
 		{
-			if (!g_psv.generic_precache[i])
+			if(!g_psv.generic_precache[i])
 			{
 				g_psv.generic_precache[i] = s;
 				return i;
 			}
 
-			if (!Q_stricmp(g_psv.generic_precache[i], s))
+			if(!Q_stricmp(g_psv.generic_precache[i], s))
 				return i;
 		}
 		Host_Error(
-			"PF_precache_generic_I: Generic item '%s' failed to precache because the item count is over the %d limit.\nReduce the number of brush models and/or regular models in the map to correct this.",
-			s,
-			HL_GENERIC_MAX);
+		    "PF_precache_generic_I: Generic item '%s' failed to precache because the item count is over the %d limit.\nReduce the number of brush models and/or regular models in the map to correct this.",
+		    s,
+		    HL_GENERIC_MAX);
 	}
 	else
 	{
-		for (int i = 0; i < HL_GENERIC_MAX; i++)
+		for(int i = 0; i < HL_GENERIC_MAX; i++)
 		{
-			if (!Q_stricmp(g_psv.generic_precache[i], s))
+			if(!Q_stricmp(g_psv.generic_precache[i], s))
 				return i;
 		}
 		Host_Error("PF_precache_generic_I: '%s' Precache can only be done in spawn functions", s);
@@ -1548,9 +1552,8 @@ int EXT_FUNC PF_precache_generic_I(char *s)
 int EXT_FUNC PF_IsMapValid_I(char *mapname)
 {
 	char cBuf[260];
-	if (!mapname || Q_strlen(mapname) == 0)
+	if(!mapname || Q_strlen(mapname) == 0)
 		return 0;
-
 
 	Q_snprintf(cBuf, sizeof(cBuf), "maps/%.32s.bsp", mapname);
 	return FS_FileExists(cBuf);
@@ -1559,30 +1562,30 @@ int EXT_FUNC PF_IsMapValid_I(char *mapname)
 int EXT_FUNC PF_NumberOfEntities_I(void)
 {
 	int ent_count = 0;
-	for (int i = 1; i < g_psv.num_edicts; i++)
+	for(int i = 1; i < g_psv.num_edicts; i++)
 	{
-		if (!g_psv.edicts[i].free)
+		if(!g_psv.edicts[i].free)
 			++ent_count;
 	}
 
 	return ent_count;
 }
 
-char* EXT_FUNC PF_GetInfoKeyBuffer_I(edict_t *e)
+char *EXT_FUNC PF_GetInfoKeyBuffer_I(edict_t *e)
 {
-	int e1;
+	int   e1;
 	char *value;
 
-	if (e)
+	if(e)
 	{
 		e1 = NUM_FOR_EDICT(e);
-		if (e1)
+		if(e1)
 		{
 #ifdef REHLDS_FIXES
-			if (e1 <= 0 || e1 > g_psvs.maxclients)	// FIXED: Check against correct amount of clients
-#else // REHLDS_FIXES
-			if (e1 > 32)
-#endif // REHLDS_FIXES
+			if(e1 <= 0 || e1 > g_psvs.maxclients) // FIXED: Check against correct amount of clients
+#else                                             // REHLDS_FIXES
+			if(e1 > 32)
+#endif                                            // REHLDS_FIXES
 				value = (char *)"";
 			else
 				value = (char *)&g_psvs.clients[e1 - 1].userinfo;
@@ -1600,28 +1603,28 @@ char* EXT_FUNC PF_GetInfoKeyBuffer_I(edict_t *e)
 	return value;
 }
 
-char* EXT_FUNC PF_InfoKeyValue_I(char *infobuffer, const char *key)
+char *EXT_FUNC PF_InfoKeyValue_I(char *infobuffer, const char *key)
 {
 	return (char *)Info_ValueForKey(infobuffer, key);
 }
 
 void EXT_FUNC PF_SetKeyValue_I(char *infobuffer, const char *key, const char *value)
 {
-	if (infobuffer == localinfo)
+	if(infobuffer == localinfo)
 	{
 		Info_SetValueForKey(infobuffer, key, value, MAX_INFO_STRING * 128);
 	}
 	else
 	{
-		if (infobuffer != Info_Serverinfo())
+		if(infobuffer != Info_Serverinfo())
 		{
 			Sys_Error("Can't set client keys with SetKeyValue");
 		}
 #ifdef REHLDS_FIXES
-		Info_SetValueForKey(infobuffer, key, value, MAX_INFO_STRING);	// Use correct length
-#else // REHLDS_FIXES
+		Info_SetValueForKey(infobuffer, key, value, MAX_INFO_STRING); // Use correct length
+#else                                                                 // REHLDS_FIXES
 		Info_SetValueForKey(infobuffer, key, value, 512);
-#endif // REHLDS_FIXES
+#endif                                                                // REHLDS_FIXES
 	}
 }
 
@@ -1634,19 +1637,19 @@ void EXT_FUNC PF_SetClientKeyValue_I(int clientIndex, char *infobuffer, const ch
 {
 	client_t *pClient;
 
-	if (infobuffer == localinfo ||
-		infobuffer == Info_Serverinfo() ||
-		clientIndex <= 0 ||
-		clientIndex > g_psvs.maxclients)
+	if(infobuffer == localinfo ||
+	   infobuffer == Info_Serverinfo() ||
+	   clientIndex <= 0 ||
+	   clientIndex > g_psvs.maxclients)
 	{
 		return;
 	}
 
-	if (Q_strcmp(Info_ValueForKey(infobuffer, key), value))
+	if(Q_strcmp(Info_ValueForKey(infobuffer, key), value))
 	{
 		Info_SetValueForStarKey(infobuffer, key, value, MAX_INFO_STRING);
-		pClient = &g_psvs.clients[clientIndex - 1];
-		pClient->sendinfo = TRUE;
+		pClient                = &g_psvs.clients[clientIndex - 1];
+		pClient->sendinfo      = TRUE;
 		pClient->sendinfo_time = 0.0f;
 	}
 }
@@ -1655,13 +1658,13 @@ int EXT_FUNC PF_walkmove_I(edict_t *ent, float yaw, float dist, int iMode)
 {
 	vec3_t move;
 
-	if (ent->v.flags & (FL_SWIM | FL_FLY | FL_ONGROUND))
+	if(ent->v.flags & (FL_SWIM | FL_FLY | FL_ONGROUND))
 	{
 		move[0] = cos(yaw * 2.0 * M_PI / 360.0) * dist;
 		move[1] = sin(yaw * 2.0 * M_PI / 360.0) * dist;
 		move[2] = 0;
 
-		switch (iMode)
+		switch(iMode)
 		{
 		case 1:
 			return SV_movetest(ent, move, 1);
@@ -1676,18 +1679,18 @@ int EXT_FUNC PF_walkmove_I(edict_t *ent, float yaw, float dist, int iMode)
 
 int EXT_FUNC PF_droptofloor_I(edict_t *ent)
 {
-	vec3_t end;
-	trace_t trace;
+	vec3_t   end;
+	trace_t  trace;
 	qboolean monsterClip = (ent->v.flags & FL_MONSTERCLIP) ? 1 : 0;
 
 	end[0] = ent->v.origin[0];
 	end[1] = ent->v.origin[1];
 	end[2] = ent->v.origin[2] - 256.0;
-	trace = SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, end, 0, ent, monsterClip);
-	if (trace.allsolid)
+	trace  = SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, end, 0, ent, monsterClip);
+	if(trace.allsolid)
 		return -1;
 
-	if (trace.fraction == 1.0f)
+	if(trace.fraction == 1.0f)
 		return 0;
 
 	ent->v.origin[0] = trace.endpos[0];
@@ -1702,9 +1705,9 @@ int EXT_FUNC PF_droptofloor_I(edict_t *ent)
 
 int EXT_FUNC PF_DecalIndex(const char *name)
 {
-	for (int i = 0; i < sv_decalnamecount; i++)
+	for(int i = 0; i < sv_decalnamecount; i++)
 	{
-		if (!Q_stricmp(sv_decalnames[i].name, name))
+		if(!Q_stricmp(sv_decalnames[i].name, name))
 			return i;
 	}
 
@@ -1714,13 +1717,13 @@ int EXT_FUNC PF_DecalIndex(const char *name)
 void EXT_FUNC PF_lightstyle_I(int style, char *val)
 {
 	g_psv.lightstyles[style] = val;
-	if (g_psv.state != ss_active)
+	if(g_psv.state != ss_active)
 		return;
 
-	for (int i = 0; i < g_psvs.maxclients; i++)
+	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
-		client_t* cl = &g_psvs.clients[i];
-		if ((cl->active || cl->spawned) && !cl->fakeclient)
+		client_t *cl = &g_psvs.clients[i];
+		if((cl->active || cl->spawned) && !cl->fakeclient)
 		{
 			MSG_WriteChar(&cl->netchan.message, svc_lightstyle);
 			MSG_WriteChar(&cl->netchan.message, style);
@@ -1741,16 +1744,16 @@ int EXT_FUNC PF_pointcontents_I(const float *rgflVector)
 
 void EXT_FUNC PF_aim_I(edict_t *ent, float speed, float *rgflReturn)
 {
-	vec3_t start;
-	vec3_t dir;
-	vec3_t end;
-	vec3_t bestdir;
-	int j;
+	vec3_t  start;
+	vec3_t  dir;
+	vec3_t  end;
+	vec3_t  bestdir;
+	int     j;
 	trace_t tr;
-	float dist;
-	float bestdist;
+	float   dist;
+	float   bestdist;
 
-	if (!ent || (ent->v.flags & FL_FAKECLIENT))
+	if(!ent || (ent->v.flags & FL_FAKECLIENT))
 	{
 		rgflReturn[0] = gGlobalVariables.v_forward[0];
 		rgflReturn[1] = gGlobalVariables.v_forward[1];
@@ -1772,7 +1775,7 @@ void EXT_FUNC PF_aim_I(edict_t *ent, float speed, float *rgflReturn)
 	VectorMA(start, 2048.0, dir, end);
 	tr = SV_Move(start, vec3_origin, vec3_origin, end, 0, ent, 0);
 
-	if (tr.ent && tr.ent->v.takedamage == 2.0f && (ent->v.team <= 0 || ent->v.team != tr.ent->v.team))
+	if(tr.ent && tr.ent->v.takedamage == 2.0f && (ent->v.team <= 0 || ent->v.team != tr.ent->v.team))
 	{
 		rgflReturn[0] = gGlobalVariables.v_forward[0];
 		rgflReturn[1] = gGlobalVariables.v_forward[1];
@@ -1783,18 +1786,18 @@ void EXT_FUNC PF_aim_I(edict_t *ent, float speed, float *rgflReturn)
 	bestdir[1] = dir[1];
 	bestdir[2] = dir[2];
 	bestdir[0] = dir[0];
-	bestdist = sv_aim.value;
+	bestdist   = sv_aim.value;
 
-	for (int i = 1; i < g_psv.num_edicts; i++)
+	for(int i = 1; i < g_psv.num_edicts; i++)
 	{
-		edict_t* check = &g_psv.edicts[i];
-		if (check->v.takedamage != 2.0f || (check->v.flags & FL_FAKECLIENT) || check == ent)
+		edict_t *check = &g_psv.edicts[i];
+		if(check->v.takedamage != 2.0f || (check->v.flags & FL_FAKECLIENT) || check == ent)
 			continue;
 
-		if (ent->v.team > 0 && ent->v.team == check->v.team)
+		if(ent->v.team > 0 && ent->v.team == check->v.team)
 			continue;
 
-		for (j = 0; j < 3; j++)
+		for(j = 0; j < 3; j++)
 		{
 			end[j] = (check->v.maxs[j] + check->v.mins[j]) * 0.75 + check->v.origin[j] + ent->v.view_ofs[j] * 0.0;
 		}
@@ -1803,16 +1806,14 @@ void EXT_FUNC PF_aim_I(edict_t *ent, float speed, float *rgflReturn)
 		dir[1] = end[1] - start[1];
 		dir[2] = end[2] - start[2];
 		VectorNormalize(dir);
-		dist = gGlobalVariables.v_forward[2] * dir[2]
-			+ gGlobalVariables.v_forward[1] * dir[1]
-			+ gGlobalVariables.v_forward[0] * dir[0];
+		dist = gGlobalVariables.v_forward[2] * dir[2] + gGlobalVariables.v_forward[1] * dir[1] + gGlobalVariables.v_forward[0] * dir[0];
 
-		if (dist >= bestdist)
+		if(dist >= bestdist)
 		{
 			tr = SV_Move(start, vec3_origin, vec3_origin, end, 0, ent, 0);
-			if (tr.ent == check)
+			if(tr.ent == check)
 			{
-				bestdist = dist;
+				bestdist   = dist;
 				bestdir[0] = dir[0];
 				bestdir[1] = dir[1];
 				bestdir[2] = dir[2];
@@ -1833,31 +1834,31 @@ void EXT_FUNC PF_changeyaw_I(edict_t *ent)
 	float speed;
 
 	current = anglemod(ent->v.angles[1]);
-	ideal = ent->v.ideal_yaw;
-	speed = ent->v.yaw_speed;
-	if (current == ideal)
+	ideal   = ent->v.ideal_yaw;
+	speed   = ent->v.yaw_speed;
+	if(current == ideal)
 		return;
 
 	move = ideal - current;
-	if (ideal <= current)
+	if(ideal <= current)
 	{
-		if (move <= -180.0)
+		if(move <= -180.0)
 			move += 360.0;
 	}
 	else
 	{
-		if (move >= 180.0)
+		if(move >= 180.0)
 			move -= 360.0;
 	}
 
-	if (move <= 0.0f)
+	if(move <= 0.0f)
 	{
-		if (move < -speed)
+		if(move < -speed)
 			move = -speed;
 	}
 	else
 	{
-		if (move > speed)
+		if(move > speed)
 			move = speed;
 	}
 
@@ -1872,31 +1873,31 @@ void EXT_FUNC PF_changepitch_I(edict_t *ent)
 	float speed;
 
 	current = anglemod(ent->v.angles[0]);
-	ideal = ent->v.idealpitch;
-	speed = ent->v.pitch_speed;
-	if (current == ideal)
+	ideal   = ent->v.idealpitch;
+	speed   = ent->v.pitch_speed;
+	if(current == ideal)
 		return;
 
 	move = ideal - current;
-	if (ideal <= (double)current)
+	if(ideal <= (double)current)
 	{
-		if (move <= -180.0)
+		if(move <= -180.0)
 			move += 360.0;
 	}
 	else
 	{
-		if (move >= 180.0)
+		if(move >= 180.0)
 			move -= 360;
 	}
 
-	if (move <= 0.0)
+	if(move <= 0.0)
 	{
-		if (move < -speed)
+		if(move < -speed)
 			move = -speed;
 	}
 	else
 	{
-		if (move > speed)
+		if(move > speed)
 			move = speed;
 	}
 
@@ -1906,11 +1907,11 @@ void EXT_FUNC PF_changepitch_I(edict_t *ent)
 void EXT_FUNC PF_setview_I(const edict_t *clientent, const edict_t *viewent)
 {
 	int clientnum = NUM_FOR_EDICT(clientent);
-	if (clientnum < 1 || clientnum > g_psvs.maxclients)
+	if(clientnum < 1 || clientnum > g_psvs.maxclients)
 		Host_Error("PF_setview_I: not a client");
 
 	client_t *client = &g_psvs.clients[clientnum - 1];
-	if (!client->fakeclient)
+	if(!client->fakeclient)
 	{
 		client->pViewEntity = viewent;
 		MSG_WriteByte(&client->netchan.message, svc_setview);
@@ -1921,23 +1922,22 @@ void EXT_FUNC PF_setview_I(const edict_t *clientent, const edict_t *viewent)
 void EXT_FUNC PF_crosshairangle_I(const edict_t *clientent, float pitch, float yaw)
 {
 	int clientnum = NUM_FOR_EDICT(clientent);
-	if (clientnum < 1 || clientnum > g_psvs.maxclients)
+	if(clientnum < 1 || clientnum > g_psvs.maxclients)
 		return;
 
-
-	client_t* client = &g_psvs.clients[clientnum - 1];
-	if (!client->fakeclient)
+	client_t *client = &g_psvs.clients[clientnum - 1];
+	if(!client->fakeclient)
 	{
-		if (pitch > 180.0)
+		if(pitch > 180.0)
 			pitch -= 360.0;
 
-		if (pitch < -180.0)
+		if(pitch < -180.0)
 			pitch += 360.0;
 
-		if (yaw > 180.0)
+		if(yaw > 180.0)
 			yaw -= 360.0;
 
-		if (yaw < -180.0)
+		if(yaw < -180.0)
 			yaw += 360.0;
 
 		MSG_WriteByte(&client->netchan.message, svc_crosshairangle);
@@ -1946,24 +1946,24 @@ void EXT_FUNC PF_crosshairangle_I(const edict_t *clientent, float pitch, float y
 	}
 }
 
-edict_t* EXT_FUNC PF_CreateFakeClient_I(const char *netname)
+edict_t *EXT_FUNC PF_CreateFakeClient_I(const char *netname)
 {
 	client_t *fakeclient;
-	edict_t *ent;
+	edict_t * ent;
 
-	int i = 0;
+	int i      = 0;
 	fakeclient = g_psvs.clients;
-	for (i = 0; i < g_psvs.maxclients; i++, fakeclient++)
+	for(i = 0; i < g_psvs.maxclients; i++, fakeclient++)
 	{
-		if (!fakeclient->active && !fakeclient->spawned && !fakeclient->connected)
+		if(!fakeclient->active && !fakeclient->spawned && !fakeclient->connected)
 			break;
 	}
 
-	if (i >= g_psvs.maxclients)
+	if(i >= g_psvs.maxclients)
 		return NULL;
 
 	ent = EDICT_NUM(i + 1);
-	if (fakeclient->frames)
+	if(fakeclient->frames)
 		SV_ClearFrames(&fakeclient->frames);
 
 	Q_memset(fakeclient, 0, sizeof(client_t));
@@ -1975,17 +1975,17 @@ edict_t* EXT_FUNC PF_CreateFakeClient_I(const char *netname)
 	Q_strncpy(fakeclient->name, netname, sizeof(fakeclient->name) - 1);
 	fakeclient->name[sizeof(fakeclient->name) - 1] = 0;
 
-	fakeclient->active = 1;
-	fakeclient->spawned = 1;
+	fakeclient->active          = 1;
+	fakeclient->spawned         = 1;
 	fakeclient->fully_connected = 1;
-	fakeclient->connected = 1;
-	fakeclient->fakeclient = 1;
-	fakeclient->userid = g_userid++;
-	fakeclient->uploading = 0;
-	fakeclient->edict = ent;
-	ent->v.netname = (size_t)fakeclient->name - (size_t)pr_strings;
-	ent->v.pContainingEntity = ent;
-	ent->v.flags = FL_FAKECLIENT | FL_CLIENT;
+	fakeclient->connected       = 1;
+	fakeclient->fakeclient      = 1;
+	fakeclient->userid          = g_userid++;
+	fakeclient->uploading       = 0;
+	fakeclient->edict           = ent;
+	ent->v.netname              = (size_t)fakeclient->name - (size_t)pr_strings;
+	ent->v.pContainingEntity    = ent;
+	ent->v.flags                = FL_FAKECLIENT | FL_CLIENT;
 
 	Info_SetValueForKey(fakeclient->userinfo, "name", netname, MAX_INFO_STRING);
 	Info_SetValueForKey(fakeclient->userinfo, "model", "gordon", MAX_INFO_STRING);
@@ -1995,7 +1995,7 @@ edict_t* EXT_FUNC PF_CreateFakeClient_I(const char *netname)
 	SV_ExtractFromUserinfo(fakeclient);
 
 	fakeclient->network_userid.m_SteamID = ISteamGameServer_CreateUnauthenticatedUserConnection();
-	fakeclient->network_userid.idtype = AUTH_IDTYPE_STEAM;
+	fakeclient->network_userid.idtype    = AUTH_IDTYPE_STEAM;
 	ISteamGameServer_BUpdateUserData(fakeclient->network_userid.m_SteamID, netname, 0);
 
 	return ent;
@@ -2004,55 +2004,55 @@ edict_t* EXT_FUNC PF_CreateFakeClient_I(const char *netname)
 void EXT_FUNC PF_RunPlayerMove_I(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, unsigned char impulse, unsigned char msec)
 {
 	usercmd_t cmd;
-	edict_t *oldclient;
+	edict_t * oldclient;
 	client_t *old;
-	int entnum;
+	int       entnum;
 
-	oldclient = sv_player;
-	old = host_client;
-	entnum = NUM_FOR_EDICT(fakeclient);
-	sv_player = fakeclient;
+	oldclient   = sv_player;
+	old         = host_client;
+	entnum      = NUM_FOR_EDICT(fakeclient);
+	sv_player   = fakeclient;
 	host_client = &g_psvs.clients[entnum - 1];
 
 	host_client->svtimebase = host_frametime + g_psv.time - msec / 1000.0;
 	Q_memset(&cmd, 0, sizeof(cmd));
 	cmd.lightlevel = 0;
-	pmove = &g_svmove;
+	pmove          = &g_svmove;
 
 	cmd.viewangles[0] = viewangles[0];
 	cmd.viewangles[1] = viewangles[1];
 	cmd.viewangles[2] = viewangles[2];
-	cmd.forwardmove = forwardmove;
-	cmd.sidemove = sidemove;
-	cmd.upmove = upmove;
-	cmd.buttons = buttons;
-	cmd.impulse = impulse;
-	cmd.msec = msec;
+	cmd.forwardmove   = forwardmove;
+	cmd.sidemove      = sidemove;
+	cmd.upmove        = upmove;
+	cmd.buttons       = buttons;
+	cmd.impulse       = impulse;
+	cmd.msec          = msec;
 
 	SV_PreRunCmd();
 	SV_RunCmd(&cmd, 0);
 	Q_memcpy(&host_client->lastcmd, &cmd, sizeof(host_client->lastcmd));
 
-	sv_player = oldclient;
+	sv_player   = oldclient;
 	host_client = old;
 }
 
-sizebuf_t* EXT_FUNC WriteDest_Parm(int dest)
+sizebuf_t *EXT_FUNC WriteDest_Parm(int dest)
 {
 	int entnum;
 
-	switch (dest)
+	switch(dest)
 	{
 	case MSG_BROADCAST:
 		return &g_psv.datagram;
 	case MSG_ONE:
 	case MSG_ONE_UNRELIABLE:
 		entnum = NUM_FOR_EDICT(gMsgEntity);
-		if (entnum <= 0 || entnum > g_psvs.maxclients)
+		if(entnum <= 0 || entnum > g_psvs.maxclients)
 		{
 			Host_Error("WriteDest_Parm: not a client");
 		}
-		if (dest == MSG_ONE)
+		if(dest == MSG_ONE)
 		{
 			return &g_psvs.clients[entnum - 1].netchan.message;
 		}
@@ -2076,30 +2076,30 @@ sizebuf_t* EXT_FUNC WriteDest_Parm(int dest)
 
 void EXT_FUNC PF_MessageBegin_I(int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)
 {
-	if (msg_dest == MSG_ONE || msg_dest == MSG_ONE_UNRELIABLE)
+	if(msg_dest == MSG_ONE || msg_dest == MSG_ONE_UNRELIABLE)
 	{
-		if (!ed)
+		if(!ed)
 			Sys_Error("MSG_ONE or MSG_ONE_UNRELIABLE with no target entity\n");
 	}
 	else
 	{
-		if (ed)
+		if(ed)
 			Sys_Error("Invalid message;  cannot use broadcast message with a target entity");
 	}
 
-	if (gMsgStarted)
+	if(gMsgStarted)
 		Sys_Error("New message started when msg '%d' has not been sent yet", gMsgType);
 
-	if (msg_type == 0)
+	if(msg_type == 0)
 		Sys_Error("Tried to create a message with a bogus message type ( 0 )");
 
 	gMsgStarted = 1;
-	gMsgType = msg_type;
-	gMsgEntity = ed;
-	gMsgDest = msg_dest;
-	if (msg_dest == MSG_PVS || msg_dest == MSG_PAS)
+	gMsgType    = msg_type;
+	gMsgEntity  = ed;
+	gMsgDest    = msg_dest;
+	if(msg_dest == MSG_PVS || msg_dest == MSG_PAS)
 	{
-		if (pOrigin)
+		if(pOrigin)
 		{
 			gMsgOrigin[0] = pOrigin[0];
 			gMsgOrigin[1] = pOrigin[1];
@@ -2110,110 +2110,111 @@ void EXT_FUNC PF_MessageBegin_I(int msg_dest, int msg_type, const float *pOrigin
 		//Host_IsSinglePlayerGame();
 	}
 
-	gMsgBuffer.flags = SIZEBUF_ALLOW_OVERFLOW;
+	gMsgBuffer.flags   = SIZEBUF_ALLOW_OVERFLOW;
 	gMsgBuffer.cursize = 0;
 }
 
 void EXT_FUNC PF_MessageEnd_I(void)
 {
 	qboolean MsgIsVarLength = 0;
-	if (!gMsgStarted)
+	if(!gMsgStarted)
 		Sys_Error("MESSAGE_END called with no active message\n");
 	gMsgStarted = 0;
 
-	if (gMsgEntity && (gMsgEntity->v.flags & FL_FAKECLIENT))
+	if(gMsgEntity && (gMsgEntity->v.flags & FL_FAKECLIENT))
 		return;
 
-	if (gMsgBuffer.flags & SIZEBUF_OVERFLOWED)
+	if(gMsgBuffer.flags & SIZEBUF_OVERFLOWED)
 		Sys_Error("MESSAGE_END called, but message buffer from .dll had overflowed\n");
 
-
-	if (gMsgType > svc_startofusermessages)
+	if(gMsgType > svc_startofusermessages)
 	{
-		UserMsg* pUserMsg = sv_gpUserMsgs;
-		while (pUserMsg && pUserMsg->iMsg != gMsgType)
+		UserMsg *pUserMsg = sv_gpUserMsgs;
+		while(pUserMsg && pUserMsg->iMsg != gMsgType)
 			pUserMsg = pUserMsg->next;
 
-		if (!pUserMsg && gMsgDest == MSG_INIT)
+		if(!pUserMsg && gMsgDest == MSG_INIT)
 		{
 			pUserMsg = sv_gpNewUserMsgs;
-			while (pUserMsg && pUserMsg->iMsg != gMsgType)
+			while(pUserMsg && pUserMsg->iMsg != gMsgType)
 				pUserMsg = pUserMsg->next;
 		}
 
-		if (!pUserMsg)
+		if(!pUserMsg)
 		{
 			Con_DPrintf("PF_MessageEnd_I:  Unknown User Msg %d\n", gMsgType);
 			return;
 		}
 
-		if (pUserMsg->iSize == -1)
+		if(pUserMsg->iSize == -1)
 		{
 			MsgIsVarLength = 1;
 
 			// Limit packet sizes
-			if (gMsgBuffer.cursize > MAX_USER_MSG_DATA)
+			if(gMsgBuffer.cursize > MAX_USER_MSG_DATA)
 				Host_Error(
-					"PF_MessageEnd_I:  Refusing to send user message %s of %i bytes to client, user message size limit is %i bytes\n",
-					pUserMsg->szName,
-					gMsgBuffer.cursize,
-					MAX_USER_MSG_DATA
-				);
+				    "PF_MessageEnd_I:  Refusing to send user message %s of %i bytes to client, user message size limit is %i bytes\n",
+				    pUserMsg->szName,
+				    gMsgBuffer.cursize,
+				    MAX_USER_MSG_DATA);
 		}
 		else
 		{
-			if (pUserMsg->iSize != gMsgBuffer.cursize)
+			if(pUserMsg->iSize != gMsgBuffer.cursize)
 				Sys_Error(
-					"User Msg '%s': %d bytes written, expected %d\n",
-					pUserMsg->szName,
-					gMsgBuffer.cursize,
-					pUserMsg->iSize
-				);
+				    "User Msg '%s': %d bytes written, expected %d\n",
+				    pUserMsg->szName,
+				    gMsgBuffer.cursize,
+				    pUserMsg->iSize);
 		}
 	}
 #ifdef REHLDS_FIXES
 	auto writer = [MsgIsVarLength]
 #endif
 	{
-		sizebuf_t * pBuffer = WriteDest_Parm(gMsgDest);
-		if ((gMsgDest == MSG_BROADCAST && gMsgBuffer.cursize + pBuffer->cursize > pBuffer->maxsize) || !pBuffer->data)
+		sizebuf_t *pBuffer = WriteDest_Parm(gMsgDest);
+		if((gMsgDest == MSG_BROADCAST && gMsgBuffer.cursize + pBuffer->cursize > pBuffer->maxsize) || !pBuffer->data)
 			return;
 
-		if (gMsgType > svc_startofusermessages && (gMsgDest == MSG_ONE || gMsgDest == MSG_ONE_UNRELIABLE))
+		if(gMsgType > svc_startofusermessages && (gMsgDest == MSG_ONE || gMsgDest == MSG_ONE_UNRELIABLE))
 		{
 			int entnum = NUM_FOR_EDICT((const edict_t *)gMsgEntity);
-			if (entnum < 1 || entnum > g_psvs.maxclients)
+			if(entnum < 1 || entnum > g_psvs.maxclients)
 				Host_Error("WriteDest_Parm: not a client");
 
-			client_t* client = &g_psvs.clients[entnum - 1];
-			if (client->fakeclient || !client->hasusrmsgs || (!client->active && !client->spawned))
+			client_t *client = &g_psvs.clients[entnum - 1];
+			if(client->fakeclient || !client->hasusrmsgs || (!client->active && !client->spawned))
 				return;
 		}
 
 		MSG_WriteByte(pBuffer, gMsgType);
-		if (MsgIsVarLength)
+		if(MsgIsVarLength)
 			MSG_WriteByte(pBuffer, gMsgBuffer.cursize);
 		MSG_WriteBuf(pBuffer, gMsgBuffer.cursize, gMsgBuffer.data);
 	}
 #ifdef REHLDS_FIXES
 	;
 
-	if (gMsgDest == MSG_ALL) {
+	if(gMsgDest == MSG_ALL)
+	{
 		gMsgDest = MSG_ONE;
-		for (int i = 0; i < g_psvs.maxclients; i++) {
+		for(int i = 0; i < g_psvs.maxclients; i++)
+		{
 			gMsgEntity = g_psvs.clients[i].edict;
-			if (gMsgEntity == nullptr)
+			if(gMsgEntity == nullptr)
 				continue;
-			if (FBitSet(gMsgEntity->v.flags, FL_FAKECLIENT))
+			if(FBitSet(gMsgEntity->v.flags, FL_FAKECLIENT))
 				continue;
 			writer();
 		}
-	} else {
+	}
+	else
+	{
 		writer();
 	}
 #endif
 
-	switch (gMsgDest)
+	switch(gMsgDest)
 	{
 	case MSG_PVS:
 		SV_Multicast((edict_t *)gMsgEntity, gMsgOrigin, MSG_FL_PVS, 0);
@@ -2238,56 +2239,56 @@ void EXT_FUNC PF_MessageEnd_I(void)
 
 void EXT_FUNC PF_WriteByte_I(int iValue)
 {
-	if (!gMsgStarted)
+	if(!gMsgStarted)
 		Sys_Error("WRITE_BYTE called with no active message\n");
 	MSG_WriteByte(&gMsgBuffer, iValue);
 }
 
 void EXT_FUNC PF_WriteChar_I(int iValue)
 {
-	if (!gMsgStarted)
+	if(!gMsgStarted)
 		Sys_Error("WRITE_CHAR called with no active message\n");
 	MSG_WriteChar(&gMsgBuffer, iValue);
 }
 
 void EXT_FUNC PF_WriteShort_I(int iValue)
 {
-	if (!gMsgStarted)
+	if(!gMsgStarted)
 		Sys_Error("WRITE_SHORT called with no active message\n");
 	MSG_WriteShort(&gMsgBuffer, iValue);
 }
 
 void EXT_FUNC PF_WriteLong_I(int iValue)
 {
-	if (!gMsgStarted)
+	if(!gMsgStarted)
 		Sys_Error("PF_WriteLong_I called with no active message\n");
 	MSG_WriteLong(&gMsgBuffer, iValue);
 }
 
 void EXT_FUNC PF_WriteAngle_I(float flValue)
 {
-	if (!gMsgStarted)
+	if(!gMsgStarted)
 		Sys_Error("PF_WriteAngle_I called with no active message\n");
 	MSG_WriteAngle(&gMsgBuffer, flValue);
 }
 
 void EXT_FUNC PF_WriteCoord_I(float flValue)
 {
-	if (!gMsgStarted)
+	if(!gMsgStarted)
 		Sys_Error("PF_WriteCoord_I called with no active message\n");
 	MSG_WriteShort(&gMsgBuffer, (int)(flValue * 8.0));
 }
 
 void EXT_FUNC PF_WriteString_I(const char *sz)
 {
-	if (!gMsgStarted)
+	if(!gMsgStarted)
 		Sys_Error("PF_WriteString_I called with no active message\n");
 	MSG_WriteString(&gMsgBuffer, sz);
 }
 
 void EXT_FUNC PF_WriteEntity_I(int iValue)
 {
-	if (!gMsgStarted)
+	if(!gMsgStarted)
 		Sys_Error("PF_WriteEntity_I called with no active message\n");
 	MSG_WriteShort(&gMsgBuffer, iValue);
 }
@@ -2301,14 +2302,14 @@ void EXT_FUNC PF_makestatic_I(edict_t *ent)
 	MSG_WriteWord(&g_psv.signon, ent->v.colormap);
 	MSG_WriteByte(&g_psv.signon, ent->v.skin);
 
-	for (int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		MSG_WriteCoord(&g_psv.signon, ent->v.origin[i]);
 		MSG_WriteAngle(&g_psv.signon, ent->v.angles[i]);
 	}
 
 	MSG_WriteByte(&g_psv.signon, ent->v.rendermode);
-	if (ent->v.rendermode)
+	if(ent->v.rendermode)
 	{
 		MSG_WriteByte(&g_psv.signon, (int)ent->v.renderamt);
 		MSG_WriteByte(&g_psv.signon, (int)ent->v.rendercolor[0]);
@@ -2330,14 +2331,14 @@ void EXT_FUNC PF_StaticDecal(const float *origin, int decalIndex, int entityInde
 	MSG_WriteShort(&g_psv.signon, decalIndex);
 	MSG_WriteShort(&g_psv.signon, entityIndex);
 
-	if (entityIndex)
+	if(entityIndex)
 		MSG_WriteShort(&g_psv.signon, modelIndex);
 }
 
 void EXT_FUNC PF_setspawnparms_I(edict_t *ent)
 {
 	int i = NUM_FOR_EDICT(ent);
-	if (i < 1 || i > g_psvs.maxclients)
+	if(i < 1 || i > g_psvs.maxclients)
 		Host_Error("Entity is not a client");
 }
 
@@ -2345,11 +2346,11 @@ void EXT_FUNC PF_changelevel_I(const char *s1, const char *s2)
 {
 	static int last_spawncount;
 
-	if (g_psvs.spawncount != last_spawncount)
+	if(g_psvs.spawncount != last_spawncount)
 	{
 		last_spawncount = g_psvs.spawncount;
 		SV_SkipUpdates();
-		if (s2)
+		if(s2)
 			Cbuf_AddText(va("changelevel2 %s %s\n", s1, s2));
 		else
 			Cbuf_AddText(va("changelevel %s\n", s1));
@@ -2359,11 +2360,11 @@ void EXT_FUNC PF_changelevel_I(const char *s1, const char *s2)
 void SeedRandomNumberGenerator(void)
 {
 	idum = -(int)CRehldsPlatformHolder::get()->time(NULL);
-	if (idum > 1000)
+	if(idum > 1000)
 	{
 		idum = -idum;
 	}
-	else if (idum > -1000)
+	else if(idum > -1000)
 	{
 		idum -= 22261048;
 	}
@@ -2374,47 +2375,54 @@ void SeedRandomNumberGenerator(void)
 #define IQ 127773
 #define IR 2836
 #define NTAB 32
-#define NDIV (1+(IM-1)/NTAB)
+#define NDIV (1 + (IM - 1) / NTAB)
 
 int32 ran1(void)
 {
-	int j;
-	long k;
+	int         j;
+	long        k;
 	static long iy = 0;
 	static long iv[NTAB];
 
-	if (idum <= 0 || !iy)
+	if(idum <= 0 || !iy)
 	{
-		if (-(idum) < 1) idum = 1;
-		else idum = -(idum);
-		for (j = NTAB + 7; j >= 0; j--)
+		if(-(idum) < 1)
+			idum = 1;
+		else
+			idum = -(idum);
+		for(j = NTAB + 7; j >= 0; j--)
 		{
-			k = (idum) / IQ;
-			idum = IA*(idum - k*IQ) - IR*k;
-			if (idum < 0) idum += IM;
-			if (j < NTAB) iv[j] = idum;
+			k    = (idum) / IQ;
+			idum = IA * (idum - k * IQ) - IR * k;
+			if(idum < 0)
+				idum += IM;
+			if(j < NTAB)
+				iv[j] = idum;
 		}
 		iy = iv[0];
 	}
-	k = (idum) / IQ;
-	idum = IA*(idum - k*IQ) - IR*k;
-	if (idum < 0) idum += IM;
-	j = iy / NDIV;
-	iy = iv[j];
+	k    = (idum) / IQ;
+	idum = IA * (idum - k * IQ) - IR * k;
+	if(idum < 0)
+		idum += IM;
+	j     = iy / NDIV;
+	iy    = iv[j];
 	iv[j] = idum;
 
 	return iy;
 }
 
-#define AM (1.0/IM)
+#define AM (1.0 / IM)
 #define EPS 1.2e-7
-#define RNMX (1.0-EPS)
+#define RNMX (1.0 - EPS)
 
 float fran1(void)
 {
-	float temp = (float)AM*ran1();
-	if (temp > RNMX) return (float)RNMX;
-	else return temp;
+	float temp = (float)AM * ran1();
+	if(temp > RNMX)
+		return (float)RNMX;
+	else
+		return temp;
 }
 
 float EXT_FUNC RandomFloat(float flLow, float flHigh)
@@ -2423,7 +2431,7 @@ float EXT_FUNC RandomFloat(float flLow, float flHigh)
 	g_engdstAddrs.pfnRandomFloat(&flLow, &flHigh);
 #endif
 
-	float fl = fran1(); // float in [0,1)
+	float fl = fran1();                     // float in [0,1)
 	return (fl * (flHigh - flLow)) + flLow; // float in [low,high)
 }
 
@@ -2436,7 +2444,7 @@ int32 EXT_FUNC RandomLong(int32 lLow, int32 lHigh)
 	unsigned long maxAcceptable;
 	unsigned long x = lHigh - lLow + 1;
 	unsigned long n;
-	if (x <= 0 || MAX_RANDOM_RANGE < x - 1)
+	if(x <= 0 || MAX_RANDOM_RANGE < x - 1)
 	{
 		return lLow;
 	}
@@ -2453,7 +2461,7 @@ int32 EXT_FUNC RandomLong(int32 lLow, int32 lHigh)
 	do
 	{
 		n = ran1();
-	} while (n > maxAcceptable);
+	} while(n > maxAcceptable);
 
 	return lLow + (n % x);
 }
@@ -2461,14 +2469,14 @@ int32 EXT_FUNC RandomLong(int32 lLow, int32 lHigh)
 void EXT_FUNC PF_FadeVolume(const edict_t *clientent, int fadePercent, int fadeOutSeconds, int holdTime, int fadeInSeconds)
 {
 	int entnum = NUM_FOR_EDICT(clientent);
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 	{
 		Con_Printf("tried to PF_FadeVolume a non-client\n");
 		return;
 	}
 
-	client_t* client = &g_psvs.clients[entnum - 1];
-	if (client->fakeclient)
+	client_t *client = &g_psvs.clients[entnum - 1];
+	if(client->fakeclient)
 		return;
 
 	MSG_WriteChar(&client->netchan.message, svc_soundfade);
@@ -2481,7 +2489,7 @@ void EXT_FUNC PF_FadeVolume(const edict_t *clientent, int fadePercent, int fadeO
 void EXT_FUNC PF_SetClientMaxspeed(edict_t *clientent, float fNewMaxspeed)
 {
 	int entnum = NUM_FOR_EDICT(clientent);
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 		Con_Printf("tried to PF_SetClientMaxspeed a non-client\n");
 
 	clientent->v.maxspeed = fNewMaxspeed;
@@ -2489,12 +2497,13 @@ void EXT_FUNC PF_SetClientMaxspeed(edict_t *clientent, float fNewMaxspeed)
 
 int EXT_FUNC PF_GetPlayerUserId(edict_t *e)
 {
-	if (!g_psv.active || !e)
+	if(!g_psv.active || !e)
 		return -1;
 
-	for (int i = 0; i < g_psvs.maxclients; i++)
+	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
-		if (g_psvs.clients[i].edict == e) {
+		if(g_psvs.clients[i].edict == e)
+		{
 			return g_psvs.clients[i].userid;
 		}
 	}
@@ -2507,38 +2516,38 @@ unsigned int EXT_FUNC PF_GetPlayerWONId(edict_t *e)
 	return 0xFFFFFFFF;
 }
 
-const char* EXT_FUNC PF_GetPlayerAuthId(edict_t *e)
+const char *EXT_FUNC PF_GetPlayerAuthId(edict_t *e)
 {
 	static char szAuthID[5][64];
-	static int count = 0;
-	client_t *cl;
-	int i;
+	static int  count = 0;
+	client_t *  cl;
+	int         i;
 
-	count = (count + 1) % 5;
+	count              = (count + 1) % 5;
 	szAuthID[count][0] = 0;
 
-	if (!g_psv.active || e == NULL)
+	if(!g_psv.active || e == NULL)
 	{
 		return szAuthID[count];
 	}
 
-	for (i = 0; i < g_psvs.maxclients; i++)
+	for(i = 0; i < g_psvs.maxclients; i++)
 	{
 		cl = &g_psvs.clients[i];
-		if (cl->edict != e)
+		if(cl->edict != e)
 		{
 			continue;
 		}
 
-		if (cl->fakeclient)
+		if(cl->fakeclient)
 		{
 			Q_strcpy(szAuthID[count], "BOT");
 		}
-//		AUTH_IDTYPE_LOCAL is handled inside SV_GetIDString(), no need to do it here
-//		else if (cl->network_userid.idtype == AUTH_IDTYPE_LOCAL)
-//		{
-//			Q_strcpy(szAuthID[count], "HLTV");
-//		}
+		//		AUTH_IDTYPE_LOCAL is handled inside SV_GetIDString(), no need to do it here
+		//		else if (cl->network_userid.idtype == AUTH_IDTYPE_LOCAL)
+		//		{
+		//			Q_strcpy(szAuthID[count], "HLTV");
+		//		}
 		else
 		{
 			Q_snprintf(szAuthID[count], sizeof(szAuthID[count]) - 1, "%s", SV_GetClientIDString(cl));
@@ -2567,46 +2576,46 @@ int EXT_FUNC PF_IsDedicatedServer(void)
 	return g_bIsDedicatedServer;
 }
 
-const char* EXT_FUNC PF_GetPhysicsInfoString(const edict_t *pClient)
+const char *EXT_FUNC PF_GetPhysicsInfoString(const edict_t *pClient)
 {
 	int entnum = NUM_FOR_EDICT(pClient);
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 	{
 		Con_Printf("tried to PF_GetPhysicsInfoString a non-client\n");
 		return "";
 	}
 
-	client_t* client = &g_psvs.clients[entnum - 1];
+	client_t *client = &g_psvs.clients[entnum - 1];
 	return client->physinfo;
 }
 
-const char* EXT_FUNC PF_GetPhysicsKeyValue(const edict_t *pClient, const char *key)
+const char *EXT_FUNC PF_GetPhysicsKeyValue(const edict_t *pClient, const char *key)
 {
 	int entnum = NUM_FOR_EDICT(pClient);
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 	{
 		Con_Printf("tried to PF_GetPhysicsKeyValue a non-client\n");
 		return "";
 	}
 
-	client_t* client = &g_psvs.clients[entnum - 1];
+	client_t *client = &g_psvs.clients[entnum - 1];
 	return Info_ValueForKey(client->physinfo, key);
 }
 
 void EXT_FUNC PF_SetPhysicsKeyValue(const edict_t *pClient, const char *key, const char *value)
 {
 	int entnum = NUM_FOR_EDICT(pClient);
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 		Con_Printf("tried to PF_SetPhysicsKeyValue a non-client\n");
 
-	client_t* client = &g_psvs.clients[entnum - 1];
+	client_t *client = &g_psvs.clients[entnum - 1];
 	Info_SetValueForKey(client->physinfo, key, value, MAX_INFO_STRING);
 }
 
 int EXT_FUNC PF_GetCurrentPlayer(void)
 {
 	int idx = host_client - g_psvs.clients;
-	if (idx < 0 || idx >= g_psvs.maxclients)
+	if(idx < 0 || idx >= g_psvs.maxclients)
 		return -1;
 
 	return idx;
@@ -2615,26 +2624,26 @@ int EXT_FUNC PF_GetCurrentPlayer(void)
 int EXT_FUNC PF_CanSkipPlayer(const edict_t *pClient)
 {
 	int entnum = NUM_FOR_EDICT(pClient);
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 	{
 		Con_Printf("tried to PF_CanSkipPlayer a non-client\n");
 		return 0;
 	}
 
-	client_t* client = &g_psvs.clients[entnum - 1];
+	client_t *client = &g_psvs.clients[entnum - 1];
 	return client->lw != 0;
 }
 
 void EXT_FUNC PF_SetGroupMask(int mask, int op)
 {
 	g_groupmask = mask;
-	g_groupop = op;
+	g_groupop   = op;
 }
 
 int EXT_FUNC PF_CreateInstancedBaseline(int classname, struct entity_state_s *baseline)
 {
 	extra_baselines_t *bls = g_psv.instance_baselines;
-	if (bls->number >= NUM_BASELINES)
+	if(bls->number >= NUM_BASELINES)
 		return 0;
 
 	bls->classname[bls->number] = classname;
@@ -2652,37 +2661,37 @@ void EXT_FUNC PF_ForceUnmodified(FORCE_TYPE type, float *mins, float *maxs, cons
 {
 	int i;
 
-	if (!filename)
+	if(!filename)
 		Host_Error("PF_ForceUnmodified: NULL pointer");
 
-	if (PR_IsEmptyString(filename))
+	if(PR_IsEmptyString(filename))
 		Host_Error("PF_ForceUnmodified: Bad string '%s'", filename);
 
-	if (g_psv.state == ss_loading)
+	if(g_psv.state == ss_loading)
 	{
-		i = 0;
-		consistency_t* cnode = g_psv.consistency_list;
-		while (cnode->filename)
+		i                    = 0;
+		consistency_t *cnode = g_psv.consistency_list;
+		while(cnode->filename)
 		{
-			if (!Q_stricmp(cnode->filename, (char *)filename))
+			if(!Q_stricmp(cnode->filename, (char *)filename))
 				return;
 
 			++cnode;
 			++i;
 
-			if (i >= 512)
+			if(i >= 512)
 				Host_Error("ForceUnmodified: '%s' overflow", filename);
 		}
 
 		cnode->check_type = type;
-		cnode->filename = (char *)filename;
-		if (mins)
+		cnode->filename   = (char *)filename;
+		if(mins)
 		{
 			cnode->mins[0] = mins[0];
 			cnode->mins[1] = mins[1];
 			cnode->mins[2] = mins[2];
 		}
-		if (maxs)
+		if(maxs)
 		{
 			cnode->maxs[0] = maxs[0];
 			cnode->maxs[1] = maxs[1];
@@ -2691,13 +2700,13 @@ void EXT_FUNC PF_ForceUnmodified(FORCE_TYPE type, float *mins, float *maxs, cons
 	}
 	else
 	{
-		i = 0;
-		consistency_t* cnode = g_psv.consistency_list;
-		while (!cnode->filename || Q_stricmp(cnode->filename, filename))
+		i                    = 0;
+		consistency_t *cnode = g_psv.consistency_list;
+		while(!cnode->filename || Q_stricmp(cnode->filename, filename))
 		{
 			++cnode;
 			++i;
-			if (i >= 512)
+			if(i >= 512)
 				Host_Error("ForceUnmodified: '%s' Precache can only be done in spawn functions", filename);
 		}
 	}
@@ -2706,33 +2715,33 @@ void EXT_FUNC PF_ForceUnmodified(FORCE_TYPE type, float *mins, float *maxs, cons
 void EXT_FUNC PF_GetPlayerStats(const edict_t *pClient, int *ping, int *packet_loss)
 {
 	*packet_loss = 0;
-	*ping = 0;
-	int c = NUM_FOR_EDICT(pClient);
-	if (c < 1 || c > g_psvs.maxclients)
+	*ping        = 0;
+	int c        = NUM_FOR_EDICT(pClient);
+	if(c < 1 || c > g_psvs.maxclients)
 	{
 		Con_Printf("tried to PF_GetPlayerStats a non-client\n");
 		return;
 	}
 
-	client_t* client = &g_psvs.clients[c - 1];
-	*packet_loss = client->packet_loss;
-	*ping = client->latency * 1000.0;
+	client_t *client = &g_psvs.clients[c - 1];
+	*packet_loss     = client->packet_loss;
+	*ping            = client->latency * 1000.0;
 }
 
 NOXREF void QueryClientCvarValueCmd(void)
 {
-	if (Cmd_Argc() <= 1)
+	if(Cmd_Argc() <= 1)
 	{
 		Con_Printf("%s <player name> <cvar>\n", Cmd_Argv(0));
 		return;
 	}
-	for (int i = 0; i < g_psvs.maxclients; i++)
+	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
 		client_t *cl = &g_psvs.clients[i];
 
-		if (cl->active || cl->connected)
+		if(cl->active || cl->connected)
 		{
-			if (!Q_stricmp(cl->name, Cmd_Argv(1)))
+			if(!Q_stricmp(cl->name, Cmd_Argv(1)))
 			{
 				QueryClientCvarValue(cl->edict, Cmd_Argv(2));
 				break;
@@ -2743,23 +2752,23 @@ NOXREF void QueryClientCvarValueCmd(void)
 
 NOXREF void QueryClientCvarValueCmd2(void)
 {
-	int i;
+	int       i;
 	client_t *cl;
-	int requestID;
+	int       requestID;
 
-	if (Cmd_Argc() < 3)
+	if(Cmd_Argc() < 3)
 	{
 		Con_Printf("%s <player name> <cvar> <requestID>", Cmd_Argv(0));
 		return;
 	}
 	requestID = Q_atoi(Cmd_Argv(3));
-	for (i = 0; i < g_psvs.maxclients; i++)
+	for(i = 0; i < g_psvs.maxclients; i++)
 	{
 		cl = &g_psvs.clients[i];
 
-		if (cl->active || cl->connected)
+		if(cl->active || cl->connected)
 		{
-			if (!Q_stricmp(cl->name, Cmd_Argv(1)))
+			if(!Q_stricmp(cl->name, Cmd_Argv(1)))
 			{
 				QueryClientCvarValue2(cl->edict, Cmd_Argv(2), requestID);
 				break;
@@ -2770,11 +2779,10 @@ NOXREF void QueryClientCvarValueCmd2(void)
 
 void EXT_FUNC QueryClientCvarValue(const edict_t *player, const char *cvarName)
 {
-
 	int entnum = NUM_FOR_EDICT(player);
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 	{
-		if (gNewDLLFunctions.pfnCvarValue)
+		if(gNewDLLFunctions.pfnCvarValue)
 			gNewDLLFunctions.pfnCvarValue(player, "Bad Player");
 
 		Con_Printf("tried to QueryClientCvarValue a non-client\n");
@@ -2788,9 +2796,9 @@ void EXT_FUNC QueryClientCvarValue(const edict_t *player, const char *cvarName)
 void EXT_FUNC QueryClientCvarValue2(const edict_t *player, const char *cvarName, int requestID)
 {
 	int entnum = NUM_FOR_EDICT(player);
-	if (entnum < 1 || entnum > g_psvs.maxclients)
+	if(entnum < 1 || entnum > g_psvs.maxclients)
 	{
-		if (gNewDLLFunctions.pfnCvarValue2)
+		if(gNewDLLFunctions.pfnCvarValue2)
 			gNewDLLFunctions.pfnCvarValue2(player, requestID, cvarName, "Bad Player");
 
 		Con_Printf("tried to QueryClientCvarValue a non-client\n");
@@ -2809,9 +2817,9 @@ int hudCheckParm(char *parm, char **ppnext)
 #endif
 
 	int i = COM_CheckParm(parm);
-	if (ppnext)
+	if(ppnext)
 	{
-		if (i && i < com_argc - 1)
+		if(i && i < com_argc - 1)
 			*ppnext = com_argv[i + 1];
 		else
 			*ppnext = 0;
@@ -2821,5 +2829,5 @@ int hudCheckParm(char *parm, char **ppnext)
 
 int EXT_FUNC EngCheckParm(const char *pchCmdLineToken, char **pchNextVal)
 {
-	return hudCheckParm((char*)pchCmdLineToken, pchNextVal);
+	return hudCheckParm((char *)pchCmdLineToken, pchNextVal);
 }

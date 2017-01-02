@@ -1,30 +1,32 @@
 /*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
+
+/// @file
 
 #include "system/precompiled.h"
 #include "console/cvar.h"
@@ -42,7 +44,7 @@
 */
 
 cvar_t *cvar_vars;
-char cvar_null_string[] = "";
+char    cvar_null_string[] = "";
 
 /*
 ============
@@ -54,9 +56,9 @@ Reads in all archived cvars
 void Cvar_Init()
 {
 #ifndef SWDS
-	// TODO: add client code, possibly none
+// TODO: add client code, possibly none
 #endif
-	
+
 	Cvar_CmdInit();
 }
 
@@ -74,9 +76,9 @@ cvar_t *Cvar_FindVar(const char *var_name)
 	g_engdstAddrs->pfnGetCvarPointer(&var_name);
 #endif
 
-	for (var = cvar_vars; var; var = var->next)
+	for(var = cvar_vars; var; var = var->next)
 	{
-		if (!Q_stricmp(var_name, var->name))
+		if(!Q_stricmp(var_name, var->name))
 			break;
 	}
 	return var;
@@ -88,9 +90,9 @@ NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 
 	cvar_t *var;
 
-	for (var = cvar_vars; var && var->next; var = var->next)
+	for(var = cvar_vars; var && var->next; var = var->next)
 	{
-		if (!Q_stricmp(var_name, var->next->name))
+		if(!Q_stricmp(var_name, var->next->name))
 			return var;
 	}
 	return NULL;
@@ -100,7 +102,7 @@ float Cvar_VariableValue(const char *var_name)
 {
 	cvar_t *var = Cvar_FindVar(var_name);
 
-	if (var)
+	if(var)
 	{
 		return (float)Q_atof(var->string);
 	}
@@ -114,7 +116,7 @@ NOXREF int Cvar_VariableInt(const char *var_name)
 
 	cvar_t *var = Cvar_FindVar(var_name);
 
-	if (var)
+	if(var)
 	{
 		return Q_atoi(var->string);
 	}
@@ -126,7 +128,7 @@ char *Cvar_VariableString(const char *var_name)
 {
 	cvar_t *var = Cvar_FindVar(var_name);
 
-	if (var)
+	if(var)
 	{
 		return var->string;
 	}
@@ -140,35 +142,35 @@ NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 
 	// TODO: We have a cvar name length limit here: prepare for unforeseen consequences!
 	static char lastpartial[256];
-	char partial[256];
-	cvar_t *cvar;
-	int len;
-	char *pPartial;
+	char        partial[256];
+	cvar_t *    cvar;
+	int         len;
+	char *      pPartial;
 
 	Q_strncpy(partial, search, 255);
 	partial[255] = 0;
-	len = Q_strlen(partial);
+	len          = Q_strlen(partial);
 
 	// Trim tail spaces
-	for (pPartial = partial + len - 1; pPartial >= partial && *pPartial == ' '; pPartial--, len--)
+	for(pPartial = partial + len - 1; pPartial >= partial && *pPartial == ' '; pPartial--, len--)
 	{
 		*pPartial = 0;
 	}
 
-	if (!len)
+	if(!len)
 	{
 		return NULL;
 	}
 
-	if (!Q_stricmp(partial, lastpartial))
+	if(!Q_stricmp(partial, lastpartial))
 	{
 		// Same partial, find this then next/prev cvar, if any.
 		// TODO: But where it match for entered by user partial? Because we store full name
 		cvar = Cvar_FindVar(partial);
-		if (cvar)
+		if(cvar)
 		{
 			cvar = forward == 1 ? cvar->next : Cvar_FindPrevVar(cvar->name);
-			if (cvar)
+			if(cvar)
 			{
 				Q_strncpy(lastpartial, cvar->name, 255);
 				lastpartial[255] = 0;
@@ -178,9 +180,9 @@ NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 	}
 
 	// Find first matching cvar
-	for (cvar = cvar_vars; cvar != NULL; cvar = cvar->next)
+	for(cvar = cvar_vars; cvar != NULL; cvar = cvar->next)
 	{
-		if (!Q_strnicmp(partial, cvar->name, len))
+		if(!Q_strnicmp(partial, cvar->name, len))
 		{
 			// Store matched cvar name
 			Q_strncpy(lastpartial, cvar->name, 255);
@@ -194,18 +196,18 @@ NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 
 void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 {
-	if (!var || !value)
+	if(!var || !value)
 	{
 		return;
 	}
 
 	const char *pszValue = value;
-	char szNew[MAX_CVAR_VALUE];
+	char        szNew[MAX_CVAR_VALUE];
 	szNew[0] = 0;
 
-	if (var->flags & FCVAR_PRINTABLEONLY)
+	if(var->flags & FCVAR_PRINTABLEONLY)
 	{
-		if (Q_UnicodeValidate(value))
+		if(Q_UnicodeValidate(value))
 		{
 			Q_strncpy(szNew, value, ARRAYSIZE(szNew) - 1);
 			szNew[ARRAYSIZE(szNew) - 1] = 0;
@@ -215,11 +217,11 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 			// Copy only printable chars
 			// TODO: Why not UTF-8 too?
 			const char *pS = pszValue;
-			char *pD = szNew;
+			char *      pD = szNew;
 
-			while (*pS)
+			while(*pS)
 			{
-				if (*pS < 32 || *pS > 126)
+				if(*pS < 32 || *pS > 126)
 				{
 					pS++;
 					continue;
@@ -229,13 +231,13 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 			*pD = 0;
 		}
 
-		if (!Q_UnicodeValidate(szNew))
+		if(!Q_UnicodeValidate(szNew))
 		{
 			// Call the artillery
 			Q_UnicodeRepair(szNew);
 		}
 
-		if (szNew[0] == 0)
+		if(szNew[0] == 0)
 		{
 			Q_strcpy(szNew, "empty");
 		}
@@ -243,9 +245,9 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 		pszValue = szNew;
 	}
 
-	if (var->flags & FCVAR_NOEXTRAWHITEPACE)
+	if(var->flags & FCVAR_NOEXTRAWHITEPACE)
 	{
-		if (pszValue != szNew)
+		if(pszValue != szNew)
 		{
 			Q_strncpy(szNew, value, ARRAYSIZE(szNew) - 1);
 			szNew[ARRAYSIZE(szNew) - 1] = 0;
@@ -258,9 +260,9 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 
 	qboolean changed = Q_strcmp(var->string, pszValue);
 
-	if (var->flags & FCVAR_USERINFO)
+	if(var->flags & FCVAR_USERINFO)
 	{
-		if (cls.state == ca_dedicated)
+		if(cls.state == ca_dedicated)
 		{
 			char *info = Info_Serverinfo();
 			Info_SetValueForKey(info, var->name, pszValue, MAX_INFO_STRING);
@@ -271,7 +273,7 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 		{
 			Info_SetValueForKey(cls.userinfo, var->name, pszValue, MAX_INFO_STRING);
 
-			if (changed && cls.state >= ca_connected)
+			if(changed && cls.state >= ca_connected)
 			{
 				MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
 				SZ_Print(&cls.netchan.message, va("setinfo \"%s\" \"%s\"\n", var->name, pszValue));
@@ -280,11 +282,11 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 #endif
 	}
 
-	if (changed && var->flags & FCVAR_SERVER)
+	if(changed && var->flags & FCVAR_SERVER)
 	{
-		if (!(var->flags & FCVAR_UNLOGGED))
+		if(!(var->flags & FCVAR_UNLOGGED))
 		{
-			if (var->flags & FCVAR_PROTECTED)
+			if(var->flags & FCVAR_PROTECTED)
 			{
 				Log_Printf("Server cvar \"%s\" = \"%s\"\n", var->name, "***PROTECTED***");
 				SV_BroadcastPrintf("\"%s\" changed to \"%s\"\n", var->name, "***PROTECTED***");
@@ -296,11 +298,11 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 			}
 		}
 
-		if (!(var->flags & FCVAR_PROTECTED))
+		if(!(var->flags & FCVAR_PROTECTED))
 		{
 			Steam_SetCVar(var->name, pszValue);
 		}
-		else if (pszValue[0] && Q_stricmp(pszValue, "none"))
+		else if(pszValue[0] && Q_stricmp(pszValue, "none"))
 		{
 			Steam_SetCVar(var->name, "1");
 		}
@@ -325,7 +327,7 @@ void Cvar_Set(const char *var_name, const char *value)
 {
 	cvar_t *var = Cvar_FindVar(var_name);
 
-	if (!var)
+	if(!var)
 	{
 		Con_DPrintf(__FUNCTION__ ": variable \"%s\" not found\n", var_name);
 		return;
@@ -347,7 +349,7 @@ void Cvar_SetValue(const char *var_name, float value)
 	g_engdstAddrs->Cvar_SetValue(&var_name, &value);
 #endif
 
-	if (fabs(value - (double)(signed int)value) >= 0.000001)
+	if(fabs(value - (double)(signed int)value) >= 0.000001)
 	{
 		Q_snprintf(val, ARRAYSIZE(val) - 1, "%f", value);
 	}
@@ -362,17 +364,17 @@ void Cvar_SetValue(const char *var_name, float value)
 
 void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 {
-	char *oldstr;
+	char *  oldstr;
 	cvar_t *v, *c;
-	cvar_t dummyvar;
+	cvar_t  dummyvar;
 
-	if (Cvar_FindVar(variable->name))
+	if(Cvar_FindVar(variable->name))
 	{
 		Con_Printf("Can't register variable \"%s\", already defined\n", variable->name);
 		return;
 	}
 
-	if (Cmd_Exists(variable->name))
+	if(Cmd_Exists(variable->name))
 	{
 		Con_Printf(__FUNCTION__ ": \"%s\" is a command\n", variable->name);
 		return;
@@ -392,9 +394,9 @@ void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 	c = &dummyvar;
 
 	// Insert with alphabetic order
-	while (v)
+	while(v)
 	{
-		if (Q_stricmp(v->name, variable->name) > 0)
+		if(Q_stricmp(v->name, variable->name) > 0)
 		{
 			break;
 		}
@@ -403,24 +405,24 @@ void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 		v = v->next;
 	}
 
-	c->next = variable;
+	c->next        = variable;
 	variable->next = v;
-	cvar_vars = dummyvar.next;
+	cvar_vars      = dummyvar.next;
 }
 
 NOXREF void Cvar_RemoveHudCvars()
 {
 	NOXREFCHECK;
 
-	cvar_t *pVar;
+	cvar_t * pVar;
 	cvar_t **pList;
 
-	pVar = cvar_vars;
+	pVar  = cvar_vars;
 	pList = &cvar_vars;
 
-	while (pVar)
+	while(pVar)
 	{
-		if (pVar->flags & FCVAR_CLIENTDLL)
+		if(pVar->flags & FCVAR_CLIENTDLL)
 		{
 			*pList = pVar->next;
 			Z_Free(pVar->string);
@@ -439,22 +441,22 @@ NOXREF void Cvar_RemoveHudCvars()
 const char *Cvar_IsMultipleTokens(const char *varname)
 {
 	static char firstToken[516];
-	int tokens;
-	char *name;
+	int         tokens;
+	char *      name;
 
 	firstToken[0] = 0;
-	tokens = 0;
-	name = (char *)varname;
+	tokens        = 0;
+	name          = (char *)varname;
 
 	name = COM_Parse(name);
 
-	if (com_token[0] == 0)
+	if(com_token[0] == 0)
 	{
-		return NULL;	// original function returns firstToken in this situation, which is "", not NULL, but it should be ok this way
+		return NULL; // original function returns firstToken in this situation, which is "", not NULL, but it should be ok this way
 	}
-	if (name == NULL)
+	if(name == NULL)
 	{
-		return NULL;	// only one token
+		return NULL; // only one token
 	}
 
 	// Store first token
@@ -464,24 +466,24 @@ const char *Cvar_IsMultipleTokens(const char *varname)
 	// Parse for another token
 	name = COM_Parse(name);
 
-	if (com_token[0] == 0)
+	if(com_token[0] == 0)
 	{
-		return NULL;	// only one token
+		return NULL; // only one token
 	}
 
-	return firstToken;	// multiple tokens, return first one
+	return firstToken; // multiple tokens, return first one
 }
 
 qboolean Cvar_Command()
 {
-	cvar_t *v;
-	const char *arg0 = Cmd_Argv(0);
+	cvar_t *    v;
+	const char *arg0       = Cmd_Argv(0);
 	const char *firstToken = Cvar_IsMultipleTokens(arg0);
 
-	if (firstToken)
+	if(firstToken)
 	{
 		v = Cvar_FindVar(firstToken);
-		if (v)
+		if(v)
 		{
 			Con_Printf("\"%s\" is \"%s\"\n", v->name, v->string);
 			return TRUE;
@@ -490,15 +492,15 @@ qboolean Cvar_Command()
 	else
 	{
 		v = Cvar_FindVar(arg0);
-		if (v)
+		if(v)
 		{
-			if (Cmd_Argc() == 1)
+			if(Cmd_Argc() == 1)
 			{
 				Con_Printf("\"%s\" is \"%s\"\n", v->name, v->string);
 			}
 			else
 			{
-				if (v->flags & FCVAR_SPONLY && cls.state >= ca_connecting && cl.maxclients > 1)
+				if(v->flags & FCVAR_SPONLY && cls.state >= ca_connecting && cl.maxclients > 1)
 				{
 					Con_Printf("Can't set %s in multiplayer\n", v->name);
 				}
@@ -529,9 +531,9 @@ NOXREF void Cvar_WriteVariables(FileHandle_t f)
 
 	cvar_t *var;
 
-	for (var = cvar_vars; var; var = var->next)
+	for(var = cvar_vars; var; var = var->next)
 	{
-		if (var->flags & FCVAR_ARCHIVE)
+		if(var->flags & FCVAR_ARCHIVE)
 		{
 			FS_FPrintf(f, "%s \"%s\"\n", var->name, var->string);
 		}
@@ -545,8 +547,8 @@ void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
 #ifdef REHLDS_FIXES
 	// Do correct output of string valued cvars
 	Q_snprintf(szOutstr, ARRAYSIZE(szOutstr) - 1, "%-28s : %16s", var->name, var->string);
-#else // REHLDS_FIXES
-	if (var->value == (float)(int)var->value)
+#else  // REHLDS_FIXES
+	if(var->value == (float)(int)var->value)
 	{
 		Q_snprintf(szOutstr, ARRAYSIZE(szOutstr) - 1, "%-15s : %8i", var->name, (int)var->value);
 	}
@@ -557,15 +559,15 @@ void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
 #endif // REHLDS_FIXES
 	szOutstr[ARRAYSIZE(szOutstr) - 1] = 0;
 
-	if (var->flags & FCVAR_ARCHIVE)
+	if(var->flags & FCVAR_ARCHIVE)
 	{
 		Q_strcat(szOutstr, ", a");
 	}
-	if (var->flags & FCVAR_SERVER)
+	if(var->flags & FCVAR_SERVER)
 	{
 		Q_strcat(szOutstr, ", sv");
 	}
-	if (var->flags & FCVAR_USERINFO)
+	if(var->flags & FCVAR_USERINFO)
 	{
 		Q_strcat(szOutstr, ", i");
 	}
@@ -574,7 +576,7 @@ void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
 
 	Con_Printf("%s", szOutstr);
 
-	if (f)
+	if(f)
 	{
 		FS_FPrintf(f, "%s", szOutstr);
 	}
@@ -582,62 +584,62 @@ void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
 
 void Cmd_CvarList_f()
 {
-	cvar_t *var;
-	int iCvars;
-	int iArgs;
-	const char *partial, *arg1;
-	int ipLen;
-	qboolean bAOnly;
-	qboolean bSOnly;
-	char szTemp[MAX_PATH];
+	cvar_t *     var;
+	int          iCvars;
+	int          iArgs;
+	const char * partial, *arg1;
+	int          ipLen;
+	qboolean     bAOnly;
+	qboolean     bSOnly;
+	char         szTemp[MAX_PATH];
 	FileHandle_t f;
 	FileHandle_t fp;
-	qboolean bLogging;
+	qboolean     bLogging;
 
-	iCvars = 0;
-	partial = NULL;
-	bAOnly = FALSE;
-	bSOnly = FALSE;
-	f = NULL;
-	fp = NULL;
+	iCvars   = 0;
+	partial  = NULL;
+	bAOnly   = FALSE;
+	bSOnly   = FALSE;
+	f        = NULL;
+	fp       = NULL;
 	bLogging = FALSE;
 
 	iArgs = Cmd_Argc();
-	if (iArgs > 1)
+	if(iArgs > 1)
 	{
 		arg1 = Cmd_Argv(1);
 
-		if (!Q_stricmp(arg1, "?"))
+		if(!Q_stricmp(arg1, "?"))
 		{
 			Con_Printf("CvarList           : List all cvars\nCvarList [Partial] : List cvars starting with 'Partial'\nCvarList log [Partial] : Logs cvars to file \"cvarlist.txt\" in the gamedir.\n");
 			return;
 		}
 
-		if (!Q_stricmp(arg1, "log"))
+		if(!Q_stricmp(arg1, "log"))
 		{
 			// Open log
 			int i;
-			for (i = 0; i < 100; i++)
+			for(i = 0; i < 100; i++)
 			{
 				Q_snprintf(szTemp, ARRAYSIZE(szTemp) - 1, "cvarlist%02d.txt", i);
 				szTemp[ARRAYSIZE(szTemp) - 1] = 0;
 
 				fp = FS_Open(szTemp, "r");
-				if (!fp)
+				if(!fp)
 				{
 					break;
 				}
 				FS_Close(fp);
 			}
 
-			if (i >= 100)
+			if(i >= 100)
 			{
 				Con_Printf("Can't cvarlist! Too many existing cvarlist output files in the gamedir!\n");
 				return;
 			}
 
 			f = FS_Open(szTemp, "wt");
-			if (!f)
+			if(!f)
 			{
 				Con_Printf("Couldn't open \"%s\" for writing!\n", szTemp);
 				return;
@@ -645,41 +647,41 @@ void Cmd_CvarList_f()
 			bLogging = TRUE;
 
 			// Get next argument into partial, if present
-			if (iArgs > 2)
+			if(iArgs > 2)
 			{
 				partial = Cmd_Argv(2);
-				ipLen = Q_strlen(partial);
+				ipLen   = Q_strlen(partial);
 			}
 		}
-		else if (!Q_stricmp(arg1, "-a"))
+		else if(!Q_stricmp(arg1, "-a"))
 		{
 			bAOnly = TRUE;
 		}
-		else if (!Q_stricmp(arg1, "-s"))
+		else if(!Q_stricmp(arg1, "-s"))
 		{
 			bSOnly = TRUE;
 		}
 		else
 		{
 			partial = arg1;
-			ipLen = Q_strlen(partial);
+			ipLen   = Q_strlen(partial);
 		}
 	}
 
 	// Print cvars
 	Con_Printf("CVar List\n--------------\n");
 
-	for (var = cvar_vars; var; var = var->next)
+	for(var = cvar_vars; var; var = var->next)
 	{
-		if (bAOnly && !(var->flags & FCVAR_ARCHIVE))
+		if(bAOnly && !(var->flags & FCVAR_ARCHIVE))
 		{
 			continue;
 		}
-		if (bSOnly && !(var->flags & FCVAR_SERVER))
+		if(bSOnly && !(var->flags & FCVAR_SERVER))
 		{
 			continue;
 		}
-		if (partial && Q_strnicmp(var->name, partial, ipLen))
+		if(partial && Q_strnicmp(var->name, partial, ipLen))
 		{
 			continue;
 		}
@@ -688,7 +690,7 @@ void Cmd_CvarList_f()
 		iCvars++;
 	}
 
-	if (partial && *partial)
+	if(partial && *partial)
 	{
 		Con_Printf("--------------\n%3i CVars for [%s]\nCvarList ? for syntax\n", iCvars, partial);
 	}
@@ -698,7 +700,7 @@ void Cmd_CvarList_f()
 	}
 
 	// Close log
-	if (bLogging)
+	if(bLogging)
 	{
 		FS_Close(f);
 		Con_Printf("cvarlist logged to %s\n", szTemp);
@@ -709,12 +711,12 @@ NOXREF int Cvar_CountServerVariables()
 {
 	NOXREFCHECK;
 
-	int i;
+	int     i;
 	cvar_t *var;
 
-	for (i = 0, var = cvar_vars; var; var = var->next)
+	for(i = 0, var = cvar_vars; var; var = var->next)
 	{
-		if (var->flags & FCVAR_SERVER)
+		if(var->flags & FCVAR_SERVER)
 		{
 			++i;
 		}
@@ -724,15 +726,15 @@ NOXREF int Cvar_CountServerVariables()
 
 void Cvar_UnlinkExternals()
 {
-	cvar_t *pVar;
+	cvar_t * pVar;
 	cvar_t **pList;
 
-	pVar = cvar_vars;
+	pVar  = cvar_vars;
 	pList = &cvar_vars;
 
-	while (pVar)
+	while(pVar)
 	{
-		if (pVar->flags & FCVAR_EXTDLL)
+		if(pVar->flags & FCVAR_EXTDLL)
 		{
 			*pList = pVar->next;
 		}

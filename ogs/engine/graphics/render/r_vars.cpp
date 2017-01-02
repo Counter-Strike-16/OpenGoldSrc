@@ -18,12 +18,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// r_vars.cpp - global render variables
+/// @file
+/// @brief global render variables
 
 #include "precompiled.h"
 #include "quakedef.h"
 
-#if	!id386
+#if !id386
 
 // all global and static refresh variables are collected in a contiguous block
 // to avoid cache conflicts.
@@ -35,6 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // FIXME: make into one big structure, like cl or sv
 // FIXME: do separately for refresh engine and driver
 
-int	r_bmodelactive;
+int r_bmodelactive;
 
-#endif	// !id386
+#endif // !id386

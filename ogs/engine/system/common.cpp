@@ -1,30 +1,32 @@
 /*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
+
+/// @file
 
 #include "precompiled.h"
 #include "system/common.h"
@@ -34,7 +36,7 @@ char serverinfo[MAX_INFO_STRING];
 char gpszVersionString[32];
 char gpszProductString[32];
 
-char* strcpy_safe(char* dst, char* src)
+char *strcpy_safe(char *dst, char *src)
 {
 	int len = Q_strlen(src);
 	Q_memmove(dst, src, len + 1);
@@ -54,15 +56,15 @@ NOBODY int Q_memcmp(void *m1, void *m2, int count);
 
 void Q_strcpy(char *dest, const char *src)
 {
-	char *c;
+	char *      c;
 	const char *s;
 
 	s = src;
-	for (c = dest; s; *c++ = *s++)
+	for(c = dest; s; *c++ = *s++)
 	{
-		if (!c)
+		if(!c)
 			break;
-		if (!*s)
+		if(!*s)
 			break;
 	}
 	*c = 0;
@@ -73,16 +75,16 @@ NOBODY void Q_strncpy(char *dest, const char *src, int count);
 int Q_strlen(const char *str)
 {
 	int result = 0;
-	if (str)
+	if(str)
 	{
-		if (*str)
+		if(*str)
 		{
-			while (str[result++ + 1]);
+			while(str[result++ + 1])
+				;
 		}
 	}
 	return result;
 }
-
 
 NOBODY char *Q_strrchr(char *s, char c);
 NOBODY void Q_strcat(char *dest, char *src);
@@ -105,17 +107,17 @@ NOBODY uint64 Q_strtoull(char *str);
 
 unsigned char COM_Nibble(char c)
 {
-	if (c >= '0' && c <= '9')
+	if(c >= '0' && c <= '9')
 	{
 		return (unsigned char)(c - '0');
 	}
 
-	if (c >= 'A' && c <= 'F')
+	if(c >= 'A' && c <= 'F')
 	{
 		return (unsigned char)(c - 'A' + 0x0A);
 	}
 
-	if (c >= 'a' && c <= 'f')
+	if(c >= 'a' && c <= 'f')
 	{
 		return (unsigned char)(c - 'a' + 0x0A);
 	}
@@ -126,14 +128,14 @@ unsigned char COM_Nibble(char c)
 void COM_HexConvert(const char *pszInput, int nInputLength, unsigned char *pOutput)
 {
 	unsigned char *p;
-	int i;
-	const char *pIn;
+	int            i;
+	const char *   pIn;
 
 	p = pOutput;
-	for (i = 0; i < nInputLength - 1; i += 2)
+	for(i = 0; i < nInputLength - 1; i += 2)
 	{
 		pIn = &pszInput[i];
-		if (pIn[0] == 0 || pIn[1] == 0)
+		if(pIn[0] == 0 || pIn[1] == 0)
 			break;
 
 		*p = COM_Nibble(pIn[0]) << 4 | COM_Nibble(pIn[1]);
@@ -144,14 +146,14 @@ void COM_HexConvert(const char *pszInput, int nInputLength, unsigned char *pOutp
 
 NOXREF char *COM_BinPrintf(unsigned char *buf, int nLen)
 {
-	static char szReturn[4096];
+	static char   szReturn[4096];
 	unsigned char c;
-	char szChunk[10];
-	int i;
+	char          szChunk[10];
+	int           i;
 
 	Q_memset(szReturn, 0, sizeof(szReturn));
 
-	for (i = 0; i < nLen; i++)
+	for(i = 0; i < nLen; i++)
 	{
 		c = (unsigned char)buf[i];
 
@@ -163,7 +165,7 @@ NOXREF char *COM_BinPrintf(unsigned char *buf, int nLen)
 
 void COM_ExplainDisconnection(qboolean bPrint, char *fmt, ...)
 {
-	va_list argptr;
+	va_list     argptr;
 	static char string[1024];
 
 	va_start(argptr, fmt);
@@ -172,10 +174,10 @@ void COM_ExplainDisconnection(qboolean bPrint, char *fmt, ...)
 
 	Q_strncpy(gszDisconnectReason, string, sizeof(gszDisconnectReason) - 1);
 	gszDisconnectReason[sizeof(gszDisconnectReason) - 1] = 0;
-	gfExtendedError = 1;
-	if (bPrint)
+	gfExtendedError                                      = 1;
+	if(bPrint)
 	{
-		if (gszDisconnectReason[0] != '#')
+		if(gszDisconnectReason[0] != '#')
 			Con_Printf("%s\n", gszDisconnectReason);
 	}
 }
@@ -184,7 +186,7 @@ NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...)
 {
 	NOXREFCHECK;
 
-	va_list argptr;
+	va_list     argptr;
 	static char string[1024];
 
 	va_start(argptr, fmt);
@@ -193,15 +195,14 @@ NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...)
 
 	Q_strncpy(gszExtendedDisconnectReason, string, sizeof(gszExtendedDisconnectReason) - 1);
 	gszExtendedDisconnectReason[sizeof(gszExtendedDisconnectReason) - 1] = 0;
-	if (bPrint)
+	if(bPrint)
 	{
-		if (gszExtendedDisconnectReason[0] != '#')
+		if(gszExtendedDisconnectReason[0] != '#')
 			Con_Printf("%s\n", gszExtendedDisconnectReason);
 	}
 }
 
 #endif // COM_Functions_region
-
 
 #ifndef Byte_Functions_region
 
@@ -278,72 +279,72 @@ int msg_readcount;
 
 // Some bit tables...
 const uint32 BITTABLE[] =
-{
-	0x00000001, 0x00000002, 0x00000004, 0x00000008,
-	0x00000010, 0x00000020, 0x00000040, 0x00000080,
-	0x00000100, 0x00000200, 0x00000400, 0x00000800,
-	0x00001000, 0x00002000, 0x00004000, 0x00008000,
-	0x00010000, 0x00020000, 0x00040000, 0x00080000,
-	0x00100000, 0x00200000, 0x00400000, 0x00800000,
-	0x01000000, 0x02000000, 0x04000000, 0x08000000,
-	0x10000000, 0x20000000, 0x40000000, 0x80000000,
-	0x00000000,
+    {
+        0x00000001, 0x00000002, 0x00000004, 0x00000008,
+        0x00000010, 0x00000020, 0x00000040, 0x00000080,
+        0x00000100, 0x00000200, 0x00000400, 0x00000800,
+        0x00001000, 0x00002000, 0x00004000, 0x00008000,
+        0x00010000, 0x00020000, 0x00040000, 0x00080000,
+        0x00100000, 0x00200000, 0x00400000, 0x00800000,
+        0x01000000, 0x02000000, 0x04000000, 0x08000000,
+        0x10000000, 0x20000000, 0x40000000, 0x80000000,
+        0x00000000,
 };
 
 const uint32 ROWBITTABLE[] =
-{
-	0x00000000, 0x00000001, 0x00000003, 0x00000007,
-	0x0000000F, 0x0000001F, 0x0000003F, 0x0000007F,
-	0x000000FF, 0x000001FF, 0x000003FF, 0x000007FF,
-	0x00000FFF, 0x00001FFF, 0x00003FFF, 0x00007FFF,
-	0x0000FFFF, 0x0001FFFF, 0x0003FFFF, 0x0007FFFF,
-	0x000FFFFF, 0x001FFFFF, 0x003FFFFF, 0x007FFFFF,
-	0x00FFFFFF, 0x01FFFFFF, 0x03FFFFFF, 0x07FFFFFF,
-	0x0FFFFFFF, 0x1FFFFFFF, 0x3FFFFFFF, 0x7FFFFFFF,
-	0xFFFFFFFF,
+    {
+        0x00000000, 0x00000001, 0x00000003, 0x00000007,
+        0x0000000F, 0x0000001F, 0x0000003F, 0x0000007F,
+        0x000000FF, 0x000001FF, 0x000003FF, 0x000007FF,
+        0x00000FFF, 0x00001FFF, 0x00003FFF, 0x00007FFF,
+        0x0000FFFF, 0x0001FFFF, 0x0003FFFF, 0x0007FFFF,
+        0x000FFFFF, 0x001FFFFF, 0x003FFFFF, 0x007FFFFF,
+        0x00FFFFFF, 0x01FFFFFF, 0x03FFFFFF, 0x07FFFFFF,
+        0x0FFFFFFF, 0x1FFFFFFF, 0x3FFFFFFF, 0x7FFFFFFF,
+        0xFFFFFFFF,
 };
 
 const uint32 INVBITTABLE[] =
-{
-	0xFFFFFFFE, 0xFFFFFFFD, 0xFFFFFFFB, 0xFFFFFFF7,
-	0xFFFFFFEF, 0xFFFFFFDF, 0xFFFFFFBF, 0xFFFFFF7F,
-	0xFFFFFEFF, 0xFFFFFDFF, 0xFFFFFBFF, 0xFFFFF7FF,
-	0xFFFFEFFF, 0xFFFFDFFF, 0xFFFFBFFF, 0xFFFF7FFF,
-	0xFFFEFFFF, 0xFFFDFFFF, 0xFFFBFFFF, 0xFFF7FFFF,
-	0xFFEFFFFF, 0xFFDFFFFF, 0xFFBFFFFF, 0xFF7FFFFF,
-	0xFEFFFFFF, 0xFDFFFFFF, 0xFBFFFFFF, 0xF7FFFFFF,
-	0xEFFFFFFF, 0xDFFFFFFF, 0xBFFFFFFF, 0x7FFFFFFF,
-	0xFFFFFFFF,
+    {
+        0xFFFFFFFE, 0xFFFFFFFD, 0xFFFFFFFB, 0xFFFFFFF7,
+        0xFFFFFFEF, 0xFFFFFFDF, 0xFFFFFFBF, 0xFFFFFF7F,
+        0xFFFFFEFF, 0xFFFFFDFF, 0xFFFFFBFF, 0xFFFFF7FF,
+        0xFFFFEFFF, 0xFFFFDFFF, 0xFFFFBFFF, 0xFFFF7FFF,
+        0xFFFEFFFF, 0xFFFDFFFF, 0xFFFBFFFF, 0xFFF7FFFF,
+        0xFFEFFFFF, 0xFFDFFFFF, 0xFFBFFFFF, 0xFF7FFFFF,
+        0xFEFFFFFF, 0xFDFFFFFF, 0xFBFFFFFF, 0xF7FFFFFF,
+        0xEFFFFFFF, 0xDFFFFFFF, 0xBFFFFFFF, 0x7FFFFFFF,
+        0xFFFFFFFF,
 };
 
 void MSG_WriteChar(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 1);
-	*(char *)buf = (char)c;
+	*(char *)buf       = (char)c;
 }
 
 void MSG_WriteByte(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 1);
-	*(byte *)buf = (byte)c;
+	*(byte *)buf       = (byte)c;
 }
 
 void MSG_WriteShort(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 2);
-	*(int16 *)buf = (int16)c;
+	*(int16 *)buf      = (int16)c;
 }
 
 void MSG_WriteWord(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 2);
-	*(uint16 *)buf = (uint16)c;
+	*(uint16 *)buf     = (uint16)c;
 }
 
 void MSG_WriteLong(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 4);
-	*(uint32 *)buf = (uint32)c;
+	*(uint32 *)buf     = (uint32)c;
 }
 
 void MSG_WriteFloat(sizebuf_t *sb, float f)
@@ -354,7 +355,7 @@ void MSG_WriteFloat(sizebuf_t *sb, float f)
 
 void MSG_WriteString(sizebuf_t *sb, const char *s)
 {
-	if (s)
+	if(s)
 	{
 		SZ_Write(sb, s, Q_strlen(s) + 1);
 	}
@@ -366,7 +367,7 @@ void MSG_WriteString(sizebuf_t *sb, const char *s)
 
 void MSG_WriteBuf(sizebuf_t *sb, int iSize, void *buf)
 {
-	if (buf)
+	if(buf)
 	{
 		SZ_Write(sb, buf, iSize);
 	}
@@ -394,44 +395,44 @@ void MSG_WriteUsercmd(sizebuf_t *buf, usercmd_t *to, usercmd_t *from)
 
 typedef struct bf_write_s
 {
-	// For enhanced and safe bits writing functions
+// For enhanced and safe bits writing functions
 #if defined(REHLDS_FIXES)
 
 #pragma pack(push, 1)
-	union {
+	union
+	{
 		uint64 u64;
 		uint32 u32[2];
-		uint8 u8[8];
+		uint8  u8[8];
 	} pendingData;
 	uint64 sse_highbits;
 #pragma pack(pop)
 
-	int nCurOutputBit;
+	int        nCurOutputBit;
 	sizebuf_t *pbuf;
 
 #else // defined(REHLDS_FIXES)
 
-	int nCurOutputBit;
+	int            nCurOutputBit;
 	unsigned char *pOutByte;
-	sizebuf_t *pbuf;
+	sizebuf_t *    pbuf;
 
 #endif // defined(REHLDS_FIXES)
 } bf_write_t;
 
 typedef struct bf_read_s
 {
-	int nMsgReadCount;	// was msg_readcount
-	sizebuf_t *pbuf;
-	int nBitFieldReadStartByte;
-	int nBytesRead;
-	int nCurInputBit;
+	int            nMsgReadCount; // was msg_readcount
+	sizebuf_t *    pbuf;
+	int            nBitFieldReadStartByte;
+	int            nBytesRead;
+	int            nCurInputBit;
 	unsigned char *pInByte;
 } bf_read_t;
 
 // Bit field reading/writing storage.
 bf_read_t bfread;
 ALIGN16 bf_write_t bfwrite;
-
 
 void COM_BitOpsInit()
 {
@@ -442,12 +443,13 @@ void COM_BitOpsInit()
 // Enhanced and safe bits writing functions
 #if defined(REHLDS_FIXES)
 
-void MSG_WBits_MaybeFlush() {
-	if (bfwrite.nCurOutputBit < 32)
+void MSG_WBits_MaybeFlush()
+{
+	if(bfwrite.nCurOutputBit < 32)
 		return;
 
-	uint32* pDest = (uint32*)SZ_GetSpace(bfwrite.pbuf, 4);
-	if (!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
+	uint32 *pDest = (uint32 *)SZ_GetSpace(bfwrite.pbuf, 4);
+	if(!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
 		*pDest = bfwrite.pendingData.u32[0];
 
 	bfwrite.pendingData.u32[0] = bfwrite.pendingData.u32[1];
@@ -458,61 +460,64 @@ void MSG_WBits_MaybeFlush() {
 void MSG_WriteBits(uint32 data, int numbits)
 {
 	uint32 maxval = _mm_cvtsi128_si32(_mm_slli_epi64(_mm_cvtsi32_si128(1), numbits)) - 1; //maxval = (1 << numbits) - 1
-	if (data > maxval)
+	if(data > maxval)
 		data = maxval;
 
 	MSG_WBits_MaybeFlush();
 
-	__m128i pending = _mm_load_si128((__m128i*) &bfwrite.pendingData.u64);
+	__m128i pending = _mm_load_si128((__m128i *)&bfwrite.pendingData.u64);
 
 	__m128i mmdata = _mm_slli_epi64(_mm_cvtsi32_si128(data), bfwrite.nCurOutputBit); //mmdata = data << bfwrite.nCurOutputBit
-	pending = _mm_or_si128(pending, mmdata);
+	pending        = _mm_or_si128(pending, mmdata);
 
-	_mm_store_si128((__m128i*) &bfwrite.pendingData.u64, pending);
+	_mm_store_si128((__m128i *)&bfwrite.pendingData.u64, pending);
 	bfwrite.nCurOutputBit += numbits;
 }
 
-void MSG_WriteOneBit(int nValue) {
+void MSG_WriteOneBit(int nValue)
+{
 	MSG_WriteBits(nValue, 1);
 }
 
 void MSG_StartBitWriting(sizebuf_t *buf)
 {
-	bfwrite.nCurOutputBit = 0;
-	bfwrite.pbuf = buf;
+	bfwrite.nCurOutputBit   = 0;
+	bfwrite.pbuf            = buf;
 	bfwrite.pendingData.u64 = 0;
 }
 
 void MSG_EndBitWriting(sizebuf_t *buf)
 {
 	int bytesNeed = bfwrite.nCurOutputBit / 8;
-	if ((bfwrite.nCurOutputBit % 8) || bytesNeed == 0) {
+	if((bfwrite.nCurOutputBit % 8) || bytesNeed == 0)
+	{
 		bytesNeed++;
 	}
 
-	uint8* pData = (uint8*)SZ_GetSpace(bfwrite.pbuf, bytesNeed);
-	if (!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED)) {
-		for (int i = 0; i < bytesNeed; i++) {
+	uint8 *pData = (uint8 *)SZ_GetSpace(bfwrite.pbuf, bytesNeed);
+	if(!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
+	{
+		for(int i = 0; i < bytesNeed; i++)
+		{
 			pData[i] = bfwrite.pendingData.u8[i];
 		}
 	}
-
 }
 
 #else // defined(REHLDS_FIXES)
 
 void MSG_WriteOneBit(int nValue)
 {
-	if (bfwrite.nCurOutputBit >= 8)
+	if(bfwrite.nCurOutputBit >= 8)
 	{
 		SZ_GetSpace(bfwrite.pbuf, 1);
 		bfwrite.nCurOutputBit = 0;
 		++bfwrite.pOutByte;
 	}
 
-	if (!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
+	if(!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
 	{
-		if (nValue)
+		if(nValue)
 		{
 			*bfwrite.pOutByte |= BITTABLE[bfwrite.nCurOutputBit];
 		}
@@ -528,63 +533,63 @@ void MSG_WriteOneBit(int nValue)
 void MSG_StartBitWriting(sizebuf_t *buf)
 {
 	bfwrite.nCurOutputBit = 0;
-	bfwrite.pbuf = buf;
-	bfwrite.pOutByte = &buf->data[buf->cursize];
+	bfwrite.pbuf          = buf;
+	bfwrite.pOutByte      = &buf->data[buf->cursize];
 }
 
 void MSG_EndBitWriting(sizebuf_t *buf)
 {
-	if (!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
+	if(!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
 	{
 		*bfwrite.pOutByte &= 255 >> (8 - bfwrite.nCurOutputBit);
 		SZ_GetSpace(bfwrite.pbuf, 1);
 		bfwrite.nCurOutputBit = 0;
-		bfwrite.pOutByte = 0;
-		bfwrite.pbuf = 0;
+		bfwrite.pOutByte      = 0;
+		bfwrite.pbuf          = 0;
 	}
 }
 
 void MSG_WriteBits(uint32 data, int numbits)
 {
-	if (numbits < 32)
+	if(numbits < 32)
 	{
-		if (data >= (uint32)(1 << numbits))
+		if(data >= (uint32)(1 << numbits))
 			data = ROWBITTABLE[numbits];
 	}
 
 	int surplusBytes = 0;
-	if ((uint32)bfwrite.nCurOutputBit >= 8)
+	if((uint32)bfwrite.nCurOutputBit >= 8)
 	{
-		surplusBytes = 1;
+		surplusBytes          = 1;
 		bfwrite.nCurOutputBit = 0;
 		++bfwrite.pOutByte;
 	}
 
 	int bits = numbits + bfwrite.nCurOutputBit;
-	if (bits <= 32)
+	if(bits <= 32)
 	{
 		int bytesToWrite = bits >> 3;
-		int bitsLeft = bits & 7;
-		if (!bitsLeft)
+		int bitsLeft     = bits & 7;
+		if(!bitsLeft)
 			--bytesToWrite;
 		SZ_GetSpace(bfwrite.pbuf, surplusBytes + bytesToWrite);
-		if (!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
+		if(!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
 		{
 			*(uint32 *)bfwrite.pOutByte = (data << bfwrite.nCurOutputBit) | *(uint32 *)bfwrite.pOutByte & ROWBITTABLE[bfwrite.nCurOutputBit];
-			bfwrite.nCurOutputBit = 8;
-			if (bitsLeft)
+			bfwrite.nCurOutputBit       = 8;
+			if(bitsLeft)
 				bfwrite.nCurOutputBit = bitsLeft;
-			bfwrite.pOutByte = &bfwrite.pOutByte[bytesToWrite];
+			bfwrite.pOutByte          = &bfwrite.pOutByte[bytesToWrite];
 		}
 	}
 	else
 	{
 		SZ_GetSpace(bfwrite.pbuf, surplusBytes + 4);
-		if (!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
+		if(!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
 		{
 			*(uint32 *)bfwrite.pOutByte = (data << bfwrite.nCurOutputBit) | *(uint32 *)bfwrite.pOutByte & ROWBITTABLE[bfwrite.nCurOutputBit];
-			int leftBits = 32 - bfwrite.nCurOutputBit;
-			bfwrite.nCurOutputBit = bits & 7;
+			int leftBits                = 32 - bfwrite.nCurOutputBit;
+			bfwrite.nCurOutputBit       = bits & 7;
 			bfwrite.pOutByte += 4;
 			*(uint32 *)bfwrite.pOutByte = data >> leftBits;
 		}
@@ -604,11 +609,11 @@ void MSG_WriteSBits(int data, int numbits)
 {
 	int idata = data;
 
-	if (numbits < 32)
+	if(numbits < 32)
 	{
 		int maxnum = (1 << (numbits - 1)) - 1;
 
-		if (data > maxnum || (maxnum = -maxnum, data < maxnum))
+		if(data > maxnum || (maxnum = -maxnum, data < maxnum))
 		{
 			idata = maxnum;
 		}
@@ -624,11 +629,11 @@ void MSG_WriteBitString(const char *p)
 {
 #ifdef REHLDS_FIXES
 	const uint8_t *pch = (uint8_t *)p;
-#else // REHLDS_FIXES
+#else  // REHLDS_FIXES
 	char *pch = (char *)p;
 #endif // REHLDS_FIXES
 
-	while (*pch)
+	while(*pch)
 	{
 		MSG_WriteBits(*pch, 8);
 		++pch;
@@ -639,10 +644,10 @@ void MSG_WriteBitString(const char *p)
 
 void MSG_WriteBitData(void *src, int length)
 {
-	int i;
+	int   i;
 	byte *p = (byte *)src;
 
-	for (i = 0; i < length; i++, p++)
+	for(i = 0; i < length; i++, p++)
 	{
 		MSG_WriteBits(*p, 8);
 	}
@@ -650,13 +655,13 @@ void MSG_WriteBitData(void *src, int length)
 
 void MSG_WriteBitAngle(float fAngle, int numbits)
 {
-	if (numbits >= 32)
+	if(numbits >= 32)
 	{
 		Sys_Error(__FUNCTION__ ": Can't write bit angle with 32 bits precision\n");
 	}
 
 	uint32 shift = (1 << numbits);
-	uint32 mask = shift - 1;
+	uint32 mask  = shift - 1;
 
 	int d = (int)(shift * fmod((double)fAngle, 360.0)) / 360;
 	d &= mask;
@@ -673,7 +678,7 @@ int MSG_CurrentBit()
 {
 	int nbits;
 
-	if (bfread.pbuf)
+	if(bfread.pbuf)
 	{
 		nbits = bfread.nCurInputBit + 8 * bfread.nBytesRead;
 	}
@@ -693,14 +698,14 @@ NOXREF qboolean MSG_IsBitReading()
 
 void MSG_StartBitReading(sizebuf_t *buf)
 {
-	bfread.nCurInputBit = 0;
-	bfread.nBytesRead = 0;
+	bfread.nCurInputBit           = 0;
+	bfread.nBytesRead             = 0;
 	bfread.nBitFieldReadStartByte = msg_readcount;
-	bfread.pbuf = buf;
-	bfread.pInByte = &buf->data[msg_readcount];
-	bfread.nMsgReadCount = msg_readcount + 1;
+	bfread.pbuf                   = buf;
+	bfread.pInByte                = &buf->data[msg_readcount];
+	bfread.nMsgReadCount          = msg_readcount + 1;
 
-	if (msg_readcount + 1 > buf->cursize)
+	if(msg_readcount + 1 > buf->cursize)
 	{
 		msg_badread = 1;
 	}
@@ -708,30 +713,30 @@ void MSG_StartBitReading(sizebuf_t *buf)
 
 void MSG_EndBitReading(sizebuf_t *buf)
 {
-	if (bfread.nMsgReadCount > buf->cursize)
+	if(bfread.nMsgReadCount > buf->cursize)
 	{
 		msg_badread = 1;
 	}
 
-	msg_readcount = bfread.nMsgReadCount;
+	msg_readcount                 = bfread.nMsgReadCount;
 	bfread.nBitFieldReadStartByte = 0;
-	bfread.nCurInputBit = 0;
-	bfread.nBytesRead = 0;
-	bfread.pInByte = 0;
-	bfread.pbuf = 0;
+	bfread.nCurInputBit           = 0;
+	bfread.nBytesRead             = 0;
+	bfread.pInByte                = 0;
+	bfread.pbuf                   = 0;
 }
 
 int MSG_ReadOneBit()
 {
 	int nValue;
 
-	if (msg_badread)
+	if(msg_badread)
 	{
 		nValue = 1;
 	}
 	else
 	{
-		if (bfread.nCurInputBit >= 8)
+		if(bfread.nCurInputBit >= 8)
 		{
 			++bfread.nMsgReadCount;
 			bfread.nCurInputBit = 0;
@@ -739,14 +744,14 @@ int MSG_ReadOneBit()
 			++bfread.pInByte;
 		}
 
-		if (bfread.nMsgReadCount <= bfread.pbuf->cursize)
+		if(bfread.nMsgReadCount <= bfread.pbuf->cursize)
 		{
 			nValue = (*bfread.pInByte & BITTABLE[bfread.nCurInputBit]) != 0;
 			++bfread.nCurInputBit;
 		}
 		else
 		{
-			nValue = 1;
+			nValue      = 1;
 			msg_badread = 1;
 		}
 	}
@@ -759,18 +764,19 @@ uint32 MSG_ReadBits(int numbits)
 	uint32 result;
 
 #ifdef REHLDS_FIXES
-	if (numbits > 32) {
+	if(numbits > 32)
+	{
 		Sys_Error(__FUNCTION__ ": invalid numbits %d\n", numbits);
 	}
 #endif // REHLDS_FIXES
 
-	if (msg_badread)
+	if(msg_badread)
 	{
 		result = 1;
 	}
 	else
 	{
-		if (bfread.nCurInputBit >= 8)
+		if(bfread.nCurInputBit >= 8)
 		{
 			++bfread.nMsgReadCount;
 			++bfread.nBytesRead;
@@ -781,13 +787,13 @@ uint32 MSG_ReadBits(int numbits)
 
 		uint32 bits = (bfread.nCurInputBit + numbits) & 7;
 
-		if ((unsigned int)(bfread.nCurInputBit + numbits) <= 32)
+		if((unsigned int)(bfread.nCurInputBit + numbits) <= 32)
 		{
 			result = (*(unsigned int *)bfread.pInByte >> bfread.nCurInputBit) & ROWBITTABLE[numbits];
 
 			uint32 bytes = (bfread.nCurInputBit + numbits) >> 3;
 
-			if (bits)
+			if(bits)
 			{
 				bfread.nCurInputBit = bits;
 			}
@@ -803,16 +809,16 @@ uint32 MSG_ReadBits(int numbits)
 		}
 		else
 		{
-			result = ((*(unsigned int *)(bfread.pInByte + 4) & ROWBITTABLE[bits]) << (32 - bfread.nCurInputBit)) | (*(unsigned int *)bfread.pInByte >> bfread.nCurInputBit);
+			result              = ((*(unsigned int *)(bfread.pInByte + 4) & ROWBITTABLE[bits]) << (32 - bfread.nCurInputBit)) | (*(unsigned int *)bfread.pInByte >> bfread.nCurInputBit);
 			bfread.nCurInputBit = bits;
 			bfread.pInByte += 4;
 			bfread.nMsgReadCount += 4;
 			bfread.nBytesRead += 4;
 		}
 
-		if (bfread.nMsgReadCount > bfread.pbuf->cursize)
+		if(bfread.nMsgReadCount > bfread.pbuf->cursize)
 		{
-			result = 1;
+			result      = 1;
 			msg_badread = 1;
 		}
 	}
@@ -825,8 +831,8 @@ NOXREF uint32 MSG_PeekBits(int numbits)
 	NOXREFCHECK;
 
 	bf_read_t savebf = bfread;
-	uint32 r = MSG_ReadBits(numbits);
-	bfread = savebf;
+	uint32    r      = MSG_ReadBits(numbits);
+	bfread           = savebf;
 
 	return r;
 }
@@ -834,9 +840,9 @@ NOXREF uint32 MSG_PeekBits(int numbits)
 int MSG_ReadSBits(int numbits)
 {
 	int nSignBit = MSG_ReadOneBit();
-	int result = MSG_ReadBits(numbits - 1);
+	int result   = MSG_ReadBits(numbits - 1);
 
-	if (nSignBit)
+	if(nSignBit)
 	{
 		result = -result;
 	}
@@ -852,10 +858,10 @@ NOXREF char *MSG_ReadBitString()
 
 	char *p = &buf[0];
 
-	for (char c = MSG_ReadBits(8); c; c = MSG_ReadBits(8))
+	for(char c = MSG_ReadBits(8); c; c = MSG_ReadBits(8))
 	{
 #ifdef REHLDS_FIXES
-		if (msg_badread)	// Prevent infinite cycle if msg_badread
+		if(msg_badread) // Prevent infinite cycle if msg_badread
 		{
 			break;
 		}
@@ -870,18 +876,17 @@ NOXREF char *MSG_ReadBitString()
 
 int MSG_ReadBitData(void *dest, int length)
 {
-	if (length > 0)
+	if(length > 0)
 	{
-		int i = length;
-		unsigned char * p = (unsigned char *)dest;
+		int            i = length;
+		unsigned char *p = (unsigned char *)dest;
 
 		do
 		{
 			*p = (unsigned char)MSG_ReadBits(8);
 			p++;
 			--i;
-		}
-		while (i);
+		} while(i);
 	}
 
 	return length;
@@ -893,26 +898,26 @@ NOXREF float MSG_ReadBitCoord()
 
 	float value = 0;
 
-	int intval = MSG_ReadOneBit();
+	int intval   = MSG_ReadOneBit();
 	int fractval = MSG_ReadOneBit();
 
-	if (intval || fractval)
+	if(intval || fractval)
 	{
 		int signbit = MSG_ReadOneBit();
 
-		if (intval)
+		if(intval)
 		{
 			intval = MSG_ReadBits(12);
 		}
 
-		if (fractval)
+		if(fractval)
 		{
 			fractval = MSG_ReadBits(3);
 		}
 
 		value = (float)(fractval / 8.0 + intval);
 
-		if (signbit)
+		if(signbit)
 		{
 			value = -value;
 		}
@@ -923,19 +928,19 @@ NOXREF float MSG_ReadBitCoord()
 
 void MSG_WriteBitCoord(const float f)
 {
-	int signbit = f <= -0.125;
-	int intval = abs((int32)f);
+	int signbit  = f <= -0.125;
+	int intval   = abs((int32)f);
 	int fractval = abs((int32)f * 8) & 7;
 
 	MSG_WriteOneBit(intval);
 	MSG_WriteOneBit(fractval);
 
-	if (intval || fractval)
+	if(intval || fractval)
 	{
 		MSG_WriteOneBit(signbit);
-		if (intval)
+		if(intval)
 			MSG_WriteBits(intval, 12);
-		if (fractval)
+		if(fractval)
 			MSG_WriteBits(fractval, 3);
 	}
 }
@@ -948,11 +953,11 @@ NOXREF void MSG_ReadBitVec3Coord(vec3_t fa)
 	int yflag = MSG_ReadOneBit();
 	int zflag = MSG_ReadOneBit();
 
-	if (xflag)
+	if(xflag)
 		fa[0] = MSG_ReadBitCoord();
-	if (yflag)
+	if(yflag)
 		fa[1] = MSG_ReadBitCoord();
-	if (zflag)
+	if(zflag)
 		fa[2] = MSG_ReadBitCoord();
 }
 
@@ -966,11 +971,11 @@ void MSG_WriteBitVec3Coord(const vec3_t fa)
 	MSG_WriteOneBit(yflag);
 	MSG_WriteOneBit(zflag);
 
-	if (xflag)
+	if(xflag)
 		MSG_WriteBitCoord(fa[0]);
-	if (yflag)
+	if(yflag)
 		MSG_WriteBitCoord(fa[1]);
-	if (zflag)
+	if(zflag)
 		MSG_WriteBitCoord(fa[2]);
 }
 
@@ -990,7 +995,7 @@ NOXREF void MSG_ReadVec3Coord(sizebuf_t *sb, vec3_t fa)
 {
 	NOXREFCHECK;
 
-	if (MSG_IsBitReading())
+	if(MSG_IsBitReading())
 	{
 		MSG_ReadBitVec3Coord(fa);
 	}
@@ -1014,14 +1019,14 @@ NOXREF void MSG_WriteVec3Coord(sizebuf_t *sb, const vec3_t fa)
 void MSG_BeginReading()
 {
 	msg_readcount = 0;
-	msg_badread = 0;
+	msg_badread   = 0;
 }
 
 int MSG_ReadChar()
 {
 	int c;
 
-	if (msg_readcount < net_message.cursize)
+	if(msg_readcount < net_message.cursize)
 	{
 		c = net_message.data[msg_readcount];
 		msg_readcount++;
@@ -1029,7 +1034,7 @@ int MSG_ReadChar()
 	else
 	{
 		msg_badread = 1;
-		c = -1;
+		c           = -1;
 	}
 
 	return c;
@@ -1039,7 +1044,7 @@ int MSG_ReadByte()
 {
 	int c;
 
-	if (msg_readcount < net_message.cursize)
+	if(msg_readcount < net_message.cursize)
 	{
 		c = net_message.data[msg_readcount];
 		msg_readcount++;
@@ -1047,7 +1052,7 @@ int MSG_ReadByte()
 	else
 	{
 		msg_badread = 1;
-		c = -1;
+		c           = -1;
 	}
 
 	return c;
@@ -1057,7 +1062,7 @@ int MSG_ReadShort()
 {
 	int c;
 
-	if (msg_readcount + 2 <= net_message.cursize )
+	if(msg_readcount + 2 <= net_message.cursize)
 	{
 		c = *(int16 *)&net_message.data[msg_readcount];
 		msg_readcount += 2;
@@ -1065,7 +1070,7 @@ int MSG_ReadShort()
 	else
 	{
 		msg_badread = 1;
-		c = -1;
+		c           = -1;
 	}
 
 	return c;
@@ -1077,7 +1082,7 @@ NOXREF int MSG_ReadWord()
 
 	int c;
 
-	if (msg_readcount + 2 <= net_message.cursize)
+	if(msg_readcount + 2 <= net_message.cursize)
 	{
 		c = *(uint16 *)&net_message.data[msg_readcount];
 		msg_readcount += 2;
@@ -1085,7 +1090,7 @@ NOXREF int MSG_ReadWord()
 	else
 	{
 		msg_badread = 1;
-		c = -1;
+		c           = -1;
 	}
 
 	return c;
@@ -1095,7 +1100,7 @@ int MSG_ReadLong()
 {
 	int c;
 
-	if (msg_readcount + 4 <= net_message.cursize)
+	if(msg_readcount + 4 <= net_message.cursize)
 	{
 		c = *(uint32 *)&net_message.data[msg_readcount];
 		msg_readcount += 4;
@@ -1103,7 +1108,7 @@ int MSG_ReadLong()
 	else
 	{
 		msg_badread = 1;
-		c = -1;
+		c           = -1;
 	}
 
 	return c;
@@ -1115,15 +1120,15 @@ NOXREF float MSG_ReadFloat()
 
 	float f;
 
-	if (msg_readcount + 4 <= net_message.cursize)
+	if(msg_readcount + 4 <= net_message.cursize)
 	{
-		f = *((float*)LittleLong(*(int *)&net_message.data[msg_readcount]));
+		f = *((float *)LittleLong(*(int *)&net_message.data[msg_readcount]));
 		msg_readcount += 4;
 	}
 	else
 	{
 		msg_badread = 1;
-		f = -1.0;
+		f           = -1.0;
 	}
 
 	return f;
@@ -1131,7 +1136,7 @@ NOXREF float MSG_ReadFloat()
 
 int MSG_ReadBuf(int iSize, void *pbuf)
 {
-	if (msg_readcount + iSize <= net_message.cursize)
+	if(msg_readcount + iSize <= net_message.cursize)
 	{
 		Q_memcpy(pbuf, &net_message.data[msg_readcount], iSize);
 		msg_readcount += iSize;
@@ -1145,10 +1150,10 @@ int MSG_ReadBuf(int iSize, void *pbuf)
 
 char *MSG_ReadString()
 {
-	int c = 0, l = 0;
+	int         c = 0, l = 0;
 	static char string[8192];
 
-	while ((c = MSG_ReadChar(), c) && c != -1 && l < ARRAYSIZE(string) - 1)
+	while((c = MSG_ReadChar(), c) && c != -1 && l < ARRAYSIZE(string) - 1)
 	{
 		string[l++] = c;
 	}
@@ -1159,10 +1164,10 @@ char *MSG_ReadString()
 
 char *MSG_ReadStringLine()
 {
-	int c = 0, l = 0;
+	int         c = 0, l = 0;
 	static char string[2048];
 
-	while ((c = MSG_ReadChar(), c) && c != '\n' && c != -1 && l < ARRAYSIZE(string) - 1)
+	while((c = MSG_ReadChar(), c) && c != '\n' && c != -1 && l < ARRAYSIZE(string) - 1)
 	{
 		string[l++] = c;
 	}
@@ -1177,7 +1182,7 @@ NOXREF float MSG_ReadAngle()
 
 	int c = MSG_ReadChar();
 #ifdef REHLDS_FIXES
-	if (c == -1)	// FIXED: Added check for wrong value, but just return 0 instead of -1 * (360.0 / 256)
+	if(c == -1) // FIXED: Added check for wrong value, but just return 0 instead of -1 * (360.0 / 256)
 	{
 		return 0;
 	}
@@ -1191,7 +1196,7 @@ NOXREF float MSG_ReadHiresAngle()
 
 	int c = MSG_ReadShort();
 #ifdef REHLDS_FIXES
-	if (c == -1)	// FIXED: Added check for wrong value, but just return 0 instead of -1 * (360.0 / 65536)
+	if(c == -1) // FIXED: Added check for wrong value, but just return 0 instead of -1 * (360.0 / 65536)
 	{
 		return 0;
 	}
@@ -1199,7 +1204,7 @@ NOXREF float MSG_ReadHiresAngle()
 	return (float)(MSG_ReadShort() * (360.0 / 65536));
 }
 
-void MSG_ReadUsercmd(usercmd_t *to, usercmd_t* from)
+void MSG_ReadUsercmd(usercmd_t *to, usercmd_t *from)
 {
 	MSG_StartBitReading(&net_message);
 #ifdef REHLDS_OPT_PEDANTIC
@@ -1219,15 +1224,15 @@ void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize)
 {
 	buf->buffername = name;
 
-	if (startsize < 256)
+	if(startsize < 256)
 	{
 		startsize = 256;
 	}
 
-	buf->data = (byte *)Hunk_AllocName(startsize, name);
+	buf->data    = (byte *)Hunk_AllocName(startsize, name);
 	buf->maxsize = startsize;
 	buf->cursize = 0;
-	buf->flags = SIZEBUF_CHECK_OVERFLOW;
+	buf->flags   = SIZEBUF_CHECK_OVERFLOW;
 }
 
 void SZ_Clear(sizebuf_t *buf)
@@ -1238,25 +1243,24 @@ void SZ_Clear(sizebuf_t *buf)
 
 void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 {
-	void *data;
+	void *      data;
 	const char *buffername = buf->buffername ? buf->buffername : "???";
 
-
-	if (length < 0)
+	if(length < 0)
 	{
 		Sys_Error(__FUNCTION__ ": %i negative length on %s", length, buffername);
 	}
 
-	if (buf->cursize + length > buf->maxsize)
+	if(buf->cursize + length > buf->maxsize)
 	{
 #ifdef REHLDS_FIXES
-		if (!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
+		if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
 		{
-			if (!buf->maxsize)
+			if(!buf->maxsize)
 			{
 				Sys_Error(__FUNCTION__ ": tried to write to an uninitialized sizebuf_t: %s", buffername);
 			}
-			else if (length > buf->maxsize)
+			else if(length > buf->maxsize)
 			{
 				Sys_Error(__FUNCTION__ ": %i is > full buffer size on %s", length, buffername);
 			}
@@ -1266,14 +1270,14 @@ void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 			}
 		}
 
-		if (length > buf->maxsize)
+		if(length > buf->maxsize)
 		{
 			Con_DPrintf(__FUNCTION__ ": %i is > full buffer size on %s, ignoring", length, buffername);
 		}
-#else // REHLDS_FIXES
-		if (!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
+#else  // REHLDS_FIXES
+		if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
 		{
-			if (!buf->maxsize)
+			if(!buf->maxsize)
 			{
 				Sys_Error(__FUNCTION__ ": Tried to write to an uninitialized sizebuf_t: %s", buffername);
 			}
@@ -1283,9 +1287,9 @@ void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 			}
 		}
 
-		if (length > buf->maxsize)
+		if(length > buf->maxsize)
 		{
-			if (!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
+			if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
 			{
 				Sys_Error(__FUNCTION__ ": %i is > full buffer size on %s", length, buffername);
 			}
@@ -1300,7 +1304,7 @@ void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 		buf->flags |= SIZEBUF_OVERFLOWED;
 	}
 
-	data = &buf->data[buf->cursize];
+	data         = &buf->data[buf->cursize];
 	buf->cursize = length + buf->cursize;
 
 	return data;
@@ -1310,7 +1314,7 @@ void SZ_Write(sizebuf_t *buf, const void *data, int length)
 {
 	unsigned char *pData = (unsigned char *)SZ_GetSpace(buf, length);
 
-	if (!(buf->flags & SIZEBUF_OVERFLOWED))
+	if(!(buf->flags & SIZEBUF_OVERFLOWED))
 	{
 		Q_memcpy(pData, data, length);
 	}
@@ -1319,9 +1323,9 @@ void SZ_Write(sizebuf_t *buf, const void *data, int length)
 void SZ_Print(sizebuf_t *buf, const char *data)
 {
 	unsigned char *pData;
-	int len = Q_strlen(data) + 1;
+	int            len = Q_strlen(data) + 1;
 
-	if (buf->data[buf->cursize - 1])
+	if(buf->data[buf->cursize - 1])
 	{
 		pData = (unsigned char *)SZ_GetSpace(buf, len);
 	}
@@ -1330,7 +1334,7 @@ void SZ_Print(sizebuf_t *buf, const char *data)
 		pData = (unsigned char *)SZ_GetSpace(buf, len - 1) - 1;
 	}
 
-	if (!(buf->flags & SIZEBUF_OVERFLOWED))
+	if(!(buf->flags & SIZEBUF_OVERFLOWED))
 	{
 		Q_memcpy(pData, data, len);
 	}
@@ -1338,48 +1342,44 @@ void SZ_Print(sizebuf_t *buf, const char *data)
 
 #endif // SZ_Functions_region
 
-
 #ifndef COM_Functions_region
 
-int com_argc;
+int    com_argc;
 char **com_argv;
 
 char com_token[COM_TOKEN_LEN];
 
 qboolean com_ignorecolons;
 qboolean s_com_token_unget;
-char *com_last_in_quotes_data = NULL;
-char com_clientfallback[MAX_PATH];
-char com_gamedir[MAX_PATH];
-char com_cmdline[COM_MAX_CMD_LINE];
+char *   com_last_in_quotes_data = NULL;
+char     com_clientfallback[MAX_PATH];
+char     com_gamedir[MAX_PATH];
+char     com_cmdline[COM_MAX_CMD_LINE];
 
-cache_user_t *loadcache;
+cache_user_t * loadcache;
 unsigned char *loadbuf;
-int loadsize;
+int            loadsize;
 
 const unsigned char mungify_table[] =
-{
-	0x7A, 0x64, 0x05, 0xF1,
-	0x1B, 0x9B, 0xA0, 0xB5,
-	0xCA, 0xED, 0x61, 0x0D,
-	0x4A, 0xDF, 0x8E, 0xC7
-};
+    {
+        0x7A, 0x64, 0x05, 0xF1,
+        0x1B, 0x9B, 0xA0, 0xB5,
+        0xCA, 0xED, 0x61, 0x0D,
+        0x4A, 0xDF, 0x8E, 0xC7};
 
 const unsigned char mungify_table2[] =
-{
-	0x05, 0x61, 0x7A, 0xED,
-	0x1B, 0xCA, 0x0D, 0x9B,
-	0x4A, 0xF1, 0x64, 0xC7,
-	0xB5, 0x8E, 0xDF, 0xA0
-};
+    {
+        0x05, 0x61, 0x7A, 0xED,
+        0x1B, 0xCA, 0x0D, 0x9B,
+        0x4A, 0xF1, 0x64, 0xC7,
+        0xB5, 0x8E, 0xDF, 0xA0};
 
 unsigned char mungify_table3[] =
-{
-	0x20, 0x07, 0x13, 0x61,
-	0x03, 0x45, 0x17, 0x72,
-	0x0A, 0x2D, 0x48, 0x0C,
-	0x4A, 0x12, 0xA9, 0xB5
-};
+    {
+        0x20, 0x07, 0x13, 0x61,
+        0x03, 0x45, 0x17, 0x72,
+        0x0A, 0x2D, 0x48, 0x0C,
+        0x4A, 0x12, 0xA9, 0xB5};
 
 NOXREF char *COM_SkipPath(char *pathname)
 {
@@ -1387,9 +1387,9 @@ NOXREF char *COM_SkipPath(char *pathname)
 
 	char *last = pathname;
 
-	while (*pathname)
+	while(*pathname)
 	{
-		if (*pathname == '/' || *pathname == '\\')
+		if(*pathname == '/' || *pathname == '\\')
 			last = pathname + 1;
 		pathname++;
 	}
@@ -1399,33 +1399,33 @@ NOXREF char *COM_SkipPath(char *pathname)
 void COM_StripExtension(char *in, char *out)
 {
 	char *c, *d = NULL;
-	int i;
+	int   i;
 
 	// Search for the first dot after the last path separator
 	c = in;
-	while (*c)
+	while(*c)
 	{
-		if (*c == '/' || *c == '\\')
+		if(*c == '/' || *c == '\\')
 		{
-			d = NULL;	// reset dot location on path separator
+			d = NULL; // reset dot location on path separator
 		}
-		else if (d == NULL && *c == '.')
+		else if(d == NULL && *c == '.')
 		{
-			d = c;		// store first dot location in the file name
+			d = c; // store first dot location in the file name
 		}
 		c++;
 	}
 
-	if (out == in)
+	if(out == in)
 	{
-		if (d != NULL)
+		if(d != NULL)
 		{
 			*d = 0;
 		}
 	}
 	else
 	{
-		if (d != NULL)
+		if(d != NULL)
 		{
 			i = d - in;
 			Q_memcpy(out, in, i);
@@ -1441,32 +1441,32 @@ void COM_StripExtension(char *in, char *out)
 char *COM_FileExtension(char *in)
 {
 	static char exten[MAX_PATH];
-	char *c, *d = NULL;
-	int i;
+	char *      c, *d = NULL;
+	int         i;
 
 	// Search for the first dot after the last path separator
 	c = in;
-	while (*c)
+	while(*c)
 	{
-		if (*c == '/' || *c == '\\')
+		if(*c == '/' || *c == '\\')
 		{
-			d = NULL;	// reset dot location on path separator
+			d = NULL; // reset dot location on path separator
 		}
-		else if (d == NULL && *c == '.')
+		else if(d == NULL && *c == '.')
 		{
-			d = c;		// store first dot location in the file name
+			d = c; // store first dot location in the file name
 		}
 		c++;
 	}
 
-	if (d == NULL)
+	if(d == NULL)
 	{
 		return "";
 	}
 
-	d++;	// skip dot
+	d++; // skip dot
 	// Copy extension
-	for (i = 0; i < (ARRAYSIZE(exten) - 1) && *d; i++, d++)
+	for(i = 0; i < (ARRAYSIZE(exten) - 1) && *d; i++, d++)
 	{
 		exten[i] = *d;
 	}
@@ -1479,19 +1479,19 @@ char *COM_FileExtension(char *in)
 void COM_FileBase(const char *in, char *out)
 {
 	const char *start, *end;
-	int len;
+	int         len;
 
 	*out = 0;
 
 	len = Q_strlen(in);
-	if (len <= 0)
+	if(len <= 0)
 		return;
 
 	start = in + len - 1;
-	end = in + len;
-	while (start >= in && *start != '/' && *start != '\\')
+	end   = in + len;
+	while(start >= in && *start != '/' && *start != '\\')
 	{
-		if (*start == '.')
+		if(*start == '.')
 			end = start;
 		start--;
 	}
@@ -1507,9 +1507,9 @@ void COM_DefaultExtension(char *path, char *extension)
 	char *src;
 	src = path + Q_strlen(path) - 1;
 
-	while (*src != '/' && *src != '\\' && src != path)
+	while(*src != '/' && *src != '\\' && src != path)
 	{
-		if (*src == '.')
+		if(*src == '.')
 		{
 			return;
 		}
@@ -1527,25 +1527,25 @@ void COM_UngetToken()
 
 char *COM_Parse(char *data)
 {
-	int c;
+	int     c;
 	uchar32 wchar;
-	int len;
+	int     len;
 
-	if (s_com_token_unget)
+	if(s_com_token_unget)
 	{
 		s_com_token_unget = 0;
 		return data;
 	}
 
-	len = 0;
+	len          = 0;
 	com_token[0] = 0;
 
-	if (!data)
+	if(!data)
 	{
 		return NULL;
 	}
 
-	if (com_last_in_quotes_data == data)
+	if(com_last_in_quotes_data == data)
 	{
 		// continue to parse quoted string
 		com_last_in_quotes_data = NULL;
@@ -1554,9 +1554,9 @@ char *COM_Parse(char *data)
 
 skipwhite:
 	// skip whitespace
-	while (!V_UTF8ToUChar32(data, &wchar) && wchar <= 32)
+	while(!V_UTF8ToUChar32(data, &wchar) && wchar <= 32)
 	{
-		if (!wchar)
+		if(!wchar)
 			return NULL;
 		data = Q_UnicodeAdvance(data, 1);
 	}
@@ -1564,27 +1564,27 @@ skipwhite:
 	c = *data;
 
 	// skip // comments till the next line
-	if (c == '/' && data[1] == '/')
+	if(c == '/' && data[1] == '/')
 	{
-		while (*data && *data != '\n')
+		while(*data && *data != '\n')
 			data++;
-		goto skipwhite;	// start over new line
+		goto skipwhite; // start over new line
 	}
 
 	// handle quoted strings specially: copy till the end or another quote
-	if (c == '\"')
+	if(c == '\"')
 	{
-		data++;	// skip starting quote
-		while (true)
+		data++; // skip starting quote
+		while(true)
 		{
-inquotes:
-			c = *data++;	// get char and advance
-			if (!c)	// EOL
+		inquotes:
+			c = *data++; // get char and advance
+			if(!c)       // EOL
 			{
 				com_token[len] = 0;
-				return data - 1;	// we are done with that, but return data to show that token is present
+				return data - 1; // we are done with that, but return data to show that token is present
 			}
-			if (c == '\"')	// closing quote
+			if(c == '\"') // closing quote
 			{
 				com_token[len] = 0;
 				return data;
@@ -1593,7 +1593,7 @@ inquotes:
 			com_token[len] = c;
 			len++;
 
-			if (len == COM_TOKEN_LEN - 1)	// check if buffer is full
+			if(len == COM_TOKEN_LEN - 1) // check if buffer is full
 			{
 				// remember in-quotes state
 				com_last_in_quotes_data = data;
@@ -1605,7 +1605,7 @@ inquotes:
 	}
 
 	// parse single characters
-	if (c == '{' || c == '}' || c == ')' || c == '(' || c == '\'' || c == ',' || (!com_ignorecolons && c == ':'))
+	if(c == '{' || c == '}' || c == ')' || c == '(' || c == '\'' || c == ',' || (!com_ignorecolons && c == ':'))
 	{
 		com_token[len] = c;
 		len++;
@@ -1620,9 +1620,9 @@ inquotes:
 		data++;
 		len++;
 		c = *data;
-		if (c == '{' || c == '}' || c == ')' || c == '(' || c == '\'' || c == ',' || (!com_ignorecolons && c == ':'))
+		if(c == '{' || c == '}' || c == ')' || c == '(' || c == '\'' || c == ',' || (!com_ignorecolons && c == ':'))
 			break;
-	} while (len < COM_TOKEN_LEN - 1 && (c < 0 || c > 32));
+	} while(len < COM_TOKEN_LEN - 1 && (c < 0 || c > 32));
 
 	com_token[len] = 0;
 	return data;
@@ -1637,25 +1637,25 @@ char *COM_ParseLine(char *data)
 #endif
 	int len;
 
-	if (s_com_token_unget)
+	if(s_com_token_unget)
 	{
 		s_com_token_unget = 0;
 		return data;
 	}
 
-	len = 0;
+	len          = 0;
 	com_token[0] = 0;
 
-	if (!data)
+	if(!data)
 	{
 		return NULL;
 	}
 
 	c = *data;
 
-	// parse a line out of the data
+// parse a line out of the data
 #ifndef REHLDS_FIXES
-	while ((c >= ' ' || c == '\t') && (len < COM_TOKEN_LEN - 1))
+	while((c >= ' ' || c == '\t') && (len < COM_TOKEN_LEN - 1))
 	{
 		com_token[len] = c;
 		data++;
@@ -1665,24 +1665,24 @@ char *COM_ParseLine(char *data)
 #else
 	do
 	{
-		com_token[len] = c;	// TODO: Here c may be any ASCII, \n for example, but we are copy it in the token
+		com_token[len] = c; // TODO: Here c may be any ASCII, \n for example, but we are copy it in the token
 		data++;
 		len++;
 		c = *data;
-	} while (c >= ' ' && (len < COM_TOKEN_LEN - 1));	// TODO: Will break on \t, may be it shouldn't?
+	} while(c >= ' ' && (len < COM_TOKEN_LEN - 1)); // TODO: Will break on \t, may be it shouldn't?
 #endif
 
 	com_token[len] = 0;
 
-	if (c == 0) // end of file
+	if(c == 0) // end of file
 	{
 		return NULL;
 	}
 
 	// eat whitespace (LF,CR,etc.) at the end of this line
-	while ((c = *data) < ' ' && c != '\t')
+	while((c = *data) < ' ' && c != '\t')
 	{
-		if (c == 0)
+		if(c == 0)
 		{
 			return NULL; // end of file;
 		}
@@ -1697,9 +1697,9 @@ int COM_TokenWaiting(char *buffer)
 	char *p;
 
 	p = buffer;
-	while (*p && *p != '\n')
+	while(*p && *p != '\n')
 	{
-		if (!isspace(*p) || isalnum(*p))
+		if(!isspace(*p) || isalnum(*p))
 			return 1;
 
 		p++;
@@ -1712,14 +1712,14 @@ int COM_CheckParm(char *parm)
 {
 	int i;
 
-	for (i = 1 ; i < com_argc; i++)
+	for(i = 1; i < com_argc; i++)
 	{
-		if (!com_argv[i])
+		if(!com_argv[i])
 		{
 			continue;
 		}
 
-		if (!Q_strcmp(parm, (const char*)com_argv[i]))
+		if(!Q_strcmp(parm, (const char *)com_argv[i]))
 		{
 			return i;
 		}
@@ -1733,26 +1733,25 @@ void COM_InitArgv(int argc, char *argv[])
 	qboolean safe = 0;
 
 	static char *safeargvs[NUM_SAFE_ARGVS] =
-	{
-		"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"
-	};
+	    {
+	        "-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 	static char *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
 
-	int i, j;
+	int   i, j;
 	char *c;
 
 	// Reconstruct full command line
 	com_cmdline[0] = 0;
-	for (i = 0, j = 0; i < MAX_NUM_ARGVS && i < argc && j < COM_MAX_CMD_LINE - 1; i++)
+	for(i = 0, j = 0; i < MAX_NUM_ARGVS && i < argc && j < COM_MAX_CMD_LINE - 1; i++)
 	{
 		c = argv[i];
-		if (*c)
+		if(*c)
 		{
-			while (*c && j < COM_MAX_CMD_LINE - 1)
+			while(*c && j < COM_MAX_CMD_LINE - 1)
 			{
 				com_cmdline[j++] = *c++;
 			}
-			if (j >= COM_MAX_CMD_LINE - 1)
+			if(j >= COM_MAX_CMD_LINE - 1)
 			{
 				break;
 			}
@@ -1762,22 +1761,22 @@ void COM_InitArgv(int argc, char *argv[])
 	com_cmdline[j] = 0;
 
 	// Copy args pointers to our array
-	for (com_argc = 0; (com_argc < MAX_NUM_ARGVS) && (com_argc < argc); com_argc++)
+	for(com_argc = 0; (com_argc < MAX_NUM_ARGVS) && (com_argc < argc); com_argc++)
 	{
 		largv[com_argc] = argv[com_argc];
 
-		if (!Q_strcmp("-safe", argv[com_argc]))
+		if(!Q_strcmp("-safe", argv[com_argc]))
 		{
 			safe = 1;
 		}
 	}
 
 	// Add arguments introducing more failsafeness
-	if (safe)
+	if(safe)
 	{
 		// force all the safe-mode switches. Note that we reserved extra space in
 		// case we need to add these, so we don't need an overflow check
-		for (int i = 0; i < NUM_SAFE_ARGVS; i++)
+		for(int i = 0; i < NUM_SAFE_ARGVS; i++)
 		{
 			largv[com_argc] = safeargvs[i];
 			com_argc++;
@@ -1785,31 +1784,31 @@ void COM_InitArgv(int argc, char *argv[])
 	}
 
 	largv[com_argc] = " ";
-	com_argv = largv;
+	com_argv        = largv;
 }
 
 void COM_Init(char *basedir)
 {
 	unsigned short swaptest = 1;
 
-	if (*(byte *)&swaptest == 1)
+	if(*(byte *)&swaptest == 1)
 	{
-		bigendien = 0;
-		BigShort = ShortSwap;
+		bigendien   = 0;
+		BigShort    = ShortSwap;
 		LittleShort = ShortNoSwap;
-		BigLong = LongSwap;
-		LittleLong = LongNoSwap;
-		BigFloat = FloatSwap;
+		BigLong     = LongSwap;
+		LittleLong  = LongNoSwap;
+		BigFloat    = FloatSwap;
 		LittleFloat = FloatNoSwap;
 	}
 	else
 	{
-		bigendien = 1;
-		BigShort = ShortNoSwap;
+		bigendien   = 1;
+		BigShort    = ShortNoSwap;
 		LittleShort = ShortSwap;
-		BigLong = LongNoSwap;
-		LittleLong = LongSwap;
-		BigFloat = FloatNoSwap;
+		BigLong     = LongNoSwap;
+		LittleLong  = LongSwap;
+		BigFloat    = FloatNoSwap;
 		LittleFloat = FloatSwap;
 	}
 
@@ -1818,8 +1817,8 @@ void COM_Init(char *basedir)
 
 char *va(char *format, ...)
 {
-	va_list argptr;
-	static int current = 0;
+	va_list     argptr;
+	static int  current = 0;
 	static char string[16][1024];
 
 	current = (current + 1) % 16;
@@ -1835,7 +1834,7 @@ NOXREF char *vstr(vec_t *v)
 {
 	NOXREFCHECK;
 
-	static int idx = 0;
+	static int  idx = 0;
 	static char string[16][1024];
 
 	idx++;
@@ -1849,9 +1848,9 @@ NOXREF int memsearch(unsigned char *start, int count, int search)
 {
 	NOXREFCHECK;
 
-	for (int i = 0; i < count; i++)
+	for(int i = 0; i < count; i++)
 	{
-		if (start[i] == search)
+		if(start[i] == search)
 		{
 			return i;
 		}
@@ -1873,7 +1872,7 @@ NOXREF void COM_WriteFile(char *filename, void *data, int len)
 
 	FileHandle_t fp = FS_Open(path, "wb");
 
-	if (fp)
+	if(fp)
 	{
 		Sys_Printf(__FUNCTION__ ": %s\n", path);
 		FS_Write(data, len, 1, fp);
@@ -1887,15 +1886,15 @@ NOXREF void COM_WriteFile(char *filename, void *data, int len)
 
 void COM_FixSlashes(char *pname)
 {
-	while (*pname)
+	while(*pname)
 	{
 #ifdef _WIN32
-		if (*pname == '/')
+		if(*pname == '/')
 		{
 			*pname = '\\';
 		}
 #else
-		if (*pname == '\\')
+		if(*pname == '\\')
 		{
 			*pname = '/';
 		}
@@ -1908,18 +1907,18 @@ void COM_FixSlashes(char *pname)
 void COM_CreatePath(char *path)
 {
 	char *ofs;
-	char old;
+	char  old;
 
-	if (*path == 0)
+	if(*path == 0)
 	{
 		return;
 	}
 
-	for (ofs = path + 1; *ofs; ofs++)
+	for(ofs = path + 1; *ofs; ofs++)
 	{
-		if (*ofs == '/' || *ofs == '\\')
+		if(*ofs == '/' || *ofs == '\\')
 		{
-			old = *ofs;
+			old  = *ofs;
 			*ofs = 0;
 			FS_CreateDirHierarchy(path, 0);
 			*ofs = old;
@@ -1931,14 +1930,14 @@ NOXREF void COM_CopyFile(char *netpath, char *cachepath)
 {
 	NOXREFCHECK;
 
-	int count;
-	int remaining;
+	int  count;
+	int  remaining;
 	char buf[4096];
 
 	FileHandle_t out;
 	FileHandle_t in = FS_Open(netpath, "rb");
 
-	if (!in)
+	if(!in)
 	{
 		return;
 	}
@@ -1946,11 +1945,11 @@ NOXREF void COM_CopyFile(char *netpath, char *cachepath)
 	count = FS_Size(in);
 	COM_CreatePath(cachepath);
 
-	for (out = FS_Open(cachepath, "wb"); count; count -= remaining)
+	for(out = FS_Open(cachepath, "wb"); count; count -= remaining)
 	{
 		remaining = count;
 
-		if (remaining > 4096)
+		if(remaining > 4096)
 		{
 			remaining = 4096;
 		}
@@ -1977,11 +1976,11 @@ NOXREF int COM_ExpandFilename(char *filename)
 int EXT_FUNC COM_FileSize(char *filename)
 {
 	FileHandle_t fp;
-	int iSize;
+	int          iSize;
 
 	iSize = -1;
-	fp = FS_Open(filename, "rb");
-	if (fp)
+	fp    = FS_Open(filename, "rb");
+	if(fp)
 	{
 		iSize = FS_Size(fp);
 		FS_Close(fp);
@@ -1989,23 +1988,23 @@ int EXT_FUNC COM_FileSize(char *filename)
 	return iSize;
 }
 
-unsigned char* EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength)
+unsigned char *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength)
 {
-	char base[33];
+	char           base[33];
 	unsigned char *buf = NULL;
 
 #ifndef SWDS
 	g_engdstAddrs->COM_LoadFile(&path, &usehunk, &pLength);
 #endif
 
-	if (pLength)
+	if(pLength)
 	{
 		*pLength = 0;
 	}
 
 	FileHandle_t hFile = FS_Open(path, "rb");
 
-	if (!hFile)
+	if(!hFile)
 	{
 		return NULL;
 	}
@@ -2014,7 +2013,7 @@ unsigned char* EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength
 	COM_FileBase(path, base);
 	base[32] = 0;
 
-	switch (usehunk)
+	switch(usehunk)
 	{
 	case 0:
 		buf = (unsigned char *)Z_Malloc(len + 1);
@@ -2033,7 +2032,7 @@ unsigned char* EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength
 		break;
 
 	case 4:
-		if (len + 1 <= loadsize)
+		if(len + 1 <= loadsize)
 		{
 			buf = loadbuf;
 		}
@@ -2054,7 +2053,7 @@ unsigned char* EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength
 		Sys_Error(__FUNCTION__ ": bad usehunk");
 	}
 
-	if (!buf)
+	if(!buf)
 	{
 #ifdef REHLDS_FIXES
 		FS_Close(hFile);
@@ -2067,7 +2066,7 @@ unsigned char* EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength
 
 	buf[len] = 0;
 
-	if (pLength)
+	if(pLength)
 	{
 		*pLength = len;
 	}
@@ -2081,7 +2080,7 @@ void EXT_FUNC COM_FreeFile(void *buffer)
 	g_engdstAddrs->COM_FreeFile();
 #endif
 
-	if (buffer)
+	if(buffer)
 	{
 		Mem_Free(buffer);
 	}
@@ -2089,12 +2088,12 @@ void EXT_FUNC COM_FreeFile(void *buffer)
 
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize)
 {
-	int copysize;
+	int  copysize;
 	char copybuf[COM_COPY_CHUNK_SIZE];
 
 	copysize = nSize;
 
-	while (copysize > COM_COPY_CHUNK_SIZE)
+	while(copysize > COM_COPY_CHUNK_SIZE)
 	{
 		FS_Read(copybuf, COM_COPY_CHUNK_SIZE, 1, src);
 		FS_Write(copybuf, COM_COPY_CHUNK_SIZE, 1, dst);
@@ -2109,22 +2108,22 @@ void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize)
 
 NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile)
 {
-	FileHandle_t hFile;
+	FileHandle_t   hFile;
 	unsigned char *buf;
-	char base[32];
-	int len;
-	int cbload;
+	char           base[32];
+	int            len;
+	int            cbload;
 
 	hFile = *phFile;
-	if (!hFile)
+	if(!hFile)
 	{
 		hFile = FS_Open(path, "rb");
-		if (!hFile)
+		if(!hFile)
 			return NULL;
 	}
 
 	len = FS_Size(hFile);
-	if (len < pos)
+	if(len < pos)
 	{
 #ifdef REHLDS_FIXES
 		FS_Close(hFile);
@@ -2134,20 +2133,20 @@ NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcb
 
 	FS_Seek(hFile, pos, FILESYSTEM_SEEK_HEAD);
 
-	if (len > cbmax)
+	if(len > cbmax)
 		cbload = cbmax;
 	else
 		cbload = len;
 
 	*pcbread = cbload;
 
-	if (path)
+	if(path)
 		COM_FileBase(path, base);
 
 	buf = (unsigned char *)Hunk_TempAlloc(cbload + 1);
-	if (!buf)
+	if(!buf)
 	{
-		if (path)
+		if(path)
 		{
 #ifdef REHLDS_FIXES
 			FS_Close(hFile);
@@ -2186,7 +2185,7 @@ NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, i
 {
 	NOXREFCHECK;
 
-	loadbuf = (unsigned char *)buffer;
+	loadbuf  = (unsigned char *)buffer;
 	loadsize = bufsize;
 
 	return COM_LoadFile(path, 4, length);
@@ -2206,7 +2205,7 @@ NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName)
 
 void COM_AddDefaultDir(char *pszDir)
 {
-	if (pszDir && *pszDir)
+	if(pszDir && *pszDir)
 	{
 		FileSystem_AddFallbackGameDir(pszDir);
 	}
@@ -2216,9 +2215,9 @@ void COM_StripTrailingSlash(char *ppath)
 {
 	int len = Q_strlen(ppath);
 
-	if (len > 0)
+	if(len > 0)
 	{
-		if ((ppath[len - 1] == '\\') || (ppath[len - 1] == '/'))
+		if((ppath[len - 1] == '\\') || (ppath[len - 1] == '/'))
 		{
 			ppath[len - 1] = 0;
 		}
@@ -2227,26 +2226,26 @@ void COM_StripTrailingSlash(char *ppath)
 
 void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault)
 {
-	const char *pParameter = NULL;
-	int cmdParameterIndex = COM_CheckParm((char *)pCmdName);
+	const char *pParameter        = NULL;
+	int         cmdParameterIndex = COM_CheckParm((char *)pCmdName);
 
-	if (cmdParameterIndex && cmdParameterIndex < com_argc - 1)
+	if(cmdParameterIndex && cmdParameterIndex < com_argc - 1)
 	{
 		pParameter = com_argv[cmdParameterIndex + 1];
 
-		if (*pParameter == '-' || *pParameter == '+')
+		if(*pParameter == '-' || *pParameter == '+')
 		{
 			pParameter = NULL;
 		}
 	}
 
 	// Found a valid parameter on the cmd line?
-	if (pParameter)
+	if(pParameter)
 	{
 		// Grab it
 		Q_strcpy(pDirName, pParameter);
 	}
-	else if (pDefault)
+	else if(pDefault)
 	{
 		// Ok, then use the default
 		Q_strcpy(pDirName, pDefault);
@@ -2266,12 +2265,12 @@ qboolean COM_SetupDirectories()
 	char pDirName[512];
 
 	com_clientfallback[0] = 0;
-	com_gamedir[0] = 0;
+	com_gamedir[0]        = 0;
 
 	COM_ParseDirectoryFromCmd("-basedir", pDirName, "valve");
 	COM_ParseDirectoryFromCmd("-game", com_gamedir, pDirName);
 
-	if (FileSystem_SetGameDirectory(pDirName, (const char *)(com_gamedir[0] != 0 ? com_gamedir : 0)))
+	if(FileSystem_SetGameDirectory(pDirName, (const char *)(com_gamedir[0] != 0 ? com_gamedir : 0)))
 	{
 		Info_SetValueForStarKey(Info_Serverinfo(), "*gamedir", com_gamedir, MAX_INFO_STRING);
 		return 1;
@@ -2282,16 +2281,16 @@ qboolean COM_SetupDirectories()
 
 void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOutdated)
 {
-	if (header->version == HLBSP_VERSION)
+	if(header->version == HLBSP_VERSION)
 	{
-		if (!bShowOutdated)
+		if(!bShowOutdated)
 		{
 			Con_Printf("%s\n", mapname);
 		}
 	}
 	else
 	{
-		if (bShowOutdated)
+		if(bShowOutdated)
 		{
 			Con_Printf("OUTDATED:  %s\n", mapname);
 		}
@@ -2300,41 +2299,41 @@ void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOut
 
 void COM_ListMaps(char *pszSubString)
 {
-	dheader_t header;
+	dheader_t    header;
 	FileHandle_t fp;
 
-	char mapwild[64];
-	char curDir[4096];
-	char pFileName[64];
+	char        mapwild[64];
+	char        curDir[4096];
+	char        pFileName[64];
 	const char *findfn;
 
 	int nSubStringLen = 0;
 
-	if (pszSubString && *pszSubString)
+	if(pszSubString && *pszSubString)
 	{
 		nSubStringLen = Q_strlen(pszSubString);
 	}
 
 	Con_Printf("-------------\n");
 
-	for (int bShowOutdated = 1; bShowOutdated >= 0; bShowOutdated--)
+	for(int bShowOutdated = 1; bShowOutdated >= 0; bShowOutdated--)
 	{
 		Q_strcpy(mapwild, "maps/*.bsp");
 		findfn = Sys_FindFirst(mapwild, NULL);
 
-		while (findfn != NULL)
+		while(findfn != NULL)
 		{
 			Q_snprintf(curDir, ARRAYSIZE(curDir), "maps/%s", findfn);
 			FS_GetLocalPath(curDir, curDir, ARRAYSIZE(curDir));
 
-			if (strstr(curDir, com_gamedir) && (!nSubStringLen || !Q_strnicmp(findfn, pszSubString, nSubStringLen)))
+			if(strstr(curDir, com_gamedir) && (!nSubStringLen || !Q_strnicmp(findfn, pszSubString, nSubStringLen)))
 			{
 				Q_memset(&header, 0, sizeof(dheader_t));
 				Q_sprintf(pFileName, "maps/%s", findfn);
 
 				fp = FS_Open(pFileName, "rb");
 
-				if (fp)
+				if(fp)
 				{
 					FS_Read(&header, sizeof(dheader_t), 1, fp);
 					FS_Close(fp);
@@ -2353,9 +2352,9 @@ void COM_ListMaps(char *pszSubString)
 void COM_Log(char *pszFile, char *fmt, ...)
 {
 	char *pfilename;
-	char string[1024];
+	char  string[1024];
 
-	if (!pszFile)
+	if(!pszFile)
 	{
 		// Why so serious?
 		pfilename = "c:\\hllog.txt";
@@ -2374,14 +2373,14 @@ void COM_Log(char *pszFile, char *fmt, ...)
 
 	FileHandle_t fp = FS_Open(pfilename, "a+t");
 
-	if (fp)
+	if(fp)
 	{
 		FS_FPrintf(fp, "%s", string);
 		FS_Close(fp);
 	}
 }
 
-unsigned char* EXT_FUNC COM_LoadFileForMe(char *filename, int *pLength)
+unsigned char *EXT_FUNC COM_LoadFileForMe(char *filename, int *pLength)
 {
 	return COM_LoadFile(filename, 5, pLength);
 }
@@ -2393,14 +2392,14 @@ int EXT_FUNC COM_CompareFileTime(char *filename1, char *filename2, int *iCompare
 
 	*iCompare = 0;
 
-	if (filename1 && filename2)
+	if(filename1 && filename2)
 	{
 		ft1 = FS_GetFileTime(filename1);
 		ft2 = FS_GetFileTime(filename2);
 
-		if (ft1 >= ft2)
+		if(ft1 >= ft2)
 		{
-			if (ft1 > ft2)
+			if(ft1 > ft2)
 			{
 				*iCompare = 1;
 			}
@@ -2419,22 +2418,22 @@ int EXT_FUNC COM_CompareFileTime(char *filename1, char *filename2, int *iCompare
 
 void EXT_FUNC COM_GetGameDir(char *szGameDir)
 {
-	if (szGameDir)
+	if(szGameDir)
 	{
-		Q_snprintf(szGameDir, MAX_PATH - 1 , "%s", com_gamedir);
+		Q_snprintf(szGameDir, MAX_PATH - 1, "%s", com_gamedir);
 	}
 }
 
 int COM_EntsForPlayerSlots(int nPlayers)
 {
 	int numedicts = gmodinfo.num_edicts;
-	int p = COM_CheckParm("-num_edicts");
+	int p         = COM_CheckParm("-num_edicts");
 
-	if (p && p < com_argc - 1)
+	if(p && p < com_argc - 1)
 	{
 		p = Q_atoi(com_argv[p + 1]);
 
-		if (numedicts < p)
+		if(numedicts < p)
 		{
 			numedicts = p;
 		}
@@ -2447,13 +2446,13 @@ void COM_NormalizeAngles(vec_t *angles)
 {
 	int i;
 
-	for (i = 0; i < 3; i++)
+	for(i = 0; i < 3; i++)
 	{
-		if (angles[i] > 180.0)
+		if(angles[i] > 180.0)
 		{
 			angles[i] = (float)(fmod((double)angles[i], 360.0) - 360.0);
 		}
-		else if (angles[i] < -180.0)
+		else if(angles[i] < -180.0)
 		{
 			angles[i] = (float)(fmod((double)angles[i], 360.0) + 360.0);
 		}
@@ -2464,25 +2463,25 @@ void COM_NormalizeAngles(vec_t *angles)
 // COM_UnMunge should reversably fixup the data
 void COM_Munge(unsigned char *data, int len, int seq)
 {
-	int i;
-	int mungelen;
-	int c;
-	int *pc;
+	int            i;
+	int            mungelen;
+	int            c;
+	int *          pc;
 	unsigned char *p;
-	int j;
+	int            j;
 
 	mungelen = len & ~3;
 	mungelen /= 4;
 
-	for (i = 0; i < mungelen; i++)
+	for(i = 0; i < mungelen; i++)
 	{
 		pc = (int *)&data[i * 4];
-		c = *pc;
+		c  = *pc;
 		c ^= ~seq;
 		c = LongSwap(c);
 
 		p = (unsigned char *)&c;
-		for (j = 0; j < 4; j++)
+		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table[(i + j) & 0x0f]);
 		}
@@ -2494,24 +2493,24 @@ void COM_Munge(unsigned char *data, int len, int seq)
 
 void COM_UnMunge(unsigned char *data, int len, int seq)
 {
-	int i;
-	int mungelen;
-	int c;
-	int *pc;
+	int            i;
+	int            mungelen;
+	int            c;
+	int *          pc;
 	unsigned char *p;
-	int j;
+	int            j;
 
 	mungelen = len & ~3;
 	mungelen /= 4;
 
-	for (i = 0; i < mungelen; i++)
+	for(i = 0; i < mungelen; i++)
 	{
 		pc = (int *)&data[i * 4];
-		c = *pc;
+		c  = *pc;
 		c ^= seq;
 
 		p = (unsigned char *)&c;
-		for (j = 0; j < 4; j++)
+		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table[(i + j) & 0x0f]);
 		}
@@ -2528,24 +2527,24 @@ void COM_Munge2(unsigned char *data, int len, int seq)
 {
 	unsigned int *pc;
 	unsigned int *end;
-	unsigned int mSeq;
+	unsigned int  mSeq;
 
 	mSeq = bswap(~seq) ^ seq;
 	len /= 4;
 	end = (unsigned int *)data + (len & ~15);
 
-	for (pc = (unsigned int *)data; pc < end; pc += 16)
+	for(pc = (unsigned int *)data; pc < end; pc += 16)
 	{
-		pc[0]  = bswap(pc[0])  ^ mSeq ^ 0xFFFFE7A5;
-		pc[1]  = bswap(pc[1])  ^ mSeq ^ 0xBFEFFFE5;
-		pc[2]  = bswap(pc[2])  ^ mSeq ^ 0xFFBFEFFF;
-		pc[3]  = bswap(pc[3])  ^ mSeq ^ 0xBFEFBFED;
-		pc[4]  = bswap(pc[4])  ^ mSeq ^ 0xBFAFEFBF;
-		pc[5]  = bswap(pc[5])  ^ mSeq ^ 0xFFBFAFEF;
-		pc[6]  = bswap(pc[6])  ^ mSeq ^ 0xFFEFBFAD;
-		pc[7]  = bswap(pc[7])  ^ mSeq ^ 0xFFFFEFBF;
-		pc[8]  = bswap(pc[8])  ^ mSeq ^ 0xFFEFF7EF;
-		pc[9]  = bswap(pc[9])  ^ mSeq ^ 0xBFEFE7F5;
+		pc[0]  = bswap(pc[0]) ^ mSeq ^ 0xFFFFE7A5;
+		pc[1]  = bswap(pc[1]) ^ mSeq ^ 0xBFEFFFE5;
+		pc[2]  = bswap(pc[2]) ^ mSeq ^ 0xFFBFEFFF;
+		pc[3]  = bswap(pc[3]) ^ mSeq ^ 0xBFEFBFED;
+		pc[4]  = bswap(pc[4]) ^ mSeq ^ 0xBFAFEFBF;
+		pc[5]  = bswap(pc[5]) ^ mSeq ^ 0xFFBFAFEF;
+		pc[6]  = bswap(pc[6]) ^ mSeq ^ 0xFFEFBFAD;
+		pc[7]  = bswap(pc[7]) ^ mSeq ^ 0xFFFFEFBF;
+		pc[8]  = bswap(pc[8]) ^ mSeq ^ 0xFFEFF7EF;
+		pc[9]  = bswap(pc[9]) ^ mSeq ^ 0xBFEFE7F5;
 		pc[10] = bswap(pc[10]) ^ mSeq ^ 0xBFBFE7E5;
 		pc[11] = bswap(pc[11]) ^ mSeq ^ 0xFFAFB7E7;
 		pc[12] = bswap(pc[12]) ^ mSeq ^ 0xBFFFAFB5;
@@ -2567,50 +2566,50 @@ void COM_Munge2(unsigned char *data, int len, int seq)
 	case 11:
 		pc[10] = bswap(pc[10]) ^ mSeq ^ 0xBFBFE7E5;
 	case 10:
-		pc[9] = bswap(pc[9])   ^ mSeq ^ 0xBFEFE7F5;
+		pc[9] = bswap(pc[9]) ^ mSeq ^ 0xBFEFE7F5;
 	case 9:
-		pc[8] = bswap(pc[8])   ^ mSeq ^ 0xFFEFF7EF;
+		pc[8] = bswap(pc[8]) ^ mSeq ^ 0xFFEFF7EF;
 	case 8:
-		pc[7] = bswap(pc[7])   ^ mSeq ^ 0xFFFFEFBF;
+		pc[7] = bswap(pc[7]) ^ mSeq ^ 0xFFFFEFBF;
 	case 7:
-		pc[6] = bswap(pc[6])   ^ mSeq ^ 0xFFEFBFAD;
+		pc[6] = bswap(pc[6]) ^ mSeq ^ 0xFFEFBFAD;
 	case 6:
-		pc[5] = bswap(pc[5])   ^ mSeq ^ 0xFFBFAFEF;
+		pc[5] = bswap(pc[5]) ^ mSeq ^ 0xFFBFAFEF;
 	case 5:
-		pc[4] = bswap(pc[4])   ^ mSeq ^ 0xBFAFEFBF;
+		pc[4] = bswap(pc[4]) ^ mSeq ^ 0xBFAFEFBF;
 	case 4:
-		pc[3] = bswap(pc[3])   ^ mSeq ^ 0xBFEFBFED;
+		pc[3] = bswap(pc[3]) ^ mSeq ^ 0xBFEFBFED;
 	case 3:
-		pc[2] = bswap(pc[2])   ^ mSeq ^ 0xFFBFEFFF;
+		pc[2] = bswap(pc[2]) ^ mSeq ^ 0xFFBFEFFF;
 	case 2:
-		pc[1] = bswap(pc[1])   ^ mSeq ^ 0xBFEFFFE5;
+		pc[1] = bswap(pc[1]) ^ mSeq ^ 0xBFEFFFE5;
 	case 1:
-		pc[0] = bswap(pc[0])   ^ mSeq ^ 0xFFFFE7A5;
+		pc[0] = bswap(pc[0]) ^ mSeq ^ 0xFFFFE7A5;
 	}
 }
-#else // REHLDS_FIXES
+#else  // REHLDS_FIXES
 
 void COM_Munge2(unsigned char *data, int len, int seq)
 {
-	int i;
-	int mungelen;
-	int c;
-	int *pc;
+	int            i;
+	int            mungelen;
+	int            c;
+	int *          pc;
 	unsigned char *p;
-	int j;
+	int            j;
 
 	mungelen = len & ~3;
 	mungelen /= 4;
 
-	for (i = 0; i < mungelen; i++)
+	for(i = 0; i < mungelen; i++)
 	{
 		pc = (int *)&data[i * 4];
-		c = *pc;
+		c  = *pc;
 		c ^= ~seq;
 		c = LongSwap(c);
 
 		p = (unsigned char *)&c;
-		for (j = 0; j < 4; j++)
+		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table2[(i + j) & 0x0f]);
 		}
@@ -2627,24 +2626,24 @@ void COM_UnMunge2(unsigned char *data, int len, int seq)
 {
 	unsigned int *pc;
 	unsigned int *end;
-	unsigned int mSeq;
+	unsigned int  mSeq;
 
 	mSeq = bswap(~seq) ^ seq;
 	len /= 4;
 	end = (unsigned int *)data + (len & ~15);
 
-	for (pc = (unsigned int *)data; pc < end; pc += 16)
+	for(pc = (unsigned int *)data; pc < end; pc += 16)
 	{
-		pc[0]  = bswap(pc[0]  ^ mSeq ^ 0xFFFFE7A5);
-		pc[1]  = bswap(pc[1]  ^ mSeq ^ 0xBFEFFFE5);
-		pc[2]  = bswap(pc[2]  ^ mSeq ^ 0xFFBFEFFF);
-		pc[3]  = bswap(pc[3]  ^ mSeq ^ 0xBFEFBFED);
-		pc[4]  = bswap(pc[4]  ^ mSeq ^ 0xBFAFEFBF);
-		pc[5]  = bswap(pc[5]  ^ mSeq ^ 0xFFBFAFEF);
-		pc[6]  = bswap(pc[6]  ^ mSeq ^ 0xFFEFBFAD);
-		pc[7]  = bswap(pc[7]  ^ mSeq ^ 0xFFFFEFBF);
-		pc[8]  = bswap(pc[8]  ^ mSeq ^ 0xFFEFF7EF);
-		pc[9]  = bswap(pc[9]  ^ mSeq ^ 0xBFEFE7F5);
+		pc[0]  = bswap(pc[0] ^ mSeq ^ 0xFFFFE7A5);
+		pc[1]  = bswap(pc[1] ^ mSeq ^ 0xBFEFFFE5);
+		pc[2]  = bswap(pc[2] ^ mSeq ^ 0xFFBFEFFF);
+		pc[3]  = bswap(pc[3] ^ mSeq ^ 0xBFEFBFED);
+		pc[4]  = bswap(pc[4] ^ mSeq ^ 0xBFAFEFBF);
+		pc[5]  = bswap(pc[5] ^ mSeq ^ 0xFFBFAFEF);
+		pc[6]  = bswap(pc[6] ^ mSeq ^ 0xFFEFBFAD);
+		pc[7]  = bswap(pc[7] ^ mSeq ^ 0xFFFFEFBF);
+		pc[8]  = bswap(pc[8] ^ mSeq ^ 0xFFEFF7EF);
+		pc[9]  = bswap(pc[9] ^ mSeq ^ 0xBFEFE7F5);
 		pc[10] = bswap(pc[10] ^ mSeq ^ 0xBFBFE7E5);
 		pc[11] = bswap(pc[11] ^ mSeq ^ 0xFFAFB7E7);
 		pc[12] = bswap(pc[12] ^ mSeq ^ 0xBFFFAFB5);
@@ -2666,49 +2665,49 @@ void COM_UnMunge2(unsigned char *data, int len, int seq)
 	case 11:
 		pc[10] = bswap(pc[10] ^ mSeq ^ 0xBFBFE7E5);
 	case 10:
-		pc[9] = bswap(pc[9]   ^ mSeq ^ 0xBFEFE7F5);
+		pc[9] = bswap(pc[9] ^ mSeq ^ 0xBFEFE7F5);
 	case 9:
-		pc[8] = bswap(pc[8]   ^ mSeq ^ 0xFFEFF7EF);
+		pc[8] = bswap(pc[8] ^ mSeq ^ 0xFFEFF7EF);
 	case 8:
-		pc[7] = bswap(pc[7]   ^ mSeq ^ 0xFFFFEFBF);
+		pc[7] = bswap(pc[7] ^ mSeq ^ 0xFFFFEFBF);
 	case 7:
-		pc[6] = bswap(pc[6]   ^ mSeq ^ 0xFFEFBFAD);
+		pc[6] = bswap(pc[6] ^ mSeq ^ 0xFFEFBFAD);
 	case 6:
-		pc[5] = bswap(pc[5]   ^ mSeq ^ 0xFFBFAFEF);
+		pc[5] = bswap(pc[5] ^ mSeq ^ 0xFFBFAFEF);
 	case 5:
-		pc[4] = bswap(pc[4]   ^ mSeq ^ 0xBFAFEFBF);
+		pc[4] = bswap(pc[4] ^ mSeq ^ 0xBFAFEFBF);
 	case 4:
-		pc[3] = bswap(pc[3]   ^ mSeq ^ 0xBFEFBFED);
+		pc[3] = bswap(pc[3] ^ mSeq ^ 0xBFEFBFED);
 	case 3:
-		pc[2] = bswap(pc[2]   ^ mSeq ^ 0xFFBFEFFF);
+		pc[2] = bswap(pc[2] ^ mSeq ^ 0xFFBFEFFF);
 	case 2:
-		pc[1] = bswap(pc[1]   ^ mSeq ^ 0xBFEFFFE5);
+		pc[1] = bswap(pc[1] ^ mSeq ^ 0xBFEFFFE5);
 	case 1:
-		pc[0] = bswap(pc[0]   ^ mSeq ^ 0xFFFFE7A5);
+		pc[0] = bswap(pc[0] ^ mSeq ^ 0xFFFFE7A5);
 	}
 }
-#else // REHLDS_FIXES
+#else  // REHLDS_FIXES
 
 void COM_UnMunge2(unsigned char *data, int len, int seq)
 {
-	int i;
-	int mungelen;
-	int c;
-	int *pc;
+	int            i;
+	int            mungelen;
+	int            c;
+	int *          pc;
 	unsigned char *p;
-	int j;
+	int            j;
 
 	mungelen = len & ~3;
 	mungelen /= 4;
 
-	for (i = 0; i < mungelen; i++)
+	for(i = 0; i < mungelen; i++)
 	{
 		pc = (int *)&data[i * 4];
-		c = *pc;
+		c  = *pc;
 		c ^= seq;
 
 		p = (unsigned char *)&c;
-		for (j = 0; j < 4; j++)
+		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table2[(i + j) & 0x0f]);
 		}
@@ -2722,25 +2721,25 @@ void COM_UnMunge2(unsigned char *data, int len, int seq)
 
 void COM_Munge3(unsigned char *data, int len, int seq)
 {
-	int i;
-	int mungelen;
-	int c;
-	int *pc;
+	int            i;
+	int            mungelen;
+	int            c;
+	int *          pc;
 	unsigned char *p;
-	int j;
+	int            j;
 
 	mungelen = len & ~3;
 	mungelen /= 4;
 
-	for (i = 0; i < mungelen; i++)
+	for(i = 0; i < mungelen; i++)
 	{
 		pc = (int *)&data[i * 4];
-		c = *pc;
+		c  = *pc;
 		c ^= ~seq;
 		c = LongSwap(c);
 
 		p = (unsigned char *)&c;
-		for (j = 0; j < 4; j++)
+		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table3[(i + j) & 0x0f]);
 		}
@@ -2754,24 +2753,24 @@ NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq)
 {
 	NOXREFCHECK;
 
-	int i;
-	int mungelen;
-	int c;
-	int *pc;
+	int            i;
+	int            mungelen;
+	int            c;
+	int *          pc;
 	unsigned char *p;
-	int j;
+	int            j;
 
 	mungelen = len & ~3;
 	mungelen /= 4;
 
-	for (i = 0; i < mungelen; i++)
+	for(i = 0; i < mungelen; i++)
 	{
 		pc = (int *)&data[i * 4];
-		c = *pc;
+		c  = *pc;
 		c ^= seq;
 
 		p = (unsigned char *)&c;
-		for (j = 0; j < 4; j++)
+		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table3[(i + j) & 0x0f]);
 		}
@@ -2784,12 +2783,12 @@ NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq)
 
 typedef struct
 {
-	unsigned char chunkID[4];
-	long chunkSize;
-	short wFormatTag;
+	unsigned char  chunkID[4];
+	long           chunkSize;
+	short          wFormatTag;
 	unsigned short wChannels;
-	unsigned long dwSamplesPerSec;
-	unsigned long dwAvgBytesPerSec;
+	unsigned long  dwSamplesPerSec;
+	unsigned long  dwAvgBytesPerSec;
 	unsigned short wBlockAlign;
 	unsigned short wBitsPerSample;
 } FormatChunk;
@@ -2798,18 +2797,18 @@ typedef struct
 
 unsigned int EXT_FUNC COM_GetApproxWavePlayLength(const char *filepath)
 {
-	char buf[WAVE_HEADER_LENGTH + 1];
-	int filelength;
+	char         buf[WAVE_HEADER_LENGTH + 1];
+	int          filelength;
 	FileHandle_t hFile;
-	FormatChunk format;
+	FormatChunk  format;
 
 	hFile = FS_Open(filepath, "rb");
 
-	if (hFile)
+	if(hFile)
 	{
 		filelength = FS_Size(hFile);
 
-		if (filelength <= WAVE_HEADER_LENGTH)
+		if(filelength <= WAVE_HEADER_LENGTH)
 			return 0;
 
 		FS_Read(buf, WAVE_HEADER_LENGTH, 1, hFile);
@@ -2817,13 +2816,13 @@ unsigned int EXT_FUNC COM_GetApproxWavePlayLength(const char *filepath)
 
 		buf[WAVE_HEADER_LENGTH] = 0;
 
-		if (!Q_strnicmp(buf, "RIFF", 4) && !Q_strnicmp(&buf[8], "WAVE", 4) && !Q_strnicmp(&buf[12], "fmt ", 4))
+		if(!Q_strnicmp(buf, "RIFF", 4) && !Q_strnicmp(&buf[8], "WAVE", 4) && !Q_strnicmp(&buf[12], "fmt ", 4))
 		{
 			Q_memcpy(&format, &buf[12], sizeof(FormatChunk));
 
 			filelength -= WAVE_HEADER_LENGTH;
 
-			if (format.dwAvgBytesPerSec > 999)
+			if(format.dwAvgBytesPerSec > 999)
 			{
 				return filelength / (format.dwAvgBytesPerSec / 1000);
 			}

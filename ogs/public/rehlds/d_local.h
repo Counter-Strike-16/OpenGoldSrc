@@ -28,8 +28,6 @@
 
 #pragma once
 
-
-
 /* <82286> ../engine/d_local.h:20 */
 typedef struct surfcache_s
 {

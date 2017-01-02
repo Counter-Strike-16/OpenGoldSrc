@@ -36,7 +36,6 @@ public:
 	virtual float	RandomFloatExp( float flMinVal = 0.0f, float flMaxVal = 1.0f, float flExponent = 1.0f ) = 0;
 };
 
-
 //-----------------------------------------------------------------------------
 // The standard generator of uniformly distributed random numbers
 //-----------------------------------------------------------------------------
@@ -52,7 +51,6 @@ public:
 	virtual float	RandomFloat( float flMinVal = 0.0f, float flMaxVal = 1.0f );
 	virtual int		RandomInt( int iMinVal, int iMaxVal );
 	virtual float	RandomFloatExp( float flMinVal = 0.0f, float flMaxVal = 1.0f, float flExponent = 1.0f );
-
 private:
 	int		GenerateRandomNumber();
 
@@ -62,7 +60,6 @@ private:
 
 	CThreadFastMutex m_mutex;
 };
-
 
 //-----------------------------------------------------------------------------
 // A generator of gaussian distributed random numbers
@@ -114,10 +111,6 @@ public:
 //-----------------------------------------------------------------------------
 VSTDLIB_INTERFACE void	InstallUniformRandomStream( IUniformRandomStream *pStream );
 
-
 #pragma warning(pop)
 
 #endif // VSTDLIB_RANDOM_H
-
-
-

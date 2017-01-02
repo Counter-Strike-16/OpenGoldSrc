@@ -1,3 +1,33 @@
+/*
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
+
+/// @file
+
 #pragma once
 
 #include "vgui2/IInput.hpp"
@@ -8,38 +38,38 @@ namespace vgui
 class CInput : public IInput
 {
 public:
-	virtual void SetMouseFocus(VPANEL newMouseFocus) = 0;
-	virtual void SetMouseCapture(VPANEL panel) = 0;
+	void SetMouseFocus(VPANEL newMouseFocus);
+	void SetMouseCapture(VPANEL panel);
 	
-	virtual void GetKeyCodeText(KeyCode code, char *buf, int buflen) = 0;
+	void GetKeyCodeText(KeyCode code, char *buf, int buflen);
 	
-	virtual VPANEL GetFocus(void) = 0;
-	virtual VPANEL GetMouseOver(void) = 0;
+	VPANEL GetFocus();
+	VPANEL GetMouseOver();
 	
-	virtual void SetCursorPos(int x, int y) = 0;
-	virtual void GetCursorPos(int &x, int &y) = 0;
+	void SetCursorPos(int x, int y);
+	void GetCursorPos(int &x, int &y);
 	
-	virtual bool WasMousePressed(MouseCode code) = 0;
-	virtual bool WasMouseDoublePressed(MouseCode code) = 0;
+	bool WasMousePressed(MouseCode code);
+	bool WasMouseDoublePressed(MouseCode code);
 	
-	virtual bool IsMouseDown(MouseCode code) = 0;
+	bool IsMouseDown(MouseCode code);
 	
-	virtual void SetCursorOveride(HCursor cursor) = 0;
-	virtual HCursor GetCursorOveride(void) = 0;
+	void SetCursorOveride(HCursor cursor);
+	HCursor GetCursorOveride();
 	
-	virtual bool WasMouseReleased(MouseCode code) = 0;
-	virtual bool WasKeyPressed(KeyCode code) = 0;
+	bool WasMouseReleased(MouseCode code);
+	bool WasKeyPressed(KeyCode code);
 	
-	virtual bool IsKeyDown(KeyCode code) = 0;
+	bool IsKeyDown(KeyCode code);
 	
-	virtual bool WasKeyTyped(KeyCode code) = 0;
-	virtual bool WasKeyReleased(KeyCode code) = 0;
+	bool WasKeyTyped(KeyCode code);
+	bool WasKeyReleased(KeyCode code);
 	
-	virtual VPANEL GetAppModalSurface(void) = 0;
-	virtual void SetAppModalSurface(VPANEL panel) = 0;
-	virtual void ReleaseAppModalSurface(void) = 0;
+	VPANEL GetAppModalSurface();
+	void SetAppModalSurface(VPANEL panel);
+	void ReleaseAppModalSurface();
 	
-	virtual void GetCursorPosition(int &x, int &y) = 0;
+	void GetCursorPosition(int &x, int &y);
 };
 
-};
+}; // namespace vgui

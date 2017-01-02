@@ -4,3 +4,7 @@
 
 Open Source implementation of GoldSrc engine  
 Based on Reverse-engineered (and bugfixed) HLDS aka REHLDS and Id Tech sources (+ Xash and Metahook)
+
+## License
+
+Licensed under GPLv3, see [LICENSE](LICENSE) file for details

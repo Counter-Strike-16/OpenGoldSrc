@@ -192,7 +192,7 @@ typedef struct
 } mstudioseqdesc_t;
 
 // events
-#include "studio_event.h"
+#include "common/studio_event.h"
 /*
 typedef struct 
 {

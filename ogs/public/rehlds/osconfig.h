@@ -126,6 +126,7 @@
 	#ifdef __FUNCTION__
 		#undef __FUNCTION__
 	#endif
+	
 	#define __FUNCTION__ __func__
 
 	#ifndef PAGESIZE
@@ -178,6 +179,10 @@
 	#define TRUE	1
 	#endif
 #endif // _WIN32
+
+#ifndef _MSC_VER
+	#define __FUNCTION__ __func__
+#endif
 
 #ifdef _WIN32
 	static const bool __isWindows = true;

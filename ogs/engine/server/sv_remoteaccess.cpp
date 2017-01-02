@@ -1,9 +1,40 @@
+/*
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
+
+/// @file
+
 #include "precompiled.h"
 
 class CServerRemoteAccess g_ServerRemoteAccess;
 
-CServerRemoteAccess::CServerRemoteAccess() {
-	m_iBytesSent = 0;
+CServerRemoteAccess::CServerRemoteAccess()
+{
+	m_iBytesSent     = 0;
 	m_iBytesReceived = 0;
 }
 
@@ -19,8 +50,8 @@ int CServerRemoteAccess::ReadDataResponse(void *data, int len)
 
 void CServerRemoteAccess::WriteDataRequest_noVirt(const void *buffer, int bufferSize)
 {
-	int requestID;
-	int requestType;
+	int  requestID;
+	int  requestType;
 	char value[256];
 	char command[256];
 	char variable[256];
@@ -28,10 +59,10 @@ void CServerRemoteAccess::WriteDataRequest_noVirt(const void *buffer, int buffer
 	CUtlBuffer cmd(buffer, bufferSize, false);
 
 	this->m_iBytesReceived += bufferSize;
-	requestID = cmd.GetInt();
+	requestID   = cmd.GetInt();
 	requestType = cmd.GetInt();
 
-	switch (requestType)
+	switch(requestType)
 	{
 	case 0:
 		cmd.GetString(variable);
@@ -53,15 +84,15 @@ void CServerRemoteAccess::WriteDataRequest_noVirt(const void *buffer, int buffer
 int CServerRemoteAccess::ReadDataResponse_noVirt(void *data, int len)
 {
 	int i = m_ResponsePackets.Head();
-	if (!m_ResponsePackets.IsValidIndex(i))
+	if(!m_ResponsePackets.IsValidIndex(i))
 		return 0;
 
-	CUtlBuffer &response = m_ResponsePackets.Element(i).packet;
-	int bytesToCopy = response.TellPut();
-	if (bytesToCopy > len)
+	CUtlBuffer &response    = m_ResponsePackets.Element(i).packet;
+	int         bytesToCopy = response.TellPut();
+	if(bytesToCopy > len)
 		bytesToCopy = 0;
 
-	if (bytesToCopy)
+	if(bytesToCopy)
 		Q_memcpy(data, response.Base(), bytesToCopy);
 
 	m_iBytesSent += bytesToCopy;
@@ -79,23 +110,23 @@ void CServerRemoteAccess::SendMessageToAdminUI(const char *message)
 	resp.packet.PutString(message);
 }
 
-const char* CServerRemoteAccess::LookupStringValue(const char *variable)
+const char *CServerRemoteAccess::LookupStringValue(const char *variable)
 {
 	static char s_ReturnBuf[32];
 
 	cvar_t *var = Cvar_FindVar(variable);
-	if (var)
+	if(var)
 		return var->string;
 
-	if (!Q_stricmp(variable, "map"))
+	if(!Q_stricmp(variable, "map"))
 		return g_psv.name;
 
-	if (!Q_stricmp(variable, "playercount"))
+	if(!Q_stricmp(variable, "playercount"))
 	{
 		int count = 0;
-		for (int i = 0; i < g_psvs.maxclients; i++)
+		for(int i = 0; i < g_psvs.maxclients; i++)
 		{
-			if (g_psvs.clients[i].active || g_psvs.clients[i].spawned || g_psvs.clients[i].connected)
+			if(g_psvs.clients[i].active || g_psvs.clients[i].spawned || g_psvs.clients[i].connected)
 				count++;
 		}
 
@@ -103,13 +134,13 @@ const char* CServerRemoteAccess::LookupStringValue(const char *variable)
 		return s_ReturnBuf;
 	}
 
-	if (!Q_stricmp(variable, "maxplayers"))
+	if(!Q_stricmp(variable, "maxplayers"))
 	{
 		Q_snprintf(s_ReturnBuf, sizeof(s_ReturnBuf) - 1, "%d", g_psvs.maxclients);
 		return s_ReturnBuf;
 	}
 
-	if (!Q_stricmp(variable, "gamedescription"))
+	if(!Q_stricmp(variable, "gamedescription"))
 		return gEntityInterface.pfnGetGameDescription();
 
 	return NULL;
@@ -117,14 +148,14 @@ const char* CServerRemoteAccess::LookupStringValue(const char *variable)
 
 void CServerRemoteAccess::GetUserBanList(CUtlBuffer &value)
 {
-	for (int i = 0; i < numuserfilters; i++)
+	for(int i = 0; i < numuserfilters; i++)
 	{
 		value.Printf("%i %s : %.3f min\n", i + 1, SV_GetIDString(&userfilters[i].userid), userfilters[i].banTime);
 	}
 
-	for (int i = 0; i < numuserfilters; i++)
+	for(int i = 0; i < numuserfilters; i++)
 	{
-		ipfilter_t* f = &ipfilters[i];
+		ipfilter_t *f = &ipfilters[i];
 		value.Printf("%i %i.%i.%i.%i : %.3f min\n", numuserfilters + i + 1, f->compare.octets[0], f->compare.octets[1], f->compare.octets[2], f->compare.octets[3], f->banTime);
 	}
 
@@ -133,15 +164,14 @@ void CServerRemoteAccess::GetUserBanList(CUtlBuffer &value)
 
 void CServerRemoteAccess::GetPlayerList(CUtlBuffer &value)
 {
-	for (int i = 0; i < g_psvs.maxclients; ++i)
+	for(int i = 0; i < g_psvs.maxclients; ++i)
 	{
-		client_t* cli = &g_psvs.clients[i];
-		if (!cli->active || Q_strlen(cli->name) < 1)
+		client_t *cli = &g_psvs.clients[i];
+		if(!cli->active || Q_strlen(cli->name) < 1)
 			continue;
 
 		value.Printf("\"%s\" %s %s %d %d %d %d\n", cli->name, SV_GetIDString(&cli->network_userid), NET_AdrToString(cli->netchan.remote_address),
-			int(cli->latency * 1000.0), (int)cli->packet_loss, (int)cli->edict->v.frags, int(realtime - cli->netchan.connect_time));
-
+		             int(cli->latency * 1000.0), (int)cli->packet_loss, (int)cli->edict->v.frags, int(realtime - cli->netchan.connect_time));
 	}
 
 	value.PutChar(0);
@@ -150,13 +180,13 @@ void CServerRemoteAccess::GetPlayerList(CUtlBuffer &value)
 void CServerRemoteAccess::GetMapList(CUtlBuffer &value)
 {
 	const char *findfn;
-	char *extension;
-	char curDir[MAX_PATH];
-	char mapName[MAX_PATH];
-	char mapwild[64];
+	char *      extension;
+	char        curDir[MAX_PATH];
+	char        mapName[MAX_PATH];
+	char        mapwild[64];
 
 	Q_strcpy(mapwild, "maps/*.bsp");
-	for (findfn = Sys_FindFirst(mapwild, 0); findfn; findfn = Sys_FindNext(0))
+	for(findfn = Sys_FindFirst(mapwild, 0); findfn; findfn = Sys_FindNext(0))
 	{
 		Q_snprintf(curDir, ARRAYSIZE(curDir), "maps/%s", findfn);
 #ifdef REHLDS_CHECKS
@@ -164,7 +194,7 @@ void CServerRemoteAccess::GetMapList(CUtlBuffer &value)
 #endif
 
 		FS_GetLocalPath(curDir, curDir, ARRAYSIZE(curDir));
-		if (Q_strstr(curDir, com_gamedir))
+		if(Q_strstr(curDir, com_gamedir))
 		{
 #ifdef REHLDS_CHECKS
 			Q_strncpy(mapName, findfn, ARRAYSIZE(mapName));
@@ -173,7 +203,7 @@ void CServerRemoteAccess::GetMapList(CUtlBuffer &value)
 			Q_strcpy(mapName, findfn);
 #endif
 			extension = Q_strstr(mapName, ".bsp");
-			if (extension)
+			if(extension)
 				*extension = 0;
 
 			value.PutString(mapName);
@@ -187,15 +217,15 @@ void CServerRemoteAccess::GetMapList(CUtlBuffer &value)
 
 bool CServerRemoteAccess::LookupValue(const char *variable, CUtlBuffer &value)
 {
-	const char* strval = LookupStringValue(variable);
-	if (strval)
+	const char *strval = LookupStringValue(variable);
+	if(strval)
 	{
 		value.PutString(strval);
 		value.PutChar(0);
 		return true;
 	}
 
-	if (!Q_stricmp(variable, "stats"))
+	if(!Q_stricmp(variable, "stats"))
 	{
 		char stats[512];
 		GetStatsString(stats, sizeof(stats));
@@ -204,45 +234,45 @@ bool CServerRemoteAccess::LookupValue(const char *variable, CUtlBuffer &value)
 		return true;
 	}
 
-	if (!Q_stricmp(variable, "banlist"))
+	if(!Q_stricmp(variable, "banlist"))
 	{
 		GetUserBanList(value);
 		return true;
 	}
 
-	if (!Q_stricmp(variable, "playerlist"))
+	if(!Q_stricmp(variable, "playerlist"))
 	{
 		GetPlayerList(value);
 		return true;
 	}
 
-	if (!Q_stricmp(variable, "maplist"))
+	if(!Q_stricmp(variable, "maplist"))
 	{
 		GetMapList(value);
 		return true;
 	}
 
-	if (!Q_stricmp(variable, "uptime"))
+	if(!Q_stricmp(variable, "uptime"))
 	{
 		value.PutInt(int(Sys_FloatTime() - Host_GetStartTime()));
 		value.PutChar(0);
 		return true;
 	}
 
-	if (!Q_stricmp(variable, "ipaddress"))
+	if(!Q_stricmp(variable, "ipaddress"))
 	{
 		value.PutString(NET_AdrToString(net_local_adr));
 		value.PutChar(0);
 		return true;
 	}
 
-	if (!Q_stricmp(variable, "mapcycle"))
+	if(!Q_stricmp(variable, "mapcycle"))
 	{
-		int len;
-		void* mapcyclelist = COM_LoadFileForMe(mapcyclefile.string, &len);
-		if (mapcyclelist && len)
+		int   len;
+		void *mapcyclelist = COM_LoadFileForMe(mapcyclefile.string, &len);
+		if(mapcyclelist && len)
 		{
-			value.PutString((char*)mapcyclelist);
+			value.PutString((char *)mapcyclelist);
 			value.PutChar(0);
 			COM_FreeFile(mapcyclelist);
 		}
@@ -258,42 +288,41 @@ void CServerRemoteAccess::RequestValue(int requestID, const char *variable)
 	CUtlBuffer value(0, 0x100, true);
 	LookupValue(variable, value);
 
-	int i = m_ResponsePackets.AddToTail();
-	DataResponse_t& resp = m_ResponsePackets.Element(i);
+	int             i    = m_ResponsePackets.AddToTail();
+	DataResponse_t &resp = m_ResponsePackets.Element(i);
 
 	resp.packet.PutInt(requestID);
 	resp.packet.PutInt(0);
 	resp.packet.PutString(variable);
 	resp.packet.PutInt(value.TellPut());
 
-	if (value.TellPut())
+	if(value.TellPut())
 		resp.packet.Put(value.Base(), value.TellPut());
-
 }
 
 void CServerRemoteAccess::SetValue(const char *variable, const char *value)
 {
-	FileHandle_t f;
+	FileHandle_t   f;
 	struct cvar_s *var;
 
-	if (!Q_stricmp(variable, "map"))
+	if(!Q_stricmp(variable, "map"))
 	{
 		Cbuf_AddText("changelevel ");
-		Cbuf_AddText((char*)value);
+		Cbuf_AddText((char *)value);
 		Cbuf_AddText("\n");
 		Cbuf_Execute();
 	}
-	else if (!Q_stricmp(variable, "mapcycle"))
+	else if(!Q_stricmp(variable, "mapcycle"))
 	{
 		f = FS_Open(mapcyclefile.string, "wt");
-		if (!f)
+		if(!f)
 		{
 			Con_Printf("Couldn't write to read-only file %s, using file _dev_mapcycle.txt instead.\n", mapcyclefile.string);
 			Cvar_DirectSet(&mapcyclefile, "_temp_mapcycle.txt");
 			f = FS_Open(mapcyclefile.string, "wt");
 		}
 
-		if (f)
+		if(f)
 		{
 			FS_Write(value, Q_strlen(value) + 1, 1, f);
 			FS_Close(f);
@@ -302,14 +331,14 @@ void CServerRemoteAccess::SetValue(const char *variable, const char *value)
 	else
 	{
 		var = Cvar_FindVar(variable);
-		if (var)
+		if(var)
 			Cvar_DirectSet(var, value);
 	}
 }
 
 void CServerRemoteAccess::ExecCommand(const char *cmdString)
 {
-	Cbuf_AddText((char*)cmdString);
+	Cbuf_AddText((char *)cmdString);
 	Cbuf_AddText("\n");
 	Cbuf_Execute();
 }
@@ -318,7 +347,6 @@ void NotifyDedicatedServerUI(const char *message)
 {
 	g_ServerRemoteAccess.SendMessageToAdminUI(message);
 }
-
 
 #ifndef HOOK_ENGINE
 

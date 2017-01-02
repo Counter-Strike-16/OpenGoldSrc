@@ -1,30 +1,32 @@
 /*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
+
+/// @file
 
 #include "precompiled.h"
 
@@ -50,18 +52,18 @@ all big things are allocated on the hunk.
 
 typedef struct memblock_s
 {
-	int size;
-	int tag;
-	int id;
+	int         size;
+	int         tag;
+	int         id;
 	memblock_t *next;
 	memblock_t *prev;
-	int pad;
+	int         pad;
 } memblock_t;
 
 typedef struct memzone_s
 {
-	int size;
-	memblock_t blocklist;
+	int         size;
+	memblock_t  blocklist;
 	memblock_t *rover;
 } memzone_t;
 
@@ -70,7 +72,7 @@ typedef struct memzone_s
 */
 #ifndef HOOK_ENGINE
 
-cvar_t mem_dbgfile = { "mem_dbgfile", ".\\mem.txt", 0, 0.0f, NULL };
+cvar_t mem_dbgfile = {"mem_dbgfile", ".\\mem.txt", 0, 0.0f, NULL};
 
 #else // HOOK_ENGINE
 
@@ -86,29 +88,29 @@ void Z_ClearZone(memzone_t *zone, int size)
 
 	zone->blocklist.prev = zone->blocklist.next = zone->rover = block;
 	zone->blocklist.size = zone->blocklist.id = 0;
-	zone->blocklist.tag = 1;
+	zone->blocklist.tag                       = 1;
 
 	block->prev = block->next = &zone->blocklist;
-	block->tag = 0;
-	block->id = ZONEID;
-	block->size = size - sizeof(memzone_t);
+	block->tag                = 0;
+	block->id                 = ZONEID;
+	block->size               = size - sizeof(memzone_t);
 }
 
 void Z_Free(void *ptr)
 {
-	if (!ptr)
+	if(!ptr)
 	{
 		Sys_Error(__FUNCTION__ ": NULL pointer");
 	}
 
 	memblock_t *block = (memblock_t *)((char *)ptr - sizeof(memblock_t));
 
-	if (block->id != ZONEID)
+	if(block->id != ZONEID)
 	{
 		Sys_Error(__FUNCTION__ ": freed a pointer without ZONEID");
 	}
 
-	if (!block->tag)
+	if(!block->tag)
 	{
 		Sys_Error(__FUNCTION__ ": freed a freed pointer");
 	}
@@ -117,13 +119,13 @@ void Z_Free(void *ptr)
 
 	memblock_t *otherblock = block->prev;
 
-	if (!otherblock->tag)
+	if(!otherblock->tag)
 	{
 		otherblock->size += block->size;
-		otherblock->next = block->next;
+		otherblock->next  = block->next;
 		block->next->prev = otherblock;
 
-		if (block == mainzone->rover)
+		if(block == mainzone->rover)
 		{
 			mainzone->rover = otherblock;
 		}
@@ -133,13 +135,13 @@ void Z_Free(void *ptr)
 
 	otherblock = block->next;
 
-	if (!otherblock->tag)
+	if(!otherblock->tag)
 	{
 		block->size += otherblock->size;
-		block->next = otherblock->next;
+		block->next            = otherblock->next;
 		otherblock->next->prev = block;
 
-		if (otherblock == mainzone->rover)
+		if(otherblock == mainzone->rover)
 		{
 			mainzone->rover = block;
 		}
@@ -152,7 +154,7 @@ void *Z_Malloc(int size)
 
 	void *buf = Z_TagMalloc(size, 1);
 
-	if (!buf)
+	if(!buf)
 	{
 		Sys_Error(__FUNCTION__ ": failed on allocation of %i bytes", size);
 	}
@@ -163,10 +165,10 @@ void *Z_Malloc(int size)
 
 void *Z_TagMalloc(int size, int tag)
 {
-	int extra;
+	int         extra;
 	memblock_t *start, *rover, *newz, *base;
 
-	if (tag == 0)
+	if(tag == 0)
 	{
 		Sys_Error(__FUNCTION__ ": tried to use a 0 tag");
 	}
@@ -176,16 +178,16 @@ void *Z_TagMalloc(int size, int tag)
 	size = (size + 7) & ~7;
 
 	base = rover = mainzone->rover;
-	start = base->prev;
+	start        = base->prev;
 
 	do
 	{
-		if (rover == start)
+		if(rover == start)
 		{
-			return(NULL);
+			return (NULL);
 		}
 
-		if (rover->tag)
+		if(rover->tag)
 		{
 			base = rover = rover->next;
 		}
@@ -193,26 +195,26 @@ void *Z_TagMalloc(int size, int tag)
 		{
 			rover = rover->next;
 		}
-	} while (base->tag || base->size < size);
+	} while(base->tag || base->size < size);
 
 	extra = base->size - size;
 
-	if (extra > MINFRAGMENT)
+	if(extra > MINFRAGMENT)
 	{
-		newz = (memblock_t *)((byte *)base + size);
-		newz->size = extra;
-		newz->tag = 0;
-		newz->prev = base;
-		newz->id = ZONEID;
-		newz->next = base->next;
+		newz             = (memblock_t *)((byte *)base + size);
+		newz->size       = extra;
+		newz->tag        = 0;
+		newz->prev       = base;
+		newz->id         = ZONEID;
+		newz->next       = base->next;
 		newz->next->prev = newz;
-		base->next = newz;
-		base->size = size;
+		base->next       = newz;
+		base->size       = size;
 	}
 
-	base->tag = tag;
+	base->tag       = tag;
 	mainzone->rover = base->next;
-	base->id = ZONEID;
+	base->id        = ZONEID;
 
 	// marker for memory trash testing
 	*(int *)((byte *)base + base->size - 4) = ZONEID;
@@ -227,26 +229,26 @@ NOXREF void Z_Print(memzone_t *zone)
 	memblock_t *block;
 	Con_Printf("zone size: %i  location: %p\n", mainzone->size, mainzone);
 
-	for (block = zone->blocklist.next;; block = block->next)
+	for(block = zone->blocklist.next;; block = block->next)
 	{
 		Con_Printf("block:%p    size:%7i    tag:%3i\n", block, block->size, block->tag);
 
-		if (block->next == &zone->blocklist)
+		if(block->next == &zone->blocklist)
 		{
 			break; // all blocks have been hit
 		}
 
-		if ((byte *)block + block->size != (byte *)block->next)
+		if((byte *)block + block->size != (byte *)block->next)
 		{
 			Con_Printf("ERROR: block size does not touch the next block\n");
 		}
 
-		if (block->next->prev != block)
+		if(block->next->prev != block)
 		{
 			Con_Printf("ERROR: next block doesn't have proper back link\n");
 		}
 
-		if (!block->tag && !block->next->tag)
+		if(!block->tag && !block->next->tag)
 		{
 			Con_Printf("ERROR: two consecutive free blocks\n");
 		}
@@ -257,24 +259,24 @@ void Z_CheckHeap(void)
 {
 	memblock_t *block;
 
-	for (block = mainzone->blocklist.next;; block = block->next)
+	for(block = mainzone->blocklist.next;; block = block->next)
 	{
-		if (block->next == &mainzone->blocklist)
+		if(block->next == &mainzone->blocklist)
 		{
 			break;
 		}
 
-		if ((byte *)block + block->size != (byte *)block->next)
+		if((byte *)block + block->size != (byte *)block->next)
 		{
 			Sys_Error(__FUNCTION__ ": block size does not touch the next block\n");
 		}
 
-		if (block->next->prev != block)
+		if(block->next->prev != block)
 		{
 			Sys_Error(__FUNCTION__ ": next block doesn't have proper back link\n");
 		}
 
-		if (!block->tag && !block->next->tag)
+		if(!block->tag && !block->next->tag)
 		{
 			Sys_Error(__FUNCTION__ ": two consecutive free blocks\n");
 		}
@@ -290,19 +292,19 @@ void Z_CheckHeap(void)
 
 typedef struct hunk_s
 {
-	int sentinel;
-	int size;
+	int  sentinel;
+	int  size;
 	char name[HUNK_NAME_LEN];
 } hunk_t;
 
 byte *hunk_base;
-int hunk_size;
+int   hunk_size;
 
 int hunk_low_used;
 int hunk_high_used;
 
 qboolean hunk_tempactive;
-int hunk_tempmark;
+int      hunk_tempmark;
 
 /*
 ==============
@@ -316,14 +318,14 @@ void Hunk_Check(void)
 {
 	hunk_t *h;
 
-	for (h = (hunk_t *)hunk_base; (byte *)h != (hunk_base + hunk_low_used); h = (hunk_t *)((byte *)h + h->size))
+	for(h = (hunk_t *)hunk_base; (byte *)h != (hunk_base + hunk_low_used); h = (hunk_t *)((byte *)h + h->size))
 	{
-		if (h->sentinel != HUNK_SENTINEL)
+		if(h->sentinel != HUNK_SENTINEL)
 		{
 			Sys_Error(__FUNCTION__ ": trahsed sentinel");
 		}
 
-		if (h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
+		if(h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
 		{
 			Sys_Error(__FUNCTION__ ": bad size");
 		}
@@ -343,30 +345,30 @@ NOXREF void Hunk_Print(qboolean all)
 {
 	NOXREFCHECK;
 
-	hunk_t	*h, *next, *endlow, *starthigh, *endhigh;
-	int		count, sum;
-	int		totalblocks;
-	char	name[HUNK_NAME_LEN];
+	hunk_t *h, *next, *endlow, *starthigh, *endhigh;
+	int     count, sum;
+	int     totalblocks;
+	char    name[HUNK_NAME_LEN];
 
 	name[HUNK_NAME_LEN - 1] = 0;
-	count = 0;
-	sum = 0;
-	totalblocks = 0;
+	count                   = 0;
+	sum                     = 0;
+	totalblocks             = 0;
 
-	h = (hunk_t *)hunk_base;
-	endlow = (hunk_t *)(hunk_base + hunk_low_used);
+	h         = (hunk_t *)hunk_base;
+	endlow    = (hunk_t *)(hunk_base + hunk_low_used);
 	starthigh = (hunk_t *)(hunk_base + hunk_size - hunk_high_used);
-	endhigh = (hunk_t *)(hunk_base + hunk_size);
+	endhigh   = (hunk_t *)(hunk_base + hunk_size);
 
 	Con_Printf("          :%8i total hunk size\n", hunk_size);
 	Con_Printf("-------------------------\n");
 
-	while (true)
+	while(true)
 	{
 		//
 		// skip to the high hunk if done with low hunk
 		//
-		if (h == endlow)
+		if(h == endlow)
 		{
 			Con_Printf("-------------------------\n");
 			Con_Printf("          :%8i REMAINING\n", hunk_size - hunk_low_used - hunk_high_used);
@@ -377,15 +379,15 @@ NOXREF void Hunk_Print(qboolean all)
 		//
 		// if totally done, break
 		//
-		if (h == endhigh)
+		if(h == endhigh)
 			break;
 
 		//
 		// run consistancy checks
 		//
-		if (h->sentinel != HUNK_SENTINEL)
+		if(h->sentinel != HUNK_SENTINEL)
 			Sys_Error(__FUNCTION__ ": trahsed sentinal");
-		if (h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
+		if(h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
 			Sys_Error(__FUNCTION__ ": bad size");
 
 		next = (hunk_t *)((byte *)h + h->size);
@@ -397,19 +399,19 @@ NOXREF void Hunk_Print(qboolean all)
 		// print the single block
 		//
 		Q_memcpy(name, h->name, HUNK_NAME_LEN);
-		if (all)
+		if(all)
 			Con_Printf("%8p :%8i %8s\n", h, h->size, name);
 
 		//
 		// print the total
 		//
-		if (next == endlow || next == endhigh ||
-			Q_strncmp(h->name, next->name, HUNK_NAME_LEN))
+		if(next == endlow || next == endhigh ||
+		   Q_strncmp(h->name, next->name, HUNK_NAME_LEN))
 		{
-			if (!all)
+			if(!all)
 				Con_Printf("          :%8i %8s (TOTAL)\n", sum, name);
 			count = 0;
-			sum = 0;
+			sum   = 0;
 		}
 
 		h = next;
@@ -427,14 +429,14 @@ Hunk_AllocName
 
 void *Hunk_AllocName(int size, const char *name)
 {
-	if (size < 0)
+	if(size < 0)
 	{
 		Sys_Error(__FUNCTION__ ": bad size: %i", size);
 	}
 
 	int totalsize = ((size + 15) & ~15) + sizeof(hunk_t);
 
-	if (hunk_size - hunk_high_used - hunk_low_used < totalsize)
+	if(hunk_size - hunk_high_used - hunk_low_used < totalsize)
 	{
 		Sys_Error(__FUNCTION__ ": failed on %i bytes", totalsize);
 	}
@@ -445,7 +447,7 @@ void *Hunk_AllocName(int size, const char *name)
 	Cache_FreeLow(hunk_low_used);
 
 	Q_memset(h, 0, totalsize);
-	h->size = totalsize;
+	h->size     = totalsize;
 	h->sentinel = HUNK_SENTINEL;
 	Q_strncpy(h->name, name, HUNK_NAME_LEN - 1);
 	h->name[HUNK_NAME_LEN - 1] = 0;
@@ -465,7 +467,7 @@ int Hunk_LowMark(void)
 
 void Hunk_FreeToLowMark(int mark)
 {
-	if (mark < 0 || mark > hunk_low_used)
+	if(mark < 0 || mark > hunk_low_used)
 	{
 		Sys_Error(__FUNCTION__ ": bad mark %i", mark);
 	}
@@ -475,7 +477,7 @@ void Hunk_FreeToLowMark(int mark)
 
 int Hunk_HighMark(void)
 {
-	if (hunk_tempactive)
+	if(hunk_tempactive)
 	{
 		hunk_tempactive = FALSE;
 		Hunk_FreeToHighMark(hunk_tempmark);
@@ -486,13 +488,13 @@ int Hunk_HighMark(void)
 
 void Hunk_FreeToHighMark(int mark)
 {
-	if (hunk_tempactive)
+	if(hunk_tempactive)
 	{
 		hunk_tempactive = FALSE;
 		Hunk_FreeToHighMark(hunk_tempmark);
 	}
 
-	if (mark < 0 || mark > hunk_high_used)
+	if(mark < 0 || mark > hunk_high_used)
 	{
 		Sys_Error(__FUNCTION__ ": bad mark %i", mark);
 	}
@@ -509,12 +511,12 @@ Hunk_HighAllocName
 void *Hunk_HighAllocName(int size, const char *name)
 {
 	hunk_t *h;
-	if (size < 0)
+	if(size < 0)
 	{
 		Sys_Error(__FUNCTION__ ": bad size: %i", size);
 	}
 
-	if (hunk_tempactive)
+	if(hunk_tempactive)
 	{
 		Hunk_FreeToHighMark(hunk_tempmark);
 		hunk_tempactive = FALSE;
@@ -522,7 +524,7 @@ void *Hunk_HighAllocName(int size, const char *name)
 
 	size = ((size + 15) & ~15) + sizeof(hunk_t);
 
-	if (hunk_size - hunk_high_used - hunk_low_used < size)
+	if(hunk_size - hunk_high_used - hunk_low_used < size)
 	{
 		Con_Printf(__FUNCTION__ ": failed on %i bytes\n", size);
 		return 0;
@@ -534,12 +536,12 @@ void *Hunk_HighAllocName(int size, const char *name)
 	h = (hunk_t *)(hunk_base + hunk_size - hunk_high_used);
 	Q_memset(h, 0, size);
 
-	h->size = size;
+	h->size     = size;
 	h->sentinel = HUNK_SENTINEL;
 	Q_strncpy(h->name, name, HUNK_NAME_LEN - 1);
 	h->name[HUNK_NAME_LEN - 1] = 0;
 
-	return (void*)(h + 1);
+	return (void *)(h + 1);
 }
 
 /*
@@ -554,14 +556,14 @@ void *Hunk_TempAlloc(int size)
 {
 	void *buf;
 
-	if (hunk_tempactive)
+	if(hunk_tempactive)
 	{
 		Hunk_FreeToHighMark(hunk_tempmark);
 		hunk_tempactive = 0;
 	}
 
-	hunk_tempmark = Hunk_HighMark();
-	buf = Hunk_HighAllocName((size + 15) & ~15, "temp");
+	hunk_tempmark   = Hunk_HighMark();
+	buf             = Hunk_HighAllocName((size + 15) & ~15, "temp");
 	hunk_tempactive = 1;
 
 	return buf;
@@ -583,9 +585,9 @@ CACHE MEMORY
 
 typedef struct cache_system_s
 {
-	int size;
-	cache_user_t *user;
-	char name[CACHE_NAME_LEN];
+	int             size;
+	cache_user_t *  user;
+	char            name[CACHE_NAME_LEN];
 	cache_system_t *prev;
 	cache_system_t *next;
 	cache_system_t *lru_prev;
@@ -604,7 +606,7 @@ void Cache_Move(cache_system_t *c)
 {
 	cache_system_t *newmem = Cache_TryAlloc(c->size, 1);
 
-	if (!newmem)
+	if(!newmem)
 	{
 		Cache_Free(c->user);
 	}
@@ -628,16 +630,16 @@ Throw things out until the hunk can be expanded to the given point
 
 void Cache_FreeLow(int new_low_hunk)
 {
-	cache_system_t	*c;
+	cache_system_t *c;
 
-	while (true)
+	while(true)
 	{
 		c = cache_head.next;
-		if (c == &cache_head)
-			return;		// nothing in cache at all
-		if ((byte *)c >= hunk_base + new_low_hunk)
-			return;		// there is space to grow the hunk
-		Cache_Move(c);	// reclaim the space
+		if(c == &cache_head)
+			return; // nothing in cache at all
+		if((byte *)c >= hunk_base + new_low_hunk)
+			return;    // there is space to grow the hunk
+		Cache_Move(c); // reclaim the space
 	}
 }
 
@@ -651,21 +653,21 @@ Throw things out until the hunk can be expanded to the given point
 
 void Cache_FreeHigh(int new_high_hunk)
 {
-	cache_system_t	*c, *prev;
+	cache_system_t *c, *prev;
 
 	prev = NULL;
-	while (true)
+	while(true)
 	{
 		c = cache_head.prev;
-		if (c == &cache_head)
-			return;		// nothing in cache at all
-		if ((byte *)c + c->size <= hunk_base + hunk_size - new_high_hunk)
-			return;		// there is space to grow the hunk
-		if (c == prev)
-			Cache_Free(c->user);	// didn't move out of the way
+		if(c == &cache_head)
+			return; // nothing in cache at all
+		if((byte *)c + c->size <= hunk_base + hunk_size - new_high_hunk)
+			return; // there is space to grow the hunk
+		if(c == prev)
+			Cache_Free(c->user); // didn't move out of the way
 		else
 		{
-			Cache_Move(c);	// try to move it
+			Cache_Move(c); // try to move it
 			prev = c;
 		}
 	}
@@ -673,7 +675,7 @@ void Cache_FreeHigh(int new_high_hunk)
 
 void Cache_UnlinkLRU(cache_system_t *cs)
 {
-	if (!cs->lru_next || !cs->lru_prev)
+	if(!cs->lru_next || !cs->lru_prev)
 	{
 		Sys_Error(__FUNCTION__ ": NULL link");
 	}
@@ -685,15 +687,15 @@ void Cache_UnlinkLRU(cache_system_t *cs)
 
 void Cache_MakeLRU(cache_system_t *cs)
 {
-	if (cs->lru_next || cs->lru_prev)
+	if(cs->lru_next || cs->lru_prev)
 	{
 		Sys_Error(__FUNCTION__ ": active link");
 	}
 
 	cache_head.lru_next->lru_prev = cs;
-	cs->lru_next = cache_head.lru_next;
-	cs->lru_prev = &cache_head;
-	cache_head.lru_next = cs;
+	cs->lru_next                  = cache_head.lru_next;
+	cs->lru_prev                  = &cache_head;
+	cache_head.lru_next           = cs;
 }
 
 /*
@@ -710,16 +712,16 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 	cache_system_t *cs;
 	cache_system_t *newmem;
 
-	if (!nobottom && cache_head.prev == &cache_head)
+	if(!nobottom && cache_head.prev == &cache_head)
 	{
-		if (hunk_size - hunk_low_used - hunk_high_used < size)
+		if(hunk_size - hunk_low_used - hunk_high_used < size)
 		{
 			Sys_Error(__FUNCTION__ ": %i is greater then free hunk", size);
 		}
 
 		newmem = (cache_system_t *)(hunk_base + hunk_low_used);
 		Q_memset(newmem, 0, sizeof(cache_system_t));
-		newmem->size = size;
+		newmem->size    = size;
 		cache_head.next = cache_head.prev = newmem;
 		newmem->next = newmem->prev = &cache_head;
 
@@ -727,12 +729,12 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 		return newmem;
 	}
 
-	cs = cache_head.next;
+	cs     = cache_head.next;
 	newmem = (cache_system_t *)(hunk_base + hunk_low_used);
 
 	do
 	{
-		if ((!nobottom || cs != cache_head.next) && (signed int)((char *)cs - (char *)newmem) >= size)
+		if((!nobottom || cs != cache_head.next) && (signed int)((char *)cs - (char *)newmem) >= size)
 		{
 			Q_memset(newmem, 0, sizeof(cache_system_t));
 
@@ -741,17 +743,17 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 			newmem->prev = cs->prev;
 
 			cs->prev->next = newmem;
-			cs->prev = newmem;
+			cs->prev       = newmem;
 
 			Cache_MakeLRU(newmem);
 			return newmem;
 		}
 
 		newmem = (cache_system_t *)((char *)cs + cs->size);
-		cs = cs->next;
-	} while (cs != &cache_head);
+		cs     = cs->next;
+	} while(cs != &cache_head);
 
-	if ((int)(hunk_size + hunk_base - hunk_high_used - (byte *)newmem) < size)
+	if((int)(hunk_size + hunk_base - hunk_high_used - (byte *)newmem) < size)
 	{
 		return 0;
 	}
@@ -763,7 +765,7 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 	newmem->prev = cache_head.prev;
 
 	cache_head.prev->next = newmem;
-	cache_head.prev = newmem;
+	cache_head.prev       = newmem;
 
 	Cache_MakeLRU(newmem);
 	return newmem;
@@ -781,7 +783,7 @@ void Cache_Force_Flush(void)
 {
 	cache_system_t *i;
 
-	for (i = cache_head.next; cache_head.next != &cache_head; i = cache_head.next)
+	for(i = cache_head.next; cache_head.next != &cache_head; i = cache_head.next)
 	{
 		Cache_Free(i->user);
 	}
@@ -789,7 +791,7 @@ void Cache_Force_Flush(void)
 
 void Cache_Flush(void)
 {
-	if (cl.maxclients <= 1 || allow_cheats)
+	if(cl.maxclients <= 1 || allow_cheats)
 	{
 		Cache_Force_Flush();
 	}
@@ -831,7 +833,7 @@ NOXREF void Cache_Print(void)
 
 	cache_system_t *cd;
 
-	for (cd = cache_head.next; cd != &cache_head; cd = cd->next)
+	for(cd = cache_head.next; cd != &cache_head; cd = cd->next)
 	{
 		Con_Printf("%8i : %s\n", cd->size, cd->name);
 	}
@@ -849,9 +851,9 @@ compares the first directory of two paths...
 NOXREF int ComparePath1(char *path1, char *path2)
 {
 	NOXREFCHECK;
-	while (*path1 != '/' && *path1 != '\\' && *path1)
+	while(*path1 != '/' && *path1 != '\\' && *path1)
 	{
-		if (*path1 != *path2)
+		if(*path1 != *path2)
 			return 0;
 		else
 		{
@@ -875,15 +877,15 @@ NOXREF char *CommatizeNumber(int num, char *pout)
 {
 	NOXREFCHECK;
 	//this is probably more complex than it needs to be.
-	int len = 0;
-	int i;
+	int  len = 0;
+	int  i;
 	char outbuf[50];
 	Q_memset(outbuf, 0, 50);
-	while (num)
+	while(num)
 	{
 		char tempbuf[50];
-		int temp = num % 1000;
-		num = num / 1000;
+		int  temp = num % 1000;
+		num       = num / 1000;
 		Q_strcpy(tempbuf, outbuf);
 
 		Q_snprintf(outbuf, sizeof(outbuf), ",%03i%s", temp, tempbuf);
@@ -891,14 +893,14 @@ NOXREF char *CommatizeNumber(int num, char *pout)
 
 	len = Q_strlen(outbuf);
 
-	for (i = 0; i < len; i++)				//find first significant digit
-		if (outbuf[i] != '0' && outbuf[i] != ',')
+	for(i = 0; i < len; i++) //find first significant digit
+		if(outbuf[i] != '0' && outbuf[i] != ',')
 			break;
 
-	if (i == len)
+	if(i == len)
 		Q_strcpy(pout, "0");
 	else
-		Q_strcpy(pout, &outbuf[i]);	//copy from i to get rid of the first comma and leading zeros
+		Q_strcpy(pout, &outbuf[i]); //copy from i to get rid of the first comma and leading zeros
 
 	return pout;
 }
@@ -953,7 +955,7 @@ Frees the memory and removes it from the LRU list
 
 void Cache_Free(cache_user_t *c)
 {
-	if (!c->data)
+	if(!c->data)
 	{
 		Sys_Error(__FUNCTION__ ": not allocated");
 	}
@@ -971,9 +973,9 @@ NOXREF int Cache_TotalUsed(void)
 {
 	NOXREFCHECK;
 
-	cache_system_t	*cd;
-	int Total = 0;
-	for (cd = cache_head.next; cd != &cache_head; cd = cd->next)
+	cache_system_t *cd;
+	int             Total = 0;
+	for(cd = cache_head.next; cd != &cache_head; cd = cd->next)
 		Total += cd->size;
 
 	return Total;
@@ -985,11 +987,11 @@ Cache_Check
 ==============
 */
 
-void* EXT_FUNC Cache_Check(cache_user_t *c)
+void *EXT_FUNC Cache_Check(cache_user_t *c)
 {
 	cache_system_t *cs;
 
-	if (c->data)
+	if(c->data)
 	{
 		cs = (cache_system_t *)((char *)c->data - sizeof(cache_system_t));
 
@@ -1010,31 +1012,31 @@ void *Cache_Alloc(cache_user_t *c, int size, char *name)
 {
 	cache_system_t *cs;
 
-	if (c->data)
+	if(c->data)
 	{
 		Sys_Error(__FUNCTION__ ": already allocated");
 	}
 
-	if (size <= 0)
+	if(size <= 0)
 	{
 		Sys_Error(__FUNCTION__ ": size %i", size);
 	}
 
-	while (true)
+	while(true)
 	{
 		cs = Cache_TryAlloc((size + sizeof(cache_system_t) + 15) & ~15, 0);
 
-		if (cs)
+		if(cs)
 		{
 			Q_strncpy(cs->name, name, CACHE_NAME_LEN - 1);
 			cs->name[CACHE_NAME_LEN - 1] = 0;
-			c->data = cs + 1;
-			cs->user = c;
+			c->data                      = cs + 1;
+			cs->user                     = c;
 
 			break;
 		}
 
-		if (cache_head.lru_prev == &cache_head)
+		if(cache_head.lru_prev == &cache_head)
 		{
 			Sys_Error(__FUNCTION__ ": out of memory");
 		}
@@ -1055,18 +1057,18 @@ void Memory_Init(void *buf, int size)
 {
 	int zonesize = ZONE_DYNAMIC_SIZE;
 
-	hunk_base = (byte *)buf;
-	hunk_size = size;
-	hunk_low_used = 0;
+	hunk_base      = (byte *)buf;
+	hunk_size      = size;
+	hunk_low_used  = 0;
 	hunk_high_used = 0;
 
 	Cache_Init();
 
 	int p = COM_CheckParm("-zone");
 
-	if (p)
+	if(p)
 	{
-		if (p < com_argc - 1)
+		if(p < com_argc - 1)
 		{
 			zonesize = Q_atoi(com_argv[p + 1]) * 1024;
 		}
@@ -1082,24 +1084,24 @@ void Memory_Init(void *buf, int size)
 
 NOXREF void Cache_Print_Models_And_Totals(void)
 {
-	char buf[50];
+	char            buf[50];
 	cache_system_t *cd;
 	cache_system_t *sortarray[512];
-	int32 i = 0;
-	int32 j = 0;
-	int32 totalbytes = 0;
-	FileHandle_t file;
+	int32           i          = 0;
+	int32           j          = 0;
+	int32           totalbytes = 0;
+	FileHandle_t    file;
 
 	file = FS_Open(mem_dbgfile.string, "a");
-	if (!file)
+	if(!file)
 		return;
 
 	Q_memset(sortarray, 0, sizeof(cache_system_t *) * 512);
 
 	//pack names into the array.
-	for (cd = cache_head.next; cd != &cache_head; cd = cd->next)
+	for(cd = cache_head.next; cd != &cache_head; cd = cd->next)
 	{
-		if (Q_strstr(cd->name,".mdl"))
+		if(Q_strstr(cd->name, ".mdl"))
 			sortarray[i++] = cd;
 	}
 
@@ -1107,39 +1109,39 @@ NOXREF void Cache_Print_Models_And_Totals(void)
 	FS_FPrintf(file, "\nCACHED MODELS:\n");
 
 	//now process the sorted list.
-	for (j = 0; j < i; j++)
+	for(j = 0; j < i; j++)
 	{
 		FS_FPrintf(file, "\t%16.16s : %s\n", CommatizeNumber(sortarray[j]->size, buf), sortarray[j]->name);
 		totalbytes += sortarray[j]->size;
 	}
 
-	FS_FPrintf(file,"Total bytes in cache used by models:  %s\n", CommatizeNumber(totalbytes, buf));
+	FS_FPrintf(file, "Total bytes in cache used by models:  %s\n", CommatizeNumber(totalbytes, buf));
 	FS_Close(file);
 }
 
-#define MAX_SFX	1024
+#define MAX_SFX 1024
 
 NOXREF void Cache_Print_Sounds_And_Totals(void)
 {
-	char buf[50];
+	char            buf[50];
 	cache_system_t *cd;
 	cache_system_t *sortarray[1024];
-	int32 i = 0;
-	int32 j = 0;
-	int32 totalsndbytes = 0;
-	FileHandle_t file;
-	int subtot = 0;
+	int32           i             = 0;
+	int32           j             = 0;
+	int32           totalsndbytes = 0;
+	FileHandle_t    file;
+	int             subtot = 0;
 
 	file = FS_Open(mem_dbgfile.string, "a");
-	if (!file)
+	if(!file)
 		return;
 
 	Q_memset(sortarray, 0, sizeof(cache_system_t *) * MAX_SFX);
 
 	//pack names into the array.
-	for (cd = cache_head.next; cd != &cache_head; cd = cd->next)
+	for(cd = cache_head.next; cd != &cache_head; cd = cd->next)
 	{
-		if (Q_strstr(cd->name,".wav"))
+		if(Q_strstr(cd->name, ".wav"))
 			sortarray[i++] = cd;
 	}
 
@@ -1147,12 +1149,12 @@ NOXREF void Cache_Print_Sounds_And_Totals(void)
 	FS_FPrintf(file, "\nCACHED SOUNDS:\n");
 
 	//now process the sorted list.  (totals by directory)
-	for (j = 0; j < i; j++)
+	for(j = 0; j < i; j++)
 	{
 		FS_FPrintf(file, "\t%16.16s : %s\n", CommatizeNumber(sortarray[j]->size, buf), sortarray[j]->name);
 		totalsndbytes += sortarray[j]->size;
 
-		if ((j + 1) == i || ComparePath1(sortarray[j]->name, sortarray[j + 1]->name) == 0)
+		if((j + 1) == i || ComparePath1(sortarray[j]->name, sortarray[j + 1]->name) == 0)
 		{
 			char pathbuf[512];
 			Sys_SplitPath(sortarray[j]->name, NULL, pathbuf, NULL, NULL);

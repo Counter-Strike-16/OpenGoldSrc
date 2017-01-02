@@ -25,10 +25,8 @@
 *    version.
 *
 */
-#pragma once
 
-class INetChan;
-class IGameClient;
+#pragma once
 
 #include "public/archtypes.h"
 #include "common/const.h"
@@ -42,9 +40,9 @@ class IGameClient;
 #endif
 
 class INetChan;
-class IGameClient;
 
-class IGameClient {
+class IGameClient
+{
 public:
 	virtual int GetId() = 0;
 
@@ -79,7 +77,8 @@ public:
 #endif
 };
 
-class INetChan {
+class INetChan
+{
 public:
 	virtual const netadr_t* GetRemoteAdr() = 0;
 	virtual sizebuf_t* GetMessageBuf() = 0;
@@ -95,7 +94,8 @@ public:
 struct client_t;
 #endif
 
-class IRehldsServerStatic {
+class IRehldsServerStatic
+{
 public:
 	virtual ~IRehldsServerStatic() { }
 
@@ -106,7 +106,8 @@ public:
 	virtual int GetIndexOfClient_t(client_t* client) = 0;
 };
 
-class IRehldsServerData {
+class IRehldsServerData
+{
 public:
 	virtual ~IRehldsServerData() { }
 

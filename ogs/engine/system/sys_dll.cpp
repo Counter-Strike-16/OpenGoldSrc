@@ -1,30 +1,30 @@
 /*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
 
 #include "precompiled.h"
 #include "system/system.h"
@@ -53,17 +53,17 @@ char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON];
 
 qboolean gfExtendedError;
 
-int giSubState;
-int giActive;
-int giStateInfo;
-DLL_FUNCTIONS gEntityInterface;
+int               giSubState;
+int               giActive;
+int               giStateInfo;
+DLL_FUNCTIONS     gEntityInterface;
 NEW_DLL_FUNCTIONS gNewDLLFunctions;
 
 extensiondll_t g_rgextdll[50];
 
-int g_iextdllMac;
+int       g_iextdllMac;
 modinfo_t gmodinfo;
-qboolean gfBackground;
+qboolean  gfBackground;
 //int starttime;
 //qboolean Win32AtLeastV4;
 //int lowshift;
@@ -82,10 +82,10 @@ char g_szFindFirstFileName[MAX_PATH];
 #endif
 
 #ifdef _WIN32
-int g_PerfCounterInitialized;
+int              g_PerfCounterInitialized;
 CRITICAL_SECTION g_PerfCounterMutex;
 
-int g_PerfCounterShiftRightAmount;
+int    g_PerfCounterShiftRightAmount;
 double g_PerfCounterSlice;
 double g_CurrentTime;
 double g_StartTime;
@@ -98,103 +98,102 @@ int g_WinNTOrHigher;
 */
 #ifndef HOOK_ENGINE
 
-int g_FPUCW_Mask_Prec_64Bit = 0;
+int g_FPUCW_Mask_Prec_64Bit   = 0;
 int g_FPUCW_Mask_Prec_64Bit_2 = 0;
-int g_FPUCW_Mask_Round_Trunc = 0;
-int g_FPUCW_Mask_Round_Up = 0;
+int g_FPUCW_Mask_Round_Trunc  = 0;
+int g_FPUCW_Mask_Round_Up     = 0;
 
 FileFindHandle_t g_hfind = FILESYSTEM_INVALID_FIND_HANDLE;
 
 enginefuncs_t g_engfuncsExportedToDlls = {
-	PF_precache_model_I, PF_precache_sound_I,
-	PF_setmodel_I, PF_modelindex,
-	ModelFrames, PF_setsize_I,
-	PF_changelevel_I, PF_setspawnparms_I,
-	SaveSpawnParms, PF_vectoyaw_I,
-	PF_vectoangles_I, SV_MoveToOrigin_I,
-	PF_changeyaw_I, PF_changepitch_I,
-	FindEntityByString, GetEntityIllum,
-	FindEntityInSphere, PF_checkclient_I,
-	PVSFindEntities, PF_makevectors_I,
-	AngleVectors_ext, PF_Spawn_I,
-	PF_Remove_I, CreateNamedEntity,
-	PF_makestatic_I, PF_checkbottom_I,
-	PF_droptofloor_I, PF_walkmove_I,
-	PF_setorigin_I, PF_sound_I,
-	PF_ambientsound_I, PF_traceline_DLL,
-	PF_TraceToss_DLL, TraceMonsterHull,
-	TraceHull, TraceModel,
-	TraceTexture, TraceSphere,
-	PF_aim_I, PF_localcmd_I,
-	PF_localexec_I, PF_stuffcmd_I,
-	PF_particle_I, PF_lightstyle_I,
-	PF_DecalIndex, PF_pointcontents_I,
-	PF_MessageBegin_I, PF_MessageEnd_I,
-	PF_WriteByte_I, PF_WriteChar_I,
-	PF_WriteShort_I, PF_WriteLong_I,
-	PF_WriteAngle_I, PF_WriteCoord_I,
-	PF_WriteString_I, PF_WriteEntity_I,
-	CVarRegister, CVarGetFloat,
-	CVarGetString, CVarSetFloat,
-	CVarSetString, AlertMessage,
-	EngineFprintf, PvAllocEntPrivateData,
-	PvEntPrivateData, FreeEntPrivateData,
-	SzFromIndex, AllocEngineString,
-	GetVarsOfEnt, PEntityOfEntOffset,
-	EntOffsetOfPEntity, IndexOfEdict,
-	PEntityOfEntIndex, FindEntityByVars,
-	GetModelPtr, RegUserMsg,
-	AnimationAutomove, GetBonePosition,
-	FunctionFromName, NameForFunction,
-	ClientPrintf, ServerPrint,
-	Cmd_Args, Cmd_Argv, Cmd_Argc,
-	GetAttachment, CRC32_Init,
-	CRC32_ProcessBuffer, CRC32_ProcessByte,
-	CRC32_Final, RandomLong,
-	RandomFloat, PF_setview_I,
-	PF_Time, PF_crosshairangle_I,
-	COM_LoadFileForMe, COM_FreeFile,
-	Host_EndSection, COM_CompareFileTime,
-	COM_GetGameDir, Cvar_RegisterVariable,
-	PF_FadeVolume, PF_SetClientMaxspeed,
-	PF_CreateFakeClient_I,
-	PF_RunPlayerMove_I,
-	PF_NumberOfEntities_I,
-	PF_GetInfoKeyBuffer_I, PF_InfoKeyValue_I,
-	PF_SetKeyValue_I, PF_SetClientKeyValue_I,
-	PF_IsMapValid_I, PF_StaticDecal,
-	PF_precache_generic_I,
-	PF_GetPlayerUserId, PF_BuildSoundMsg_I,
-	PF_IsDedicatedServer, CVarGetPointer,
-	PF_GetPlayerWONId, PF_RemoveKey_I,
-	PF_GetPhysicsKeyValue,
-	PF_SetPhysicsKeyValue,
-	PF_GetPhysicsInfoString, EV_Precache,
-	EV_Playback, SV_FatPVS, SV_FatPAS,
-	SV_CheckVisibility, DELTA_SetField,
-	DELTA_UnsetField, DELTA_AddEncoder,
-	PF_GetCurrentPlayer, PF_CanSkipPlayer,
-	DELTA_FindFieldIndex,
-	DELTA_SetFieldByIndex,
-	DELTA_UnsetFieldByIndex, PF_SetGroupMask,
-	PF_CreateInstancedBaseline,
-	PF_Cvar_DirectSet, PF_ForceUnmodified,
-	PF_GetPlayerStats, Cmd_AddGameCommand,
-	Voice_GetClientListening,
-	Voice_SetClientListening,
-	PF_GetPlayerAuthId, NULL,
-	NULL, COM_FileSize,
-	COM_GetApproxWavePlayLength,
-	VGuiWrap2_IsInCareerMatch,
-	VGuiWrap2_GetLocalizedStringLength,
-	RegisterTutorMessageShown,
-	GetTimesTutorMessageShown,
-	ProcessTutorMessageDecayBuffer,
-	ConstructTutorMessageDecayBuffer,
-	ResetTutorMessageDecayData,
-	QueryClientCvarValue, QueryClientCvarValue2,
-	EngCheckParm
-};
+    PF_precache_model_I, PF_precache_sound_I,
+    PF_setmodel_I, PF_modelindex,
+    ModelFrames, PF_setsize_I,
+    PF_changelevel_I, PF_setspawnparms_I,
+    SaveSpawnParms, PF_vectoyaw_I,
+    PF_vectoangles_I, SV_MoveToOrigin_I,
+    PF_changeyaw_I, PF_changepitch_I,
+    FindEntityByString, GetEntityIllum,
+    FindEntityInSphere, PF_checkclient_I,
+    PVSFindEntities, PF_makevectors_I,
+    AngleVectors_ext, PF_Spawn_I,
+    PF_Remove_I, CreateNamedEntity,
+    PF_makestatic_I, PF_checkbottom_I,
+    PF_droptofloor_I, PF_walkmove_I,
+    PF_setorigin_I, PF_sound_I,
+    PF_ambientsound_I, PF_traceline_DLL,
+    PF_TraceToss_DLL, TraceMonsterHull,
+    TraceHull, TraceModel,
+    TraceTexture, TraceSphere,
+    PF_aim_I, PF_localcmd_I,
+    PF_localexec_I, PF_stuffcmd_I,
+    PF_particle_I, PF_lightstyle_I,
+    PF_DecalIndex, PF_pointcontents_I,
+    PF_MessageBegin_I, PF_MessageEnd_I,
+    PF_WriteByte_I, PF_WriteChar_I,
+    PF_WriteShort_I, PF_WriteLong_I,
+    PF_WriteAngle_I, PF_WriteCoord_I,
+    PF_WriteString_I, PF_WriteEntity_I,
+    CVarRegister, CVarGetFloat,
+    CVarGetString, CVarSetFloat,
+    CVarSetString, AlertMessage,
+    EngineFprintf, PvAllocEntPrivateData,
+    PvEntPrivateData, FreeEntPrivateData,
+    SzFromIndex, AllocEngineString,
+    GetVarsOfEnt, PEntityOfEntOffset,
+    EntOffsetOfPEntity, IndexOfEdict,
+    PEntityOfEntIndex, FindEntityByVars,
+    GetModelPtr, RegUserMsg,
+    AnimationAutomove, GetBonePosition,
+    FunctionFromName, NameForFunction,
+    ClientPrintf, ServerPrint,
+    Cmd_Args, Cmd_Argv, Cmd_Argc,
+    GetAttachment, CRC32_Init,
+    CRC32_ProcessBuffer, CRC32_ProcessByte,
+    CRC32_Final, RandomLong,
+    RandomFloat, PF_setview_I,
+    PF_Time, PF_crosshairangle_I,
+    COM_LoadFileForMe, COM_FreeFile,
+    Host_EndSection, COM_CompareFileTime,
+    COM_GetGameDir, Cvar_RegisterVariable,
+    PF_FadeVolume, PF_SetClientMaxspeed,
+    PF_CreateFakeClient_I,
+    PF_RunPlayerMove_I,
+    PF_NumberOfEntities_I,
+    PF_GetInfoKeyBuffer_I, PF_InfoKeyValue_I,
+    PF_SetKeyValue_I, PF_SetClientKeyValue_I,
+    PF_IsMapValid_I, PF_StaticDecal,
+    PF_precache_generic_I,
+    PF_GetPlayerUserId, PF_BuildSoundMsg_I,
+    PF_IsDedicatedServer, CVarGetPointer,
+    PF_GetPlayerWONId, PF_RemoveKey_I,
+    PF_GetPhysicsKeyValue,
+    PF_SetPhysicsKeyValue,
+    PF_GetPhysicsInfoString, EV_Precache,
+    EV_Playback, SV_FatPVS, SV_FatPAS,
+    SV_CheckVisibility, DELTA_SetField,
+    DELTA_UnsetField, DELTA_AddEncoder,
+    PF_GetCurrentPlayer, PF_CanSkipPlayer,
+    DELTA_FindFieldIndex,
+    DELTA_SetFieldByIndex,
+    DELTA_UnsetFieldByIndex, PF_SetGroupMask,
+    PF_CreateInstancedBaseline,
+    PF_Cvar_DirectSet, PF_ForceUnmodified,
+    PF_GetPlayerStats, Cmd_AddGameCommand,
+    Voice_GetClientListening,
+    Voice_SetClientListening,
+    PF_GetPlayerAuthId, NULL,
+    NULL, COM_FileSize,
+    COM_GetApproxWavePlayLength,
+    VGuiWrap2_IsInCareerMatch,
+    VGuiWrap2_GetLocalizedStringLength,
+    RegisterTutorMessageShown,
+    GetTimesTutorMessageShown,
+    ProcessTutorMessageDecayBuffer,
+    ConstructTutorMessageDecayBuffer,
+    ResetTutorMessageDecayData,
+    QueryClientCvarValue, QueryClientCvarValue2,
+    EngCheckParm};
 
 #else // HOOK_ENGINE
 
@@ -224,10 +223,10 @@ NOINLINE void Sys_InitFPUControlWords()
 	int fpucw = 0;
 	__asm { fnstcw fpucw }
 
-	g_FPUCW_Mask_Prec_64Bit = (fpucw & 0xF0FF) | 0x300;
+	g_FPUCW_Mask_Prec_64Bit   = (fpucw & 0xF0FF) | 0x300;
 	g_FPUCW_Mask_Prec_64Bit_2 = (fpucw & 0xF0FF) | 0x300;
-	g_FPUCW_Mask_Round_Trunc = (fpucw & 0xF0FF) | 0xC00;
-	g_FPUCW_Mask_Round_Up = (fpucw & 0xF0FF) | 0x800;
+	g_FPUCW_Mask_Round_Trunc  = (fpucw & 0xF0FF) | 0xC00;
+	g_FPUCW_Mask_Round_Up     = (fpucw & 0xF0FF) | 0x800;
 }
 
 void __cdecl Sys_SetStartTime()
@@ -236,7 +235,7 @@ void __cdecl Sys_SetStartTime()
 
 	Sys_FloatTime();
 	startTimeArg = COM_CheckParm("-starttime");
-	if (startTimeArg)
+	if(startTimeArg)
 		g_CurrentTime = Q_atof(com_argv[startTimeArg + 1]);
 	else
 		g_CurrentTime = 0;
@@ -246,11 +245,11 @@ void __cdecl Sys_SetStartTime()
 
 void __cdecl Sys_InitHardwareTimer()
 {
-	unsigned int perfHighPart;
-	unsigned int perfLowPart;
+	unsigned int  perfHighPart;
+	unsigned int  perfLowPart;
 	LARGE_INTEGER perfFreq;
 
-	if (!g_PerfCounterInitialized)
+	if(!g_PerfCounterInitialized)
 	{
 		InitializeCriticalSection(&g_PerfCounterMutex);
 		g_PerfCounterInitialized = 1;
@@ -258,13 +257,13 @@ void __cdecl Sys_InitHardwareTimer()
 	Sys_SetupFPUOptions();
 	Sys_InitFPUControlWords();
 
-	if (!CRehldsPlatformHolder::get()->QueryPerfFreq(&perfFreq))
+	if(!CRehldsPlatformHolder::get()->QueryPerfFreq(&perfFreq))
 		Sys_Error("No hardware timer available");
 
-	perfHighPart = perfFreq.HighPart;
-	perfLowPart = perfFreq.LowPart;
+	perfHighPart                  = perfFreq.HighPart;
+	perfLowPart                   = perfFreq.LowPart;
 	g_PerfCounterShiftRightAmount = 0;
-	while (perfHighPart || perfLowPart > 2000000.0)
+	while(perfHighPart || perfLowPart > 2000000.0)
 	{
 		g_PerfCounterShiftRightAmount++;
 		perfLowPart = (perfHighPart << 31) | (perfLowPart >> 1);
@@ -276,14 +275,16 @@ void __cdecl Sys_InitHardwareTimer()
 	Sys_SetStartTime();
 }
 
-int g_SavedFPUCW1 = 0;
-NOINLINE void Sys_FPUCW_Push_Prec64() {
+int           g_SavedFPUCW1 = 0;
+NOINLINE void Sys_FPUCW_Push_Prec64()
+{
 	uint16 tmp = g_FPUCW_Mask_Prec_64Bit;
 	__asm { fnstcw  g_SavedFPUCW1 }
 	__asm { fldcw tmp }
 }
 
-NOINLINE void Sys_FPUCW_Pop_Prec64() {
+NOINLINE void Sys_FPUCW_Pop_Prec64()
+{
 	uint16 tmp = g_SavedFPUCW1;
 	__asm { fldcw tmp }
 }
@@ -297,20 +298,20 @@ NOXREF void Sys_PageIn(void *ptr, int size)
 // TODO: investigate filesystem_stdio problem (multiple enumeration of files).
 const char *Sys_FindFirst(const char *path, char *basename)
 {
-	if (g_hfind != -1)
+	if(g_hfind != -1)
 		Sys_Error(__FUNCTION__ " without close");
 
 	const char *psz = FS_FindFirst(path, &g_hfind, 0);
 
 #ifdef REHLDS_FIXES
 	// Hack: store first file name to fix multiple enumeration of files in the filesystem module
-	if (psz != NULL)
+	if(psz != NULL)
 	{
 		Q_strncpy(g_szFindFirstFileName, psz, MAX_PATH - 1);
 	}
 #endif // REHLDS_FIXES
 
-	if (basename && psz)
+	if(basename && psz)
 	{
 		COM_FileBase((char *)psz, basename);
 	}
@@ -321,7 +322,7 @@ const char *Sys_FindFirst(const char *path, char *basename)
 const char *Sys_FindFirstPathID(const char *path, char *pathid)
 {
 	//const char *psz;//unused?
-	if (g_hfind != -1)
+	if(g_hfind != -1)
 		Sys_Error("Sys_FindFirst without close");
 	return FS_FindFirst(path, &g_hfind, pathid);
 }
@@ -333,13 +334,13 @@ const char *Sys_FindNext(char *basename)
 
 #ifdef REHLDS_FIXES
 	// Hack: stop if we are starting over again
-	if (psz && !Q_strcmp(g_szFindFirstFileName, psz))
+	if(psz && !Q_strcmp(g_szFindFirstFileName, psz))
 	{
 		return NULL;
 	}
 #endif // REHLDS_FIXES
 
-	if (basename && psz)
+	if(basename && psz)
 	{
 		COM_FileBase((char *)psz, basename);
 	}
@@ -349,7 +350,7 @@ const char *Sys_FindNext(char *basename)
 
 void Sys_FindClose()
 {
-	if (g_hfind != -1)
+	if(g_hfind != -1)
 	{
 		FS_FindClose(g_hfind);
 		g_hfind = -1;
@@ -390,7 +391,7 @@ NOBODY int glob_match(char *pattern, char *text);
 NOXREF void Sys_MakeCodeWriteable(uint32 startaddr, uint32 length)
 {
 #ifdef _WIN32
-	if (!VirtualProtect((LPVOID)startaddr, length, PAGE_EXECUTE_READWRITE, (PDWORD)&length))
+	if(!VirtualProtect((LPVOID)startaddr, length, PAGE_EXECUTE_READWRITE, (PDWORD)&length))
 		Sys_Error("Protection change failed.");
 #endif // _WIN32
 }
@@ -428,8 +429,8 @@ NOBODY void Sys_DebugOutStraight(const char *pStr);
 
 void __declspec(noreturn) Sys_Error(const char *error, ...)
 {
-	va_list argptr;
-	char text[1024];
+	va_list         argptr;
+	char            text[1024];
 	static qboolean bReentry;
 
 	va_start(argptr, error);
@@ -440,27 +441,27 @@ void __declspec(noreturn) Sys_Error(const char *error, ...)
 	MessageBox(GetForegroundWindow(), text, "Fatal error - Dedicated server", MB_ICONERROR | MB_OK);
 #endif // _WIN32
 
-	if (bReentry)
+	if(bReentry)
 	{
 		fprintf(stderr, "%s\n", text);
 		longjmp(host_abortserver, 2);
 	}
 	bReentry = true;
 
-	if (g_psvs.dll_initialized && gEntityInterface.pfnSys_Error)
+	if(g_psvs.dll_initialized && gEntityInterface.pfnSys_Error)
 		gEntityInterface.pfnSys_Error(text);
 
 	Log_Printf("FATAL ERROR (shutting down): %s\n", text);
 
 #ifdef REHLDS_FIXES
-	if (syserror_logfile.string[0] != '\0')
+	if(syserror_logfile.string[0] != '\0')
 	{
 		auto pFile = FS_Open(syserror_logfile.string, "a");
-		if (pFile)
+		if(pFile)
 		{
-			tm *today;
+			tm *   today;
 			time_t ltime;
-			char szDate[32];
+			char   szDate[32];
 
 			time(&ltime);
 			today = localtime(&ltime);
@@ -472,9 +473,9 @@ void __declspec(noreturn) Sys_Error(const char *error, ...)
 	}
 #endif // REHLDS_FIXES
 
-	if (g_bIsDedicatedServer)
+	if(g_bIsDedicatedServer)
 	{
-		if (Launcher_ConsolePrintf)
+		if(Launcher_ConsolePrintf)
 			Launcher_ConsolePrintf("FATAL ERROR (shutting down): %s\n", text);
 		else
 			printf("FATAL ERROR (shutting down): %s\n", text);
@@ -483,7 +484,7 @@ void __declspec(noreturn) Sys_Error(const char *error, ...)
 	else
 	{
 		HWND hWnd = 0;
-		if (pmainwindow)
+		if(pmainwindow)
 			hWnd = *pmainwindow;
 
 		Sys_Printf(text);
@@ -500,7 +501,7 @@ void __declspec(noreturn) Sys_Error(const char *error, ...)
 NOXREF void Sys_Warning(const char *pszWarning, ...)
 {
 	va_list argptr;
-	char text[1024];
+	char    text[1024];
 
 	va_start(argptr, pszWarning);
 	Q_vsnprintf(text, sizeof(text), pszWarning, argptr);
@@ -511,23 +512,22 @@ NOXREF void Sys_Warning(const char *pszWarning, ...)
 
 void Sys_Printf(const char *fmt, ...)
 {
-	char Dest[1024];
+	char    Dest[1024];
 	va_list va;
 
 	va_start(va, fmt);
 	Q_vsnprintf(Dest, sizeof(Dest), fmt, va);
 	va_end(va);
 
-	if (g_bIsDedicatedServer && Launcher_ConsolePrintf)
+	if(g_bIsDedicatedServer && Launcher_ConsolePrintf)
 		Launcher_ConsolePrintf("%s", Dest);
 
 #ifdef _WIN32
 	OutputDebugStringA(Dest);
 #else
-	if (!g_bIsDedicatedServer)
+	if(!g_bIsDedicatedServer)
 		fprintf(stderr, "%s\n", Dest);
 #endif // _WIN32
-
 }
 
 void Sys_Quit()
@@ -539,42 +539,42 @@ void Sys_Quit()
 
 double EXT_FUNC Sys_FloatTime()
 {
-	unsigned int currentTime;
-	int savedOldTime;
+	unsigned int  currentTime;
+	int           savedOldTime;
 	LARGE_INTEGER PerformanceCount;
 
-	static bool s_NeedInit = true;
-	static unsigned int s_oldTime = 0;
-	static int s_timeNotChangedCounter = 0;
+	static bool         s_NeedInit              = true;
+	static unsigned int s_oldTime               = 0;
+	static int          s_timeNotChangedCounter = 0;
 
-	if (!g_PerfCounterInitialized)
+	if(!g_PerfCounterInitialized)
 		return 1.0;
 
 	EnterCriticalSection(&g_PerfCounterMutex);
 	Sys_FPUCW_Push_Prec64();
 
 	CRehldsPlatformHolder::get()->QueryPerfCounter(&PerformanceCount);
-	if (g_PerfCounterShiftRightAmount)
+	if(g_PerfCounterShiftRightAmount)
 		currentTime = (PerformanceCount.LowPart >> g_PerfCounterShiftRightAmount) | (PerformanceCount.HighPart << (32 - g_PerfCounterShiftRightAmount));
 	else
 		currentTime = PerformanceCount.LowPart;
 
-	if (!s_NeedInit)
+	if(!s_NeedInit)
 	{
 		savedOldTime = s_oldTime;
-		if (currentTime <= s_oldTime && s_oldTime - currentTime < 0x10000000)
+		if(currentTime <= s_oldTime && s_oldTime - currentTime < 0x10000000)
 		{
 			s_oldTime = currentTime;
 		}
 		else
 		{
-			s_oldTime = currentTime;
+			s_oldTime     = currentTime;
 			g_CurrentTime = g_CurrentTime + (double)(currentTime - savedOldTime) * g_PerfCounterSlice;
-			if (g_CurrentTime == g_StartTime)
+			if(g_CurrentTime == g_StartTime)
 			{
-				if (s_timeNotChangedCounter >= 100000)
+				if(s_timeNotChangedCounter >= 100000)
 				{
-					g_CurrentTime = g_CurrentTime + 1.0;
+					g_CurrentTime           = g_CurrentTime + 1.0;
 					s_timeNotChangedCounter = 0;
 				}
 			}
@@ -587,7 +587,7 @@ double EXT_FUNC Sys_FloatTime()
 	}
 	else
 	{
-		s_oldTime = currentTime;
+		s_oldTime  = currentTime;
 		s_NeedInit = false;
 	}
 
@@ -601,10 +601,10 @@ double EXT_FUNC Sys_FloatTime()
 double Sys_FloatTime()
 {
 	static struct timespec start_time;
-	static bool bInitialized;
-	struct timespec now;
+	static bool            bInitialized;
+	struct timespec        now;
 
-	if ( !bInitialized )
+	if(!bInitialized)
 	{
 		bInitialized = 1;
 		clock_gettime(1, &start_time);
@@ -622,11 +622,11 @@ void Dispatch_Substate(int iSubState)
 
 void GameSetSubState(int iSubState)
 {
-	if (iSubState & 2)
+	if(iSubState & 2)
 	{
 		Dispatch_Substate(1);
 	}
-	else if (iSubState != 1)
+	else if(iSubState != 1)
 	{
 		Dispatch_Substate(iSubState);
 	}
@@ -646,12 +646,12 @@ qboolean EXT_FUNC Voice_GetClientListening(int iReceiver, int iSender)
 	--iReceiver;
 	--iSender;
 
-	if (iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
+	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
 		return 0;
 
 #ifdef REHLDS_FIXES
 	return (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] & (1 << iReceiver)) != 0;
-#else // REHLDS_FIXES
+#else  // REHLDS_FIXES
 	return (1 << iReceiver) & (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] != 0);
 #endif // REHLDS_FIXES
 }
@@ -661,11 +661,11 @@ qboolean EXT_FUNC Voice_SetClientListening(int iReceiver, int iSender, qboolean 
 	--iReceiver;
 	--iSender;
 
-	if (iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
+	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
 		return 0;
 
 	uint32 *pDest = g_psvs.clients[iSender].m_VoiceStreams;
-	if (bListen)
+	if(bListen)
 	{
 		pDest[iReceiver >> 5] |= 1 << iReceiver;
 	}
@@ -679,13 +679,13 @@ qboolean EXT_FUNC Voice_SetClientListening(int iReceiver, int iSender, qboolean 
 
 DISPATCHFUNCTION GetDispatch(char *pname)
 {
-	int i;
+	int              i;
 	DISPATCHFUNCTION pDispatch;
 
-	for (i = 0; i < g_iextdllMac; i++)
+	for(i = 0; i < g_iextdllMac; i++)
 	{
 		pDispatch = (DISPATCHFUNCTION)GetProcAddress((HMODULE)g_rgextdll[i].lDLLHandle, pname);
-		if (pDispatch)
+		if(pDispatch)
 		{
 			return pDispatch;
 		}
@@ -697,16 +697,16 @@ DISPATCHFUNCTION GetDispatch(char *pname)
 const char *FindAddressInTable(extensiondll_t *pDll, uint32 function)
 {
 #ifdef _WIN32
-	for (int i = 0; i < pDll->functionCount; i++)
+	for(int i = 0; i < pDll->functionCount; i++)
 	{
-		if (pDll[i].functionTable->pFunction == function)
+		if(pDll[i].functionTable->pFunction == function)
 		{
 			return pDll[i].functionTable->pFunctionName;
 		}
 	}
-#else // _WIN32
+#else  // _WIN32
 	Dl_info addrInfo;
-	if (dladdr((void *)function, &addrInfo))
+	if(dladdr((void *)function, &addrInfo))
 	{
 		return addrInfo.dli_sname;
 	}
@@ -718,9 +718,9 @@ const char *FindAddressInTable(extensiondll_t *pDll, uint32 function)
 uint32 FindNameInTable(extensiondll_t *pDll, const char *pName)
 {
 #ifdef _WIN32
-	for (int i = 0; i < pDll->functionCount; i++)
+	for(int i = 0; i < pDll->functionCount; i++)
 	{
-		if (!Q_strcmp(pName, pDll->functionTable[i].pFunctionName))
+		if(!Q_strcmp(pName, pDll->functionTable[i].pFunctionName))
 		{
 			return pDll[i].functionTable->pFunction;
 		}
@@ -753,15 +753,15 @@ uint32 EXT_FUNC FunctionFromName(const char *pName)
 	return 0; //TODO: do we really need to reverse it?
 }
 
-const char* EXT_FUNC NameForFunction(uint32 function)
+const char *EXT_FUNC NameForFunction(uint32 function)
 {
-	int i;
+	int         i;
 	const char *pName;
 
-	for (i = 0; i < g_iextdllMac; i++)
+	for(i = 0; i < g_iextdllMac; i++)
 	{
 		pName = FindAddressInTable(&g_rgextdll[i], function);
-		if (pName)
+		if(pName)
 		{
 			return pName;
 		}
@@ -783,138 +783,137 @@ FIELDIOFUNCTION GetIOFunction(char *pName)
 
 void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue)
 {
-	if (!Q_stricmp(pkey, "url_info"))
+	if(!Q_stricmp(pkey, "url_info"))
 	{
 		pinfo->bIsMod = 1;
 		Q_strncpy(pinfo->szInfo, pvalue, sizeof(pinfo->szInfo) - 1);
 		pinfo->szInfo[sizeof(pinfo->szInfo) - 1] = 0;
 	}
-	else if (!Q_stricmp(pkey, "url_dl"))
+	else if(!Q_stricmp(pkey, "url_dl"))
 	{
 		pinfo->bIsMod = 1;
 		Q_strncpy(pinfo->szDL, pvalue, sizeof(pinfo->szDL) - 1);
 		pinfo->szDL[sizeof(pinfo->szDL) - 1] = 0;
 	}
-	else if (!Q_stricmp(pkey, "version"))
+	else if(!Q_stricmp(pkey, "version"))
 	{
-		pinfo->bIsMod = 1;
+		pinfo->bIsMod  = 1;
 		pinfo->version = Q_atoi(pvalue);
 	}
-	else if (!Q_stricmp(pkey, "size"))
+	else if(!Q_stricmp(pkey, "size"))
 	{
 		pinfo->bIsMod = 1;
-		pinfo->size = Q_atoi(pvalue);
+		pinfo->size   = Q_atoi(pvalue);
 	}
-	else if (!Q_stricmp(pkey, "svonly"))
+	else if(!Q_stricmp(pkey, "svonly"))
 	{
 		pinfo->bIsMod = 1;
 		pinfo->svonly = Q_atoi(pvalue) != 0;
 	}
-	else if (!Q_stricmp(pkey, "cldll"))
+	else if(!Q_stricmp(pkey, "cldll"))
 	{
 		pinfo->bIsMod = 1;
-		pinfo->cldll = Q_atoi(pvalue) != 0;
+		pinfo->cldll  = Q_atoi(pvalue) != 0;
 	}
-	else if (!Q_stricmp(pkey, "secure"))
+	else if(!Q_stricmp(pkey, "secure"))
 	{
 		pinfo->bIsMod = 1;
 		pinfo->secure = Q_atoi(pvalue) != 0;
 	}
-	else if (!Q_stricmp(pkey, "hlversion"))
+	else if(!Q_stricmp(pkey, "hlversion"))
 	{
 		Q_strncpy(pinfo->szHLVersion, pvalue, sizeof(pinfo->szHLVersion) - 1);
 		pinfo->szHLVersion[sizeof(pinfo->szHLVersion) - 1] = 0;
 	}
-	else if (!Q_stricmp(pkey, "edicts"))
+	else if(!Q_stricmp(pkey, "edicts"))
 	{
 		pinfo->num_edicts = Q_atoi(pvalue);
-		if (pinfo->num_edicts < NUM_EDICTS)
+		if(pinfo->num_edicts < NUM_EDICTS)
 			pinfo->num_edicts = NUM_EDICTS;
 	}
-	else if (!Q_stricmp(pkey, "crcclientdll"))
+	else if(!Q_stricmp(pkey, "crcclientdll"))
 	{
-		pinfo->bIsMod = 1;
+		pinfo->bIsMod       = 1;
 		pinfo->clientDllCRC = Q_atoi(pvalue) != 0;
 	}
-	else if (!Q_stricmp(pkey, "type"))
+	else if(!Q_stricmp(pkey, "type"))
 	{
-		if (!Q_stricmp(pvalue, "singleplayer_only"))
+		if(!Q_stricmp(pvalue, "singleplayer_only"))
 			pinfo->type = SINGLEPLAYER_ONLY;
-		else if (!Q_stricmp(pvalue, "multiplayer_only"))
+		else if(!Q_stricmp(pvalue, "multiplayer_only"))
 			pinfo->type = MULTIPLAYER_ONLY;
 		else
 			pinfo->type = BOTH;
 	}
-	else if (!Q_stricmp(pkey, "fallback_dir"))
+	else if(!Q_stricmp(pkey, "fallback_dir"))
 	{
 		COM_AddDefaultDir(pvalue);
 	}
-
 }
 
 void LoadEntityDLLs(const char *szBaseDir)
 {
-	FileHandle_t hLibListFile;
-	unsigned int nFileSize;
-	unsigned int nFileSize2;
-	char *pszInputStream;
-	int nBytesRead;
-	char *pStreamPos;
-	const char *findfn;
+	FileHandle_t         hLibListFile;
+	unsigned int         nFileSize;
+	unsigned int         nFileSize2;
+	char *               pszInputStream;
+	int                  nBytesRead;
+	char *               pStreamPos;
+	const char *         findfn;
 	NEW_DLL_FUNCTIONS_FN pNewAPI;
-	APIFUNCTION2 pfnGetAPI2;
-	APIFUNCTION pfnGetAPI;
-	char szDllFilename[8192];
-	char szDllWildcard[260];
-	char szDllListFile[260];
-	char szValue[256];
-	char szKey[64];
-	char szGameDir[64];
-	int interface_version;
+	APIFUNCTION2         pfnGetAPI2;
+	APIFUNCTION          pfnGetAPI;
+	char                 szDllFilename[8192];
+	char                 szDllWildcard[260];
+	char                 szDllListFile[260];
+	char                 szValue[256];
+	char                 szKey[64];
+	char                 szGameDir[64];
+	int                  interface_version;
 
 	SV_ResetModInfo();
 	g_iextdllMac = 0;
 	Q_memset(g_rgextdll, 0, sizeof(g_rgextdll));
 
 	Q_strncpy(szGameDir, com_gamedir, sizeof(szGameDir) - 1);
-	if (Q_stricmp(szGameDir, "valve"))
+	if(Q_stricmp(szGameDir, "valve"))
 		gmodinfo.bIsMod = 1;
 
 	Q_snprintf(szDllListFile, sizeof(szDllListFile), "%s", "liblist.gam");
 	hLibListFile = FS_Open(szDllListFile, "rb");
-	if (hLibListFile)
+	if(hLibListFile)
 	{
-		nFileSize = FS_Size(hLibListFile);
+		nFileSize  = FS_Size(hLibListFile);
 		nFileSize2 = nFileSize;
-		if (!nFileSize || (signed int)nFileSize > 262144)
+		if(!nFileSize || (signed int)nFileSize > 262144)
 			Sys_Error("Game listing file size is bogus [%s: size %i]", "liblist.gam", nFileSize);
 
 		pszInputStream = (char *)Mem_Malloc(nFileSize + 1);
-		if (!pszInputStream)
+		if(!pszInputStream)
 			Sys_Error("Could not allocate space for game listing file of %i bytes", nFileSize2 + 1);
 
 		nBytesRead = FS_Read(pszInputStream, nFileSize2, 1, hLibListFile);
-		if (nBytesRead != nFileSize2)
+		if(nBytesRead != nFileSize2)
 			Sys_Error("Error reading in game listing file, expected %i bytes, read %i", nFileSize2, nBytesRead);
 
 		pszInputStream[nFileSize2] = 0;
-		pStreamPos = pszInputStream;
-		com_ignorecolons = 1;
-		while (1)
+		pStreamPos                 = pszInputStream;
+		com_ignorecolons           = 1;
+		while(1)
 		{
 			pStreamPos = COM_Parse(pStreamPos);
-			if (Q_strlen(com_token) <= 0)
+			if(Q_strlen(com_token) <= 0)
 				break;
 
 			Q_strncpy(szKey, com_token, sizeof(szKey) - 1);
 			szKey[sizeof(szKey) - 1] = 0;
-			pStreamPos = COM_Parse(pStreamPos);
+			pStreamPos               = COM_Parse(pStreamPos);
 			Q_strncpy(szValue, com_token, sizeof(szValue) - 1);
 			szValue[sizeof(szValue) - 1] = 0;
 #ifdef _WIN32
-			if (Q_stricmp(szKey, "gamedll"))
-#else // _WIN32
-			if (Q_stricmp(szKey, "gamedll_linux"))
+			if(Q_stricmp(szKey, "gamedll"))
+#else  // _WIN32
+			if(Q_stricmp(szKey, "gamedll_linux"))
 #endif // _WIN32
 			{
 				DLL_SetModKey(&gmodinfo, szKey, szValue);
@@ -922,15 +921,15 @@ void LoadEntityDLLs(const char *szBaseDir)
 			else
 			{
 				int index = COM_CheckParm("-dll");
-				if (index && index < com_argc - 1)
+				if(index && index < com_argc - 1)
 				{
 					Q_strncpy(szValue, com_argv[index + 1], sizeof(szValue) - 1);
 					szValue[sizeof(szValue) - 1] = 0;
 				}
 #ifdef _WIN32
-				if (Q_strstr(szValue, ".dll"))
-#else // _WIN32
-				if (Q_strstr(szValue, ".so"))
+				if(Q_strstr(szValue, ".dll"))
+#else  // _WIN32
+				if(Q_strstr(szValue, ".so"))
 #endif // _WIN32
 				{
 					FS_GetLocalPath(szValue, szDllFilename, sizeof(szDllFilename));
@@ -951,10 +950,10 @@ void LoadEntityDLLs(const char *szBaseDir)
 	{
 #ifdef _WIN32
 		Q_snprintf(szDllWildcard, sizeof(szDllWildcard), "%s\\*.dll", "valve\\dlls");
-#else // _WIN32
+#else  // _WIN32
 		Q_snprintf(szDllWildcard, sizeof(szDllWildcard), "%s\\*.so", "valve\\dlls");
 #endif // _WIN32
-		for (findfn = Sys_FindFirst(szDllWildcard, 0); findfn; findfn = Sys_FindNext(0))
+		for(findfn = Sys_FindFirst(szDllWildcard, 0); findfn; findfn = Sys_FindNext(0))
 		{
 			Q_snprintf(szDllFilename, sizeof(szDllWildcard), "%s/%s/%s", szBaseDir, "valve\\dlls", findfn);
 			LoadThisDll(szDllFilename);
@@ -962,27 +961,27 @@ void LoadEntityDLLs(const char *szBaseDir)
 		Sys_FindClose();
 	}
 	gNewDLLFunctions.pfnOnFreeEntPrivateData = NULL;
-	gNewDLLFunctions.pfnGameShutdown = NULL;
-	gNewDLLFunctions.pfnShouldCollide = NULL;
-	gNewDLLFunctions.pfnCvarValue = NULL;
-	gNewDLLFunctions.pfnCvarValue2 = NULL;
-	pNewAPI = (NEW_DLL_FUNCTIONS_FN)GetDispatch("GetNewDLLFunctions");
-	if (pNewAPI)
+	gNewDLLFunctions.pfnGameShutdown         = NULL;
+	gNewDLLFunctions.pfnShouldCollide        = NULL;
+	gNewDLLFunctions.pfnCvarValue            = NULL;
+	gNewDLLFunctions.pfnCvarValue2           = NULL;
+	pNewAPI                                  = (NEW_DLL_FUNCTIONS_FN)GetDispatch("GetNewDLLFunctions");
+	if(pNewAPI)
 	{
 		interface_version = NEW_DLL_FUNCTIONS_VERSION;
 		pNewAPI(&gNewDLLFunctions, &interface_version);
 	}
 
 	pfnGetAPI2 = (APIFUNCTION2)GetDispatch("GetEntityAPI2");
-	if (pfnGetAPI2)
+	if(pfnGetAPI2)
 	{
 		interface_version = INTERFACE_VERSION;
-		if (!pfnGetAPI2(&gEntityInterface, &interface_version))
+		if(!pfnGetAPI2(&gEntityInterface, &interface_version))
 		{
 			Con_Printf("==================\n");
 			Con_Printf("Game DLL version mismatch\n");
 			Con_Printf("DLL version is %i, engine version is %i\n", interface_version, INTERFACE_VERSION);
-			if (interface_version <= INTERFACE_VERSION)
+			if(interface_version <= INTERFACE_VERSION)
 				Con_Printf("The game DLL for %s appears to be outdated, check for updates\n", szGameDir);
 			else
 				Con_Printf("Engine appears to be outdated, check for updates\n");
@@ -993,10 +992,10 @@ void LoadEntityDLLs(const char *szBaseDir)
 	else
 	{
 		pfnGetAPI = (APIFUNCTION)GetDispatch("GetEntityAPI");
-		if (!pfnGetAPI)
+		if(!pfnGetAPI)
 			Host_Error("Couldn't get DLL API from %s!", szDllFilename);
 		interface_version = INTERFACE_VERSION;
-		if (!pfnGetAPI(&gEntityInterface, interface_version))
+		if(!pfnGetAPI(&gEntityInterface, interface_version))
 		{
 			Con_Printf("==================\n");
 			Con_Printf("Game DLL version mismatch\n");
@@ -1012,7 +1011,7 @@ void LoadEntityDLLs(const char *szBaseDir)
 #ifdef _WIN32
 HMODULE LoadWindowsDLL(LPCSTR lpLibFileName)
 {
-	if (!lpLibFileName)
+	if(!lpLibFileName)
 		return NULL;
 
 	FS_GetLocalCopy(lpLibFileName);
@@ -1023,44 +1022,43 @@ HMODULE LoadWindowsDLL(LPCSTR lpLibFileName)
 void LoadThisDll(const char *szDllFilename)
 {
 #ifdef _WIN32
-	typedef void(__stdcall *PFN_GiveFnptrsToDll)(enginefuncs_t *, globalvars_t *);
+	typedef void(__stdcall * PFN_GiveFnptrsToDll)(enginefuncs_t *, globalvars_t *);
 #else
-	typedef void(__cdecl *PFN_GiveFnptrsToDll)(enginefuncs_t *, globalvars_t *);
+	typedef void(__cdecl * PFN_GiveFnptrsToDll)(enginefuncs_t *, globalvars_t *);
 #endif // _WIN32
 	PFN_GiveFnptrsToDll pfnGiveFnptrsToDll;
-	extensiondll_t *pextdll;
+	extensiondll_t *    pextdll;
 
 #ifdef _WIN32
 	HMODULE hDLL = LoadWindowsDLL(szDllFilename);
-	if (!hDLL)
+	if(!hDLL)
 	{
 		Con_Printf("LoadLibrary failed on %s (%d)\n", szDllFilename, GetLastError());
 		goto IgnoreThisDLL;
 	}
 #else // _WIN32
 	void *hDLL = dlopen(szDllFilename, RTLD_NOW);
-	if (!hDLL)
+	if(!hDLL)
 	{
 		Con_Printf("LoadLibrary failed on %s: %s\n", szDllFilename, dlerror());
 		goto IgnoreThisDLL;
 	}
 #endif
 
-
 #ifdef _WIN32
 	pfnGiveFnptrsToDll = (PFN_GiveFnptrsToDll)GetProcAddress(hDLL, "GiveFnptrsToDll");
 #else
-	pfnGiveFnptrsToDll = (PFN_GiveFnptrsToDll) dlsym(hDLL, "GiveFnptrsToDll");
+	pfnGiveFnptrsToDll = (PFN_GiveFnptrsToDll)dlsym(hDLL, "GiveFnptrsToDll");
 #endif // _WIN32
 
-	if (pfnGiveFnptrsToDll == NULL)
+	if(pfnGiveFnptrsToDll == NULL)
 	{
 		Con_Printf("Couldn't get GiveFnptrsToDll in %s\n", szDllFilename);
 		goto IgnoreThisDLL;
 	}
 
 	pfnGiveFnptrsToDll(&g_engfuncsExportedToDlls, &gGlobalVariables);
-	if (g_iextdllMac == 50)
+	if(g_iextdllMac == 50)
 	{
 		Con_Printf("Too many DLLs, ignoring remainder\n");
 		goto IgnoreThisDLL;
@@ -1072,7 +1070,7 @@ void LoadThisDll(const char *szDllFilename)
 	return;
 
 IgnoreThisDLL:
-	if (hDLL)
+	if(hDLL)
 	{
 #ifdef _WIN32
 		FreeLibrary(hDLL);
@@ -1087,20 +1085,20 @@ void ReleaseEntityDlls()
 	extensiondll_t *pextdll;
 	extensiondll_t *pextdllMac;
 
-	if (!g_psvs.dll_initialized)
+	if(!g_psvs.dll_initialized)
 		return;
 
 	FreeAllEntPrivateData();
 
-	if (gNewDLLFunctions.pfnGameShutdown)
+	if(gNewDLLFunctions.pfnGameShutdown)
 		gNewDLLFunctions.pfnGameShutdown();
 
 	Cvar_UnlinkExternals();
 
-	pextdll = &g_rgextdll[0];
+	pextdll    = &g_rgextdll[0];
 	pextdllMac = &g_rgextdll[g_iextdllMac];
 
-	while (pextdll < pextdllMac)
+	while(pextdll < pextdllMac)
 	{
 #ifdef _WIN32
 		FreeLibrary((HMODULE)pextdll->lDLLHandle);
@@ -1109,7 +1107,7 @@ void ReleaseEntityDlls()
 #endif // _WIN32
 
 		pextdll->lDLLHandle = NULL;
-		if (pextdll->functionTable)
+		if(pextdll->functionTable)
 		{
 			Mem_Free((void *)pextdll->functionTable);
 			pextdll->functionTable = NULL;
@@ -1126,18 +1124,18 @@ void EXT_FUNC EngineFprintf(void *pfile, const char *szFmt, ...)
 
 void EXT_FUNC AlertMessage(ALERT_TYPE atype, const char *szFmt, ...)
 {
-	va_list argptr;
+	va_list     argptr;
 	static char szOut[1024];
 
 	va_start(argptr, szFmt);
-	if (atype == at_logged && g_psvs.maxclients > 1)
+	if(atype == at_logged && g_psvs.maxclients > 1)
 	{
 		Q_vsnprintf(szOut, sizeof(szOut), szFmt, argptr);
 		Log_Printf("%s", szOut);
 	}
-	else if (developer.value != 0.0f)
+	else if(developer.value != 0.0f)
 	{
-		switch (atype)
+		switch(atype)
 		{
 		case at_notice:
 			Q_strcpy(szOut, "NOTE:  ");
@@ -1146,7 +1144,7 @@ void EXT_FUNC AlertMessage(ALERT_TYPE atype, const char *szFmt, ...)
 			szOut[0] = 0;
 			break;
 		case at_aiconsole:
-			if (developer.value < 2.0f)
+			if(developer.value < 2.0f)
 				return;
 			szOut[0] = 0;
 			break;
@@ -1174,35 +1172,35 @@ NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname,
 	_splitpath(path, drive, dir, fname, ext);
 #else // _WIN32
 
-	char *p;
-	char *last_slash = NULL;
-	char *dot = NULL;
+	char *       p;
+	char *       last_slash = NULL;
+	char *       dot        = NULL;
 	unsigned int len;
 
-	if (path[0] && path[1] == ':')
+	if(path[0] && path[1] == ':')
 	{
-		if (drive)
+		if(drive)
 		{
 			Q_strncpy(drive, path, 2);
 			drive[2] = 0;
 		}
 		path += 2;
 	}
-	else if (drive)
+	else if(drive)
 		drive[0] = 0;
 
-	for (p = (char *)path; *p; p++)
+	for(p = (char *)path; *p; p++)
 	{
-		if (*p == '\\' || *p == '/')
+		if(*p == '\\' || *p == '/')
 			last_slash = ++p;
 	}
 
-	if (last_slash)
+	if(last_slash)
 	{
-		if (dir)
+		if(dir)
 		{
 			len = (unsigned int)(last_slash - path);
-			if (len > 0xFF)
+			if(len > 0xFF)
 				len = 0xFF;
 
 			Q_strncpy(dir, path, len);
@@ -1210,32 +1208,32 @@ NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname,
 		}
 		path = last_slash;
 	}
-	else if (dir)
+	else if(dir)
 		dir[0] = 0;
 
-	for (p = (char *)path; *p; p++)
+	for(p = (char *)path; *p; p++)
 	{
-		if (*p == '.')
+		if(*p == '.')
 			dot = p;
 	}
 
-	if (!dot)
+	if(!dot)
 		dot = p;
 
-	if (fname)
+	if(fname)
 	{
 		len = (unsigned int)(dot - path);
-		if (len > 0xFF)
+		if(len > 0xFF)
 			len = 0xFF;
 
 		Q_strncpy(fname, path, len);
 		fname[len] = 0;
 	}
 
-	if (ext)
+	if(ext)
 	{
 		len = (unsigned int)(dot - path);
-		if (len > 0xFF)
+		if(len > 0xFF)
 			len = 0xFF;
 
 		Q_strncpy(ext, dot, len);

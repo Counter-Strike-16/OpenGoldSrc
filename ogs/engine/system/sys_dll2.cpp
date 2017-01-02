@@ -1,30 +1,32 @@
 /*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
+ * This file is part of OGS Engine
+ * Copyright (C) 2016-2017 OGS Dev Team
+ *
+ * OGS Engine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OGS Engine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, as a special exception, the author gives permission to
+ * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ * Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ * L.L.C ("Valve").  You must obey the GNU General Public License in all
+ * respects for all of the code used other than the GoldSrc Engine and MODs
+ * from Valve.  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If
+ * you do not wish to do so, delete this exception statement from your
+ * version.
+ */
+
+/// @file
 
 #include "precompiled.h"
 #include "system/system.h"
@@ -39,9 +41,9 @@ double g_flLastSteamProgressUpdateTime;
 */
 #ifndef HOOK_ENGINE
 
-char *szCommonPreloads = "multiplayer_preloads";
+char *szCommonPreloads  = "multiplayer_preloads";
 char *szReslistsBaseDir = "reslists";
-char *szReslistsExt = ".lst";
+char *szReslistsExt     = ".lst";
 
 #else // HOOK_ENGINE
 
@@ -53,25 +55,25 @@ char *szReslistsExt;
 
 const char *GetCurrentSteamAppName()
 {
-	if (!Q_stricmp(com_gamedir, "cstrike") || !Q_stricmp(com_gamedir, "cstrike_beta"))
+	if(!Q_stricmp(com_gamedir, "cstrike") || !Q_stricmp(com_gamedir, "cstrike_beta"))
 		return "Counter-Strike";
 
-	else if (!Q_stricmp(com_gamedir, "valve"))
+	else if(!Q_stricmp(com_gamedir, "valve"))
 		return "Half-Life";
 
-	else if (!Q_stricmp(com_gamedir, "ricochet"))
+	else if(!Q_stricmp(com_gamedir, "ricochet"))
 		return "Ricochet";
 
-	else if (!Q_stricmp(com_gamedir, "dod"))
+	else if(!Q_stricmp(com_gamedir, "dod"))
 		return "Day of Defeat";
 
-	else if (!Q_stricmp(com_gamedir, "tfc"))
+	else if(!Q_stricmp(com_gamedir, "tfc"))
 		return "Team Fortress Classic";
 
-	else if (!Q_stricmp(com_gamedir, "dmc"))
+	else if(!Q_stricmp(com_gamedir, "dmc"))
 		return "Deathmatch Classic";
 
-	else if (!Q_stricmp(com_gamedir, "czero"))
+	else if(!Q_stricmp(com_gamedir, "czero"))
 		return "Condition Zero";
 
 	return "Half-Life";
@@ -92,19 +94,19 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 	char key[65];
 	char hostname[4096];
 
-	if (CRehldsPlatformHolder::get()->gethostname(hostname, sizeof(hostname)))
+	if(CRehldsPlatformHolder::get()->gethostname(hostname, sizeof(hostname)))
 		Q_snprintf(key, sizeof(key), "%u", RandomLong(0, 0x7FFFFFFF));
 	else
 	{
 		struct hostent *hostinfo;
 		hostinfo = CRehldsPlatformHolder::get()->gethostbyname(hostname);
-		if (hostinfo && hostinfo->h_length == 4 && *hostinfo->h_addr_list != NULL)
+		if(hostinfo && hostinfo->h_length == 4 && *hostinfo->h_addr_list != NULL)
 		{
 			Q_snprintf(key, sizeof(key), "%u.%u.%u.%u",
-				(*hostinfo->h_addr_list)[0],
-				(*hostinfo->h_addr_list)[1],
-				(*hostinfo->h_addr_list)[2],
-				(*hostinfo->h_addr_list)[3]);
+			           (*hostinfo->h_addr_list)[0],
+			           (*hostinfo->h_addr_list)[1],
+			           (*hostinfo->h_addr_list)[2],
+			           (*hostinfo->h_addr_list)[3]);
 		}
 		else
 		{
@@ -119,10 +121,10 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 	key[64] = 0;
 	Q_strcpy(pszCDKey, key);
 
-	if (nLength)
+	if(nLength)
 		*nLength = Q_strlen(key);
 
-	if (bDedicated)
+	if(bDedicated)
 		*bDedicated = 0;
 }
 
@@ -133,13 +135,13 @@ NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage)
 void Legacy_Sys_Printf(char *fmt, ...)
 {
 	va_list argptr;
-	char text[1024];
+	char    text[1024];
 
 	va_start(argptr, fmt);
 	Q_vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end(argptr);
 
-	if (dedicated_)
+	if(dedicated_)
 		dedicated_->Sys_Printf(text);
 }
 
@@ -154,7 +156,7 @@ NOXREF void Legacy_MP3subsys_Resume_Audio()
 void Sys_SetupLegacyAPIs()
 {
 #ifndef SWDS
-	VID_FlipScreen = Sys_VID_FlipScreen;
+	VID_FlipScreen       = Sys_VID_FlipScreen;
 	D_SurfaceCacheForRes = Sys_GetSurfaceCacheSize;
 #endif // SWDS
 	Launcher_ConsolePrintf = Legacy_Sys_Printf;
@@ -187,15 +189,15 @@ NOXREF void Sys_CheckOSVersion()
 
 	Q_memset(&verInfo, 0, sizeof(verInfo));
 	verInfo.dwOSVersionInfoSize = sizeof(verInfo);
-	if (!GetVersionExA(&verInfo))
+	if(!GetVersionExA(&verInfo))
 		Sys_Error("Couldn't get OS info");
 
 	g_WinNTOrHigher = verInfo.dwMajorVersion >= 4;
-	if (verInfo.dwPlatformId == 1 && verInfo.dwMajorVersion == 4)
+	if(verInfo.dwPlatformId == 1 && verInfo.dwMajorVersion == 4)
 	{
-		if (verInfo.dwMinorVersion)
+		if(verInfo.dwMinorVersion)
 		{
-			if (verInfo.dwMinorVersion < 90)
+			if(verInfo.dwMinorVersion < 90)
 				g_bIsWin98 = 1;
 		}
 		else
@@ -220,39 +222,39 @@ void Sys_Shutdown()
 #endif // SWDS
 	Steam_ShutdownClient();
 #ifdef _WIN32
-	if (g_PerfCounterInitialized)
+	if(g_PerfCounterInitialized)
 	{
 		DeleteCriticalSection(&g_PerfCounterMutex);
 		g_PerfCounterInitialized = 0;
 	}
 #else
-	#ifndef SWDS
-		GL_Shutdown(*pmainwindow, maindc, baseRC);
-	#endif // SWDS
+#ifndef SWDS
+	GL_Shutdown(*pmainwindow, maindc, baseRC);
+#endif // SWDS
 
 #endif // _WIN32
 }
 
 void Sys_InitArgv(char *lpCmdLine)
 {
-	static char *argv[MAX_COMMAND_LINE_PARAMS];
+	static char * argv[MAX_COMMAND_LINE_PARAMS];
 	unsigned char c;
 #ifdef REHLDS_FIXES
 	bool inQuotes;
 #endif
 
 	argv[0] = "";
-	c = *lpCmdLine;
-	for (host_parms.argc = 1; c && host_parms.argc < MAX_COMMAND_LINE_PARAMS; c = *(++lpCmdLine))
+	c       = *lpCmdLine;
+	for(host_parms.argc = 1; c && host_parms.argc < MAX_COMMAND_LINE_PARAMS; c = *(++lpCmdLine))
 	{
 #ifdef REHLDS_FIXES
 		// Skip whitespace
-		while (c && c <= ' ')
+		while(c && c <= ' ')
 		{
 			lpCmdLine++;
 			c = *lpCmdLine;
 		}
-		if (!c)
+		if(!c)
 		{
 			break;
 		}
@@ -264,23 +266,23 @@ void Sys_InitArgv(char *lpCmdLine)
 
 		// Find end of the argument
 		inQuotes = false;
-		while (c > ' ' || (c && inQuotes))	// FIXED: Do not break quoted arguments
+		while(c > ' ' || (c && inQuotes)) // FIXED: Do not break quoted arguments
 		{
-			if (c == '"')
+			if(c == '"')
 			{
 				inQuotes = !inQuotes;
 			}
 			lpCmdLine++;
 			c = *lpCmdLine;
 		}
-#else // REHLDS_FIXES
+#else  // REHLDS_FIXES
 		// Skip whitespace and UTF8
-		while (c && (c <= ' ' || c > '~'))
+		while(c && (c <= ' ' || c > '~'))
 		{
 			lpCmdLine++;
 			c = *lpCmdLine;
 		}
-		if (!c)
+		if(!c)
 		{
 			break;
 		}
@@ -290,13 +292,13 @@ void Sys_InitArgv(char *lpCmdLine)
 		host_parms.argc++;
 
 		// Find end of the argument
-		while (c > ' ' && c <= '~')
+		while(c > ' ' && c <= '~')
 		{
 			lpCmdLine++;
 			c = *lpCmdLine;
 		}
 #endif // REHLDS_FIXES
-		if (!c)
+		if(!c)
 		{
 			break;
 		}
@@ -318,47 +320,47 @@ void Sys_InitMemory()
 	int i;
 
 	i = COM_CheckParm("-heapsize");
-	if (i && i < com_argc - 1)
+	if(i && i < com_argc - 1)
 		host_parms.memsize = Q_atoi(com_argv[i + 1]) * 1024;
 
-	if (host_parms.memsize < MINIMUM_WIN_MEMORY)
+	if(host_parms.memsize < MINIMUM_WIN_MEMORY)
 	{
 #ifdef _WIN32
 		MEMORYSTATUS lpBuffer;
 		lpBuffer.dwLength = sizeof(MEMORYSTATUS);
 		GlobalMemoryStatus(&lpBuffer);
 
-		if (lpBuffer.dwTotalPhys)
+		if(lpBuffer.dwTotalPhys)
 		{
-			if (lpBuffer.dwTotalPhys < FIFTEEN_MB)
+			if(lpBuffer.dwTotalPhys < FIFTEEN_MB)
 				Sys_Error("Available memory less than 15MB!!! %i", host_parms.memsize);
 
 			host_parms.memsize = (int)(lpBuffer.dwTotalPhys >> 1);
-			if (host_parms.memsize < MINIMUM_WIN_MEMORY)
+			if(host_parms.memsize < MINIMUM_WIN_MEMORY)
 				host_parms.memsize = MINIMUM_WIN_MEMORY;
 		}
 		else
 			host_parms.memsize = MAXIMUM_WIN_MEMORY;
 
-		if (g_bIsDedicatedServer)
+		if(g_bIsDedicatedServer)
 			host_parms.memsize = DEFAULT_MEMORY;
 #else
 		host_parms.memsize = DEFAULT_MEMORY;
 #endif // _WIN32
 	}
 
-	if (host_parms.memsize > MAXIMUM_DEDICATED_MEMORY)
+	if(host_parms.memsize > MAXIMUM_DEDICATED_MEMORY)
 		host_parms.memsize = MAXIMUM_DEDICATED_MEMORY;
 
-	if (COM_CheckParm("-minmemory"))
+	if(COM_CheckParm("-minmemory"))
 		host_parms.memsize = MINIMUM_WIN_MEMORY;
 #ifdef _WIN32
 	host_parms.membase = (void *)GlobalAlloc(GMEM_FIXED, host_parms.memsize);
 #else
-	host_parms.membase = Mem_Malloc(host_parms.memsize);
+	host_parms.membase     = Mem_Malloc(host_parms.memsize);
 #endif // _WIN32
 
-	if (!host_parms.membase)
+	if(!host_parms.membase)
 		Sys_Error("Unable to allocate %.2f MB\n", (float)host_parms.memsize / (1024.0f * 1024.0f));
 }
 
@@ -379,9 +381,9 @@ void Sys_InitLauncherInterface()
 	//TODO: client-side code
 	Launcher_ConsolePrintf = Legacy_Sys_Printf;
 #else
-	#ifndef SWDS
-		gHasMMXTechnology = TRUE;
-	#endif
+#ifndef SWDS
+	gHasMMXTechnology = TRUE;
+#endif
 
 	Sys_SetupLegacyAPIs();
 #endif // _WIN32
@@ -402,24 +404,24 @@ NOXREF void Sys_ShutdownAuthentication()
 
 void Sys_ShowProgressTicks(char *specialProgressMsg)
 {
-	static bool recursionGuard = false;
-	static int32 numTics = 0;
+	static bool  recursionGuard = false;
+	static int32 numTics        = 0;
 
 	double currentTime;
-	if (!recursionGuard)
+	if(!recursionGuard)
 	{
 		recursionGuard = true;
-		if (COM_CheckParm("-steam"))
+		if(COM_CheckParm("-steam"))
 		{
 			currentTime = Sys_FloatTime();
 
-			if (g_flLastSteamProgressUpdateTime + 2.0 <= currentTime)
+			if(g_flLastSteamProgressUpdateTime + 2.0 <= currentTime)
 			{
 				g_flLastSteamProgressUpdateTime = currentTime;
 				numTics++;
-				if (g_bIsDedicatedServer)
+				if(g_bIsDedicatedServer)
 				{
-					if (g_bMajorMapChange)
+					if(g_bMajorMapChange)
 					{
 						g_bPrintingKeepAliveDots = TRUE;
 						Sys_Printf(".");
@@ -429,14 +431,14 @@ void Sys_ShowProgressTicks(char *specialProgressMsg)
 				}
 				else
 				{
-					int i;
-					int numTicsToPrint = (numTics % 5 + 1);
+					int  i;
+					int  numTicsToPrint = (numTics % 5 + 1);
 					char msg[128];
 
 					Q_strncpy(msg, "Updating game resources", sizeof(msg) - 1);
 					msg[sizeof(msg) - 1] = '\0';
 
-					for (i = 1; i < numTicsToPrint; i++)
+					for(i = 1; i < numTicsToPrint; i++)
 					{
 						Q_strncat(msg, ".", sizeof(msg) - 1);
 						msg[sizeof(msg) - 1] = '\0';
@@ -454,7 +456,7 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 	host_initialized = FALSE;
 
 #ifndef SWDS
-	if (!bIsDedicated)
+	if(!bIsDedicated)
 	{
 		pmainwindow = (HWND *)pwnd;
 #ifdef _WIN32
@@ -484,17 +486,17 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 	Sys_InitLauncherInterface();
 
 #ifndef SWDS
-	if (!GL_SetMode(*pmainwindow, &maindc, &baseRC))
+	if(!GL_SetMode(*pmainwindow, &maindc, &baseRC))
 		return 0;
 #endif // SWDS
 	TraceInit("Host_Init( &host_parms )", "Host_Shutdown()", 0);
 	Host_Init(&host_parms);
-	if (!host_initialized)
+	if(!host_initialized)
 		return 0;
 
 	TraceInit("Sys_InitAuthentication()", "Sys_ShutdownAuthentication()", 0);
 	Sys_InitAuthentication();
-	if (g_bIsDedicatedServer)
+	if(g_bIsDedicatedServer)
 	{
 		Host_InitializeGameDLL();
 		NET_Config(TRUE);
@@ -504,17 +506,17 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 	else
 		ClientDLL_ActivateMouse();
 
-	char MessageText[512];
+	char       MessageText[512];
 	const char en_US[12];
 
 	Q_strcpy(en_US, "en_US.UTF-8");
 	en_US[16] = 0;
 
 	char *cat = setlocale(6, NULL);
-	if (!cat)
+	if(!cat)
 		cat = "c";
 
-	if (Q_stricmp(cat, en_US) )
+	if(Q_stricmp(cat, en_US))
 	{
 		Q_snprintf(MessageText, sizeof(MessageText), "SetLocale('%s') failed. Using '%s'.\nYou may have limited glyph support.\nPlease install '%s' locale.", en_US, cat, en_US);
 		SDL_ShowSimpleMessageBox(0, "Warning", MessageText, *pmainwindow);
@@ -525,13 +527,13 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 
 void Sys_ShutdownGame()
 {
-	if (!g_bIsDedicatedServer)
+	if(!g_bIsDedicatedServer)
 		ClientDLL_DeactivateMouse();
 
 	TraceShutdown("Host_Shutdown()", 0);
 	Host_Shutdown();
 
-	if (g_bIsDedicatedServer)
+	if(g_bIsDedicatedServer)
 		NET_Config(FALSE);
 
 	TraceShutdown("Sys_ShutdownLauncherInterface()", 0);
@@ -546,7 +548,7 @@ void ClearIOStates()
 {
 #ifndef SWDS
 	int i;
-	for (i = 0; i < 256; i++)
+	for(i = 0; i < 256; i++)
 	{
 		Key_Event(i, false);
 	}

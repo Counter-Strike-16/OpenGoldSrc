@@ -25,7 +25,9 @@
 *    version.
 *
 */
+
 #pragma once
+
 #include "rehlds/hookchains.h"
 
 #define MAX_HOOKS_IN_CHAIN 19

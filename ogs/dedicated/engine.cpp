@@ -1,9 +1,12 @@
 //========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
+
+/// @file
+
 #include <stdio.h>
 #ifdef _WIN32
 #include <windows.h>
@@ -14,29 +17,29 @@
 #include <stdlib.h> // exit()
 #endif
 
-#include "dedicated.h"
-#include "dll_state.h"
-#include "enginecallback.h"
-#include "sys_ded.h"
+#include "dedicated.hpp"
+#include "common/dll_state.h"
+#include "enginecallback.hpp"
+#include "sys_ded.hpp"
 
-int			iWait = 0;
-int		fDeferedPause = 0;
+int iWait         = 0;
+int fDeferedPause = 0;
 
-int			gDLLState;		
-int			gDLLStateInfo;
-long		ghMod = 0;
+int  gDLLState;
+int  gDLLStateInfo;
+long ghMod = 0;
 
 static engine_api_t nullapi;
-engine_api_t engineapi = nullapi;
+engine_api_t        engineapi = nullapi;
 
 extern SleepType Sys_Sleep; // setup by sys_ded.cpp
 
-typedef int (*engine_api_func)( int version, int size, struct engine_api_s *api );
+typedef int (*engine_api_func)(int version, int size, struct engine_api_s *api);
 
 #ifdef _WIN32
 // This is a big chunk of uninitialized memory that we reserve for loading blobs into.
 char g_rgchBlob[0x03800000];
-#endif	// _WIN32
+#endif // _WIN32
 
 /*
 ==============
@@ -45,15 +48,15 @@ Eng_LoadFunctions
 Load engine->front end interface, if possible
 ==============
 */
-int Eng_LoadFunctions( long hMod )
+int Eng_LoadFunctions(long hMod)
 {
 	engine_api_func pfnEngineAPI;
-	
-	pfnEngineAPI = ( engine_api_func )Sys_GetProcAddress( hMod, "Sys_EngineAPI"  );
-	if ( !pfnEngineAPI )
+
+	pfnEngineAPI = (engine_api_func)Sys_GetProcAddress(hMod, "Sys_EngineAPI");
+	if(!pfnEngineAPI)
 		return 0;
 
-	if ( !(*pfnEngineAPI)( ENGINE_LAUNCHER_API_VERSION, sizeof( engine_api_t ), &engineapi ) )
+	if(!(*pfnEngineAPI)(ENGINE_LAUNCHER_API_VERSION, sizeof(engine_api_t), &engineapi))
 		return 0;
 
 	// All is okay
@@ -67,14 +70,14 @@ Eng_LoadStubs
 Force NULL interface
 ==============
 */
-void Eng_LoadStubs( void )
+void Eng_LoadStubs(void)
 {
 	// No callbacks in dedicated server since engine should always be loaded.
-	memset( &engineapi, 0, sizeof( engineapi ) );
+	memset(&engineapi, 0, sizeof(engineapi));
 
-	engineapi.version		= ENGINE_LAUNCHER_API_VERSION;
-	engineapi.rendertype	= RENDERTYPE_UNDEFINED;
-	engineapi.size			= sizeof( engine_api_t );
+	engineapi.version    = ENGINE_LAUNCHER_API_VERSION;
+	engineapi.rendertype = RENDERTYPE_UNDEFINED;
+	engineapi.size       = sizeof(engine_api_t);
 }
 
 /*
@@ -86,7 +89,7 @@ Free engine .dll and reset interfaces
 */
 void Eng_Unload(void)
 {
-	if ( ghMod )
+	if(ghMod)
 	{
 		Sys_FreeLibrary(ghMod);
 		ghMod = 0;
@@ -94,8 +97,8 @@ void Eng_Unload(void)
 
 	Eng_LoadStubs();
 
-	gDLLState		= 0;
-	gDLLStateInfo	= 0;
+	gDLLState     = 0;
+	gDLLStateInfo = 0;
 }
 
 /*
@@ -105,9 +108,9 @@ Eng_KillEngine
 Load failure on engine
 ==============
 */
-void Eng_KillEngine( long *phMod )
+void Eng_KillEngine(long *phMod)
 {
-	Sys_FreeLibrary( ghMod );
+	Sys_FreeLibrary(ghMod);
 	ghMod = *phMod = 0;
 
 	Eng_LoadStubs();
@@ -120,92 +123,92 @@ Eng_Load
 Try to load the engine with specified command line, etc. etc. and the specified .dll
 ==============
 */
-int Eng_Load( const char *cmdline, struct exefuncs_s *pef, int memory, void *pmembase, const char *psz, int iSubMode )
+int Eng_Load(const char *cmdline, struct exefuncs_s *pef, int memory, void *pmembase, const char *psz, int iSubMode)
 {
-	char	szLastDLL[ 100 ];
+	char szLastDLL[100];
 	long hMod = (long)NULL;
 
-#if defined( _DEBUG )
+#if defined(_DEBUG)
 	char *p;
 
-	if ( psz && !stricmp( psz, "swds.dll" ) && CheckParm( "-force", &p ) && p )
+	if(psz && !stricmp(psz, "swds.dll") && CheckParm("-force", &p) && p)
 	{
 		psz = p;
 	}
 #endif
 
 	// Are we loading a different engine?
-	if ( psz && ghMod && !strcmp( psz, szLastDLL ) )
+	if(psz && ghMod && !strcmp(psz, szLastDLL))
 	{
 		return 1;
 	}
 
-	if ( ghMod )
+	if(ghMod)
 	{
-		Eng_KillEngine( &hMod );
+		Eng_KillEngine(&hMod);
 	}
-	
-	if ( !psz )
+
+	if(!psz)
 	{
 		hMod = 0;
 		Eng_LoadStubs();
 	}
-	else if ( !ghMod )
+	else if(!ghMod)
 	{
-		hMod = Sys_LoadLibrary( (char *)psz );
-		if ( !hMod )
+		hMod = Sys_LoadLibrary((char *)psz);
+		if(!hMod)
 		{
 			return 0;
 		}
 
 		// Load function table from engine
-		if ( !Eng_LoadFunctions( hMod ) )
+		if(!Eng_LoadFunctions(hMod))
 		{
-			Sys_FreeLibrary( hMod );
+			Sys_FreeLibrary(hMod);
 			Eng_LoadStubs();
 			return 0;
 		}
 
 		// Activate engine
-		Eng_SetState( DLL_ACTIVE );
+		Eng_SetState(DLL_ACTIVE);
 	}
 
-	Eng_SetSubState( iSubMode );
+	Eng_SetSubState(iSubMode);
 
-	snprintf( szLastDLL, sizeof( szLastDLL ), "%s", psz );
+	snprintf(szLastDLL, sizeof(szLastDLL), "%s", psz);
 
-	ghMod		= hMod;
+	ghMod = hMod;
 
-	if ( ghMod )
+	if(ghMod)
 	{
 		static char *szEmpty = "";
 
 		char *p = (char *)cmdline;
-		if ( !p )
+		if(!p)
 		{
 			p = szEmpty;
 		}
 
-		if ( !engineapi.Game_Init( p, (unsigned char *)pmembase, memory, pef, NULL, 1) )
+		if(!engineapi.Game_Init(p, (unsigned char *)pmembase, memory, pef, NULL, 1))
 		{
 			Sys_FreeLibrary(ghMod);
 			ghMod = hMod = 0;
 			return 0;
 		}
-		
-		if ( engineapi.SetStartupMode )
+
+		if(engineapi.SetStartupMode)
 		{
-			engineapi.SetStartupMode( 1 );
-		}
-		
-		if ( engineapi.Host_Frame )
-		{
-			Eng_Frame( 1, 0.05 );
+			engineapi.SetStartupMode(1);
 		}
 
-		if ( engineapi.SetStartupMode )
+		if(engineapi.Host_Frame)
 		{
-			engineapi.SetStartupMode( 0 );
+			Eng_Frame(1, 0.05);
+		}
+
+		if(engineapi.SetStartupMode)
+		{
+			engineapi.SetStartupMode(0);
 		}
 	}
 	return 1;
@@ -218,36 +221,36 @@ Eng_Frame
 Run a frame in the engine, if it's loaded.
 ==============
 */
-int Eng_Frame( int fForce, double time )
+int Eng_Frame(int fForce, double time)
 {
-	if ( ( gDLLState != DLL_ACTIVE ) && !fForce )
+	if((gDLLState != DLL_ACTIVE) && !fForce)
 		return 0;
 
-	if ( gDLLState )
+	if(gDLLState)
 	{
 		gDLLStateInfo = DLL_NORMAL;
 
-		int iState = engineapi.Host_Frame ( (float)time, gDLLState, &gDLLStateInfo ); 
+		int iState = engineapi.Host_Frame((float)time, gDLLState, &gDLLStateInfo);
 
 		// Special Signal
-		if ( gDLLStateInfo != DLL_NORMAL )
+		if(gDLLStateInfo != DLL_NORMAL)
 		{
-			switch (gDLLStateInfo)
+			switch(gDLLStateInfo)
 			{
 			case DLL_QUIT:
 				Eng_Unload();
 #ifdef _WIN32
 				PostQuitMessage(0);
-#else			
-				exit( 0 );
+#else
+				exit(0);
 #endif
 				break;
 			case DLL_RESTART:
 				Eng_Unload();
 #ifdef _WIN32
 				PostQuitMessage(1);
-#else			
-				exit( 1 );
+#else
+				exit(1);
 #endif
 				break;
 			default:
@@ -256,12 +259,12 @@ int Eng_Frame( int fForce, double time )
 		}
 
 		// Are we in our transistion counter?
-		if (iWait)
+		if(iWait)
 		{
 			iWait--;
 
 			// Defer all pauses until we're ready to bring up the launcher
-			if (iState == DLL_PAUSED)
+			if(iState == DLL_PAUSED)
 			{
 				fDeferedPause = 1;
 				Eng_SetState(DLL_ACTIVE);
@@ -269,57 +272,57 @@ int Eng_Frame( int fForce, double time )
 			}
 
 			// Are we done waiting, if so, did someone request a pause?
-			if (!iWait && fDeferedPause)
+			if(!iWait && fDeferedPause)
 			{
 				//force a pause
-				iState = DLL_PAUSED;
-				gDLLState = DLL_ACTIVE; 
+				iState        = DLL_PAUSED;
+				gDLLState     = DLL_ACTIVE;
 				fDeferedPause = 0;
 			}
 		}
 
 		// Are we now in a transistion?
-		if (iState == DLL_TRANS)
+		if(iState == DLL_TRANS)
 		{
 			iState = DLL_ACTIVE;
-			iWait = 5; // Let's wait N frames before we'll allow a pause
+			iWait  = 5; // Let's wait N frames before we'll allow a pause
 			Eng_SetState(DLL_ACTIVE);
 		}
 
 		// Has the state changed?
-		if (iState != gDLLState)
+		if(iState != gDLLState)
 		{
 			Eng_SetState(iState);
 		}
 	}
 
-	if ( gDLLState == DLL_CLOSE || gDLLState == DLL_RESTART)
+	if(gDLLState == DLL_CLOSE || gDLLState == DLL_RESTART)
 	{
 		static int bQuitting = 0;
-		
-		if ( !bQuitting )
+
+		if(!bQuitting)
 		{
 			bQuitting = 1;
-			engineapi.Cbuf_AddText( "killserver\n" );
-			Eng_Frame( 1, 0.05 );
-			Sys_Sleep( 100 );
-			Eng_Frame( 1, 0.05 );
-			Sys_Sleep( 100 );
+			engineapi.Cbuf_AddText("killserver\n");
+			Eng_Frame(1, 0.05);
+			Sys_Sleep(100);
+			Eng_Frame(1, 0.05);
+			Sys_Sleep(100);
 			return gDLLState;
 		}
-		
+
 		Eng_Unload();
 
 #ifdef _WIN32
 		PostQuitMessage(0);
-#else			
-		if ( gDLLState == DLL_RESTART ) 
+#else
+		if(gDLLState == DLL_RESTART)
 		{
-			exit( 1 );
+			exit(1);
 		}
 		else
 		{
-			exit( 0 );
+			exit(0);
 		}
 #endif
 	}
@@ -335,12 +338,12 @@ Eng_SetSubState
 */
 void Eng_SetSubState(int iSubState)
 {
-	if ( !engineapi.GameSetSubState )
+	if(!engineapi.GameSetSubState)
 		return;
 
-	if ( iSubState != ENG_NORMAL )
+	if(iSubState != ENG_NORMAL)
 	{
-		engineapi.GameSetSubState( iSubState );
+		engineapi.GameSetSubState(iSubState);
 	}
 }
 
@@ -354,8 +357,8 @@ void Eng_SetState(int iState)
 {
 	gDLLState = iState;
 
-	if (engineapi.GameSetState)
+	if(engineapi.GameSetState)
 	{
-		engineapi.GameSetState( iState );
+		engineapi.GameSetState(iState);
 	}
 }

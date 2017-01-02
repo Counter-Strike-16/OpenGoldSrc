@@ -32,7 +32,7 @@ CInitTracker g_InitTracker;
 
 CInitTracker::CInitTracker(void)
 {
-	for (int l = 0; l < NUM_LISTS; l++)
+	for(int l = 0; l < NUM_LISTS; l++)
 	{
 		m_Funcs[l].RemoveAll();
 		m_nNumFuncs[l] = 0;
@@ -41,12 +41,12 @@ CInitTracker::CInitTracker(void)
 
 CInitTracker::~CInitTracker(void)
 {
-	for (int l = 0; l < NUM_LISTS; l++)
+	for(int l = 0; l < NUM_LISTS; l++)
 	{
-		for (int i = 0; i < m_nNumFuncs[l]; i++)
+		for(int i = 0; i < m_nNumFuncs[l]; i++)
 		{
 			InitFunc *f = m_Funcs[l][i];
-			if (f->referencecount)
+			if(f->referencecount)
 			{
 				Sys_Printf("Missing shutdown function for %s : %s\n", f->initname, f->shutdownname);
 			}
@@ -61,12 +61,12 @@ void CInitTracker::Init(const char *init, const char *shutdown, int listnum)
 {
 	InitFunc *f = new InitFunc;
 
-	f->initname = init;
-	f->shutdownname = shutdown;
-	f->inittime = 0.0f;
+	f->initname       = init;
+	f->shutdownname   = shutdown;
+	f->inittime       = 0.0f;
 	f->referencecount = 1;
-	f->shutdowntime = 0.0f;
-	f->sequence = m_nNumFuncs[listnum];
+	f->shutdowntime   = 0.0f;
+	f->sequence       = m_nNumFuncs[listnum];
 	f->warningprinted = false;
 
 	m_Funcs[listnum].AddToHead(f);
@@ -75,29 +75,29 @@ void CInitTracker::Init(const char *init, const char *shutdown, int listnum)
 
 void CInitTracker::Shutdown(const char *shutdown, int listnum)
 {
-	int i = 0;
+	int       i = 0;
 	InitFunc *f = NULL;
 
-	if (!m_nNumFuncs[listnum])
+	if(!m_nNumFuncs[listnum])
 	{
 		Sys_Printf("Mismatched shutdown function %s\n", shutdown);
 		return;
 	}
-	for (i = 0; i < m_nNumFuncs[listnum]; i++)
+	for(i = 0; i < m_nNumFuncs[listnum]; i++)
 	{
 		f = m_Funcs[listnum][i];
-		if (f->referencecount)
+		if(f->referencecount)
 			break;
 	}
-	if (f && f->referencecount && Q_stricmp(f->shutdownname, shutdown))
+	if(f && f->referencecount && Q_stricmp(f->shutdownname, shutdown))
 	{
-		if (!f->warningprinted)
+		if(!f->warningprinted)
 			f->warningprinted = true;
 	}
-	for (i = 0; i < m_nNumFuncs[listnum]; i++)
+	for(i = 0; i < m_nNumFuncs[listnum]; i++)
 	{
 		InitFunc *f = m_Funcs[listnum][i];
-		if (!Q_stricmp(f->shutdownname, shutdown))
+		if(!Q_stricmp(f->shutdownname, shutdown))
 		{
 			f->referencecount--;
 			return;

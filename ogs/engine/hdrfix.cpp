@@ -4,27 +4,23 @@
 
 //#include "client/enginevgui.h"
 
-// #include "graphics/draw.h"
-// #include "graphics/gl_model.h"
+//#include "graphics/gl_model.h"
 // #include "graphics/glquake.h"
-// #include "graphics/vid.h"
 // #include "graphics/vid_null.h"
 // #include "graphics/draw/d_iface.h"
 // #include "graphics/draw/d_ifacea.h"
 // #include "graphics/draw/d_local.h"
-// #include "graphics/render/r_local.h"
-// #include "graphics/render/r_shared.h"
+//#include "graphics/render/r_local.h"
+#include "graphics/render/r_shared.h"
 // #include "graphics/render/render.h"
 
 //#include "math/mathlib_e.h"
 
 //#include "network/delta_jit.h"
-//#include "network/ipratelimit.h"
 
 //#include "resources/studio_rehlds.h"
 
 //#include "server/sv_steam3.h"
-//#include "server/sv_user.h"
 
 // #include "system/quakedef.h"
 // #include "system/sys.h"
