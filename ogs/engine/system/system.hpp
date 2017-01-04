@@ -45,17 +45,17 @@
 
 //#include "engine_launcher_api.h"
 
-#if defined(_WIN32) && !defined(__MINGW32__)
-#define NOXREFCHECK       \
-	__asm { push [ebp + 4]} \
-	Sys_Error(__FUNCTION__ " NOXREF, but called from 0x%.08x")
-#else
-#define NOXREFCHECK \
-	int *a = 0;     \
-	*a     = 0
-#endif
+// clang-format off
 
-const int MAX_DISCONNECT_REASON = 256;
+#if defined(_WIN32) && !defined(__MINGW32__)
+	#define NOXREFCHECK       \
+		__asm { push [ebp + 4]} \
+		Sys_Error(__FUNCTION__ " NOXREF, but called from 0x%.08x")
+#else
+	#define NOXREFCHECK \
+		int *a = 0;     \
+		*a     = 0
+#endif
 
 #define FIFTEEN_MB (15 * 1024 * 1024)
 #define MINIMUM_WIN_MEMORY 0x0e00000
@@ -65,43 +65,51 @@ const int MAX_DISCONNECT_REASON = 256;
 #define DEFAULT_MEMORY 0x2800000
 
 #ifdef HOOK_ENGINE
-#define g_hfind (*pg_hfind)
-
-#define g_engfuncsExportedToDlls (*pg_engfuncsExportedToDlls)
-
-#define gszDisconnectReason (*pgszDisconnectReason)
-#define gszExtendedDisconnectReason (*pgszExtendedDisconnectReason)
-#define gfExtendedError (*pgfExtendedError)
-#define g_bIsDedicatedServer (*pg_bIsDedicatedServer)
-#define giSubState (*pgiSubState)
-#define giActive (*pgiActive)
-#define giStateInfo (*pgiStateInfo)
-#define gEntityInterface (*pgEntityInterface)
-#define gNewDLLFunctions (*pgNewDLLFunctions)
-#define g_modfuncs (*pg_modfuncs)
-#define g_rgextdll (*pg_rgextdll)
-#define g_iextdllMac (*pg_iextdllMac)
-#define gmodinfo (*pgmodinfo)
-#define gfBackground (*pgfBackground)
-
+	#define g_hfind (*pg_hfind)
+	
+	#define g_engfuncsExportedToDlls (*pg_engfuncsExportedToDlls)
+	
+	#define gszDisconnectReason (*pgszDisconnectReason)
+	#define gszExtendedDisconnectReason (*pgszExtendedDisconnectReason)
+	#define gfExtendedError (*pgfExtendedError)
+	#define g_bIsDedicatedServer (*pg_bIsDedicatedServer)
+	#define giSubState (*pgiSubState)
+	#define giActive (*pgiActive)
+	#define giStateInfo (*pgiStateInfo)
+	#define gEntityInterface (*pgEntityInterface)
+	#define gNewDLLFunctions (*pgNewDLLFunctions)
+	#define g_modfuncs (*pg_modfuncs)
+	#define g_rgextdll (*pg_rgextdll)
+	#define g_iextdllMac (*pg_iextdllMac)
+	#define gmodinfo (*pgmodinfo)
+	#define gfBackground (*pgfBackground)
+	
 #ifndef _WIN32
-#define gHasMMXTechnology (*pgHasMMXTechnology)
+	#define gHasMMXTechnology (*pgHasMMXTechnology)
 #endif
-
-#define con_debuglog (*pcon_debuglog)
-#define g_bPrintingKeepAliveDots (*pg_bPrintingKeepAliveDots)
-#define Launcher_ConsolePrintf (*pLauncher_ConsolePrintf)
+	
+	#define con_debuglog (*pcon_debuglog)
+	#define g_bPrintingKeepAliveDots (*pg_bPrintingKeepAliveDots)
+	#define Launcher_ConsolePrintf (*pLauncher_ConsolePrintf)
 #endif // HOOK_ENGINE
 
 #ifdef HOOK_ENGINE
-#define dedicated_ (*pdedicated)
-#define g_bIsWin95 (*pg_bIsWin95)
-#define g_bIsWin98 (*pg_bIsWin98)
-#define g_flLastSteamProgressUpdateTime (*pg_flLastSteamProgressUpdateTime)
-#define szCommonPreloads (*pszCommonPreloads)
-#define szReslistsBaseDir (*pszReslistsBaseDir)
-#define szReslistsExt (*pszReslistsExt)
+	#define dedicated_ (*pdedicated)
+	
+	#define g_bIsWin95 (*pg_bIsWin95)
+	#define g_bIsWin98 (*pg_bIsWin98)
+	
+	#define g_flLastSteamProgressUpdateTime (*pg_flLastSteamProgressUpdateTime)
+	
+	#define szCommonPreloads (*pszCommonPreloads)
+	
+	#define szReslistsBaseDir (*pszReslistsBaseDir)
+	#define szReslistsExt (*pszReslistsExt)
 #endif
+
+// clang-format on
+
+const int MAX_DISCONNECT_REASON = 256;
 
 typedef struct modinfo_s modinfo_t;
 
@@ -109,10 +117,12 @@ class IEngineAPI;
 
 extern qboolean g_bIsWin95;
 extern qboolean g_bIsWin98;
+
 extern double   g_flLastSteamProgressUpdateTime;
-extern char *   szCommonPreloads;
-extern char *   szReslistsBaseDir;
-extern char *   szReslistsExt;
+
+extern char *szCommonPreloads;
+extern char *szReslistsBaseDir;
+extern char *szReslistsExt;
 
 extern FileFindHandle_t g_hfind;
 extern enginefuncs_t    g_engfuncsExportedToDlls;
@@ -138,6 +148,7 @@ extern qboolean  gfBackground;
 #ifndef _WIN32
 extern qboolean gHasMMXTechnology;
 #endif
+
 extern qboolean g_bPrintingKeepAliveDots;
 
 extern qboolean con_debuglog;
@@ -215,9 +226,6 @@ void GameSetSubState(int iSubState);
 void GameSetState(int iState);
 NOBODY void GameSetBackground(qboolean bNewSetting);
 
-qboolean Voice_GetClientListening(int iReceiver, int iSender);
-qboolean Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen);
-
 DISPATCHFUNCTION GetDispatch(char *pname);
 
 const char *FindAddressInTable(extensiondll_t *pDll, uint32 function);
@@ -246,8 +254,6 @@ const char *GetCurrentSteamAppName();
 NOXREF void SetRateRegistrySetting(const char *pchRate);
 
 NOXREF const char *GetRateRegistrySetting(const char *pchDef);
-
-void EXPORT F(IEngineAPI **api);
 
 void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated);
 

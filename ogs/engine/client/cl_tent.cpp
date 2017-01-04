@@ -29,7 +29,7 @@
 /// @file
 /// @brief client side temporary entities
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "client/client.hpp"
 
 #define MAX_BEAMS 8

@@ -34,7 +34,7 @@
 #include "IEngineVGui.h"
 
 /// Enumeration of level loading progress bar spots
-enum LevelLoadingProgress_e
+enum eLevelLoadingProgress
 {
 	PROGRESS_NONE = 0,
 	PROGRESS_CHANGELEVEL,               /// Server is changing level

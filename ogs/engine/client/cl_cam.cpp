@@ -37,7 +37,7 @@
  * Player moves as a spectator, but the camera tracks and enemy player
  */
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "client/client.hpp"
 
 #define PM_SPECTATORMAXSPEED 500

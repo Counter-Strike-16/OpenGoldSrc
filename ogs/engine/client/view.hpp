@@ -31,6 +31,8 @@
 
 #pragma once
 
+#include "common/commontypes.h"
+
 extern cvar_t v_gamma;
 extern cvar_t lcd_x;
 #ifdef GLQUAKE

@@ -33,6 +33,7 @@
 #include "maintypes.h"
 
 typedef struct sizebuf_s sizebuf_t;
+typedef struct usercmd_s usercmd_t;
 
 void COM_BitOpsInit();
 

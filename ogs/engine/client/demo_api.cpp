@@ -28,11 +28,12 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "client/demo_api.hpp"
 
 namespace
 {
+
 int DemoAPI_IsRecording()
 {
 	return 0;
@@ -48,7 +49,9 @@ int DemoAPI_IsTimeDemo()
 	return 0;
 };
 
-void DemoAPI_WriteBuffer(int size, unsigned char *buffer){};
+void DemoAPI_WriteBuffer(int size, unsigned char *buffer)
+{
+};
 
 }; // namespace
 

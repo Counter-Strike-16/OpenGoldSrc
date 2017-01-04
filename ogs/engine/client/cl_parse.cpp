@@ -29,7 +29,7 @@
 /// @file
 /// @brief parse a message received from the server
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "client/client.hpp"
 
 char *svc_strings[] =

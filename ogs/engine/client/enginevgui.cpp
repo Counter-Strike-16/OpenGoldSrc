@@ -28,7 +28,7 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "client/enginevgui.hpp"
 
 IGameUI *     gpGameUI      = nullptr;

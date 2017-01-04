@@ -119,9 +119,6 @@ extern cache_user_t * loadcache;
 extern unsigned char *loadbuf;
 extern int            loadsize;
 
-typedef struct sizebuf_s sizebuf_t;
-typedef struct usercmd_s usercmd_t;
-
 //#define Q_functions
 #ifndef Q_functions
 
@@ -231,12 +228,6 @@ short ShortNoSwap(short l);
 int LongNoSwap(int l);
 float FloatSwap(float f);
 float FloatNoSwap(float f);
-
-void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize);
-void SZ_Clear(sizebuf_t *buf);
-void *SZ_GetSpace(sizebuf_t *buf, int length);
-void SZ_Write(sizebuf_t *buf, const void *data, int length);
-void SZ_Print(sizebuf_t *buf, const char *data);
 
 NOXREF char *COM_SkipPath(char *pathname);
 void COM_StripExtension(char *in, char *out);

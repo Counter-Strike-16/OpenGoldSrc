@@ -28,7 +28,7 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "console/cvar.hpp"
 #include "console/cmd.hpp"
 #include "console/console.hpp"
@@ -70,17 +70,18 @@ void Cvar_Shutdown()
 
 cvar_t *Cvar_FindVar(const char *var_name)
 {
-	cvar_t *var;
-
 #ifndef SWDS
 	g_engdstAddrs->pfnGetCvarPointer(&var_name);
 #endif
-
+	
+	cvar_t *var = NULL;
+	
 	for(var = cvar_vars; var; var = var->next)
 	{
 		if(!Q_stricmp(var_name, var->name))
 			break;
-	}
+	};
+	
 	return var;
 }
 
@@ -94,18 +95,17 @@ NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 	{
 		if(!Q_stricmp(var_name, var->next->name))
 			return var;
-	}
+	};
+	
 	return NULL;
-}
+};
 
 float Cvar_VariableValue(const char *var_name)
 {
 	cvar_t *var = Cvar_FindVar(var_name);
 
 	if(var)
-	{
 		return (float)Q_atof(var->string);
-	}
 
 	return 0.0f;
 }
@@ -117,9 +117,7 @@ NOXREF int Cvar_VariableInt(const char *var_name)
 	cvar_t *var = Cvar_FindVar(var_name);
 
 	if(var)
-	{
 		return Q_atoi(var->string);
-	}
 
 	return 0;
 }
@@ -129,9 +127,7 @@ char *Cvar_VariableString(const char *var_name)
 	cvar_t *var = Cvar_FindVar(var_name);
 
 	if(var)
-	{
 		return var->string;
-	}
 
 	return cvar_null_string;
 }
@@ -158,9 +154,7 @@ NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 	}
 
 	if(!len)
-	{
 		return NULL;
-	}
 
 	if(!Q_stricmp(partial, lastpartial))
 	{
@@ -197,9 +191,7 @@ NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 {
 	if(!var || !value)
-	{
 		return;
-	}
 
 	const char *pszValue = value;
 	char        szNew[MAX_CVAR_VALUE];
@@ -739,9 +731,7 @@ void Cvar_UnlinkExternals()
 			*pList = pVar->next;
 		}
 		else
-		{
 			pList = &pVar->next;
-		}
 
 		pVar = *pList;
 	}

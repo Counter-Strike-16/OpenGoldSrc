@@ -28,11 +28,14 @@
 
 #include "precompiled.hpp"
 #include "system/system.hpp"
+#include "voice/voice.hpp"
 
 void (*Launcher_ConsolePrintf)(char *, ...);
 char *(*Launcher_GetLocalizedString)(unsigned int);
+
 int (*Launcher_MP3subsys_Suspend_Audio)();
 void (*Launcher_MP3subsys_Resume_Audio)();
+
 void (*VID_FlipScreen)();
 
 //double curtime;
@@ -56,6 +59,7 @@ qboolean gfExtendedError;
 int               giSubState;
 int               giActive;
 int               giStateInfo;
+
 DLL_FUNCTIONS     gEntityInterface;
 NEW_DLL_FUNCTIONS gNewDLLFunctions;
 
@@ -623,13 +627,9 @@ void Dispatch_Substate(int iSubState)
 void GameSetSubState(int iSubState)
 {
 	if(iSubState & 2)
-	{
 		Dispatch_Substate(1);
-	}
 	else if(iSubState != 1)
-	{
 		Dispatch_Substate(iSubState);
-	}
 }
 
 void GameSetState(int iState)
@@ -641,58 +641,19 @@ NOBODY void GameSetBackground(qboolean bNewSetting);
 //{
 //}
 
-qboolean EXT_FUNC Voice_GetClientListening(int iReceiver, int iSender)
-{
-	--iReceiver;
-	--iSender;
-
-	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
-		return 0;
-
-#ifdef REHLDS_FIXES
-	return (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] & (1 << iReceiver)) != 0;
-#else  // REHLDS_FIXES
-	return (1 << iReceiver) & (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] != 0);
-#endif // REHLDS_FIXES
-}
-
-qboolean EXT_FUNC Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen)
-{
-	--iReceiver;
-	--iSender;
-
-	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
-		return 0;
-
-	uint32 *pDest = g_psvs.clients[iSender].m_VoiceStreams;
-	if(bListen)
-	{
-		pDest[iReceiver >> 5] |= 1 << iReceiver;
-	}
-	else
-	{
-		pDest[iReceiver >> 5] &= ~(1 << iReceiver);
-	}
-
-	return 1;
-}
-
 DISPATCHFUNCTION GetDispatch(char *pname)
 {
-	int              i;
 	DISPATCHFUNCTION pDispatch;
 
-	for(i = 0; i < g_iextdllMac; i++)
+	for(int i = 0; i < g_iextdllMac; i++)
 	{
 		pDispatch = (DISPATCHFUNCTION)GetProcAddress((HMODULE)g_rgextdll[i].lDLLHandle, pname);
 		if(pDispatch)
-		{
 			return pDispatch;
-		}
-	}
+	};
 
 	return NULL;
-}
+};
 
 const char *FindAddressInTable(extensiondll_t *pDll, uint32 function)
 {
@@ -779,76 +740,6 @@ ENTITYINIT GetEntityInit(char *pClassName)
 FIELDIOFUNCTION GetIOFunction(char *pName)
 {
 	return (FIELDIOFUNCTION)GetDispatch(pName);
-}
-
-void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue)
-{
-	if(!Q_stricmp(pkey, "url_info"))
-	{
-		pinfo->bIsMod = 1;
-		Q_strncpy(pinfo->szInfo, pvalue, sizeof(pinfo->szInfo) - 1);
-		pinfo->szInfo[sizeof(pinfo->szInfo) - 1] = 0;
-	}
-	else if(!Q_stricmp(pkey, "url_dl"))
-	{
-		pinfo->bIsMod = 1;
-		Q_strncpy(pinfo->szDL, pvalue, sizeof(pinfo->szDL) - 1);
-		pinfo->szDL[sizeof(pinfo->szDL) - 1] = 0;
-	}
-	else if(!Q_stricmp(pkey, "version"))
-	{
-		pinfo->bIsMod  = 1;
-		pinfo->version = Q_atoi(pvalue);
-	}
-	else if(!Q_stricmp(pkey, "size"))
-	{
-		pinfo->bIsMod = 1;
-		pinfo->size   = Q_atoi(pvalue);
-	}
-	else if(!Q_stricmp(pkey, "svonly"))
-	{
-		pinfo->bIsMod = 1;
-		pinfo->svonly = Q_atoi(pvalue) != 0;
-	}
-	else if(!Q_stricmp(pkey, "cldll"))
-	{
-		pinfo->bIsMod = 1;
-		pinfo->cldll  = Q_atoi(pvalue) != 0;
-	}
-	else if(!Q_stricmp(pkey, "secure"))
-	{
-		pinfo->bIsMod = 1;
-		pinfo->secure = Q_atoi(pvalue) != 0;
-	}
-	else if(!Q_stricmp(pkey, "hlversion"))
-	{
-		Q_strncpy(pinfo->szHLVersion, pvalue, sizeof(pinfo->szHLVersion) - 1);
-		pinfo->szHLVersion[sizeof(pinfo->szHLVersion) - 1] = 0;
-	}
-	else if(!Q_stricmp(pkey, "edicts"))
-	{
-		pinfo->num_edicts = Q_atoi(pvalue);
-		if(pinfo->num_edicts < NUM_EDICTS)
-			pinfo->num_edicts = NUM_EDICTS;
-	}
-	else if(!Q_stricmp(pkey, "crcclientdll"))
-	{
-		pinfo->bIsMod       = 1;
-		pinfo->clientDllCRC = Q_atoi(pvalue) != 0;
-	}
-	else if(!Q_stricmp(pkey, "type"))
-	{
-		if(!Q_stricmp(pvalue, "singleplayer_only"))
-			pinfo->type = SINGLEPLAYER_ONLY;
-		else if(!Q_stricmp(pvalue, "multiplayer_only"))
-			pinfo->type = MULTIPLAYER_ONLY;
-		else
-			pinfo->type = BOTH;
-	}
-	else if(!Q_stricmp(pkey, "fallback_dir"))
-	{
-		COM_AddDefaultDir(pvalue);
-	}
 }
 
 void LoadEntityDLLs(const char *szBaseDir)

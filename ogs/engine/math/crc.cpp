@@ -28,7 +28,8 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "common/crc.h"
 
 static const uint32 pulCRCTable[256] =
     {

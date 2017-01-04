@@ -28,7 +28,7 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "client/client.hpp"
 
 #ifdef _WIN32

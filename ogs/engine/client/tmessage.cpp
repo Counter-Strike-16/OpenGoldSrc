@@ -28,7 +28,7 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "client/tmessage.hpp"
 #include "system/common.hpp"
 #include "console/console.hpp"

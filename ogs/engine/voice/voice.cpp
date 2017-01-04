@@ -28,7 +28,7 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "voice/voice.hpp"
 
 qboolean Voice_RecordStart(const char *pUncompressedFile, const char *pDecompressedFile, const char *pMicInputFile)
@@ -56,4 +56,39 @@ void Voice_Idle(float frametime)
 qboolean Voice_RecordStop()
 {
 	return TRUE;
+};
+
+// voiceserver?
+
+qboolean EXT_FUNC Voice_GetClientListening(int iReceiver, int iSender)
+{
+	--iReceiver;
+	--iSender;
+
+	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
+		return 0;
+
+#ifdef REHLDS_FIXES
+	return (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] & (1 << iReceiver)) != 0;
+#else  // REHLDS_FIXES
+	return (1 << iReceiver) & (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] != 0);
+#endif // REHLDS_FIXES
+}
+
+qboolean EXT_FUNC Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen)
+{
+	--iReceiver;
+	--iSender;
+
+	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
+		return 0;
+
+	uint32 *pDest = g_psvs.clients[iSender].m_VoiceStreams;
+	
+	if(bListen)
+		pDest[iReceiver >> 5] |= 1 << iReceiver;
+	else
+		pDest[iReceiver >> 5] &= ~(1 << iReceiver);
+
+	return 1;
 };

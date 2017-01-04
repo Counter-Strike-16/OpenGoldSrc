@@ -134,7 +134,7 @@ NOXREF void Host_EndGame(const char *message, ...);
 
 void __declspec(noreturn) Host_Error(const char *error, ...);
 
-void        Host_InitLocal();
+void Host_InitLocal();
 
 NOBODY void Info_WriteVars(FileHandle_t fp);
 
@@ -161,17 +161,17 @@ void Host_CheckConnectionFailure();
 void _Host_Frame(float time);
 int Host_Frame(float time, int iState, int *stateInfo);
 
-void     CheckGore();
+void CheckGore();
 
 qboolean Host_IsSinglePlayerGame();
 qboolean Host_IsServerActive();
 
-void     Host_Version();
+void Host_Version();
 
 int Host_Init(quakeparms_t *parms);
 void Host_Shutdown();
 
-int      GetGameAppID();
+int GetGameAppID();
 
 qboolean IsGameSubscribed(const char *gameName);
 NOXREF qboolean BIsValveGame();

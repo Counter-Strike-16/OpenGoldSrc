@@ -28,7 +28,7 @@
  
  /// @file
  
- #include "precompiled.hpp"
+ //#include "precompiled.hpp"
  #include "console/cmd.hpp"
  
  sizebuf_t cmd_text;

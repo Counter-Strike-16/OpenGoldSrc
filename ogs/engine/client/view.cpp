@@ -29,7 +29,8 @@
 /// @file
 /// @brief player eye positioning
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "client/view.hpp"
 #include "quakedef.hpp"
 #include "r_local.hpp"
 
@@ -117,7 +118,7 @@ V_CalcBob
 
 ===============
 */
-float V_CalcBob(void)
+float V_CalcBob()
 {
 	static double bobtime;
 	static float  bob;
@@ -154,7 +155,7 @@ float V_CalcBob(void)
 cvar_t v_centermove  = {"v_centermove", "0.15", false};
 cvar_t v_centerspeed = {"v_centerspeed", "500"};
 
-void V_StartPitchDrift(void)
+void V_StartPitchDrift()
 {
 #if 1
 	if(cl.laststop == cl.time)
@@ -170,7 +171,7 @@ void V_StartPitchDrift(void)
 	}
 }
 
-void V_StopPitchDrift(void)
+void V_StopPitchDrift()
 {
 	cl.laststop = cl.time;
 	cl.nodrift  = true;
@@ -190,7 +191,7 @@ Drifting is enabled when the center view key is hit, mlook is released and
 lookspring is non 0, or when 
 ===============
 */
-void V_DriftPitch(void)
+void V_DriftPitch()
 {
 	float delta, move;
 
@@ -298,12 +299,13 @@ void BuildGammaTable(float g)
 V_CheckGamma
 =================
 */
-qboolean V_CheckGamma(void)
+qboolean V_CheckGamma()
 {
 	static float oldgammavalue;
 
 	if(v_gamma.value == oldgammavalue)
 		return false;
+	
 	oldgammavalue = v_gamma.value;
 
 	BuildGammaTable(v_gamma.value);
@@ -317,7 +319,7 @@ qboolean V_CheckGamma(void)
 V_ParseDamage
 ===============
 */
-void V_ParseDamage(void)
+void V_ParseDamage()
 {
 	// Deprecated
 
@@ -386,7 +388,7 @@ void V_ParseDamage(void)
 V_cshift_f
 ==================
 */
-void V_cshift_f(void)
+void V_cshift_f()
 {
 	cshift_empty.destcolor[0] = atoi(Cmd_Argv(1));
 	cshift_empty.destcolor[1] = atoi(Cmd_Argv(2));
@@ -401,7 +403,7 @@ V_BonusFlash_f
 When you run over an item, the server sends this command
 ==================
 */
-void V_BonusFlash_f(void)
+void V_BonusFlash_f()
 {
 	cl.cshifts[CSHIFT_BONUS].destcolor[0] = 215;
 	cl.cshifts[CSHIFT_BONUS].destcolor[1] = 186;
@@ -446,7 +448,7 @@ void V_SetContentsColor(int contents)
 V_CalcPowerupCshift
 =============
 */
-void V_CalcPowerupCshift(void)
+void V_CalcPowerupCshift()
 {
 	if(cl.stats[STAT_ITEMS] & IT_QUAD)
 	{
@@ -486,7 +488,7 @@ V_CalcBlend
 =============
 */
 #ifdef GLQUAKE
-void V_CalcBlend(void)
+void V_CalcBlend()
 {
 	float r, g, b, a, a2;
 	int   j;
@@ -531,7 +533,7 @@ V_UpdatePalette
 =============
 */
 #ifdef GLQUAKE
-void V_UpdatePalette(void)
+void V_UpdatePalette()
 {
 	int i, j;
 	qboolean new;
@@ -625,10 +627,10 @@ void V_UpdatePalette(void)
 V_UpdatePalette
 =============
 */
-void V_UpdatePalette(void)
+void V_UpdatePalette()
 {
 	int i, j;
-	qboolean new;
+	qboolean bnew;
 	byte *   basepal, *newpal;
 	byte     pal[768];
 	int      r, g, b;
@@ -636,19 +638,19 @@ void V_UpdatePalette(void)
 
 	V_CalcPowerupCshift();
 
-	new = false;
+	bnew = false;
 
 	for(i = 0; i < NUM_CSHIFTS; i++)
 	{
 		if(cl.cshifts[i].percent != cl.prev_cshifts[i].percent)
 		{
-			new                        = true;
+			bnew                        = true;
 			cl.prev_cshifts[i].percent = cl.cshifts[i].percent;
 		}
 		for(j = 0; j < 3; j++)
 			if(cl.cshifts[i].destcolor[j] != cl.prev_cshifts[i].destcolor[j])
 			{
-				new                             = true;
+				bnew                             = true;
 				cl.prev_cshifts[i].destcolor[j] = cl.cshifts[i].destcolor[j];
 			}
 	}
@@ -664,7 +666,7 @@ void V_UpdatePalette(void)
 		cl.cshifts[CSHIFT_BONUS].percent = 0;
 
 	force = V_CheckGamma();
-	if(!new && !force)
+	if(!bnew && !force)
 		return;
 
 	basepal = host_basepal;
@@ -716,7 +718,7 @@ float angledelta(float a)
 CalcGunAngle
 ==================
 */
-void CalcGunAngle(void)
+void CalcGunAngle()
 {
 	float        yaw, pitch, move;
 	static float oldyaw   = 0;
@@ -770,7 +772,7 @@ void CalcGunAngle(void)
 V_BoundOffsets
 ==============
 */
-void V_BoundOffsets(void)
+void V_BoundOffsets()
 {
 	// absolutely bound refresh reletive to entity clipping hull
 	// so the view can never be inside a solid wall
@@ -796,7 +798,7 @@ V_AddIdle
 Idle swaying
 ==============
 */
-void V_AddIdle(void)
+void V_AddIdle()
 {
 	r_refdef.viewangles[ROLL] += v_idlescale.value * sin(cl.time * v_iroll_cycle.value) * v_iroll_level.value;
 	r_refdef.viewangles[PITCH] += v_idlescale.value * sin(cl.time * v_ipitch_cycle.value) * v_ipitch_level.value;
@@ -814,7 +816,7 @@ V_CalcViewRoll
 Roll is induced by movement and damage
 ==============
 */
-void V_CalcViewRoll(void)
+void V_CalcViewRoll()
 {
 	float side;
 
@@ -835,9 +837,9 @@ V_CalcIntermissionRefdef
 
 ==================
 */
-void V_CalcIntermissionRefdef(void)
+void V_CalcIntermissionRefdef()
 {
-	entity_t *view;
+	cl_entity_t *view;
 	float     old;
 
 	// view is the weapon model
@@ -860,9 +862,9 @@ V_CalcRefdef
 
 ==================
 */
-void V_CalcRefdef(void)
+void V_CalcRefdef()
 {
-	entity_t *   view;
+	cl_entity_t *   view;
 	int          i;
 	vec3_t       forward, right, up;
 	float        bob;
@@ -965,7 +967,7 @@ void V_CalcRefdef(void)
 DropPunchAngle
 =============
 */
-void DropPunchAngle(void)
+void DropPunchAngle()
 {
 	cl.punchangle -= 10 * host_frametime;
 	if(cl.punchangle < 0)
@@ -982,7 +984,7 @@ the entity origin, so any view position inside that will be valid
 */
 extern vrect_t scr_vrect;
 
-void V_RenderView(void)
+void V_RenderView()
 {
 	//	if (cl.simangles[ROLL])
 	//		Sys_Error ("cl.simangles[ROLL]");	// DEBUG
@@ -1000,9 +1002,7 @@ void V_RenderView(void)
 		V_CalcIntermissionRefdef();
 	}
 	else
-	{
 		V_CalcRefdef();
-	}
 
 	R_PushDlights();
 	R_RenderView();
@@ -1020,7 +1020,7 @@ void V_RenderView(void)
 V_Init
 =============
 */
-void V_Init(void)
+void V_Init()
 {
 	Cmd_AddCommand("v_cshift", V_cshift_f);
 	Cmd_AddCommand("bf", V_BonusFlash_f);
@@ -1057,6 +1057,6 @@ void V_Init(void)
 	Cvar_RegisterVariable(&v_kickroll);
 	Cvar_RegisterVariable(&v_kickpitch);
 
-	BuildGammaTable(1.0); // no gamma yet
+	BuildGammaTable(1.0f); // no gamma yet
 	Cvar_RegisterVariable(&v_gamma);
 }

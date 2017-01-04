@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,26 +28,14 @@
 
 /// @file
 
-// Same interface as in Source, used to start the engine as local host (server + client)
-// Older versions of GoldSrc are using C interfaces for these purposes (?) (look at dedicated
-// server launcher in 2.3 SDK)
-
 #pragma once
 
-#include "common/commontypes.h"
-#include "engine_launcher_api.h"
+typedef struct sizebuf_s sizebuf_t;
 
-class CEngineAPI : public IEngineAPI
-{
-public:
-	int Run(void *instance,
-			
-	        char *basedir,
-	        char *cmdline,
-	        char *postRestartCmdLineArgs,
-			
-	        CreateInterfaceFn launcherFactory,
-	        CreateInterfaceFn filesystemFactory);
-};
+void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize);
+void SZ_Clear(sizebuf_t *buf);
 
-void EXPORT F(IEngineAPI **api);
+void *SZ_GetSpace(sizebuf_t *buf, int length);
+
+void SZ_Write(sizebuf_t *buf, const void *data, int length);
+void SZ_Print(sizebuf_t *buf, const char *data);

@@ -28,7 +28,7 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "console/console.hpp"
 #include "input/keys.hpp"
 #include "client/client.hpp"
@@ -125,11 +125,9 @@ Con_ClearNotify
 */
 void Con_ClearNotify()
 {
-	int i;
-
-	for(i            = 0; i < NUM_CON_TIMES; i++)
+	for(int i = 0; i < NUM_CON_TIMES; i++)
 		con_times[i] = 0;
-}
+};
 
 /*
 ================
@@ -140,7 +138,7 @@ void Con_MessageMode_f()
 {
 	chat_team = false;
 	key_dest  = key_message;
-}
+};
 
 /*
 ================
@@ -151,7 +149,7 @@ void Con_MessageMode2_f()
 {
 	chat_team = true;
 	key_dest  = key_message;
-}
+};
 
 void Con_Debug_f()
 {
@@ -165,7 +163,7 @@ void Con_Debug_f()
 		con_debuglog = TRUE;
 		Con_Printf("condebug enabled\n");
 	};
-}
+};
 
 /*
 ================
