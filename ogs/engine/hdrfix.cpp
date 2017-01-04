@@ -2,31 +2,31 @@
 // STAGE #1
 //======================================
 
-//#include "client/enginevgui.h"
+//#include "client/enginevgui.hpp"
 
-//#include "graphics/gl_model.h"
-// #include "graphics/glquake.h"
-// #include "graphics/vid_null.h"
-// #include "graphics/draw/d_iface.h"
-// #include "graphics/draw/d_ifacea.h"
-// #include "graphics/draw/d_local.h"
-//#include "graphics/render/r_local.h"
-#include "graphics/render/r_shared.h"
-// #include "graphics/render/render.h"
+//#include "graphics/gl_model.hpp"
+// #include "graphics/glquake.hpp"
+// #include "graphics/vid_null.hpp"
+// #include "graphics/draw/d_iface.hpp"
+// #include "graphics/draw/d_ifacea.hpp"
+// #include "graphics/draw/d_local.hpp"
+//#include "graphics/render/r_local.hpp"
+//#include "graphics/render/r_shared.hpp"
+// #include "graphics/render/render.hpp"
 
-//#include "math/mathlib_e.h"
+//#include "math/mathlib_e.hpp"
 
-//#include "network/delta_jit.h"
+//#include "network/delta_jit.hpp"
 
-//#include "resources/studio_rehlds.h"
+//#include "resources/studio_rehlds.hpp"
 
-//#include "server/sv_steam3.h"
+//#include "server/sv_steam3.hpp"
 
-// #include "system/quakedef.h"
-// #include "system/sys.h"
-// #include "system/system.h"
+// #include "system/quakedef.hpp"
+// #include "system/sys.hpp"
+#include "system/system.hpp"
 
-//#include "world/pr_cmds.h"
+//#include "world/pr_cmds.hpp"
 
 //======================================
 // STAGE #2

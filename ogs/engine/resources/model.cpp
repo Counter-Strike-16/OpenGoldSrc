@@ -1,34 +1,34 @@
 /*
- * This file is part of OGS Engine
- * Copyright (C) 2016-2017 OGS Dev Team
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
- * OGS Engine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * OGS Engine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
  *
- * In addition, as a special exception, the author gives permission to
- * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
- * Engine") and Modified Game Libraries ("MODs") developed by Valve,
- * L.L.C ("Valve").  You must obey the GNU General Public License in all
- * respects for all of the code used other than the GoldSrc Engine and MODs
- * from Valve.  If you modify this file, you may extend this exception
- * to your version of the file, but you are not obligated to do so.  If
- * you do not wish to do so, delete this exception statement from your
- * version.
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
  */
 
 /// @file
 
-#include "precompiled.h"
+#include "precompiled.hpp"
 
 model_t *        loadmodel;
 char             loadname[32];
@@ -46,7 +46,7 @@ mod_known_info_t mod_known_info[MAX_KNOWN_MODELS];
 #define NL_NEEDS_LOADED 1
 #define NL_UNREFERENCED 2
 
-void SW_Mod_Init(void)
+void SW_Mod_Init()
 {
 #ifndef SWDS
 // TODO: Add client-side code
@@ -58,9 +58,7 @@ void *EXT_FUNC Mod_Extradata(model_t *mod)
 	void *r;
 
 	if(!mod)
-	{
 		return NULL;
-	}
 
 	r = Cache_Check(&mod->cache);
 	if(r)
@@ -109,7 +107,7 @@ mleaf_t *Mod_PointInLeaf(vec_t *p, model_t *model)
 	return (mleaf_t *)node;
 }
 
-void Mod_ClearAll(void)
+void Mod_ClearAll()
 {
 	int      i;
 	model_t *mod;
@@ -205,45 +203,6 @@ NOXREF void Mod_NeedCRC(const char *name, qboolean needCRC)
 	p   = &mod_known_info[mod - mod_known];
 
 	p->shouldCRC = needCRC;
-}
-
-//TODO: move to czmodelcheck.cpp
-qboolean IsCZPlayerModel(uint32 crc, const char *filename)
-{
-	if(crc == 0x27FB4D2F)
-		return Q_stricmp(filename, "models/player/spetsnaz/spetsnaz.mdl") ? 0 : 1;
-
-	if(crc == 0xEC43F76D || crc == 0x270FB2D7)
-		return Q_stricmp(filename, "models/player/terror/terror.mdl") ? 0 : 1;
-
-	if(crc == 0x1AAA3360 || crc == 0x35AC6FED)
-		return Q_stricmp(filename, "models/player/gign/gign.mdl") ? 0 : 1;
-
-	if(crc == 0x02B95E5F || crc == 0x72DB74E4)
-		return Q_stricmp(filename, "models/player/vip/vip.mdl") ? 0 : 1;
-
-	if(crc == 0x1F3CD80B || crc == 0x1B6C4115)
-		return Q_stricmp(filename, "models/player/guerilla/guerilla.mdl") ? 0 : 1;
-
-	if(crc == 0x3BCAA016)
-		return Q_stricmp(filename, "models/player/militia/militia.mdl") ? 0 : 1;
-
-	if(crc == 0x43E67FF3 || crc == 0xF141AE3F)
-		return Q_stricmp(filename, "models/player/sas/sas.mdl") ? 0 : 1;
-
-	if(crc == 0xDA8922A || crc == 0x56DD2D02)
-		return Q_stricmp(filename, "models/player/gsg9/gsg9.mdl") ? 0 : 1;
-
-	if(crc == 0xA37D8680 || crc == 0x4986827B)
-		return Q_stricmp(filename, "models/player/arctic/arctic.mdl") ? 0 : 1;
-
-	if(crc == 0xC37369F6 || crc == 0x29FE156C)
-		return Q_stricmp(filename, "models/player/leet/leet.mdl") ? 0 : 1;
-
-	if(crc == 0xC7F0DBF3 || crc == 0x068168DB)
-		return Q_stricmp(filename, "models/player/urban/urban.mdl") ? 0 : 1;
-
-	return 0;
 }
 
 model_t *Mod_LoadModel(model_t *mod, qboolean crash, qboolean trackCRC)
@@ -370,7 +329,7 @@ model_t *Mod_ForName(const char *name, qboolean crash, qboolean trackCRC)
 	return Mod_LoadModel(mod, crash, trackCRC);
 }
 
-void Mod_AdInit(void)
+void Mod_AdInit()
 {
 	int         i;
 	char *      s;
@@ -1115,7 +1074,7 @@ void Mod_LoadClipnodes(lump_t *l)
 	}
 }
 
-void Mod_MakeHull0(void)
+void Mod_MakeHull0()
 {
 	mnode_t *    in, *child;
 	dclipnode_t *out;
@@ -1855,7 +1814,7 @@ NOXREF void Mod_UnloadSpriteTextures(model_t *pModel)
 	}
 }
 
-void Mod_Print(void)
+void Mod_Print()
 {
 	int      i;
 	model_t *mod;
@@ -1871,7 +1830,7 @@ void Mod_Print(void)
 	}
 }
 
-NOXREF void Mod_ChangeGame(void)
+NOXREF void Mod_ChangeGame()
 {
 	int               i;
 	model_t *         mod;

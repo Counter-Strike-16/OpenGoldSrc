@@ -1,22 +1,30 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
@@ -26,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <math.h>
 #include <stdarg.h>
 
-#include "../client/ref.h"
+#include "ref.hpp"
 
 #define REF_VERSION "SOFT 0.01"
 
@@ -378,7 +386,7 @@ typedef struct
 	float        dist;
 	float        s_offset, t_offset;
 	float        viewer_position[3];
-	void (*drawspanlet)(void);
+	void (*drawspanlet)();
 	int stipple_parity;
 } polydesc_t;
 
@@ -436,11 +444,11 @@ extern affinetridesc_t r_affinetridesc;
 
 extern vec3_t r_pright, r_pup, r_ppn;
 
-void D_DrawSurfaces(void);
-void R_DrawParticle(void);
-void D_ViewChanged(void);
-void D_WarpScreen(void);
-void R_PolysetUpdateTables(void);
+void D_DrawSurfaces();
+void R_DrawParticle();
+void D_ViewChanged();
+void D_WarpScreen();
+void R_PolysetUpdateTables();
 
 extern void *acolormap; // FIXME: should go away
 
@@ -450,7 +458,7 @@ extern void *acolormap; // FIXME: should go away
 
 extern drawsurf_t r_drawsurf;
 
-void R_DrawSurface(void);
+void R_DrawSurface();
 
 extern int c_surf;
 
@@ -565,7 +573,7 @@ extern int *       pfrustum_indexes[4];
 
 //=============================================================================
 
-void R_RenderWorld(void);
+void R_RenderWorld();
 
 //=============================================================================
 
@@ -588,61 +596,61 @@ extern msurface_t *r_alpha_surfaces;
 
 //=============================================================================
 
-void R_ClearPolyList(void);
-void R_DrawPolyList(void);
+void R_ClearPolyList();
+void R_DrawPolyList();
 
 //
 // current entity info
 //
 extern qboolean insubmodel;
 
-void R_DrawAlphaSurfaces(void);
+void R_DrawAlphaSurfaces();
 
-void R_DrawSprite(void);
+void R_DrawSprite();
 void R_DrawBeam(entity_t *e);
 
 void R_RenderFace(msurface_t *fa, int clipflags);
 void R_RenderBmodelFace(bedge_t *pedges, msurface_t *psurf);
 void R_TransformPlane(mplane_t *p, float *normal, float *dist);
-void R_TransformFrustum(void);
-void R_DrawSurfaceBlock16(void);
-void R_DrawSurfaceBlock8(void);
+void R_TransformFrustum();
+void R_DrawSurfaceBlock16();
+void R_DrawSurfaceBlock8();
 
 #if id386
 
-void R_DrawSurfaceBlock8_mip0(void);
-void R_DrawSurfaceBlock8_mip1(void);
-void R_DrawSurfaceBlock8_mip2(void);
-void R_DrawSurfaceBlock8_mip3(void);
+void R_DrawSurfaceBlock8_mip0();
+void R_DrawSurfaceBlock8_mip1();
+void R_DrawSurfaceBlock8_mip2();
+void R_DrawSurfaceBlock8_mip3();
 
 #endif
 
 void R_GenSkyTile(void *pdest);
 void R_GenSkyTile16(void *pdest);
-void R_Surf8Patch(void);
-void R_Surf16Patch(void);
+void R_Surf8Patch();
+void R_Surf16Patch();
 void R_DrawSubmodelPolygons(model_t *pmodel, int clipflags, mnode_t *topnode);
 void R_DrawSolidClippedSubmodelPolygons(model_t *pmodel, mnode_t *topnode);
 
 void R_AddPolygonEdges(emitpoint_t *pverts, int numverts, int miplevel);
-surf_t *R_GetSurf(void);
-void    R_AliasDrawModel(void);
-void    R_BeginEdgeFrame(void);
-void    R_ScanEdges(void);
-void    D_DrawSurfaces(void);
+surf_t *R_GetSurf();
+void    R_AliasDrawModel();
+void    R_BeginEdgeFrame();
+void    R_ScanEdges();
+void    D_DrawSurfaces();
 void R_InsertNewEdges(edge_t *edgestoadd, edge_t *edgelist);
 void R_StepActiveU(edge_t *pedge);
 void R_RemoveEdges(edge_t *pedge);
 void R_PushDlights(model_t *model);
 
-extern void R_Surf8Start(void);
-extern void R_Surf8End(void);
-extern void R_Surf16Start(void);
-extern void R_Surf16End(void);
-extern void R_EdgeCodeStart(void);
-extern void R_EdgeCodeEnd(void);
+extern void R_Surf8Start();
+extern void R_Surf8End();
+extern void R_Surf16Start();
+extern void R_Surf16End();
+extern void R_EdgeCodeStart();
+extern void R_EdgeCodeEnd();
 
-extern void R_RotateBmodel(void);
+extern void R_RotateBmodel();
 
 extern int c_faceclip;
 extern int r_polycount;
@@ -660,10 +668,10 @@ extern float entity_rotation[3][3];
 extern int r_currentkey;
 extern int r_currentbkey;
 
-void R_InitTurb(void);
+void R_InitTurb();
 
-void R_DrawParticles(void);
-void R_SurfacePatch(void);
+void R_DrawParticles();
+void R_SurfacePatch();
 
 extern int     r_amodels_drawn;
 extern edge_t *auxedges;
@@ -695,7 +703,7 @@ typedef struct
 
 extern aliastriangleparms_t aliastriangleparms;
 
-void R_DrawTriangle(void);
+void R_DrawTriangle();
 //void R_DrawTriangle (finalvert_t *index0, finalvert_t *index1, finalvert_t *index2);
 void R_AliasClipTriangle(finalvert_t *index0, finalvert_t *index1, finalvert_t *index2);
 
@@ -717,13 +725,13 @@ extern qboolean r_fov_greater_than_90;
 extern image_t *r_notexture_mip;
 extern model_t *r_worldmodel;
 
-void R_PrintAliasStats(void);
-void R_PrintTimes(void);
-void R_PrintDSpeeds(void);
-void R_AnimateLight(void);
+void R_PrintAliasStats();
+void R_PrintTimes();
+void R_PrintDSpeeds();
+void R_AnimateLight();
 void R_LightPoint(vec3_t p, vec3_t color);
-void R_SetupFrame(void);
-void R_cshift_f(void);
+void R_SetupFrame();
+void R_cshift_f();
 void R_EmitEdge(mvertex_t *pv0, mvertex_t *pv1);
 void R_ClipEdge(mvertex_t *pv0, mvertex_t *pv1, clipplane_t *clip);
 void R_SplitEntityOnNode2(mnode_t *node);
@@ -738,19 +746,19 @@ extern void *colormap;
 
 float R_DLightPoint(vec3_t p);
 
-void     R_NewMap(void);
-void     R_Register(void);
-void     R_UnRegister(void);
-void     Draw_InitLocal(void);
+void     R_NewMap();
+void     R_Register();
+void     R_UnRegister();
+void     Draw_InitLocal();
 qboolean R_Init(void *hInstance, void *wndProc);
-void R_Shutdown(void);
-void R_InitCaches(void);
-void D_FlushCaches(void);
+void R_Shutdown();
+void R_InitCaches();
+void D_FlushCaches();
 
-void R_ScreenShot_f(void);
+void R_ScreenShot_f();
 void R_BeginRegistration(char *map);
 struct model_s *R_RegisterModel(char *name);
-void R_EndRegistration(void);
+void R_EndRegistration();
 
 void R_RenderFrame(refdef_t *fd);
 
@@ -763,9 +771,9 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data)
 void Draw_Char(int x, int y, int c);
 void Draw_TileClear(int x, int y, int w, int h, char *name);
 void Draw_Fill(int x, int y, int w, int h, int c);
-void Draw_FadeScreen(void);
+void Draw_FadeScreen();
 
-void Draw_GetPalette(void);
+void Draw_GetPalette();
 
 void R_BeginFrame(float camera_separation);
 
@@ -774,20 +782,20 @@ void R_CinematicSetPalette(const unsigned char *palette);
 extern unsigned d_8to24table[256]; // base
 
 void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length);
-void Sys_SetFPCW(void);
+void Sys_SetFPCW();
 
 void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height);
 
-void     R_InitImages(void);
-void     R_ShutdownImages(void);
+void     R_InitImages();
+void     R_ShutdownImages();
 image_t *R_FindImage(char *name, imagetype_t type);
-void R_FreeUnusedImages(void);
+void R_FreeUnusedImages();
 
 void R_GammaCorrectAndSetPalette(const unsigned char *pal);
 
 extern mtexinfo_t *sky_texinfo[6];
 
-void R_InitSkyBox(void);
+void R_InitSkyBox();
 
 typedef struct swstate_s
 {
@@ -822,9 +830,9 @@ IMPLEMENTATION FUNCTIONS
 */
 
 void SWimp_BeginFrame(float camera_separation);
-void SWimp_EndFrame(void);
+void SWimp_EndFrame();
 int SWimp_Init(void *hInstance, void *wndProc);
 void SWimp_SetPalette(const unsigned char *palette);
-void    SWimp_Shutdown(void);
+void    SWimp_Shutdown();
 rserr_t SWimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen);
 void SWimp_AppActivate(qboolean active);

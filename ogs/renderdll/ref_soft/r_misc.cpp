@@ -1,26 +1,34 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
-#include "r_local.h"
+#include "r_local.hpp"
 
 #define NUM_MIPS 4
 
@@ -48,12 +56,12 @@ short *zspantable[MAXHEIGHT];
 D_Patch
 ================
 */
-void D_Patch(void)
+void D_Patch()
 {
 #if id386
-	extern void     D_Aff8Patch(void);
+	extern void     D_Aff8Patch();
 	static qboolean protectset8 = false;
-	extern void     D_PolysetAff8Start(void);
+	extern void     D_PolysetAff8Start();
 
 	if(!protectset8)
 	{
@@ -76,7 +84,7 @@ D_ViewChanged
 */
 unsigned char *alias_colormap;
 
-void D_ViewChanged(void)
+void D_ViewChanged()
 {
 	int i;
 
@@ -127,7 +135,7 @@ void D_ViewChanged(void)
 R_PrintTimes
 =============
 */
-void R_PrintTimes(void)
+void R_PrintTimes()
 {
 	int r_time2;
 	int ms;
@@ -146,7 +154,7 @@ void R_PrintTimes(void)
 R_PrintDSpeeds
 =============
 */
-void R_PrintDSpeeds(void)
+void R_PrintDSpeeds()
 {
 	int ms, dp_time, r_time2, rw_time, db_time, se_time, de_time, da_time;
 
@@ -169,7 +177,7 @@ void R_PrintDSpeeds(void)
 R_PrintAliasStats
 =============
 */
-void R_PrintAliasStats(void)
+void R_PrintAliasStats()
 {
 	ri.Con_Printf(PRINT_ALL, "%3i polygon model drawn\n", r_amodels_drawn);
 }
@@ -179,7 +187,7 @@ void R_PrintAliasStats(void)
 R_TransformFrustum
 ===================
 */
-void R_TransformFrustum(void)
+void R_TransformFrustum()
 {
 	int    i;
 	vec3_t v, v2;
@@ -265,7 +273,7 @@ void R_TransformPlane(mplane_t *p, float *normal, float *dist)
 R_SetUpFrustumIndexes
 ===============
 */
-void R_SetUpFrustumIndexes(void)
+void R_SetUpFrustumIndexes()
 {
 	int i, j, *pindex;
 
@@ -396,7 +404,7 @@ void R_ViewChanged(vrect_t *vr)
 R_SetupFrame
 ===============
 */
-void R_SetupFrame(void)
+void R_SetupFrame()
 {
 	int     i;
 	vrect_t vrect;
@@ -492,7 +500,7 @@ void R_SetupFrame(void)
 R_SurfacePatch
 ================
 */
-void R_SurfacePatch(void)
+void R_SurfacePatch()
 {
 	// we only patch code on Intel
 }
@@ -583,7 +591,7 @@ void WritePCXfile(char *filename, byte *data, int width, int height,
 R_ScreenShot_f
 ================== 
 */
-void R_ScreenShot_f(void)
+void R_ScreenShot_f()
 {
 	int   i;
 	char  pcxname[80];

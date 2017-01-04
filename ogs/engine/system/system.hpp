@@ -1,29 +1,29 @@
 /*
- * This file is part of OGS Engine
- * Copyright (C) 2016-2017 OGS Dev Team
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
- * OGS Engine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * OGS Engine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
  *
- * In addition, as a special exception, the author gives permission to
- * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
- * Engine") and Modified Game Libraries ("MODs") developed by Valve,
- * L.L.C ("Valve").  You must obey the GNU General Public License in all
- * respects for all of the code used other than the GoldSrc Engine and MODs
- * from Valve.  If you modify this file, you may extend this exception
- * to your version of the file, but you are not obligated to do so.  If
- * you do not wish to do so, delete this exception statement from your
- * version.
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
  */
 
 /// @file
@@ -31,17 +31,19 @@
 #pragma once
 
 #include "maintypes.h"
-#include "public/interface.h"
-#include "tier0/platform.h"
-#include "resources/modinfo.h"
+#include "common/commontypes.h"
+#include "engine/eiface.h"
+//#include "public/interface.h"
+//#include "tier0/platform.h"
+//#include "resources/modinfo.hpp"
 #include "public/FileSystem.h"
-#include "world/pr_dlls.h"
+//#include "world/pr_dlls.hpp"
 
 //vmodes.h must be included before cdll_int.h (wrect_t declaration)
-#include "common/wrect.h"
-#include "engine/cdll_int.h"
+//#include "common/wrect.h"
+//#include "engine/cdll_int.h"
 
-#include "engine_launcher_api.h"
+//#include "engine_launcher_api.h"
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 #define NOXREFCHECK       \
@@ -53,7 +55,7 @@
 	*a     = 0
 #endif
 
-#define MAX_DISCONNECT_REASON 256
+const int MAX_DISCONNECT_REASON = 256;
 
 #define FIFTEEN_MB (15 * 1024 * 1024)
 #define MINIMUM_WIN_MEMORY 0x0e00000
@@ -100,6 +102,10 @@
 #define szReslistsBaseDir (*pszReslistsBaseDir)
 #define szReslistsExt (*pszReslistsExt)
 #endif
+
+typedef struct modinfo_s modinfo_t;
+
+class IEngineAPI;
 
 extern qboolean g_bIsWin95;
 extern qboolean g_bIsWin98;
@@ -176,57 +182,84 @@ extern void __cdecl Sys_InitHardwareTimer();
 #endif //_WIN32
 
 NOXREF void Sys_PageIn(void *ptr, int size);
+
 const char *Sys_FindFirst(const char *path, char *basename);
 const char *Sys_FindFirstPathID(const char *path, char *pathid);
 const char *Sys_FindNext(char *basename);
 void       Sys_FindClose();
+
 NOBODY int glob_match_after_star(char *pattern, char *text);
 NOBODY int glob_match(char *pattern, char *text);
+
 NOXREF void Sys_MakeCodeWriteable(uint32 startaddr, uint32 length);
+
 NOBODY void Sys_SetFPCW();
 NOBODY void Sys_PushFPCW_SetHigh();
 NOBODY void Sys_PopFPCW();
+
 NOBODY void MaskExceptions();
+
 NOBODY void Sys_Init();
 NOXREF void Sys_Sleep(int msec);
 NOBODY void Sys_DebugOutStraight(const char *pStr);
+
 NOBODY void __declspec(noreturn) Sys_Error(const char *error, ...);
 NOXREF void Sys_Warning(const char *pszWarning, ...);
+
 void Sys_Printf(const char *fmt, ...);
+
 void   Sys_Quit();
 double Sys_FloatTime();
 void Dispatch_Substate(int iSubState);
 void GameSetSubState(int iSubState);
 void GameSetState(int iState);
 NOBODY void GameSetBackground(qboolean bNewSetting);
+
 qboolean Voice_GetClientListening(int iReceiver, int iSender);
 qboolean Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen);
+
 DISPATCHFUNCTION GetDispatch(char *pname);
+
 const char *FindAddressInTable(extensiondll_t *pDll, uint32 function);
 uint32 FindNameInTable(extensiondll_t *pDll, const char *pName);
+
 NOBODY const char *ConvertNameToLocalPlatform(const char *pchInName);
+
 uint32 FunctionFromName(const char *pName);
 const char *NameForFunction(uint32 function);
+
 ENTITYINIT GetEntityInit(char *pClassName);
+
 FIELDIOFUNCTION GetIOFunction(char *pName);
-NOBODY void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue);
+
 void LoadEntityDLLs(const char *szBaseDir);
 void LoadThisDll(const char *szDllFilename);
 void ReleaseEntityDlls();
+
 void EngineFprintf(void *pfile, const char *szFmt, ...);
 void AlertMessage(ALERT_TYPE atype, const char *szFmt, ...);
+
 NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname, char *ext);
 
 const char *GetCurrentSteamAppName();
+
 NOXREF void SetRateRegistrySetting(const char *pchRate);
+
 NOXREF const char *GetRateRegistrySetting(const char *pchDef);
+
 void EXPORT F(IEngineAPI **api);
+
 void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated);
+
 NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage);
+
 void Legacy_Sys_Printf(char *fmt, ...);
+
 NOXREF void Legacy_MP3subsys_Suspend_Audio();
 NOXREF void Legacy_MP3subsys_Resume_Audio();
+
 void        Sys_SetupLegacyAPIs();
+
 NOXREF int  Sys_IsWin95();
 NOXREF int  Sys_IsWin98();
 

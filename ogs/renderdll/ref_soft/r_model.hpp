@@ -1,27 +1,34 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
-#ifndef __MODEL__
-#define __MODEL__
+#pragma once
 
 /*
 
@@ -235,8 +242,8 @@ typedef struct model_s
 
 //============================================================================
 
-void     Mod_Init(void);
-void     Mod_ClearAll(void);
+void     Mod_Init();
+void     Mod_ClearAll();
 model_t *Mod_ForName(char *name, qboolean crash);
 void *Mod_Extradata(model_t *mod); // handles caching
 void Mod_TouchModel(char *name);
@@ -244,10 +251,8 @@ void Mod_TouchModel(char *name);
 mleaf_t *Mod_PointInLeaf(float *p, model_t *model);
 byte *Mod_ClusterPVS(int cluster, model_t *model);
 
-void Mod_Modellist_f(void);
-void Mod_FreeAll(void);
+void Mod_Modellist_f();
+void Mod_FreeAll();
 void Mod_Free(model_t *mod);
 
 extern int registration_sequence;
-
-#endif // __MODEL__

@@ -1,37 +1,45 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
-#include "r_local.h"
+#include "r_local.hpp"
 
 #ifndef id386
-void R_SurfacePatch(void)
+void R_SurfacePatch()
 {
 }
 
-void R_EdgeCodeStart(void)
+void R_EdgeCodeStart()
 {
 }
 
-void R_EdgeCodeEnd(void)
+void R_EdgeCodeEnd()
 {
 }
 #endif
@@ -64,7 +72,7 @@ int current_iv;
 
 int edge_head_u_shift20, edge_tail_u_shift20;
 
-static void (*pdrawfunc)(void);
+static void (*pdrawfunc)();
 
 edge_t edge_head;
 edge_t edge_tail;
@@ -79,11 +87,11 @@ float scale_for_mip;
 int   ubasestep, errorterm, erroradjustup, erroradjustdown;
 
 // FIXME: should go away
-extern void R_RotateBmodel(void);
-extern void R_TransformFrustum(void);
+extern void R_RotateBmodel();
+extern void R_TransformFrustum();
 
-void R_GenerateSpans(void);
-void R_GenerateSpansBackward(void);
+void R_GenerateSpans();
+void R_GenerateSpansBackward();
 
 void R_LeadingEdge(edge_t *edge);
 void R_LeadingEdgeBackwards(edge_t *edge);
@@ -102,7 +110,7 @@ EDGE SCANNING
 R_BeginEdgeFrame
 ==============
 */
-void R_BeginEdgeFrame(void)
+void R_BeginEdgeFrame()
 {
 	int v;
 
@@ -272,7 +280,7 @@ void R_StepActiveU(edge_t *pedge)
 R_CleanupSpan
 ==============
 */
-void R_CleanupSpan(void)
+void R_CleanupSpan()
 {
 	surf_t * surf;
 	int      iu;
@@ -548,7 +556,7 @@ void R_LeadingEdge(edge_t *edge)
 R_GenerateSpans
 ==============
 */
-void R_GenerateSpans(void)
+void R_GenerateSpans()
 {
 	edge_t *edge;
 	surf_t *surf;
@@ -584,7 +592,7 @@ void R_GenerateSpans(void)
 R_GenerateSpansBackward
 ==============
 */
-void R_GenerateSpansBackward(void)
+void R_GenerateSpansBackward()
 {
 	edge_t *edge;
 
@@ -617,7 +625,7 @@ Output:
 Each surface has a linked list of its visible spans
 ==============
 */
-void R_ScanEdges(void)
+void R_ScanEdges()
 {
 	int      iv, bottom;
 	byte     basespans[MAXSPANS * sizeof(espan_t) + CACHE_SIZE];
@@ -1037,7 +1045,7 @@ D_DrawflatSurfaces
 To allow developers to see the polygon carving of the world
 =============
 */
-void D_DrawflatSurfaces(void)
+void D_DrawflatSurfaces()
 {
 	surf_t *s;
 
@@ -1065,7 +1073,7 @@ Rasterize all the span lists.  Guaranteed zero overdraw.
 May be called more than once a frame if the surf list overflows (higher res)
 ==============
 */
-void D_DrawSurfaces(void)
+void D_DrawSurfaces()
 {
 	surf_t *s;
 

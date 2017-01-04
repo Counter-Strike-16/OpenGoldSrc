@@ -1,33 +1,41 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
-#include "r_local.h"
+#include "r_local.hpp"
 
 viddef_t    vid;
 refimport_t ri;
 
 unsigned d_8to24table[256];
 
-entity_t r_worldentity;
+cl_entity_t r_worldentity;
 
 char     skyname[MAX_QPATH];
 float    skyrotate;
@@ -107,7 +115,7 @@ image_t *r_notexture_mip;
 float da_time1, da_time2, dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
 float se_time1, se_time2, de_time1, de_time2;
 
-void R_MarkLeaves(void);
+void R_MarkLeaves();
 
 cvar_t *r_lefthand;
 cvar_t *sw_aliasstats;
@@ -191,7 +199,7 @@ byte r_notexture_buffer[1024];
 R_InitTextures
 ==================
 */
-void R_InitTextures(void)
+void R_InitTextures()
 {
 	int   x, y, m;
 	byte *dest;
@@ -225,7 +233,7 @@ void R_InitTextures(void)
 R_InitTurb
 ================
 */
-void R_InitTurb(void)
+void R_InitTurb()
 {
 	int i;
 
@@ -237,9 +245,9 @@ void R_InitTurb(void)
 	}
 }
 
-void R_ImageList_f(void);
+void R_ImageList_f();
 
-void R_Register(void)
+void R_Register()
 {
 	sw_aliasstats        = ri.Cvar_Get("sw_polymodelstats", "0", 0);
 	sw_allow_modex       = ri.Cvar_Get("sw_allow_modex", "1", CVAR_ARCHIVE);
@@ -282,7 +290,7 @@ void R_Register(void)
 	//PGM
 }
 
-void R_UnRegister(void)
+void R_UnRegister()
 {
 	ri.Cmd_RemoveCommand("screenshot");
 	ri.Cmd_RemoveCommand("modellist");
@@ -339,7 +347,7 @@ qboolean R_Init(void *hInstance, void *wndProc)
 R_Shutdown
 ===============
 */
-void R_Shutdown(void)
+void R_Shutdown()
 {
 	// free z buffer
 	if(d_pzbuffer)
@@ -373,7 +381,7 @@ void R_Shutdown(void)
 R_NewMap
 ===============
 */
-void R_NewMap(void)
+void R_NewMap()
 {
 	r_viewcluster = -1;
 
@@ -424,7 +432,7 @@ Mark the leaves and nodes that are in the PVS for the current
 cluster
 ===============
 */
-void R_MarkLeaves(void)
+void R_MarkLeaves()
 {
 	byte *   vis;
 	mnode_t *node;
@@ -496,7 +504,7 @@ void R_MarkLeaves(void)
 **
 ** IMPLEMENT THIS!
 */
-void R_DrawNullModel(void)
+void R_DrawNullModel()
 {
 }
 
@@ -505,7 +513,7 @@ void R_DrawNullModel(void)
 R_DrawEntitiesOnList
 =============
 */
-void R_DrawEntitiesOnList(void)
+void R_DrawEntitiesOnList()
 {
 	int      i;
 	qboolean translucent_entities = false;
@@ -756,7 +764,7 @@ void RotatedBBox(vec3_t mins, vec3_t maxs, vec3_t angles, vec3_t tmins, vec3_t t
 R_DrawBEntitiesOnList
 =============
 */
-void R_DrawBEntitiesOnList(void)
+void R_DrawBEntitiesOnList()
 {
 	int      i, clipflags;
 	vec3_t   oldorigin;
@@ -840,7 +848,7 @@ void R_DrawBEntitiesOnList(void)
 R_EdgeDrawing
 ================
 */
-void R_EdgeDrawing(void)
+void R_EdgeDrawing()
 {
 	edge_t ledges[NUMSTACKEDGES +
 	              ((CACHE_SIZE - 1) / sizeof(edge_t)) + 1];
@@ -903,7 +911,7 @@ R_CalcPalette
 
 =============
 */
-void R_CalcPalette(void)
+void R_CalcPalette()
 {
 	static qboolean modified;
 	byte            palette[256][4], *in, *out;
@@ -954,7 +962,7 @@ void R_CalcPalette(void)
 
 //=======================================================================
 
-void R_SetLightLevel(void)
+void R_SetLightLevel()
 {
 	vec3_t light;
 
@@ -1081,7 +1089,7 @@ void R_InitGraphics(int width, int height)
 */
 void R_BeginFrame(float camera_separation)
 {
-	extern void Draw_BuildGammaTable(void);
+	extern void Draw_BuildGammaTable();
 
 	/*
 	** rebuild the gamma correction palette if necessary
@@ -1195,7 +1203,7 @@ void R_CinematicSetPalette(const unsigned char *palette)
 Draw_BuildGammaTable
 ================
 */
-void Draw_BuildGammaTable(void)
+void Draw_BuildGammaTable()
 {
 	int   i, inf;
 	float g;
@@ -1302,7 +1310,7 @@ void R_SetSky(char *name, float rotate, vec3_t axis)
 Draw_GetPalette
 ===============
 */
-void Draw_GetPalette(void)
+void Draw_GetPalette()
 {
 	byte *pal, *out;
 	int   i;

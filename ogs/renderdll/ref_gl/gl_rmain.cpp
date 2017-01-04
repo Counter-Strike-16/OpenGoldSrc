@@ -1,28 +1,36 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
-#include "gl_local.h"
+#include "gl_local.hpp"
 
-void R_Clear(void);
+void R_Clear();
 
 viddef_t vid;
 
@@ -38,7 +46,7 @@ glstate_t  gl_state;
 image_t *r_notexture;       // use for bad textures
 image_t *r_particletexture; // little dot for particles
 
-entity_t *currententity;
+cl_entity_t *currententity;
 model_t * currentmodel;
 
 cplane_t frustum[4];
@@ -50,7 +58,7 @@ int c_brush_polys, c_alias_polys;
 
 float v_blend[4]; // final blending color
 
-void GL_Strings_f(void);
+void GL_Strings_f();
 
 //
 // view origin
@@ -144,18 +152,17 @@ Returns true if the box is completely outside the frustom
 */
 qboolean R_CullBox(vec3_t mins, vec3_t maxs)
 {
-	int i;
-
 	if(r_nocull->value)
 		return false;
 
-	for(i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++)
 		if(BOX_ON_PLANE_SIDE(mins, maxs, &frustum[i]) == 2)
 			return true;
+	
 	return false;
 }
 
-void R_RotateForEntity(entity_t *e)
+void R_RotateForEntity(cl_entity_t *e)
 {
 	qglTranslatef(e->origin[0], e->origin[1], e->origin[2]);
 
@@ -178,7 +185,7 @@ R_DrawSpriteModel
 
 =================
 */
-void R_DrawSpriteModel(entity_t *e)
+void R_DrawSpriteModel(cl_entity_t *e)
 {
 	float        alpha = 1.0F;
 	vec3_t       point;
@@ -275,7 +282,7 @@ void R_DrawSpriteModel(entity_t *e)
 R_DrawNullModel
 =============
 */
-void R_DrawNullModel(void)
+void R_DrawNullModel()
 {
 	vec3_t shadelight;
 	int    i;
@@ -313,7 +320,7 @@ void R_DrawNullModel(void)
 R_DrawEntitiesOnList
 =============
 */
-void R_DrawEntitiesOnList(void)
+void R_DrawEntitiesOnList()
 {
 	int i;
 
@@ -463,7 +470,7 @@ void GL_DrawParticles(int num_particles, const particle_t particles[], const uns
 R_DrawParticles
 ===============
 */
-void R_DrawParticles(void)
+void R_DrawParticles()
 {
 	if(gl_ext_pointparameters->value && qglPointParameterfEXT)
 	{
@@ -505,7 +512,7 @@ void R_DrawParticles(void)
 R_PolyBlend
 ============
 */
-void R_PolyBlend(void)
+void R_PolyBlend()
 {
 	if(!gl_polyblend->value)
 		return;
@@ -557,7 +564,7 @@ int SignbitsForPlane(cplane_t *out)
 	return bits;
 }
 
-void R_SetFrustum(void)
+void R_SetFrustum()
 {
 	int i;
 
@@ -604,7 +611,7 @@ void R_SetFrustum(void)
 R_SetupFrame
 ===============
 */
-void R_SetupFrame(void)
+void R_SetupFrame()
 {
 	int      i;
 	mleaf_t *leaf;
@@ -689,7 +696,7 @@ void MYgluPerspective(GLdouble fovy, GLdouble aspect,
 R_SetupGL
 =============
 */
-void R_SetupGL(void)
+void R_SetupGL()
 {
 	float screenaspect;
 	//	float	yfov;
@@ -752,7 +759,7 @@ void R_SetupGL(void)
 R_Clear
 =============
 */
-void R_Clear(void)
+void R_Clear()
 {
 	if(gl_ztrick->value)
 	{
@@ -789,7 +796,7 @@ void R_Clear(void)
 	qglDepthRange(gldepthmin, gldepthmax);
 }
 
-void R_Flash(void)
+void R_Flash()
 {
 	R_PolyBlend();
 }
@@ -852,7 +859,7 @@ void R_RenderView(refdef_t *fd)
 	}
 }
 
-void R_SetGL2D(void)
+void R_SetGL2D()
 {
 	// set 2D virtual screen size
 	qglViewport(0, 0, vid.width, vid.height);
@@ -878,7 +885,7 @@ static void GL_DrawColoredStereoLinePair(float r, float g, float b, float y)
 	qglVertex2f(vid.width, y + 1);
 }
 
-static void GL_DrawStereoPattern(void)
+static void GL_DrawStereoPattern()
 {
 	int i;
 
@@ -915,7 +922,7 @@ R_SetLightLevel
 
 ====================
 */
-void R_SetLightLevel(void)
+void R_SetLightLevel()
 {
 	vec3_t shadelight;
 
@@ -957,7 +964,7 @@ void R_RenderFrame(refdef_t *fd)
 	R_SetGL2D();
 }
 
-void R_Register(void)
+void R_Register()
 {
 	r_lefthand     = ri.Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
 	r_norefresh    = ri.Cvar_Get("r_norefresh", "0", 0);
@@ -1037,7 +1044,7 @@ void R_Register(void)
 R_SetMode
 ==================
 */
-qboolean R_SetMode(void)
+qboolean R_SetMode()
 {
 	rserr_t  err;
 	qboolean fullscreen;
@@ -1055,9 +1062,7 @@ qboolean R_SetMode(void)
 	gl_mode->modified        = false;
 
 	if((err = GLimp_SetMode(&vid.width, &vid.height, gl_mode->value, fullscreen)) == rserr_ok)
-	{
 		gl_state.prev_mode = gl_mode->value;
-	}
 	else
 	{
 		if(err == rserr_invalid_fullscreen)
@@ -1335,7 +1340,7 @@ int R_Init(void *hinstance, void *hWnd)
 R_Shutdown
 ===============
 */
-void R_Shutdown(void)
+void R_Shutdown()
 {
 	ri.Cmd_RemoveCommand("modellist");
 	ri.Cmd_RemoveCommand("screenshot");
@@ -1517,7 +1522,7 @@ void R_SetPalette(const unsigned char *palette)
 /*
 ** R_DrawBeam
 */
-void R_DrawBeam(entity_t *e)
+void R_DrawBeam(cl_entity_t *e)
 {
 #define NUM_BEAM_SEGS 6
 
@@ -1589,7 +1594,7 @@ void R_BeginRegistration(char *map);
 struct model_s *R_RegisterModel(char *name);
 struct image_s *R_RegisterSkin(char *name);
 void R_SetSky(char *name, float rotate, vec3_t axis);
-void R_EndRegistration(void);
+void R_EndRegistration();
 
 void R_RenderFrame(refdef_t *fd);
 
@@ -1599,7 +1604,7 @@ void Draw_Pic(int x, int y, char *name);
 void Draw_Char(int x, int y, int c);
 void Draw_TileClear(int x, int y, int w, int h, char *name);
 void Draw_Fill(int x, int y, int w, int h, int c);
-void Draw_FadeScreen(void);
+void Draw_FadeScreen();
 
 /*
 @@@@@@@@@@@@@@@@@@@@@

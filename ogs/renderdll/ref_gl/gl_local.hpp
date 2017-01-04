@@ -1,22 +1,30 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
@@ -120,10 +128,10 @@ typedef enum {
 #include "gl_model.h"
 
 void GL_BeginRendering(int *x, int *y, int *width, int *height);
-void GL_EndRendering(void);
+void GL_EndRendering();
 
-void GL_SetDefaultState(void);
-void GL_UpdateSwapInterval(void);
+void GL_SetDefaultState();
+void GL_UpdateSwapInterval();
 
 extern float gldepthmin, gldepthmax;
 
@@ -253,7 +261,7 @@ void GL_EnableMultitexture(qboolean enable);
 void GL_SelectTexture(GLenum);
 
 void R_LightPoint(vec3_t p, vec3_t color);
-void R_PushDlights(void);
+void R_PushDlights();
 
 //====================================================================
 
@@ -266,30 +274,30 @@ extern int registration_sequence;
 void V_AddBlend(float r, float g, float b, float a, float *v_blend);
 
 int R_Init(void *hinstance, void *hWnd);
-void R_Shutdown(void);
+void R_Shutdown();
 
 void R_RenderView(refdef_t *fd);
-void GL_ScreenShot_f(void);
+void GL_ScreenShot_f();
 void R_DrawAliasModel(entity_t *e);
 void R_DrawBrushModel(entity_t *e);
 void R_DrawSpriteModel(entity_t *e);
 void R_DrawBeam(entity_t *e);
-void R_DrawWorld(void);
-void R_RenderDlights(void);
-void R_DrawAlphaSurfaces(void);
+void R_DrawWorld();
+void R_RenderDlights();
+void R_DrawAlphaSurfaces();
 void R_RenderBrushPoly(msurface_t *fa);
-void R_InitParticleTexture(void);
-void Draw_InitLocal(void);
+void R_InitParticleTexture();
+void Draw_InitLocal();
 void GL_SubdivideSurface(msurface_t *fa);
 qboolean R_CullBox(vec3_t mins, vec3_t maxs);
 void R_RotateForEntity(entity_t *e);
-void R_MarkLeaves(void);
+void R_MarkLeaves();
 
 glpoly_t *WaterWarpPolyVerts(glpoly_t *p);
 void EmitWaterPolys(msurface_t *fa);
 void R_AddSkySurface(msurface_t *fa);
-void R_ClearSkyBox(void);
-void R_DrawSkyBox(void);
+void R_ClearSkyBox();
+void R_DrawSkyBox();
 void R_MarkLights(dlight_t *light, int bit, mnode_t *node);
 
 #if 0
@@ -310,14 +318,14 @@ void Draw_StretchPic(int x, int y, int w, int h, char *name);
 void Draw_Char(int x, int y, int c);
 void Draw_TileClear(int x, int y, int w, int h, char *name);
 void Draw_Fill(int x, int y, int w, int h, int c);
-void Draw_FadeScreen(void);
+void Draw_FadeScreen();
 void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data);
 
 void R_BeginFrame(float camera_separation);
 void R_SwapBuffers(int);
 void R_SetPalette(const unsigned char *palette);
 
-int Draw_GetPalette(void);
+int Draw_GetPalette();
 
 void GL_ResampleTexture(unsigned *in, int inwidth, int inheight, unsigned *out, int outwidth, int outheight);
 
@@ -327,14 +335,14 @@ void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height
 image_t *GL_LoadPic(char *name, byte *pic, int width, int height, imagetype_t type, int bits);
 image_t *GL_FindImage(char *name, imagetype_t type);
 void GL_TextureMode(char *string);
-void GL_ImageList_f(void);
+void GL_ImageList_f();
 
 void GL_SetTexturePalette(unsigned palette[256]);
 
-void GL_InitImages(void);
-void GL_ShutdownImages(void);
+void GL_InitImages();
+void GL_ShutdownImages();
 
-void GL_FreeUnusedImages(void);
+void GL_FreeUnusedImages();
 
 void GL_TextureAlphaMode(char *string);
 void GL_TextureSolidMode(char *string);
@@ -442,10 +450,10 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 */
 
 void GLimp_BeginFrame(float camera_separation);
-void GLimp_EndFrame(void);
+void GLimp_EndFrame();
 int GLimp_Init(void *hinstance, void *hWnd);
-void GLimp_Shutdown(void);
+void GLimp_Shutdown();
 int GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen);
 void GLimp_AppActivate(qboolean active);
 void GLimp_EnableLogging(qboolean enable);
-void GLimp_LogNewFrame(void);
+void GLimp_LogNewFrame();

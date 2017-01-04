@@ -1,30 +1,38 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 /// @brief routines for drawing sets of polygons sharing the same texture (used for Alias models)
 
-#include "r_local.h"
+#include "r_local.hpp"
 
 int rand1k[] = {
-#include "rand1k.h"
+#include "rand1k.hpp"
 };
 
 #define MASK_1K 0x3FF
@@ -126,9 +134,9 @@ void R_PolysetDrawSpans8_Opaque(spanpackage_t *pspanpackage);
 
 void R_PolysetDrawThreshSpans8(spanpackage_t *pspanpackage);
 void R_PolysetCalcGradients(int skinwidth);
-void R_DrawNonSubdiv(void);
-void R_PolysetSetEdgeTable(void);
-void R_RasterizeAliasPolySmooth(void);
+void R_DrawNonSubdiv();
+void R_PolysetSetEdgeTable();
+void R_RasterizeAliasPolySmooth();
 void R_PolysetScanLeftEdge(int height);
 void R_PolysetScanLeftEdge_C(int height);
 
@@ -183,7 +191,7 @@ byte irtable[256] = {79, 78, 77, 76, 75, 74, 73, 72, // black/white
 R_PolysetUpdateTables
 ================
 */
-void R_PolysetUpdateTables(void)
+void R_PolysetUpdateTables()
 {
 	int   i;
 	byte *s;
@@ -204,7 +212,7 @@ void R_PolysetUpdateTables(void)
 R_DrawTriangle
 ================
 */
-void R_DrawTriangle(void)
+void R_DrawTriangle()
 {
 	spanpackage_t spans[DPS_MAXSPANS];
 
@@ -1104,7 +1112,7 @@ void R_PolysetFillSpans8(spanpackage_t *pspanpackage)
 R_RasterizeAliasPolySmooth
 ================
 */
-void R_RasterizeAliasPolySmooth(void)
+void R_RasterizeAliasPolySmooth()
 {
 	int  initialleftheight, initialrightheight;
 	int *plefttop, *prighttop, *pleftbottom, *prightbottom;
@@ -1435,7 +1443,7 @@ void R_RasterizeAliasPolySmooth(void)
 R_PolysetSetEdgeTable
 ================
 */
-void R_PolysetSetEdgeTable(void)
+void R_PolysetSetEdgeTable()
 {
 	int edgetableindex;
 

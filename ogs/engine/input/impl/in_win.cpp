@@ -1,29 +1,29 @@
 /*
- * This file is part of OGS Engine
- * Copyright (C) 2016-2017 OGS Dev Team
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
- * OGS Engine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * OGS Engine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
  *
- * In addition, as a special exception, the author gives permission to
- * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
- * Engine") and Modified Game Libraries ("MODs") developed by Valve,
- * L.L.C ("Valve").  You must obey the GNU General Public License in all
- * respects for all of the code used other than the GoldSrc Engine and MODs
- * from Valve.  If you modify this file, you may extend this exception
- * to your version of the file, but you are not obligated to do so.  If
- * you do not wish to do so, delete this exception statement from your
- * version.
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
  */
 
 // NOTE: this code was partially moved to cldll too
@@ -181,8 +181,8 @@ static DIDATAFORMAT df = {
 };
 
 // forward-referenced functions
-void IN_StartupJoystick(void);
-void Joy_AdvancedUpdate_f(void);
+void IN_StartupJoystick();
+void Joy_AdvancedUpdate_f();
 void IN_JoyMove(usercmd_t *cmd);
 
 /*
@@ -190,7 +190,7 @@ void IN_JoyMove(usercmd_t *cmd);
 Force_CenterView_f
 ===========
 */
-void Force_CenterView_f(void)
+void Force_CenterView_f()
 {
 	cl.viewangles[PITCH] = 0;
 }
@@ -200,7 +200,7 @@ void Force_CenterView_f(void)
 IN_UpdateClipCursor
 ===========
 */
-void IN_UpdateClipCursor(void)
+void IN_UpdateClipCursor()
 {
 	if(mouseinitialized && mouseactive && !dinput)
 	{
@@ -213,7 +213,7 @@ void IN_UpdateClipCursor(void)
 IN_ShowMouse
 ===========
 */
-void IN_ShowMouse(void)
+void IN_ShowMouse()
 {
 	if(!mouseshowtoggle)
 	{
@@ -227,7 +227,7 @@ void IN_ShowMouse(void)
 IN_HideMouse
 ===========
 */
-void IN_HideMouse(void)
+void IN_HideMouse()
 {
 	if(mouseshowtoggle)
 	{
@@ -241,7 +241,7 @@ void IN_HideMouse(void)
 IN_ActivateMouse
 ===========
 */
-void IN_ActivateMouse(void)
+void IN_ActivateMouse()
 {
 	mouseactivatetoggle = true;
 
@@ -281,7 +281,7 @@ void IN_ActivateMouse(void)
 IN_SetQuakeMouseState
 ===========
 */
-void IN_SetQuakeMouseState(void)
+void IN_SetQuakeMouseState()
 {
 	if(mouseactivatetoggle)
 		IN_ActivateMouse();
@@ -292,7 +292,7 @@ void IN_SetQuakeMouseState(void)
 IN_DeactivateMouse
 ===========
 */
-void IN_DeactivateMouse(void)
+void IN_DeactivateMouse()
 {
 	mouseactivatetoggle = false;
 
@@ -327,7 +327,7 @@ void IN_DeactivateMouse(void)
 IN_RestoreOriginalMouseState
 ===========
 */
-void IN_RestoreOriginalMouseState(void)
+void IN_RestoreOriginalMouseState()
 {
 	if(mouseactivatetoggle)
 	{
@@ -346,7 +346,7 @@ void IN_RestoreOriginalMouseState(void)
 IN_InitDInput
 ===========
 */
-qboolean IN_InitDInput(void)
+qboolean IN_InitDInput()
 {
 	HRESULT     hr;
 	DIPROPDWORD dipdw = {
@@ -435,7 +435,7 @@ qboolean IN_InitDInput(void)
 IN_StartupMouse
 ===========
 */
-void IN_StartupMouse(void)
+void IN_StartupMouse()
 {
 	HDC hdc;
 
@@ -495,7 +495,7 @@ void IN_StartupMouse(void)
 IN_Init
 ===========
 */
-void IN_Init(void)
+void IN_Init()
 {
 	// mouse variables
 	Cvar_RegisterVariable(&m_filter);
@@ -535,7 +535,7 @@ void IN_Init(void)
 IN_Shutdown
 ===========
 */
-void IN_Shutdown(void)
+void IN_Shutdown()
 {
 	IN_DeactivateMouse();
 	IN_ShowMouse();
@@ -756,7 +756,7 @@ void IN_Move(usercmd_t *cmd)
 IN_Accumulate
 ===========
 */
-void IN_Accumulate(void)
+void IN_Accumulate()
 {
 	int mx, my;
 	HDC hdc;
@@ -778,7 +778,7 @@ void IN_Accumulate(void)
 IN_ClearStates
 ===================
 */
-void IN_ClearStates(void)
+void IN_ClearStates()
 {
 	if(mouseactive)
 	{
@@ -793,7 +793,7 @@ void IN_ClearStates(void)
 IN_StartupJoystick 
 =============== 
 */
-void IN_StartupJoystick(void)
+void IN_StartupJoystick()
 {
 	int      i, numdevs;
 	JOYCAPS  jc;
@@ -885,7 +885,7 @@ PDWORD RawValuePointer(int axis)
 Joy_AdvancedUpdate_f
 ===========
 */
-void Joy_AdvancedUpdate_f(void)
+void Joy_AdvancedUpdate_f()
 {
 	// called once by IN_ReadJoystick and by user whenever an update is needed
 	// cvars are now available
@@ -955,7 +955,7 @@ void Joy_AdvancedUpdate_f(void)
 IN_Commands
 ===========
 */
-void IN_Commands(void)
+void IN_Commands()
 {
 	int   i, key_index;
 	DWORD buttonstate, povstate;
@@ -1023,7 +1023,7 @@ void IN_Commands(void)
 IN_ReadJoystick
 =============== 
 */
-qboolean IN_ReadJoystick(void)
+qboolean IN_ReadJoystick()
 {
 	memset(&ji, 0, sizeof(ji));
 	ji.dwSize  = sizeof(ji);

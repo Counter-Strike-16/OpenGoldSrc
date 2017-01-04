@@ -1,26 +1,34 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
-#include "r_local.h"
+#include "r_local.hpp"
 
 vec3_t r_pright, r_pup, r_ppn;
 
@@ -55,7 +63,7 @@ static unsigned s_prefetch_address;
 ** Outputs:
 ** none
 */
-__declspec(naked) void BlendParticle33(void)
+__declspec(naked) void BlendParticle33()
 {
 	//	return vid.alphamap[color + dstcolor*256];
 	__asm mov ebp, vid.alphamap __asm xor ebx, ebx
@@ -75,7 +83,7 @@ __declspec(naked) void BlendParticle33(void)
 	    __asm ret
 }
 
-__declspec(naked) void BlendParticle66(void)
+__declspec(naked) void BlendParticle66()
 {
 	//	return vid.alphamap[pcolor*256 + dstcolor];
 	__asm mov ebp, vid.alphamap __asm xor ebx, ebx
@@ -95,7 +103,7 @@ __declspec(naked) void BlendParticle66(void)
 	    __asm ret
 }
 
-__declspec(naked) void BlendParticle100(void)
+__declspec(naked) void BlendParticle100()
 {
 	__asm mov byte ptr[edi], al __asm ret
 }
@@ -110,7 +118,7 @@ __declspec(naked) void BlendParticle100(void)
 ** other than a slightly higher global memory footprint.
 **
 */
-__declspec(naked) void R_DrawParticle(void)
+__declspec(naked) void R_DrawParticle()
 {
 	static vec3_t local, transformed;
 	static float  zi;
@@ -118,7 +126,7 @@ __declspec(naked) void R_DrawParticle(void)
 	static short  izi;
 	static int    ebpsave;
 
-	static byte (*blendfunc)(void);
+	static byte (*blendfunc)();
 
 	/*
 	** must be memvars since x86 can't load constants
@@ -447,7 +455,7 @@ static byte BlendParticle100(int pcolor, int dstcolor)
 ** function pointer route.  This exacts some overhead, but
 ** it pays off in clean and easy to understand code.
 */
-void R_DrawParticle(void)
+void R_DrawParticle()
 {
 	particle_t *pparticle = partparms.particle;
 	int         level     = partparms.level;
@@ -577,7 +585,7 @@ void R_DrawParticle(void)
 ** if we're using the asm path, it simply assigns a function pointer
 ** and goes.
 */
-void R_DrawParticles(void)
+void R_DrawParticles()
 {
 	particle_t *         p;
 	int                  i;

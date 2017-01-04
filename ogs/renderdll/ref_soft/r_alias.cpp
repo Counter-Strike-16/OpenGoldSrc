@@ -1,22 +1,30 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 /// @brief routines for setting up to draw alias models
@@ -24,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /*
 ** use a real variable to control lerping
 */
-#include "r_local.h"
+#include "r_local.hpp"
 
 #define LIGHT_MIN 5 // lowest light value we'll allow, to avoid the
                     //  need for inner-loop light clamping
@@ -62,7 +70,7 @@ float r_avertexnormals[NUMVERTEXNORMALS][3] = {
 };
 
 void R_AliasSetUpLerpData(dmdl_t *pmdl, float backlerp);
-void R_AliasSetUpTransform(void);
+void R_AliasSetUpTransform();
 void R_AliasTransformVector(vec3_t in, vec3_t out, float m[3][4]);
 void R_AliasProjectAndClipTestFinalVert(finalvert_t *fv);
 
@@ -183,7 +191,7 @@ unsigned long R_AliasCheckFrameBBox(daliasframe_t *frame, float worldxf[3][4])
 	return BBOX_MUST_CLIP_XY;
 }
 
-qboolean R_AliasCheckBBox(void)
+qboolean R_AliasCheckBBox()
 {
 	unsigned long ccodes[2] = {0, 0};
 
@@ -241,7 +249,7 @@ typedef struct
 
 aliasbatchedtransformdata_t aliasbatchedtransformdata;
 
-void R_AliasPreparePoints(void)
+void R_AliasPreparePoints()
 {
 	int          i;
 	dstvert_t *  pstverts;
@@ -353,7 +361,7 @@ void R_AliasPreparePoints(void)
 R_AliasSetUpTransform
 ================
 */
-void R_AliasSetUpTransform(void)
+void R_AliasSetUpTransform()
 {
 	int          i;
 	static float viewmatrix[3][4];
@@ -818,7 +826,7 @@ void R_AliasProjectAndClipTestFinalVert(finalvert_t *fv)
 R_AliasSetupSkin
 ===============
 */
-static qboolean R_AliasSetupSkin(void)
+static qboolean R_AliasSetupSkin()
 {
 	int      skinnum;
 	image_t *pskindesc;
@@ -857,7 +865,7 @@ R_AliasSetupLighting
   FIXME: put lighting into tables
 ================
 */
-void R_AliasSetupLighting(void)
+void R_AliasSetupLighting()
 {
 	alight_t lighting;
 	float    lightvec[3] = {-1, 0, 0};
@@ -1017,7 +1025,7 @@ void R_AliasSetUpLerpData(dmdl_t *pmdl, float backlerp)
 R_AliasDrawModel
 ================
 */
-void R_AliasDrawModel(void)
+void R_AliasDrawModel()
 {
 	extern void (*d_pdrawspans)(void *);
 	extern void R_PolysetDrawSpans8_Opaque(void *);

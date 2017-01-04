@@ -1,27 +1,35 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
 #include <assert.h>
-#include "r_local.h"
+#include "r_local.hpp"
 
 #define AFFINE_SPANLET_SIZE 16
 #define AFFINE_SPANLET_SIZE_BITS 4
@@ -59,7 +67,7 @@ static void R_DrawPoly(qboolean iswater);
 /*
 ** R_DrawSpanletOpaque
 */
-void R_DrawSpanletOpaque(void)
+void R_DrawSpanletOpaque()
 {
 	unsigned btemp;
 
@@ -91,7 +99,7 @@ void R_DrawSpanletOpaque(void)
 /*
 ** R_DrawSpanletTurbulentStipple33
 */
-void R_DrawSpanletTurbulentStipple33(void)
+void R_DrawSpanletTurbulentStipple33()
 {
 	unsigned btemp;
 	int      sturb, tturb;
@@ -148,7 +156,7 @@ void R_DrawSpanletTurbulentStipple33(void)
 /*
 ** R_DrawSpanletTurbulentStipple66
 */
-void R_DrawSpanletTurbulentStipple66(void)
+void R_DrawSpanletTurbulentStipple66()
 {
 	unsigned btemp;
 	int      sturb, tturb;
@@ -235,7 +243,7 @@ void R_DrawSpanletTurbulentStipple66(void)
 /*
 ** R_DrawSpanletTurbulentBlended
 */
-void R_DrawSpanletTurbulentBlended66(void)
+void R_DrawSpanletTurbulentBlended66()
 {
 	unsigned btemp;
 	int      sturb, tturb;
@@ -259,7 +267,7 @@ void R_DrawSpanletTurbulentBlended66(void)
 	} while(--s_spanletvars.spancount > 0);
 }
 
-void R_DrawSpanletTurbulentBlended33(void)
+void R_DrawSpanletTurbulentBlended33()
 {
 	unsigned btemp;
 	int      sturb, tturb;
@@ -286,7 +294,7 @@ void R_DrawSpanletTurbulentBlended33(void)
 /*
 ** R_DrawSpanlet33
 */
-void R_DrawSpanlet33(void)
+void R_DrawSpanlet33()
 {
 	unsigned btemp;
 
@@ -315,7 +323,7 @@ void R_DrawSpanlet33(void)
 	} while(--s_spanletvars.spancount > 0);
 }
 
-void R_DrawSpanletConstant33(void)
+void R_DrawSpanletConstant33()
 {
 	do
 	{
@@ -333,7 +341,7 @@ void R_DrawSpanletConstant33(void)
 /*
 ** R_DrawSpanlet66
 */
-void R_DrawSpanlet66(void)
+void R_DrawSpanlet66()
 {
 	unsigned btemp;
 
@@ -365,7 +373,7 @@ void R_DrawSpanlet66(void)
 /*
 ** R_DrawSpanlet33Stipple
 */
-void R_DrawSpanlet33Stipple(void)
+void R_DrawSpanlet33Stipple()
 {
 	unsigned btemp;
 	byte *   pdest = s_spanletvars.pdest;
@@ -424,7 +432,7 @@ void R_DrawSpanlet33Stipple(void)
 /*
 ** R_DrawSpanlet66Stipple
 */
-void R_DrawSpanlet66Stipple(void)
+void R_DrawSpanlet66Stipple()
 {
 	unsigned btemp;
 	byte *   pdest = s_spanletvars.pdest;
@@ -749,7 +757,7 @@ void R_PolygonDrawSpans(espan_t *pspan, qboolean iswater)
 ** Goes through the polygon and scans the left edge, filling in 
 ** screen coordinate data for the spans
 */
-void R_PolygonScanLeftEdge(void)
+void R_PolygonScanLeftEdge()
 {
 	int          i, v, itop, ibottom, lmaxindex;
 	emitpoint_t *pvert, *pnext;
@@ -812,7 +820,7 @@ void R_PolygonScanLeftEdge(void)
 ** Goes through the polygon and scans the right edge, filling in
 ** count values.
 */
-void R_PolygonScanRightEdge(void)
+void R_PolygonScanRightEdge()
 {
 	int          i, v, itop, ibottom;
 	emitpoint_t *pvert, *pnext;
@@ -1085,7 +1093,7 @@ void R_BuildPolygonFromSurface(msurface_t *fa)
 /*
 ** R_PolygonCalculateGradients
 */
-void R_PolygonCalculateGradients(void)
+void R_PolygonCalculateGradients()
 {
 	vec3_t p_normal, p_saxis, p_taxis;
 	float  distinv;
@@ -1181,7 +1189,7 @@ static void R_DrawPoly(qboolean iswater)
 /*
 ** R_DrawAlphaSurfaces
 */
-void R_DrawAlphaSurfaces(void)
+void R_DrawAlphaSurfaces()
 {
 	msurface_t *s = r_alpha_surfaces;
 

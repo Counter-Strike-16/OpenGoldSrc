@@ -1,29 +1,29 @@
 /*
- * This file is part of OGS Engine
- * Copyright (C) 2016-2017 OGS Dev Team
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
- * OGS Engine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * OGS Engine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
  *
- * In addition, as a special exception, the author gives permission to
- * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
- * Engine") and Modified Game Libraries ("MODs") developed by Valve,
- * L.L.C ("Valve").  You must obey the GNU General Public License in all
- * respects for all of the code used other than the GoldSrc Engine and MODs
- * from Valve.  If you modify this file, you may extend this exception
- * to your version of the file, but you are not obligated to do so.  If
- * you do not wish to do so, delete this exception statement from your
- * version.
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
  */
 
 /// @file
@@ -44,7 +44,7 @@
 #include "common/commontypes.h"
 #include "public/FileSystem.h"
 
-#define MAX_COMMAND_LINE_PARAMS 50
+const int MAX_COMMAND_LINE_PARAMS = 50;
 
 typedef struct cvar_s   cvar_t;
 typedef struct client_s client_t;
@@ -131,9 +131,13 @@ extern jmp_buf host_enddemo;
 extern unsigned short *host_basepal;
 
 NOXREF void Host_EndGame(const char *message, ...);
+
 void __declspec(noreturn) Host_Error(const char *error, ...);
+
 void        Host_InitLocal();
+
 NOBODY void Info_WriteVars(FileHandle_t fp);
+
 void Host_WriteConfiguration();
 void Host_WriteCustomConfig();
 
@@ -148,18 +152,26 @@ qboolean Host_FilterTime(float time);
 void Host_ComputeFPS(double frametime);
 void Host_GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
 void Host_Speeds(double *time);
+
 void Host_UpdateScreen();
 void Host_UpdateSounds();
+
 void Host_CheckConnectionFailure();
+
 void _Host_Frame(float time);
 int Host_Frame(float time, int iState, int *stateInfo);
+
 void     CheckGore();
+
 qboolean Host_IsSinglePlayerGame();
 qboolean Host_IsServerActive();
+
 void     Host_Version();
+
 int Host_Init(quakeparms_t *parms);
 void Host_Shutdown();
 
 int      GetGameAppID();
+
 qboolean IsGameSubscribed(const char *gameName);
 NOXREF qboolean BIsValveGame();

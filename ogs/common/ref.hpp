@@ -1,29 +1,29 @@
 /*
- * This file is part of OGS Engine
- * Copyright (C) 2016-2017 OGS Dev Team
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
- * OGS Engine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * OGS Engine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
  *
- * In addition, as a special exception, the author gives permission to
- * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
- * Engine") and Modified Game Libraries ("MODs") developed by Valve,
- * L.L.C ("Valve").  You must obey the GNU General Public License in all
- * respects for all of the code used other than the GoldSrc Engine and MODs
- * from Valve.  If you modify this file, you may extend this exception
- * to your version of the file, but you are not obligated to do so.  If
- * you do not wish to do so, delete this exception statement from your
- * version.
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
  */
 
 /// @file
@@ -131,7 +131,7 @@ typedef struct
 	qboolean (*Init)(void *hinstance, void *wndproc);
 
 	// called before the library is unloaded
-	void (*Shutdown)(void);
+	void (*Shutdown)();
 
 	// All data that will be used in a level should be
 	// registered before rendering any frames to prevent disk hits,
@@ -151,7 +151,7 @@ typedef struct
 	struct image_s *(*RegisterSkin)(char *name);
 	struct image_s *(*RegisterPic)(char *name);
 	void (*SetSky)(char *name, float rotate, vec3_t axis);
-	void (*EndRegistration)(void);
+	void (*EndRegistration)();
 
 	void (*RenderFrame)(refdef_t *fd);
 
@@ -161,7 +161,7 @@ typedef struct
 	void (*DrawChar)(int x, int y, int c);
 	void (*DrawTileClear)(int x, int y, int w, int h, char *name);
 	void (*DrawFill)(int x, int y, int w, int h, int c);
-	void (*DrawFadeScreen)(void);
+	void (*DrawFadeScreen)();
 
 	// Draw images for cinematic rendering (which can have a different palette). Note that calls
 	void (*DrawStretchRaw)(int x, int y, int w, int h, int cols, int rows, byte *data);
@@ -171,7 +171,7 @@ typedef struct
 	*/
 	void (*CinematicSetPalette)(const unsigned char *palette); // NULL = game palette
 	void (*BeginFrame)(float camera_separation);
-	void (*EndFrame)(void);
+	void (*EndFrame)();
 
 	void (*AppActivate)(qboolean activate);
 
@@ -184,9 +184,9 @@ typedef struct
 {
 	void (*Sys_Error)(int err_level, char *str, ...);
 
-	void (*Cmd_AddCommand)(char *name, void (*cmd)(void));
+	void (*Cmd_AddCommand)(char *name, void (*cmd)());
 	void (*Cmd_RemoveCommand)(char *name);
-	int (*Cmd_Argc)(void);
+	int (*Cmd_Argc)();
 	char *(*Cmd_Argv)(int i);
 	void (*Cmd_ExecuteText)(int exec_when, char *text);
 
@@ -202,14 +202,14 @@ typedef struct
 
 	// gamedir will be the current directory that generated
 	// files should be stored to, ie: "f:\quake\id1"
-	char *(*FS_Gamedir)(void);
+	char *(*FS_Gamedir)();
 
 	cvar_t *(*Cvar_Get)(char *name, char *value, int flags);
 	cvar_t *(*Cvar_Set)(char *name, char *value);
 	void (*Cvar_SetValue)(char *name, float value);
 
 	qboolean (*Vid_GetModeInfo)(int *width, int *height, int mode);
-	void (*Vid_MenuInit)(void);
+	void (*Vid_MenuInit)();
 	void (*Vid_NewWindow)(int width, int height);
 } refimport_t;
 

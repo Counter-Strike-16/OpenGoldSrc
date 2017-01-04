@@ -1,27 +1,35 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 /// @brief surface-related refresh code
 
-#include "r_local.h"
+#include "r_local.hpp"
 
 drawsurf_t r_drawsurf;
 
@@ -38,18 +46,18 @@ int            r_lightwidth;
 int            r_numhblocks, r_numvblocks;
 unsigned char *r_source, *r_sourcemax;
 
-void R_DrawSurfaceBlock8_mip0(void);
-void R_DrawSurfaceBlock8_mip1(void);
-void R_DrawSurfaceBlock8_mip2(void);
-void R_DrawSurfaceBlock8_mip3(void);
+void R_DrawSurfaceBlock8_mip0();
+void R_DrawSurfaceBlock8_mip1();
+void R_DrawSurfaceBlock8_mip2();
+void R_DrawSurfaceBlock8_mip3();
 
-static void (*surfmiptable[4])(void) = {
+static void (*surfmiptable[4])() = {
     R_DrawSurfaceBlock8_mip0,
     R_DrawSurfaceBlock8_mip1,
     R_DrawSurfaceBlock8_mip2,
     R_DrawSurfaceBlock8_mip3};
 
-void            R_BuildLightMap(void);
+void            R_BuildLightMap();
 extern unsigned blocklights[1024]; // allow some very large lightmaps
 
 float    surfscale;
@@ -87,7 +95,7 @@ image_t *R_TextureAnimation(mtexinfo_t *tex)
 R_DrawSurface
 ===============
 */
-void R_DrawSurface(void)
+void R_DrawSurface()
 {
 	unsigned char *basetptr;
 	int            smax, tmax, twidth;
@@ -95,7 +103,7 @@ void R_DrawSurface(void)
 	int            soffset, basetoffset, texwidth;
 	int            horzblockstep;
 	unsigned char *pcolumndest;
-	void (*pblockdrawer)(void);
+	void (*pblockdrawer)();
 	image_t *mt;
 
 	surfrowbytes = r_drawsurf.rowbytes;
@@ -168,7 +176,7 @@ void R_DrawSurface(void)
 R_DrawSurfaceBlock8_mip0
 ================
 */
-void R_DrawSurfaceBlock8_mip0(void)
+void R_DrawSurfaceBlock8_mip0()
 {
 	int           v, i, b, lightstep, lighttemp, light;
 	unsigned char pix, *psource, *prowdest;
@@ -217,7 +225,7 @@ void R_DrawSurfaceBlock8_mip0(void)
 R_DrawSurfaceBlock8_mip1
 ================
 */
-void R_DrawSurfaceBlock8_mip1(void)
+void R_DrawSurfaceBlock8_mip1()
 {
 	int           v, i, b, lightstep, lighttemp, light;
 	unsigned char pix, *psource, *prowdest;
@@ -266,7 +274,7 @@ void R_DrawSurfaceBlock8_mip1(void)
 R_DrawSurfaceBlock8_mip2
 ================
 */
-void R_DrawSurfaceBlock8_mip2(void)
+void R_DrawSurfaceBlock8_mip2()
 {
 	int           v, i, b, lightstep, lighttemp, light;
 	unsigned char pix, *psource, *prowdest;
@@ -315,7 +323,7 @@ void R_DrawSurfaceBlock8_mip2(void)
 R_DrawSurfaceBlock8_mip3
 ================
 */
-void R_DrawSurfaceBlock8_mip3(void)
+void R_DrawSurfaceBlock8_mip3()
 {
 	int           v, i, b, lightstep, lighttemp, light;
 	unsigned char pix, *psource, *prowdest;
@@ -369,7 +377,7 @@ R_InitCaches
 
 ================
 */
-void R_InitCaches(void)
+void R_InitCaches()
 {
 	int size;
 	int pix;
@@ -407,7 +415,7 @@ void R_InitCaches(void)
 D_FlushCaches
 ==================
 */
-void D_FlushCaches(void)
+void D_FlushCaches()
 {
 	surfcache_t *c;
 
@@ -516,7 +524,7 @@ surfcache_t *D_SCAlloc(int width, int size)
 D_SCDump
 =================
 */
-void D_SCDump(void)
+void D_SCDump()
 {
 	surfcache_t *test;
 

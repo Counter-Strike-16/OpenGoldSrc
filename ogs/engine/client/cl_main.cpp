@@ -1,34 +1,34 @@
 /*
- * This file is part of OGS Engine
- * Copyright (C) 2016-2017 OGS Dev Team
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
- * OGS Engine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * OGS Engine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
  *
- * In addition, as a special exception, the author gives permission to
- * link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
- * Engine") and Modified Game Libraries ("MODs") developed by Valve,
- * L.L.C ("Valve").  You must obey the GNU General Public License in all
- * respects for all of the code used other than the GoldSrc Engine and MODs
- * from Valve.  If you modify this file, you may extend this exception
- * to your version of the file, but you are not obligated to do so.  If
- * you do not wish to do so, delete this exception statement from your
- * version.
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
  */
 
 /// @file
 
-#include "system/precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/client.hpp"
 
 #ifdef _WIN32
@@ -207,7 +207,6 @@ void CL_CheckForResend()
 {
 	netadr_t adr;
 	char     data[2048];
-	double   t1, t2;
 
 	if(cls.connect_time == -1)
 		return;
@@ -215,10 +214,11 @@ void CL_CheckForResend()
 	if(cls.state != ca_disconnected)
 		return;
 
-	if(cls.connect_time && realtime - cls.connect_time < 5.0)
+	if(cls.connect_time && realtime - cls.connect_time < 5.0f)
 		return;
 
-	t1 = Sys_DoubleTime();
+	double t1 = Sys_DoubleTime();
+	
 	if(!NET_StringToAdr(cls.servername, &adr))
 	{
 		Con_Printf("Bad server address\n");
@@ -234,7 +234,8 @@ void CL_CheckForResend()
 
 	if(adr.port == 0)
 		adr.port = BigShort(27500);
-	t2           = Sys_DoubleTime();
+	
+	double t2 = Sys_DoubleTime();
 
 	connect_time = realtime + t2 - t1; // for retransmit requests
 
@@ -382,27 +383,26 @@ Dump userdata / masterdata for a user
 */
 void CL_User_f()
 {
-	int uid;
-	int i;
-
 	if(Cmd_Argc() != 2)
 	{
 		Con_Printf("Usage: user <username / userid>\n");
 		return;
 	}
 
-	uid = atoi(Cmd_Argv(1));
+	int uid = atoi(Cmd_Argv(1));
 
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(!cl.players[i].name[0])
 			continue;
+		
 		if(cl.players[i].userid == uid || !strcmp(cl.players[i].name, Cmd_Argv(1)))
 		{
 			Info_Print(cl.players[i].userinfo);
 			return;
 		}
 	}
+	
 	Con_Printf("User not on server\n");
 }
 
@@ -415,13 +415,12 @@ Dump userids for all current players
 */
 void CL_Users_f()
 {
-	int i;
-	int c;
-
-	c = 0;
+	int c = 0;
+	
 	Con_Printf("userid frags name\n");
 	Con_Printf("------ ----- ----\n");
-	for(i = 0; i < MAX_CLIENTS; i++)
+	
+	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(cl.players[i].name[0])
 		{
