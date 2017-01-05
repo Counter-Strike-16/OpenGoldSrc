@@ -30,6 +30,9 @@
 
 //#include "precompiled.hpp"
 #include "input/keys.hpp"
+#include "console/cmd.hpp"
+#include "system/system.hpp"
+#include "client/client.hpp"
 
 #ifdef _WINDOWS
 #include <windows.h>

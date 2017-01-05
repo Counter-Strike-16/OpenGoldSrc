@@ -46,7 +46,9 @@
 #include "resources/consistency.hpp"
 #include "world/event.hpp"
 #include "server/server.hpp"
-#include "common/screenfade.hpp"
+#include "common/screenfade.h"
+#include "sound/soundfade.hpp"
+#include "client/frame.hpp"
 
 #ifdef HOOK_ENGINE
 #define g_pcls (*pcls)
@@ -62,9 +64,6 @@
 #endif // HOOK_ENGINE
 
 extern keydest_t key_dest;
-
-extern client_static_t cls;
-extern client_state_t  cl;
 
 extern playermove_t g_clmove;
 extern qboolean     cl_inmovie;
@@ -183,6 +182,8 @@ typedef struct client_static_s
 
 	int build_num;
 } client_static_t;
+
+extern client_static_t cls;
 
 /**
 * the client_state_t structure is wiped completely at every
@@ -305,6 +306,8 @@ typedef struct client_state_s
 
 	char downloadUrl[128];
 } client_state_t;
+
+extern client_state_t cl;
 
 void CL_RecordHUDCommand(char *cmdname);
 

@@ -33,6 +33,10 @@
 #include "system/common.hpp"
 #include "filesystem/filesystem_internal.hpp"
 #include "system/system.hpp"
+#include "console/console.hpp"
+#include "common/com_model.h"
+#include "console/cmd.hpp"
+#include "client/client.hpp"
 
 #ifndef Cache_Functions_region
 
@@ -148,7 +152,7 @@ void Cache_UnlinkLRU(cache_system_t *cs)
 void Cache_MakeLRU(cache_system_t *cs)
 {
 	if(cs->lru_next || cs->lru_prev)
-		Sys_Error("%s: active link". __FUNCTION__);
+		Sys_Error("%s: active link", __FUNCTION__);
 
 	cache_head.lru_next->lru_prev = cs;
 	cs->lru_next                  = cache_head.lru_next;

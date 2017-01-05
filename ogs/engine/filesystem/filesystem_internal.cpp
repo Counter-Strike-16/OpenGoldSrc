@@ -31,6 +31,7 @@
 //#include "precompiled.hpp"
 #include "filesystem/filesystem_internal.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
 
 IFileSystem *gpFileSystem = nullptr;
 

@@ -28,7 +28,7 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "system/engine.hpp"
 #include "system/system.hpp"
 #include "system/host.hpp"
@@ -131,7 +131,7 @@ int CEngine::Frame()
 int CEngine::Frame_noVirt()
 {
 #ifndef SWDS
-	(*(void (**)())(*(_DWORD *)cdaudio + 24))();
+	//(*(void (**)())(*(DWORD *)cdaudio + 24))();
 #endif // SWDS
 
 	if(!game->IsActiveApp())

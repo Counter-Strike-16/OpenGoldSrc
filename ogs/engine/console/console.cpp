@@ -32,6 +32,7 @@
 #include "console/console.hpp"
 #include "input/keys.hpp"
 #include "client/client.hpp"
+#include "system/system.hpp"
 
 int        con_ormask;
 console_t  con_main;
@@ -769,7 +770,7 @@ void EXT_FUNC Con_Printf(const char *fmt, ...)
 		if(con_debuglog)
 			Con_DebugLog("qconsole.log", "%s", Dest);
 #ifndef SWDS
-		if(host_initialized && con_initialized && g_pcls.state)
+		if(host_initialized && con_initialized && cls.state)
 		{
 			if(developer.value != 0.0f)
 			{

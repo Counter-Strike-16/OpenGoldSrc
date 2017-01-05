@@ -37,7 +37,7 @@ CUtlVector<char *> g_fallbackLocalizationFiles;
 char               s_pBaseDir[512];
 bool               bLowViolenceBuild;
 
-CSysModule *      g_pFileSystemModule;
+CSysModule *      gpFileSystemModule;
 CreateInterfaceFn g_FileSystemFactory;
 
 const char *GetBaseDirectory()
@@ -56,18 +56,18 @@ bool FileSystem_LoadDLL(CreateInterfaceFn filesystemFactory)
 {
 	if(!filesystemFactory)
 	{
-		g_pFileSystemModule = Sys_LoadModule(FILESYSTEM_DLL_NAME);
+		gpFileSystemModule = Sys_LoadModule(FILESYSTEM_DLL_NAME);
 
-		if(g_pFileSystemModule)
-			filesystemFactory = Sys_GetFactory(g_pFileSystemModule);
+		if(gpFileSystemModule)
+			filesystemFactory = Sys_GetFactory(gpFileSystemModule);
 	}
 
 	if(filesystemFactory)
 	{
 		g_FileSystemFactory = filesystemFactory;
 
-		g_pFileSystem = (IFileSystem *)filesystemFactory(FILESYSTEM_INTERFACE_VERSION, 0);
-		return g_pFileSystem != NULL;
+		gpFileSystem = (IFileSystem *)filesystemFactory(FILESYSTEM_INTERFACE_VERSION, 0);
+		return gpFileSystem != NULL;
 	}
 
 	return false;
@@ -75,12 +75,12 @@ bool FileSystem_LoadDLL(CreateInterfaceFn filesystemFactory)
 
 void FileSystem_UnloadDLL()
 {
-	if(g_pFileSystemModule)
+	if(gpFileSystemModule)
 	{
-		Sys_UnloadModule((CSysModule *)g_pFileSystemModule);
-		g_pFileSystemModule = NULL;
+		Sys_UnloadModule((CSysModule *)gpFileSystemModule);
+		gpFileSystemModule = NULL;
 		g_FileSystemFactory = NULL;
-		g_pFileSystem       = NULL;
+		gpFileSystem       = NULL;
 	}
 }
 
@@ -102,7 +102,7 @@ bool BEnableAddonsFolder()
 
 void Host_SetHDModels_f()
 {
-	if(g_pcls.state && Cmd_Argc() == 2)
+	if(cls.state && Cmd_Argc() == 2)
 	{
 		bool bEnabled = (registry->ReadInt("hdmodels", 1) > 0);
 
@@ -115,7 +115,7 @@ void Host_SetHDModels_f()
 
 void Host_SetAddonsFolder_f()
 {
-	if(g_pcls.state && Cmd_Argc() == 2)
+	if(cls.state && Cmd_Argc() == 2)
 	{
 		bool bEnabled = (registry->ReadInt("addons_folder", 0) > 0);
 
@@ -144,7 +144,7 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 
 	Q_snprintf(szTemp, sizeof(szTemp) - 1, "%s/liblist.gam", pGameDir);
 	COM_FixSlashes(szTemp);
-	g_pFileSystem->GetLocalCopy(szTemp);
+	gpFileSystem->GetLocalCopy(szTemp);
 
 	if(Q_stricmp(com_gamedir, pGameDir))
 	{
@@ -222,14 +222,14 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 		Q_snprintf(szTemp, 511, "%s/%s_lv", GetBaseDirectory(), szFallback);
 		szTemp[511] = 0;
 		COM_FixSlashes(szTemp);
-		g_pFileSystem->AddSearchPathNoWrite(szTemp, "GAME_FALLBACK");
+		gpFileSystem->AddSearchPathNoWrite(szTemp, "GAME_FALLBACK");
 	}
 	if(BEnableAddonsFolder())
 	{
 		Q_snprintf(szTemp, 511, "%s/%s_addon", GetBaseDirectory(), szFallback);
 		szTemp[511] = 0;
 		COM_FixSlashes(szTemp);
-		g_pFileSystem->AddSearchPathNoWrite(szTemp, "GAME_FALLBACK");
+		gpFileSystem->AddSearchPathNoWrite(szTemp, "GAME_FALLBACK");
 	}
 
 	if(bLanguage && pLanguage)
@@ -240,7 +240,7 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 		Q_snprintf(szTemp, 511, "%s/%s_%s", GetBaseDirectory(), szFallback, pLanguage);
 		szTemp[511] = 0;
 		COM_FixSlashes(szTemp);
-		g_pFileSystem->AddSearchPath(szTemp, "GAME_FALLBACK");
+		gpFileSystem->AddSearchPath(szTemp, "GAME_FALLBACK");
 
 		if(!COM_CheckParm("-steam"))
 		{
@@ -256,7 +256,7 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 				szTemp[511] = 0;
 
 				COM_FixSlashes(szTemp);
-				g_pFileSystem->AddSearchPath(szTemp, "GAME_FALLBACK");
+				gpFileSystem->AddSearchPath(szTemp, "GAME_FALLBACK");
 			}
 		}
 	}
@@ -266,13 +266,13 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 		Q_snprintf(szTemp, 511, "%s/%s_hd", GetBaseDirectory(), szFallback);
 		szTemp[511] = 0;
 		COM_FixSlashes(szTemp);
-		g_pFileSystem->AddSearchPathNoWrite(szTemp, "GAME_FALLBACK");
+		gpFileSystem->AddSearchPathNoWrite(szTemp, "GAME_FALLBACK");
 	}
 
 	Q_snprintf(szTemp, 511, "%s/%s", GetBaseDirectory(), szFallback);
 	szTemp[511] = 0;
 	COM_FixSlashes(szTemp);
-	g_pFileSystem->AddSearchPath(szTemp, "GAME_FALLBACK");
+	gpFileSystem->AddSearchPath(szTemp, "GAME_FALLBACK");
 
 	if(Q_stricmp(szFallback, "valve"))
 	{
@@ -327,21 +327,21 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 			Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_lv", GetBaseDirectory(), pGameDir);
 			temp[sizeof(temp) - 1] = 0;
 			COM_FixSlashes(temp);
-			g_pFileSystem->AddSearchPathNoWrite(temp, "GAME");
+			gpFileSystem->AddSearchPathNoWrite(temp, "GAME");
 		}
 		if(BEnableAddonsFolder())
 		{
 			Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_addon", GetBaseDirectory(), pGameDir);
 			temp[sizeof(temp) - 1] = 0;
 			COM_FixSlashes(temp);
-			g_pFileSystem->AddSearchPathNoWrite(temp, "GAME");
+			gpFileSystem->AddSearchPathNoWrite(temp, "GAME");
 		}
 		if(bLanguage)
 		{
 			Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_%s", GetBaseDirectory(), pGameDir, language);
 			temp[sizeof(temp) - 1] = 0;
 			COM_FixSlashes(temp);
-			g_pFileSystem->AddSearchPathNoWrite(temp, "GAME");
+			gpFileSystem->AddSearchPathNoWrite(temp, "GAME");
 
 			if(!COM_CheckParm("-steam"))
 			{
@@ -355,7 +355,7 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 					Q_snprintf(temp, 511, "%s\\localization\\%s_%s", baseDir, pGameDir, language);
 					temp[511] = 0;
 					COM_FixSlashes(temp);
-					g_pFileSystem->AddSearchPathNoWrite(temp, "GAME");
+					gpFileSystem->AddSearchPathNoWrite(temp, "GAME");
 				}
 			}
 		}
@@ -364,19 +364,19 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 			Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_hd", GetBaseDirectory(), pGameDir);
 			temp[sizeof(temp) - 1] = 0;
 			COM_FixSlashes(temp);
-			g_pFileSystem->AddSearchPathNoWrite(temp, "GAME");
+			gpFileSystem->AddSearchPathNoWrite(temp, "GAME");
 		}
 
 		Q_snprintf(temp, 511, "%s/%s", GetBaseDirectory(), pGameDir);
 		temp[sizeof(temp) - 1] = 0;
 		COM_FixSlashes(temp);
-		g_pFileSystem->AddSearchPath(temp, "GAME");
-		g_pFileSystem->AddSearchPath(temp, "GAMECONFIG");
+		gpFileSystem->AddSearchPath(temp, "GAME");
+		gpFileSystem->AddSearchPath(temp, "GAMECONFIG");
 
 		Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_downloads", GetBaseDirectory(), pGameDir);
 		temp[sizeof(temp) - 1] = 0;
 		COM_FixSlashes(temp);
-		g_pFileSystem->AddSearchPath(temp, "GAMEDOWNLOAD");
+		gpFileSystem->AddSearchPath(temp, "GAMEDOWNLOAD");
 
 		CheckLiblistForFallbackDir(pGameDir, bLanguage, language, bLowViolenceBuild);
 	}
@@ -387,7 +387,7 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 			Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_lv", GetBaseDirectory(), pDefaultDir);
 			temp[sizeof(temp) - 1] = 0;
 			COM_FixSlashes(temp);
-			g_pFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
+			gpFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
 		}
 
 		if(BEnableAddonsFolder())
@@ -395,13 +395,13 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 			Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_addon", GetBaseDirectory(), pDefaultDir);
 			temp[sizeof(temp) - 1] = 0;
 			COM_FixSlashes(temp);
-			g_pFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
+			gpFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
 		}
 
 		Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_%s", GetBaseDirectory(), pDefaultDir, language);
 		temp[sizeof(temp) - 1] = 0;
 		COM_FixSlashes(temp);
-		g_pFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
+		gpFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
 		if(!COM_CheckParm("-steam"))
 		{
 			char baseDir[MAX_PATH];
@@ -415,7 +415,7 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 				Q_snprintf(temp, sizeof(temp) - 1, "%s\\localization\\%s_%s", baseDir, pDefaultDir, language);
 				temp[sizeof(temp) - 1] = 0;
 				COM_FixSlashes(temp);
-				g_pFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
+				gpFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
 			}
 		}
 	}
@@ -424,23 +424,23 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 		Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_hd", GetBaseDirectory(), pDefaultDir);
 		temp[sizeof(temp) - 1] = 0;
 		COM_FixSlashes(temp);
-		g_pFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
+		gpFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
 	}
 
 	Q_snprintf(temp, sizeof(temp) - 1, "%s", GetBaseDirectory());
 	temp[sizeof(temp) - 1] = 0;
 	COM_FixSlashes(temp);
-	g_pFileSystem->AddSearchPath(temp, "BASE");
+	gpFileSystem->AddSearchPath(temp, "BASE");
 
 	Q_snprintf(temp, sizeof(temp) - 1, "%s/%s", GetBaseDirectory(), pDefaultDir);
 	temp[sizeof(temp) - 1] = 0;
 	COM_FixSlashes(temp);
-	g_pFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
+	gpFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
 
 	Q_snprintf(temp, sizeof(temp) - 1, "%s/platform", GetBaseDirectory());
 	temp[sizeof(temp) - 1] = 0;
 	COM_FixSlashes(temp);
-	g_pFileSystem->AddSearchPath(temp, "PLATFORM");
+	gpFileSystem->AddSearchPath(temp, "PLATFORM");
 
 	return 1;
 }
@@ -459,10 +459,10 @@ int FileSystem_AddFallbackGameDir(const char *pGameDir)
 	{
 		char temp[MAX_PATH];
 		Q_sprintf(temp, "%s/%s_%s", GetBaseDirectory(), pGameDir, language);
-		g_pFileSystem->AddSearchPath(temp, "GAME");
+		gpFileSystem->AddSearchPath(temp, "GAME");
 	}
 
-	g_pFileSystem->AddSearchPath(pGameDir, "GAME");
+	gpFileSystem->AddSearchPath(pGameDir, "GAME");
 	return 1;
 }
 

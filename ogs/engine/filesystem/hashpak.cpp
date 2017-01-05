@@ -34,6 +34,9 @@
 #include "system/common.hpp"
 #include "memory/mem.hpp"
 #include "console/console.hpp"
+#include "console/cmd.hpp"
+#include "console/cvar.hpp"
+#include "system/system.hpp"
 
 /*
 * Globals initialization

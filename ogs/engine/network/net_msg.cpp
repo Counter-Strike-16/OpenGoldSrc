@@ -25,14 +25,14 @@
  *	you do not wish to do so, delete this exception statement from your
  *	version.
  */
- 
- /// @file
- 
- //#include "precompiled/hpp"
- #include "network/net_msg.hpp"
- #include "system/sizebuf.hpp"
- 
- #ifndef MSG_Functions_region
+
+/// @file
+
+//#include "precompiled/hpp"
+#include "network/net_msg.hpp"
+#include "system/sizebuf.hpp"
+
+#ifndef MSG_Functions_region
 
 // MESSAGE IO FUNCTIONS
 // Handles byte ordering and avoids alignment errors

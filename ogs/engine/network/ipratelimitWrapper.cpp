@@ -28,7 +28,10 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "common/commontypes.h"
+#include "common/netadr.h"
+#include "ipratelimitWrapper.hpp"
 
 #ifdef HOOK_ENGINE
 int (*pCheckIP)(netadr_t adr);

@@ -30,6 +30,7 @@
 
 //#include "precompiled.hpp"
 #include "math/mathlib_e.hpp"
+#include "system/common.hpp"
 
 // Intrisics guide: https://software.intel.com/sites/landingpage/IntrinsicsGuide/
 // Shufps calculator: http://wurstcaptures.untergrund.net/assembler_tricks.html

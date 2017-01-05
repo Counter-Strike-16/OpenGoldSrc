@@ -28,7 +28,10 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "network/net_chan.hpp"
+#include "console/console.hpp"
+#include "system/common.hpp"
 
 int  net_drop;
 char gDownloadFile[256];

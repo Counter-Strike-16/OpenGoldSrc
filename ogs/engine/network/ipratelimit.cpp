@@ -28,7 +28,10 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "maintypes.h"
+#include "common/netadr.h"
+#include "network/ipratelimit.hpp"
 
 //bool (__fastcall *pCIPRateLimit__CheckIP)(CIPRateLimit *obj, int none, netadr_t adr);
 

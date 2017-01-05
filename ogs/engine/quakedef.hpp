@@ -1,8 +1,7 @@
 /// @file
 
-#define QUAKE_GAME // as opposed to utilities
-
-//define	PARANOID			// speed sapping error checking
+// speed sapping error checking
+//define PARANOID
 
 #ifdef _WIN32
 #pragma warning(disable : 4244 4127 4201 4214 4514 4305 4115 4018)
@@ -18,25 +17,37 @@
 
 //#include "bothdefs.h"
 
-#include "system/common.h"
+#include "system/common.hpp"
+#include "system/system.hpp"
+
+#include "memory/zone.hpp"
+#include "memory/mem.hpp"
+
+#include "common/mathlib.hpp"
+
+#include "console/cvar.hpp"
+#include "console/cmd.hpp"
+#include "console/console.hpp"
+
+#include "filesystem/filesystem_internal.hpp"
+#include "filesystem/wad.hpp"
+
+#include "network/net.hpp"
+//#include "network/protocol.hpp"
+
 //#include "bspfile.h"
-#include "graphics/vid.h"
-#include "system/system.h"
-#include "filesystem/filesystem_internal.h"
-#include "memory/zone.h"
-#include "memory/mem.h"
-#include "common/mathlib.h"
-#include "filesystem/wad.h"
-#include "graphics/draw.h"
-#include "console/cvar.h"
+
+#include "graphics/vid.hpp"
+#include "graphics/draw.hpp"
+//#include "graphics/render.hpp"
+
 //#include "screen.h"
-#include "network/net.h"
-//#include "protocol.h"
-#include "console/cmd.h"
+
 //#include "sbar.h"
-#include "sound/sound.h"
-//#include "render.h"
-#include "client/client.h"
+
+#include "sound/sound.hpp"
+
+#include "client/client.hpp"
 
 #ifdef GLQUAKE
 #include "graphics/gl_model.h"

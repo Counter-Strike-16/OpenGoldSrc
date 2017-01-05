@@ -36,6 +36,9 @@
 #include "console/console.hpp"
 #include "system/system.hpp"
 #include "client/client.hpp"
+#include "system/sizebuf.hpp"
+#include "memory/zone.hpp"
+#include "memory/mem.hpp"
 
 int   cmd_argc;
 char *cmd_argv[80];
@@ -802,7 +805,8 @@ qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
 	char      tempData[4096];
 	sizebuf_t tempBuf;
 
-	tempBuf.buffername = __FUNCTION__ "::tempBuf";
+	sprintf(tempBuf.buffername, "%s::tempBuf", __FUNCTION__);
+	
 	tempBuf.data       = (byte *)tempData;
 	tempBuf.maxsize    = 4096;
 	tempBuf.cursize    = 0;

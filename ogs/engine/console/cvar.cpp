@@ -38,6 +38,7 @@
 #include "system/system.hpp"
 #include "memory/zone.hpp"
 #include "server/sv_steam3.hpp"
+#include "system/sizebuf.hpp"
 
 /*
 	All cvar names are case insensitive! Values not

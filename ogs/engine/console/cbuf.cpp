@@ -30,6 +30,10 @@
  
  //#include "precompiled.hpp"
  #include "console/cmd.hpp"
+ #include "system/sizebuf.hpp"
+ #include "system/common.hpp"
+ #include "console/console.hpp"
+ #include "memory/zone.hpp"
  
  sizebuf_t cmd_text;
  

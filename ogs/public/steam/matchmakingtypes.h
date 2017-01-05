@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "system/common.h" //Q_snprinf
+#include "system/common.hpp" //Q_snprinf
 
 //
 // Max size (in bytes of UTF-8 data, not in characters) of server fields, including null terminator.
