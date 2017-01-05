@@ -180,10 +180,6 @@
 	#endif
 #endif // _WIN32
 
-#ifndef _MSC_VER
-	#define __FUNCTION__ __func__
-#endif
-
 #ifdef _WIN32
 	static const bool __isWindows = true;
 	static const bool __isLinux = false;

@@ -78,7 +78,7 @@ char *Ed_StrPool_Alloc(const char *origStr)
 
 	if(len >= ARRAYSIZE(str))
 	{
-		Sys_Error(__FUNCTION__ ": Too long string allocated: %s", origStr);
+		Sys_Error("%s: Too long string allocated: %s", __FUNCTION__, origStr);
 	}
 
 	Q_strcpy(str, origStr);

@@ -321,7 +321,7 @@ void Cvar_Set(const char *var_name, const char *value)
 
 	if(!var)
 	{
-		Con_DPrintf(__FUNCTION__ ": variable \"%s\" not found\n", var_name);
+		Con_DPrintf("%s: variable \"%s\" not found\n", __FUNCTION__, var_name);
 		return;
 	}
 
@@ -368,7 +368,7 @@ void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 
 	if(Cmd_Exists(variable->name))
 	{
-		Con_Printf(__FUNCTION__ ": \"%s\" is a command\n", variable->name);
+		Con_Printf("%s: \"%s\" is a command\n", __FUNCTION__, variable->name);
 		return;
 	}
 

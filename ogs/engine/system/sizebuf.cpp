@@ -35,6 +35,7 @@
 #include "rehlds/common_rehlds.h"
 #include "console/console.hpp"
 #include "system/system.hpp"
+#include "memory/zone.hpp"
 
 #ifndef SZ_Functions_region
 
@@ -63,7 +64,7 @@ void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 	const char *buffername = buf->buffername ? buf->buffername : "???";
 
 	if(length < 0)
-		Sys_Error(__FUNCTION__ ": %i negative length on %s", length, buffername);
+		Sys_Error("%s: %i negative length on %s", __FUNCTION__, length, buffername);
 
 	if(buf->cursize + length > buf->maxsize)
 	{
@@ -71,35 +72,35 @@ void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 		if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
 		{
 			if(!buf->maxsize)
-				Sys_Error(__FUNCTION__ ": tried to write to an uninitialized sizebuf_t: %s", buffername);
+				Sys_Error("%s: tried to write to an uninitialized sizebuf_t: %s", __FUNCTION__, buffername);
 			else if(length > buf->maxsize)
-				Sys_Error(__FUNCTION__ ": %i is > full buffer size on %s", length, buffername);
+				Sys_Error("%s: %i is > full buffer size on %s", __FUNCTION__, length, buffername);
 			else
-				Sys_Error(__FUNCTION__ ": overflow without FSB_ALLOWOVERFLOW set on %s", buffername);
+				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s", __FUNCTION__, buffername);
 		};
 
 		if(length > buf->maxsize)
-			Con_DPrintf(__FUNCTION__ ": %i is > full buffer size on %s, ignoring", length, buffername);
+			Con_DPrintf("%s: %i is > full buffer size on %s, ignoring", __FUNCTION__, length, buffername);
 #else  // REHLDS_FIXES
 		
 		if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
 		{
 			if(!buf->maxsize)
-				Sys_Error(__FUNCTION__ ": Tried to write to an uninitialized sizebuf_t: %s", buffername);
+				Sys_Error("%s: Tried to write to an uninitialized sizebuf_t: %s", __FUNCTION__, buffername);
 			else
-				Sys_Error(__FUNCTION__ ": overflow without FSB_ALLOWOVERFLOW set on %s", buffername);
+				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s", __FUNCTION__, buffername);
 		};
 
 		if(length > buf->maxsize)
 		{
 			if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
-				Sys_Error(__FUNCTION__ ": %i is > full buffer size on %s", length, buffername);
+				Sys_Error("%s: %i is > full buffer size on %s", __FUNCTION__, length, buffername);
 
-			Con_DPrintf(__FUNCTION__ ": %i is > full buffer size on %s, ignoring", length, buffername);
+			Con_DPrintf("%s: %i is > full buffer size on %s, ignoring", __FUNCTION__, length, buffername);
 		};
 #endif // REHLDS_FIXES
 
-		Con_Printf(__FUNCTION__ ": overflow on %s\n", buffername);
+		Con_Printf("%s: overflow on %s\n", __FUNCTION__, buffername);
 
 		SZ_Clear(buf);
 		buf->flags |= SIZEBUF_OVERFLOWED;

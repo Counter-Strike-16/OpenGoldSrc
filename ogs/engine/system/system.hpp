@@ -35,13 +35,13 @@
 #include "engine/eiface.h"
 //#include "public/interface.h"
 //#include "tier0/platform.h"
-//#include "resources/modinfo.hpp"
 #include "public/FileSystem.h"
-//#include "world/pr_dlls.hpp"
+#include "world/pr_dlls.hpp"
 
 //vmodes.h must be included before cdll_int.h (wrect_t declaration)
-//#include "common/wrect.h"
-//#include "engine/cdll_int.h"
+#include "common/wrect.h"
+#include "common/enums.h"
+#include "engine/cdll_int.h"
 
 //#include "engine_launcher_api.h"
 
@@ -81,7 +81,7 @@
 	#define g_modfuncs (*pg_modfuncs)
 	#define g_rgextdll (*pg_rgextdll)
 	#define g_iextdllMac (*pg_iextdllMac)
-	#define gmodinfo (*pgmodinfo)
+	
 	#define gfBackground (*pgfBackground)
 	
 #ifndef _WIN32
@@ -111,14 +111,10 @@
 
 const int MAX_DISCONNECT_REASON = 256;
 
-typedef struct modinfo_s modinfo_t;
-
-class IEngineAPI;
-
 extern qboolean g_bIsWin95;
 extern qboolean g_bIsWin98;
 
-extern double   g_flLastSteamProgressUpdateTime;
+extern double g_flLastSteamProgressUpdateTime;
 
 extern char *szCommonPreloads;
 extern char *szReslistsBaseDir;
@@ -132,18 +128,20 @@ extern char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON];
 
 extern qboolean gfExtendedError;
 
-extern int               giSubState;
-extern int               giActive;
-extern int               giStateInfo;
+extern int giSubState;
+extern int giActive;
+extern int giStateInfo;
+
 extern DLL_FUNCTIONS     gEntityInterface;
 extern NEW_DLL_FUNCTIONS gNewDLLFunctions;
-extern modfuncs_t        g_modfuncs;
+
+extern modfuncs_t g_modfuncs;
 
 extern extensiondll_t g_rgextdll[50];
 
-extern int       g_iextdllMac;
-extern modinfo_t gmodinfo;
-extern qboolean  gfBackground;
+extern int g_iextdllMac;
+
+extern qboolean gfBackground;
 
 #ifndef _WIN32
 extern qboolean gHasMMXTechnology;
@@ -264,7 +262,7 @@ void Legacy_Sys_Printf(char *fmt, ...);
 NOXREF void Legacy_MP3subsys_Suspend_Audio();
 NOXREF void Legacy_MP3subsys_Resume_Audio();
 
-void        Sys_SetupLegacyAPIs();
+void Sys_SetupLegacyAPIs();
 
 NOXREF int  Sys_IsWin95();
 NOXREF int  Sys_IsWin98();
@@ -275,17 +273,24 @@ NOXREF void Sys_CheckOSVersion();
 
 NOXREF void Sys_Init();
 NOXREF void Sys_Shutdown();
+
 void Sys_InitArgv(char *lpCmdLine);
 NOXREF void Sys_ShutdownArgv();
+
 void        Sys_InitMemory();
 void        Sys_ShutdownMemory();
+
 void        Sys_InitLauncherInterface();
 NOXREF void Sys_ShutdownLauncherInterface();
+
 void        Sys_InitAuthentication();
 NOXREF void Sys_ShutdownAuthentication();
+
 void Sys_ShowProgressTicks(char *specialProgressMsg);
+
 int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
 void Sys_ShutdownGame();
+
 void ClearIOStates();
 
 // TODO: Needs rechecking

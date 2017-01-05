@@ -60,4 +60,10 @@ typedef struct modinfo_s
 	int                 clientDllCRC;
 } modinfo_t;
 
+#ifdef HOOK_ENGINE
+	#define gmodinfo (*pgmodinfo)
+#endif
+
+extern modinfo_t gmodinfo;
+
 NOBODY void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue);

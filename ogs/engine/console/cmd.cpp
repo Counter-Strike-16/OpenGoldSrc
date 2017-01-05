@@ -28,8 +28,14 @@
 
 /// @file
 
-#include "precompiled.hpp"
-#include "system/quakedef.hpp"
+//#include "precompiled.hpp"
+//#include "system/quakedef.hpp"
+#include "console/cmd.hpp"
+#include "system/common.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "console/console.hpp"
+#include "system/system.hpp"
+#include "client/client.hpp"
 
 int   cmd_argc;
 char *cmd_argv[80];
@@ -519,20 +525,20 @@ void Cmd_AddCommand(char *cmd_name, xcommand_t function)
 
 	if(host_initialized)
 	{
-		Sys_Error(__FUNCTION__ " after host_initialized");
+		Sys_Error("%s after host_initialized", __FUNCTION__);
 	}
 
 	// Check in variables list
 	if(Cvar_FindVar(cmd_name) != NULL)
 	{
-		Con_Printf(__FUNCTION__ ": \"%s\" already defined as a var\n", cmd_name);
+		Con_Printf("%s: \"%s\" already defined as a var\n", __FUNCTION__, cmd_name);
 		return;
 	}
 
 	// Check if this command is already defined
 	if(Cmd_Exists(cmd_name))
 	{
-		Con_Printf(__FUNCTION__ ": \"%s\" already defined\n", cmd_name);
+		Con_Printf("%s: \"%s\" already defined\n", __FUNCTION__, cmd_name);
 		return;
 	}
 
@@ -553,14 +559,14 @@ void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag)
 	// Check in variables list
 	if(Cvar_FindVar(cmd_name) != NULL)
 	{
-		Con_Printf(__FUNCTION__ ": \"%s\" already defined as a var\n", cmd_name);
+		Con_Printf("%s: \"%s\" already defined as a var\n", __FUNCTION__, cmd_name);
 		return;
 	}
 
 	// Check if this command is already defined
 	if(Cmd_Exists(cmd_name))
 	{
-		Con_Printf(__FUNCTION__ ": \"%s\" already defined\n", cmd_name);
+		Con_Printf("%s: \"%s\" already defined\n", __FUNCTION__, cmd_name);
 		return;
 	}
 
@@ -847,7 +853,7 @@ NOXREF int Cmd_CheckParm(char *parm)
 
 	if(!parm)
 	{
-		Sys_Error(__FUNCTION__ ": NULL");
+		Sys_Error("%s: NULL", __FUNCTION__);
 	}
 
 	int c = Cmd_Argc();

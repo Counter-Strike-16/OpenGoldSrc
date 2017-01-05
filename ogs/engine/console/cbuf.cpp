@@ -46,7 +46,7 @@ void Cbuf_AddText(char *text)
 
 	if(cmd_text.cursize + len >= cmd_text.maxsize)
 	{
-		Con_Printf(__FUNCTION__ ": overflow\n");
+		Con_Printf("%s: overflow\n", __FUNCTION__);
 		return;
 	}
 
@@ -63,7 +63,7 @@ void Cbuf_InsertText(char *text)
 
 	if(cmd_text.cursize + addLen >= cmd_text.maxsize)
 	{
-		Con_Printf(__FUNCTION__ ": overflow\n");
+		Con_Printf("%s: overflow\n", __FUNCTION__);
 		return;
 	}
 
@@ -100,7 +100,7 @@ void Cbuf_InsertTextLines(char *text)
 
 	if(cmd_text.cursize + addLen + 2 >= cmd_text.maxsize)
 	{
-		Con_Printf(__FUNCTION__ ": overflow\n");
+		Con_Printf("%s: overflow\n", __FUNCTION__);
 		return;
 	}
 

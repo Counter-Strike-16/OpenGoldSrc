@@ -407,19 +407,16 @@ void MSG_WriteBitString(const char *p)
 
 void MSG_WriteBitData(void *src, int length)
 {
-	int   i;
 	byte *p = (byte *)src;
 
-	for(i = 0; i < length; i++, p++)
-	{
+	for(int i = 0; i < length; i++, p++)
 		MSG_WriteBits(*p, 8);
-	}
 }
 
 void MSG_WriteBitAngle(float fAngle, int numbits)
 {
 	if(numbits >= 32)
-		Sys_Error(__FUNCTION__ ": Can't write bit angle with 32 bits precision\n");
+		Sys_Error("%s: Can't write bit angle with 32 bits precision\n", __FUNCTION__);
 
 	uint32 shift = (1 << numbits);
 	uint32 mask  = shift - 1;
@@ -518,7 +515,7 @@ uint32 MSG_ReadBits(int numbits)
 #ifdef REHLDS_FIXES
 	if(numbits > 32)
 	{
-		Sys_Error(__FUNCTION__ ": invalid numbits %d\n", numbits);
+		Sys_Error("%s: invalid numbits %d\n", __FUNCTION__, numbits);
 	}
 #endif // REHLDS_FIXES
 

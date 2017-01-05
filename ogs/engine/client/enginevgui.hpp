@@ -31,6 +31,9 @@
 
 #pragma once
 
+#include <cstddef>
+#include "common/commontypes.h"
+#include "public/archtypes.h"
 #include "IEngineVGui.h"
 
 /// Enumeration of level loading progress bar spots
@@ -109,7 +112,7 @@ public:
 
 	virtual void EnabledProgressBarForNextLoad() = 0;
 
-	virtual void UpdateProgressBar(LevelLoadingProgress_e progress) = 0;
+	virtual void UpdateProgressBar(eLevelLoadingProgress progress) = 0;
 	virtual void UpdateCustomProgressBar(float progress, const wchar_t *desc) = 0;
 
 	virtual void StartCustomProgress()  = 0;
@@ -196,7 +199,7 @@ public:
 
 	void EnabledProgressBarForNextLoad();
 
-	void UpdateProgressBar(LevelLoadingProgress_e progress);
+	void UpdateProgressBar(eLevelLoadingProgress progress);
 	void UpdateCustomProgressBar(float progress, const wchar_t *desc);
 
 	void StartCustomProgress();

@@ -138,9 +138,7 @@ void Cache_FreeHigh(int new_high_hunk)
 void Cache_UnlinkLRU(cache_system_t *cs)
 {
 	if(!cs->lru_next || !cs->lru_prev)
-	{
-		Sys_Error(__FUNCTION__ ": NULL link");
-	}
+		Sys_Error("%s: NULL link", __FUNCTION__);
 
 	cs->lru_next->lru_prev = cs->lru_prev;
 	cs->lru_prev->lru_next = cs->lru_next;
@@ -150,9 +148,7 @@ void Cache_UnlinkLRU(cache_system_t *cs)
 void Cache_MakeLRU(cache_system_t *cs)
 {
 	if(cs->lru_next || cs->lru_prev)
-	{
-		Sys_Error(__FUNCTION__ ": active link");
-	}
+		Sys_Error("%s: active link". __FUNCTION__);
 
 	cache_head.lru_next->lru_prev = cs;
 	cs->lru_next                  = cache_head.lru_next;
@@ -177,9 +173,7 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 	if(!nobottom && cache_head.prev == &cache_head)
 	{
 		if(hunk_size - hunk_low_used - hunk_high_used < size)
-		{
-			Sys_Error(__FUNCTION__ ": %i is greater then free hunk", size);
-		}
+			Sys_Error("%s: %i is greater then free hunk", __FUNCTION__, size);
 
 		newmem = (cache_system_t *)(hunk_base + hunk_low_used);
 		Q_memset(newmem, 0, sizeof(cache_system_t));
@@ -418,9 +412,7 @@ Frees the memory and removes it from the LRU list
 void Cache_Free(cache_user_t *c)
 {
 	if(!c->data)
-	{
-		Sys_Error(__FUNCTION__ ": not allocated");
-	}
+		Sys_Error("%s: not allocated", __FUNCTION__);
 
 	cache_system_t *cs = ((cache_system_t *)c->data - 1);
 
@@ -475,14 +467,10 @@ void *Cache_Alloc(cache_user_t *c, int size, char *name)
 	cache_system_t *cs;
 
 	if(c->data)
-	{
-		Sys_Error(__FUNCTION__ ": already allocated");
-	}
+		Sys_Error("%s: already allocated", __FUNCTION__);
 
 	if(size <= 0)
-	{
-		Sys_Error(__FUNCTION__ ": size %i", size);
-	}
+		Sys_Error("%s: size %i", __FUNCTION__, size);
 
 	while(true)
 	{
@@ -500,7 +488,7 @@ void *Cache_Alloc(cache_user_t *c, int size, char *name)
 
 		if(cache_head.lru_prev == &cache_head)
 		{
-			Sys_Error(__FUNCTION__ ": out of memory");
+			Sys_Error("%s: out of memory", __FUNCTION__);
 		}
 
 		Cache_Free(cache_head.lru_prev->user);
@@ -531,13 +519,9 @@ void Memory_Init(void *buf, int size)
 	if(p)
 	{
 		if(p < com_argc - 1)
-		{
 			zonesize = Q_atoi(com_argv[p + 1]) * 1024;
-		}
 		else
-		{
-			Sys_Error(__FUNCTION__ ": you must specify a size in KB after -zone");
-		}
+			Sys_Error("%s: you must specify a size in KB after -zone", __FUNCTION__);
 	}
 
 	mainzone = ((memzone_t *)Hunk_AllocName(zonesize, "zone"));

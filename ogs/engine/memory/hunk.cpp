@@ -69,10 +69,10 @@ void Hunk_Check()
 	for(hunk_t *h = (hunk_t *)hunk_base; (byte *)h != (hunk_base + hunk_low_used); h = (hunk_t *)((byte *)h + h->size))
 	{
 		if(h->sentinel != HUNK_SENTINEL)
-			Sys_Error(__FUNCTION__ ": trahsed sentinel");
+			Sys_Error("%s: trahsed sentinel", __FUNCTION__);
 
 		if(h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
-			Sys_Error(__FUNCTION__ ": bad size");
+			Sys_Error("%s: bad size", __FUNCTION__);
 	};
 };
 
@@ -130,9 +130,9 @@ NOXREF void Hunk_Print(qboolean all)
 		// run consistancy checks
 		//
 		if(h->sentinel != HUNK_SENTINEL)
-			Sys_Error(__FUNCTION__ ": trahsed sentinal");
+			Sys_Error("%s: trahsed sentinal", __FUNCTION__);
 		if(h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
-			Sys_Error(__FUNCTION__ ": bad size");
+			Sys_Error("%s: bad size", __FUNCTION__);
 
 		next = (hunk_t *)((byte *)h + h->size);
 		count++;
@@ -173,12 +173,12 @@ Hunk_AllocName
 void *Hunk_AllocName(int size, const char *name)
 {
 	if(size < 0)
-		Sys_Error(__FUNCTION__ ": bad size: %i", size);
+		Sys_Error("%s: bad size: %i", __FUNCTION__, size);
 
 	int totalsize = ((size + 15) & ~15) + sizeof(hunk_t);
 
 	if(hunk_size - hunk_high_used - hunk_low_used < totalsize)
-		Sys_Error(__FUNCTION__ ": failed on %i bytes", totalsize);
+		Sys_Error("%s: failed on %i bytes", __FUNCTION__, totalsize);
 
 	hunk_t *h = (hunk_t *)(hunk_base + hunk_low_used);
 
@@ -207,7 +207,7 @@ int Hunk_LowMark()
 void Hunk_FreeToLowMark(int mark)
 {
 	if(mark < 0 || mark > hunk_low_used)
-		Sys_Error(__FUNCTION__ ": bad mark %i", mark);
+		Sys_Error("%s: bad mark %i", __FUNCTION__, mark);
 
 	hunk_low_used = mark;
 };
@@ -232,7 +232,7 @@ void Hunk_FreeToHighMark(int mark)
 	};
 
 	if(mark < 0 || mark > hunk_high_used)
-		Sys_Error(__FUNCTION__ ": bad mark %i", mark);
+		Sys_Error("%s: bad mark %i", __FUNCTION__, mark);
 
 	hunk_high_used = mark;
 };
@@ -245,7 +245,7 @@ Hunk_HighAllocName
 void *Hunk_HighAllocName(int size, const char *name)
 {
 	if(size < 0)
-		Sys_Error(__FUNCTION__ ": bad size: %i", size);
+		Sys_Error("%s: bad size: %i", __FUNCTION__, size);
 
 	if(hunk_tempactive)
 	{
@@ -257,7 +257,7 @@ void *Hunk_HighAllocName(int size, const char *name)
 
 	if(hunk_size - hunk_high_used - hunk_low_used < size)
 	{
-		Con_Printf(__FUNCTION__ ": failed on %i bytes\n", size);
+		Con_Printf("%s: failed on %i bytes\n", __FUNCTION__, size);
 		return 0;
 	};
 

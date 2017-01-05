@@ -24,7 +24,6 @@
 
 // #include "system/quakedef.hpp"
 // #include "system/sys.hpp"
-#include "system/system.hpp"
 
 //#include "world/pr_cmds.hpp"
 

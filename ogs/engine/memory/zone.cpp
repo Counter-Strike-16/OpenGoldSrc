@@ -100,15 +100,15 @@ void Z_ClearZone(memzone_t *zone, int size)
 void Z_Free(void *ptr)
 {
 	if(!ptr)
-		Sys_Error(__FUNCTION__ ": NULL pointer");
+		Sys_Error("%s: NULL pointer", __FUNCTION__);
 
 	memblock_t *block = (memblock_t *)((char *)ptr - sizeof(memblock_t));
 
 	if(block->id != ZONEID)
-		Sys_Error(__FUNCTION__ ": freed a pointer without ZONEID");
+		Sys_Error("%s: freed a pointer without ZONEID", __FUNCTION__);
 
 	if(!block->tag)
-		Sys_Error(__FUNCTION__ ": freed a freed pointer");
+		Sys_Error("%s: freed a freed pointer", __FUNCTION__);
 
 	block->tag = 0;
 
@@ -146,7 +146,7 @@ void *Z_Malloc(int size)
 	void *buf = Z_TagMalloc(size, 1);
 
 	if(!buf)
-		Sys_Error(__FUNCTION__ ": failed on allocation of %i bytes", size);
+		Sys_Error("%s: failed on allocation of %i bytes", __FUNCTION__, size);
 
 	Q_memset(buf, 0, size);
 	return buf;
@@ -158,7 +158,7 @@ void *Z_TagMalloc(int size, int tag)
 	memblock_t *start, *rover, *newz, *base;
 
 	if(tag == 0)
-		Sys_Error(__FUNCTION__ ": tried to use a 0 tag");
+		Sys_Error("%s: tried to use a 0 tag", __FUNCTION__);
 
 	size += sizeof(memblock_t);
 	size += 4;
@@ -236,13 +236,13 @@ void Z_CheckHeap()
 			break;
 
 		if((byte *)block + block->size != (byte *)block->next)
-			Sys_Error(__FUNCTION__ ": block size does not touch the next block\n");
+			Sys_Error("%s: block size does not touch the next block\n", __FUNCTION__);
 
 		if(block->next->prev != block)
-			Sys_Error(__FUNCTION__ ": next block doesn't have proper back link\n");
+			Sys_Error("%s: next block doesn't have proper back link\n", __FUNCTION__);
 
 		if(!block->tag && !block->next->tag)
-			Sys_Error(__FUNCTION__ ": two consecutive free blocks\n");
+			Sys_Error("%s: two consecutive free blocks\n", __FUNCTION__);
 	};
 };
 
