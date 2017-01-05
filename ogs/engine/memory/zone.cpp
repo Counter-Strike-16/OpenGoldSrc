@@ -48,8 +48,8 @@ all big things are allocated on the hunk.
 ==============================================================================
 */
 
-#define ZONEID 0x001d4a11
-#define MINFRAGMENT 64
+const int ZONEID = 0x001d4a11;
+const int MINFRAGMENT = 64;
 
 typedef struct memblock_s
 {
@@ -100,21 +100,15 @@ void Z_ClearZone(memzone_t *zone, int size)
 void Z_Free(void *ptr)
 {
 	if(!ptr)
-	{
 		Sys_Error(__FUNCTION__ ": NULL pointer");
-	}
 
 	memblock_t *block = (memblock_t *)((char *)ptr - sizeof(memblock_t));
 
 	if(block->id != ZONEID)
-	{
 		Sys_Error(__FUNCTION__ ": freed a pointer without ZONEID");
-	}
 
 	if(!block->tag)
-	{
 		Sys_Error(__FUNCTION__ ": freed a freed pointer");
-	}
 
 	block->tag = 0;
 
@@ -127,12 +121,10 @@ void Z_Free(void *ptr)
 		block->next->prev = otherblock;
 
 		if(block == mainzone->rover)
-		{
 			mainzone->rover = otherblock;
-		}
 
 		block = otherblock;
-	}
+	};
 
 	otherblock = block->next;
 
@@ -143,11 +135,9 @@ void Z_Free(void *ptr)
 		otherblock->next->prev = block;
 
 		if(otherblock == mainzone->rover)
-		{
 			mainzone->rover = block;
-		}
-	}
-}
+	};
+};
 
 void *Z_Malloc(int size)
 {
@@ -156,13 +146,11 @@ void *Z_Malloc(int size)
 	void *buf = Z_TagMalloc(size, 1);
 
 	if(!buf)
-	{
 		Sys_Error(__FUNCTION__ ": failed on allocation of %i bytes", size);
-	}
 
 	Q_memset(buf, 0, size);
 	return buf;
-}
+};
 
 void *Z_TagMalloc(int size, int tag)
 {
@@ -170,9 +158,7 @@ void *Z_TagMalloc(int size, int tag)
 	memblock_t *start, *rover, *newz, *base;
 
 	if(tag == 0)
-	{
 		Sys_Error(__FUNCTION__ ": tried to use a 0 tag");
-	}
 
 	size += sizeof(memblock_t);
 	size += 4;
@@ -184,19 +170,14 @@ void *Z_TagMalloc(int size, int tag)
 	do
 	{
 		if(rover == start)
-		{
 			return (NULL);
-		}
 
 		if(rover->tag)
-		{
 			base = rover = rover->next;
-		}
 		else
-		{
 			rover = rover->next;
-		}
-	} while(base->tag || base->size < size);
+	}
+	while(base->tag || base->size < size);
 
 	extra = base->size - size;
 
@@ -211,7 +192,7 @@ void *Z_TagMalloc(int size, int tag)
 		newz->next->prev = newz;
 		base->next       = newz;
 		base->size       = size;
-	}
+	};
 
 	base->tag       = tag;
 	mainzone->rover = base->next;
@@ -221,67 +202,48 @@ void *Z_TagMalloc(int size, int tag)
 	*(int *)((byte *)base + base->size - 4) = ZONEID;
 
 	return (void *)((byte *)base + sizeof(memblock_t));
-}
+};
 
 NOXREF void Z_Print(memzone_t *zone)
 {
 	NOXREFCHECK;
-
-	memblock_t *block;
+	
 	Con_Printf("zone size: %i  location: %p\n", mainzone->size, mainzone);
 
-	for(block = zone->blocklist.next;; block = block->next)
+	for(memblock_t *block = zone->blocklist.next;; block = block->next)
 	{
 		Con_Printf("block:%p    size:%7i    tag:%3i\n", block, block->size, block->tag);
 
 		if(block->next == &zone->blocklist)
-		{
 			break; // all blocks have been hit
-		}
 
 		if((byte *)block + block->size != (byte *)block->next)
-		{
 			Con_Printf("ERROR: block size does not touch the next block\n");
-		}
 
 		if(block->next->prev != block)
-		{
 			Con_Printf("ERROR: next block doesn't have proper back link\n");
-		}
 
 		if(!block->tag && !block->next->tag)
-		{
 			Con_Printf("ERROR: two consecutive free blocks\n");
-		}
-	}
-}
+	};
+};
 
 void Z_CheckHeap()
 {
-	memblock_t *block;
-
-	for(block = mainzone->blocklist.next;; block = block->next)
+	for(memblock_t *block = mainzone->blocklist.next;; block = block->next)
 	{
 		if(block->next == &mainzone->blocklist)
-		{
 			break;
-		}
 
 		if((byte *)block + block->size != (byte *)block->next)
-		{
 			Sys_Error(__FUNCTION__ ": block size does not touch the next block\n");
-		}
 
 		if(block->next->prev != block)
-		{
 			Sys_Error(__FUNCTION__ ": next block doesn't have proper back link\n");
-		}
 
 		if(!block->tag && !block->next->tag)
-		{
 			Sys_Error(__FUNCTION__ ": two consecutive free blocks\n");
-		}
-	}
-}
+	};
+};
 
 #endif // Z_Functions_region

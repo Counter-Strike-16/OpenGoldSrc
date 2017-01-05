@@ -25,12 +25,13 @@
 *    version.
 *
 */
+
 #pragma once
 
 #include "public/archtypes.h"
 
 /* <8f1> ../engine/cmd.h:65 */
-typedef void(*xcommand_t)(void);
+typedef void (*xcommand_t)();
 
 /* <904> ../engine/cmd.h:71 */
 typedef struct cmd_function_s

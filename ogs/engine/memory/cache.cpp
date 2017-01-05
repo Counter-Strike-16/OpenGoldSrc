@@ -51,6 +51,7 @@ typedef struct cache_system_s
 	int             size;
 	cache_user_t *  user;
 	char            name[CACHE_NAME_LEN];
+	
 	cache_system_t *prev;
 	cache_system_t *next;
 	cache_system_t *lru_prev;
@@ -70,9 +71,7 @@ void Cache_Move(cache_system_t *c)
 	cache_system_t *newmem = Cache_TryAlloc(c->size, 1);
 
 	if(!newmem)
-	{
 		Cache_Free(c->user);
-	}
 	else
 	{
 		Q_memcpy(newmem + 1, c + 1, c->size - sizeof(cache_system_t));
@@ -80,8 +79,8 @@ void Cache_Move(cache_system_t *c)
 		Q_memcpy(newmem->name, c->name, sizeof(newmem->name));
 		Cache_Free(c->user);
 		newmem->user->data = (void *)(newmem + 1);
-	}
-}
+	};
+};
 
 /*
 ============
@@ -103,8 +102,8 @@ void Cache_FreeLow(int new_low_hunk)
 		if((byte *)c >= hunk_base + new_low_hunk)
 			return;    // there is space to grow the hunk
 		Cache_Move(c); // reclaim the space
-	}
-}
+	};
+};
 
 /*
 ============
