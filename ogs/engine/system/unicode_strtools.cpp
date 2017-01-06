@@ -26,7 +26,8 @@
 *
 */
 
-#include "precompiled.h"
+//#include "precompiled.hpp"
+#include "system/unicode_strtools.h"
 
 // Table for Q_iswprint
 static const uint32_t g_isPrintTable[2048] = {

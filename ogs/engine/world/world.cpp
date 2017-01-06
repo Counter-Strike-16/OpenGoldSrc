@@ -28,8 +28,14 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "world/world.hpp"
+#include "engine/edict.h"
+#include "system/common.hpp"
+#include "server/server.hpp"
+#include "server/sv_phys.hpp"
+#include "system/system.hpp"
+#include "console/console.hpp"
 
 hull_t          box_hull;
 hull_t          beam_hull;

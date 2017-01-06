@@ -313,7 +313,7 @@ void CL_RecordHUDCommand(char *cmdname);
 
 void R_DecalRemoveAll(int textureIndex);
 
-void     CL_CheckForResend();
+void CL_CheckForResend();
 
 qboolean CL_CheckFile(sizebuf_t *msg, char *filename);
 
@@ -342,24 +342,14 @@ void     CL_AdjustClock();
 void CL_Save(const char *name);
 void CL_HudMessage(const char *pMessage);
 
-extern "C" void ClientDLL_UpdateClientData();
-extern "C" void ClientDLL_HudVidInit();
-
 void Chase_Init();
-
-extern "C" void ClientDLL_Init();
 
 int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf);
 
 void CL_ShutDownUsrMessages();
 void CL_ShutDownClientStatic();
 
-extern "C" void ClientDLL_MoveClient(struct playermove_s *ppmove);
-
 void CL_Shutdown();
-
-extern "C" void ClientDLL_Frame(double time);
-extern "C" void ClientDLL_CAM_Think();
 
 void CL_InitEventSystem();
 void CL_CheckClientState();

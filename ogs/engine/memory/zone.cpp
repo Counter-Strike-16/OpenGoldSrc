@@ -30,6 +30,9 @@
 
 //#include "precompiled.hpp"
 #include "memory/zone.hpp"
+#include "system/system.hpp"
+#include "console/console.hpp"
+#include "system/common.hpp"
 
 #ifndef Z_Functions_region
 

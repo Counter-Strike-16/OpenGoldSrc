@@ -32,7 +32,7 @@ public:
 	virtual void Stop(void) = 0;
 	virtual bool IsRunning(void) = 0;
 	virtual void RunFrame(void) = 0;
-	virtual void ShutdownMessage(unsigned int shutdownID) = 0;;
+	virtual void ShutdownMessage(unsigned int shutdownID) = 0;
 	virtual VPANEL AllocPanel(void) = 0;
 	virtual void FreePanel(VPANEL panel) = 0;
 	virtual void DPrintf(const char *format, ...) = 0;
@@ -42,7 +42,7 @@ public:
 	virtual VPANEL HandleToPanel(HPanel index) = 0;
 	virtual void MarkPanelForDeletion(VPANEL panel) = 0;
 	virtual void AddTickSignal(VPANEL panel, int intervalMilliseconds = 0) = 0;
-	virtual void RemoveTickSignal(VPANEL panekl);
+	virtual void RemoveTickSignal(VPANEL panel) = 0;
 	virtual void PostMessage(VPANEL target, KeyValues *params, VPANEL from, float delaySeconds = 0.0) = 0;
 	virtual HContext CreateContext(void) = 0;
 	virtual void DestroyContext(HContext context) = 0;

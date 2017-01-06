@@ -1,27 +1,35 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 /// @brief model loading and caching
 
-#include "gl_local.h"
+#include "gl_local.hpp"
 
 model_t *loadmodel;
 int      modfilelen;
@@ -137,7 +145,7 @@ byte *Mod_ClusterPVS(int cluster, model_t *model)
 Mod_Modellist_f
 ================
 */
-void Mod_Modellist_f(void)
+void Mod_Modellist_f()
 {
 	int      i;
 	model_t *mod;
@@ -160,7 +168,7 @@ void Mod_Modellist_f(void)
 Mod_Init
 ===============
 */
-void Mod_Init(void)
+void Mod_Init()
 {
 	memset(mod_novis, 0xff, sizeof(mod_novis));
 }
@@ -222,7 +230,7 @@ model_t *Mod_ForName(char *name, qboolean crash)
 	//
 	// load the file
 	//
-	modfilelen = ri.FS_LoadFile(mod->name, &buf);
+	modfilelen = gpFileSystem->LoadFile(mod->name, &buf);
 	if(!buf)
 	{
 		if(crash)
@@ -263,7 +271,7 @@ model_t *Mod_ForName(char *name, qboolean crash)
 
 	loadmodel->extradatasize = Hunk_End();
 
-	ri.FS_FreeFile(buf);
+	gpFileSystem->FreeFile(buf);
 
 	return mod;
 }
@@ -536,7 +544,7 @@ void CalcSurfaceExtents(msurface_t *s)
 
 void GL_BuildPolygonFromSurface(msurface_t *fa);
 void GL_CreateSurfaceLightmap(msurface_t *surf);
-void GL_EndBuildingLightmaps(void);
+void GL_EndBuildingLightmaps();
 void GL_BeginBuildingLightmaps(model_t *m);
 
 /*
@@ -1155,7 +1163,7 @@ R_EndRegistration
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-void R_EndRegistration(void)
+void R_EndRegistration()
 {
 	int      i;
 	model_t *mod;
@@ -1191,7 +1199,7 @@ void Mod_Free(model_t *mod)
 Mod_FreeAll
 ================
 */
-void Mod_FreeAll(void)
+void Mod_FreeAll()
 {
 	int i;
 

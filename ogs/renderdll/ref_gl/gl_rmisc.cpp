@@ -1,26 +1,34 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
-#include "gl_local.h"
+#include "gl_local.hpp"
 
 /*
 ==================
@@ -39,7 +47,7 @@ byte dottexture[8][8] =
         {0, 0, 0, 0, 0, 0, 0, 0},
 };
 
-void R_InitParticleTexture(void)
+void R_InitParticleTexture()
 {
 	int  x, y;
 	byte data[8][8][4];
@@ -97,7 +105,7 @@ typedef struct _TargaHeader
 GL_ScreenShot_f
 ================== 
 */
-void GL_ScreenShot_f(void)
+void GL_ScreenShot_f()
 {
 	byte *buffer;
 	char  picname[80];
@@ -106,7 +114,7 @@ void GL_ScreenShot_f(void)
 	FILE *f;
 
 	// create the scrnshots directory if it doesn't exist
-	Com_sprintf(checkname, sizeof(checkname), "%s/scrnshot", ri.FS_Gamedir());
+	Com_sprintf(checkname, sizeof(checkname), "%s/scrnshot", gpFileSystem->Gamedir());
 	Sys_Mkdir(checkname);
 
 	//
@@ -118,7 +126,7 @@ void GL_ScreenShot_f(void)
 	{
 		picname[5] = i / 10 + '0';
 		picname[6] = i % 10 + '0';
-		Com_sprintf(checkname, sizeof(checkname), "%s/scrnshot/%s", ri.FS_Gamedir(), picname);
+		Com_sprintf(checkname, sizeof(checkname), "%s/scrnshot/%s", gpFileSystem->Gamedir(), picname);
 		f = fopen(checkname, "rb");
 		if(!f)
 			break; // file doesn't exist
@@ -161,7 +169,7 @@ void GL_ScreenShot_f(void)
 /*
 ** GL_Strings_f
 */
-void GL_Strings_f(void)
+void GL_Strings_f()
 {
 	ri.Con_Printf(PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string);
 	ri.Con_Printf(PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string);
@@ -172,7 +180,7 @@ void GL_Strings_f(void)
 /*
 ** GL_SetDefaultState
 */
-void GL_SetDefaultState(void)
+void GL_SetDefaultState()
 {
 	qglClearColor(1, 0, 0.5, 0.5);
 	qglCullFace(GL_FRONT);
@@ -228,7 +236,7 @@ void GL_SetDefaultState(void)
 	GL_UpdateSwapInterval();
 }
 
-void GL_UpdateSwapInterval(void)
+void GL_UpdateSwapInterval()
 {
 	if(gl_swapinterval->modified)
 	{

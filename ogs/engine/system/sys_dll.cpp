@@ -806,6 +806,7 @@ void LoadEntityDLLs(const char *szBaseDir)
 #else  // _WIN32
 			if(Q_stricmp(szKey, "gamedll_linux"))
 #endif // _WIN32
+			// TODO: Mac support
 			{
 				DLL_SetModKey(&gmodinfo, szKey, szValue);
 			}
@@ -851,11 +852,13 @@ void LoadEntityDLLs(const char *szBaseDir)
 		}
 		Sys_FindClose();
 	}
+	
 	gNewDLLFunctions.pfnOnFreeEntPrivateData = NULL;
 	gNewDLLFunctions.pfnGameShutdown         = NULL;
 	gNewDLLFunctions.pfnShouldCollide        = NULL;
 	gNewDLLFunctions.pfnCvarValue            = NULL;
 	gNewDLLFunctions.pfnCvarValue2           = NULL;
+	
 	pNewAPI                                  = (NEW_DLL_FUNCTIONS_FN)GetDispatch("GetNewDLLFunctions");
 	if(pNewAPI)
 	{

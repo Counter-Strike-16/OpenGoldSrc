@@ -1,22 +1,30 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
@@ -30,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <GL/gl.h>
 
 qboolean QGL_Init(const char *dllname);
-void QGL_Shutdown(void);
+void QGL_Shutdown();
 
 #ifndef APIENTRY
 #define APIENTRY
@@ -110,8 +118,8 @@ extern void(APIENTRY *qglEdgeFlagPointer)(GLsizei stride, const GLvoid *pointer)
 extern void(APIENTRY *qglEdgeFlagv)(const GLboolean *flag);
 extern void(APIENTRY *qglEnable)(GLenum cap);
 extern void(APIENTRY *qglEnableClientState)(GLenum array);
-extern void(APIENTRY *qglEnd)(void);
-extern void(APIENTRY *qglEndList)(void);
+extern void(APIENTRY *qglEnd)();
+extern void(APIENTRY *qglEndList)();
 extern void(APIENTRY *qglEvalCoord1d)(GLdouble u);
 extern void(APIENTRY *qglEvalCoord1dv)(const GLdouble *u);
 extern void(APIENTRY *qglEvalCoord1f)(GLfloat u);
@@ -125,8 +133,8 @@ extern void(APIENTRY *qglEvalMesh2)(GLenum mode, GLint i1, GLint i2, GLint j1, G
 extern void(APIENTRY *qglEvalPoint1)(GLint i);
 extern void(APIENTRY *qglEvalPoint2)(GLint i, GLint j);
 extern void(APIENTRY *qglFeedbackBuffer)(GLsizei size, GLenum type, GLfloat *buffer);
-extern void(APIENTRY *qglFinish)(void);
-extern void(APIENTRY *qglFlush)(void);
+extern void(APIENTRY *qglFinish)();
+extern void(APIENTRY *qglFlush)();
 extern void(APIENTRY *qglFogf)(GLenum pname, GLfloat param);
 extern void(APIENTRY *qglFogfv)(GLenum pname, const GLfloat *params);
 extern void(APIENTRY *qglFogi)(GLenum pname, GLint param);
@@ -138,7 +146,7 @@ extern void(APIENTRY *qglGenTextures)(GLsizei n, GLuint *textures);
 extern void(APIENTRY *qglGetBooleanv)(GLenum pname, GLboolean *params);
 extern void(APIENTRY *qglGetClipPlane)(GLenum plane, GLdouble *equation);
 extern void(APIENTRY *qglGetDoublev)(GLenum pname, GLdouble *params);
-extern GLenum(APIENTRY *qglGetError)(void);
+extern GLenum(APIENTRY *qglGetError)();
 extern void(APIENTRY *qglGetFloatv)(GLenum pname, GLfloat *params);
 extern void(APIENTRY *qglGetIntegerv)(GLenum pname, GLint *params);
 extern void(APIENTRY *qglGetLightfv)(GLenum light, GLenum pname, GLfloat *params);
@@ -177,7 +185,7 @@ extern void(APIENTRY *qglIndexs)(GLshort c);
 extern void(APIENTRY *qglIndexsv)(const GLshort *c);
 extern void(APIENTRY *qglIndexub)(GLubyte c);
 extern void(APIENTRY *qglIndexubv)(const GLubyte *c);
-extern void(APIENTRY *qglInitNames)(void);
+extern void(APIENTRY *qglInitNames)();
 extern void(APIENTRY *qglInterleavedArrays)(GLenum format, GLsizei stride, const GLvoid *pointer);
 extern GLboolean(APIENTRY *qglIsEnabled)(GLenum cap);
 extern GLboolean(APIENTRY *qglIsList)(GLuint list);
@@ -193,7 +201,7 @@ extern void(APIENTRY *qglLightiv)(GLenum light, GLenum pname, const GLint *param
 extern void(APIENTRY *qglLineStipple)(GLint factor, GLushort pattern);
 extern void(APIENTRY *qglLineWidth)(GLfloat width);
 extern void(APIENTRY *qglListBase)(GLuint base);
-extern void(APIENTRY *qglLoadIdentity)(void);
+extern void(APIENTRY *qglLoadIdentity)();
 extern void(APIENTRY *qglLoadMatrixd)(const GLdouble *m);
 extern void(APIENTRY *qglLoadMatrixf)(const GLfloat *m);
 extern void(APIENTRY *qglLoadName)(GLuint name);
@@ -239,14 +247,14 @@ extern void(APIENTRY *qglPointSize)(GLfloat size);
 extern void(APIENTRY *qglPolygonMode)(GLenum face, GLenum mode);
 extern void(APIENTRY *qglPolygonOffset)(GLfloat factor, GLfloat units);
 extern void(APIENTRY *qglPolygonStipple)(const GLubyte *mask);
-extern void(APIENTRY *qglPopAttrib)(void);
-extern void(APIENTRY *qglPopClientAttrib)(void);
-extern void(APIENTRY *qglPopMatrix)(void);
-extern void(APIENTRY *qglPopName)(void);
+extern void(APIENTRY *qglPopAttrib)();
+extern void(APIENTRY *qglPopClientAttrib)();
+extern void(APIENTRY *qglPopMatrix)();
+extern void(APIENTRY *qglPopName)();
 extern void(APIENTRY *qglPrioritizeTextures)(GLsizei n, const GLuint *textures, const GLclampf *priorities);
 extern void(APIENTRY *qglPushAttrib)(GLbitfield mask);
 extern void(APIENTRY *qglPushClientAttrib)(GLbitfield mask);
-extern void(APIENTRY *qglPushMatrix)(void);
+extern void(APIENTRY *qglPushMatrix)();
 extern void(APIENTRY *qglPushName)(GLuint name);
 extern void(APIENTRY *qglRasterPos2d)(GLdouble x, GLdouble y);
 extern void(APIENTRY *qglRasterPos2dv)(const GLdouble *v);
@@ -378,7 +386,7 @@ extern void(APIENTRY *qglPointParameterfvEXT)(GLenum param, const GLfloat *value
 extern void(APIENTRY *qglColorTableEXT)(int, int, int, int, int, const void *);
 
 extern void(APIENTRY *qglLockArraysEXT)(int, int);
-extern void(APIENTRY *qglUnlockArraysEXT)(void);
+extern void(APIENTRY *qglUnlockArraysEXT)();
 
 extern void(APIENTRY *qglMTexCoord2fSGIS)(GLenum, GLfloat, GLfloat);
 extern void(APIENTRY *qglSelectTextureSGIS)(GLenum);
@@ -395,8 +403,8 @@ extern BOOL(WINAPI *qwglCopyContext)(HGLRC, HGLRC, UINT);
 extern HGLRC(WINAPI *qwglCreateContext)(HDC);
 extern HGLRC(WINAPI *qwglCreateLayerContext)(HDC, int);
 extern BOOL(WINAPI *qwglDeleteContext)(HGLRC);
-extern HGLRC(WINAPI *qwglGetCurrentContext)(VOID);
-extern HDC(WINAPI *qwglGetCurrentDC)(VOID);
+extern HGLRC(WINAPI *qwglGetCurrentContext)();
+extern HDC(WINAPI *qwglGetCurrentDC)();
 extern PROC(WINAPI *qwglGetProcAddress)(LPCSTR);
 extern BOOL(WINAPI *qwglMakeCurrent)(HDC, HGLRC);
 extern BOOL(WINAPI *qwglShareLists)(HGLRC, HGLRC);

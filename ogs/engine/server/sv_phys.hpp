@@ -32,7 +32,7 @@
 
 #include "maintypes.h"
 #include "rehlds/model.h"
-#include "console/cvar.h"
+#include "console/cvar.hpp"
 
 #ifdef HOOK_ENGINE
 #define sv_maxvelocity (*psv_maxvelocity)

@@ -49,7 +49,7 @@
 #define GL_COLOR_INDEX8_EXT GL_COLOR_INDEX
 #endif
 
-#include "../client/ref.h"
+#include "ref.hpp"
 
 #include "qgl.h"
 

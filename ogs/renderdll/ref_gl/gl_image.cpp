@@ -1,26 +1,34 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
 /// @file
 
-#include "gl_local.h"
+#include "gl_local.hpp"
 
 image_t gltextures[MAX_GLTEXTURES];
 int     numgltextures;
@@ -288,7 +296,7 @@ void GL_TextureSolidMode(char *string)
 GL_ImageList_f
 ===============
 */
-void GL_ImageList_f(void)
+void GL_ImageList_f()
 {
 	int         i;
 	image_t *   image;
@@ -394,7 +402,7 @@ int Scrap_AllocBlock(int w, int h, int *x, int *y)
 
 int scrap_uploads;
 
-void Scrap_Upload(void)
+void Scrap_Upload()
 {
 	scrap_uploads++;
 	GL_Bind(TEXNUM_SCRAPS);
@@ -430,7 +438,7 @@ void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height
 	//
 	// load the file
 	//
-	len = ri.FS_LoadFile(filename, (void **)&raw);
+	len = gpFileSystem->LoadFile(filename, (void **)&raw);
 	if(!raw)
 	{
 		ri.Con_Printf(PRINT_DEVELOPER, "Bad pcx file %s\n", filename);
@@ -502,7 +510,7 @@ void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height
 		*pic = NULL;
 	}
 
-	ri.FS_FreeFile(pcx);
+	gpFileSystem->FreeFile(pcx);
 }
 
 /*
@@ -544,7 +552,7 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 	//
 	// load the file
 	//
-	length = ri.FS_LoadFile(name, (void **)&buffer);
+	length = gpFileSystem->LoadFile(name, (void **)&buffer);
 	if(!buffer)
 	{
 		ri.Con_Printf(PRINT_DEVELOPER, "Bad tga file %s\n", name);
@@ -721,7 +729,7 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 		}
 	}
 
-	ri.FS_FreeFile(buffer);
+	gpFileSystem->FreeFile(buffer);
 }
 
 /*
@@ -1326,7 +1334,7 @@ image_t *GL_LoadWal(char *name)
 	int       width, height, ofs;
 	image_t * image;
 
-	ri.FS_LoadFile(name, (void **)&mt);
+	gpFileSystem->LoadFile(name, (void **)&mt);
 	if(!mt)
 	{
 		ri.Con_Printf(PRINT_ALL, "GL_FindImage: can't load %s\n", name);
@@ -1339,7 +1347,7 @@ image_t *GL_LoadWal(char *name)
 
 	image = GL_LoadPic(name, (byte *)mt + ofs, width, height, it_wall, 8);
 
-	ri.FS_FreeFile((void *)mt);
+	gpFileSystem->FreeFile((void *)mt);
 
 	return image;
 }
@@ -1426,7 +1434,7 @@ Any image that was not touched on this registration sequence
 will be freed.
 ================
 */
-void GL_FreeUnusedImages(void)
+void GL_FreeUnusedImages()
 {
 	int      i;
 	image_t *image;
@@ -1454,7 +1462,7 @@ void GL_FreeUnusedImages(void)
 Draw_GetPalette
 ===============
 */
-int Draw_GetPalette(void)
+int Draw_GetPalette()
 {
 	int      i;
 	int      r, g, b;
@@ -1491,7 +1499,7 @@ int Draw_GetPalette(void)
 GL_InitImages
 ===============
 */
-void GL_InitImages(void)
+void GL_InitImages()
 {
 	int   i, j;
 	float g = vid_gamma->value;
@@ -1510,7 +1518,7 @@ void GL_InitImages(void)
 
 	if(qglColorTableEXT)
 	{
-		ri.FS_LoadFile("pics/16to8.dat", &gl_state.d_16to8table);
+		gpFileSystem->LoadFile("pics/16to8.dat", &gl_state.d_16to8table);
 		if(!gl_state.d_16to8table)
 			ri.Sys_Error(ERR_FATAL, "Couldn't load pics/16to8.pcx");
 	}
@@ -1553,7 +1561,7 @@ void GL_InitImages(void)
 GL_ShutdownImages
 ===============
 */
-void GL_ShutdownImages(void)
+void GL_ShutdownImages()
 {
 	int      i;
 	image_t *image;
