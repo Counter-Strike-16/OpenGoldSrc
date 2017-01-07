@@ -33,6 +33,7 @@
 #include "system/system.hpp"
 #include "system/common.hpp"
 #include "filesystem/filesystem_internal.hpp"
+#include "console/console.hpp"
 
 static const uint32 pulCRCTable[256] =
     {

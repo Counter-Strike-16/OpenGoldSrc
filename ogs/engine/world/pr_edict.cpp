@@ -28,7 +28,15 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "world/pr_edict.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "system/host.hpp"
+#include "server/server.hpp"
+#include "console/console.hpp"
+#include "console/cvar.hpp"
+#include "memory/mem.hpp"
 
 void ED_ClearEdict(edict_t *e)
 {

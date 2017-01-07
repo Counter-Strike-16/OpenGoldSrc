@@ -28,13 +28,16 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "system/host.hpp"
+#include "system/host_cmd.hpp"
+#include "system/system.hpp"
+#include "memory/zone.hpp"
 #include "client/client.hpp"
 #include "console/console.hpp"
 #include "console/cmd.hpp"
 #include "filesystem/hashpak.hpp"
-#include "system/host_cmd.hpp"
+#include "filesystem/wad.hpp"
 
 double       realtime; // // without any filtering or bounding
 double       rolling_fps;

@@ -128,7 +128,7 @@ void Host_SetAddonsFolder_f()
 
 void Host_SetVideoLevel_f()
 {
-	if(g_pcls.state && Cmd_Argc() == 2)
+	if(cls.state && Cmd_Argc() == 2)
 		registry->WriteInt("vid_level", !Q_stricmp(Cmd_Argv(1), "1") ? 1 : 0);
 }
 
@@ -294,7 +294,7 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 	char        language[256];
 	const char *pchLang;
 
-	g_pFileSystem->RemoveAllSearchPaths();
+	gpFileSystem->RemoveAllSearchPaths();
 	language[0] = 0;
 
 	if(!bLowViolenceBuild)

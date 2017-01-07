@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -29,44 +29,38 @@
 /// @file
 
 //#include "precompiled.hpp"
-#include "system/buildinfo.hpp"
-#include "system/common.hpp"
+#include "maintypes.h"
+#include "server/server.hpp"
 
-static char *date = __BUILD_DATE__;
-static char *mon[12] =
-    {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-static char mond[12] =
-    {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-int build_number()
+qboolean EXT_FUNC Voice_GetClientListening(int iReceiver, int iSender)
 {
-	int        m = 0;
-	int        d = 0;
-	int        y = 0;
-	static int b = 0;
+	--iReceiver;
+	--iSender;
 
-	if(b != 0)
-		return b;
-
-	for(m = 0; m < 11; m++)
-	{
-		if(Q_strnicmp(&date[0], mon[m], 3) == 0)
-			break;
-		d += mond[m];
-	};
-
-	d += Q_atoi(&date[4]) - 1;
-	y = Q_atoi(&date[7]) - 1900;
-	b = d + (int)((y - 1) * 365.25);
-
-	if(((y % 4) == 0) && m > 1)
-		b += 1;
+	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
+		return 0;
 
 #ifdef REHLDS_FIXES
-	b -= 41374; // return days since initial commit on Apr 12 2014 (Happy Cosmonautics Day!)
-#else           // REHLDS_FIXES
-	b -= 34995; // return days since Oct 24 1996
-#endif          // REHLDS_FIXES
+	return (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] & (1 << iReceiver)) != 0;
+#else  // REHLDS_FIXES
+	return (1 << iReceiver) & (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] != 0);
+#endif // REHLDS_FIXES
+}
 
-	return b;
+qboolean EXT_FUNC Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen)
+{
+	--iReceiver;
+	--iSender;
+
+	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
+		return 0;
+
+	uint32 *pDest = g_psvs.clients[iSender].m_VoiceStreams;
+	
+	if(bListen)
+		pDest[iReceiver >> 5] |= 1 << iReceiver;
+	else
+		pDest[iReceiver >> 5] &= ~(1 << iReceiver);
+
+	return 1;
 };

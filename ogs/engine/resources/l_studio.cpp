@@ -28,7 +28,9 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "maintypes.h"
+#include "resources/l_studio.hpp"
 
 //int giTextureSize;
 

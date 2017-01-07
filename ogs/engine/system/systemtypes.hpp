@@ -27,5 +27,34 @@
  */
 
 /// @file
+/// @brief system module types
 
 #pragma once
+
+// clang-format off
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+	#define NOXREFCHECK       \
+		__asm { push [ebp + 4]} \
+		Sys_Error(__FUNCTION__ " NOXREF, but called from 0x%.08x")
+#else
+	#define NOXREFCHECK \
+		int *a = 0;     \
+		*a     = 0
+#endif
+
+// clang-format on
+
+const int MAX_DISCONNECT_REASON = 256;
+
+// Note: move these below to memorytypes?
+
+const int FIFTEEN_MB = 15 * 1024 * 1024;
+
+const int DEFAULT_MEMORY = 0x2800000;
+const int WARNING_MEMORY = 0x0200000;
+
+const int MINIMUM_WIN_MEMORY = 0x0e00000;
+const int MAXIMUM_WIN_MEMORY = 0x8000000;		// Ask for 128 MB max
+
+const int MAXIMUM_DEDICATED_MEMORY = 0x8000000;	// Ask for 128 MB max

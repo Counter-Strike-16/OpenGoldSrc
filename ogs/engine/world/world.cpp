@@ -33,7 +33,7 @@
 #include "engine/edict.h"
 #include "system/common.hpp"
 #include "server/server.hpp"
-#include "server/sv_phys.hpp"
+#include "physics/sv_phys.hpp"
 #include "system/system.hpp"
 #include "console/console.hpp"
 

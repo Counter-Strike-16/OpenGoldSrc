@@ -233,7 +233,7 @@ NOXREF char *COM_SkipPath(char *pathname);
 void COM_StripExtension(char *in, char *out);
 char *COM_FileExtension(char *in);
 void COM_FileBase(const char *in, char *out);
-void COM_DefaultExtension(char *path, char *extension);
+void COM_DefaultExtension(char *path, const char *extension);
 void  COM_UngetToken();
 char *COM_Parse(char *data);
 char *COM_ParseLine(char *data);

@@ -28,7 +28,10 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "server/server.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
 
 typedef struct full_packet_entities_s
 {
@@ -7334,7 +7337,7 @@ qboolean SV_IsSimulating()
 	if(g_psvs.maxclients > 1)
 		return TRUE;
 
-	if(!key_dest && (g_pcls.state == ca_active || g_pcls.state == ca_dedicated))
+	if(!key_dest && (cls.state == ca_active || cls.state == ca_dedicated))
 		return TRUE;
 
 	return FALSE;

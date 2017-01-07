@@ -26,7 +26,10 @@
 *
 */
 
-#include "precompiled.h"
+//#include "precompiled.hpp"
+#include "system/traceinit.h"
+#include "system/system.hpp"
+#include "system/common.hpp"
 
 CInitTracker g_InitTracker;
 

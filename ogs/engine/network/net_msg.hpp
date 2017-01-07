@@ -32,6 +32,7 @@
 
 #include "maintypes.h"
 #include "common/commontypes.h"
+#include "public/archtypes.h"
 
 typedef struct sizebuf_s sizebuf_t;
 typedef struct usercmd_s usercmd_t;

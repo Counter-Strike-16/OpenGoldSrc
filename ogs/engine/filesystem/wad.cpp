@@ -33,6 +33,7 @@
 #include "system/common.hpp"
 #include "console/console.hpp"
 #include "system/system.hpp"
+#include "tier0/commonmacros.h"
 
 wadlist_t wads[NUM_WADS];
 

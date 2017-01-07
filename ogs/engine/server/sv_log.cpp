@@ -28,7 +28,11 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "server/server.hpp"
+#include "system/common.hpp"
+#include "console/console.hpp"
+#include "console/cmd.hpp"
 
 LOGLIST_T *firstLog;
 

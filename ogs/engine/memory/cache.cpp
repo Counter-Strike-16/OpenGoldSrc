@@ -38,8 +38,6 @@
 #include "console/cmd.hpp"
 #include "client/client.hpp"
 
-#ifndef Cache_Functions_region
-
 /*
 ===============================================================================
 
@@ -48,12 +46,14 @@ CACHE MEMORY
 ===============================================================================
 */
 
-#define CACHE_NAME_LEN 64
+const int CACHE_NAME_LEN = 64;
 
 typedef struct cache_system_s
 {
 	int             size;
+	
 	cache_user_t *  user;
+	
 	char            name[CACHE_NAME_LEN];
 	
 	cache_system_t *prev;
@@ -69,7 +69,6 @@ cache_system_t cache_head;
 Cache_Move
 ===========
 */
-
 void Cache_Move(cache_system_t *c)
 {
 	cache_system_t *newmem = Cache_TryAlloc(c->size, 1);
@@ -614,6 +613,4 @@ NOXREF void Cache_Print_Sounds_And_Totals()
 	}
 	FS_FPrintf(file, "Total bytes in cache used by sound:  %s\n", CommatizeNumber(totalsndbytes, buf));
 	FS_Close(file);
-}
-
-#endif // Cache_Functions_region
+};

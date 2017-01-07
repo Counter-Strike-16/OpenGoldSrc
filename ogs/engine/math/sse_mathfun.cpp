@@ -29,7 +29,8 @@ misrepresented as being the original software.
 (this is the zlib license)
 */
 
-#include "precompiled.h"
+//#include "precompiled.hpp"
+#include "math/sse_mathfun.hpp"
 
 /* natural logarithm computed for 4 simultaneous float
 return NaN for x <= 0
@@ -443,4 +444,4 @@ void sincos_ps(v4sf x, v4sf *s, v4sf *c)
 	/* update the sign */
 	*s = _mm_xor_ps(xmm1, sign_bit_sin);
 	*c = _mm_xor_ps(xmm2, sign_bit_cos);
-}
+};

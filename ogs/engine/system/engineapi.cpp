@@ -29,6 +29,7 @@
 /// @file
 
 //#include "precompiled.hpp"
+#include <cstddef>
 #include "system/engineapi.hpp"
 #include "system/iengine.hpp"
 

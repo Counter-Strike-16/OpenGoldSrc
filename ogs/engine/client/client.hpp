@@ -51,8 +51,9 @@
 #include "client/frame.hpp"
 
 #ifdef HOOK_ENGINE
-#define g_pcls (*pcls)
-#define g_pcl (*pcl)
+#define cls (*pcls)
+#define cl (*pcl)
+
 #define key_dest (*pkey_dest)
 
 #define g_clmove (*pg_clmove)
@@ -309,22 +310,37 @@ typedef struct client_state_s
 
 extern client_state_t cl;
 
+void CL_Init();//+
+void CL_InitClosest();
+void CL_InitEventSystem();
+
+void CL_Shutdown();
+void CL_ShutDownUsrMessages();
+void CL_ShutDownClientStatic();
+
+void CL_CheckClientState();
+void CL_ClearClientState();
+
+void CL_Connect_f();//+
+
+void CL_CheckForResend();//+
+void CL_KeepConnectionActive();
+
+void CL_Disconnect();//+
+void CL_Disconnect_f();//+
+
+
+
 void CL_RecordHUDCommand(char *cmdname);
 
 void R_DecalRemoveAll(int textureIndex);
 
-void CL_CheckForResend();
-
 qboolean CL_CheckFile(sizebuf_t *msg, char *filename);
 
-void CL_ClearClientState();
-void CL_Connect_f();
 void CL_DecayLights();
-void CL_Disconnect();
-void CL_Disconnect_f();
+
 void CL_EmitEntities();
-void CL_InitClosest();
-void CL_Init();
+
 void CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel);
 
 void CL_PredictMove(qboolean repredicting);
@@ -346,14 +362,6 @@ void Chase_Init();
 
 int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf);
 
-void CL_ShutDownUsrMessages();
-void CL_ShutDownClientStatic();
-
-void CL_Shutdown();
-
-void CL_InitEventSystem();
-void CL_CheckClientState();
-
 void CL_RedoPrediction();
 
 void CL_SetLastUpdate();
@@ -363,9 +371,6 @@ void CL_MoveSpectatorCamera();
 void CL_AddVoiceToDatagram(qboolean bFinal);
 void CL_VoiceIdle();
 
-void PollDInputDevices();
-
-void CL_KeepConnectionActive();
 void CL_UpdateModuleC();
 
 int  VGuiWrap2_IsInCareerMatch();

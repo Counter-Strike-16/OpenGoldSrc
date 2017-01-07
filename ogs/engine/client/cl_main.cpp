@@ -367,6 +367,45 @@ void CL_ClearState()
 	cl.free_efrags[i].entnext     = NULL;
 }
 
+/*
+=====================
+CL_Disconnect
+
+Goes from a connected state to full screen console state
+Sends a disconnect message to the server
+This is also called on Host_Error, so it shouldn't cause any errors
+=====================
+*/
+void CL_Disconnect()
+{
+	// Stop sounds (especially looping!)
+	S_StopAllSounds(true);
+	
+	cls.connect_time = -1;
+	
+	// bring the console down and fade the colors back to normal
+	//	SCR_BringDownConsole();
+	
+	// if running a local server, shut it down
+	if(cls.demoplayback) // TODO: demoplayback -> clientstate?
+		CL_StopPlayback();
+	
+	mvStates[state]->OnDisconnect();
+	
+	cls.demoplayback = cls.timedemo = false;
+	cls.signon = 0;
+	
+	Cam_Reset();
+	
+	if(cls.download)
+	{
+		fclose(cls.download);
+		cls.download = NULL;
+	};
+	
+	CL_StopUpload();
+};
+
 void CL_Disconnect_f()
 {
 	CL_Disconnect();
@@ -974,7 +1013,8 @@ void CL_Init()
 {
 	extern cvar_t baseskin;
 	extern cvar_t noskins;
-	char          st[80];
+	
+	char st[80];
 
 	sprintf(st, "%4.2f-%04d", VERSION, build_number());
 	Info_SetValueForStarKey(cls.userinfo, "*ver", st, MAX_INFO_STRING);

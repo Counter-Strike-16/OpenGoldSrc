@@ -115,4 +115,5 @@ extern v4sf log_ps(v4sf x);
 extern v4sf exp_ps(v4sf x);
 extern v4sf sin_ps(v4sf x);
 extern v4sf cos_ps(v4sf x);
+
 extern void sincos_ps(v4sf x, v4sf *s, v4sf *c);

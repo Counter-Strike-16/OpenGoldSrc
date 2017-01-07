@@ -28,7 +28,8 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "server/server.hpp"
 
 /*
 * Local initialization

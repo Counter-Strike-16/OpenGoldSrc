@@ -35,9 +35,7 @@
 #include "rehlds/common_rehlds.h"
 #include "console/console.hpp"
 #include "system/system.hpp"
-#include "memory/zone.hpp"
-
-#ifndef SZ_Functions_region
+#include "memory/hunk.hpp"
 
 void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize)
 {
@@ -131,5 +129,3 @@ void SZ_Print(sizebuf_t *buf, const char *data)
 	if(!(buf->flags & SIZEBUF_OVERFLOWED))
 		Q_memcpy(pData, data, len);
 };
-
-#endif // SZ_Functions_region

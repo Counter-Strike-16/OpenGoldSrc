@@ -28,7 +28,12 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "world/ed_strpool.hpp"
+#include "common/commontypes.h"
+#include "rehlds/static_map.h"
+#include "system/common.hpp"
+#include "memory/zone.hpp"
 
 class CStringPoolMap : public CStaticMap<const char *, char *, 8, 2048>
 {

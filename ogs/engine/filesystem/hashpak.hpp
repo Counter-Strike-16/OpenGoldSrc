@@ -37,10 +37,10 @@
 
 const char HASHPAK_EXTENSION[] = ".hpk";
 
-#define HASHPAK_VERSION 0x0001
+const int HASHPAK_VERSION = 0x0001;
 
-#define MAX_FILE_SIZE 0x20000
-#define MAX_FILE_ENTRIES 0x8000
+const int MAX_FILE_SIZE = 0x20000;
+const int MAX_FILE_ENTRIES = 0x8000;
 
 typedef struct hash_pack_queue_s
 {
@@ -72,9 +72,9 @@ typedef struct hash_pack_header_s
 } hash_pack_header_t;
 
 #ifdef HOOK_ENGINE
-#define gp_hpak_queue (*pgp_hpak_queue)
-#define hash_pack_dir (*phash_pack_dir)
-#define hash_pack_header (*phash_pack_header)
+	#define gp_hpak_queue (*pgp_hpak_queue)
+	#define hash_pack_dir (*phash_pack_dir)
+	#define hash_pack_header (*phash_pack_header)
 #endif // HOOK_ENGINE
 
 extern hash_pack_queue_t *gp_hpak_queue;

@@ -34,8 +34,6 @@
 #include "console/console.hpp"
 #include "system/common.hpp"
 
-#ifndef Z_Functions_region
-
 /*
 ==============================================================================
 
@@ -59,8 +57,10 @@ typedef struct memblock_s
 	int         size;
 	int         tag;
 	int         id;
-	memblock_t *next;
-	memblock_t *prev;
+	
+	struct memblock_s *next;
+	struct memblock_s *prev;
+	
 	int         pad;
 } memblock_t;
 
@@ -86,19 +86,71 @@ cvar_t mem_dbgfile;
 
 memzone_t *mainzone;
 
-void Z_ClearZone(memzone_t *zone, int size)
+void *Z_Malloc(int size)
 {
-	memblock_t *block = (memblock_t *)&zone[1];
+	Z_CheckHeap();
 
-	zone->blocklist.prev = zone->blocklist.next = zone->rover = block;
-	zone->blocklist.size = zone->blocklist.id = 0;
-	zone->blocklist.tag                       = 1;
+	void *buf = Z_TagMalloc(size, 1);
 
-	block->prev = block->next = &zone->blocklist;
-	block->tag                = 0;
-	block->id                 = ZONEID;
-	block->size               = size - sizeof(memzone_t);
-}
+	if(!buf)
+		Sys_Error("%s: failed on allocation of %i bytes", __FUNCTION__, size);
+
+	Q_memset(buf, 0, size);
+	return buf;
+};
+
+void *Z_TagMalloc(int size, int tag)
+{
+	int         extra;
+	memblock_t *start, *rover, *newz, *base;
+
+	if(tag == 0)
+		Sys_Error("%s: tried to use a 0 tag", __FUNCTION__);
+
+	size += sizeof(memblock_t);
+	size += 4;
+	size = (size + 7) & ~7;
+
+	base = rover = mainzone->rover;
+	
+	start        = base->prev;
+
+	do
+	{
+		if(rover == start)
+			return (NULL);
+
+		if(rover->tag)
+			base = rover = rover->next;
+		else
+			rover = rover->next;
+	}
+	while(base->tag || base->size < size);
+
+	extra = base->size - size;
+
+	if(extra > MINFRAGMENT)
+	{
+		newz             = (memblock_t *)((byte *)base + size);
+		newz->size       = extra;
+		newz->tag        = 0;
+		newz->prev       = base;
+		newz->id         = ZONEID;
+		newz->next       = base->next;
+		newz->next->prev = newz;
+		base->next       = newz;
+		base->size       = size;
+	};
+
+	base->tag       = tag;
+	mainzone->rover = base->next;
+	base->id        = ZONEID;
+
+	// marker for memory trash testing
+	*(int *)((byte *)base + base->size - 4) = ZONEID;
+
+	return (void *)((byte *)base + sizeof(memblock_t));
+};
 
 void Z_Free(void *ptr)
 {
@@ -142,93 +194,19 @@ void Z_Free(void *ptr)
 	};
 };
 
-void *Z_Malloc(int size)
+void Z_ClearZone(memzone_t *zone, int size)
 {
-	Z_CheckHeap();
+	memblock_t *block = (memblock_t *)&zone[1];
 
-	void *buf = Z_TagMalloc(size, 1);
+	zone->blocklist.prev = zone->blocklist.next = zone->rover = block;
+	zone->blocklist.size = zone->blocklist.id = 0;
+	zone->blocklist.tag                       = 1;
 
-	if(!buf)
-		Sys_Error("%s: failed on allocation of %i bytes", __FUNCTION__, size);
-
-	Q_memset(buf, 0, size);
-	return buf;
-};
-
-void *Z_TagMalloc(int size, int tag)
-{
-	int         extra;
-	memblock_t *start, *rover, *newz, *base;
-
-	if(tag == 0)
-		Sys_Error("%s: tried to use a 0 tag", __FUNCTION__);
-
-	size += sizeof(memblock_t);
-	size += 4;
-	size = (size + 7) & ~7;
-
-	base = rover = mainzone->rover;
-	start        = base->prev;
-
-	do
-	{
-		if(rover == start)
-			return (NULL);
-
-		if(rover->tag)
-			base = rover = rover->next;
-		else
-			rover = rover->next;
-	}
-	while(base->tag || base->size < size);
-
-	extra = base->size - size;
-
-	if(extra > MINFRAGMENT)
-	{
-		newz             = (memblock_t *)((byte *)base + size);
-		newz->size       = extra;
-		newz->tag        = 0;
-		newz->prev       = base;
-		newz->id         = ZONEID;
-		newz->next       = base->next;
-		newz->next->prev = newz;
-		base->next       = newz;
-		base->size       = size;
-	};
-
-	base->tag       = tag;
-	mainzone->rover = base->next;
-	base->id        = ZONEID;
-
-	// marker for memory trash testing
-	*(int *)((byte *)base + base->size - 4) = ZONEID;
-
-	return (void *)((byte *)base + sizeof(memblock_t));
-};
-
-NOXREF void Z_Print(memzone_t *zone)
-{
-	NOXREFCHECK;
+	block->prev = block->next = &zone->blocklist;
 	
-	Con_Printf("zone size: %i  location: %p\n", mainzone->size, mainzone);
-
-	for(memblock_t *block = zone->blocklist.next;; block = block->next)
-	{
-		Con_Printf("block:%p    size:%7i    tag:%3i\n", block, block->size, block->tag);
-
-		if(block->next == &zone->blocklist)
-			break; // all blocks have been hit
-
-		if((byte *)block + block->size != (byte *)block->next)
-			Con_Printf("ERROR: block size does not touch the next block\n");
-
-		if(block->next->prev != block)
-			Con_Printf("ERROR: next block doesn't have proper back link\n");
-
-		if(!block->tag && !block->next->tag)
-			Con_Printf("ERROR: two consecutive free blocks\n");
-	};
+	block->tag                = 0;
+	block->id                 = ZONEID;
+	block->size               = size - sizeof(memzone_t);
 };
 
 void Z_CheckHeap()
@@ -249,4 +227,27 @@ void Z_CheckHeap()
 	};
 };
 
-#endif // Z_Functions_region
+NOXREF void Z_Print(memzone_t *zone)
+{
+	NOXREFCHECK;
+	
+	Con_Printf("zone size: %i  location: %p\n", mainzone->size, mainzone);
+
+	for(memblock_t *block = zone->blocklist.next;; block = block->next)
+	{
+		Con_Printf("block:%p    size:%7i    tag:%3i\n", block, block->size, block->tag);
+		
+		// all blocks have been hit
+		if(block->next == &zone->blocklist)
+			break;
+
+		if((byte *)block + block->size != (byte *)block->next)
+			Con_Printf("ERROR: block size does not touch the next block\n");
+
+		if(block->next->prev != block)
+			Con_Printf("ERROR: next block doesn't have proper back link\n");
+
+		if(!block->tag && !block->next->tag)
+			Con_Printf("ERROR: two consecutive free blocks\n");
+	};
+};

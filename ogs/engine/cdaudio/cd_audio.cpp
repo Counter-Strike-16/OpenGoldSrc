@@ -28,6 +28,8 @@
 
 /// @file
 
+//#include "precompiled.hpp"
+#include "cdaudio/cdaudio.hpp"
 #include <dpmi.h>
 #include "quakedef.h"
 #include "dosisms.h"

@@ -28,8 +28,11 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "system/info.hpp"
+#include "system/systemtypes.hpp"
+#include "system/common.hpp"
+#include "console/console.hpp"
 
 // NOTE: This file contains a lot of fixes that are not covered by REHLDS_FIXES define.
 // TODO: Most of the Info_ functions can be speedup via removing unneded copy of key and values.

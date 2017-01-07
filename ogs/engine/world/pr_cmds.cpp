@@ -28,7 +28,15 @@
 
 /// @file
 
-#include "precompiled.h"
+//#include "precompiled.hpp"
+#include "world/pr_cmds.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "system/host.hpp"
+#include "console/console.hpp"
+#include "console/cmd.hpp"
+#include "server/server.hpp"
+#include "network/net_msg.hpp"
 
 vec_t gHullMins[4][3] = {
     {0.0f, 0.0f, 0.0f},

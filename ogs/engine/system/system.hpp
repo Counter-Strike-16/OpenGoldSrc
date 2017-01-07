@@ -32,6 +32,7 @@
 
 #include "maintypes.h"
 #include "common/commontypes.h"
+#include "system/systemtypes.hpp"
 #include "engine/eiface.h"
 //#include "public/interface.h"
 //#include "tier0/platform.h"
@@ -46,23 +47,6 @@
 //#include "engine_launcher_api.h"
 
 // clang-format off
-
-#if defined(_WIN32) && !defined(__MINGW32__)
-	#define NOXREFCHECK       \
-		__asm { push [ebp + 4]} \
-		Sys_Error(__FUNCTION__ " NOXREF, but called from 0x%.08x")
-#else
-	#define NOXREFCHECK \
-		int *a = 0;     \
-		*a     = 0
-#endif
-
-#define FIFTEEN_MB (15 * 1024 * 1024)
-#define MINIMUM_WIN_MEMORY 0x0e00000
-#define WARNING_MEMORY 0x0200000
-#define MAXIMUM_WIN_MEMORY 0x8000000       // Ask for 128 MB max
-#define MAXIMUM_DEDICATED_MEMORY 0x8000000 // Ask for 128 MB max
-#define DEFAULT_MEMORY 0x2800000
 
 #ifdef HOOK_ENGINE
 	#define g_hfind (*pg_hfind)
@@ -108,8 +92,6 @@
 #endif
 
 // clang-format on
-
-const int MAX_DISCONNECT_REASON = 256;
 
 extern qboolean g_bIsWin95;
 extern qboolean g_bIsWin98;

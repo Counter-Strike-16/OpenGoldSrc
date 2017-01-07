@@ -37,6 +37,8 @@
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
 #include "system/system.hpp"
+#include "server/server.hpp"
+#include "server/sv_log.hpp"
 
 /*
 * Globals initialization

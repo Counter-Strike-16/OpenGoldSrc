@@ -30,7 +30,10 @@
 
 //#include "precompiled/hpp"
 #include "network/net_msg.hpp"
+#include "system/common.hpp"
 #include "system/sizebuf.hpp"
+#include "system/systemtypes.hpp"
+#include "common/usercmd.h"
 
 #ifndef MSG_Functions_region
 
