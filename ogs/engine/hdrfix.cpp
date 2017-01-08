@@ -14,18 +14,12 @@
 //#include "graphics/render/r_shared.hpp"
 // #include "graphics/render/render.hpp"
 
-//#include "math/mathlib_e.hpp"
-
 //#include "network/delta_jit.hpp"
-
-//#include "resources/studio_rehlds.hpp"
 
 //#include "server/sv_steam3.hpp"
 
 // #include "system/quakedef.hpp"
 // #include "system/sys.hpp"
-
-//#include "world/pr_cmds.hpp"
 
 //======================================
 // STAGE #2

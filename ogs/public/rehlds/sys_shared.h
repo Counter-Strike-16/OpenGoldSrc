@@ -25,9 +25,10 @@
 *    version.
 *
 */
+
 #pragma once
 
-#include <archtypes.h>
+#include "public/archtypes.h"
 
 typedef struct cpuinfo_s
 {
@@ -36,4 +37,4 @@ typedef struct cpuinfo_s
 
 extern cpuinfo_t cpuinfo;
 
-void Sys_CheckCpuInstructionsSupport(void);
+void Sys_CheckCpuInstructionsSupport();

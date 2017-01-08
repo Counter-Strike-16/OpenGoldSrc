@@ -24,6 +24,8 @@
 #include "isteamunifiedmessages.h"
 #include "isteamcontroller.h"
 
+#include "platform.h"
+
 // Steam API export macro
 #if defined( _WIN32 ) && !defined( _X360 )
 	#if defined( STEAM_API_EXPORTS )

@@ -33,6 +33,8 @@
 #include "maintypes.h"
 #include "common/commontypes.h"
 #include "public/archtypes.h"
+#include "engine/eiface.h"
+#include "common/com_model.h"
 
 #define MAX_RANDOM_RANGE 0x7FFFFFFFUL
 
@@ -78,10 +80,14 @@ extern int           gMsgDest;
 extern int           gMsgType;
 extern qboolean      gMsgStarted;
 extern vec3_t        gMsgOrigin;
+
 extern int32         idum;
+
 extern int           g_groupop;
 extern int           g_groupmask;
+
 extern unsigned char checkpvs[1024];
+
 extern int           c_invis;
 extern int           c_notvis;
 
@@ -91,6 +97,8 @@ extern int r_visframecount;
 
 #define GROUP_OP_AND 0
 #define GROUP_OP_NAND 1
+
+class IGameClient;
 
 void PF_makevectors_I(const float *rgflVector);
 float PF_Time(void);

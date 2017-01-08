@@ -34,20 +34,24 @@
 #include "public/interface.h"
 #include "tier1/utlvector.h"
 
+// clang-format off
+
 #ifdef _WIN32
-#define FILESYSTEM_DLL_NAME "filesystem_stdio.dll"
+	const char FILESYSTEM_DLL_NAME[] = "filesystem_stdio.dll";
 #else
-#define FILESYSTEM_DLL_NAME "filesystem_stdio.so"
+	const char FILESYSTEM_DLL_NAME[] = "filesystem_stdio.so";
 #endif
 
 #ifdef HOOK_ENGINE
-#define g_fallbackLocalizationFiles (*pg_fallbackLocalizationFiles)
-#define s_pBaseDir (*ps_pBaseDir)
-#define bLowViolenceBuild (*pbLowViolenceBuild)
+	#define g_fallbackLocalizationFiles (*pg_fallbackLocalizationFiles)
+	#define s_pBaseDir (*ps_pBaseDir)
+	#define bLowViolenceBuild (*pbLowViolenceBuild)
 
-#define g_pFileSystemModule (*pg_pFileSystemModule)
-#define g_FileSystemFactory (*pg_FileSystemFactory)
+	#define g_pFileSystemModule (*pg_pFileSystemModule)
+	#define g_FileSystemFactory (*pg_FileSystemFactory)
 #endif // HOOK_ENGINE
+
+// clang-format on
 
 extern CUtlVector<char *> g_fallbackLocalizationFiles;
 extern char               s_pBaseDir[512];
@@ -75,5 +79,6 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 
 int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir);
 int FileSystem_AddFallbackGameDir(const char *pGameDir);
+
 int FileSystem_Init(char *basedir, void *voidfilesystemFactory);
 void FileSystem_Shutdown();

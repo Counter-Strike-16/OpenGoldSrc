@@ -32,11 +32,11 @@
 
 #include "maintypes.h"
 #include "common/commontypes.h"
+#include "public/archtypes.h"
 #include "rehlds/studio.h"
 #include "rehlds/model.h"
 #include "common/r_studioint.h"
 #include "common/cvardef.h"
-#include "public/archtypes.h"
 
 typedef struct r_studiocache_s r_studiocache_t;
 

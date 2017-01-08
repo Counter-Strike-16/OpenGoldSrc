@@ -31,6 +31,10 @@
 //#include "precompiled.hpp"
 #include "math/mathlib_e.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
+#include "rehlds/sys_shared.h"
+
+int nanmask = 0x7F800000;
 
 // Intrisics guide: https://software.intel.com/sites/landingpage/IntrinsicsGuide/
 // Shufps calculator: http://wurstcaptures.untergrund.net/assembler_tricks.html

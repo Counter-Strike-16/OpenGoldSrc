@@ -49,8 +49,6 @@
 
 extern vec3_t vec3_origin;
 
-static const int nanmask = 0x7F800000;
-
 #define IS_NAN(fvar) ((*reinterpret_cast<int *>(&(fvar)) & nanmask) == nanmask)
 
 inline double M_sqrt(int value)

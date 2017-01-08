@@ -33,6 +33,8 @@
 #include "maintypes.h"
 #include "common/commontypes.h"
 
+////////////////////////////////////////
+
 // clang-format off
 
 #ifdef HOOK_ENGINE

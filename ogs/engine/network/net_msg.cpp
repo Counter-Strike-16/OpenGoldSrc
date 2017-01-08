@@ -35,8 +35,6 @@
 #include "system/systemtypes.hpp"
 #include "common/usercmd.h"
 
-#ifndef MSG_Functions_region
-
 // MESSAGE IO FUNCTIONS
 // Handles byte ordering and avoids alignment errors
 
@@ -517,15 +515,11 @@ uint32 MSG_ReadBits(int numbits)
 
 #ifdef REHLDS_FIXES
 	if(numbits > 32)
-	{
 		Sys_Error("%s: invalid numbits %d\n", __FUNCTION__, numbits);
-	}
 #endif // REHLDS_FIXES
 
 	if(msg_badread)
-	{
 		result = 1;
-	}
 	else
 	{
 		if(bfread.nCurInputBit >= 8)
@@ -595,9 +589,7 @@ int MSG_ReadSBits(int numbits)
 	int result   = MSG_ReadBits(numbits - 1);
 
 	if(nSignBit)
-	{
 		result = -result;
-	}
 
 	return result;
 }
@@ -638,7 +630,8 @@ int MSG_ReadBitData(void *dest, int length)
 			*p = (unsigned char)MSG_ReadBits(8);
 			p++;
 			--i;
-		} while(i);
+		}
+		while(i);
 	}
 
 	return length;
@@ -658,21 +651,15 @@ NOXREF float MSG_ReadBitCoord()
 		int signbit = MSG_ReadOneBit();
 
 		if(intval)
-		{
 			intval = MSG_ReadBits(12);
-		}
 
 		if(fractval)
-		{
 			fractval = MSG_ReadBits(3);
-		}
 
 		value = (float)(fractval / 8.0 + intval);
 
 		if(signbit)
-		{
 			value = -value;
-		}
 	}
 
 	return value;
@@ -966,5 +953,3 @@ void MSG_ReadUsercmd(usercmd_t *to, usercmd_t *from)
 	MSG_EndBitReading(&net_message);
 	COM_NormalizeAngles(to->viewangles);
 };
-
-#endif // MSG_Functions_region
