@@ -116,38 +116,36 @@ NOXREF void Hunk_Print(qboolean all);
 
 ////////////////////////////////////////
 
-void Cache_Move(cache_system_t *c);
+void Cache_Init();
+
+void *Cache_Alloc(cache_user_t *c, int size, char *name);
+cache_system_t *Cache_TryAlloc(int size, qboolean nobottom);
+
+void Cache_Free(cache_user_t *c);
 
 void Cache_FreeLow(int new_low_hunk);
 void Cache_FreeHigh(int new_high_hunk);
 
-void Cache_UnlinkLRU(cache_system_t *cs);
+void Cache_Move(cache_system_t *c);
+
 void Cache_MakeLRU(cache_system_t *cs);
+void Cache_UnlinkLRU(cache_system_t *cs);
 
-cache_system_t *Cache_TryAlloc(int size, qboolean nobottom);
-
-void       Cache_Force_Flush();
-void       Cache_Flush();
-
-NOXREF int CacheSystemCompare(const void *ppcs1, const void *ppcs2);
-
-NOXREF void Cache_Print();
+void Cache_Flush();
+void Cache_Force_Flush();
 
 NOXREF int ComparePath1(char *path1, char *path2);
+NOXREF int CacheSystemCompare(const void *ppcs1, const void *ppcs2);
 
 NOXREF char *CommatizeNumber(int num, char *pout);
 
+void *Cache_Check(cache_user_t *c);
+
+NOXREF void Cache_Print();
 NOXREF void Cache_Report();
 NOXREF void Cache_Compact();
 
-void        Cache_Init();
-
-void Cache_Free(cache_user_t *c);
-
 NOXREF int Cache_TotalUsed();
-
-void *Cache_Check(cache_user_t *c);
-void *Cache_Alloc(cache_user_t *c, int size, char *name);
 
 NOXREF NOBODY void Cache_Print_Models_And_Totals();
 NOXREF NOBODY void Cache_Print_Sounds_And_Totals();

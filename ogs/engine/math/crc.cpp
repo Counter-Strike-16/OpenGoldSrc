@@ -34,6 +34,7 @@
 #include "system/common.hpp"
 #include "filesystem/filesystem_internal.hpp"
 #include "console/console.hpp"
+#include "rehlds/bspfile.h"
 
 static const uint32 pulCRCTable[256] =
     {

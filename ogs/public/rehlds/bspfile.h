@@ -27,7 +27,10 @@
 */
 #pragma once
 
-#define BSPVERSION			30
+// header
+#define Q1BSP_VERSION		29		// quake1 regular version (beta is 28)
+#define HLBSP_VERSION		30		// half-life regular version
+
 #define MAX_MAP_HULLS		4
 
 #define CONTENTS_ORIGIN		-7		// removed at csg time
