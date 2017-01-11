@@ -829,12 +829,25 @@ void CL_ParseStuffText()
 	Cbuf_AddText(s);
 };
 
+/*
+================
+CL_ParseSetAngle
+
+set the view angle to this absolute value
+================
+*/
 void CL_ParseSetAngle()
 {
-	for(i                = 0; i < 3; i++)
+	for(int i = 0; i < 3; ++i)
 		cl.viewangles[i] = MSG_ReadAngle();
 
 	//cl.viewangles[PITCH] = cl.viewangles[ROLL] = 0;
+	
+	/*
+	cl.refdef.cl_viewangles[0] = BF_ReadBitAngle( msg, 16 );
+	cl.refdef.cl_viewangles[1] = BF_ReadBitAngle( msg, 16 );
+	cl.refdef.cl_viewangles[2] = BF_ReadBitAngle( msg, 16 );
+	*/
 };
 
 /*
@@ -849,9 +862,9 @@ void CL_ParseServerInfo()
 	char           key[MAX_MSGLEN];
 	char           value[MAX_MSGLEN];
 
-	strncpy(key, MSG_ReadString(), sizeof(key) - 1);
+	Q_strncpy(key, MSG_ReadString(), charsmax(key));
 	key[sizeof(key) - 1] = 0;
-	strncpy(value, MSG_ReadString(), sizeof(value) - 1);
+	Q_strncpy(value, MSG_ReadString(), charsmax(value));
 	key[sizeof(value) - 1] = 0;
 
 	Con_DPrintf("SERVERINFO: %s=%s\n", key, value);
@@ -1835,7 +1848,15 @@ void CL_ParseNewMoveVars()
 
 void CL_ParseResourceRequest(){};
 
-void CL_ParseCustomization(){};
+/*
+==================
+CL_ParseCustomization
+==================
+*/
+void CL_ParseCustomization()
+{
+	// TODO
+};
 
 void CL_ParseCrosshairAngle(){};
 
@@ -1848,7 +1869,22 @@ void CL_ParseHLTVMode()
 	byte nMode = MSG_ReadByte();
 };
 
-void CL_ParseDirectorMsg(){};
+/*
+==============
+CL_ParseDirectorMsg
+
+spectator message (hltv)
+==============
+*/
+void CL_ParseDirectorMsg()
+{
+	byte pbuf[256];
+	int	iSize = MSG_ReadByte();
+
+	// parse user message into buffer
+	MSG_ReadBytes(msg, pbuf, iSize);
+	gpClientDLL->pfnDirectorMessage(iSize, pbuf);
+};
 
 void CL_HandleVoiceInit(){};
 
@@ -1867,9 +1903,45 @@ void CL_ParseResouceLocation()
 	char *sURL = MSG_ReadString();
 };
 
-void CL_ParseCvarValue(){};
+/*
+==============
+CL_ParseCvarValue
 
-void CL_ParseCvarValue2(){};
+Find the client cvar value
+and sent it back to the server
+==============
+*/
+void CL_ParseCvarValue()
+{
+	const char *cvarName = MSG_ReadString();
+	convar_t *cvar = Cvar_FindVar(cvarName);
+
+	// build the answer
+	MSG_WriteByte(&cls.netchan.message, clc_requestcvarvalue);
+	MSG_WriteString(&cls.netchan.message, cvar ? cvar->string : "Not Found");
+
+};
+
+/*
+==============
+CL_ParseCvarValue2
+
+Find the client cvar value
+and sent it back to the server
+==============
+*/
+void CL_ParseCvarValue2()
+{
+	int requestID = MSG_ReadLong();
+	const char *cvarName = MSG_ReadString();
+	convar_t *cvar = Cvar_FindVar(cvarName);
+
+	// build the answer
+	MSG_WriteByte(&cls.netchan.message, clc_requestcvarvalue2);
+	MSG_WriteLong(&cls.netchan.message, requestID);
+	MSG_WriteString(&cls.netchan.message, cvarName);
+	MSG_WriteString(&cls.netchan.message, cvar ? cvar->string : "Not Found");
+};
 
 /*
 =====================

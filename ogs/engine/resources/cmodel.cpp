@@ -28,7 +28,14 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "resources/cmodel.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "memory/mem.hpp"
+#include "console/console.hpp"
+#include "server/server.hpp"
+#include "resources/model_rehlds.hpp"
 
 unsigned char *gPAS;
 unsigned char *gPVS;

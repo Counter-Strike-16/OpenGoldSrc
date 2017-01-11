@@ -841,3 +841,10 @@ void Key_ClearStates()
 		key_repeats[i] = false;
 	}
 }
+
+/*
+const char *EngFunc_Key_LookupBinding(const char *pBinding)
+{
+	return Key_KeynumToString( Key_GetKey( pBinding ));
+};
+*/

@@ -23,7 +23,7 @@
 #include "memory/zone.hpp"
 #include "memory/mem.hpp"
 
-#include "common/mathlib.hpp"
+#include "math/mathlib_e.hpp"
 
 #include "console/cvar.hpp"
 #include "console/cmd.hpp"

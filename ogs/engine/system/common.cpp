@@ -30,6 +30,10 @@
 
 //#include "precompiled.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
+#include "memory/zone.hpp"
+#include "console/console.hpp"
+#include "filesystem/filesystem_internal.hpp"
 
 char serverinfo[MAX_INFO_STRING];
 

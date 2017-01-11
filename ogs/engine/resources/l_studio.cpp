@@ -31,6 +31,7 @@
 //#include "precompiled.hpp"
 #include "maintypes.h"
 #include "resources/l_studio.hpp"
+#include "system/common.hpp"
 
 //int giTextureSize;
 

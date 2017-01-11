@@ -1060,3 +1060,77 @@ void V_Init()
 	BuildGammaTable(1.0f); // no gamma yet
 	Cvar_RegisterVariable(&v_gamma);
 }
+
+/*
+=============
+pfnCalcShake
+
+=============
+*/
+void V_CalcShake( void )
+{
+	int	i;
+	float	fraction, freq;
+	float	localAmp;
+
+	if( clgame.shake.time == 0 )
+		return;
+
+	if(( cl.time > clgame.shake.time ) || clgame.shake.amplitude <= 0 || clgame.shake.frequency <= 0 )
+	{
+		Q_memset( &clgame.shake, 0, sizeof( clgame.shake ));
+		return;
+	}
+
+	if( cl.time > clgame.shake.next_shake )
+	{
+		// higher frequency means we recalc the extents more often and perturb the display again
+		clgame.shake.next_shake = cl.time + ( 1.0f / clgame.shake.frequency );
+
+		// compute random shake extents (the shake will settle down from this)
+		for( i = 0; i < 3; i++ )
+			clgame.shake.offset[i] = Com_RandomFloat( -clgame.shake.amplitude, clgame.shake.amplitude );
+		clgame.shake.angle = Com_RandomFloat( -clgame.shake.amplitude * 0.25f, clgame.shake.amplitude * 0.25f );
+	}
+
+	// ramp down amplitude over duration (fraction goes from 1 to 0 linearly with slope 1/duration)
+	fraction = ( clgame.shake.time - cl.time ) / clgame.shake.duration;
+
+	// ramp up frequency over duration
+	if( fraction )
+	{
+		freq = ( clgame.shake.frequency / fraction );
+	}
+	else
+	{
+		freq = 0;
+	}
+
+	// square fraction to approach zero more quickly
+	fraction *= fraction;
+
+	// Sine wave that slowly settles to zero
+	fraction = fraction * sin( cl.time * freq );
+	
+	// add to view origin
+	VectorScale( clgame.shake.offset, fraction, clgame.shake.applied_offset );
+
+	// add to roll
+	clgame.shake.applied_angle = clgame.shake.angle * fraction;
+
+	// drop amplitude a bit, less for higher frequency shakes
+	localAmp = clgame.shake.amplitude * ( host.frametime / ( clgame.shake.duration * clgame.shake.frequency ));
+	clgame.shake.amplitude -= localAmp;
+}
+
+/*
+=============
+pfnApplyShake
+
+=============
+*/
+void V_ApplyShake( float *origin, float *angles, float factor )
+{
+	if( origin ) VectorMA( origin, factor, clgame.shake.applied_offset, origin );
+	if( angles ) angles[ROLL] += clgame.shake.applied_angle * factor;
+}

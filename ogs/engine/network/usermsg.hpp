@@ -27,11 +27,11 @@
  */
 
 /// @file
+/// @brief user message data
 
 #pragma once
 
-// user message
-#define MAX_USER_MSG_DATA 192
+const int MAX_USER_MSG_DATA = 192;
 
 typedef int (*pfnUserMsgHook)(const char *pszName, int iSize, void *pbuf);
 
@@ -43,3 +43,11 @@ typedef struct _UserMsg
 	struct _UserMsg *next;
 	pfnUserMsgHook   pfn;
 } UserMsg;
+
+class CUserMsg
+{
+public:
+	void SetHook(pfnUserMsgHook afnHook);
+private:
+	UserMsg *mpData;
+};

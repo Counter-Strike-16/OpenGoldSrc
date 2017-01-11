@@ -43,5 +43,13 @@ typedef enum
 
 void Key_Init();
 
+void Key_Event(int key, int down);
+
 int  Key_CountBindings();
 void Key_WriteBindings(FileHandle_t f);
+
+const char *Key_LookupBinding(const char *pBinding);
+
+const char *Key_KeynumToString(int nKey);
+
+int Key_GetKey(const char *sBinding);

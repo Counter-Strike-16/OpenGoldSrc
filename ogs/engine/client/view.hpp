@@ -54,5 +54,8 @@ void V_ParseDamage();
 
 void V_SetContentsColor(int contents);
 
-void  V_CalcBlend();
+void V_CalcBlend();
+void V_CalcShake();
 float V_CalcRoll(vec3_t angles, vec3_t velocity);
+
+void V_ApplyShake(float *origin, float *angles, float factor);

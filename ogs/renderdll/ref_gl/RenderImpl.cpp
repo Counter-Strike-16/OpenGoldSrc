@@ -75,6 +75,46 @@ void CRendererImpl::EndRegistration()
 	R_EndRegistration();
 };
 
+void CRendererImpl::BeginRendering(int nMode)
+{
+	switch( nMode )
+	{
+	case TRI_POINTS:
+		mode = GL_POINTS;
+		break;
+	case TRI_TRIANGLES:
+		mode = GL_TRIANGLES;
+		break;
+	case TRI_TRIANGLE_FAN:
+		mode = GL_TRIANGLE_FAN;
+		break;
+	case TRI_QUADS:
+		mode = GL_QUADS;
+		break;
+	case TRI_LINES:
+		mode = GL_LINES;
+		break;
+	case TRI_TRIANGLE_STRIP:
+		mode = GL_TRIANGLE_STRIP;
+		break;
+	case TRI_QUAD_STRIP:
+		mode = GL_QUAD_STRIP;
+		break;
+	case TRI_POLYGON:
+	default:
+		mode = GL_POLYGON;
+		break;
+	};
+
+	pglBegin( mode );
+};
+
+void CRendererImpl::EndRendering()
+{
+	pglEnd();
+	pglDisable( GL_ALPHA_TEST );
+};
+
 struct model_s *CRendererImpl::RegisterModel(const char *asName)
 {
 	return R_RegisterModel(asName);

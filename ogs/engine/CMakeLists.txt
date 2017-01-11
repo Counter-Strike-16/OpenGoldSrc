@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(OGS-engine)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/)
 
 file(GLOB_RECURSE ENGINE_SOURCES

@@ -31,10 +31,11 @@
 //#include "precompiled.hpp"
 #include "system/dedicatedserverapi.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
+#include "system/iengine.hpp"
+#include "system/traceinit.h"
 #include "system/host.hpp"
 #include "console/cmd.hpp"
-#include "system/traceinit.h"
-#include "system/system.hpp"
 
 IDedicatedExports *dedicated_;
 qboolean           g_bIsDedicatedServer;

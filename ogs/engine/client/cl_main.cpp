@@ -343,6 +343,7 @@ void CL_ClearState()
 	Con_DPrintf("Clearing memory\n");
 	D_FlushCaches();
 	Mod_ClearAll();
+	
 	if(host_hunklevel) // FIXME: check this...
 		Hunk_FreeToLowMark(host_hunklevel);
 
@@ -362,8 +363,10 @@ void CL_ClearState()
 	// allocate the efrags and chain together into a free list
 	//
 	cl.free_efrags = cl_efrags;
-	for(i                         = 0; i < MAX_EFRAGS - 1; i++)
+	
+	for(i = 0; i < MAX_EFRAGS - 1; i++)
 		cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
+	
 	cl.free_efrags[i].entnext     = NULL;
 }
 
@@ -381,7 +384,7 @@ void CL_Disconnect()
 	// Stop sounds (especially looping!)
 	S_StopAllSounds(true);
 	
-	cls.connect_time = -1;
+	cls.connect_time = -1; // 0
 	
 	// bring the console down and fade the colors back to normal
 	//	SCR_BringDownConsole();
