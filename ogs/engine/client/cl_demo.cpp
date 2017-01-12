@@ -30,9 +30,14 @@
 /// @brief demo recording/playback code
 
 //#include "precompiled.hpp"
+#include "client/cl_demo.hpp"
 #include "system/common.hpp"
 #include "client/client.hpp"
 #include "console/console.hpp"
+
+#define dem_cmd 0
+#define dem_read 1
+#define dem_set 2
 
 void CL_FinishTimeDemo();
 
@@ -49,6 +54,21 @@ read from the demo file.
 ==============================================================================
 */
 
+int CL_IsRecording()
+{
+	return cls.demorecording;
+};
+
+int CL_IsPlayingback()
+{
+	return cls.demoplayback;
+};
+
+int CL_IsTimeDemo()
+{
+	return cls.timedemo;
+};
+
 /*
 ==============
 CL_StopPlayback
@@ -62,6 +82,7 @@ void CL_StopPlayback()
 		return;
 
 	fclose(cls.demofile);
+	
 	cls.demofile     = NULL;
 	cls.state        = ca_disconnected;
 	cls.demoplayback = 0;
@@ -69,10 +90,6 @@ void CL_StopPlayback()
 	if(cls.timedemo)
 		CL_FinishTimeDemo();
 }
-
-#define dem_cmd 0
-#define dem_read 1
-#define dem_set 2
 
 /*
 ====================

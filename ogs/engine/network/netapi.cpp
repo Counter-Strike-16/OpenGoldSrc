@@ -30,115 +30,134 @@
 
 #include "common/net_api.h"
 #include "network/network.hpp"
-#include <cstddef>
+
+/*
+=================
+
+NetworkApi implementation
+
+=================
+*/
 
 namespace
 {
 
-CNetwork *gpNetwork = NULL;
-
-void NetAPI_InitNetworking()
+void NET_Status(struct net_status_s *status)
 {
-	gpNetwork->Init();
+	ASSERT( status != NULL );
+
+	status->connected = NET_IsLocalAddress( cls.netchan.remote_address ) ? false : true;
+	status->connection_time = host.realtime - cls.netchan.connect_time;
+	status->remote_address = cls.netchan.remote_address;
+	status->packet_loss = cls.packet_loss / 100; // percent
+	status->latency = cl.frame.latency;
+	status->local_address = net_local;
+	status->rate = cls.netchan.rate;
 };
 
-void NetAPI_Status(struct net_status_s *status)
+void NET_SendRequest(int context, int request, int flags, double timeout, struct netadr_s *remote_address, net_api_response_func_t response)
 {
-	status = gpNetwork->GetStatus(); // not so elegant but will work
-};
+	net_request_t	*nr = NULL;
+	string		req;
+	int		i;
 
-void NetAPI_SendRequest(int context, int request, int flags, double timeout, struct netadr_s *remote_address, net_api_response_func_t response)
-{
-};
-
-void NetAPI_CancelRequest(int context)
-{
-};
-
-void NetAPI_CancelAllRequests()
-{
-};
-
-char *NetAPI_AdrToString(struct netadr_s *a) // const ref in arg
-{
-	static char s[64];
-	
-	Q_memset(s, 0, sizeof(s));
-	
-	if(a.type == NA_LOOPBACK)
-		Q_snprintf(s, sizeof(s), "loopback");
-	else if(a.type == NA_IP)
-		Q_snprintf(s, sizeof(s), "%i.%i.%i.%i:%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3], ntohs(a.port));
-#ifdef _WIN32
-	else
-		Q_snprintf(s, sizeof(s), "%02x%02x%02x%02x:%02x%02x%02x%02x%02x%02x:%i", a.ipx[0], a.ipx[1], a.ipx[2], a.ipx[3], a.ipx[4], a.ipx[5], a.ipx[6], a.ipx[7], a.ipx[8], a.ipx[9], ntohs(a.port));
-#endif // _WIN32
-	
-	return s;
-};
-
-/*qboolean*/ int NetAPI_CompareAdr(struct netadr_s *a, struct netadr_s *b) // arg: ref, ref
-{
-	if(a.type != b.type)
-		return FALSE;
-	
-	if(a.type == NA_LOOPBACK)
-		return TRUE;
-	
-	if(a.type == NA_IP)
+	if( !response )
 	{
-		if(a.ip[0] == b.ip[0] &&
-			a.ip[1] == b.ip[1] &&
-			a.ip[2] == b.ip[2] &&
-			a.ip[3] == b.ip[3] &&
-			a.port == b.port)
-			return TRUE;
+		MsgDev( D_ERROR, "Net_SendRequest: no callbcak specified for request with context %i!\n", context );
+		return;
 	}
-#ifdef _WIN32
-	else if(a.type == NA_IPX)
+
+	// find a free request
+	for( i = 0; i < MAX_REQUESTS; i++ )
 	{
-		if(Q_memcmp(a.ipx, b.ipx, 10) == 0 && a.port == b.port)
-			return TRUE;
-	};
-#endif // _WIN32
-	
-	return FALSE;
+		nr = &clgame.net_requests[i];
+		if( !nr->pfnFunc || nr->timeout < host.realtime )
+			break;
+	}
+
+	if( i == MAX_REQUESTS )
+	{
+		double	max_timeout = 0;
+
+		// no free requests? use older
+		for( i = 0, nr = NULL; i < MAX_REQUESTS; i++ )
+		{
+			if(( host.realtime - clgame.net_requests[i].timesend ) > max_timeout )
+			{
+				max_timeout = host.realtime - clgame.net_requests[i].timesend;
+				nr = &clgame.net_requests[i];
+			}
+		}
+	}
+
+	ASSERT( nr != NULL );
+
+	// clear slot
+	Q_memset( nr, 0, sizeof( *nr ));
+
+	// create a new request
+	nr->timesend = host.realtime;
+	nr->timeout = nr->timesend + timeout;
+	nr->pfnFunc = response;
+	nr->resp.context = context;
+	nr->resp.type = request;	
+	nr->resp.remote_address = *remote_address; 
+	nr->flags = flags;
+
+	if( request == NETAPI_REQUEST_SERVERLIST )
+	{
+		// UNDONE: build request for master-server
+	}
+	else
+	{
+		// send request over the net
+		Q_snprintf( req, sizeof( req ), "netinfo %i %i %i", PROTOCOL_VERSION, context, request );
+		Netchan_OutOfBandPrint( NS_CLIENT, nr->resp.remote_address, req );
+	}
 };
 
-/*qboolean*/ int NetAPI_StringToAdr(/*const*/ char *s, struct netadr_s *a)
+void NET_CancelRequest(int context)
 {
-	gpNetwork->StringToAdr(s, a);
+	int	i;
+
+	// find a specified request
+	for( i = 0; i < MAX_REQUESTS; i++ )
+	{
+		if( clgame.net_requests[i].resp.context == context )
+		{
+			MsgDev( D_NOTE, "Request with context %i cancelled\n", context );
+			Q_memset( &clgame.net_requests[i], 0, sizeof( net_request_t ));
+			break;
+		}
+	}
 };
 
-const char *NetAPI_ValueForKey(const char *s, const char *key)
+void NET_CancelAllRequests()
+{
+	Q_memset( clgame.net_requests, 0, sizeof( clgame.net_requests ));
+};
+
+const char *NET_ValueForKey(const char *s, const char *key)
 {
 	return "";
-};
-
-void NetAPI_RemoveKey(char *s, const char *key)
-{
-};
-
-void NetAPI_SetValueForKey(char *s, const char *key, const char *value, int maxsize)
-{
 };
 
 }; // namespace
 
 net_api_t gNetAPI =
 {
-	NetAPI_InitNetworking,
-	NetAPI_Status,
+	NET_Init, // Net_Config(true)?
+	NET_Status,
 	
-	NetAPI_SendRequest,
-	NetAPI_CancelRequest,
-	NetAPI_CancelAllRequests,
+	NET_SendRequest,
+	NET_CancelRequest,
+	NET_CancelAllRequests,
 	
-	NetAPI_AdrToString,
-	NetAPI_CompareAdr,
-	NetAPI_StringToAdr,
+	NET_AdrToString,
+	NET_CompareAdr,
+	NET_StringToAdr,
 	
-	NetAPI_ValueForKey,
-	NetAPI_RemoveKey,
-	NetAPI_SetValueForKey
+	Info_ValueForKey,
+	Info_RemoveKey,
+	Info_SetValueForKey
 };

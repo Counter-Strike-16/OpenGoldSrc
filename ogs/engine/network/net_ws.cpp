@@ -135,7 +135,7 @@ cvar_t net_graphpos;
 
 #endif // HOOK_ENGINE
 
-void NET_ThreadLock(void)
+void NET_ThreadLock()
 {
 #ifdef _WIN32
 	if(use_thread && net_thread_initialized)
@@ -145,7 +145,7 @@ void NET_ThreadLock(void)
 #endif // _WIN32
 }
 
-void NET_ThreadUnlock(void)
+void NET_ThreadUnlock()
 {
 #ifdef _WIN32
 	if(use_thread && net_thread_initialized)
@@ -766,7 +766,7 @@ void NET_AddToLagged(netsrc_t sock, packetlag_t *pList, packetlag_t *pPacket, ne
 	Q_memcpy(&pPacket->net_from_, net_from_, sizeof(netadr_t));
 }
 
-void NET_AdjustLag(void)
+void NET_AdjustLag()
 {
 	static double lasttime = realtime;
 	double        dt;
@@ -1093,7 +1093,7 @@ qboolean NET_QueuePacket(netsrc_t sock)
 	}
 }
 
-DLL_EXPORT int NET_Sleep_Timeout(void)
+DLL_EXPORT int NET_Sleep_Timeout()
 {
 	fd_set         fdset;
 	struct timeval tv;
@@ -1167,7 +1167,7 @@ DLL_EXPORT int NET_Sleep_Timeout(void)
 	}
 }
 
-int NET_Sleep(void)
+int NET_Sleep()
 {
 	fd_set         fdset;
 	struct timeval tv;
@@ -1207,7 +1207,7 @@ int NET_Sleep(void)
 	return select(number + 1, &fdset, 0, 0, net_sleepforever == 0 ? &tv : NULL);
 }
 
-void NET_StartThread(void)
+void NET_StartThread()
 {
 	if(use_thread)
 	{
@@ -1232,7 +1232,7 @@ void NET_StartThread(void)
 	}
 }
 
-void NET_StopThread(void)
+void NET_StopThread()
 {
 	if(use_thread)
 	{
@@ -1339,7 +1339,7 @@ qboolean NET_GetPacket(netsrc_t sock)
 	return bret;
 }
 
-void NET_AllocateQueues(void)
+void NET_AllocateQueues()
 {
 	net_messages_t *p;
 	for(int i = 0; i < NUM_MSG_QUEUES; i++)
@@ -1354,7 +1354,7 @@ void NET_AllocateQueues(void)
 	NET_StartThread();
 }
 
-void NET_FlushQueues(void)
+void NET_FlushQueues()
 {
 	for(int i = 0; i < 3; i++)
 	{
@@ -1673,7 +1673,7 @@ int NET_IPSocket(char *net_interface, int port, qboolean multicast)
 	return newsocket;
 }
 
-void NET_OpenIP(void)
+void NET_OpenIP()
 {
 	//cvar_t *ip;//unused?
 	int port;
@@ -1833,7 +1833,7 @@ int NET_IPXSocket(int hostshort)
 	return newsocket;
 }
 
-void NET_OpenIPX(void)
+void NET_OpenIPX()
 {
 	int port;
 	int dedicated;
@@ -1878,7 +1878,7 @@ void NET_OpenIPX(void)
 
 #endif // _WIN32
 
-void NET_GetLocalAddress(void)
+void NET_GetLocalAddress()
 {
 	char               buff[512];
 	struct sockaddr_in address;
@@ -1967,7 +1967,7 @@ void NET_GetLocalAddress(void)
 #endif //_WIN32
 }
 
-int NET_IsConfigured(void)
+int NET_IsConfigured()
 {
 	return net_configured;
 }
@@ -2033,7 +2033,7 @@ void NET_Config(qboolean multiplayer)
 	net_configured = multiplayer ? 1 : 0;
 }
 
-void MaxPlayers_f(void)
+void MaxPlayers_f()
 {
 	if(Cmd_Argc() != 2)
 	{
@@ -2064,7 +2064,7 @@ void MaxPlayers_f(void)
 		Cvar_Set("deathmatch", "1");
 }
 
-void NET_Init(void)
+void NET_Init()
 {
 #ifdef HOOK_ENGINE
 	Cmd_AddCommand("maxplayers", (xcommand_t)GetOriginalFuncAddrOrDefault("MaxPlayers_f", (void *)MaxPlayers_f));
@@ -2152,7 +2152,7 @@ void NET_ClearLagData(qboolean bClient, qboolean bServer)
 	NET_ThreadUnlock();
 }
 
-void NET_Shutdown(void)
+void NET_Shutdown()
 {
 	NET_ThreadLock();
 

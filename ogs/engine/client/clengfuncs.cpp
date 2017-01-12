@@ -434,26 +434,73 @@ struct model_s *EngFunc_LoadMapSprite(const char *filename)
 
 const char *EngFunc_PlayerInfo_ValueForKey(int playerNum, const char *key)
 {
+	// find the player
+	if(( playerNum > cl.maxclients ) || ( playerNum < 1 ))
+		return NULL;
+	
+	if( !cl.players[playerNum-1].name[0] )
+		return NULL;
+	
+	return Info_ValueForKey( cl.players[playerNum-1].userinfo, key );
 };
 
 void EngFunc_PlayerInfo_SetValueForKey(const char *key, const char *value)
 {
+	cvar_t	*var;
+
+	var = (cvar_t *)Cvar_FindVar( key );
+	if( !var || !(var->flags & CVAR_USERINFO ))
+		return;
+
+	Cvar_DirectSet( var, value );
 };
 
 qboolean EngFunc_GetPlayerUniqueID(int iPlayer, char playerID[16])
 {
+	// TODO: implement
+
+	playerID[0] = '\0';
+	return false;
 };
 
 int EngFunc_GetTrackerIDForPlayer(int playerSlot)
 {
+	playerSlot -= 1;	// make into a client index
+
+	if( !cl.players[playerSlot].userinfo[0] || !cl.players[playerSlot].name[0] )
+		return 0;
+	
+	return Q_atoi( Info_ValueForKey( cl.players[playerSlot].userinfo, "*tracker" ));
 };
 
 int EngFunc_GetPlayerForTrackerID(int trackerID)
 {
+	int	i;
+
+	for( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		if( !cl.players[i].userinfo[0] || !cl.players[i].name[0] )
+			continue;
+
+		if( Q_atoi( Info_ValueForKey( cl.players[i].userinfo, "*tracker" )) == trackerID )
+		{
+			// make into a player slot
+			return (i+1);
+		}
+	};
+	
+	return 0;
 };
 
 int EngFunc_ServerCmdUnreliable(char *szCmdString)
 {
+	if( !szCmdString || !szCmdString[0] )
+		return 0;
+	
+	BF_WriteByte( &cls.datagram, clc_stringcmd );
+	BF_WriteString( &cls.datagram, szCmdString );
+	
+	return 1;
 };
 
 void EngFunc_GetMousePos(struct tagPOINT *ppt)
@@ -504,6 +551,9 @@ void *EngFunc_SequenceGet(const char *fileName, const char *entryName)
 
 void EngFunc_SPR_DrawGeneric(int frame, int x, int y, const wrect_t *prc, int blendsrc, int blenddst, int width, int height)
 {
+	pglEnable( GL_BLEND );
+	pglBlendFunc( blendsrc, blenddst ); // g-cont. are params is valid?
+	SPR_DrawGeneric( frame, x, y, width, height, prc );
 };
 
 void *EngFunc_SequencePickSentence(const char *groupName, int pickMethod, int *entryPicked)
@@ -512,15 +562,30 @@ void *EngFunc_SequencePickSentence(const char *groupName, int pickMethod, int *e
 
 int EngFunc_DrawString(int x, int y, const char *str, int r, int g, int b)
 {
+	Con_UtfProcessChar(0);
+	
+	// draw the string until we hit the null character or a newline character
+	for ( ; *str != 0 && *str != '\n'; str++ )
+		x += pfnDrawCharacter( x, y, (unsigned char)*str, r, g, b );
+	
+	return x;
 };
 
 int EngFunc_DrawStringReverse(int x, int y, const char *str, int r, int g, int b)
 {
+	// find the end of the string
+	char *szIt;
+	
+	for( szIt = (char*)str; *szIt != 0; szIt++ )
+		x -= clgame.scrInfo.charWidths[ (unsigned char) *szIt ];
+	
+	pfnDrawString( x, y, str, r, g, b );
+	return x;
 };
 
 const char *EngFunc_LocalPlayerInfo_ValueForKey(const char* key)
 {
-	return "";
+	return Info_ValueForKey( Cvar_Userinfo(), key );
 };
 
 unsigned int EngFunc_GetApproxWavePlayLen(char *filename)
@@ -589,6 +654,161 @@ void EngFunc_VguiWrap2_GetMouseDelta(int *x, int *y)
 
 }; // namespace
 
-cl_enginefunc_t gClEngFuncsNull =
+cl_enginefunc_t gClEngFuncs =
 {
+	pfnSPR_Load,
+	pfnSPR_Frames,
+	pfnSPR_Height,
+	pfnSPR_Width,
+	pfnSPR_Set,
+	pfnSPR_Draw,
+	pfnSPR_DrawHoles,
+	pfnSPR_DrawAdditive,
+	SPR_EnableScissor,
+	SPR_DisableScissor,
+	pfnSPR_GetList,
+	
+	pfnFillRGBA,
+	
+	pfnGetScreenInfo,
+	
+	pfnSetCrosshair,
+	
+	(void*)pfnCvar_RegisterVariable,
+	(void*)Cvar_VariableValue,
+	(void*)Cvar_VariableString,
+	
+	(void*)pfnAddClientCommand,
+	
+	(void*)pfnHookUserMsg,
+	
+	(void*)pfnServerCmd,
+	(void*)pfnClientCmd,
+	
+	pfnGetPlayerInfo,
+	
+	(void*)pfnPlaySoundByName,
+	pfnPlaySoundByIndex,
+	
+	AngleVectors,
+	
+	CL_TextMessageGet,
+	
+	pfnDrawCharacter,
+	pfnDrawConsoleString,
+	pfnDrawSetTextColor,
+	pfnDrawConsoleStringLen,
+	
+	pfnConsolePrint,
+	pfnCenterPrint,
+	
+	pfnGetWindowCenterX,
+	pfnGetWindowCenterY,
+	
+	pfnGetViewAngles,
+	pfnSetViewAngles,
+	
+	CL_GetMaxClients,
+	
+	(void*)Cvar_SetFloat,
+	
+	Cmd_Argc,
+	Cmd_Argv,
+	
+	Con_Printf,
+	Con_DPrintf,
+	Con_NPrintf,
+	Con_NXPrintf,
+	
+	pfnPhysInfo_ValueForKey,
+	pfnServerInfo_ValueForKey,
+	
+	pfnGetClientMaxspeed,
+	pfnCheckParm,
+	(void*)Key_Event,
+	CL_GetMousePosition,
+	pfnIsNoClipping,
+	CL_GetLocalPlayer,
+	pfnGetViewModel,
+	CL_GetEntityByIndex,
+	pfnGetClientTime,
+	pfnCalcShake,
+	pfnApplyShake,
+	(void*)pfnPointContents,
+	(void*)CL_WaterEntity,
+	pfnTraceLine,
+	CL_LoadModel,
+	CL_AddEntity,
+	CL_GetSpritePointer,
+	pfnPlaySoundByNameAtLocation,
+	pfnPrecacheEvent,
+	CL_PlaybackEvent,
+	CL_WeaponAnim,
+	Com_RandomFloat,
+	Com_RandomLong,
+	(void*)pfnHookEvent,
+	(void*)Con_Visible,
+	pfnGetGameDirectory,
+	pfnCVarGetPointer,
+	Key_LookupBinding,
+	pfnGetLevelName,
+	pfnGetScreenFade,
+	pfnSetScreenFade,
+	VGui_GetPanel,
+	VGui_ViewportPaintBackground,
+	(void*)COM_LoadFile,
+	COM_ParseFile,
+	COM_FreeFile,
+	&gTriApi,
+	&gEfxApi,
+	&gEventApi,
+	&gDemoApi,
+	&gNetApi,
+	&gVoiceApi,
+	pfnIsSpectateOnly,
+	pfnLoadMapSprite,
+	COM_AddAppDirectoryToSearchPath,
+	COM_ExpandFilename,
+	PlayerInfo_ValueForKey,
+	PlayerInfo_SetValueForKey,
+	pfnGetPlayerUniqueID,
+	pfnGetTrackerIDForPlayer,
+	pfnGetPlayerForTrackerID,
+	pfnServerCmdUnreliable,
+	pfnGetMousePos,
+	pfnSetMousePos,
+	pfnSetMouseEnable,
+	Cvar_GetList,
+	(void*)Cmd_GetFirstFunctionHandle,
+	(void*)Cmd_GetNextFunctionHandle,
+	(void*)Cmd_GetName,
+	pfnGetClientOldTime,
+	pfnGetGravity,
+	Mod_Handle,
+	pfnEnableTexSort,
+	pfnSetLightmapColor,
+	pfnSetLightmapScale,
+	pfnSequenceGet,
+	pfnSPR_DrawGeneric,
+	pfnSequencePickSentence,
+	pfnDrawString,
+	pfnDrawStringReverse,
+	LocalPlayerInfo_ValueForKey,
+	pfnVGUI2DrawCharacter,
+	pfnVGUI2DrawCharacterAdditive,
+	(void*)Sound_GetApproxWavePlayLen,
+	GetCareerGameInterface,
+	(void*)Cvar_Set,
+	pfnIsCareerMatch,
+	pfnPlaySoundVoiceByName,
+	pfnMP3_InitStream,
+	Sys_DoubleTime,
+	pfnProcessTutorMessageDecayBuffer,
+	pfnConstructTutorMessageDecayBuffer,
+	pfnResetTutorMessageDecayData,
+	pfnPlaySoundByNameAtPitch,
+	pfnFillRGBABlend,
+	pfnGetAppID,
+	Cmd_AliasGetList,
+	pfnVguiWrap2_GetMouseDelta
 };

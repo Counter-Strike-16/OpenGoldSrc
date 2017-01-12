@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,37 +28,12 @@
 
 /// @file
 
-//#include "precompiled.hpp"
-#include "client/demo_api.hpp"
+#pragma once
 
-namespace
-{
+#include "common/demo_api.h"
 
-int DemoAPI_IsRecording()
-{
-	return 0;
-};
+extern demo_api_t gDemoAPI;
 
-int DemoAPI_IsPlayingback()
-{
-	return 0;
-};
-
-int DemoAPI_IsTimeDemo()
-{
-	return 0;
-};
-
-void DemoAPI_WriteBuffer(int size, unsigned char *buffer)
-{
-};
-
-}; // namespace
-
-demo_api_t gDemoAPI =
-    {
-        DemoAPI_IsRecording,
-        DemoAPI_IsPlayingback,
-        DemoAPI_IsTimeDemo,
-
-        DemoAPI_WriteBuffer};
+int CL_IsRecording();
+int CL_IsPlayingback();
+int CL_IsTimeDemo();

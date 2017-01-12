@@ -84,7 +84,14 @@ void TriAPI_Color4f(float r, float g, float b, float a)
 	pglColor4ub( clgame.ds.triColor[0], clgame.ds.triColor[1], clgame.ds.triColor[2], clgame.ds.triColor[3] );
 };
 
-void TriAPI_Color4ub(unsigned char r, unsigned char g, unsigned char b, unsigned char a){};
+void TriAPI_Color4ub(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+{
+	clgame.ds.triColor[0] = r;
+	clgame.ds.triColor[1] = g;
+	clgame.ds.triColor[2] = b;
+	clgame.ds.triColor[3] = a;
+	pglColor4ub( r, g, b, a );
+};
 
 void TriAPI_TexCoord2f(float u, float v)
 {
@@ -129,18 +136,98 @@ void TriAPI_CullFace(TRICULLSTYLE style)
 	GL_Cull( clgame.ds.cullMode );
 };
 
+/*
+=============
+TriSpriteTexture
+
+bind current texture
+=============
+*/
 int TriAPI_SpriteTexture(struct model_s *pSpriteModel, int frame)
 {
-	return 0;
+	int	gl_texturenum;
+	msprite_t	*psprite;
+
+	if(( gl_texturenum = R_GetSpriteTexture( pSpriteModel, frame )) == 0 )
+		return 0;
+
+	if( gl_texturenum <= 0 || gl_texturenum > MAX_TEXTURES )
+	{
+		MsgDev( D_ERROR, "TriSpriteTexture: bad index %i\n", gl_texturenum );
+		gl_texturenum = tr.defaultTexture;
+	}
+
+	psprite = pSpriteModel->cache.data;
+	if( psprite->texFormat == SPR_ALPHTEST )
+	{
+		pglEnable( GL_ALPHA_TEST );
+		pglAlphaFunc( GL_GREATER, 0.0f );
+	}
+
+	GL_Bind( GL_TEXTURE0, gl_texturenum );
+	return 1;
 };
 
+/*
+=============
+TriWorldToScreen
+
+convert world coordinates (x,y,z) into screen (x, y)
+=============
+*/
 int TriAPI_WorldToScreen(float *world, float *screen)
 {
-	return 0;
+	int retval = R_WorldToScreen( world, screen );
+
+	screen[0] =  0.5f * screen[0] * (float)cl.refdef.viewport[2];
+	screen[1] = -0.5f * screen[1] * (float)cl.refdef.viewport[3];
+	screen[0] += 0.5f * (float)cl.refdef.viewport[2];
+	screen[1] += 0.5f * (float)cl.refdef.viewport[3];
+
+	return retval;
 };
 
+/*
+=============
+TriFog
+
+enables global fog on the level
+=============
+*/
 void TriAPI_Fog(float flFogColor[3], float flStart, float flEnd, int bOn)
 {
+	if( RI.fogEnabled )
+		return;
+	
+	RI.fogCustom = true;
+	
+	if( !bOn )
+	{
+		pglDisable( GL_FOG );
+		RI.fogCustom = false;
+		return;
+	}
+	
+	// copy fog params
+	RI.fogColor[0] = flFogColor[0] / 255.0f;
+	RI.fogColor[1] = flFogColor[1] / 255.0f;
+	RI.fogColor[2] = flFogColor[2] / 255.0f;
+	RI.fogStart = flStart;
+	RI.fogDensity = 0.0f;
+	RI.fogEnd = flEnd;
+	
+	if( VectorIsNull( RI.fogColor ))
+	{
+		pglDisable( GL_FOG );
+		return;	
+	}
+	
+	pglEnable( GL_FOG );
+	pglFogi( GL_FOG_MODE, GL_LINEAR );
+	pglFogf( GL_FOG_START, RI.fogStart );
+	pglFogf( GL_FOG_END, RI.fogEnd );
+	pglFogfv( GL_FOG_COLOR, RI.fogColor );
+	pglHint( GL_FOG_HINT, GL_NICEST );
 };
 
 void TriAPI_ScreenToWorld(float *screen, float *world)
@@ -149,19 +236,63 @@ void TriAPI_ScreenToWorld(float *screen, float *world)
 
 void TriAPI_GetMatrix(const int pname, float *matrix)
 {
+	pglGetFloatv( pname, matrix );
 };
 
+/*
+=============
+TriBoxInPVS
+
+check for box presense in pvs (absmin, absmax)
+=============
+*/
 int TriAPI_BoxInPVS(float *mins, float *maxs)
 {
-	return 0;
+	return Mod_BoxVisible( mins, maxs, Mod_GetCurrentVis( ));
 };
 
-void TriAPI_LightAtPoint(float *pos, float *value){};
+/*
+=============
+TriLightAtPoint
 
-void TriAPI_Color4fRendermode(float r, float g, float b, float a, int rendermode){};
+NOTE: dlights are ignored
+=============
+*/
+void TriAPI_LightAtPoint(float *pos, float *value)
+{
+	color24	ambient;
 
-void TriAPI_FogParams(float flDensity, int iFogSkybox){};
-#else
+	if( !pos || !value )
+		return;
+
+	R_LightForPoint( pos, &ambient, false, false, 0.0f );
+
+	value[0] = (float)ambient.r * 255.0f;
+	value[1] = (float)ambient.g * 255.0f;
+	value[2] = (float)ambient.b * 255.0f;
+};
+
+/*
+=============
+TriColor4fRendermode
+
+Heavy legacy of Quake...
+=============
+*/
+void TriAPI_Color4fRendermode(float r, float g, float b, float a, int rendermode)
+{
+	if( rendermode == kRenderTransAlpha )
+		pglColor4f( r, g, b, a );
+	else
+		pglColor4f( r * a, g * a, b * a, 1.0f );
+};
+
+void TriAPI_FogParams(float flDensity, int iFogSkybox)
+{
+	RI.fogDensity = flDensity;
+	RI.fogCustom = iFogSkybox;
+};
+#else // if OGS_TRIAPI_NULL_IMPL defined
 void TriAPI_RenderMode(int mode){};
 
 void TriAPI_Begin(int primitiveCode){};

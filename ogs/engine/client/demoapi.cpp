@@ -27,28 +27,32 @@
  */
 
 /// @file
-/// @brief client module types - constants, macros, typedefs and enums
 
-#pragma once
+//#include "precompiled.hpp"
+#include "client/cl_demo.hpp"
 
-/// Maximum number of recorded demo files
-const int MAX_DEMOS = 32;
+/*
+=================
 
-/// Local client states
-typedef enum cactive_e
+DemoApi implementation
+
+=================
+*/
+
+void Demo_WriteBuffer(int size, unsigned char *buffer)
 {
-	ca_dedicated,		///< Dedicated server mode, client is unused
-	ca_disconnected,	///< Not talking to a server
-	ca_connecting,		///< Sending request packets to the server
-	ca_connected,		///< Netchan_t established, waiting for svc_serverdata
-	ca_uninitialized,	///< Not initialized yet
-	ca_active,			///< Game views should be displayed
-} cactive_t;
+	CL_WriteDemoUserMessage( buffer, size );
+};
 
-/// Career states
-typedef enum CareerStateType_e
+// clang-format off
+
+demo_api_t gDemoAPI =
 {
-	CAREER_NONE    = 0,
-	CAREER_LOADING = 1,
-	CAREER_PLAYING = 2,
-} CareerStateType;
+	CL_IsRecording,
+	CL_IsPlayingback,
+	CL_IsTimeDemo,
+	
+	Demo_WriteBuffer
+};
+
+// clang-format on

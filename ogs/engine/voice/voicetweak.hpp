@@ -29,3 +29,7 @@
 /// @file
 
 #pragma once
+
+#include "common/ivoicetweak.h"
+
+extern IVoiceTweak gVoiceAPI;

@@ -25,5 +25,59 @@
  *	you do not wish to do so, delete this exception statement from your
  *	version.
  */
- 
- #include "voice/voicetweak.hpp"
+
+/// @file
+
+#include "voice/voicetweak.hpp"
+
+/*
+=================
+
+IVoiceTweak implementation
+
+=================
+*/
+
+namespace
+{
+
+int Voice_StartVoiceTweakMode()
+{
+	// TODO: implement
+	return 0;
+};
+
+void Voice_EndVoiceTweakMode()
+{
+	// TODO: implement
+};
+	
+void Voice_SetControlFloat( VoiceTweakControl iControl, float value )
+{
+	// TODO: implement
+};
+
+float Voice_GetControlFloat( VoiceTweakControl iControl )
+{
+	// TODO: implement
+	return 1.0f;
+};
+
+int Voice_GetSpeakingVolume()
+{
+	// TODO: implement
+	return 255;
+};
+
+}; // namespace
+
+IVoiceTweak gVoiceAPI =
+{
+	Voice_StartVoiceTweakMode,
+	Voice_EndVoiceTweakMode,
+	
+	Voice_SetControlFloat,
+	Voice_GetControlFloat,
+	
+	Voice_GetSpeakingVolume
+};
