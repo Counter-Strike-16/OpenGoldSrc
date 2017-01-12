@@ -5,7 +5,8 @@
 
 using namespace vgui;
 
-CWebExplorer::CWebExplorer(vgui::Panel *parent, const char *panelName) : Frame(parent, panelName)
+CWebExplorer::CWebExplorer(vgui::Panel *parent, const char *panelName)
+    : Frame(parent, panelName)
 {
 	m_pMessage = new HTML(this, "Message");
 	m_pMessage->SetContextMenuEnabled(false);
@@ -29,7 +30,7 @@ void CWebExplorer::Activate(const char *msg)
 {
 	Frame::Activate();
 
-	if (IsURL(msg))
+	if(IsURL(msg))
 		m_pMessage->OpenURL(msg);
 }
 
@@ -45,7 +46,7 @@ bool CWebExplorer::IsURL(const char *str)
 {
 	bool isUrl = false;
 
-	if (strlen(str) > 7 && str[0] == 'h' && str[1] == 't' && str[2] == 't' && str[3] == 'p' && str[4] == ':' && str[5] == '/' && str[6] == '/')
+	if(strlen(str) > 7 && str[0] == 'h' && str[1] == 't' && str[2] == 't' && str[3] == 'p' && str[4] == ':' && str[5] == '/' && str[6] == '/')
 		isUrl = true;
 
 	return isUrl;

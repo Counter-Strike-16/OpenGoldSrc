@@ -1,4 +1,4 @@
-#if !defined (VCONTROLSLISTPANEL_H)
+#if !defined(VCONTROLSLISTPANEL_H)
 #define VCONTROLSLISTPANEL_H
 #ifdef _WIN32
 #pragma once
@@ -17,7 +17,7 @@ public:
 	virtual void EndCaptureMode(vgui::HCursor hCursor = NULL);
 	virtual bool IsCapturing(void);
 	virtual void SetItemOfInterest(int itemID);
-	virtual int GetItemOfInterest(void);
+	virtual int  GetItemOfInterest(void);
 	virtual void OnMousePressed(vgui::MouseCode code);
 	virtual void OnMouseDoublePressed(vgui::MouseCode code);
 
@@ -28,10 +28,10 @@ private:
 	class CInlineEditPanel *m_pInlineEditPanel;
 
 private:
-	bool m_bCaptureMode;
-	int m_nClickRow;
-	vgui::HFont m_hFont;
-	int m_iMouseX, m_iMouseY;
+	bool                             m_bCaptureMode;
+	int                              m_nClickRow;
+	vgui::HFont                      m_hFont;
+	int                              m_iMouseX, m_iMouseY;
 	typedef vgui::SectionedListPanel BaseClass;
 };
 

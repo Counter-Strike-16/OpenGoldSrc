@@ -64,7 +64,7 @@ enum eLevelLoadingProgress
 	PROGRESS_FULLYCONNECTED,            ///
 	PROGRESS_READYTOPLAY,               ///
 
-	PROGRESS_HIGHESTITEM,				///< Must be last item in list
+	PROGRESS_HIGHESTITEM, ///< Must be last item in list
 };
 
 /// Centerpoint for handling all user interface in the engine

@@ -74,15 +74,15 @@ cvar_t *Cvar_FindVar(const char *var_name)
 #ifndef SWDS
 	g_engdstAddrs->pfnGetCvarPointer(&var_name);
 #endif
-	
+
 	cvar_t *var = NULL;
-	
+
 	for(var = cvar_vars; var; var = var->next)
 	{
 		if(!Q_stricmp(var_name, var->name))
 			break;
 	};
-	
+
 	return var;
 }
 
@@ -97,7 +97,7 @@ NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 		if(!Q_stricmp(var_name, var->next->name))
 			return var;
 	};
-	
+
 	return NULL;
 };
 

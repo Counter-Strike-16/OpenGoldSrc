@@ -35,9 +35,12 @@
 #include "client/client.hpp"
 #include "console/console.hpp"
 
-#define dem_cmd 0
-#define dem_read 1
-#define dem_set 2
+enum
+{
+	dem_cmd = 0,
+	dem_read,
+	dem_set
+};
 
 void CL_FinishTimeDemo();
 
@@ -82,7 +85,7 @@ void CL_StopPlayback()
 		return;
 
 	fclose(cls.demofile);
-	
+
 	cls.demofile     = NULL;
 	cls.state        = ca_disconnected;
 	cls.demoplayback = 0;
@@ -101,13 +104,12 @@ Writes the current user cmd
 void CL_WriteDemoCmd(usercmd_t *pcmd)
 {
 	int       i;
-	float     fl;
 	byte      c;
 	usercmd_t cmd;
 
 	//Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
-	fl = LittleFloat((float)realtime);
+	float fl = LittleFloat((float)realtime);
 	fwrite(&fl, sizeof(fl), 1, cls.demofile);
 
 	c = dem_cmd;
@@ -143,19 +145,17 @@ Dumps the current net message, prefixed by the length and view angles
 */
 void CL_WriteDemoMessage(sizebuf_t *msg)
 {
-	int   len;
-	float fl;
-	byte  c;
+	int len;
 
 	//Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	if(!cls.demorecording)
 		return;
 
-	fl = LittleFloat((float)realtime);
+	float fl = LittleFloat((float)realtime);
 	fwrite(&fl, sizeof(fl), 1, cls.demofile);
 
-	c = dem_read;
+	byte c = dem_read;
 	fwrite(&c, sizeof(c), 1, cls.demofile);
 
 	len = LittleLong(msg->cursize);
@@ -348,26 +348,21 @@ Dumps the current net message, prefixed by the length and view angles
 */
 void CL_WriteRecordDemoMessage(sizebuf_t *msg, int seq)
 {
-	int   len;
-	int   i;
-	float fl;
-	byte  c;
-
 	//Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	if(!cls.demorecording)
 		return;
 
-	fl = LittleFloat((float)realtime);
+	float fl = LittleFloat((float)realtime);
 	fwrite(&fl, sizeof(fl), 1, cls.demofile);
 
-	c = dem_read;
+	byte c = dem_read;
 	fwrite(&c, sizeof(c), 1, cls.demofile);
 
-	len = LittleLong(msg->cursize + 8);
+	int len = LittleLong(msg->cursize + 8);
 	fwrite(&len, 4, 1, cls.demofile);
 
-	i = LittleLong(seq);
+	int i = LittleLong(seq);
 	fwrite(&i, 4, 1, cls.demofile);
 	fwrite(&i, 4, 1, cls.demofile);
 

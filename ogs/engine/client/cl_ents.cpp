@@ -1048,10 +1048,10 @@ void CL_SetSolidPlayers(int playernum)
 {
 	if(!cl_solid_players.value)
 		return;
-	
-	extern vec3_t            player_mins;
-	extern vec3_t            player_maxs;
-	
+
+	extern vec3_t player_mins;
+	extern vec3_t player_maxs;
+
 	struct predicted_player *pplayer;
 
 	physent_t *pent = pmove.physents + pmove.numphysent;

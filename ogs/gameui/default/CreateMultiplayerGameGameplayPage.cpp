@@ -30,7 +30,8 @@ public:
 	void WriteFileHeader(FileHandle_t fp);
 };
 
-CCreateMultiplayerGameGameplayPage::CCreateMultiplayerGameGameplayPage(vgui::Panel *parent, const char *name) : PropertyPage(parent, name)
+CCreateMultiplayerGameGameplayPage::CCreateMultiplayerGameGameplayPage(vgui::Panel *parent, const char *name)
+    : PropertyPage(parent, name)
 {
 	m_pOptionsList = new CPanelListPanel(this, "GameOptions");
 
@@ -65,16 +66,16 @@ const char *CCreateMultiplayerGameGameplayPage::GetHostName(void)
 
 const char *CCreateMultiplayerGameGameplayPage::GetValue(const char *cvarName, const char *defaultValue)
 {
-	for (mpcontrol_t *mp = m_pList; mp != NULL; mp = mp->next)
+	for(mpcontrol_t *mp = m_pList; mp != NULL; mp = mp->next)
 	{
 		Panel *control = mp->pControl;
 
-		if (control && !stricmp(mp->GetName(), cvarName))
+		if(control && !stricmp(mp->GetName(), cvarName))
 		{
-			KeyValues *data = new KeyValues("GetText");
+			KeyValues * data = new KeyValues("GetText");
 			static char buf[128];
 
-			if (control && control->RequestInfo(data))
+			if(control && control->RequestInfo(data))
 				strncpy(buf, data->GetString("text", defaultValue), sizeof(buf) - 1);
 			else
 				strncpy(buf, defaultValue, sizeof(buf) - 1);
@@ -92,13 +93,13 @@ void CCreateMultiplayerGameGameplayPage::SaveValues(void)
 {
 	GatherCurrentValues();
 
-	if (m_pDescription)
+	if(m_pDescription)
 	{
 		m_pDescription->WriteToConfig();
 
 		FileHandle_t fp = g_pFullFileSystem->Open(OPTIONS_FILE, "wb");
 
-		if (fp)
+		if(fp)
 		{
 			m_pDescription->WriteToScriptFile(fp);
 			g_pFullFileSystem->Close(fp);
@@ -112,7 +113,7 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList(void)
 
 	p = m_pList;
 
-	while (p)
+	while(p)
 	{
 		n = p->next;
 
@@ -126,65 +127,66 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList(void)
 	m_pList = NULL;
 
 	CScriptObject *pObj = m_pDescription->pObjList;
-	mpcontrol_t *pCtrl;
+	mpcontrol_t *  pCtrl;
 
-	CheckButton *pBox;
-	TextEntry *pEdit;
-	ComboBox *pCombo;
+	CheckButton *    pBox;
+	TextEntry *      pEdit;
+	ComboBox *       pCombo;
 	CScriptListItem *pListItem;
 
 	Panel *objParent = m_pOptionsList;
 
-	while (pObj)
+	while(pObj)
 	{
-		if (pObj->type == O_OBSOLETE)
+		if(pObj->type == O_OBSOLETE)
 		{
 			pObj = pObj->pNext;
 			continue;
 		}
 
-		pCtrl = new mpcontrol_t(objParent, pObj->cvarname);
+		pCtrl       = new mpcontrol_t(objParent, pObj->cvarname);
 		pCtrl->type = pObj->type;
 
-		switch (pCtrl->type)
+		switch(pCtrl->type)
 		{
-			case O_BOOL:
-			{
-				pBox = new CheckButton(pCtrl, "DescCheckButton", pObj->prompt);
-				pBox->SetSelected(pObj->fdefValue != 0.0f ? true : false);
-				pCtrl->pControl = (Panel *)pBox;
-				break;
-			}
-
-			case O_STRING:
-			case O_NUMBER:
-			{
-				pEdit = new TextEntry(pCtrl, "DescEdit");
-				pEdit->InsertString(pObj->defValue);
-				pCtrl->pControl = (Panel *)pEdit;
-				break;
-			}
-
-			case O_LIST:
-			{
-				pCombo = new ComboBox(pCtrl, "DescEdit", 5, false);
-				pListItem = pObj->pListItems;
-
-				while (pListItem)
-				{
-					pCombo->AddItem(pListItem->szItemText, NULL);
-					pListItem = pListItem->pNext;
-				}
-
-				pCombo->ActivateItemByRow((int)pObj->fdefValue);
-				pCtrl->pControl = (Panel *)pCombo;
-				break;
-			}
-
-			default: break;
+		case O_BOOL:
+		{
+			pBox = new CheckButton(pCtrl, "DescCheckButton", pObj->prompt);
+			pBox->SetSelected(pObj->fdefValue != 0.0f ? true : false);
+			pCtrl->pControl = (Panel *)pBox;
+			break;
 		}
 
-		if (pCtrl->type != O_BOOL)
+		case O_STRING:
+		case O_NUMBER:
+		{
+			pEdit = new TextEntry(pCtrl, "DescEdit");
+			pEdit->InsertString(pObj->defValue);
+			pCtrl->pControl = (Panel *)pEdit;
+			break;
+		}
+
+		case O_LIST:
+		{
+			pCombo    = new ComboBox(pCtrl, "DescEdit", 5, false);
+			pListItem = pObj->pListItems;
+
+			while(pListItem)
+			{
+				pCombo->AddItem(pListItem->szItemText, NULL);
+				pListItem = pListItem->pNext;
+			}
+
+			pCombo->ActivateItemByRow((int)pObj->fdefValue);
+			pCtrl->pControl = (Panel *)pCombo;
+			break;
+		}
+
+		default:
+			break;
+		}
+
+		if(pCtrl->type != O_BOOL)
 		{
 			pCtrl->pPrompt = new vgui::Label(pCtrl, "DescLabel", "");
 			pCtrl->pPrompt->SetContentAlignment(vgui::Label::a_west);
@@ -196,20 +198,20 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList(void)
 		pCtrl->SetSize(100, 28);
 		m_pOptionsList->AddItem(pCtrl);
 
-		if (!m_pList)
+		if(!m_pList)
 		{
-			m_pList = pCtrl;
+			m_pList     = pCtrl;
 			pCtrl->next = NULL;
 		}
 		else
 		{
 			mpcontrol_t *p = m_pList;
 
-			while (p)
+			while(p)
 			{
-				if (!p->next)
+				if(!p->next)
 				{
-					p->next = pCtrl;
+					p->next     = pCtrl;
 					pCtrl->next = NULL;
 					break;
 				}
@@ -224,93 +226,93 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList(void)
 
 void CCreateMultiplayerGameGameplayPage::GatherCurrentValues(void)
 {
-	if (!m_pDescription)
+	if(!m_pDescription)
 		return;
 
 	CheckButton *pBox;
-	TextEntry *pEdit;
-	ComboBox *pCombo;
+	TextEntry *  pEdit;
+	ComboBox *   pCombo;
 
 	mpcontrol_t *pList;
 
-	CScriptObject *pObj;
+	CScriptObject *  pObj;
 	CScriptListItem *pItem;
 
-	char szValue[256];
-	char strValue[256];
+	char    szValue[256];
+	char    strValue[256];
 	wchar_t w_szStrValue[256];
 
 	pList = m_pList;
 
-	while (pList)
+	while(pList)
 	{
 		pObj = pList->pScrObj;
 
-		if (!pList->pControl)
+		if(!pList->pControl)
 		{
 			pObj->SetCurValue(pObj->defValue);
 			pList = pList->next;
 			continue;
 		}
 
-		switch (pObj->type)
+		switch(pObj->type)
 		{
-			case O_BOOL:
+		case O_BOOL:
+		{
+			pBox = (CheckButton *)pList->pControl;
+			Q_snprintf(szValue, sizeof(szValue), "%s", pBox->IsSelected() ? "1" : "0");
+			break;
+		}
+
+		case O_NUMBER:
+		{
+			pEdit = (TextEntry *)pList->pControl;
+			pEdit->GetText(strValue, sizeof(strValue));
+			Q_snprintf(szValue, sizeof(szValue), "%s", strValue);
+			break;
+		}
+
+		case O_STRING:
+		{
+			pEdit = (TextEntry *)pList->pControl;
+			pEdit->GetText(strValue, sizeof(strValue));
+			Q_snprintf(szValue, sizeof(szValue), "%s", strValue);
+			break;
+		}
+
+		case O_LIST:
+		{
+			pCombo = (ComboBox *)pList->pControl;
+			pCombo->GetText(w_szStrValue, sizeof(w_szStrValue) / sizeof(wchar_t));
+
+			pItem = pObj->pListItems;
+
+			while(pItem)
 			{
-				pBox = (CheckButton *)pList->pControl;
-				Q_snprintf(szValue, sizeof(szValue), "%s", pBox->IsSelected() ? "1" : "0");
-				break;
-			}
+				wchar_t *wLocalizedString = NULL;
+				wchar_t  w_szStrTemp[256];
 
-			case O_NUMBER:
-			{
-				pEdit = (TextEntry *)pList->pControl;
-				pEdit->GetText(strValue, sizeof(strValue));
-				Q_snprintf(szValue, sizeof(szValue), "%s", strValue);
-				break;
-			}
+				if(pItem->szItemText[0] == '#')
+					wLocalizedString = g_pVGuiLocalize->Find(pItem->szItemText);
 
-			case O_STRING:
-			{
-				pEdit = (TextEntry *)pList->pControl;
-				pEdit->GetText(strValue, sizeof(strValue));
-				Q_snprintf(szValue, sizeof(szValue), "%s", strValue);
-				break;
-			}
-
-			case O_LIST:
-			{
-				pCombo = (ComboBox *)pList->pControl;
-				pCombo->GetText(w_szStrValue, sizeof(w_szStrValue) / sizeof(wchar_t));
-
-				pItem = pObj->pListItems;
-
-				while (pItem)
-				{
-					wchar_t *wLocalizedString = NULL;
-					wchar_t w_szStrTemp[256];
-
-					if (pItem->szItemText[0] == '#')
-						wLocalizedString = g_pVGuiLocalize->Find(pItem->szItemText);
-
-					if (wLocalizedString)
-						wcsncpy(w_szStrTemp, wLocalizedString, sizeof(w_szStrTemp) / sizeof(wchar_t));
-					else
-						g_pVGuiLocalize->ConvertANSIToUnicode(pItem->szItemText, w_szStrTemp, sizeof(w_szStrTemp));
-
-					if (_wcsicmp(w_szStrTemp, w_szStrValue) == 0)
-						break;
-
-					pItem = pItem->pNext;
-				}
-
-				if (pItem)
-					Q_snprintf(szValue, sizeof(szValue), "%s", pItem->szValue);
+				if(wLocalizedString)
+					wcsncpy(w_szStrTemp, wLocalizedString, sizeof(w_szStrTemp) / sizeof(wchar_t));
 				else
-					Q_snprintf(szValue, sizeof(szValue), "%s", pObj->defValue);
+					g_pVGuiLocalize->ConvertANSIToUnicode(pItem->szItemText, w_szStrTemp, sizeof(w_szStrTemp));
 
-				break;
+				if(_wcsicmp(w_szStrTemp, w_szStrValue) == 0)
+					break;
+
+				pItem = pItem->pNext;
 			}
+
+			if(pItem)
+				Q_snprintf(szValue, sizeof(szValue), "%s", pItem->szValue);
+			else
+				Q_snprintf(szValue, sizeof(szValue), "%s", pObj->defValue);
+
+			break;
+		}
 		}
 
 		UTIL_StripInvalidCharacters(szValue, sizeof(szValue));
@@ -323,7 +325,8 @@ void CCreateMultiplayerGameGameplayPage::GatherCurrentValues(void)
 	}
 }
 
-CServerDescription::CServerDescription(CPanelListPanel *panel) : CDescription(panel)
+CServerDescription::CServerDescription(CPanelListPanel *panel)
+    : CDescription(panel)
 {
 	setHint("// NOTE:  THIS FILE IS AUTOMATICALLY REGENERATED, \r\n//DO NOT EDIT THIS HEADER, YOUR COMMENTS WILL BE LOST IF YOU DO\r\n// Multiplayer options script\r\n//\r\n// Format:\r\n//  Version [float]\r\n//  Options description followed by \r\n//  Options defaults\r\n//\r\n// Option description syntax:\r\n//\r\n//  \"cvar\" { \"Prompt\" { type [ type info ] } { default } }\r\n//\r\n//  type = \r\n//   BOOL   (a yes/no toggle)\r\n//   STRING\r\n//   NUMBER\r\n//   LIST\r\n//\r\n// type info:\r\n// BOOL                 no type info\r\n// NUMBER       min max range, use -1 -1 for no limits\r\n// STRING       no type info\r\n// LIST          delimited list of options value pairs\r\n//\r\n//\r\n// default depends on type\r\n// BOOL is \"0\" or \"1\"\r\n// NUMBER is \"value\"\r\n// STRING is \"value\"\r\n// LIST is \"index\", where index \"0\" is the first element of the list\r\n\r\n\r\n");
 	setDescription("SERVER_OPTIONS");
@@ -333,17 +336,17 @@ void CServerDescription::WriteScriptHeader(FileHandle_t fp)
 {
 	char am_pm[] = "AM";
 
-	time_t timer = time(NULL);
-	tm *tblock = localtime(&timer);
-	tm newtime = *tblock;
+	time_t timer   = time(NULL);
+	tm *   tblock  = localtime(&timer);
+	tm     newtime = *tblock;
 
-	if (newtime.tm_hour > 12)
+	if(newtime.tm_hour > 12)
 		Q_strncpy(am_pm, "PM", sizeof(am_pm));
 
-	if (newtime.tm_hour > 12)
+	if(newtime.tm_hour > 12)
 		newtime.tm_hour -= 12;
 
-	if (newtime.tm_hour == 0)
+	if(newtime.tm_hour == 0)
 		newtime.tm_hour = 12;
 
 	g_pFullFileSystem->FPrintf(fp, (char *)getHint());
@@ -359,17 +362,17 @@ void CServerDescription::WriteFileHeader(FileHandle_t fp)
 {
 	char am_pm[] = "AM";
 
-	time_t timer = time(NULL);
-	tm *tblock = localtime(&timer);
-	tm newtime = *tblock;
+	time_t timer   = time(NULL);
+	tm *   tblock  = localtime(&timer);
+	tm     newtime = *tblock;
 
-	if (newtime.tm_hour > 12)
+	if(newtime.tm_hour > 12)
 		Q_strncpy(am_pm, "PM", sizeof(am_pm));
 
-	if (newtime.tm_hour > 12)
+	if(newtime.tm_hour > 12)
 		newtime.tm_hour -= 12;
 
-	if (newtime.tm_hour == 0)
+	if(newtime.tm_hour == 0)
 		newtime.tm_hour = 12;
 
 	g_pFullFileSystem->FPrintf(fp, "// Half-Life Server Configuration Settings\r\n");

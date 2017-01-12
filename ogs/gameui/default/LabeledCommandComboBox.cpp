@@ -5,11 +5,12 @@
 
 using namespace vgui;
 
-CLabeledCommandComboBox::CLabeledCommandComboBox(vgui::Panel *parent, const char *panelName) : vgui::ComboBox(parent, panelName, 6, false)
+CLabeledCommandComboBox::CLabeledCommandComboBox(vgui::Panel *parent, const char *panelName)
+    : vgui::ComboBox(parent, panelName, 6, false)
 {
 	AddActionSignalTarget(this);
 	m_iCurrentSelection = -1;
-	m_iStartSelection = -1;
+	m_iStartSelection   = -1;
 }
 
 CLabeledCommandComboBox::~CLabeledCommandComboBox(void)
@@ -24,18 +25,18 @@ void CLabeledCommandComboBox::DeleteAllItems(void)
 
 void CLabeledCommandComboBox::AddItem(char const *text, char const *engineCommand)
 {
-	int idx = m_Items.AddToTail();
+	int          idx  = m_Items.AddToTail();
 	COMMANDITEM *item = &m_Items[idx];
 
 	item->comboBoxID = BaseClass::AddItem(text, NULL);
 
 	Q_strncpy(item->name, text, sizeof(item->name));
 
-	if (text[0] == '#')
+	if(text[0] == '#')
 	{
 		wchar_t *localized = g_pVGuiLocalize->Find(text);
 
-		if (localized)
+		if(localized)
 			g_pVGuiLocalize->ConvertUnicodeToANSI(localized, item->name, sizeof(item->name));
 	}
 
@@ -44,7 +45,7 @@ void CLabeledCommandComboBox::AddItem(char const *text, char const *engineComman
 
 void CLabeledCommandComboBox::ActivateItem(int index)
 {
-	if (index < m_Items.Count())
+	if(index < m_Items.Count())
 	{
 		int comboBoxID = m_Items[index].comboBoxID;
 		BaseClass::ActivateItem(comboBoxID);
@@ -54,34 +55,34 @@ void CLabeledCommandComboBox::ActivateItem(int index)
 
 void CLabeledCommandComboBox::SetInitialItem(int index)
 {
-	if (index< m_Items.Count())
+	if(index < m_Items.Count())
 	{
 		m_iStartSelection = index;
-		int comboBoxID = m_Items[index].comboBoxID;
+		int comboBoxID    = m_Items[index].comboBoxID;
 		ActivateItem(comboBoxID);
 	}
 }
 
 void CLabeledCommandComboBox::OnTextChanged(char const *text)
 {
-	for (int i = 0; i < m_Items.Size(); i++)
+	for(int i = 0; i < m_Items.Size(); i++)
 	{
 		COMMANDITEM *item = &m_Items[i];
 
-		if (!stricmp(item->name, text))
+		if(!stricmp(item->name, text))
 		{
 			m_iCurrentSelection = i;
 			break;
 		}
 	}
 
-	if (HasBeenModified())
+	if(HasBeenModified())
 		PostActionSignal(new KeyValues("ControlModified"));
 }
 
 const char *CLabeledCommandComboBox::GetActiveItemCommand(void)
 {
-	if (m_iCurrentSelection == -1)
+	if(m_iCurrentSelection == -1)
 		return NULL;
 
 	COMMANDITEM *item = &m_Items[m_iCurrentSelection];
@@ -90,10 +91,10 @@ const char *CLabeledCommandComboBox::GetActiveItemCommand(void)
 
 void CLabeledCommandComboBox::ApplyChanges(void)
 {
-	if (m_iCurrentSelection == -1)
+	if(m_iCurrentSelection == -1)
 		return;
 
-	if (m_Items.Size() < 1)
+	if(m_Items.Size() < 1)
 		return;
 
 	Assert(m_iCurrentSelection < m_Items.Size());
@@ -109,6 +110,6 @@ bool CLabeledCommandComboBox::HasBeenModified(void)
 
 void CLabeledCommandComboBox::Reset(void)
 {
-	if (m_iStartSelection != -1)
+	if(m_iStartSelection != -1)
 		ActivateItem(m_iStartSelection);
 }

@@ -12,26 +12,27 @@
 
 using namespace vgui;
 
-COptionsSubMouse::COptionsSubMouse(vgui::Panel *parent) : PropertyPage(parent, NULL)
+COptionsSubMouse::COptionsSubMouse(vgui::Panel *parent)
+    : PropertyPage(parent, NULL)
 {
 	m_pReverseMouseCheckBox = new CCvarNegateCheckButton(this, "ReverseMouse", "#GameUI_ReverseMouse", "m_pitch");
-	m_pMouseLookCheckBox = new CKeyToggleCheckButton(this, "MouseLook", "#GameUI_MouseLook", "in_mlook", "mlook");
-	m_pMouseFilterCheckBox = new CCvarToggleCheckButton(this, "MouseFilter", "#GameUI_MouseFilter", "m_filter");
+	m_pMouseLookCheckBox    = new CKeyToggleCheckButton(this, "MouseLook", "#GameUI_MouseLook", "in_mlook", "mlook");
+	m_pMouseFilterCheckBox  = new CCvarToggleCheckButton(this, "MouseFilter", "#GameUI_MouseFilter", "m_filter");
 
-	m_pJoystickCheckBox = new CCvarToggleCheckButton(this, "Joystick", "#GameUI_Joystick", "joystick");
-	m_pJoystickLookCheckBox = new CKeyToggleCheckButton(this, "JoystickLook", "#GameUI_JoystickLook", "in_jlook", "jlook");
+	m_pJoystickCheckBox       = new CCvarToggleCheckButton(this, "Joystick", "#GameUI_Joystick", "joystick");
+	m_pJoystickLookCheckBox   = new CKeyToggleCheckButton(this, "JoystickLook", "#GameUI_JoystickLook", "in_jlook", "jlook");
 	m_pMouseSensitivitySlider = new CCvarSlider(this, "Slider", "#GameUI_MouseSensitivity", 1.0f, 20.0f, "sensitivity", true);
 
 	m_pMouseSensitivityLabel = new TextEntry(this, "SensitivityLabel");
 	m_pMouseSensitivityLabel->AddActionSignalTarget(this);
 
-	m_pAutoAimCheckBox = new CCvarToggleCheckButton(this, "Auto-Aim", "#GameUI_AutoAim", "sv_aim");
+	m_pAutoAimCheckBox  = new CCvarToggleCheckButton(this, "Auto-Aim", "#GameUI_AutoAim", "sv_aim");
 	m_pRawInputCheckBox = new CCvarToggleCheckButton(this, "RawInput", "#GameUI_RawInput", "m_rawinput");
 
 	LoadControlSettingsFromScheme("OptionsSubMouse.res");
 
 	float sensitivity = engine->pfnGetCvarFloat("sensitivity");
-	char buf[64];
+	char  buf[64];
 	_snprintf(buf, sizeof(buf) - 1, " %.1f", sensitivity);
 	buf[sizeof(buf) - 1] = 0;
 	m_pMouseSensitivityLabel->SetText(buf);
@@ -80,20 +81,20 @@ void COptionsSubMouse::OnControlModified(Panel *panel)
 {
 	PostActionSignal(new KeyValues("ApplyButtonEnable"));
 
-	if (panel == m_pMouseSensitivitySlider && m_pMouseSensitivitySlider->HasBeenModified())
+	if(panel == m_pMouseSensitivitySlider && m_pMouseSensitivitySlider->HasBeenModified())
 		UpdateSensitivityLabel();
 }
 
 void COptionsSubMouse::OnTextChanged(Panel *panel)
 {
-	if (panel == m_pMouseSensitivityLabel)
+	if(panel == m_pMouseSensitivityLabel)
 	{
 		char buf[64];
 		m_pMouseSensitivityLabel->GetText(buf, 64);
 
 		float fValue = (float)atof(buf);
 
-		if (fValue >= 1.0)
+		if(fValue >= 1.0)
 		{
 			m_pMouseSensitivitySlider->SetSliderValue(fValue);
 			PostActionSignal(new KeyValues("ApplyButtonEnable"));

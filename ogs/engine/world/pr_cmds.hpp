@@ -81,15 +81,15 @@ extern int           gMsgType;
 extern qboolean      gMsgStarted;
 extern vec3_t        gMsgOrigin;
 
-extern int32         idum;
+extern int32 idum;
 
-extern int           g_groupop;
-extern int           g_groupmask;
+extern int g_groupop;
+extern int g_groupmask;
 
 extern unsigned char checkpvs[1024];
 
-extern int           c_invis;
-extern int           c_notvis;
+extern int c_invis;
+extern int c_notvis;
 
 extern vec3_t vec_origin;
 

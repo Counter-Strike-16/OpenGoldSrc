@@ -14,16 +14,18 @@ CModInfo &ModInfo(void)
 
 CModInfo::CModInfo(void)
 {
-	m_pModData = new KeyValues("ModData");
+	m_pModData        = new KeyValues("ModData");
 	m_wcsGameTitle[0] = 0;
 
-	char *p = strchr(gConfigs.szGameName, ':');
-	int len1 = p - gConfigs.szGameName;
+	char *p    = strchr(gConfigs.szGameName, ':');
+	int   len1 = p - gConfigs.szGameName;
 
 	wcsncpy(m_wcsGameTitle, ANSIToUnicode(gConfigs.szGameName), len1);
 	m_wcsGameTitle[len1] = 0;
 
-	while (*(++p) == ' ') {}
+	while(*(++p) == ' ')
+	{
+	}
 
 	wcscpy(m_wcsGameTitle2, ANSIToUnicode(p));
 }
@@ -34,7 +36,7 @@ CModInfo::~CModInfo(void)
 
 void CModInfo::FreeModInfo(void)
 {
-	if (m_pModData)
+	if(m_pModData)
 	{
 		m_pModData->deleteThis();
 		m_pModData = NULL;

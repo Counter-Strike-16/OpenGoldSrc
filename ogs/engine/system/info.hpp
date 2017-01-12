@@ -42,9 +42,9 @@ const int MAX_KV_LEN = 127;
 const int INFO_MAX_BUFFER_VALUES = 4;
 
 #ifdef REHLDS_FIXES
-	const int MAX_LOCALINFO = 4096;
+const int MAX_LOCALINFO = 4096;
 #else
-	const int MAX_LOCALINFO = MAX_INFO_STRING * 128;
+const int MAX_LOCALINFO = MAX_INFO_STRING * 128;
 #endif // REHLDS_FIXES
 
 const char *Info_ValueForKey(const char *s, const char *key);

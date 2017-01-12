@@ -5,12 +5,13 @@
 
 using namespace vgui;
 
-CKeyToggleCheckButton::CKeyToggleCheckButton(Panel *parent, const char *panelName, const char *text, char const *key, char const *cmdname) : CheckButton(parent, panelName, text)
+CKeyToggleCheckButton::CKeyToggleCheckButton(Panel *parent, const char *panelName, const char *text, char const *key, char const *cmdname)
+    : CheckButton(parent, panelName, text)
 {
 	m_pszKeyName = key ? strdup(key) : NULL;
 	m_pszCmdName = cmdname ? strdup(cmdname) : NULL;
 
-	if (m_pszKeyName)
+	if(m_pszKeyName)
 		Reset();
 }
 
@@ -24,14 +25,14 @@ void CKeyToggleCheckButton::Paint(void)
 {
 	BaseClass::Paint();
 
-	if (!m_pszKeyName)
+	if(!m_pszKeyName)
 		return;
 
 	bool isdown;
 
-	if (gameuifuncs->IsKeyDown(m_pszKeyName, isdown))
+	if(gameuifuncs->IsKeyDown(m_pszKeyName, isdown))
 	{
-		if (m_bStartValue != isdown)
+		if(m_bStartValue != isdown)
 		{
 			SetSelected(isdown);
 			m_bStartValue = isdown;
@@ -43,13 +44,13 @@ void CKeyToggleCheckButton::Reset(void)
 {
 	gameuifuncs->IsKeyDown(m_pszKeyName, m_bStartValue);
 
-	if (IsSelected() != m_bStartValue)
+	if(IsSelected() != m_bStartValue)
 		SetSelected(m_bStartValue);
 }
 
 void CKeyToggleCheckButton::ApplyChanges(void)
 {
-	if (!m_pszCmdName || !m_pszCmdName[0])
+	if(!m_pszCmdName || !m_pszCmdName[0])
 		return;
 
 	char szCommand[256];

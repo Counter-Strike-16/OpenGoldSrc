@@ -439,7 +439,7 @@ int MSG_CurrentBit()
 
 	if(bfread.pbuf)
 		nbits = bfread.nCurInputBit + 8 * bfread.nBytesRead;
-	
+
 	return nbits;
 };
 
@@ -630,8 +630,7 @@ int MSG_ReadBitData(void *dest, int length)
 			*p = (unsigned char)MSG_ReadBits(8);
 			p++;
 			--i;
-		}
-		while(i);
+		} while(i);
 	}
 
 	return length;
@@ -903,12 +902,12 @@ char *MSG_ReadString()
 
 char *MSG_ReadStringLine()
 {
-	int c = 0, l = 0;
+	int         c = 0, l = 0;
 	static char string[2048];
 
-	while((c = MSG_ReadChar(), c) && c != '\n' && c != -1 && l < ARRAYSIZE(string) - 1)
+	while((c        = MSG_ReadChar(), c) && c != '\n' && c != -1 && l < ARRAYSIZE(string) - 1)
 		string[l++] = c;
-	
+
 	string[l] = 0;
 
 	return string;
@@ -933,12 +932,12 @@ NOXREF float MSG_ReadHiresAngle()
 	NOXREFCHECK;
 
 	int c = MSG_ReadShort();
-	
+
 #ifdef REHLDS_FIXES
 	if(c == -1) // FIXED: Added check for wrong value, but just return 0 instead of -1 * (360.0 / 65536)
 		return 0;
 #endif
-	
+
 	return (float)(MSG_ReadShort() * (360.0 / 65536));
 };
 

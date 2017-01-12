@@ -20,7 +20,8 @@ public:
 	virtual void ApplySchemeSettings(IScheme *pScheme);
 };
 
-VScrollBarReversedButtons::VScrollBarReversedButtons(Panel *parent, const char *panelName, bool vertical) : ScrollBar(parent, panelName, vertical)
+VScrollBarReversedButtons::VScrollBarReversedButtons(Panel *parent, const char *panelName, bool vertical)
+    : ScrollBar(parent, panelName, vertical)
 {
 }
 
@@ -29,12 +30,13 @@ void VScrollBarReversedButtons::ApplySchemeSettings(IScheme *pScheme)
 	ScrollBar::ApplySchemeSettings(pScheme);
 }
 
-CPanelListPanel::CPanelListPanel(vgui::Panel *parent, char const *panelName, bool inverseButtons) : Panel(parent, panelName)
+CPanelListPanel::CPanelListPanel(vgui::Panel *parent, char const *panelName, bool inverseButtons)
+    : Panel(parent, panelName)
 {
 	SetBounds(0, 0, 100, 100);
 	_sliderYOffset = 0;
 
-	if (inverseButtons)
+	if(inverseButtons)
 		_vbar = new VScrollBarReversedButtons(this, "CPanelListPanelVScroll", true);
 	else
 		_vbar = new ScrollBar(this, "CPanelListPanelVScroll", true);
@@ -56,20 +58,20 @@ CPanelListPanel::~CPanelListPanel(void)
 
 int CPanelListPanel::computeVPixelsNeeded(void)
 {
-	int pixels = 0;
+	int       pixels = 0;
 	DATAITEM *item;
-	Panel *panel;
+	Panel *   panel;
 
-	for (int i = 0; i < _dataItems.GetCount(); i++)
+	for(int i = 0; i < _dataItems.GetCount(); i++)
 	{
 		item = _dataItems[i];
 
-		if (!item)
+		if(!item)
 			continue;
 
 		panel = item->panel;
 
-		if (!panel)
+		if(!panel)
 			continue;
 
 		int w, h;
@@ -86,7 +88,7 @@ Panel *CPanelListPanel::GetCellRenderer(int row)
 {
 	DATAITEM *item = _dataItems[row];
 
-	if (item)
+	if(item)
 	{
 		Panel *panel = item->panel;
 		return panel;
@@ -100,7 +102,7 @@ int CPanelListPanel::AddItem(Panel *panel)
 	InvalidateLayout();
 
 	DATAITEM *newitem = new DATAITEM;
-	newitem->panel = panel;
+	newitem->panel    = panel;
 	panel->SetParent(_embedded);
 	return _dataItems.PutElement(newitem);
 }
@@ -112,7 +114,7 @@ int CPanelListPanel::GetItemCount(void)
 
 Panel *CPanelListPanel::GetItem(int itemIndex)
 {
-	if (itemIndex < 0 || itemIndex >= _dataItems.GetCount())
+	if(itemIndex < 0 || itemIndex >= _dataItems.GetCount())
 		return NULL;
 
 	return _dataItems[itemIndex]->panel;
@@ -120,7 +122,7 @@ Panel *CPanelListPanel::GetItem(int itemIndex)
 
 CPanelListPanel::DATAITEM *CPanelListPanel::GetDataItem(int itemIndex)
 {
-	if (itemIndex < 0 || itemIndex >= _dataItems.GetCount())
+	if(itemIndex < 0 || itemIndex >= _dataItems.GetCount())
 		return NULL;
 
 	return _dataItems[itemIndex];
@@ -139,9 +141,9 @@ void CPanelListPanel::RemoveItem(int itemIndex)
 
 void CPanelListPanel::DeleteAllItems(void)
 {
-	for (int i = 0; i < _dataItems.GetCount(); i++)
+	for(int i = 0; i < _dataItems.GetCount(); i++)
 	{
-		if (_dataItems[i])
+		if(_dataItems[i])
 			delete _dataItems[i]->panel;
 
 		delete _dataItems[i];
@@ -182,11 +184,11 @@ void CPanelListPanel::PerformLayout(void)
 	int y = 0;
 	int h = 0;
 
-	for (int i = 0; i < _dataItems.GetCount(); i++, y += h)
+	for(int i = 0; i < _dataItems.GetCount(); i++, y += h)
 	{
 		DATAITEM *item = _dataItems[i];
 
-		if (!item || !item->panel)
+		if(!item || !item->panel)
 			continue;
 
 		h = item->panel->GetTall();

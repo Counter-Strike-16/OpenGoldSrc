@@ -24,33 +24,33 @@ using namespace vgui;
 CUtlVector<char *> g_vLanguageList;
 
 char *g_LanguageList[] =
-{
-	"english",
-	"schinese",
-	"tchinese",
-	"macedonian"
-};
+    {
+        "english",
+        "schinese",
+        "tchinese",
+        "macedonian"};
 
-COptionsSubAdvanced::COptionsSubAdvanced(vgui::Panel *parent) : PropertyPage(parent, NULL)
+COptionsSubAdvanced::COptionsSubAdvanced(vgui::Panel *parent)
+    : PropertyPage(parent, NULL)
 {
 	GetLanguageList();
 
 	g_pVGuiLocalize->AddFile("Resource/language_%language%.txt");
 
 	m_pVersionInfo = new vgui::Label(this, "VersionInfo", "");
-	m_pLanguage = new vgui::ComboBox(this, "Language", g_vLanguageList.Size(), true);
+	m_pLanguage    = new vgui::ComboBox(this, "Language", g_vLanguageList.Size(), true);
 
 	LoadControlSettingsFromScheme("OptionsSubAdvanced.res");
 	InitLanguageList(m_pLanguage);
 	GetVersionInfo(m_pVersionInfo);
 
-	if (g_bIsUseSteam)
+	if(g_bIsUseSteam)
 		m_pLanguage->SetEnabled(false);
 }
 
 COptionsSubAdvanced::~COptionsSubAdvanced(void)
 {
-	for (int i = 0; i < g_vLanguageList.Size(); i++)
+	for(int i = 0; i < g_vLanguageList.Size(); i++)
 		free(g_vLanguageList[i]);
 
 	g_vLanguageList.RemoveAll();
@@ -79,11 +79,11 @@ void COptionsSubAdvanced::OnThink(void)
 
 void COptionsSubAdvanced::OnApplyChanges(void)
 {
-	int i = m_pLanguage->GetActiveItem();
-	KeyValues *data = m_pLanguage->GetActiveItemUserData();
+	int         i        = m_pLanguage->GetActiveItem();
+	KeyValues * data     = m_pLanguage->GetActiveItemUserData();
 	const char *language = data->GetString("language");
 
-	if (strcmp(language, gConfigs.szLanguage))
+	if(strcmp(language, gConfigs.szLanguage))
 	{
 		char cmd[64];
 		sprintf(cmd, "_setlanguage %s\n", language);
@@ -99,7 +99,7 @@ void COptionsSubAdvanced::OnCommand(const char *command)
 
 void COptionsSubAdvanced::GetLanguageList(void)
 {
-	int j = g_vLanguageList.AddToTail();
+	int j              = g_vLanguageList.AddToTail();
 	g_vLanguageList[j] = strdup("english");
 
 	int gamedir_len = strlen(gConfigs.szGameDir);
@@ -108,17 +108,17 @@ void COptionsSubAdvanced::GetLanguageList(void)
 	sprintf(szWildCard, "%s_*", gConfigs.szGameDir);
 
 	WIN32_FIND_DATA findData;
-	HANDLE findHandle = FindFirstFile(szWildCard, &findData);
+	HANDLE          findHandle = FindFirstFile(szWildCard, &findData);
 
-	while (findHandle != INVALID_HANDLE_VALUE)
+	while(findHandle != INVALID_HANDLE_VALUE)
 	{
-		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
-			j = g_vLanguageList.AddToTail();
+			j                  = g_vLanguageList.AddToTail();
 			g_vLanguageList[j] = strdup(&findData.cFileName[gamedir_len + 1]);
 		}
 
-		if (!FindNextFile(findHandle, &findData))
+		if(!FindNextFile(findHandle, &findData))
 			break;
 	}
 
@@ -135,26 +135,26 @@ void COptionsSubAdvanced::InitLanguageList(vgui::ComboBox *cb)
 	KeyValues *data = new KeyValues("data");
 	data->Clear();
 
-	for (int i = 0; i < g_vLanguageList.Size(); i++)
+	for(int i = 0; i < g_vLanguageList.Size(); i++)
 	{
-		if (!strcmp(gConfigs.szLanguage, g_vLanguageList[i]))
+		if(!strcmp(gConfigs.szLanguage, g_vLanguageList[i]))
 			initialLang = i;
 	}
 
-	if (initialLang == -1)
+	if(initialLang == -1)
 	{
 		m_pLanguage->AddItem("* unknown", NULL);
 		unknownLang = 1;
 	}
 
-	for (int i = 0; i < g_vLanguageList.Size(); i++)
+	for(int i = 0; i < g_vLanguageList.Size(); i++)
 	{
 		data->SetString("language", g_vLanguageList[i]);
 
-		char *tokenName = UTIL_va("#Language_%s", g_vLanguageList[i]);
-		wchar_t *wtext = g_pVGuiLocalize->Find(tokenName);
+		char *   tokenName = UTIL_va("#Language_%s", g_vLanguageList[i]);
+		wchar_t *wtext     = g_pVGuiLocalize->Find(tokenName);
 
-		if (wtext)
+		if(wtext)
 			m_pLanguage->AddItem(wtext, data);
 		else
 			m_pLanguage->AddItem(UTIL_va("* %s", g_vLanguageList[i]), data);

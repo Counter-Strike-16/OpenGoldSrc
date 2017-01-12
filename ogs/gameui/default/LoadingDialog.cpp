@@ -23,28 +23,29 @@ using namespace vgui;
 
 CBitmapImagePanel *CLoadingDialog::m_pLoadingBackground = NULL;
 
-CLoadingDialog::CLoadingDialog(vgui::Panel *parent) : Frame(parent, "LoadingDialog")
+CLoadingDialog::CLoadingDialog(vgui::Panel *parent)
+    : Frame(parent, "LoadingDialog")
 {
 	SetDeleteSelfOnClose(true);
 	SetTitle("#GameUI_Loading", true);
 
-	m_bCenter = true;
-	m_pParent = parent;
+	m_bCenter              = true;
+	m_pParent              = parent;
 	m_szBackgroundImage[0] = 0;
 
-	m_bShowingSecondaryProgress = false;
-	m_flSecondaryProgress = 0.0f;
+	m_bShowingSecondaryProgress         = false;
+	m_flSecondaryProgress               = 0.0f;
 	m_flLastSecondaryProgressUpdateTime = 0.0f;
-	m_flSecondaryProgressStartTime = 0.0f;
+	m_flSecondaryProgressStartTime      = 0.0f;
 
-	m_pProgress = new ProgressBar(this, "Progress");
-	m_pProgress2 = new ProgressBar(this, "Progress2");
-	m_pInfoLabel = new Label(this, "InfoLabel", "");
-	m_pCancelButton = new Button(this, "CancelButton", "#GameUI_Cancel");
+	m_pProgress           = new ProgressBar(this, "Progress");
+	m_pProgress2          = new ProgressBar(this, "Progress2");
+	m_pInfoLabel          = new Label(this, "InfoLabel", "");
+	m_pCancelButton       = new Button(this, "CancelButton", "#GameUI_Cancel");
 	m_pTimeRemainingLabel = new Label(this, "TimeRemainingLabel", "");
 	m_pCancelButton->SetCommand("Cancel");
 
-	if (!m_pLoadingBackground)
+	if(!m_pLoadingBackground)
 		m_pLoadingBackground = new CBitmapImagePanel(NULL, "Background");
 
 	SetMinimizeButtonVisible(false);
@@ -68,7 +69,7 @@ CLoadingDialog::~CLoadingDialog(void)
 
 void CLoadingDialog::PaintBackground(void)
 {
-	if (strlen(m_szBackgroundImage) > 0)
+	if(strlen(m_szBackgroundImage) > 0)
 	{
 		BaseClass::PaintBackground();
 		return;
@@ -88,7 +89,7 @@ void CLoadingDialog::Open(bool bShowBackground)
 
 	m_bShowBackground = bShowBackground;
 
-	if (bShowBackground)
+	if(bShowBackground)
 	{
 		int swide, stall;
 		surface()->GetScreenSize(swide, stall);
@@ -108,7 +109,7 @@ void CLoadingDialog::Open(bool bShowBackground)
 
 		m_pProgress->SetVisible(true);
 
-		if (!ModInfo().IsSinglePlayerOnly())
+		if(!ModInfo().IsSinglePlayerOnly())
 			m_pInfoLabel->SetVisible(true);
 
 		m_pInfoLabel->SetText("");
@@ -133,7 +134,7 @@ void CLoadingDialog::Open(bool bShowBackground)
 		m_pLoadingBackground->SetVisible(false);
 		m_pProgress->SetVisible(true);
 
-		if (!ModInfo().IsSinglePlayerOnly())
+		if(!ModInfo().IsSinglePlayerOnly())
 			m_pInfoLabel->SetVisible(true);
 
 		m_pInfoLabel->SetText("");
@@ -178,16 +179,16 @@ void CLoadingDialog::DisplayGenericError(const char *failureReason, const char *
 {
 	SetupControlSettingsForErrorDisplay("LoadingDialogError.res");
 
-	if (extendedReason && strlen(extendedReason) > 0)
+	if(extendedReason && strlen(extendedReason) > 0)
 	{
 		wchar_t compositeReason[256], finalMsg[512], formatStr[256];
 
-		if (extendedReason[0] == '#')
+		if(extendedReason[0] == '#')
 			wcsncpy(compositeReason, g_pVGuiLocalize->Find(extendedReason), sizeof(compositeReason) / sizeof(wchar_t));
 		else
 			g_pVGuiLocalize->ConvertANSIToUnicode(extendedReason, compositeReason, sizeof(compositeReason));
 
-		if (failureReason[0] == '#')
+		if(failureReason[0] == '#')
 			wcsncpy(formatStr, g_pVGuiLocalize->Find(failureReason), sizeof(formatStr) / sizeof(wchar_t));
 		else
 			g_pVGuiLocalize->ConvertANSIToUnicode(failureReason, formatStr, sizeof(formatStr));
@@ -201,10 +202,10 @@ void CLoadingDialog::DisplayGenericError(const char *failureReason, const char *
 
 void CLoadingDialog::SetBackgroundImage(const char *imageName)
 {
-	if (!m_bShowBackground)
+	if(!m_bShowBackground)
 		return;
 
-	if (strcmp(imageName, m_szBackgroundImage))
+	if(strcmp(imageName, m_szBackgroundImage))
 	{
 		strcpy(m_szBackgroundImage, imageName);
 
@@ -221,13 +222,13 @@ void CLoadingDialog::OnThink(void)
 {
 	BaseClass::OnThink();
 
-	if (m_bShowingSecondaryProgress)
+	if(m_bShowingSecondaryProgress)
 	{
 		wchar_t unicode[512];
 
-		if (m_flSecondaryProgress >= 1.0f)
+		if(m_flSecondaryProgress >= 1.0f)
 			m_pTimeRemainingLabel->SetText("complete");
-		else if (ProgressBar::ConstructTimeRemainingString(unicode, sizeof(unicode), m_flSecondaryProgressStartTime, (float)system()->GetFrameTime(), m_flSecondaryProgress, m_flLastSecondaryProgressUpdateTime, true))
+		else if(ProgressBar::ConstructTimeRemainingString(unicode, sizeof(unicode), m_flSecondaryProgressStartTime, (float)system()->GetFrameTime(), m_flSecondaryProgress, m_flLastSecondaryProgressUpdateTime, true))
 			m_pTimeRemainingLabel->SetText(unicode);
 		else
 			m_pTimeRemainingLabel->SetText("");
@@ -241,13 +242,13 @@ void CLoadingDialog::PerformLayout(void)
 	int swide, stall;
 	surface()->GetScreenSize(swide, stall);
 
-	if (strlen(m_szBackgroundImage) > 0)
+	if(strlen(m_szBackgroundImage) > 0)
 	{
 		m_pLoadingBackground->SetBounds(0, 0, swide, stall);
 		m_pLoadingBackground->SetBgColor(Color(0, 0, 0, 255));
 	}
 
-	if (m_bCenter)
+	if(m_bCenter)
 	{
 		MoveToCenterOfScreen();
 	}
@@ -259,7 +260,7 @@ void CLoadingDialog::PerformLayout(void)
 		int wide, tall;
 		GetSize(wide, tall);
 
-		if (IsPC())
+		if(IsPC())
 		{
 			x = screenWide - (wide + 10);
 			y = screenTall - (tall + 10);
@@ -278,7 +279,7 @@ void CLoadingDialog::PerformLayout(void)
 
 	BaseClass::PerformLayout();
 
-	if (m_bShowBackground)
+	if(m_bShowBackground)
 	{
 		int xofs = swide * 0.06;
 		int tall = vgui::scheme()->GetProportionalScaledValue(18);
@@ -304,13 +305,13 @@ void CLoadingDialog::SetProgressRange(int min, int max)
 
 void CLoadingDialog::SetSecondaryProgress(float progress)
 {
-	if (strlen(m_szBackgroundImage) > 0)
+	if(strlen(m_szBackgroundImage) > 0)
 		return;
 
-	if (!m_bShowingSecondaryProgress && progress > 0.99f)
+	if(!m_bShowingSecondaryProgress && progress > 0.99f)
 		return;
 
-	if (!m_bShowingSecondaryProgress)
+	if(!m_bShowingSecondaryProgress)
 	{
 		LoadControlSettingsFromScheme("LoadingDialogDualProgress.res");
 		m_bShowingSecondaryProgress = true;
@@ -318,19 +319,19 @@ void CLoadingDialog::SetSecondaryProgress(float progress)
 		m_flSecondaryProgressStartTime = (float)system()->GetFrameTime();
 	}
 
-	if (progress > m_flSecondaryProgress)
+	if(progress > m_flSecondaryProgress)
 	{
 		m_pProgress2->SetProgress(progress);
-		m_flSecondaryProgress = progress;
+		m_flSecondaryProgress               = progress;
 		m_flLastSecondaryProgressUpdateTime = (float)system()->GetFrameTime();
 	}
 
-	if (progress < m_flSecondaryProgress)
+	if(progress < m_flSecondaryProgress)
 	{
 		m_pProgress2->SetProgress(progress);
-		m_flSecondaryProgress = progress;
+		m_flSecondaryProgress               = progress;
 		m_flLastSecondaryProgressUpdateTime = (float)system()->GetFrameTime();
-		m_flSecondaryProgressStartTime = (float)system()->GetFrameTime();
+		m_flSecondaryProgressStartTime      = (float)system()->GetFrameTime();
 	}
 }
 
@@ -341,7 +342,7 @@ void CLoadingDialog::SetSecondaryProgressText(const char *statusText)
 
 void CLoadingDialog::OnClose(void)
 {
-	if (strlen(m_szBackgroundImage) > 0)
+	if(strlen(m_szBackgroundImage) > 0)
 	{
 		SetBackgroundImage("");
 
@@ -364,7 +365,7 @@ void CLoadingDialog::Activate(void)
 
 void CLoadingDialog::OnCommand(const char *command)
 {
-	if (!stricmp(command, "Cancel"))
+	if(!stricmp(command, "Cancel"))
 	{
 		engine->pfnClientCmd("disconnect\n");
 
@@ -376,7 +377,7 @@ void CLoadingDialog::OnCommand(const char *command)
 
 void CLoadingDialog::OnKeyCodePressed(KeyCode code)
 {
-	if (code == KEY_ESCAPE)
+	if(code == KEY_ESCAPE)
 		OnCommand("Cancel");
 	else
 		BaseClass::OnKeyCodePressed(code);

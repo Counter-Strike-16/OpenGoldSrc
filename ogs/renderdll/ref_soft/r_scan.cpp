@@ -116,8 +116,7 @@ void D_DrawTurbulent8Span()
 		*r_turb_pdest++ = *(r_turb_pbase + (tturb << 6) + sturb);
 		r_turb_s += r_turb_sstep;
 		r_turb_t += r_turb_tstep;
-	}
-	while(--r_turb_spancount > 0);
+	} while(--r_turb_spancount > 0);
 }
 
 #endif // !id386

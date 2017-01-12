@@ -48,6 +48,7 @@ class CUserMsg
 {
 public:
 	void SetHook(pfnUserMsgHook afnHook);
+
 private:
 	UserMsg *mpData;
 };

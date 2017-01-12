@@ -42,30 +42,29 @@ using namespace vgui;
 struct ColorItem_t
 {
 	char *name;
-	int r, g, b;
+	int   r, g, b;
 };
 
 static ColorItem_t itemlist[] =
-{
-	{ "#Valve_Orange", 255, 120, 24 },
-	{ "#Valve_Yellow", 225, 180, 24 },
-	{ "#Valve_Blue", 0, 60, 255 },
-	{ "#Valve_Ltblue", 0, 167, 255 },
-	{ "#Valve_Green", 0, 167, 0 },
-	{ "#Valve_Red", 255, 43, 0 },
-	{ "#Valve_Brown", 123, 73, 0 },
-	{ "#Valve_Ltgray", 100, 100, 100 },
-	{ "#Valve_Dkgray", 36, 36, 36 },
+    {
+        {"#Valve_Orange", 255, 120, 24},
+        {"#Valve_Yellow", 225, 180, 24},
+        {"#Valve_Blue", 0, 60, 255},
+        {"#Valve_Ltblue", 0, 167, 255},
+        {"#Valve_Green", 0, 167, 0},
+        {"#Valve_Red", 255, 43, 0},
+        {"#Valve_Brown", 123, 73, 0},
+        {"#Valve_Ltgray", 100, 100, 100},
+        {"#Valve_Dkgray", 36, 36, 36},
 };
 
 static ColorItem_t s_crosshairColors[] =
-{
-	{ "#Valve_Green", 50, 250, 50 },
-	{ "#Valve_Red", 250, 50, 50 },
-	{ "#Valve_Blue", 50, 50, 250 },
-	{ "#Valve_Yellow", 250, 250, 50 },
-	{ "#Valve_Ltblue", 50, 250, 250 }
-};
+    {
+        {"#Valve_Green", 50, 250, 50},
+        {"#Valve_Red", 250, 50, 50},
+        {"#Valve_Blue", 50, 50, 250},
+        {"#Valve_Yellow", 250, 250, 50},
+        {"#Valve_Ltblue", 50, 250, 250}};
 
 static const int NumCrosshairColors = sizeof(s_crosshairColors) / sizeof(s_crosshairColors[0]);
 
@@ -83,16 +82,17 @@ public:
 	void UpdateCrosshair(int r, int g, int b, int size);
 
 protected:
-	int m_R, m_G, m_B;
-	int m_barSize;
-	int m_barGap;
-	CCvarToggleCheckButton *m_pAdditive;
+	int                      m_R, m_G, m_B;
+	int                      m_barSize;
+	int                      m_barGap;
+	CCvarToggleCheckButton * m_pAdditive;
 	CLabeledCommandComboBox *m_pCrosshairType;
 };
 
-CrosshairImagePanel::CrosshairImagePanel(Panel *parent, const char *name, CCvarToggleCheckButton *pAdditive, CLabeledCommandComboBox *pCrosshairType) : ImagePanel(parent, name)
+CrosshairImagePanel::CrosshairImagePanel(Panel *parent, const char *name, CCvarToggleCheckButton *pAdditive, CLabeledCommandComboBox *pCrosshairType)
+    : ImagePanel(parent, name)
 {
-	m_pAdditive = pAdditive;
+	m_pAdditive      = pAdditive;
 	m_pCrosshairType = pCrosshairType;
 
 	UpdateCrosshair(50, 250, 50, 0);
@@ -107,11 +107,11 @@ void CrosshairImagePanel::UpdateCrosshair(int r, int g, int b, int size)
 	int screenWide, screenTall;
 	surface()->GetScreenSize(screenWide, screenTall);
 
-	if (size == 0)
+	if(size == 0)
 	{
-		if (screenWide <= 640)
+		if(screenWide <= 640)
 			size = 1;
-		else if (screenWide < 1024)
+		else if(screenWide < 1024)
 			size = 2;
 		else
 			size = 3;
@@ -119,15 +119,21 @@ void CrosshairImagePanel::UpdateCrosshair(int r, int g, int b, int size)
 
 	int scaleBase = 1024;
 
-	switch (size)
+	switch(size)
 	{
-		case 3: scaleBase = 640; break;
-		case 2: scaleBase = 800; break;
-		default: scaleBase = 1024; break;
+	case 3:
+		scaleBase = 640;
+		break;
+	case 2:
+		scaleBase = 800;
+		break;
+	default:
+		scaleBase = 1024;
+		break;
 	}
 
 	m_barSize = (int)9 * screenWide / scaleBase;
-	m_barGap = (int)5 * screenWide / scaleBase;
+	m_barGap  = (int)5 * screenWide / scaleBase;
 }
 
 static void DrawCrosshairRect(int x, int y, int w, int h, bool additive)
@@ -139,7 +145,7 @@ void CrosshairImagePanel::Paint(void)
 {
 	BaseClass::Paint();
 
-	if (!m_pAdditive)
+	if(!m_pAdditive)
 		return;
 
 	int wide, tall;
@@ -147,67 +153,67 @@ void CrosshairImagePanel::Paint(void)
 
 	int type = m_pCrosshairType->GetActiveItem();
 
-	bool bDrawPoint = false;
+	bool bDrawPoint  = false;
 	bool bDrawCircle = false;
-	bool bDrawCross = false;
+	bool bDrawCross  = false;
 
-	switch (type)
+	switch(type)
 	{
-		case 1:
-		{
-			bDrawPoint = true;
-			bDrawCross = true;
-			break;
-		}
+	case 1:
+	{
+		bDrawPoint = true;
+		bDrawCross = true;
+		break;
+	}
 
-		case 2:
-		{
-			bDrawPoint = true;
-			bDrawCircle = true;
-			break;
-		}
+	case 2:
+	{
+		bDrawPoint  = true;
+		bDrawCircle = true;
+		break;
+	}
 
-		case 3:
-		{
-			bDrawPoint = true;
-			bDrawCircle = true;
-			bDrawCross = true;
-			break;
-		}
+	case 3:
+	{
+		bDrawPoint  = true;
+		bDrawCircle = true;
+		bDrawCross  = true;
+		break;
+	}
 
-		case 4:
-		{
-			bDrawPoint = true;
-			break;
-		}
+	case 4:
+	{
+		bDrawPoint = true;
+		break;
+	}
 
-		default:
-		{
-			bDrawCross = true;
-			break;
-		}
+	default:
+	{
+		bDrawCross = true;
+		break;
+	}
 	}
 
 	bool additive = m_pAdditive->IsSelected();
 
-	if (additive)
+	if(additive)
 		vgui::surface()->DrawSetColor(m_R, m_G, m_B, surface()->DrawGetAlphaMultiplier() * 200);
 	else
 		vgui::surface()->DrawSetColor(m_R, m_G, m_B, surface()->DrawGetAlphaMultiplier() * 255);
 
-	if (bDrawCircle)
+	if(bDrawCircle)
 	{
 		int radius = m_barGap + (m_barSize / 2);
-		int count = radius * 6;
+		int count  = radius * 6;
 
-		for (int i = 0; i < count; i++)
+		for(int i = 0; i < count; i++)
 			DrawCrosshairRect((wide / 2) + radius * cos(2 * M_PI / count * i), (tall / 2) + radius * sin(2 * M_PI / count * i), 1, 1, additive);
 	}
 
-	if (bDrawPoint)
+	if(bDrawPoint)
 		DrawCrosshairRect((wide / 2) - 1, (tall / 2) - 1, 3, 3, additive);
 
-	if (bDrawCross)
+	if(bDrawCross)
 	{
 		DrawCrosshairRect((wide / 2 - m_barGap - m_barSize) + 1, tall / 2, m_barSize, 1, additive);
 		DrawCrosshairRect(wide / 2 + m_barGap, tall / 2, m_barSize, 1, additive);
@@ -216,7 +222,8 @@ void CrosshairImagePanel::Paint(void)
 	}
 }
 
-COptionsSubMultiplayer::COptionsSubMultiplayer(vgui::Panel *parent) : vgui::PropertyPage(parent, "OptionsSubMultiplayer")
+COptionsSubMultiplayer::COptionsSubMultiplayer(vgui::Panel *parent)
+    : vgui::PropertyPage(parent, "OptionsSubMultiplayer")
 {
 	Button *cancel = new Button(this, "Cancel", "#GameUI_Cancel");
 	cancel->SetCommand("Close");
@@ -230,11 +237,11 @@ COptionsSubMultiplayer::COptionsSubMultiplayer(vgui::Panel *parent) : vgui::Prop
 	Button *advanced = new Button(this, "Advanced", "#GameUI_AdvancedEllipsis");
 	advanced->SetCommand("Advanced");
 
-	m_pNameTextEntry = new CCvarTextEntry(this, "NameEntry", "name");
+	m_pNameTextEntry            = new CCvarTextEntry(this, "NameEntry", "name");
 	m_pHighQualityModelCheckBox = new CCvarToggleCheckButton(this, "High Quality Models", "#GameUI_HighModels", "cl_himodels");
 
-	m_pLogoList = new CLabeledCommandComboBox(this, "SpraypaintList");
-	m_pColorList = new CLabeledCommandComboBox(this, "SpraypaintColor");
+	m_pLogoList   = new CLabeledCommandComboBox(this, "SpraypaintList");
+	m_pColorList  = new CLabeledCommandComboBox(this, "SpraypaintColor");
 	m_LogoName[0] = 0;
 
 	InitLogoColorEntries();
@@ -247,11 +254,11 @@ COptionsSubMultiplayer::COptionsSubMultiplayer(vgui::Panel *parent) : vgui::Prop
 	m_nLogoG = 255;
 	m_nLogoB = 255;
 
-	m_pCrosshairColorComboBox = new CLabeledCommandComboBox(this, "CrosshairColorComboBox");
-	m_pCrosshairSize = new CLabeledCommandComboBox(this, "CrosshairSizeComboBox");
-	m_pCrosshairType = new CLabeledCommandComboBox(this, "CrosshairTypeComboBox");
+	m_pCrosshairColorComboBox        = new CLabeledCommandComboBox(this, "CrosshairColorComboBox");
+	m_pCrosshairSize                 = new CLabeledCommandComboBox(this, "CrosshairSizeComboBox");
+	m_pCrosshairType                 = new CLabeledCommandComboBox(this, "CrosshairTypeComboBox");
 	m_pCrosshairTranslucencyCheckbox = new CCvarToggleCheckButton(this, "CrosshairTranslucencyCheckbox", "#GameUI_Translucent", "cl_crosshair_translucent");
-	m_pCrosshairImage = new CrosshairImagePanel(this, "CrosshairImage", m_pCrosshairTranslucencyCheckbox, m_pCrosshairType);
+	m_pCrosshairImage                = new CrosshairImagePanel(this, "CrosshairImage", m_pCrosshairTranslucencyCheckbox, m_pCrosshairType);
 
 	LoadControlSettingsFromScheme("OptionsSubMultiplayer.res");
 
@@ -268,9 +275,9 @@ COptionsSubMultiplayer::~COptionsSubMultiplayer(void)
 
 void COptionsSubMultiplayer::OnCommand(const char *command)
 {
-	if (!stricmp(command, "Advanced"))
+	if(!stricmp(command, "Advanced"))
 	{
-		if (!m_hMultiplayerAdvancedDialog.Get())
+		if(!m_hMultiplayerAdvancedDialog.Get())
 			m_hMultiplayerAdvancedDialog = new CMultiplayerAdvancedDialog(this);
 
 		m_hMultiplayerAdvancedDialog->Activate();
@@ -282,35 +289,35 @@ void COptionsSubMultiplayer::OnCommand(const char *command)
 void COptionsSubMultiplayer::InitLogoList(CLabeledCommandComboBox *cb)
 {
 	FileFindHandle_t fh;
-	char directory[512];
+	char             directory[512];
 
 	g_pFullFileSystem->RemoveFile("logos/remapped.bmp", NULL);
 
 	const char *logofile = engine->pfnGetCvarString("cl_logofile");
 	sprintf(directory, "logos/*.bmp");
 	const char *fn = g_pFullFileSystem->FindFirst(directory, &fh);
-	int i = 0, initialItem = 0;
+	int         i = 0, initialItem = 0;
 
 	cb->DeleteAllItems();
 
-	while (fn)
+	while(fn)
 	{
-		if (stricmp(fn, "remapped.bmp"))
+		if(stricmp(fn, "remapped.bmp"))
 		{
-			if (fn[0] && fn[0] != '.')
+			if(fn[0] && fn[0] != '.')
 			{
 				char filename[512];
 				strcpy(filename, fn);
 
-				if (strlen(filename) >= 4)
+				if(strlen(filename) >= 4)
 					filename[strlen(filename) - 4] = 0;
 
-				if (!stricmp(filename, logofile))
+				if(!stricmp(filename, logofile))
 					initialItem = i;
 
 				cb->AddItem(filename, "");
 
-				if (m_LogoName[0] == 0)
+				if(m_LogoName[0] == 0)
 					strcpy(m_LogoName, filename);
 			}
 
@@ -327,12 +334,12 @@ void COptionsSubMultiplayer::InitLogoList(CLabeledCommandComboBox *cb)
 void COptionsSubMultiplayer::InitLogoColorEntries(void)
 {
 	char const *currentcolor = engine->pfnGetCvarString("cl_logocolor");
-	int count = sizeof(itemlist) / sizeof(itemlist[0]);
-	int selected = 0;
+	int         count        = sizeof(itemlist) / sizeof(itemlist[0]);
+	int         selected     = 0;
 
-	for (int i = 0; i < count; i++)
+	for(int i = 0; i < count; i++)
 	{
-		if (currentcolor && !stricmp(currentcolor, itemlist[i].name))
+		if(currentcolor && !stricmp(currentcolor, itemlist[i].name))
 			selected = i;
 
 		char command[256];
@@ -346,19 +353,19 @@ void COptionsSubMultiplayer::InitLogoColorEntries(void)
 
 void COptionsSubMultiplayer::InitCrosshairColorEntries(void)
 {
-	if (m_pCrosshairColorComboBox == NULL)
+	if(m_pCrosshairColorComboBox == NULL)
 		return;
 
-	int selected = 0;
-	int cr = 0, cg = 0, cb = 0;
+	int         selected = 0;
+	int         cr = 0, cg = 0, cb = 0;
 	const char *color = engine->pfnGetCvarString("cl_crosshair_color");
 
-	if (color)
+	if(color)
 		sscanf(color, "%d %d %d", &cr, &cg, &cb);
 
-	for (int i = 0; i < NumCrosshairColors; i++)
+	for(int i = 0; i < NumCrosshairColors; i++)
 	{
-		if (s_crosshairColors[i].r == cr && s_crosshairColors[i].g == cg && s_crosshairColors[i].b == cb)
+		if(s_crosshairColors[i].r == cr && s_crosshairColors[i].g == cg && s_crosshairColors[i].b == cb)
 			selected = i;
 
 		char command[256];
@@ -372,12 +379,12 @@ void COptionsSubMultiplayer::InitCrosshairColorEntries(void)
 
 void COptionsSubMultiplayer::RedrawCrosshairImage(void)
 {
-	if (m_pCrosshairColorComboBox == NULL)
+	if(m_pCrosshairColorComboBox == NULL)
 		return;
 
-	if (m_pCrosshairImage && m_pCrosshairSize)
+	if(m_pCrosshairImage && m_pCrosshairSize)
 	{
-		int size = m_pCrosshairSize->GetActiveItem();
+		int size        = m_pCrosshairSize->GetActiveItem();
 		int selectedVal = m_pCrosshairColorComboBox->GetActiveItem();
 
 		m_pCrosshairImage->UpdateCrosshair(s_crosshairColors[selectedVal].r, s_crosshairColors[selectedVal].g, s_crosshairColors[selectedVal].b, size);
@@ -386,7 +393,7 @@ void COptionsSubMultiplayer::RedrawCrosshairImage(void)
 
 void COptionsSubMultiplayer::InitCrosshairSizeList(CLabeledCommandComboBox *cb)
 {
-	if (cb == NULL)
+	if(cb == NULL)
 		return;
 
 	cb->Reset();
@@ -398,16 +405,22 @@ void COptionsSubMultiplayer::InitCrosshairSizeList(CLabeledCommandComboBox *cb)
 
 	char *value = engine->pfnGetCvarString("cl_crosshair_size");
 
-	if (!value)
+	if(!value)
 		return;
 
 	int initialScale = atoi(value);
 
-	switch (tolower(value[0]))
+	switch(tolower(value[0]))
 	{
-		case 's': initialScale = 1; break;
-		case 'm': initialScale = 2; break;
-		case 'l': initialScale = 3; break;
+	case 's':
+		initialScale = 1;
+		break;
+	case 'm':
+		initialScale = 2;
+		break;
+	case 'l':
+		initialScale = 3;
+		break;
 	}
 
 	cb->SetInitialItem(initialScale);
@@ -415,7 +428,7 @@ void COptionsSubMultiplayer::InitCrosshairSizeList(CLabeledCommandComboBox *cb)
 
 void COptionsSubMultiplayer::InitCrosshairTypeList(CLabeledCommandComboBox *cb)
 {
-	if (cb == NULL)
+	if(cb == NULL)
 		return;
 
 	cb->Reset();
@@ -428,7 +441,7 @@ void COptionsSubMultiplayer::InitCrosshairTypeList(CLabeledCommandComboBox *cb)
 
 	char *value = engine->pfnGetCvarString("cl_crosshair_type");
 
-	if (!value)
+	if(!value)
 		return;
 
 	int initialType = atoi(value);
@@ -441,13 +454,13 @@ void COptionsSubMultiplayer::RemapLogo(void)
 	char logoname[256];
 	m_pLogoList->GetText(logoname, sizeof(logoname));
 
-	if (!logoname[0])
+	if(!logoname[0])
 		return;
 
-	int r, g, b;
+	int         r, g, b;
 	const char *colorname = m_pColorList->GetActiveItemCommand();
 
-	if (!colorname || !colorname[0])
+	if(!colorname || !colorname[0])
 		return;
 
 	colorname += strlen("cl_logocolor ");
@@ -460,13 +473,13 @@ void COptionsSubMultiplayer::RemapLogo(void)
 
 void COptionsSubMultiplayer::OnTextChanged(vgui::Panel *panel)
 {
-	if (panel == m_pNameTextEntry)
+	if(panel == m_pNameTextEntry)
 		return;
 
-	if (panel == m_pLogoList || panel == m_pColorList)
+	if(panel == m_pLogoList || panel == m_pColorList)
 		RemapLogo();
 
-	if (panel == m_pCrosshairSize || panel == m_pCrosshairType || panel == m_pCrosshairTranslucencyCheckbox || panel == m_pCrosshairColorComboBox)
+	if(panel == m_pCrosshairSize || panel == m_pCrosshairType || panel == m_pCrosshairTranslucencyCheckbox || panel == m_pCrosshairColorComboBox)
 		RedrawCrosshairImage();
 }
 
@@ -486,9 +499,9 @@ void COptionsSubMultiplayer::ColorForName(char const *pszColorName, int &r, int 
 
 	int count = sizeof(itemlist) / sizeof(itemlist[0]);
 
-	for (int i = 0; i < count; i++)
+	for(int i = 0; i < count; i++)
 	{
-		if (!strnicmp(pszColorName, itemlist[i].name, strlen(itemlist[i].name)))
+		if(!strnicmp(pszColorName, itemlist[i].name, strlen(itemlist[i].name)))
 		{
 			r = itemlist[i].r;
 			g = itemlist[i].g;
@@ -509,47 +522,47 @@ void COptionsSubMultiplayer::RemapLogoPalette(char *filename, int r, int g, int 
 
 	FileHandle_t file = g_pFullFileSystem->Open(infile, "rb");
 
-	if (file == FILESYSTEM_INVALID_HANDLE)
+	if(file == FILESYSTEM_INVALID_HANDLE)
 		return;
 
 	BITMAPFILEHEADER bmfHeader;
-	DWORD dwBitsSize, dwFileSize;
-	LPBITMAPINFO lpbmi;
+	DWORD            dwBitsSize, dwFileSize;
+	LPBITMAPINFO     lpbmi;
 	LPBITMAPCOREINFO lpbmc;
 
 	dwFileSize = g_pFullFileSystem->Size(file);
 	g_pFullFileSystem->Read(&bmfHeader, sizeof(bmfHeader), file);
 	outbuffer.Put(&bmfHeader, sizeof(bmfHeader));
 
-	if (bmfHeader.bfType == DIB_HEADER_MARKER)
+	if(bmfHeader.bfType == DIB_HEADER_MARKER)
 	{
 		dwBitsSize = dwFileSize - sizeof(bmfHeader);
 
 		HGLOBAL hDIB = GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, dwBitsSize);
-		char *pDIB = (LPSTR)GlobalLock((HGLOBAL)hDIB);
+		char *  pDIB = (LPSTR)GlobalLock((HGLOBAL)hDIB);
 		{
 			g_pFullFileSystem->Read(pDIB, dwBitsSize, file);
 			lpbmi = (LPBITMAPINFO)pDIB;
 			lpbmc = (LPBITMAPCOREINFO)pDIB;
 
-			bool bWinStyleDIB = true;
-			float f = 0;
+			bool  bWinStyleDIB = true;
+			float f            = 0;
 
-			for (int i = 0; i < 256; i++)
+			for(int i = 0; i < 256; i++)
 			{
 				float t = f / 256.0;
 
-				if (bWinStyleDIB)
+				if(bWinStyleDIB)
 				{
-					lpbmi->bmiColors[i].rgbRed = (unsigned char)(r * t);
+					lpbmi->bmiColors[i].rgbRed   = (unsigned char)(r * t);
 					lpbmi->bmiColors[i].rgbGreen = (unsigned char)(g * t);
-					lpbmi->bmiColors[i].rgbBlue = (unsigned char)(b * t);
+					lpbmi->bmiColors[i].rgbBlue  = (unsigned char)(b * t);
 				}
 				else
 				{
-					lpbmc->bmciColors[i].rgbtRed = (unsigned char)(r * t);
+					lpbmc->bmciColors[i].rgbtRed   = (unsigned char)(r * t);
 					lpbmc->bmciColors[i].rgbtGreen = (unsigned char)(g * t);
-					lpbmc->bmciColors[i].rgbtBlue = (unsigned char)(b * t);
+					lpbmc->bmciColors[i].rgbtBlue  = (unsigned char)(b * t);
 				}
 
 				f++;
@@ -559,7 +572,7 @@ void COptionsSubMultiplayer::RemapLogoPalette(char *filename, int r, int g, int 
 		}
 
 		GlobalUnlock(hDIB);
-		GlobalFree((HGLOBAL) hDIB);
+		GlobalFree((HGLOBAL)hDIB);
 	}
 
 	g_pFullFileSystem->Close(file);
@@ -568,7 +581,7 @@ void COptionsSubMultiplayer::RemapLogoPalette(char *filename, int r, int g, int 
 	g_pFullFileSystem->CreateDirHierarchy("logos", NULL);
 	file = g_pFullFileSystem->Open(outfile, "wb");
 
-	if (file != FILESYSTEM_INVALID_HANDLE)
+	if(file != FILESYSTEM_INVALID_HANDLE)
 	{
 		g_pFullFileSystem->Write(outbuffer.Base(), outbuffer.TellPut(), file);
 		g_pFullFileSystem->Close(file);
@@ -600,23 +613,23 @@ void COptionsSubMultiplayer::OnApplyChanges(void)
 	m_pHighQualityModelCheckBox->ApplyChanges();
 	m_pNameTextEntry->ApplyChanges();
 
-	for (int i = 0; i < m_cvarToggleCheckButtons.GetCount(); ++i)
+	for(int i = 0; i < m_cvarToggleCheckButtons.GetCount(); ++i)
 	{
 		CCvarToggleCheckButton *toggleButton = m_cvarToggleCheckButtons[i];
 
-		if (toggleButton->IsVisible() && toggleButton->IsEnabled())
+		if(toggleButton->IsVisible() && toggleButton->IsEnabled())
 			toggleButton->ApplyChanges();
 	}
 
-	if (!ModInfo().NoCrosshair())
+	if(!ModInfo().NoCrosshair())
 	{
-		if (m_pCrosshairSize != NULL)
+		if(m_pCrosshairSize != NULL)
 			m_pCrosshairSize->ApplyChanges();
 
-		if (m_pCrosshairType != NULL)
+		if(m_pCrosshairType != NULL)
 			m_pCrosshairType->ApplyChanges();
 
-		if (m_pCrosshairTranslucencyCheckbox != NULL)
+		if(m_pCrosshairTranslucencyCheckbox != NULL)
 			m_pCrosshairTranslucencyCheckbox->ApplyChanges();
 
 		ApplyCrosshairColorChanges();
@@ -624,7 +637,7 @@ void COptionsSubMultiplayer::OnApplyChanges(void)
 
 	const char *colorname = m_pColorList->GetActiveItemCommand();
 
-	if (colorname && colorname[0])
+	if(colorname && colorname[0])
 	{
 		colorname += strlen("cl_logocolor ");
 
@@ -639,17 +652,17 @@ void COptionsSubMultiplayer::OnApplyChanges(void)
 		sprintf(infile, "logos/remapped.bmp");
 		FileHandle_t file = g_pFullFileSystem->Open(infile, "rb");
 
-		if (file != FILESYSTEM_INVALID_HANDLE)
+		if(file != FILESYSTEM_INVALID_HANDLE)
 		{
 			BITMAPFILEHEADER bmfHeader;
-			DWORD dwBitsSize, dwFileSize;
+			DWORD            dwBitsSize, dwFileSize;
 
 			dwFileSize = g_pFullFileSystem->Size(file);
 			g_pFullFileSystem->Read(&bmfHeader, sizeof(bmfHeader), file);
 
-			if (bmfHeader.bfType == DIB_HEADER_MARKER)
+			if(bmfHeader.bfType == DIB_HEADER_MARKER)
 			{
-				dwBitsSize = dwFileSize - sizeof(bmfHeader);
+				dwBitsSize   = dwFileSize - sizeof(bmfHeader);
 				HGLOBAL hDIB = GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, dwBitsSize);
 
 				char *pDIB = (LPSTR)GlobalLock((HGLOBAL)hDIB);
@@ -669,7 +682,7 @@ void COptionsSubMultiplayer::ApplyCrosshairColorChanges(void)
 	char cmd[256];
 	cmd[0] = 0;
 
-	if (m_pCrosshairColorComboBox != NULL)
+	if(m_pCrosshairColorComboBox != NULL)
 	{
 		int i = m_pCrosshairColorComboBox->GetActiveItem();
 		Q_snprintf(cmd, sizeof(cmd), "cl_crosshair_color \"%d %d %d\"\n", s_crosshairColors[i].r, s_crosshairColors[i].g, s_crosshairColors[i].b);
@@ -679,7 +692,7 @@ void COptionsSubMultiplayer::ApplyCrosshairColorChanges(void)
 
 Panel *COptionsSubMultiplayer::CreateControlByName(const char *controlName)
 {
-	if (!Q_stricmp("CCvarToggleCheckButton", controlName))
+	if(!Q_stricmp("CCvarToggleCheckButton", controlName))
 	{
 		CCvarToggleCheckButton *newButton = new CCvarToggleCheckButton(this, controlName, "", "");
 		m_cvarToggleCheckButtons.AddElement(newButton);

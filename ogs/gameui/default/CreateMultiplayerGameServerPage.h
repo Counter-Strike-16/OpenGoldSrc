@@ -17,12 +17,12 @@ public:
 
 public:
 	void SetMap(const char *name);
-	bool IsRandomMapSelected(void);
+	bool        IsRandomMapSelected(void);
 	const char *GetMapName(void);
 
 public:
 	void EnableBots(KeyValues *data);
-	int GetBotQuota(void);
+	int  GetBotQuota(void);
 	bool GetBotsEnabled(void);
 
 protected:
@@ -42,14 +42,17 @@ public:
 	static int MapListCompare(const unsigned long *a1, const unsigned long *a2);
 
 private:
-	enum { DATA_STR_LENGTH = 64 };
+	enum
+	{
+		DATA_STR_LENGTH = 64
+	};
 
 private:
-	vgui::ComboBox *m_pMapList;
-	vgui::CheckButton *m_pEnableBotsCheck;
-	CCvarToggleCheckButton *m_pEnableTutorCheck;
-	KeyValues *m_pSavedData;
-	char m_szMapName[DATA_STR_LENGTH];
+	vgui::ComboBox *          m_pMapList;
+	vgui::CheckButton *       m_pEnableBotsCheck;
+	CCvarToggleCheckButton *  m_pEnableTutorCheck;
+	KeyValues *               m_pSavedData;
+	char                      m_szMapName[DATA_STR_LENGTH];
 	CUtlVector<unsigned long> m_vMapCache;
 };
 

@@ -78,9 +78,9 @@ void FileSystem_UnloadDLL()
 	if(gpFileSystemModule)
 	{
 		Sys_UnloadModule((CSysModule *)gpFileSystemModule);
-		gpFileSystemModule = NULL;
+		gpFileSystemModule  = NULL;
 		g_FileSystemFactory = NULL;
-		gpFileSystem       = NULL;
+		gpFileSystem        = NULL;
 	}
 }
 

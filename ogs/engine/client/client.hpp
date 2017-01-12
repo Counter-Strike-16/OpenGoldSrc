@@ -310,7 +310,7 @@ typedef struct client_state_s
 
 extern client_state_t cl;
 
-void CL_Init();//+
+void CL_Init(); //+
 void CL_InitClosest();
 void CL_InitEventSystem();
 
@@ -321,15 +321,13 @@ void CL_ShutDownClientStatic();
 void CL_CheckClientState();
 void CL_ClearClientState();
 
-void CL_Connect_f();//+
+void CL_Connect_f(); //+
 
-void CL_CheckForResend();//+
+void CL_CheckForResend(); //+
 void CL_KeepConnectionActive();
 
-void CL_Disconnect();//+
-void CL_Disconnect_f();//+
-
-
+void CL_Disconnect();   //+
+void CL_Disconnect_f(); //+
 
 void CL_RecordHUDCommand(char *cmdname);
 
@@ -345,16 +343,16 @@ void CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel);
 
 void CL_PredictMove(qboolean repredicting);
 
-void     CL_PrintLogos();
-void     CL_ReadPackets();
+void CL_PrintLogos();
+void CL_ReadPackets();
 
 qboolean CL_RequestMissingResources();
 
-void     CL_Move();
-void     CL_SendConnectPacket();
-void     CL_StopPlayback();
-void     CL_UpdateSoundFade();
-void     CL_AdjustClock();
+void CL_Move();
+void CL_SendConnectPacket();
+void CL_StopPlayback();
+void CL_UpdateSoundFade();
+void CL_AdjustClock();
 void CL_Save(const char *name);
 void CL_HudMessage(const char *pMessage);
 

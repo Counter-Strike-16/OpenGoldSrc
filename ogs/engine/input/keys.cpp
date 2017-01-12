@@ -54,13 +54,13 @@ keydest_t key_dest;
 
 int key_count; // incremented every key event
 
-char *   keybindings[256];
+char *keybindings[256];
 
 qboolean consolekeys[256]; // if true, can't be rebound while in console
 qboolean menubound[256];   // if true, can't be rebound while in menu
 
-int      keyshift[256];    // key to map to if shift held down in console
-int      key_repeats[256]; // if > 1, it is autorepeating
+int keyshift[256];    // key to map to if shift held down in console
+int key_repeats[256]; // if > 1, it is autorepeating
 
 qboolean keydown[256];
 

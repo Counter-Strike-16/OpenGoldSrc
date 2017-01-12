@@ -22,7 +22,8 @@ using namespace vgui;
 
 #define OPTIONS_FILE "user.scr"
 
-CMultiplayerAdvancedDialog::CMultiplayerAdvancedDialog(vgui::Panel *parent) : BaseClass(NULL, "MultiplayerAdvancedDialog")
+CMultiplayerAdvancedDialog::CMultiplayerAdvancedDialog(vgui::Panel *parent)
+    : BaseClass(NULL, "MultiplayerAdvancedDialog")
 {
 	SetBounds(0, 0, 372, 160);
 	SetSizeable(false);
@@ -72,7 +73,7 @@ void CMultiplayerAdvancedDialog::OnClose(void)
 
 void CMultiplayerAdvancedDialog::OnCommand(const char *command)
 {
-	if (!stricmp(command, "Ok"))
+	if(!stricmp(command, "Ok"))
 	{
 		SaveValues();
 		OnClose();
@@ -84,7 +85,7 @@ void CMultiplayerAdvancedDialog::OnCommand(const char *command)
 
 void CMultiplayerAdvancedDialog::OnKeyCodeTyped(KeyCode code)
 {
-	if (code == KEY_ESCAPE)
+	if(code == KEY_ESCAPE)
 	{
 		SetAlpha(0);
 		Close();
@@ -95,82 +96,82 @@ void CMultiplayerAdvancedDialog::OnKeyCodeTyped(KeyCode code)
 
 void CMultiplayerAdvancedDialog::GatherCurrentValues(void)
 {
-	if (!m_pDescription)
+	if(!m_pDescription)
 		return;
 
-	CheckButton *pBox;
-	TextEntry *pEdit;
-	ComboBox *pCombo;
-	CScriptObject *pObj;
+	CheckButton *    pBox;
+	TextEntry *      pEdit;
+	ComboBox *       pCombo;
+	CScriptObject *  pObj;
 	CScriptListItem *pItem;
 
-	char szValue[256];
-	char strValue[256];
+	char         szValue[256];
+	char         strValue[256];
 	mpcontrol_t *pList = m_pList;
 
-	while (pList)
+	while(pList)
 	{
 		pObj = pList->pScrObj;
 
-		if (!pList->pControl)
+		if(!pList->pControl)
 		{
 			pObj->SetCurValue(pObj->defValue);
 			pList = pList->next;
 			continue;
 		}
 
-		switch (pObj->type)
+		switch(pObj->type)
 		{
-			case O_BOOL:
+		case O_BOOL:
+		{
+			pBox = (CheckButton *)pList->pControl;
+			sprintf(szValue, "%s", pBox->IsSelected() ? "1" : "0");
+			break;
+		}
+
+		case O_NUMBER:
+		{
+			pEdit = (TextEntry *)pList->pControl;
+			pEdit->GetText(strValue, sizeof(strValue));
+			sprintf(szValue, "%s", strValue);
+			break;
+		}
+
+		case O_STRING:
+		{
+			pEdit = (TextEntry *)pList->pControl;
+			pEdit->GetText(strValue, sizeof(strValue));
+			sprintf(szValue, "%s", strValue);
+			break;
+		}
+
+		case O_LIST:
+		{
+			pCombo         = (ComboBox *)pList->pControl;
+			int activeItem = pCombo->GetActiveItem();
+			pItem          = pObj->pListItems;
+			int n          = (int)pObj->fdefValue;
+
+			while(pItem)
 			{
-				pBox = (CheckButton *)pList->pControl;
-				sprintf(szValue, "%s", pBox->IsSelected() ? "1" : "0");
-				break;
+				if(!activeItem--)
+					break;
+
+				pItem = pItem->pNext;
 			}
 
-			case O_NUMBER:
+			if(pItem)
 			{
-				pEdit = (TextEntry *)pList->pControl;
-				pEdit->GetText(strValue, sizeof(strValue));
-				sprintf(szValue, "%s", strValue);
-				break;
+				sprintf(szValue, "%s", pItem->szValue);
+			}
+			else
+			{
+				assert(!("Couldn't find string in list, using default value"));
+				sprintf(szValue, "%s", pObj->defValue);
 			}
 
-			case O_STRING:
-			{
-				pEdit = (TextEntry *)pList->pControl;
-				pEdit->GetText(strValue, sizeof(strValue));
-				sprintf(szValue, "%s", strValue);
-				break;
-			}
-
-			case O_LIST:
-			{
-				pCombo = (ComboBox *)pList->pControl;
-				int activeItem = pCombo->GetActiveItem();
-				pItem = pObj->pListItems;
-				int n = (int)pObj->fdefValue;
-
-				while (pItem)
-				{
-					if (!activeItem--)
-						break;
-
-					pItem = pItem->pNext;
-				}
-
-				if (pItem)
-				{
-					sprintf(szValue, "%s", pItem->szValue);
-				}
-				else
-				{
-					assert(!("Couldn't find string in list, using default value"));
-					sprintf(szValue, "%s", pObj->defValue);
-				}
-
-				break;
-			}
+			break;
+		}
 		}
 
 		UTIL_StripInvalidCharacters(szValue, sizeof(szValue));
@@ -184,59 +185,60 @@ void CMultiplayerAdvancedDialog::CreateControls(void)
 {
 	DestroyControls();
 
-	CScriptObject *pObj = m_pDescription->pObjList;
-	mpcontrol_t *pCtrl;
-	CheckButton *pBox;
-	TextEntry *pEdit;
-	ComboBox *pCombo;
+	CScriptObject *  pObj = m_pDescription->pObjList;
+	mpcontrol_t *    pCtrl;
+	CheckButton *    pBox;
+	TextEntry *      pEdit;
+	ComboBox *       pCombo;
 	CScriptListItem *pListItem;
 
 	Panel *objParent = m_pListPanel;
 
-	while (pObj)
+	while(pObj)
 	{
-		pCtrl = new mpcontrol_t(objParent, "mpcontrol_t");
+		pCtrl       = new mpcontrol_t(objParent, "mpcontrol_t");
 		pCtrl->type = pObj->type;
 
-		switch (pCtrl->type)
+		switch(pCtrl->type)
 		{
-			case O_BOOL:
-			{
-				pBox = new CheckButton(pCtrl, "DescCheckButton", pObj->prompt);
-				pBox->SetSelected(pObj->fdefValue != 0.0f ? true : false);
-				pCtrl->pControl = (Panel *)pBox;
-				break;
-			}
-
-			case O_STRING:
-			case O_NUMBER:
-			{
-				pEdit = new TextEntry(pCtrl, "DescTextEntry");
-				pEdit->InsertString(pObj->defValue);
-				pCtrl->pControl = (Panel *)pEdit;
-				break;
-			}
-
-			case O_LIST:
-			{
-				pCombo = new ComboBox(pCtrl, "DescComboBox", 5, false);
-				pListItem = pObj->pListItems;
-
-				while (pListItem)
-				{
-					pCombo->AddItem(pListItem->szItemText, NULL);
-					pListItem = pListItem->pNext;
-				}
-
-				pCombo->ActivateItemByRow((int)pObj->fdefValue);
-				pCtrl->pControl = (Panel *)pCombo;
-				break;
-			}
-
-			default: break;
+		case O_BOOL:
+		{
+			pBox = new CheckButton(pCtrl, "DescCheckButton", pObj->prompt);
+			pBox->SetSelected(pObj->fdefValue != 0.0f ? true : false);
+			pCtrl->pControl = (Panel *)pBox;
+			break;
 		}
 
-		if (pCtrl->type != O_BOOL)
+		case O_STRING:
+		case O_NUMBER:
+		{
+			pEdit = new TextEntry(pCtrl, "DescTextEntry");
+			pEdit->InsertString(pObj->defValue);
+			pCtrl->pControl = (Panel *)pEdit;
+			break;
+		}
+
+		case O_LIST:
+		{
+			pCombo    = new ComboBox(pCtrl, "DescComboBox", 5, false);
+			pListItem = pObj->pListItems;
+
+			while(pListItem)
+			{
+				pCombo->AddItem(pListItem->szItemText, NULL);
+				pListItem = pListItem->pNext;
+			}
+
+			pCombo->ActivateItemByRow((int)pObj->fdefValue);
+			pCtrl->pControl = (Panel *)pCombo;
+			break;
+		}
+
+		default:
+			break;
+		}
+
+		if(pCtrl->type != O_BOOL)
 		{
 			pCtrl->pPrompt = new Label(pCtrl, "DescLabel", "");
 			pCtrl->pPrompt->SetContentAlignment(Label::a_west);
@@ -248,20 +250,20 @@ void CMultiplayerAdvancedDialog::CreateControls(void)
 		pCtrl->SetSize(100, 28);
 		m_pListPanel->AddItem(pCtrl);
 
-		if (!m_pList)
+		if(!m_pList)
 		{
-			m_pList = pCtrl;
+			m_pList     = pCtrl;
 			pCtrl->next = NULL;
 		}
 		else
 		{
 			mpcontrol_t *p = m_pList;
 
-			while (p)
+			while(p)
 			{
-				if (!p->next)
+				if(!p->next)
 				{
-					p->next = pCtrl;
+					p->next     = pCtrl;
 					pCtrl->next = NULL;
 					break;
 				}
@@ -279,7 +281,7 @@ void CMultiplayerAdvancedDialog::DestroyControls(void)
 	mpcontrol_t *p, *n;
 	p = m_pList;
 
-	while (p)
+	while(p)
 	{
 		n = p->next;
 		delete p->pControl;
@@ -295,13 +297,13 @@ void CMultiplayerAdvancedDialog::SaveValues(void)
 {
 	GatherCurrentValues();
 
-	if (m_pDescription)
+	if(m_pDescription)
 	{
 		m_pDescription->WriteToConfig();
 
 		FileHandle_t fp = g_pFullFileSystem->Open("user.scr", "wb");
 
-		if (fp)
+		if(fp)
 		{
 			m_pDescription->WriteToScriptFile(fp);
 			g_pFullFileSystem->Close(fp);
@@ -311,9 +313,9 @@ void CMultiplayerAdvancedDialog::SaveValues(void)
 
 void CInfoDescription::WriteScriptHeader(void *fp)
 {
-	char am_pm[] = "AM";
-	time_t timer = time(NULL);
-	tm *tblock = localtime(&timer);
+	char   am_pm[] = "AM";
+	time_t timer   = time(NULL);
+	tm *   tblock  = localtime(&timer);
 
 	g_pFullFileSystem->FPrintf(fp, (char *)getHint());
 	g_pFullFileSystem->FPrintf(fp, "// Half-Life User Info Configuration Layout Script (stores last settings chosen, too)\r\n");
@@ -325,9 +327,9 @@ void CInfoDescription::WriteScriptHeader(void *fp)
 
 void CInfoDescription::WriteFileHeader(void *fp)
 {
-	char am_pm[] = "AM";
-	time_t timer = time(NULL);
-	tm *tblock = localtime(&timer);
+	char   am_pm[] = "AM";
+	time_t timer   = time(NULL);
+	tm *   tblock  = localtime(&timer);
 
 	g_pFullFileSystem->FPrintf(fp, "// Half-Life User Info Configuration Settings\r\n");
 	g_pFullFileSystem->FPrintf(fp, "// DO NOT EDIT, GENERATED BY HALF-LIFE\r\n");
@@ -335,7 +337,8 @@ void CInfoDescription::WriteFileHeader(void *fp)
 	g_pFullFileSystem->FPrintf(fp, "//\r\n//\r\n// Cvar\t-\tSetting\r\n\r\n");
 }
 
-CInfoDescription::CInfoDescription(CPanelListPanel *panel) : CDescription(panel)
+CInfoDescription::CInfoDescription(CPanelListPanel *panel)
+    : CDescription(panel)
 {
 	setHint("// NOTE:  THIS FILE IS AUTOMATICALLY REGENERATED, \r\n//DO NOT EDIT THIS HEADER, YOUR COMMENTS WILL BE LOST IF YOU DO\r\n// User options script\r\n//\r\n// Format:\r\n//  Version [float]\r\n//  Options description followed by \r\n//  Options defaults\r\n//\r\n// Option description syntax:\r\n//\r\n//  \"cvar\" { \"Prompt\" { type [ type info ] } { default } }\r\n//\r\n//  type = \r\n//   BOOL   (a yes/no toggle)\r\n//   STRING\r\n//   NUMBER\r\n//   LIST\r\n//\r\n// type info:\r\n// BOOL                 no type info\r\n// NUMBER       min max range, use -1 -1 for no limits\r\n// STRING       no type info\r\n// LIST          delimited list of options value pairs\r\n//\r\n//\r\n// default depends on type\r\n// BOOL is \"0\" or \"1\"\r\n// NUMBER is \"value\"\r\n// STRING is \"value\"\r\n// LIST is \"index\", where index \"0\" is the first element of the list\r\n\r\n\r\n");
 	setDescription("INFO_OPTIONS");

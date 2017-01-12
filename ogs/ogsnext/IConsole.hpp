@@ -42,37 +42,37 @@ struct IConsole : public IBaseInterface
 {
 	/// Prints a formatted message into the console
 	virtual void Printf(int print_level, const char *asMsg, ...) = 0;
-	
+
 	/// Execute a command text
 	virtual void ExecuteText(int exec_mode, const char *asText) = 0;
-	
+
 	///
 	virtual void AddCommand(const char *asName, pfnConCmdCallback afnCallback) = 0;
-	
+
 	///
 	virtual void RemoveCommand(const char *asName) = 0;
-	
+
 	/// @return Argument count of current processing command
 	virtual int Cmd_Argc() = 0;
-	
+
 	///
 	virtual const char *Cmd_Argv(int i) = 0;
-	
+
 	///
 	virtual bool Cvar_Register(cvar_t *apCvar) = 0;
-	
+
 	///
 	virtual cvar_t *Cvar_Add(const char *asName, const char *asValue, int flags) = 0;
-	
+
 	///
 	virtual bool Cvar_Remove(const char *asName) = 0;
-	
+
 	///
 	virtual cvar_t *Cvar_Get(const char *asName) = 0;
-	
+
 	///
 	virtual cvar_t *Cvar_Set(const char *asName, const char *asValue) = 0;
-	
+
 	///
 	virtual void Cvar_SetValue(const char *asName, float afValue) = 0;
 };

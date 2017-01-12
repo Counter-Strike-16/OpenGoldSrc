@@ -56,9 +56,9 @@ char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON];
 
 qboolean gfExtendedError;
 
-int               giSubState;
-int               giActive;
-int               giStateInfo;
+int giSubState;
+int giActive;
+int giStateInfo;
 
 DLL_FUNCTIONS     gEntityInterface;
 NEW_DLL_FUNCTIONS gNewDLLFunctions;
@@ -852,14 +852,14 @@ void LoadEntityDLLs(const char *szBaseDir)
 		}
 		Sys_FindClose();
 	}
-	
+
 	gNewDLLFunctions.pfnOnFreeEntPrivateData = NULL;
 	gNewDLLFunctions.pfnGameShutdown         = NULL;
 	gNewDLLFunctions.pfnShouldCollide        = NULL;
 	gNewDLLFunctions.pfnCvarValue            = NULL;
 	gNewDLLFunctions.pfnCvarValue2           = NULL;
-	
-	pNewAPI                                  = (NEW_DLL_FUNCTIONS_FN)GetDispatch("GetNewDLLFunctions");
+
+	pNewAPI = (NEW_DLL_FUNCTIONS_FN)GetDispatch("GetNewDLLFunctions");
 	if(pNewAPI)
 	{
 		interface_version = NEW_DLL_FUNCTIONS_VERSION;

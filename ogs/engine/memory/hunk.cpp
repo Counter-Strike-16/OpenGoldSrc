@@ -39,9 +39,9 @@ const int HUNK_SENTINEL = 0x1df001ed;
 
 typedef struct hunk_s
 {
-	int  sentinel;
-	int  size;
-	
+	int sentinel;
+	int size;
+
 	char name[HUNK_NAME_LEN];
 } hunk_t;
 
@@ -75,9 +75,9 @@ void *Hunk_TempAlloc(int size)
 	};
 
 	hunk_tempmark = Hunk_HighMark();
-	
+
 	void *buf = Hunk_HighAllocName((size + 15) & ~15, "temp");
-	
+
 	hunk_tempactive = 1;
 	return buf;
 };
@@ -103,10 +103,10 @@ void *Hunk_AllocName(int size, const char *name)
 	Cache_FreeLow(hunk_low_used);
 
 	Q_memset(h, 0, totalsize);
-	
+
 	h->size     = totalsize;
 	h->sentinel = HUNK_SENTINEL;
-	
+
 	Q_strncpy(h->name, name, HUNK_NAME_LEN - 1);
 	h->name[HUNK_NAME_LEN - 1] = 0;
 
@@ -145,7 +145,7 @@ void *Hunk_HighAllocName(int size, const char *name)
 
 	h->size     = size;
 	h->sentinel = HUNK_SENTINEL;
-	
+
 	Q_strncpy(h->name, name, HUNK_NAME_LEN - 1);
 	h->name[HUNK_NAME_LEN - 1] = 0;
 
@@ -227,10 +227,10 @@ NOXREF void Hunk_Print(qboolean all)
 	char    name[HUNK_NAME_LEN];
 
 	name[HUNK_NAME_LEN - 1] = 0;
-	
-	count                   = 0;
-	sum                     = 0;
-	totalblocks             = 0;
+
+	count       = 0;
+	sum         = 0;
+	totalblocks = 0;
 
 	h         = (hunk_t *)hunk_base;
 	endlow    = (hunk_t *)(hunk_base + hunk_low_used);
@@ -276,7 +276,7 @@ NOXREF void Hunk_Print(qboolean all)
 		// print the single block
 		//
 		Q_memcpy(name, h->name, HUNK_NAME_LEN);
-		
+
 		if(all)
 			Con_Printf("%8p :%8i %8s\n", h, h->size, name);
 

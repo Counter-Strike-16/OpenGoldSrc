@@ -21,7 +21,6 @@ public:
 	virtual void Activate(void);
 
 private:
-
 	void CreateControls(void);
 	void DestroyControls(void);
 	void GatherCurrentValues(void);
@@ -29,8 +28,8 @@ private:
 
 public:
 	CInfoDescription *m_pDescription;
-	mpcontrol_t *m_pList;
-	CPanelListPanel *m_pListPanel;
+	mpcontrol_t *     m_pList;
+	CPanelListPanel * m_pListPanel;
 
 public:
 	virtual void OnCommand(const char *command);

@@ -41,10 +41,10 @@
 using namespace vgui;
 
 extern vgui::DHANDLE<CLoadingDialog> g_hLoadingDialog;
-extern CBasePanel *staticPanel;
+extern CBasePanel *                  staticPanel;
 
-static CBasePanel *g_pBasePanel = NULL;
-static float g_flAnimationPadding = 0.01f;
+static CBasePanel *g_pBasePanel         = NULL;
+static float       g_flAnimationPadding = 0.01f;
 
 CBasePanel *BasePanel(void)
 {
@@ -56,7 +56,8 @@ VPANEL GetGameUIBasePanel(void)
 	return BasePanel()->GetVPanel();
 }
 
-CGameMenuItem::CGameMenuItem(vgui::Menu *parent, const char *name) : BaseClass(parent, name, "GameMenuItem")
+CGameMenuItem::CGameMenuItem(vgui::Menu *parent, const char *name)
+    : BaseClass(parent, name, "GameMenuItem")
 {
 	m_bRightAligned = false;
 }
@@ -78,7 +79,7 @@ void CGameMenuItem::ApplySchemeSettings(IScheme *pScheme)
 
 	vgui::HFont hMainMenuFont = pScheme->GetFont("MainMenuFont", IsProportional());
 
-	if (hMainMenuFont)
+	if(hMainMenuFont)
 		SetFont(hMainMenuFont);
 	else
 		SetFont(pScheme->GetFont("MenuLarge", IsProportional()));
@@ -89,7 +90,7 @@ void CGameMenuItem::ApplySchemeSettings(IScheme *pScheme)
 	SetReleasedSound("UI/buttonclickrelease.wav");
 	SetButtonActivationType(Button::ACTIVATE_ONPRESSED);
 
-	if (m_bRightAligned)
+	if(m_bRightAligned)
 		SetContentAlignment(Label::a_east);
 }
 
@@ -108,7 +109,8 @@ class CGameMenu : public vgui::Menu
 	DECLARE_CLASS_SIMPLE(CGameMenu, vgui::Menu);
 
 public:
-	CGameMenu(vgui::Panel *parent, const char *name) : BaseClass(parent, name)
+	CGameMenu(vgui::Panel *parent, const char *name)
+	    : BaseClass(parent, name)
 	{
 		m_pConsoleFooter = NULL;
 	}
@@ -130,13 +132,13 @@ public:
 	{
 		BaseClass::SetVisible(true);
 
-		if (!state)
+		if(!state)
 			ipanel()->MoveToBack(GetVPanel());
 	}
 
 	virtual int AddMenuItem(const char *itemName, const char *itemText, const char *command, Panel *target, KeyValues *userData = NULL)
 	{
-		if (!strcmp(command, "OpenServerBrowser") && !GameUI().IsServerBrowserValid())
+		if(!strcmp(command, "OpenServerBrowser") && !GameUI().IsServerBrowserValid())
 			return 0;
 
 		MenuItem *item = new CGameMenuItem(this, itemName);
@@ -150,14 +152,14 @@ public:
 
 	virtual void SetMenuItemBlinkingState(const char *itemName, bool state)
 	{
-		for (int i = 0; i < GetChildCount(); i++)
+		for(int i = 0; i < GetChildCount(); i++)
 		{
-			Panel *child = GetChild(i);
+			Panel *   child    = GetChild(i);
 			MenuItem *menuItem = dynamic_cast<MenuItem *>(child);
 
-			if (menuItem)
+			if(menuItem)
 			{
-				if (Q_strcmp(menuItem->GetCommand()->GetString("command", ""), itemName) == 0)
+				if(Q_strcmp(menuItem->GetCommand()->GetString("command", ""), itemName) == 0)
 					menuItem->SetBlink(state);
 			}
 		}
@@ -169,7 +171,7 @@ public:
 	{
 		m_KeyRepeat.Reset();
 
-		if (!stricmp(command, "Open"))
+		if(!stricmp(command, "Open"))
 		{
 			MoveToFront();
 			RequestFocus();
@@ -182,29 +184,29 @@ public:
 	{
 		m_KeyRepeat.KeyDown(code);
 #ifdef _DEBUG
-		if (engine->pfnGetCvarFloat("developer") >= 1)
+		if(engine->pfnGetCvarFloat("developer") >= 1)
 		{
-			switch (code)
+			switch(code)
 			{
-				case KEY_F1:
-				{
-					engine->pfnClientCmd("connect 127.1:27015\n");
-					break;
-				}
+			case KEY_F1:
+			{
+				engine->pfnClientCmd("connect 127.1:27015\n");
+				break;
+			}
 
-				case KEY_F2:
-				{
-					engine->pfnClientCmd("connect 127.1:4242\n");
-					break;
-				}
+			case KEY_F2:
+			{
+				engine->pfnClientCmd("connect 127.1:4242\n");
+				break;
+			}
 			}
 		}
 #else
-		if (code >= KEY_F1 && code <= KEY_F12)
+		if(code >= KEY_F1 && code <= KEY_F12)
 		{
 			const char *binding = gameuifuncs->Key_BindingForKey(K_F1 + (code - KEY_F1));
 
-			if (binding && binding[0])
+			if(binding && binding[0])
 			{
 				char szCommand[256];
 				Q_strncpy(szCommand, binding, sizeof(szCommand));
@@ -225,7 +227,7 @@ public:
 	{
 		vgui::KeyCode code = m_KeyRepeat.KeyRepeated();
 
-		if (code)
+		if(code)
 			OnKeyCodeTyped(code);
 
 		BaseClass::OnThink();
@@ -242,48 +244,48 @@ public:
 
 	void ShowFooter(bool bShow)
 	{
-		if (m_pConsoleFooter)
+		if(m_pConsoleFooter)
 			m_pConsoleFooter->SetVisible(bShow);
 	}
 
 	void UpdateMenuItemState(bool isInGame, bool isMultiplayer)
 	{
-		for (int i = 0; i < GetChildCount(); i++)
+		for(int i = 0; i < GetChildCount(); i++)
 		{
-			Panel *child = GetChild(i);
+			Panel *   child    = GetChild(i);
 			MenuItem *menuItem = dynamic_cast<MenuItem *>(child);
 
-			if (menuItem)
+			if(menuItem)
 			{
-				bool shouldBeVisible = true;
-				KeyValues *kv = menuItem->GetUserData();
+				bool       shouldBeVisible = true;
+				KeyValues *kv              = menuItem->GetUserData();
 
-				if (!kv)
+				if(!kv)
 					continue;
 
-				if (!isInGame && kv->GetInt("OnlyInGame"))
+				if(!isInGame && kv->GetInt("OnlyInGame"))
 					shouldBeVisible = false;
-				else if (isMultiplayer && kv->GetInt("notmulti"))
+				else if(isMultiplayer && kv->GetInt("notmulti"))
 					shouldBeVisible = false;
-				else if (isInGame && !isMultiplayer && kv->GetInt("notsingle"))
+				else if(isInGame && !isMultiplayer && kv->GetInt("notsingle"))
 					shouldBeVisible = false;
-				else if (kv->GetInt("ConsoleOnly"))
+				else if(kv->GetInt("ConsoleOnly"))
 					shouldBeVisible = false;
 
 				menuItem->SetVisible(shouldBeVisible);
 			}
 		}
 
-		if (!isInGame)
+		if(!isInGame)
 		{
-			for (int j = 0; j < GetChildCount() - 2; j++)
+			for(int j = 0; j < GetChildCount() - 2; j++)
 				MoveMenuItem(j, j + 1);
 		}
 		else
 		{
-			for (int i = 0; i < GetChildCount(); i++)
+			for(int i = 0; i < GetChildCount(); i++)
 			{
-				for (int j = i; j < GetChildCount() - 2; j++)
+				for(int j = i; j < GetChildCount() - 2; j++)
 				{
 					int iID1 = GetMenuID(j);
 					int iID2 = GetMenuID(j + 1);
@@ -294,7 +296,7 @@ public:
 					KeyValues *kv1 = menuItem1->GetUserData();
 					KeyValues *kv2 = menuItem2->GetUserData();
 
-					if (kv1->GetInt("InGameOrder") > kv2->GetInt("InGameOrder"))
+					if(kv1->GetInt("InGameOrder") > kv2->GetInt("InGameOrder"))
 						MoveMenuItem(iID2, iID1);
 				}
 			}
@@ -302,28 +304,28 @@ public:
 
 		InvalidateLayout();
 
-		if (m_pConsoleFooter)
+		if(m_pConsoleFooter)
 		{
 			const char *pHelpName;
 
-			if (!isInGame)
+			if(!isInGame)
 				pHelpName = "MainMenu";
 			else
 				pHelpName = "GameMenu";
 
-			if (!m_pConsoleFooter->GetHelpName() || V_stricmp(pHelpName, m_pConsoleFooter->GetHelpName()))
+			if(!m_pConsoleFooter->GetHelpName() || V_stricmp(pHelpName, m_pConsoleFooter->GetHelpName()))
 			{
 				m_pConsoleFooter->SetHelpNameAndReset(pHelpName);
 				m_pConsoleFooter->AddNewButtonLabel("#GameUI_Action", "#GameUI_Icons_A_BUTTON");
 
-				if (isInGame)
+				if(isInGame)
 					m_pConsoleFooter->AddNewButtonLabel("#GameUI_Close", "#GameUI_Icons_B_BUTTON");
 			}
 		}
 	}
 
 private:
-	CFooterPanel *m_pConsoleFooter;
+	CFooterPanel *          m_pConsoleFooter;
 	vgui::CKeyRepeatHandler m_KeyRepeat;
 };
 
@@ -337,26 +339,27 @@ static CBackgroundMenuButton *CreateMenuButton(CBasePanel *parent, const char *p
 	return pButton;
 }
 
-CBasePanel::CBasePanel(void) : Panel(NULL, "BaseGameUIPanel")
+CBasePanel::CBasePanel(void)
+    : Panel(NULL, "BaseGameUIPanel")
 {
-	g_pBasePanel = this;
-	m_bLevelLoading = false;
-	m_eBackgroundState = BACKGROUND_INITIAL;
-	m_flTransitionStartTime = 0.0f;
-	m_flTransitionEndTime = 0.0f;
-	m_flFrameFadeInTime = 0.5f;
+	g_pBasePanel                     = this;
+	m_bLevelLoading                  = false;
+	m_eBackgroundState               = BACKGROUND_INITIAL;
+	m_flTransitionStartTime          = 0.0f;
+	m_flTransitionEndTime            = 0.0f;
+	m_flFrameFadeInTime              = 0.5f;
 	m_bRenderingBackgroundTransition = false;
-	m_bFadingInMenus = false;
-	m_bEverActivated = false;
-	m_iGameMenuInset = 24;
-	m_bHaveDarkenedBackground = false;
-	m_bHaveDarkenedTitleText = true;
-	m_bForceTitleTextUpdate = true;
-	m_BackdropColor = Color(0, 0, 0, 128);
-	m_pConsoleAnimationController = NULL;
-	m_pConsoleControlSettings = NULL;
-	m_iToolBarSize = 40;
-	m_bInitialLoading = true;
+	m_bFadingInMenus                 = false;
+	m_bEverActivated                 = false;
+	m_iGameMenuInset                 = 24;
+	m_bHaveDarkenedBackground        = false;
+	m_bHaveDarkenedTitleText         = true;
+	m_bForceTitleTextUpdate          = true;
+	m_BackdropColor                  = Color(0, 0, 0, 128);
+	m_pConsoleAnimationController    = NULL;
+	m_pConsoleControlSettings        = NULL;
+	m_iToolBarSize                   = 40;
+	m_bInitialLoading                = true;
 
 	m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton", ModInfo().GetGameTitle()));
 	m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton2", ModInfo().GetGameTitle2()));
@@ -373,7 +376,7 @@ CBasePanel::CBasePanel(void) : Panel(NULL, "BaseGameUIPanel")
 	SetMenuAlpha(0);
 
 	m_pFocusParent = NULL;
-	m_pFocusPanel = NULL;
+	m_pFocusPanel  = NULL;
 }
 
 KeyValues *CBasePanel::GetConsoleControlSettings(void)
@@ -385,32 +388,32 @@ CBasePanel::~CBasePanel(void)
 {
 	g_pBasePanel = NULL;
 
-	if (m_pBinkPanel)
+	if(m_pBinkPanel)
 		delete m_pBinkPanel;
 }
 
 void CBasePanel::PaintBackground(void)
 {
-	if (!m_hOptionsDialog.Get())
+	if(!m_hOptionsDialog.Get())
 	{
-		m_hOptionsDialog = new COptionsDialog(this);
+		m_hOptionsDialog               = new COptionsDialog(this);
 		m_hCreateMultiplayerGameDialog = new CCreateMultiplayerGameDialog(this);
 
 		PositionDialog(m_hOptionsDialog);
 		PositionDialog(m_hCreateMultiplayerGameDialog);
 	}
 
-	if (!GameUI().IsInLevel() || g_hLoadingDialog.Get())
+	if(!GameUI().IsInLevel() || g_hLoadingDialog.Get())
 	{
 		DrawBackgroundImage();
 	}
 	else
 	{
-		if (m_pBinkPanel)
+		if(m_pBinkPanel)
 			m_pBinkPanel->SetVisible(false);
 	}
 
-	if (m_flBackgroundFillAlpha)
+	if(m_flBackgroundFillAlpha)
 	{
 		int swide, stall;
 		surface()->GetScreenSize(swide, stall);
@@ -438,48 +441,48 @@ void CBasePanel::UpdateBackgroundState(void)
 {
 	GameConsole().SetParent(GetVPanel());
 
-	if (GameUI().IsInLevel())
+	if(GameUI().IsInLevel())
 	{
 		SetBackgroundRenderState(BACKGROUND_LEVEL);
 	}
-	else if (!m_bLevelLoading)
+	else if(!m_bLevelLoading)
 	{
-		if (IsPC())
+		if(IsPC())
 			SetBackgroundRenderState(BACKGROUND_MAINMENU);
 	}
-	else if (m_bLevelLoading && g_hLoadingDialog.Get())
+	else if(m_bLevelLoading && g_hLoadingDialog.Get())
 	{
 		SetBackgroundRenderState(BACKGROUND_LOADING);
 	}
-	else if (m_bEverActivated)
+	else if(m_bEverActivated)
 	{
 		SetBackgroundRenderState(BACKGROUND_DISCONNECTED);
 	}
 
 	bool bHaveActiveDialogs = false;
-	bool bIsInLevel = GameUI().IsInLevel();
+	bool bIsInLevel         = GameUI().IsInLevel();
 
-	for (int i = 0; i < GetChildCount(); ++i)
+	for(int i = 0; i < GetChildCount(); ++i)
 	{
-		VPANEL child = ipanel()->GetChild(GetVPanel(), i);
-		const char *name = ipanel()->GetName(child);
+		VPANEL      child = ipanel()->GetChild(GetVPanel(), i);
+		const char *name  = ipanel()->GetName(child);
 
-		if (child && ipanel()->IsVisible(child) && ipanel()->IsPopup(child) && child != m_pGameMenu->GetVPanel())
+		if(child && ipanel()->IsVisible(child) && ipanel()->IsPopup(child) && child != m_pGameMenu->GetVPanel())
 		{
 			bHaveActiveDialogs = true;
 			break;
 		}
 	}
 
-	if (!bHaveActiveDialogs)
+	if(!bHaveActiveDialogs)
 	{
 		VPANEL parent = GetVParent();
 
-		for (int i = 0; i < ipanel()->GetChildCount(parent); ++i)
+		for(int i = 0; i < ipanel()->GetChildCount(parent); ++i)
 		{
 			VPANEL child = ipanel()->GetChild(parent, i);
 
-			if (child && ipanel()->IsVisible(child) && ipanel()->IsPopup(child) && child != GetVPanel())
+			if(child && ipanel()->IsVisible(child) && ipanel()->IsPopup(child) && child != GetVPanel())
 			{
 				bHaveActiveDialogs = true;
 				break;
@@ -489,104 +492,104 @@ void CBasePanel::UpdateBackgroundState(void)
 
 	bool bNeedDarkenedBackground = (bHaveActiveDialogs || bIsInLevel);
 
-	if (m_bHaveDarkenedBackground != bNeedDarkenedBackground)
+	if(m_bHaveDarkenedBackground != bNeedDarkenedBackground)
 	{
 		float targetAlpha, duration;
 
-		if (bNeedDarkenedBackground || m_eBackgroundState == BACKGROUND_LOADING)
+		if(bNeedDarkenedBackground || m_eBackgroundState == BACKGROUND_LOADING)
 		{
 			targetAlpha = m_BackdropColor[3];
-			duration = m_flFrameFadeInTime;
+			duration    = m_flFrameFadeInTime;
 		}
 		else
 		{
 			targetAlpha = 0.0f;
-			duration = 2.0f;
+			duration    = 2.0f;
 		}
 
 		m_bHaveDarkenedBackground = bNeedDarkenedBackground;
 
-		if (g_bIsDebuggerPresent)
+		if(g_bIsDebuggerPresent)
 			duration = 0.1f;
 
 		GetAnimationController()->RunAnimationCommand(this, "m_flBackgroundFillAlpha", targetAlpha, 0.0f, duration, AnimationController::INTERPOLATOR_LINEAR);
 	}
 
-	if (m_bLevelLoading)
+	if(m_bLevelLoading)
 		return;
 
 	bool bNeedDarkenedTitleText = bHaveActiveDialogs;
 
-	if (m_bHaveDarkenedTitleText != bNeedDarkenedTitleText || m_bForceTitleTextUpdate)
+	if(m_bHaveDarkenedTitleText != bNeedDarkenedTitleText || m_bForceTitleTextUpdate)
 	{
 		float targetTitleAlpha, duration;
 
-		if (bHaveActiveDialogs || m_eBackgroundState == BACKGROUND_LOADING)
+		if(bHaveActiveDialogs || m_eBackgroundState == BACKGROUND_LOADING)
 		{
-			duration = m_flFrameFadeInTime;
+			duration         = m_flFrameFadeInTime;
 			targetTitleAlpha = 128.0f;
 		}
 		else
 		{
-			duration = 2.0f;
+			duration         = 2.0f;
 			targetTitleAlpha = 255.0f;
 		}
 
-		if (g_bIsDebuggerPresent)
+		if(g_bIsDebuggerPresent)
 			duration = 0.1f;
 
-		if (m_pBinkPanel)
+		if(m_pBinkPanel)
 			GetAnimationController()->RunAnimationCommand(m_pBinkPanel, "alpha", targetTitleAlpha, 0.0f, duration, AnimationController::INTERPOLATOR_LINEAR);
 
-		if (m_pGameLogo)
+		if(m_pGameLogo)
 			GetAnimationController()->RunAnimationCommand(m_pGameLogo, "alpha", targetTitleAlpha, 0.0f, duration, AnimationController::INTERPOLATOR_LINEAR);
 
-		if (m_pGameMenu)
+		if(m_pGameMenu)
 			GetAnimationController()->RunAnimationCommand(m_pGameMenu, "alpha", targetTitleAlpha, 0.0f, duration, AnimationController::INTERPOLATOR_LINEAR);
 
-		for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
+		for(int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 			GetAnimationController()->RunAnimationCommand(m_pGameMenuButtons[i], "alpha", targetTitleAlpha, 0.0f, duration, AnimationController::INTERPOLATOR_LINEAR);
 
-		m_bFadingInMenus = false;
+		m_bFadingInMenus         = false;
 		m_bHaveDarkenedTitleText = bNeedDarkenedTitleText;
-		m_bForceTitleTextUpdate = false;
+		m_bForceTitleTextUpdate  = false;
 	}
 }
 
 void CBasePanel::SetBackgroundRenderState(EBackgroundState state)
 {
-	if (state == m_eBackgroundState)
+	if(state == m_eBackgroundState)
 		return;
 
 	float frametime = engine->GetAbsoluteTime();
 
 	m_bRenderingBackgroundTransition = false;
-	m_bFadingInMenus = false;
+	m_bFadingInMenus                 = false;
 
-	if (state == BACKGROUND_EXITING)
+	if(state == BACKGROUND_EXITING)
 	{
 	}
-	else if (state == BACKGROUND_DISCONNECTED || state == BACKGROUND_MAINMENU)
+	else if(state == BACKGROUND_DISCONNECTED || state == BACKGROUND_MAINMENU)
 	{
-		m_bFadingInMenus = true;
+		m_bFadingInMenus      = true;
 		m_flFadeMenuStartTime = frametime;
-		m_flFadeMenuEndTime = frametime + 3.0f;
+		m_flFadeMenuEndTime   = frametime + 3.0f;
 
-		if (m_pBinkPanel)
+		if(m_pBinkPanel)
 			m_pBinkPanel->SetVisible(true);
 	}
-	else if (state == BACKGROUND_LOADING)
+	else if(state == BACKGROUND_LOADING)
 	{
 		SetMenuAlpha(0);
 
-		if (m_pBinkPanel)
+		if(m_pBinkPanel)
 			m_pBinkPanel->SetVisible(false);
 	}
-	else if (state == BACKGROUND_LEVEL)
+	else if(state == BACKGROUND_LEVEL)
 	{
 		SetMenuAlpha(255);
 
-		if (m_pBinkPanel)
+		if(m_pBinkPanel)
 			m_pBinkPanel->SetVisible(false);
 	}
 
@@ -605,7 +608,7 @@ void CBasePanel::OnLevelLoadingStarted(const char *levelName)
 	static char imageName[MAX_PATH];
 	sprintf(imageName, "resource/maploading/loadingbg_%s", levelName);
 
-	if (!g_hLoadingDialog.Get())
+	if(!g_hLoadingDialog.Get())
 		g_hLoadingDialog = new CLoadingDialog(this);
 
 	g_hLoadingDialog->SetBackgroundImage(imageName);
@@ -625,30 +628,30 @@ void CBasePanel::DrawBackgroundImage(void)
 	GetSize(wide, tall);
 
 	float frametime = engine->GetAbsoluteTime();
-	int alpha = 255;
+	int   alpha     = 255;
 
-	if (m_bRenderingBackgroundTransition)
+	if(m_bRenderingBackgroundTransition)
 	{
 		alpha = (m_flTransitionEndTime - frametime) / (m_flTransitionEndTime - m_flTransitionStartTime) * 255;
 		alpha = clamp(alpha, 0, 255);
 	}
 
-	if (m_pBinkPanel)
+	if(m_pBinkPanel)
 	{
 		float playtime = m_pBinkPanel->GetPlayTime();
 
-		if (!g_pcvarEnableBink->value || (!playtime || (IsPC() && (m_bRenderingBackgroundTransition || m_eBackgroundState == BACKGROUND_LOADING))))
+		if(!g_pcvarEnableBink->value || (!playtime || (IsPC() && (m_bRenderingBackgroundTransition || m_eBackgroundState == BACKGROUND_LOADING))))
 		{
 			float xScale = swide / 800.0f;
 			float yScale = stall / 600.0f;
 
 			int ypos = 0;
 
-			for (int y = 0; y < BACKGROUND_ROWS; y++)
+			for(int y = 0; y < BACKGROUND_ROWS; y++)
 			{
 				int xpos = 0;
 
-				for (int x = 0; x < BACKGROUND_COLUMNS; x++)
+				for(int x = 0; x < BACKGROUND_COLUMNS; x++)
 				{
 					bimage_t &bimage = m_ImageID[y][x];
 
@@ -657,10 +660,10 @@ void CBasePanel::DrawBackgroundImage(void)
 					int dw = (int)ceil((xpos + bimage.width) * xScale);
 					int dt = (int)ceil((ypos + bimage.height) * yScale);
 
-					if (x == 0)
+					if(x == 0)
 						dx = 0;
 
-					if (y == 0)
+					if(y == 0)
 						dy = 0;
 
 					surface()->DrawSetColor(255, 255, 255, alpha);
@@ -680,16 +683,16 @@ void CBasePanel::DrawBackgroundImage(void)
 			surface()->DrawSetColor(0, 0, 0, 255);
 			surface()->DrawFilledRect(0, 0, swide, stall);
 
-			if (!m_pBinkPanel->IsPlaying())
+			if(!m_pBinkPanel->IsPlaying())
 				m_pBinkPanel->Play();
 
 			m_pBinkPanel->SetVisible(true);
 		}
 	}
 
-	if (IsPC() && (m_bRenderingBackgroundTransition || m_eBackgroundState == BACKGROUND_LOADING))
+	if(IsPC() && (m_bRenderingBackgroundTransition || m_eBackgroundState == BACKGROUND_LOADING))
 	{
-		if (m_pGameMenu->GetAlpha() < 255)
+		if(m_pGameMenu->GetAlpha() < 255)
 		{
 			surface()->DrawSetColor(255, 255, 255, alpha);
 			surface()->DrawSetTexture(m_iLoadingImageID);
@@ -700,15 +703,15 @@ void CBasePanel::DrawBackgroundImage(void)
 		}
 	}
 
-	if (m_bFadingInMenus)
+	if(m_bFadingInMenus)
 	{
 		alpha = (frametime - m_flFadeMenuStartTime) / (m_flFadeMenuEndTime - m_flFadeMenuStartTime) * 255;
 		alpha = clamp(alpha, 0, 255);
 
-		for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
+		for(int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 			m_pGameMenuButtons[i]->SetAlpha(alpha);
 
-		if (alpha == 255)
+		if(alpha == 255)
 			m_bFadingInMenus = false;
 
 		m_pGameMenu->SetAlpha(alpha);
@@ -720,10 +723,10 @@ void CBasePanel::CreateGameMenu(void)
 	KeyValues *datafile = new KeyValues("GameMenu");
 	datafile->UsesEscapeSequences(true);
 
-	if (datafile->LoadFromFile(g_pFullFileSystem, "Resource/GameMenu.res"))
+	if(datafile->LoadFromFile(g_pFullFileSystem, "Resource/GameMenu.res"))
 		m_pGameMenu = RecursiveLoadGameMenu(datafile);
 
-	if (!m_pGameMenu)
+	if(!m_pGameMenu)
 	{
 		Error("Could not load file Resource/GameMenu.res");
 	}
@@ -738,11 +741,11 @@ void CBasePanel::CreateGameMenu(void)
 
 void CBasePanel::CreateGameLogo(void)
 {
-	if (ModInfo().UseGameLogo())
+	if(ModInfo().UseGameLogo())
 	{
 		m_pGameLogo = new CMainMenuGameLogo(this, "GameLogo");
 
-		if (m_pGameLogo)
+		if(m_pGameLogo)
 		{
 			SETUP_PANEL(m_pGameLogo);
 			m_pGameLogo->InvalidateLayout(true, true);
@@ -759,8 +762,8 @@ void CBasePanel::CreateBinkPanel(void)
 	surface()->GetScreenSize(swide, stall);
 
 	m_pBinkPanel = new CBinkPanel(this, "BinkPlayer");
-	
-	if (!m_pBinkPanel->OpenBink("resource/bg_bink.bik", BINKSURFACE24R))
+
+	if(!m_pBinkPanel->OpenBink("resource/bg_bink.bik", BINKSURFACE24R))
 	{
 		delete m_pBinkPanel;
 		m_pBinkPanel = NULL;
@@ -792,7 +795,7 @@ void CBasePanel::CreateToolbar(void)
 void CBasePanel::UpdateGameMenus(void)
 {
 	bool isInGame = GameUI().IsInLevel();
-	bool isMulti = isInGame && (engine->GetMaxClients() > 1);
+	bool isMulti  = isInGame && (engine->GetMaxClients() > 1);
 
 	m_pGameMenu->UpdateMenuItemState(isInGame, isMulti);
 	m_pGameMenu->SetVisible(true);
@@ -804,11 +807,11 @@ CGameMenu *CBasePanel::RecursiveLoadGameMenu(KeyValues *datafile)
 {
 	CGameMenu *menu = new CGameMenu(this, datafile->GetName());
 
-	for (KeyValues *dat = datafile->GetFirstSubKey(); dat != NULL; dat = dat->GetNextKey())
+	for(KeyValues *dat = datafile->GetFirstSubKey(); dat != NULL; dat = dat->GetNextKey())
 	{
 		const char *label = dat->GetString("label", "<unknown>");
-		const char *cmd = dat->GetString("command", NULL);
-		const char *name = dat->GetString("name", label);
+		const char *cmd   = dat->GetString("command", NULL);
+		const char *name  = dat->GetString("name", label);
 
 		menu->AddMenuItem(name, label, cmd, this, dat);
 	}
@@ -818,10 +821,10 @@ CGameMenu *CBasePanel::RecursiveLoadGameMenu(KeyValues *datafile)
 
 void CBasePanel::RunFrame(void)
 {
-	if (!IsVisible())
+	if(!IsVisible())
 		return;
 
-	if (surface()->GetModalPanel())
+	if(surface()->GetModalPanel())
 		surface()->PaintTraverse(GetVPanel());
 
 	GetAnimationController()->UpdateAnimations(engine->GetAbsoluteTime());
@@ -839,20 +842,20 @@ void CBasePanel::PerformLayout(void)
 	m_pGameMenu->GetSize(menuWide, menuTall);
 
 	int idealMenuY = tall - menuTall - m_iGameMenuInset;
-	int yDiff = idealMenuY - m_iGameMenuPos.y;
+	int yDiff      = idealMenuY - m_iGameMenuPos.y;
 
-	for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
+	for(int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 	{
 		m_pGameMenuButtons[i]->SizeToContents();
 		m_pGameMenuButtons[i]->SetPos(m_iGameTitlePos[i].x, m_iGameTitlePos[i].y + yDiff);
 	}
 
-	if (m_pGameLogo)
+	if(m_pGameLogo)
 		m_pGameLogo->SetPos(m_iGameMenuPos.x + m_pGameLogo->GetOffsetX(), idealMenuY - m_pGameLogo->GetTall() + m_pGameLogo->GetOffsetY());
 
 	m_pGameMenu->SetPos(m_iGameMenuPos.x, idealMenuY);
 
-	if (m_bInitialLoading)
+	if(m_bInitialLoading)
 	{
 		m_bInitialLoading = false;
 		GameConsole().CheckPending();
@@ -870,11 +873,11 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 
 	CUtlVector<Color> buttonColor;
 
-	if (pScheme)
+	if(pScheme)
 	{
 		m_iGameTitlePos.RemoveAll();
 
-		for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
+		for(int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 		{
 			m_pGameMenuButtons[i]->SetFont(pScheme->GetFont("TitleFont"));
 
@@ -897,7 +900,7 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 	}
 	else
 	{
-		for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
+		for(int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 		{
 			m_pGameMenuButtons[i]->SetFont(pScheme->GetFont("TitleFont"));
 
@@ -905,7 +908,7 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 		}
 	}
 
-	for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
+	for(int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 	{
 		m_pGameMenuButtons[i]->SetDefaultColor(buttonColor[i], Color(0, 0, 0, 0));
 		m_pGameMenuButtons[i]->SetArmedColor(buttonColor[i], Color(0, 0, 0, 0));
@@ -915,20 +918,20 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 	SetBgColor(Color(0, 0, 0, 0));
 
 	m_flFrameFadeInTime = atof(pScheme->GetResourceString("Frame.TransitionEffectTime"));
-	m_BackdropColor = pScheme->GetColor("mainmenu.backdrop", Color(0, 0, 0, 128));
+	m_BackdropColor     = pScheme->GetColor("mainmenu.backdrop", Color(0, 0, 0, 128));
 
 	int screenWide, screenTall;
 	surface()->GetScreenSize(screenWide, screenTall);
 
-	float aspectRatio = (float)screenWide/(float)screenTall;
-	bool bIsWidescreen = aspectRatio >= 1.5999f;
+	float aspectRatio   = (float)screenWide / (float)screenTall;
+	bool  bIsWidescreen = aspectRatio >= 1.5999f;
 
-	for (int y = 0; y < BACKGROUND_ROWS; y++)
+	for(int y = 0; y < BACKGROUND_ROWS; y++)
 	{
-		for (int x = 0; x < BACKGROUND_COLUMNS; x++)
+		for(int x = 0; x < BACKGROUND_COLUMNS; x++)
 		{
 			bimage_t &bimage = m_ImageID[y][x];
-			bimage.imageID = surface()->CreateNewTextureID();
+			bimage.imageID   = surface()->CreateNewTextureID();
 
 			char filename[MAX_PATH];
 			sprintf(filename, "resource/background/800_%d_%c_loading", y + 1, 'a' + x);
@@ -937,7 +940,7 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 		}
 	}
 
-	if (IsPC())
+	if(IsPC())
 	{
 		m_iLoadingImageID = surface()->CreateNewTextureID();
 		surface()->DrawSetTextureFile(m_iLoadingImageID, "gfx/vgui/console/startup_loading", false, false);
@@ -950,49 +953,49 @@ void CBasePanel::OnActivateModule(int moduleIndex)
 
 void CBasePanel::OnGameUIActivated(void)
 {
-	if (!m_bEverActivated)
+	if(!m_bEverActivated)
 	{
 		UpdateGameMenus();
 		m_bEverActivated = true;
 	}
 
-	if (GameUI().IsInLevel())
+	if(GameUI().IsInLevel())
 		OnCommand("OpenPauseMenu");
 }
 
 void CBasePanel::RunMenuCommand(const char *command)
 {
-	if (!Q_stricmp(command, "OpenServerBrowser"))
+	if(!Q_stricmp(command, "OpenServerBrowser"))
 	{
 		OnOpenServerBrowser();
 	}
-	else if (!Q_stricmp(command, "OpenCreateMultiplayerGameDialog"))
+	else if(!Q_stricmp(command, "OpenCreateMultiplayerGameDialog"))
 	{
 		OnOpenCreateMultiplayerGameDialog();
 	}
-	else if (!Q_stricmp(command, "OpenOptionsDialog"))
+	else if(!Q_stricmp(command, "OpenOptionsDialog"))
 	{
 		OnOpenOptionsDialog();
 	}
-	else if (!Q_stricmp(command, "ResumeGame"))
+	else if(!Q_stricmp(command, "ResumeGame"))
 	{
 		engine->pfnClientCmd("cancelselect");
 	}
-	else if (!Q_stricmp(command, "Disconnect"))
+	else if(!Q_stricmp(command, "Disconnect"))
 	{
 		engine->pfnClientCmd("disconnect\n");
 	}
-	else if (!Q_stricmp(command, "Quit"))
+	else if(!Q_stricmp(command, "Quit"))
 	{
 		OnOpenQuitConfirmationDialog();
 	}
-	else if (!Q_stricmp(command, "QuitNoConfirm"))
+	else if(!Q_stricmp(command, "QuitNoConfirm"))
 	{
 		SetVisible(false);
 		vgui::surface()->RestrictPaintToSinglePanel(GetVPanel());
 		engine->pfnClientCmd("quit\n");
 	}
-	else if (!Q_stricmp(command, "ReleaseModalWindow"))
+	else if(!Q_stricmp(command, "ReleaseModalWindow"))
 	{
 		vgui::surface()->RestrictPaintToSinglePanel(NULL);
 	}
@@ -1007,17 +1010,17 @@ void CBasePanel::OnCommand(const char *command)
 
 void CBasePanel::RunAnimationWithCallback(vgui::Panel *parent, const char *animName, KeyValues *msgFunc)
 {
-	if (!m_pConsoleAnimationController)
+	if(!m_pConsoleAnimationController)
 		return;
 
 	m_pConsoleAnimationController->StartAnimationSequence(animName);
 
 	float sequenceLength = m_pConsoleAnimationController->GetAnimationSequenceLength(animName);
 
-	if (sequenceLength)
+	if(sequenceLength)
 		sequenceLength += g_flAnimationPadding;
 
-	if (parent && msgFunc)
+	if(parent && msgFunc)
 		PostMessage(parent, msgFunc, sequenceLength);
 }
 
@@ -1026,7 +1029,8 @@ class CQuitQueryBox : public vgui::QueryBox
 	DECLARE_CLASS_SIMPLE(CQuitQueryBox, vgui::QueryBox);
 
 public:
-	CQuitQueryBox(const char *title, const char *info, Panel *parent) : BaseClass(title, info, parent)
+	CQuitQueryBox(const char *title, const char *info, Panel *parent)
+	    : BaseClass(title, info, parent)
 	{
 	}
 
@@ -1038,7 +1042,7 @@ public:
 
 	void OnKeyCodePressed(KeyCode code)
 	{
-		if (code == KEY_ESCAPE)
+		if(code == KEY_ESCAPE)
 		{
 			SetAlpha(0);
 			Close();
@@ -1056,12 +1060,12 @@ public:
 
 void CBasePanel::OnOpenQuitConfirmationDialog(void)
 {
-	if (GameUI().IsInLevel() && engine->GetMaxClients() == 1)
+	if(GameUI().IsInLevel() && engine->GetMaxClients() == 1)
 	{
 	}
 	else
 	{
-		if (!m_hQuitQueryBox.Get())
+		if(!m_hQuitQueryBox.Get())
 		{
 			m_hQuitQueryBox = new CQuitQueryBox("#GameUI_QuitConfirmationTitle", "#GameUI_QuitConfirmationText", this);
 			m_hQuitQueryBox->SetOKButtonText("#GameUI_Quit");
@@ -1080,7 +1084,7 @@ void CBasePanel::OnOpenServerBrowser(void)
 
 void CBasePanel::OnOpenOptionsDialog(void)
 {
-	if (!m_hOptionsDialog.Get())
+	if(!m_hOptionsDialog.Get())
 	{
 		m_hOptionsDialog = new COptionsDialog(this);
 		PositionDialog(m_hOptionsDialog);
@@ -1091,7 +1095,7 @@ void CBasePanel::OnOpenOptionsDialog(void)
 
 void CBasePanel::OnOpenCreateMultiplayerGameDialog(void)
 {
-	if (!m_hCreateMultiplayerGameDialog.Get())
+	if(!m_hCreateMultiplayerGameDialog.Get())
 	{
 		m_hCreateMultiplayerGameDialog = new CCreateMultiplayerGameDialog(this);
 		PositionDialog(m_hCreateMultiplayerGameDialog);
@@ -1102,7 +1106,7 @@ void CBasePanel::OnOpenCreateMultiplayerGameDialog(void)
 
 void CBasePanel::PositionDialog(vgui::PHandle dlg)
 {
-	if (!dlg.Get())
+	if(!dlg.Get())
 		return;
 
 	int x, y, ww, wt, wide, tall;
@@ -1113,7 +1117,7 @@ void CBasePanel::PositionDialog(vgui::PHandle dlg)
 
 void CBasePanel::OnGameUIHidden(void)
 {
-	if (m_hOptionsDialog.Get())
+	if(m_hOptionsDialog.Get())
 		PostMessage(m_hOptionsDialog.Get(), new KeyValues("GameUIHidden"));
 }
 
@@ -1121,10 +1125,10 @@ void CBasePanel::SetMenuAlpha(int alpha)
 {
 	m_pGameMenu->SetAlpha(alpha);
 
-	if (m_pGameLogo)
+	if(m_pGameLogo)
 		m_pGameLogo->SetAlpha(alpha);
 
-	for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
+	for(int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 		m_pGameMenuButtons[i]->SetAlpha(alpha);
 
 	m_bForceTitleTextUpdate = true;
@@ -1132,12 +1136,12 @@ void CBasePanel::SetMenuAlpha(int alpha)
 
 void CBasePanel::SetMenuItemBlinkingState(const char *itemName, bool state)
 {
-	for (int i = 0; i < GetChildCount(); i++)
+	for(int i = 0; i < GetChildCount(); i++)
 	{
-		Panel *child = GetChild(i);
+		Panel *    child     = GetChild(i);
 		CGameMenu *pGameMenu = dynamic_cast<CGameMenu *>(child);
 
-		if (pGameMenu)
+		if(pGameMenu)
 			pGameMenu->SetMenuItemBlinkingState(itemName, state);
 	}
 }
@@ -1156,37 +1160,38 @@ void CBasePanel::FinishDialogClose(void)
 {
 }
 
-CFooterPanel::CFooterPanel(Panel *parent, const char *panelName) : BaseClass(parent, panelName)
+CFooterPanel::CFooterPanel(Panel *parent, const char *panelName)
+    : BaseClass(parent, panelName)
 {
 	SetVisible(true);
 	SetAlpha(0);
 
-	m_pHelpName = NULL;
+	m_pHelpName    = NULL;
 	m_pSizingLabel = new vgui::Label(this, "SizingLabel", "");
 	m_pSizingLabel->SetVisible(false);
 
-	m_nButtonGap = 32;
+	m_nButtonGap        = 32;
 	m_nButtonGapDefault = 32;
-	m_ButtonPinRight = 100;
-	m_FooterTall = 80;
+	m_ButtonPinRight    = 100;
+	m_FooterTall        = 80;
 
 	int wide, tall;
 	surface()->GetScreenSize(wide, tall);
 
-	if (tall <= 480)
+	if(tall <= 480)
 		m_FooterTall = 60;
 
 	m_ButtonOffsetFromTop = 0;
-	m_ButtonSeparator = 4;
-	m_TextAdjust = 0;
+	m_ButtonSeparator     = 4;
+	m_TextAdjust          = 0;
 
-	m_bPaintBackground = false;
+	m_bPaintBackground  = false;
 	m_bCenterHorizontal = false;
 
 	m_szButtonFont[0] = '\0';
-	m_szTextFont[0] = '\0';
-	m_szFGColor[0] = '\0';
-	m_szBGColor[0] = '\0';
+	m_szTextFont[0]   = '\0';
+	m_szFGColor[0]    = '\0';
+	m_szBGColor[0]    = '\0';
 }
 
 CFooterPanel::~CFooterPanel(void)
@@ -1201,7 +1206,7 @@ void CFooterPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 	BaseClass::ApplySchemeSettings(pScheme);
 
 	m_hButtonFont = pScheme->GetFont((m_szButtonFont[0] != '\0') ? m_szButtonFont : "GameUIButtons");
-	m_hTextFont = pScheme->GetFont((m_szTextFont[0] != '\0') ? m_szTextFont : "MenuLarge");
+	m_hTextFont   = pScheme->GetFont((m_szTextFont[0] != '\0') ? m_szTextFont : "MenuLarge");
 
 	SetFgColor(pScheme->GetColor(m_szFGColor, Color(255, 255, 255, 255)));
 	SetBgColor(pScheme->GetColor(m_szBGColor, Color(0, 0, 0, 255)));
@@ -1215,16 +1220,16 @@ void CFooterPanel::ApplySettings(KeyValues *inResourceData)
 {
 	BaseClass::ApplySettings(inResourceData);
 
-	m_nButtonGap = inResourceData->GetInt("buttongap", 32);
-	m_nButtonGapDefault = m_nButtonGap;
-	m_ButtonPinRight = inResourceData->GetInt("button_pin_right", 100);
-	m_FooterTall = inResourceData->GetInt("tall", 80);
+	m_nButtonGap          = inResourceData->GetInt("buttongap", 32);
+	m_nButtonGapDefault   = m_nButtonGap;
+	m_ButtonPinRight      = inResourceData->GetInt("button_pin_right", 100);
+	m_FooterTall          = inResourceData->GetInt("tall", 80);
 	m_ButtonOffsetFromTop = inResourceData->GetInt("buttonoffsety", 0);
-	m_ButtonSeparator = inResourceData->GetInt("button_separator", 4);
-	m_TextAdjust = inResourceData->GetInt("textadjust", 0);
+	m_ButtonSeparator     = inResourceData->GetInt("button_separator", 4);
+	m_TextAdjust          = inResourceData->GetInt("textadjust", 0);
 
 	m_bCenterHorizontal = (inResourceData->GetInt("center", 0) == 1);
-	m_bPaintBackground = (inResourceData->GetInt("paintbackground", 0) == 1);
+	m_bPaintBackground  = (inResourceData->GetInt("paintbackground", 0) == 1);
 
 	Q_strncpy(m_szTextFont, inResourceData->GetString("fonttext", "MenuLarge"), sizeof(m_szTextFont));
 	Q_strncpy(m_szButtonFont, inResourceData->GetString("fontbutton", "GameUIButtons"), sizeof(m_szButtonFont));
@@ -1232,11 +1237,11 @@ void CFooterPanel::ApplySettings(KeyValues *inResourceData)
 	Q_strncpy(m_szFGColor, inResourceData->GetString("fgcolor", "White"), sizeof(m_szFGColor));
 	Q_strncpy(m_szBGColor, inResourceData->GetString("bgcolor", "Black"), sizeof(m_szBGColor));
 
-	for (KeyValues *pButton = inResourceData->GetFirstSubKey(); pButton != NULL; pButton = pButton->GetNextKey())
+	for(KeyValues *pButton = inResourceData->GetFirstSubKey(); pButton != NULL; pButton = pButton->GetNextKey())
 	{
 		const char *pName = pButton->GetName();
 
-		if (!Q_stricmp(pName, "button"))
+		if(!Q_stricmp(pName, "button"))
 		{
 			const char *pText = pButton->GetString("text", "NULL");
 			const char *pIcon = pButton->GetString("icon", "NULL");
@@ -1251,15 +1256,15 @@ void CFooterPanel::AddButtonsFromMap(vgui::Frame *pMenu)
 {
 	CControllerMap *pMap = dynamic_cast<CControllerMap *>(pMenu->FindChildByName("ControllerMap"));
 
-	if (pMap)
+	if(pMap)
 	{
 		int buttonCt = pMap->NumButtons();
 
-		for (int i = 0; i < buttonCt; ++i)
+		for(int i = 0; i < buttonCt; ++i)
 		{
 			const char *pText = pMap->GetBindingText(i);
 
-			if (pText)
+			if(pText)
 				AddNewButtonLabel(pText, pMap->GetBindingIcon(i));
 		}
 	}
@@ -1276,13 +1281,13 @@ void CFooterPanel::SetStandardDialogButtons(void)
 
 void CFooterPanel::SetHelpNameAndReset(const char *pName)
 {
-	if (m_pHelpName)
+	if(m_pHelpName)
 	{
 		free(m_pHelpName);
 		m_pHelpName = NULL;
 	}
 
-	if (pName)
+	if(pName)
 		m_pHelpName = strdup(pName);
 
 	ClearButtons();
@@ -1307,7 +1312,7 @@ void CFooterPanel::AddNewButtonLabel(const char *text, const char *icon)
 
 	wchar_t *pIcon = g_pVGuiLocalize->Find(icon);
 
-	if (pIcon)
+	if(pIcon)
 	{
 		button->icon[0] = pIcon[0];
 		button->icon[1] = '\0';
@@ -1317,7 +1322,7 @@ void CFooterPanel::AddNewButtonLabel(const char *text, const char *icon)
 
 	wchar_t *pText = g_pVGuiLocalize->Find(text);
 
-	if (pText)
+	if(pText)
 		wcsncpy(button->text, pText, wcslen(pText) + 1);
 	else
 		button->text[0] = '\0';
@@ -1327,9 +1332,9 @@ void CFooterPanel::AddNewButtonLabel(const char *text, const char *icon)
 
 void CFooterPanel::ShowButtonLabel(const char *name, bool show)
 {
-	for (int i = 0; i < m_ButtonLabels.Count(); ++i)
+	for(int i = 0; i < m_ButtonLabels.Count(); ++i)
 	{
-		if (!Q_stricmp(m_ButtonLabels[i]->name, name))
+		if(!Q_stricmp(m_ButtonLabels[i]->name, name))
 		{
 			m_ButtonLabels[i]->bVisible = show;
 			break;
@@ -1339,13 +1344,13 @@ void CFooterPanel::ShowButtonLabel(const char *name, bool show)
 
 void CFooterPanel::SetButtonText(const char *buttonName, const char *text)
 {
-	for (int i = 0; i < m_ButtonLabels.Count(); ++i)
+	for(int i = 0; i < m_ButtonLabels.Count(); ++i)
 	{
-		if (!Q_stricmp(m_ButtonLabels[i]->name, buttonName))
+		if(!Q_stricmp(m_ButtonLabels[i]->name, buttonName))
 		{
 			wchar_t *wtext = g_pVGuiLocalize->Find(text);
 
-			if (text)
+			if(text)
 				wcsncpy(m_ButtonLabels[i]->text, wtext, wcslen(wtext) + 1);
 			else
 				m_ButtonLabels[i]->text[0] = '\0';
@@ -1357,7 +1362,7 @@ void CFooterPanel::SetButtonText(const char *buttonName, const char *text)
 
 void CFooterPanel::PaintBackground(void)
 {
-	if (!m_bPaintBackground)
+	if(!m_bPaintBackground)
 		return;
 
 	BaseClass::PaintBackground();
@@ -1365,27 +1370,27 @@ void CFooterPanel::PaintBackground(void)
 
 void CFooterPanel::Paint(void)
 {
-	int wide = GetWide();
+	int wide  = GetWide();
 	int right = wide - m_ButtonPinRight;
 
 	int buttonHeight = vgui::surface()->GetFontTall(m_hButtonFont);
-	int fontHeight = vgui::surface()->GetFontTall(m_hTextFont);
-	int textY = (buttonHeight - fontHeight) / 2 + m_TextAdjust;
+	int fontHeight   = vgui::surface()->GetFontTall(m_hTextFont);
+	int textY        = (buttonHeight - fontHeight) / 2 + m_TextAdjust;
 
-	if (textY < 0)
+	if(textY < 0)
 		textY = 0;
 
 	int y = m_ButtonOffsetFromTop;
 
-	if (!m_bCenterHorizontal)
+	if(!m_bCenterHorizontal)
 	{
 		int x = right;
 
-		for (int i = 0; i < m_ButtonLabels.Count(); ++i)
+		for(int i = 0; i < m_ButtonLabels.Count(); ++i)
 		{
 			ButtonLabel_t *pButton = m_ButtonLabels[i];
 
-			if (!pButton->bVisible)
+			if(!pButton->bVisible)
 				continue;
 
 			m_pSizingLabel->SetFont(m_hTextFont);
@@ -1394,7 +1399,7 @@ void CFooterPanel::Paint(void)
 
 			int iTextWidth = m_pSizingLabel->GetWide();
 
-			if (iTextWidth == 0)
+			if(iTextWidth == 0)
 				x += m_nButtonGap;
 			else
 				x -= iTextWidth;
@@ -1416,16 +1421,16 @@ void CFooterPanel::Paint(void)
 	}
 	else
 	{
-		int x = wide / 2;
-		int totalWidth = 0;
-		int i = 0;
+		int x            = wide / 2;
+		int totalWidth   = 0;
+		int i            = 0;
 		int nButtonCount = 0;
 
-		for (i = 0; i < m_ButtonLabels.Count(); ++i)
+		for(i = 0; i < m_ButtonLabels.Count(); ++i)
 		{
 			ButtonLabel_t *pButton = m_ButtonLabels[i];
 
-			if (!pButton->bVisible)
+			if(!pButton->bVisible)
 				continue;
 
 			m_pSizingLabel->SetFont(m_hTextFont);
@@ -1442,11 +1447,11 @@ void CFooterPanel::Paint(void)
 		totalWidth += (nButtonCount - 1) * m_nButtonGap;
 		x -= (totalWidth / 2);
 
-		for (i = 0; i < m_ButtonLabels.Count(); ++i)
+		for(i = 0; i < m_ButtonLabels.Count(); ++i)
 		{
 			ButtonLabel_t *pButton = m_ButtonLabels[i];
 
-			if (!pButton->bVisible)
+			if(!pButton->bVisible)
 				continue;
 
 			m_pSizingLabel->SetFont(m_hTextFont);
@@ -1474,7 +1479,8 @@ void CFooterPanel::Paint(void)
 
 DECLARE_BUILD_FACTORY(CFooterPanel);
 
-CMainMenuGameLogo::CMainMenuGameLogo(vgui::Panel *parent, const char *name) : vgui::EditablePanel(parent, name)
+CMainMenuGameLogo::CMainMenuGameLogo(vgui::Panel *parent, const char *name)
+    : vgui::EditablePanel(parent, name)
 {
 	m_nOffsetX = 0;
 	m_nOffsetY = 0;
@@ -1497,6 +1503,6 @@ void CMainMenuGameLogo::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 void CBasePanel::CloseBaseDialogs(void)
 {
-	if (m_hCreateMultiplayerGameDialog.Get())
+	if(m_hCreateMultiplayerGameDialog.Get())
 		m_hCreateMultiplayerGameDialog->Close();
 }

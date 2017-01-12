@@ -49,19 +49,19 @@ all big things are allocated on the hunk.
 ==============================================================================
 */
 
-const int ZONEID = 0x001d4a11;
+const int ZONEID      = 0x001d4a11;
 const int MINFRAGMENT = 64;
 
 typedef struct memblock_s
 {
-	int         size;
-	int         tag;
-	int         id;
-	
+	int size;
+	int tag;
+	int id;
+
 	struct memblock_s *next;
 	struct memblock_s *prev;
-	
-	int         pad;
+
+	int pad;
 } memblock_t;
 
 typedef struct memzone_s
@@ -142,8 +142,8 @@ void *Z_TagMalloc(int size, int tag)
 	size = (size + 7) & ~7;
 
 	base = rover = mainzone->rover;
-	
-	start        = base->prev;
+
+	start = base->prev;
 
 	do
 	{
@@ -154,8 +154,7 @@ void *Z_TagMalloc(int size, int tag)
 			base = rover = rover->next;
 		else
 			rover = rover->next;
-	}
-	while(base->tag || base->size < size);
+	} while(base->tag || base->size < size);
 
 	extra = base->size - size;
 
@@ -233,10 +232,10 @@ void Z_ClearZone(memzone_t *zone, int size)
 	zone->blocklist.tag                       = 1;
 
 	block->prev = block->next = &zone->blocklist;
-	
-	block->tag                = 0;
-	block->id                 = ZONEID;
-	block->size               = size - sizeof(memzone_t);
+
+	block->tag  = 0;
+	block->id   = ZONEID;
+	block->size = size - sizeof(memzone_t);
 };
 
 void Z_CheckHeap()
@@ -260,13 +259,13 @@ void Z_CheckHeap()
 NOXREF void Z_Print(memzone_t *zone)
 {
 	NOXREFCHECK;
-	
+
 	Con_Printf("zone size: %i  location: %p\n", mainzone->size, mainzone);
 
 	for(memblock_t *block = zone->blocklist.next;; block = block->next)
 	{
 		Con_Printf("block:%p    size:%7i    tag:%3i\n", block, block->size, block->tag);
-		
+
 		// all blocks have been hit
 		if(block->next == &zone->blocklist)
 			break;

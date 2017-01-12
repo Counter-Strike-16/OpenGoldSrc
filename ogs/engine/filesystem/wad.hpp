@@ -35,26 +35,26 @@
 
 typedef struct qpic_s
 {
-	int  width;
-	int  height;
-	
+	int width;
+	int height;
+
 	byte data[4]; // variably sized
 } qpic_t;
 
 typedef struct wadinfo_s
 {
 	char identification[4]; // should be WAD2 or 2DAW
-	
-	int  numlumps;
-	int  infotableofs;
+
+	int numlumps;
+	int infotableofs;
 } wadinfo_t;
 
 typedef struct lumpinfo_s
 {
-	int  filepos;
-	int  disksize;
-	int  size; // uncompressed
-	
+	int filepos;
+	int disksize;
+	int size; // uncompressed
+
 	char type;
 	char compression;
 	char pad1;

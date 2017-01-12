@@ -38,8 +38,7 @@ class CServerRemoteAccess : public IGameServerData
 {
 public:
 	CServerRemoteAccess();
-	virtual ~CServerRemoteAccess(){}
-	
+	virtual ~CServerRemoteAccess() {}
 	virtual void WriteDataRequest(const void *buffer, int bufferSize);
 	virtual int ReadDataResponse(void *data, int len);
 
@@ -55,11 +54,12 @@ public:
 	void GetUserBanList(CUtlBuffer &value);
 	void GetPlayerList(CUtlBuffer &value);
 	void GetMapList(CUtlBuffer &value);
-	
+
 	struct DataResponse_t
 	{
 		CUtlBuffer packet;
 	};
+
 private:
 	CUtlLinkedList<DataResponse_t, int> m_ResponsePackets;
 	int m_iBytesSent;

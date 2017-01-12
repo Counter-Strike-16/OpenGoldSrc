@@ -33,11 +33,11 @@
 #include "LoadingDialog.h"
 #include "Configs.h"
 
-IServerBrowser *serverbrowser = NULL;
-static CBasePanel *staticPanel = NULL;
+IServerBrowser *   serverbrowser = NULL;
+static CBasePanel *staticPanel   = NULL;
 
 static CGameUI g_GameUI;
-CGameUI *g_pGameUI = NULL;
+CGameUI *      g_pGameUI = NULL;
 
 vgui::DHANDLE<CLoadingDialog> g_hLoadingDialog;
 
@@ -55,9 +55,9 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CGameUI, IGameUI, GAMEUI_INTERFACE_VERSION, g_
 
 CGameUI::CGameUI(void)
 {
-	g_pGameUI = this;
+	g_pGameUI                 = this;
 	m_szPreviousStatusText[0] = 0;
-	m_bLoadlingLevel = false;
+	m_bLoadlingLevel          = false;
 }
 
 CGameUI::~CGameUI(void)
@@ -67,7 +67,7 @@ CGameUI::~CGameUI(void)
 
 void CGameUI::Initialize(CreateInterfaceFn *factories, int count)
 {
-	if (!vgui::VGui_InitInterfacesList("GameUI", factories, count))
+	if(!vgui::VGui_InitInterfacesList("GameUI", factories, count))
 		return;
 
 	g_pVGuiLocalize->AddFile("Resource/gameui_%language%.txt");
@@ -76,17 +76,17 @@ void CGameUI::Initialize(CreateInterfaceFn *factories, int count)
 
 	ModInfo().LoadCurrentGameInfo();
 
-	enginevguifuncs = (IEngineVGui *)factories[0](VENGINE_VGUI_VERSION, NULL);
+	enginevguifuncs    = (IEngineVGui *)factories[0](VENGINE_VGUI_VERSION, NULL);
 	enginesurfacefuncs = (vgui::ISurface *)factories[0](VGUI_SURFACE_INTERFACE_VERSION, NULL);
-	gameuifuncs = (IGameUIFuncs *)factories[0](VENGINE_GAMEUIFUNCS_VERSION, NULL);
-	baseuifuncs = (IBaseUI *)factories[0](BASEUI_INTERFACE_VERSION, NULL);
+	gameuifuncs        = (IGameUIFuncs *)factories[0](VENGINE_GAMEUIFUNCS_VERSION, NULL);
+	baseuifuncs        = (IBaseUI *)factories[0](BASEUI_INTERFACE_VERSION, NULL);
 
-	if (!enginesurfacefuncs || !gameuifuncs || !enginevguifuncs || !baseuifuncs)
+	if(!enginesurfacefuncs || !gameuifuncs || !enginevguifuncs || !baseuifuncs)
 		Error("CGameUI::Initialize() failed to get necessary interfaces\n");
 
 	serverbrowser = (IServerBrowser *)CreateInterface(SERVERBROWSER_INTERFACE_VERSION, NULL);
 
-	if (serverbrowser)
+	if(serverbrowser)
 		serverbrowser->Initialize(factories, count);
 
 	staticPanel = new CBasePanel();
@@ -99,7 +99,7 @@ void CGameUI::Initialize(CreateInterfaceFn *factories, int count)
 	staticPanel->SetKeyBoardInputEnabled(false);
 	staticPanel->SetParent(enginevguifuncs->GetPanel(PANEL_GAMEUIDLL));
 
-	if (serverbrowser)
+	if(serverbrowser)
 		serverbrowser->SetParent(staticPanel->GetVPanel());
 
 	vgui::surface()->SetAllowHTMLJavaScript(true);
@@ -107,12 +107,12 @@ void CGameUI::Initialize(CreateInterfaceFn *factories, int count)
 
 void CGameUI::Start(struct cl_enginefuncs_s *engineFuncs, int interfaceVersion, void *system)
 {
-	if (gConfigs.bEnableFMOD)
+	if(gConfigs.bEnableFMOD)
 		engine->pfnClientCmd("fmod loop media/gamestartup.mp3\n");
 	else
 		engine->pfnClientCmd("mp3 loop media/gamestartup.mp3\n");
 
-	if (serverbrowser)
+	if(serverbrowser)
 	{
 		serverbrowser->ActiveGameName(gConfigs.szGameName, gConfigs.szGameDir);
 		serverbrowser->Reactivate();
@@ -121,7 +121,7 @@ void CGameUI::Start(struct cl_enginefuncs_s *engineFuncs, int interfaceVersion, 
 
 void CGameUI::Shutdown(void)
 {
-	if (serverbrowser)
+	if(serverbrowser)
 	{
 		serverbrowser->Deactivate();
 		serverbrowser->Shutdown();
@@ -132,15 +132,15 @@ void CGameUI::Shutdown(void)
 
 int CGameUI::ActivateGameUI(void)
 {
-	if (!m_bLoadlingLevel && g_hLoadingDialog.Get() && IsInLevel())
+	if(!m_bLoadlingLevel && g_hLoadingDialog.Get() && IsInLevel())
 	{
 		g_hLoadingDialog->Close();
 		g_hLoadingDialog = NULL;
 	}
 
-	if (!m_bLoadlingLevel)
+	if(!m_bLoadlingLevel)
 	{
-		if (IsGameUIActive())
+		if(IsGameUIActive())
 			return 1;
 	}
 
@@ -167,16 +167,16 @@ void CGameUI::RunFrame(void)
 	vgui::surface()->GetScreenSize(wide, tall);
 	staticPanel->SetSize(wide, tall);
 
-	if (staticPanel->IsVisible())
+	if(staticPanel->IsVisible())
 		BasePanel()->RunFrame();
 }
 
 void CGameUI::ConnectToServer(const char *game, int IP, int port)
 {
-	if (serverbrowser)
+	if(serverbrowser)
 		serverbrowser->ConnectToGame(IP, port);
 
-	if (gConfigs.bEnableFMOD)
+	if(gConfigs.bEnableFMOD)
 		engine->pfnClientCmd("fmod stop\n");
 	else
 		engine->pfnClientCmd("mp3 stop\n");
@@ -186,7 +186,7 @@ void CGameUI::ConnectToServer(const char *game, int IP, int port)
 
 void CGameUI::DisconnectFromServer(void)
 {
-	if (serverbrowser)
+	if(serverbrowser)
 		serverbrowser->DisconnectFromGame();
 
 	baseuifuncs->ActivateGameUI();
@@ -194,10 +194,10 @@ void CGameUI::DisconnectFromServer(void)
 
 void CGameUI::HideGameUI(void)
 {
-	if (!IsGameUIActive())
+	if(!IsGameUIActive())
 		return;
 
-	if (!IsInLevel())
+	if(!IsInLevel())
 		return;
 
 	staticPanel->SetVisible(false);
@@ -205,10 +205,10 @@ void CGameUI::HideGameUI(void)
 	engine->pfnClientCmd("unpause");
 	engine->pfnClientCmd("hideconsole");
 
-	if (GameConsole().IsConsoleVisible())
+	if(GameConsole().IsConsoleVisible())
 		GameConsole().Hide();
 
-	if (!m_bLoadlingLevel && g_hLoadingDialog.Get())
+	if(!m_bLoadlingLevel && g_hLoadingDialog.Get())
 	{
 		g_hLoadingDialog->Close();
 		g_hLoadingDialog = NULL;
@@ -237,7 +237,7 @@ void CGameUI::LoadingFinished(const char *resourceType, const char *resourceName
 
 void CGameUI::StartProgressBar(const char *progressType, int progressSteps)
 {
-	if (!g_hLoadingDialog.Get())
+	if(!g_hLoadingDialog.Get())
 		g_hLoadingDialog = new CLoadingDialog(staticPanel);
 
 	m_szPreviousStatusText[0] = 0;
@@ -248,7 +248,7 @@ void CGameUI::StartProgressBar(const char *progressType, int progressSteps)
 
 int CGameUI::ContinueProgressBar(int progressPoint, float progressFraction)
 {
-	if (!g_hLoadingDialog.Get())
+	if(!g_hLoadingDialog.Get())
 	{
 		g_hLoadingDialog = new CLoadingDialog(staticPanel);
 		g_hLoadingDialog->SetProgressRange(0, 24);
@@ -262,13 +262,13 @@ int CGameUI::ContinueProgressBar(int progressPoint, float progressFraction)
 
 void CGameUI::StopProgressBar(bool bError, const char *failureReason, const char *extendedReason)
 {
-	if (!g_hLoadingDialog.Get() && bError)
+	if(!g_hLoadingDialog.Get() && bError)
 		g_hLoadingDialog = new CLoadingDialog(staticPanel);
 
-	if (!g_hLoadingDialog.Get())
+	if(!g_hLoadingDialog.Get())
 		return;
 
-	if (bError)
+	if(bError)
 	{
 		g_hLoadingDialog->DisplayGenericError(failureReason, extendedReason);
 	}
@@ -281,13 +281,13 @@ void CGameUI::StopProgressBar(bool bError, const char *failureReason, const char
 
 int CGameUI::SetProgressBarStatusText(const char *statusText)
 {
-	if (!g_hLoadingDialog.Get())
+	if(!g_hLoadingDialog.Get())
 		return false;
 
-	if (!statusText)
+	if(!statusText)
 		return false;
 
-	if (!stricmp(statusText, m_szPreviousStatusText))
+	if(!stricmp(statusText, m_szPreviousStatusText))
 		return false;
 
 	g_hLoadingDialog->SetStatusText(statusText);
@@ -297,7 +297,7 @@ int CGameUI::SetProgressBarStatusText(const char *statusText)
 
 void CGameUI::SetSecondaryProgressBar(float progress)
 {
-	if (!g_hLoadingDialog.Get())
+	if(!g_hLoadingDialog.Get())
 		return;
 
 	g_hLoadingDialog->SetSecondaryProgress(progress);
@@ -305,7 +305,7 @@ void CGameUI::SetSecondaryProgressBar(float progress)
 
 void CGameUI::SetSecondaryProgressBarText(const char *statusText)
 {
-	if (!g_hLoadingDialog.Get())
+	if(!g_hLoadingDialog.Get())
 		return;
 
 	g_hLoadingDialog->SetSecondaryProgressText(statusText);
@@ -322,7 +322,7 @@ bool CGameUI::IsServerBrowserValid(void)
 
 void CGameUI::ActivateServerBrowser(void)
 {
-	if (serverbrowser)
+	if(serverbrowser)
 		serverbrowser->Activate();
 }
 
@@ -330,7 +330,7 @@ bool CGameUI::IsInLevel(void)
 {
 	const char *levelName = engine->pfnGetLevelName();
 
-	if (strlen(levelName) > 0)
+	if(strlen(levelName) > 0)
 		return true;
 
 	return false;

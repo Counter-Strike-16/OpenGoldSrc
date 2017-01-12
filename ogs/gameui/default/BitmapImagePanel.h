@@ -27,7 +27,7 @@ private:
 
 private:
 	bool m_bUploaded;
-	int m_nTextureId;
+	int  m_nTextureId;
 	char m_szTexture[128];
 };
 

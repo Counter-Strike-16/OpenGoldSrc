@@ -37,25 +37,25 @@ class CRenderImpl : public IRender
 public:
 	CRenderImpl();
 	~CRenderImpl();
-	
+
 	bool Init(CreateInterfaceFn afnEngineFactory, void *ahInstance, void *apWndProc);
 	void Shutdown();
-	
+
 	void AppActivate(bool abActivate);
-	
+
 	void BeginRegistration(const char *asMap);
 	void EndRegistration();
-	
+
 	struct model_s *RegisterModel(const char *asName);
 	struct image_s *RegisterSkin(const char *asName);
 	struct image_s *RegisterPic(const char *asName);
-	
+
 	void SetSky(const char *asName, float afRotate, vec3_t avAxis);
-	
+
 	void BeginFrame(float afCameraSeparation);
 	void RenderFrame(refdef_t *apRenderSettings);
 	void EndFrame();
-	
+
 	void DrawGetPicSize(int *w, int *h, char *name);
 	void DrawPic(int x, int y, char *name);
 	void DrawStretchPic(int x, int y, int w, int h, char *name);
@@ -63,8 +63,8 @@ public:
 	void DrawTileClear(int x, int y, int w, int h, char *name);
 	void DrawFill(int x, int y, int w, int h, int c);
 	void DrawFadeScreen();
-	
+
 	void DrawStretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data);
-	
+
 	void CinematicSetPalette(const byte *palette);
 };

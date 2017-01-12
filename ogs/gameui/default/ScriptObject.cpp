@@ -10,38 +10,39 @@ void StripFloatTrailingZeros(char *str)
 {
 	char *period = strchr(str, '.');
 
-	if (!period)
+	if(!period)
 		return;
 
 	char *end = 0;
 
-	for (end = str + strlen(str) - 1; end > period; --end)
+	for(end = str + strlen(str) - 1; end > period; --end)
 	{
-		if (*end == '0')
+		if(*end == '0')
 			*end = '\0';
 		else
 			break;
 	}
 
-	if (*end == '.')
+	if(*end == '.')
 		*end = '\0';
 }
 
 objtypedesc_t objtypes[] =
-{
-	{ O_BOOL, "BOOL" },
-	{ O_NUMBER, "NUMBER" },
-	{ O_LIST, "LIST" },
-	{ O_STRING, "STRING" },
-	{ O_OBSOLETE, "OBSOLETE" },
+    {
+        {O_BOOL, "BOOL"},
+        {O_NUMBER, "NUMBER"},
+        {O_LIST, "LIST"},
+        {O_STRING, "STRING"},
+        {O_OBSOLETE, "OBSOLETE"},
 };
 
-mpcontrol_t::mpcontrol_t(Panel *parent, char const *panelName) : Panel(parent, panelName)
+mpcontrol_t::mpcontrol_t(Panel *parent, char const *panelName)
+    : Panel(parent, panelName)
 {
-	type = O_BADTYPE;
+	type     = O_BADTYPE;
 	pControl = NULL;
-	pPrompt = NULL;
-	pScrObj = NULL;
+	pPrompt  = NULL;
+	pScrObj  = NULL;
 
 	next = NULL;
 
@@ -52,18 +53,18 @@ void mpcontrol_t::OnSizeChanged(int wide, int tall)
 {
 	int inset = 4;
 
-	if (pPrompt)
+	if(pPrompt)
 	{
 		int w = wide / 2;
 
-		if (pControl)
+		if(pControl)
 			pControl->SetBounds(w + 20, inset, w - 20, tall - 2 * inset);
 
 		pPrompt->SetBounds(0, inset, w + 20, tall - 2 * inset);
 	}
 	else
 	{
-		if (pControl)
+		if(pControl)
 			pControl->SetBounds(0, inset, wide, tall - 2 * inset);
 	}
 }
@@ -84,9 +85,9 @@ CScriptListItem::CScriptListItem(char const *strItem, char const *strValue)
 
 CScriptObject::CScriptObject(void)
 {
-	type = O_BOOL;
-	bSetInfo = false;
-	pNext = NULL;
+	type       = O_BOOL;
+	bSetInfo   = false;
+	pNext      = NULL;
 	pListItems = NULL;
 }
 
@@ -96,7 +97,7 @@ CScriptObject::~CScriptObject(void)
 
 	p = pListItems;
 
-	while (p)
+	while(p)
 	{
 		n = p->pNext;
 		delete p;
@@ -112,7 +113,7 @@ void CScriptObject::SetCurValue(char const *strValue)
 
 	fcurValue = (float)atof(curValue);
 
-	if (type == O_NUMBER || type == O_BOOL)
+	if(type == O_NUMBER || type == O_BOOL)
 		StripFloatTrailingZeros(curValue);
 }
 
@@ -121,18 +122,18 @@ void CScriptObject::AddItem(CScriptListItem *pItem)
 	CScriptListItem *p;
 	p = pListItems;
 
-	if (!p)
+	if(!p)
 	{
-		pListItems = pItem;
+		pListItems   = pItem;
 		pItem->pNext = NULL;
 		return;
 	}
 
-	while (p)
+	while(p)
 	{
-		if (!p->pNext)
+		if(!p->pNext)
 		{
-			p->pNext = pItem;
+			p->pNext     = pItem;
 			pItem->pNext = NULL;
 			return;
 		}
@@ -143,17 +144,17 @@ void CScriptObject::AddItem(CScriptListItem *pItem)
 
 void UTIL_StripInvalidCharacters(char *pszInput, int maxlen)
 {
-	char szOutput[4096];
+	char  szOutput[4096];
 	char *pIn, *pOut;
 
-	pIn = pszInput;
+	pIn  = pszInput;
 	pOut = szOutput;
 
 	*pOut = '\0';
 
-	while (*pIn)
+	while(*pIn)
 	{
-		if ((*pIn != '"') && (*pIn != '%'))
+		if((*pIn != '"') && (*pIn != '%'))
 			*pOut++ = *pIn;
 
 		pIn++;
@@ -174,7 +175,7 @@ void FixupString(char *inString, int maxlen)
 
 char *CleanFloat(float val)
 {
-	static int curstring = 0;
+	static int  curstring = 0;
 	static char string[2][32];
 	curstring = (curstring + 1) % 2;
 
@@ -183,21 +184,21 @@ char *CleanFloat(float val)
 	char *str = string[curstring];
 	char *tmp = str;
 
-	if (!str || !*str || !strchr(str, '.'))
+	if(!str || !*str || !strchr(str, '.'))
 		return str;
 
-	while (*tmp)
+	while(*tmp)
 		++tmp;
 
 	--tmp;
 
-	while (*tmp == '0' && tmp > str)
+	while(*tmp == '0' && tmp > str)
 	{
 		*tmp = 0;
 		--tmp;
 	}
 
-	if (*tmp == '.')
+	if(*tmp == '.')
 		*tmp = 0;
 
 	return str;
@@ -205,7 +206,7 @@ char *CleanFloat(float val)
 
 void CScriptObject::WriteToScriptFile(FileHandle_t fp)
 {
-	if (type == O_OBSOLETE)
+	if(type == O_OBSOLETE)
 		return;
 
 	FixupString(cvarname, sizeof(cvarname));
@@ -216,56 +217,56 @@ void CScriptObject::WriteToScriptFile(FileHandle_t fp)
 
 	FixupString(prompt, sizeof(prompt));
 
-	switch (type)
+	switch(type)
 	{
-		case O_BOOL:
-		{
-			g_pFullFileSystem->FPrintf(fp, "\t\t\"%s\"\r\n", prompt);
-			g_pFullFileSystem->FPrintf(fp, "\t\t{ BOOL }\r\n");
-			g_pFullFileSystem->FPrintf(fp, "\t\t{ \"%i\" }\r\n", (int)fcurValue ? 1 : 0);
-			break;
-		}
-
-		case O_NUMBER:
-		{
-			g_pFullFileSystem->FPrintf(fp, "\t\t\"%s\"\r\n", prompt);
-			g_pFullFileSystem->FPrintf(fp, "\t\t{ NUMBER %s %s }\r\n", CleanFloat(fMin), CleanFloat(fMax));
-			g_pFullFileSystem->FPrintf(fp, "\t\t{ \"%s\" }\r\n", CleanFloat(fcurValue));
-			break;
-		}
-
-		case O_STRING:
-		{
-			g_pFullFileSystem->FPrintf(fp, "\t\t\"%s\"\r\n", prompt);
-			g_pFullFileSystem->FPrintf(fp, "\t\t{ STRING }\r\n");
-			FixupString(curValue, sizeof(curValue));
-			g_pFullFileSystem->FPrintf(fp, "\t\t{ \"%s\" }\r\n", curValue);
-			break;
-		}
-
-		case O_LIST:
-		{
-			g_pFullFileSystem->FPrintf(fp, "\t\t\"%s\"\r\n", prompt);
-			g_pFullFileSystem->FPrintf(fp, "\t\t{\r\n\t\t\tLIST\r\n");
-
-			pItem = pListItems;
-
-			while (pItem)
-			{
-				UTIL_StripInvalidCharacters(pItem->szItemText, sizeof(pItem->szItemText));
-				UTIL_StripInvalidCharacters(pItem->szValue, sizeof(pItem->szValue));
-				g_pFullFileSystem->FPrintf(fp, "\t\t\t\"%s\" \"%s\"\r\n", pItem->szItemText, pItem->szValue);
-
-				pItem = pItem->pNext;
-			}
-
-			g_pFullFileSystem->FPrintf(fp, "\t\t}\r\n");
-			g_pFullFileSystem->FPrintf(fp, "\t\t{ \"%s\" }\r\n", CleanFloat(fcurValue));
-			break;
-		}
+	case O_BOOL:
+	{
+		g_pFullFileSystem->FPrintf(fp, "\t\t\"%s\"\r\n", prompt);
+		g_pFullFileSystem->FPrintf(fp, "\t\t{ BOOL }\r\n");
+		g_pFullFileSystem->FPrintf(fp, "\t\t{ \"%i\" }\r\n", (int)fcurValue ? 1 : 0);
+		break;
 	}
 
-	if (bSetInfo)
+	case O_NUMBER:
+	{
+		g_pFullFileSystem->FPrintf(fp, "\t\t\"%s\"\r\n", prompt);
+		g_pFullFileSystem->FPrintf(fp, "\t\t{ NUMBER %s %s }\r\n", CleanFloat(fMin), CleanFloat(fMax));
+		g_pFullFileSystem->FPrintf(fp, "\t\t{ \"%s\" }\r\n", CleanFloat(fcurValue));
+		break;
+	}
+
+	case O_STRING:
+	{
+		g_pFullFileSystem->FPrintf(fp, "\t\t\"%s\"\r\n", prompt);
+		g_pFullFileSystem->FPrintf(fp, "\t\t{ STRING }\r\n");
+		FixupString(curValue, sizeof(curValue));
+		g_pFullFileSystem->FPrintf(fp, "\t\t{ \"%s\" }\r\n", curValue);
+		break;
+	}
+
+	case O_LIST:
+	{
+		g_pFullFileSystem->FPrintf(fp, "\t\t\"%s\"\r\n", prompt);
+		g_pFullFileSystem->FPrintf(fp, "\t\t{\r\n\t\t\tLIST\r\n");
+
+		pItem = pListItems;
+
+		while(pItem)
+		{
+			UTIL_StripInvalidCharacters(pItem->szItemText, sizeof(pItem->szItemText));
+			UTIL_StripInvalidCharacters(pItem->szValue, sizeof(pItem->szValue));
+			g_pFullFileSystem->FPrintf(fp, "\t\t\t\"%s\" \"%s\"\r\n", pItem->szItemText, pItem->szValue);
+
+			pItem = pItem->pNext;
+		}
+
+		g_pFullFileSystem->FPrintf(fp, "\t\t}\r\n");
+		g_pFullFileSystem->FPrintf(fp, "\t\t{ \"%s\" }\r\n", CleanFloat(fcurValue));
+		break;
+	}
+	}
+
+	if(bSetInfo)
 		g_pFullFileSystem->FPrintf(fp, "\t\tSetInfo\r\n");
 
 	g_pFullFileSystem->FPrintf(fp, "\t}\r\n\r\n");
@@ -273,140 +274,140 @@ void CScriptObject::WriteToScriptFile(FileHandle_t fp)
 
 void CScriptObject::WriteToFile(FileHandle_t fp)
 {
-	if (type == O_OBSOLETE)
+	if(type == O_OBSOLETE)
 		return;
 
 	FixupString(cvarname, sizeof(cvarname));
 	g_pFullFileSystem->FPrintf(fp, "\"%s\"\t\t", cvarname);
 
 	CScriptListItem *pItem;
-	int n, i;
-	float fVal;
+	int              n, i;
+	float            fVal;
 
-	switch (type)
+	switch(type)
 	{
-		case O_BOOL:
+	case O_BOOL:
+	{
+		g_pFullFileSystem->FPrintf(fp, "\"%s\"\r\n", fcurValue != 0.0 ? "1" : "0");
+		break;
+	}
+
+	case O_NUMBER:
+	{
+		fVal = fcurValue;
+
+		if(fMin != -1.0)
+			fVal = __max(fVal, fMin);
+
+		if(fMax != -1.0)
+			fVal = __min(fVal, fMax);
+
+		g_pFullFileSystem->FPrintf(fp, "\"%f\"\r\n", fVal);
+		break;
+	}
+
+	case O_STRING:
+	{
+		FixupString(curValue, sizeof(curValue));
+		g_pFullFileSystem->FPrintf(fp, "\"%s\"\r\n", curValue);
+		break;
+	}
+
+	case O_LIST:
+	{
+		pItem = pListItems;
+		n     = (int)fcurValue;
+		i     = 0;
+
+		while((i < n) && pItem)
 		{
-			g_pFullFileSystem->FPrintf(fp, "\"%s\"\r\n", fcurValue != 0.0 ? "1" : "0");
-			break;
+			i++;
+			pItem = pItem->pNext;
 		}
 
-		case O_NUMBER:
+		if(pItem)
 		{
-			fVal = fcurValue;
-
-			if (fMin != -1.0)
-				fVal = __max(fVal, fMin);
-
-			if (fMax != -1.0)
-				fVal = __min(fVal, fMax);
-
-			g_pFullFileSystem->FPrintf(fp, "\"%f\"\r\n", fVal);
-			break;
+			UTIL_StripInvalidCharacters(pItem->szValue, sizeof(pItem->szValue));
+			g_pFullFileSystem->FPrintf(fp, "\"%s\"\r\n", pItem->szValue);
 		}
+		else
+			g_pFullFileSystem->FPrintf(fp, "\"0.0\"\r\n");
 
-		case O_STRING:
-		{
-			FixupString(curValue, sizeof(curValue));
-			g_pFullFileSystem->FPrintf(fp, "\"%s\"\r\n", curValue);
-			break;
-		}
-
-		case O_LIST:
-		{
-			pItem = pListItems;
-			n = (int)fcurValue;
-			i = 0;
-
-			while ((i < n) && pItem)
-			{
-				i++;
-				pItem = pItem->pNext;
-			}
-
-			if (pItem)
-			{
-				UTIL_StripInvalidCharacters(pItem->szValue, sizeof(pItem->szValue));
-				g_pFullFileSystem->FPrintf(fp, "\"%s\"\r\n", pItem->szValue);
-			}
-			else
-				g_pFullFileSystem->FPrintf(fp, "\"0.0\"\r\n");
-
-			break;
-		}
+		break;
+	}
 	}
 }
 
 void CScriptObject::WriteToConfig(void)
 {
-	if (type == O_OBSOLETE)
+	if(type == O_OBSOLETE)
 		return;
 
 	char *pszKey;
-	char szValue[2048];
+	char  szValue[2048];
 
 	pszKey = (char *)cvarname;
 
 	CScriptListItem *pItem;
-	int n, i;
-	float fVal;
+	int              n, i;
+	float            fVal;
 
-	switch (type)
+	switch(type)
 	{
-		case O_BOOL:
+	case O_BOOL:
+	{
+		Q_snprintf(szValue, sizeof(szValue), "%s", fcurValue != 0.0 ? "1" : "0");
+		break;
+	}
+
+	case O_NUMBER:
+	{
+		fVal = fcurValue;
+
+		if(fMin != -1.0)
+			fVal = __max(fVal, fMin);
+
+		if(fMax != -1.0)
+			fVal = __min(fVal, fMax);
+
+		Q_snprintf(szValue, sizeof(szValue), "%f", fVal);
+		break;
+	}
+
+	case O_STRING:
+	{
+		Q_snprintf(szValue, sizeof(szValue), "\"%s\"", (char *)curValue);
+		UTIL_StripInvalidCharacters(szValue, sizeof(szValue));
+		break;
+	}
+
+	case O_LIST:
+	{
+		pItem = pListItems;
+		n     = (int)fcurValue;
+		i     = 0;
+
+		while((i < n) && pItem)
 		{
-			Q_snprintf(szValue, sizeof(szValue), "%s", fcurValue != 0.0 ? "1" : "0");
-			break;
+			i++;
+			pItem = pItem->pNext;
 		}
 
-		case O_NUMBER:
+		if(pItem)
 		{
-			fVal = fcurValue;
-
-			if (fMin != -1.0)
-				fVal = __max(fVal, fMin);
-
-			if (fMax != -1.0)
-				fVal = __min(fVal, fMax);
-
-			Q_snprintf(szValue, sizeof(szValue), "%f", fVal);
-			break;
-		}
-
-		case O_STRING:
-		{
-			Q_snprintf(szValue, sizeof(szValue), "\"%s\"", (char *)curValue);
+			Q_snprintf(szValue, sizeof(szValue), "%s", pItem->szValue);
 			UTIL_StripInvalidCharacters(szValue, sizeof(szValue));
-			break;
 		}
+		else
+			Q_strncpy(szValue, "0.0", sizeof(szValue));
 
-		case O_LIST:
-		{
-			pItem = pListItems;
-			n = (int)fcurValue;
-			i = 0;
-
-			while ((i < n) && pItem)
-			{
-				i++;
-				pItem = pItem->pNext;
-			}
-
-			if (pItem)
-			{
-				Q_snprintf(szValue, sizeof(szValue), "%s", pItem->szValue);
-				UTIL_StripInvalidCharacters(szValue, sizeof(szValue));
-			}
-			else
-				Q_strncpy(szValue, "0.0", sizeof(szValue));
-
-			break;
-		}
+		break;
+	}
 	}
 
 	char command[256];
 
-	if (bSetInfo)
+	if(bSetInfo)
 		Q_snprintf(command, sizeof(command), "setinfo %s \"%s\"\n", pszKey, szValue);
 	else
 		Q_snprintf(command, sizeof(command), "%s \"%s\"\n", pszKey, szValue);
@@ -418,9 +419,9 @@ objtype_t CScriptObject::GetType(char *pszType)
 {
 	int nTypes = sizeof(objtypes) / sizeof(objtypedesc_t);
 
-	for (int i = 0; i < nTypes; i++)
+	for(int i = 0; i < nTypes; i++)
 	{
-		if (!stricmp(objtypes[i].szDescription, pszType))
+		if(!stricmp(objtypes[i].szDescription, pszType))
 			return objtypes[i].type;
 	}
 
@@ -431,18 +432,18 @@ bool CScriptObject::ReadFromBuffer(char **pBuffer, bool isNewObject)
 {
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (isNewObject)
+	if(isNewObject)
 		Q_strncpy(cvarname, token, sizeof(cvarname));
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (strcmp(token, "{"))
+	if(strcmp(token, "{"))
 	{
 		Msg("Expecting '{', got '%s'", token);
 		return false;
@@ -450,18 +451,18 @@ bool CScriptObject::ReadFromBuffer(char **pBuffer, bool isNewObject)
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (isNewObject)
+	if(isNewObject)
 		Q_strncpy(prompt, token, sizeof(prompt));
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (strcmp(token, "{"))
+	if(strcmp(token, "{"))
 	{
 		Msg("Expecting '{', got '%s'", token);
 		return false;
@@ -469,129 +470,129 @@ bool CScriptObject::ReadFromBuffer(char **pBuffer, bool isNewObject)
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
 	objtype_t newType = GetType(token);
 
-	if (isNewObject)
+	if(isNewObject)
 		type = newType;
 
-	if (newType == O_BADTYPE)
+	if(newType == O_BADTYPE)
 	{
 		Msg("Type '%s' unknown", token);
 		return false;
 	}
 
-	switch (newType)
+	switch(newType)
 	{
-		case O_OBSOLETE:
-		case O_BOOL:
+	case O_OBSOLETE:
+	case O_BOOL:
+	{
+		*pBuffer = engine->COM_ParseFile(*pBuffer, token);
+
+		if(strlen(token) <= 0)
+			return false;
+
+		if(strcmp(token, "}"))
+		{
+			Msg("Expecting '{', got '%s'", token);
+			return false;
+		}
+
+		break;
+	}
+
+	case O_NUMBER:
+	{
+		*pBuffer = engine->COM_ParseFile(*pBuffer, token);
+
+		if(strlen(token) <= 0)
+			return false;
+
+		if(isNewObject)
+			fMin = (float)atof(token);
+
+		*pBuffer = engine->COM_ParseFile(*pBuffer, token);
+
+		if(strlen(token) <= 0)
+			return false;
+
+		if(isNewObject)
+			fMax = (float)atof(token);
+
+		*pBuffer = engine->COM_ParseFile(*pBuffer, token);
+
+		if(strlen(token) <= 0)
+			return false;
+
+		if(strcmp(token, "}"))
+		{
+			Msg("Expecting '{', got '%s'", token);
+			return false;
+		}
+
+		break;
+	}
+
+	case O_STRING:
+	{
+		*pBuffer = engine->COM_ParseFile(*pBuffer, token);
+
+		if(strlen(token) <= 0)
+			return false;
+
+		if(strcmp(token, "}"))
+		{
+			Msg("Expecting '{', got '%s'", token);
+			return false;
+		}
+
+		break;
+	}
+
+	case O_LIST:
+	{
+		while(1)
 		{
 			*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-			if (strlen(token) <= 0)
+			if(strlen(token) <= 0)
 				return false;
 
-			if (strcmp(token, "}"))
-			{
-				Msg("Expecting '{', got '%s'", token);
-				return false;
-			}
+			if(!strcmp(token, "}"))
+				break;
 
-			break;
-		}
+			char strItem[128];
+			char strValue[128];
 
-		case O_NUMBER:
-		{
-			*pBuffer = engine->COM_ParseFile(*pBuffer, token);
-
-			if (strlen(token) <= 0)
-				return false;
-
-			if (isNewObject)
-				fMin = (float)atof(token);
+			Q_strncpy(strItem, token, sizeof(strItem));
 
 			*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-			if (strlen(token) <= 0)
+			if(strlen(token) <= 0)
 				return false;
 
-			if (isNewObject)
-				fMax = (float)atof(token);
+			Q_strncpy(strValue, token, sizeof(strValue));
 
-			*pBuffer = engine->COM_ParseFile(*pBuffer, token);
-
-			if (strlen(token) <= 0)
-				return false;
-
-			if (strcmp(token, "}"))
+			if(isNewObject)
 			{
-				Msg("Expecting '{', got '%s'", token);
-				return false;
+				CScriptListItem *pItem;
+				pItem = new CScriptListItem(strItem, strValue);
+				AddItem(pItem);
 			}
-
-			break;
 		}
 
-		case O_STRING:
-		{
-			*pBuffer = engine->COM_ParseFile(*pBuffer, token);
-
-			if (strlen(token) <= 0)
-				return false;
-
-			if (strcmp(token, "}"))
-			{
-				Msg("Expecting '{', got '%s'", token);
-				return false;
-			}
-
-			break;
-		}
-
-		case O_LIST:
-		{
-			while (1)
-			{
-				*pBuffer = engine->COM_ParseFile(*pBuffer, token);
-
-				if (strlen(token) <= 0)
-					return false;
-
-				if (!strcmp(token, "}"))
-					break;
-
-				char strItem[128];
-				char strValue[128];
-
-				Q_strncpy(strItem, token, sizeof(strItem));
-
-				*pBuffer = engine->COM_ParseFile(*pBuffer, token);
-
-				if (strlen(token) <= 0)
-					return false;
-
-				Q_strncpy(strValue, token, sizeof(strValue));
-
-				if (isNewObject)
-				{
-					CScriptListItem *pItem;
-					pItem = new CScriptListItem(strItem, strValue);
-					AddItem(pItem);
-				}
-			}
-
-			break;
-		}
+		break;
+	}
 	}
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (strcmp(token, "{"))
+	if(strcmp(token, "{"))
 	{
 		Msg("Expecting '{', got '%s'", token);
 		return false;
@@ -602,17 +603,17 @@ bool CScriptObject::ReadFromBuffer(char **pBuffer, bool isNewObject)
 	Q_strncpy(defValue, token, sizeof(defValue));
 	fdefValue = (float)atof(token);
 
-	if (type == O_NUMBER)
+	if(type == O_NUMBER)
 		StripFloatTrailingZeros(defValue);
 
 	SetCurValue(defValue);
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (strcmp(token, "}"))
+	if(strcmp(token, "}"))
 	{
 		Msg("Expecting '{', got '%s'", token);
 		return false;
@@ -620,19 +621,19 @@ bool CScriptObject::ReadFromBuffer(char **pBuffer, bool isNewObject)
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (!stricmp(token, "SetInfo"))
+	if(!stricmp(token, "SetInfo"))
 	{
 		bSetInfo = true;
 		*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-		if (strlen(token) <= 0)
+		if(strlen(token) <= 0)
 			return false;
 	}
 
-	if (strcmp(token, "}"))
+	if(strcmp(token, "}"))
 	{
 		Msg("Expecting '{', got '%s'", token);
 		return false;
@@ -654,9 +655,9 @@ CDescription::~CDescription(void)
 
 	p = pObjList;
 
-	while (p)
+	while(p)
 	{
-		n = p->pNext;
+		n        = p->pNext;
 		p->pNext = NULL;
 		p->MarkForDeletion();
 		p = n;
@@ -664,24 +665,24 @@ CDescription::~CDescription(void)
 
 	pObjList = NULL;
 
-	if (m_pszHintText)
+	if(m_pszHintText)
 		free(m_pszHintText);
 
-	if (m_pszDescriptionType)
+	if(m_pszDescriptionType)
 		free(m_pszDescriptionType);
 }
 
 CScriptObject *CDescription::FindObject(const char *pszObjectName)
 {
-	if (!pszObjectName)
+	if(!pszObjectName)
 		return NULL;
 
 	CScriptObject *p;
 	p = pObjList;
 
-	while (p)
+	while(p)
 	{
-		if (!stricmp(pszObjectName, p->cvarname))
+		if(!stricmp(pszObjectName, p->cvarname))
 			return p;
 
 		p = p->pNext;
@@ -695,18 +696,18 @@ void CDescription::AddObject(CScriptObject *pObj)
 	CScriptObject *p;
 	p = pObjList;
 
-	if (!p)
+	if(!p)
 	{
-		pObjList = pObj;
+		pObjList    = pObj;
 		pObj->pNext = NULL;
 		return;
 	}
 
-	while (p)
+	while(p)
 	{
-		if (!p->pNext)
+		if(!p->pNext)
 		{
-			p->pNext = pObj;
+			p->pNext    = pObj;
 			pObj->pNext = NULL;
 			return;
 		}
@@ -719,10 +720,10 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 {
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (stricmp(token, "VERSION"))
+	if(stricmp(token, "VERSION"))
 	{
 		Msg("Expecting 'VERSION', got '%s'", token);
 		return false;
@@ -730,7 +731,7 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 	{
 		Msg("Expecting version #");
 		return false;
@@ -738,7 +739,7 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 
 	float fVer = (float)atof(token);
 
-	if (fVer != SCRIPT_VERSION)
+	if(fVer != SCRIPT_VERSION)
 	{
 		Msg("Version mismatch, expecting %f, got %f", SCRIPT_VERSION, fVer);
 		return false;
@@ -746,10 +747,10 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (stricmp(token, "DESCRIPTION"))
+	if(stricmp(token, "DESCRIPTION"))
 	{
 		Msg("Expecting 'DESCRIPTION', got '%s'", token);
 		return false;
@@ -757,13 +758,13 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 	{
 		Msg("Expecting '%s'", m_pszDescriptionType);
 		return false;
 	}
 
-	if (stricmp(token, m_pszDescriptionType))
+	if(stricmp(token, m_pszDescriptionType))
 	{
 		Msg("Expecting %s, got %s", m_pszDescriptionType, token);
 		return false;
@@ -771,36 +772,36 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 
 	*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-	if (strlen(token) <= 0)
+	if(strlen(token) <= 0)
 		return false;
 
-	if (strcmp(token, "{"))
+	if(strcmp(token, "{"))
 	{
 		Msg("Expecting '{', got '%s'", token);
 		return false;
 	}
 
-	char *pStart;
+	char *         pStart;
 	CScriptObject *pObj;
 
-	while (1)
+	while(1)
 	{
 		pStart = *pBuffer;
 
 		*pBuffer = engine->COM_ParseFile(*pBuffer, token);
 
-		if (strlen(token) <= 0)
+		if(strlen(token) <= 0)
 			return false;
 
-		if (!stricmp(token, "}"))
+		if(!stricmp(token, "}"))
 			break;
 
 		*pBuffer = pStart;
 
 		bool mustAdd = true;
-		pObj = FindObject(token);
+		pObj         = FindObject(token);
 
-		if (pObj)
+		if(pObj)
 		{
 			pObj->ReadFromBuffer(&pStart, false);
 			mustAdd = false;
@@ -809,13 +810,13 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 		{
 			pObj = new CScriptObject();
 
-			if (!pObj)
+			if(!pObj)
 			{
 				Msg("Couldn't create script object");
 				return false;
 			}
 
-			if (!pObj->ReadFromBuffer(&pStart, true))
+			if(!pObj->ReadFromBuffer(&pStart, true))
 			{
 				delete pObj;
 				return false;
@@ -824,7 +825,7 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 
 		*pBuffer = pStart;
 
-		if (mustAdd)
+		if(mustAdd)
 			AddObject(pObj);
 	}
 
@@ -835,7 +836,7 @@ bool CDescription::InitFromFile(char *pszFileName)
 {
 	FileHandle_t file = g_pFullFileSystem->Open(pszFileName, "rb");
 
-	if (!file)
+	if(!file)
 		return false;
 
 	int len = g_pFullFileSystem->Size(file);
@@ -849,7 +850,7 @@ bool CDescription::InitFromFile(char *pszFileName)
 
 	ReadFromBuffer(&pBuffer);
 
-	delete [] buffer;
+	delete[] buffer;
 
 	return true;
 }
@@ -862,7 +863,7 @@ void CDescription::WriteToFile(FileHandle_t fp)
 
 	pObj = pObjList;
 
-	while (pObj)
+	while(pObj)
 	{
 		pObj->WriteToFile(fp);
 		pObj = pObj->pNext;
@@ -875,7 +876,7 @@ void CDescription::WriteToConfig(void)
 
 	pObj = pObjList;
 
-	while (pObj)
+	while(pObj)
 	{
 		pObj->WriteToConfig();
 		pObj = pObj->pNext;
@@ -890,7 +891,7 @@ void CDescription::WriteToScriptFile(FileHandle_t fp)
 
 	pObj = pObjList;
 
-	while (pObj)
+	while(pObj)
 	{
 		pObj->WriteToScriptFile(fp);
 		pObj = pObj->pNext;
@@ -901,21 +902,21 @@ void CDescription::WriteToScriptFile(FileHandle_t fp)
 
 void CDescription::TransferCurrentValues(const char *pszConfigFile)
 {
-	char szValue[1024];
+	char           szValue[1024];
 	CScriptObject *pObj;
 
 	pObj = pObjList;
 
-	while (pObj)
+	while(pObj)
 	{
 		const char *value;
 
-		if (pObj->bSetInfo)
+		if(pObj->bSetInfo)
 			value = engine->LocalPlayerInfo_ValueForKey(pObj->cvarname);
 		else
 			value = engine->pfnGetCvarString(pObj->cvarname);
 
-		if (value && value[0])
+		if(value && value[0])
 		{
 			Q_strncpy(szValue, value, sizeof(szValue));
 			Q_strncpy(pObj->curValue, szValue, sizeof(pObj->curValue));

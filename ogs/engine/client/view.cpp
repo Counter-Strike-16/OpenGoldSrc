@@ -305,7 +305,7 @@ qboolean V_CheckGamma()
 
 	if(v_gamma.value == oldgammavalue)
 		return false;
-	
+
 	oldgammavalue = v_gamma.value;
 
 	BuildGammaTable(v_gamma.value);
@@ -629,7 +629,7 @@ V_UpdatePalette
 */
 void V_UpdatePalette()
 {
-	int i, j;
+	int      i, j;
 	qboolean bnew;
 	byte *   basepal, *newpal;
 	byte     pal[768];
@@ -644,13 +644,13 @@ void V_UpdatePalette()
 	{
 		if(cl.cshifts[i].percent != cl.prev_cshifts[i].percent)
 		{
-			bnew                        = true;
+			bnew                       = true;
 			cl.prev_cshifts[i].percent = cl.cshifts[i].percent;
 		}
 		for(j = 0; j < 3; j++)
 			if(cl.cshifts[i].destcolor[j] != cl.prev_cshifts[i].destcolor[j])
 			{
-				bnew                             = true;
+				bnew                            = true;
 				cl.prev_cshifts[i].destcolor[j] = cl.cshifts[i].destcolor[j];
 			}
 	}
@@ -840,7 +840,7 @@ V_CalcIntermissionRefdef
 void V_CalcIntermissionRefdef()
 {
 	cl_entity_t *view;
-	float     old;
+	float        old;
 
 	// view is the weapon model
 	view = &cl.viewent;
@@ -864,7 +864,7 @@ V_CalcRefdef
 */
 void V_CalcRefdef()
 {
-	cl_entity_t *   view;
+	cl_entity_t *view;
 	int          i;
 	vec3_t       forward, right, up;
 	float        bob;
@@ -1067,39 +1067,39 @@ pfnCalcShake
 
 =============
 */
-void V_CalcShake( void )
+void V_CalcShake(void)
 {
-	int	i;
-	float	fraction, freq;
-	float	localAmp;
+	int   i;
+	float fraction, freq;
+	float localAmp;
 
-	if( clgame.shake.time == 0 )
+	if(clgame.shake.time == 0)
 		return;
 
-	if(( cl.time > clgame.shake.time ) || clgame.shake.amplitude <= 0 || clgame.shake.frequency <= 0 )
+	if((cl.time > clgame.shake.time) || clgame.shake.amplitude <= 0 || clgame.shake.frequency <= 0)
 	{
-		Q_memset( &clgame.shake, 0, sizeof( clgame.shake ));
+		Q_memset(&clgame.shake, 0, sizeof(clgame.shake));
 		return;
 	}
 
-	if( cl.time > clgame.shake.next_shake )
+	if(cl.time > clgame.shake.next_shake)
 	{
 		// higher frequency means we recalc the extents more often and perturb the display again
-		clgame.shake.next_shake = cl.time + ( 1.0f / clgame.shake.frequency );
+		clgame.shake.next_shake = cl.time + (1.0f / clgame.shake.frequency);
 
 		// compute random shake extents (the shake will settle down from this)
-		for( i = 0; i < 3; i++ )
-			clgame.shake.offset[i] = Com_RandomFloat( -clgame.shake.amplitude, clgame.shake.amplitude );
-		clgame.shake.angle = Com_RandomFloat( -clgame.shake.amplitude * 0.25f, clgame.shake.amplitude * 0.25f );
+		for(i                      = 0; i < 3; i++)
+			clgame.shake.offset[i] = Com_RandomFloat(-clgame.shake.amplitude, clgame.shake.amplitude);
+		clgame.shake.angle         = Com_RandomFloat(-clgame.shake.amplitude * 0.25f, clgame.shake.amplitude * 0.25f);
 	}
 
 	// ramp down amplitude over duration (fraction goes from 1 to 0 linearly with slope 1/duration)
-	fraction = ( clgame.shake.time - cl.time ) / clgame.shake.duration;
+	fraction = (clgame.shake.time - cl.time) / clgame.shake.duration;
 
 	// ramp up frequency over duration
-	if( fraction )
+	if(fraction)
 	{
-		freq = ( clgame.shake.frequency / fraction );
+		freq = (clgame.shake.frequency / fraction);
 	}
 	else
 	{
@@ -1110,16 +1110,16 @@ void V_CalcShake( void )
 	fraction *= fraction;
 
 	// Sine wave that slowly settles to zero
-	fraction = fraction * sin( cl.time * freq );
-	
+	fraction = fraction * sin(cl.time * freq);
+
 	// add to view origin
-	VectorScale( clgame.shake.offset, fraction, clgame.shake.applied_offset );
+	VectorScale(clgame.shake.offset, fraction, clgame.shake.applied_offset);
 
 	// add to roll
 	clgame.shake.applied_angle = clgame.shake.angle * fraction;
 
 	// drop amplitude a bit, less for higher frequency shakes
-	localAmp = clgame.shake.amplitude * ( host.frametime / ( clgame.shake.duration * clgame.shake.frequency ));
+	localAmp = clgame.shake.amplitude * (host.frametime / (clgame.shake.duration * clgame.shake.frequency));
 	clgame.shake.amplitude -= localAmp;
 }
 
@@ -1129,8 +1129,10 @@ pfnApplyShake
 
 =============
 */
-void V_ApplyShake( float *origin, float *angles, float factor )
+void V_ApplyShake(float *origin, float *angles, float factor)
 {
-	if( origin ) VectorMA( origin, factor, clgame.shake.applied_offset, origin );
-	if( angles ) angles[ROLL] += clgame.shake.applied_angle * factor;
+	if(origin)
+		VectorMA(origin, factor, clgame.shake.applied_offset, origin);
+	if(angles)
+		angles[ROLL] += clgame.shake.applied_angle * factor;
 }

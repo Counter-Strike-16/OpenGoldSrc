@@ -56,7 +56,7 @@ qboolean EXT_FUNC Voice_SetClientListening(int iReceiver, int iSender, qboolean 
 		return 0;
 
 	uint32 *pDest = g_psvs.clients[iSender].m_VoiceStreams;
-	
+
 	if(bListen)
 		pDest[iReceiver >> 5] |= 1 << iReceiver;
 	else

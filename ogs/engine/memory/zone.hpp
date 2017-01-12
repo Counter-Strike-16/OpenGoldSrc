@@ -59,7 +59,7 @@ const int ZONE_DYNAMIC_SIZE = 0x20000;
 
 ////////////////////////////////////////
 
-typedef struct cvar_s cvar_t;
+typedef struct cvar_s    cvar_t;
 typedef struct memzone_s memzone_t;
 
 typedef struct cache_user_s   cache_user_t;
@@ -67,7 +67,7 @@ typedef struct cache_system_s cache_system_t;
 
 ////////////////////////////////////////
 
-extern cvar_t mem_dbgfile;
+extern cvar_t     mem_dbgfile;
 extern memzone_t *mainzone;
 
 extern byte *hunk_base;

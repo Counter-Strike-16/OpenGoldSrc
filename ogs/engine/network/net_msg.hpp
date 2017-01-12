@@ -71,7 +71,7 @@ void MSG_EndBitReading(sizebuf_t *buf);
 NOXREF qboolean MSG_IsBitReading();
 
 float MSG_ReadBitAngle(int numbits);
-int    MSG_CurrentBit();
+int MSG_CurrentBit();
 
 NOXREF uint32 MSG_PeekBits(int numbits);
 void MSG_WriteBitCoord(const float f);
@@ -79,7 +79,7 @@ void MSG_WriteBitVec3Coord(const vec3_t fa);
 void MSG_WriteCoord(sizebuf_t *sb, const float f);
 NOXREF void MSG_WriteVec3Coord(sizebuf_t *sb, const vec3_t fa);
 
-void         MSG_BeginReading();
+void MSG_BeginReading();
 
 int          MSG_ReadChar();
 int          MSG_ReadByte();

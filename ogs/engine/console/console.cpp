@@ -126,7 +126,7 @@ Con_ClearNotify
 */
 void Con_ClearNotify()
 {
-	for(int i = 0; i < NUM_CON_TIMES; i++)
+	for(int i        = 0; i < NUM_CON_TIMES; i++)
 		con_times[i] = 0;
 };
 

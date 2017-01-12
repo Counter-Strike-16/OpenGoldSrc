@@ -42,23 +42,23 @@ private:
 	void SetupControlSettingsForErrorDisplay(const char *settingsFile);
 
 public:
-	vgui::Panel *m_pParent;
-	vgui::ProgressBar *m_pProgress;
-	vgui::ProgressBar *m_pProgress2;
-	vgui::Label *m_pInfoLabel;
-	vgui::Label *m_pTimeRemainingLabel;
-	vgui::Button *m_pCancelButton;
+	vgui::Panel *             m_pParent;
+	vgui::ProgressBar *       m_pProgress;
+	vgui::ProgressBar *       m_pProgress2;
+	vgui::Label *             m_pInfoLabel;
+	vgui::Label *             m_pTimeRemainingLabel;
+	vgui::Button *            m_pCancelButton;
 	static CBitmapImagePanel *m_pLoadingBackground;
-	int m_iRangeMin, m_iRangeMax;
-	bool m_bShowingSecondaryProgress;
-	float m_flSecondaryProgress;
-	float m_flLastSecondaryProgressUpdateTime;
-	float m_flSecondaryProgressStartTime;
-	bool m_bCenter;
-	float m_flProgressFraction;
-	char m_szBackgroundImage[MAX_PATH];
-	bool m_bShowBackground;
-	vgui::VPANEL m_RestrictPanel;
+	int                       m_iRangeMin, m_iRangeMax;
+	bool                      m_bShowingSecondaryProgress;
+	float                     m_flSecondaryProgress;
+	float                     m_flLastSecondaryProgressUpdateTime;
+	float                     m_flSecondaryProgressStartTime;
+	bool                      m_bCenter;
+	float                     m_flProgressFraction;
+	char                      m_szBackgroundImage[MAX_PATH];
+	bool                      m_bShowBackground;
+	vgui::VPANEL              m_RestrictPanel;
 
 public:
 	CPanelAnimationVar(int, m_iAdditionalIndentX, "AdditionalIndentX", "0");

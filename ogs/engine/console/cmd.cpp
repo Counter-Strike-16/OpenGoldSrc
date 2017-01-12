@@ -61,8 +61,6 @@ void Cmd_Wait_f()
 	cmd_wait = 1;
 }
 
-
-
 void Cmd_StuffCmds_f()
 {
 	int   i;
@@ -806,11 +804,11 @@ qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
 	sizebuf_t tempBuf;
 
 	sprintf(tempBuf.buffername, "%s::tempBuf", __FUNCTION__);
-	
-	tempBuf.data       = (byte *)tempData;
-	tempBuf.maxsize    = 4096;
-	tempBuf.cursize    = 0;
-	tempBuf.flags      = SIZEBUF_ALLOW_OVERFLOW;
+
+	tempBuf.data    = (byte *)tempData;
+	tempBuf.maxsize = 4096;
+	tempBuf.cursize = 0;
+	tempBuf.flags   = SIZEBUF_ALLOW_OVERFLOW;
 
 	MSG_WriteByte(&tempBuf, clc_stringcmd);
 

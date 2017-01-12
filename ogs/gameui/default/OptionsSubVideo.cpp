@@ -30,16 +30,16 @@ using namespace vgui;
 
 struct RatioToAspectMode_t
 {
-	int anamorphic;
+	int   anamorphic;
 	float aspectRatio;
 };
 
 RatioToAspectMode_t g_RatioToAspectModes[] =
-{
-	{ 0, 4.0f / 3.0f },
-	{ 1, 16.0f / 9.0f },
-	{ 2, 16.0f / 10.0f },
-	{ 2, 1.0f },
+    {
+        {0, 4.0f / 3.0f},
+        {1, 16.0f / 9.0f},
+        {2, 16.0f / 10.0f},
+        {2, 1.0f},
 };
 
 int GetScreenAspectMode(int width, int height)
@@ -47,16 +47,16 @@ int GetScreenAspectMode(int width, int height)
 	float aspectRatio = (float)width / (float)height;
 
 	float closestAspectRatioDist = 99999.0f;
-	int closestAnamorphic = 0;
+	int   closestAnamorphic      = 0;
 
-	for (int i = 0; i < ARRAYSIZE(g_RatioToAspectModes); i++)
+	for(int i = 0; i < ARRAYSIZE(g_RatioToAspectModes); i++)
 	{
 		float dist = fabs(g_RatioToAspectModes[i].aspectRatio - aspectRatio);
 
-		if (dist < closestAspectRatioDist)
+		if(dist < closestAspectRatioDist)
 		{
 			closestAspectRatioDist = dist;
-			closestAnamorphic = g_RatioToAspectModes[i].anamorphic;
+			closestAnamorphic      = g_RatioToAspectModes[i].anamorphic;
 		}
 	}
 
@@ -73,15 +73,16 @@ class CGammaDialog : public vgui::Frame
 	DECLARE_CLASS_SIMPLE(CGammaDialog, vgui::Frame);
 
 public:
-	CGammaDialog(vgui::VPANEL hParent) : BaseClass(NULL, "OptionsSubVideoGammaDlg")
+	CGammaDialog(vgui::VPANEL hParent)
+	    : BaseClass(NULL, "OptionsSubVideoGammaDlg")
 	{
 		SetTitle("#GameUI_AdjustGamma_Title", true);
 		SetSize(400, 260);
 		SetDeleteSelfOnClose(true);
 
 		m_pGammaSlider = new CCvarSlider(this, "Gamma", "#GameUI_Gamma", 1.6f, 2.6f, "bte_monitorgamma");
-		m_pGammaLabel = new Label(this, "Gamma label", "#GameUI_Gamma");
-		m_pGammaEntry = new TextEntry(this, "GammaEntry");
+		m_pGammaLabel  = new Label(this, "Gamma label", "#GameUI_Gamma");
+		m_pGammaEntry  = new TextEntry(this, "GammaEntry");
 
 		Button *ok = new Button(this, "OKButton", "#vgui_ok");
 		ok->SetCommand(new KeyValues("OK"));
@@ -95,7 +96,7 @@ public:
 
 	MESSAGE_FUNC_PTR(OnGammaChanged, "SliderMoved", panel)
 	{
-		if (panel == m_pGammaSlider)
+		if(panel == m_pGammaSlider)
 			m_pGammaSlider->ApplyChanges();
 	}
 
@@ -124,7 +125,7 @@ public:
 
 	void OnKeyCodeTyped(KeyCode code)
 	{
-		if (code == KEY_ESCAPE)
+		if(code == KEY_ESCAPE)
 		{
 			SetAlpha(0);
 			Close();
@@ -135,7 +136,7 @@ public:
 
 	MESSAGE_FUNC_PTR(OnControlModified, "ControlModified", panel)
 	{
-		if (panel == m_pGammaSlider && m_pGammaSlider->HasBeenModified())
+		if(panel == m_pGammaSlider && m_pGammaSlider->HasBeenModified())
 			UpdateGammaLabel();
 	}
 
@@ -151,10 +152,10 @@ public:
 	}
 
 private:
-	CCvarSlider *m_pGammaSlider;
-	vgui::Label *m_pGammaLabel;
+	CCvarSlider *    m_pGammaSlider;
+	vgui::Label *    m_pGammaLabel;
 	vgui::TextEntry *m_pGammaEntry;
-	float m_flOriginalGamma;
+	float            m_flOriginalGamma;
 };
 
 class COptionsSubVideoAdvancedDlg : public vgui::Frame
@@ -162,7 +163,8 @@ class COptionsSubVideoAdvancedDlg : public vgui::Frame
 	DECLARE_CLASS_SIMPLE(COptionsSubVideoAdvancedDlg, vgui::Frame);
 
 public:
-	COptionsSubVideoAdvancedDlg(vgui::Panel *parent) : BaseClass(parent , "OptionsSubVideoAdvancedDlg")
+	COptionsSubVideoAdvancedDlg(vgui::Panel *parent)
+	    : BaseClass(parent, "OptionsSubVideoAdvancedDlg")
 	{
 		SetTitle("#GameUI_VideoAdvanced_Title", true);
 		SetSize(260, 400);
@@ -177,8 +179,8 @@ public:
 		m_pAnisotropicFiltering->AddItem("16X", NULL);
 
 		m_pDetailTexture = new CheckButton(this, "DetailTexture", "#GameUI_Detail_Texture");
-		m_pWaterReflect = new CheckButton(this, "WaterReflect", "#GameUI_Water_Reflect");
-		m_pWaitForVSync = new CheckButton(this, "WaitForVSync", "#GameUI_Wait_For_VSync");
+		m_pWaterReflect  = new CheckButton(this, "WaterReflect", "#GameUI_Water_Reflect");
+		m_pWaitForVSync  = new CheckButton(this, "WaitForVSync", "#GameUI_Wait_For_VSync");
 
 		LoadControlSettingsFromScheme("OptionsSubVideoAdvancedDlg.res");
 	}
@@ -220,13 +222,23 @@ public:
 	{
 		int activateItem = m_pAnisotropicFiltering->GetActiveItem();
 
-		switch (activateItem)
+		switch(activateItem)
 		{
-			case 0: ApplyChangesToConVar("gl_ansio", 1); break;
-			case 1: ApplyChangesToConVar("gl_ansio", 2); break;
-			case 2: ApplyChangesToConVar("gl_ansio", 4); break;
-			case 3: ApplyChangesToConVar("gl_ansio", 8); break;
-			case 4: ApplyChangesToConVar("gl_ansio", 16); break;
+		case 0:
+			ApplyChangesToConVar("gl_ansio", 1);
+			break;
+		case 1:
+			ApplyChangesToConVar("gl_ansio", 2);
+			break;
+		case 2:
+			ApplyChangesToConVar("gl_ansio", 4);
+			break;
+		case 3:
+			ApplyChangesToConVar("gl_ansio", 8);
+			break;
+		case 4:
+			ApplyChangesToConVar("gl_ansio", 16);
+			break;
 		}
 
 		ApplyChangesToConVar("r_detailtextures", m_pDetailTexture->IsSelected());
@@ -238,13 +250,13 @@ public:
 	{
 		int ansio = engine->pfnGetCvarFloat("gl_ansio");
 
-		if (ansio >= 16)
+		if(ansio >= 16)
 			m_pAnisotropicFiltering->ActivateItem(4);
-		else if (ansio >= 8)
+		else if(ansio >= 8)
 			m_pAnisotropicFiltering->ActivateItem(3);
-		else if (ansio >= 4)
+		else if(ansio >= 4)
 			m_pAnisotropicFiltering->ActivateItem(2);
-		else if (ansio >= 2)
+		else if(ansio >= 2)
 			m_pAnisotropicFiltering->ActivateItem(1);
 		else
 			m_pAnisotropicFiltering->ActivateItem(0);
@@ -256,7 +268,7 @@ public:
 
 	virtual void OnCommand(const char *command)
 	{
-		if (!stricmp(command, "OK"))
+		if(!stricmp(command, "OK"))
 		{
 			ApplyChanges();
 			Close();
@@ -267,7 +279,7 @@ public:
 
 	void OnKeyCodeTyped(KeyCode code)
 	{
-		if (code == KEY_ESCAPE)
+		if(code == KEY_ESCAPE)
 		{
 			SetAlpha(0);
 			Close();
@@ -282,18 +294,19 @@ public:
 	}
 
 private:
-	bool m_bUseChanges;
-	vgui::ComboBox *m_pAnisotropicFiltering;
+	bool               m_bUseChanges;
+	vgui::ComboBox *   m_pAnisotropicFiltering;
 	vgui::CheckButton *m_pDetailTexture, *m_pWaterReflect, *m_pWaitForVSync;
 };
 
-COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent) : PropertyPage(parent, NULL)
+COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent)
+    : PropertyPage(parent, NULL)
 {
 	memset(&m_OrigSettings, 0, sizeof(m_OrigSettings));
 	memset(&m_CurrentSettings, 0, sizeof(m_CurrentSettings));
 
 	m_pBrightnessSlider = new CCvarSlider(this, "Brightness", "#GameUI_Brightness", 0.0f, 2.0f, "brightness");
-	m_pGammaSlider = new CCvarSlider(this, "Gamma", "#GameUI_Gamma", 1.0f, 3.0f, "gamma");
+	m_pGammaSlider      = new CCvarSlider(this, "Gamma", "#GameUI_Gamma", 1.0f, 3.0f, "gamma");
 
 	m_bRequireRestart = false;
 
@@ -301,14 +314,14 @@ COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent) : PropertyPage(parent, N
 
 	m_pGammaButton = new Button(this, "GammaButton", "#GameUI_AdjustGamma");
 	m_pGammaButton->SetCommand(new KeyValues("OpenGammaDialog"));
-	m_pMode = new ComboBox(this, "Resolution", 8, false);
+	m_pMode        = new ComboBox(this, "Resolution", 8, false);
 	m_pAspectRatio = new ComboBox(this, "AspectRatio", 6, false);
-	m_pAdvanced = new Button(this, "AdvancedButton", "#GameUI_AdvancedEllipsis");
+	m_pAdvanced    = new Button(this, "AdvancedButton", "#GameUI_AdvancedEllipsis");
 	m_pAdvanced->SetCommand(new KeyValues("OpenAdvanced"));
 	m_pThirdPartyCredits = new URLButton(this, "ThirdPartyVideoCredits", "#GameUI_ThirdPartyTechCredits");
 	m_pThirdPartyCredits->SetCommand(new KeyValues("OpenThirdPartyVideoCreditsDialog"));
 
-	char pszAspectName[3][64];
+	char     pszAspectName[3][64];
 	wchar_t *unicodeText = g_pVGuiLocalize->Find("#GameUI_AspectNormal");
 	g_pVGuiLocalize->ConvertUnicodeToANSI(unicodeText, pszAspectName[0], 32);
 	unicodeText = g_pVGuiLocalize->Find("#GameUI_AspectWide16x9");
@@ -317,31 +330,31 @@ COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent) : PropertyPage(parent, N
 	g_pVGuiLocalize->ConvertUnicodeToANSI(unicodeText, pszAspectName[2], 32);
 
 	int iNormalItemID = m_pAspectRatio->AddItem(pszAspectName[0], NULL);
-	int i16x9ItemID = m_pAspectRatio->AddItem(pszAspectName[1], NULL);
-	int i16x10ItemID = m_pAspectRatio->AddItem(pszAspectName[2], NULL);
+	int i16x9ItemID   = m_pAspectRatio->AddItem(pszAspectName[1], NULL);
+	int i16x10ItemID  = m_pAspectRatio->AddItem(pszAspectName[2], NULL);
 
 	int iAspectMode = GetScreenAspectMode(m_CurrentSettings.w, m_CurrentSettings.h);
 
-	switch (iAspectMode)
+	switch(iAspectMode)
 	{
-		default:
-		case 0:
-		{
-			m_pAspectRatio->ActivateItem(iNormalItemID);
-			break;
-		}
+	default:
+	case 0:
+	{
+		m_pAspectRatio->ActivateItem(iNormalItemID);
+		break;
+	}
 
-		case 1:
-		{
-			m_pAspectRatio->ActivateItem(i16x9ItemID);
-			break;
-		}
+	case 1:
+	{
+		m_pAspectRatio->ActivateItem(i16x9ItemID);
+		break;
+	}
 
-		case 2:
-		{
-			m_pAspectRatio->ActivateItem(i16x10ItemID);
-			break;
-		}
+	case 2:
+	{
+		m_pAspectRatio->ActivateItem(i16x10ItemID);
+		break;
+	}
 	}
 
 	m_pColorDepth = new ComboBox(this, "ColorDepth", 2, false);
@@ -349,7 +362,7 @@ COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent) : PropertyPage(parent, N
 	m_pColorDepth->AddItem("#GameUI_HighBitDepth", NULL);
 	m_pColorDepth->SetVisible(false);
 
-	m_pWindowed = new CheckButton(this, "Windowed", "#GameUI_Windowed");
+	m_pWindowed  = new CheckButton(this, "Windowed", "#GameUI_Windowed");
 	m_pCSOModels = new CheckButton(this, "CSOModels", "#GameUI_CSOModels");
 
 	m_pAdvanced->SetEnabled(false);
@@ -371,36 +384,36 @@ void COptionsSubVideo::PrepareResolutionList(void)
 	m_pAspectRatio->SetItemEnabled(2, false);
 
 	vmode_t *plist = NULL;
-	int count = 0;
+	int      count = 0;
 	gameuifuncs->GetVideoModes(&plist, &count);
 
 	bool bFoundWidescreen = false;
-	int selectedItemID = -1;
+	int  selectedItemID   = -1;
 
-	for (int i = 0; i < count; i++, plist++)
+	for(int i = 0; i < count; i++, plist++)
 	{
 		char sz[256];
 		GetResolutionName(plist, sz, sizeof(sz));
 
-		int itemID = -1;
+		int itemID      = -1;
 		int iAspectMode = GetScreenAspectMode(plist->width, plist->height);
 
-		if (iAspectMode > 0)
+		if(iAspectMode > 0)
 		{
 			m_pAspectRatio->SetItemEnabled(iAspectMode, true);
 			bFoundWidescreen = true;
 		}
 
-		if (iAspectMode == m_pAspectRatio->GetActiveItem())
+		if(iAspectMode == m_pAspectRatio->GetActiveItem())
 		{
 			itemID = m_pMode->AddItem(sz, NULL);
 		}
 
-		if (plist->width == currentWidth && plist->height == currentHeight)
+		if(plist->width == currentWidth && plist->height == currentHeight)
 		{
 			selectedItemID = itemID;
 		}
-		else if (selectedItemID == -1 && plist->width == m_CurrentSettings.w && plist->height == m_CurrentSettings.h)
+		else if(selectedItemID == -1 && plist->width == m_CurrentSettings.w && plist->height == m_CurrentSettings.h)
 		{
 			selectedItemID = itemID;
 		}
@@ -409,7 +422,7 @@ void COptionsSubVideo::PrepareResolutionList(void)
 	m_pAspectRatio->SetEnabled(bFoundWidescreen);
 	m_nSelectedMode = selectedItemID;
 
-	if (selectedItemID != -1)
+	if(selectedItemID != -1)
 	{
 		m_pMode->ActivateItem(selectedItemID);
 	}
@@ -422,7 +435,7 @@ void COptionsSubVideo::PrepareResolutionList(void)
 
 COptionsSubVideo::~COptionsSubVideo(void)
 {
-	if (m_hOptionsSubVideoAdvancedDlg.Get())
+	if(m_hOptionsSubVideoAdvancedDlg.Get())
 		m_hOptionsSubVideoAdvancedDlg->MarkForDeletion();
 }
 
@@ -439,7 +452,7 @@ void COptionsSubVideo::OnResetData(void)
 	m_pWindowed->SetSelected(m_CurrentSettings.windowed ? true : false);
 	m_pCSOModels->SetSelected(m_CurrentSettings.csomodels ? true : false);
 
-	if (Gamma_IsSupport())
+	if(Gamma_IsSupport())
 		m_pGammaButton->SetEnabled(m_CurrentSettings.windowed ? false : true);
 
 	SetCurrentResolutionComboItem();
@@ -448,28 +461,28 @@ void COptionsSubVideo::OnResetData(void)
 void COptionsSubVideo::SetCurrentResolutionComboItem(void)
 {
 	vmode_t *plist = NULL;
-	int count = 0;
+	int      count = 0;
 	gameuifuncs->GetVideoModes(&plist, &count);
 
 	int resolution = -1;
 
-	for (int i = 0; i < count; i++, plist++)
+	for(int i = 0; i < count; i++, plist++)
 	{
-		if (plist->width == m_CurrentSettings.w && plist->height == m_CurrentSettings.h)
+		if(plist->width == m_CurrentSettings.w && plist->height == m_CurrentSettings.h)
 		{
 			resolution = i;
 			break;
 		}
 	}
 
-	if (resolution != -1)
+	if(resolution != -1)
 	{
 		char sz[256];
 		GetResolutionName(plist, sz, sizeof(sz));
 		m_pMode->SetText(sz);
 	}
 
-	if (m_CurrentSettings.bpp > 16)
+	if(m_CurrentSettings.bpp > 16)
 		m_pColorDepth->ActivateItemByRow(1);
 	else
 		m_pColorDepth->ActivateItemByRow(0);
@@ -482,7 +495,7 @@ void COptionsSubVideo::OnApplyChanges(void)
 	m_pBrightnessSlider->ApplyChanges();
 	m_pGammaSlider->ApplyChanges();
 
-	if (RequiresRestart())
+	if(RequiresRestart())
 	{
 	}
 
@@ -507,11 +520,11 @@ void COptionsSubVideo::RevertVidSettings(void)
 
 void COptionsSubVideo::ApplyVidSettings(bool bForceRefresh)
 {
-	if (m_pMode)
+	if(m_pMode)
 	{
 		char sz[256], colorDepth[256];
 
-		if (m_nSelectedMode == -1)
+		if(m_nSelectedMode == -1)
 			m_pMode->GetText(sz, 256);
 		else
 			m_pMode->GetItemText(m_nSelectedMode, sz, 256);
@@ -523,29 +536,29 @@ void COptionsSubVideo::ApplyVidSettings(bool bForceRefresh)
 		m_CurrentSettings.w = w;
 		m_CurrentSettings.h = h;
 
-		if (strstr(colorDepth, "32"))
+		if(strstr(colorDepth, "32"))
 			m_CurrentSettings.bpp = 32;
 		else
 			m_CurrentSettings.bpp = 16;
 	}
 
-	if (m_pWindowed)
+	if(m_pWindowed)
 		m_CurrentSettings.windowed = m_pWindowed->IsSelected() != false;
 
-	if (m_pCSOModels)
+	if(m_pCSOModels)
 		m_CurrentSettings.csomodels = m_pCSOModels->IsSelected() != false;
 
 	VID_SetCSOModels(m_pCSOModels);
 
-	if (m_CurrentSettings.w != m_OrigSettings.w || m_CurrentSettings.h != m_OrigSettings.h || m_CurrentSettings.bpp != m_OrigSettings.bpp)
+	if(m_CurrentSettings.w != m_OrigSettings.w || m_CurrentSettings.h != m_OrigSettings.h || m_CurrentSettings.bpp != m_OrigSettings.bpp)
 	{
 		VID_SetVideoMode(m_CurrentSettings.w, m_CurrentSettings.h, m_CurrentSettings.bpp);
 		VID_SetRenderer(m_CurrentSettings.renderer, m_CurrentSettings.windowed);
 		VID_Restart();
 	}
-	else if (m_CurrentSettings.windowed != m_OrigSettings.windowed)
+	else if(m_CurrentSettings.windowed != m_OrigSettings.windowed)
 	{
-		if (g_dwEngineBuildnum < 5971)
+		if(g_dwEngineBuildnum < 5971)
 		{
 			VID_SwitchFullScreen(m_CurrentSettings.windowed);
 		}
@@ -571,21 +584,21 @@ void COptionsSubVideo::OnThink(void)
 
 	VID_GetCurrentRenderer(NULL, 0, &m_OrigSettings.windowed);
 
-	if (m_OrigSettings.windowed != m_CurrentSettings.windowed)
+	if(m_OrigSettings.windowed != m_CurrentSettings.windowed)
 	{
 		m_pWindowed->SetSelected(m_OrigSettings.windowed ? true : false);
 		m_CurrentSettings.windowed = m_OrigSettings.windowed;
 	}
 
-	if (m_pGammaButton)
+	if(m_pGammaButton)
 	{
 		bool enable = m_CurrentSettings.windowed ? false : true;
 
-		if (Gamma_IsSupport())
+		if(Gamma_IsSupport())
 		{
 			m_pGammaButton->SetEnabled(enable);
 
-			if (!enable && m_hGammaDialog.Get())
+			if(!enable && m_hGammaDialog.Get())
 			{
 				m_hGammaDialog->Close();
 				m_hGammaDialog = NULL;
@@ -596,7 +609,7 @@ void COptionsSubVideo::OnThink(void)
 
 void COptionsSubVideo::OnButtonChecked(Panel *panel)
 {
-	if (panel == m_pWindowed || panel == m_pCSOModels)
+	if(panel == m_pWindowed || panel == m_pCSOModels)
 	{
 		OnDataChanged();
 	}
@@ -604,21 +617,21 @@ void COptionsSubVideo::OnButtonChecked(Panel *panel)
 
 void COptionsSubVideo::OnTextChanged(Panel *pPanel, const char *pszText)
 {
-	if (pPanel == m_pMode)
+	if(pPanel == m_pMode)
 	{
 		m_nSelectedMode = m_pMode->GetActiveItem();
 
 		int w = 0, h = 0;
 		sscanf(pszText, "%i x %i", &w, &h);
 
-		if (m_CurrentSettings.w != w || m_CurrentSettings.h != h)
+		if(m_CurrentSettings.w != w || m_CurrentSettings.h != h)
 			OnDataChanged();
 	}
-	else if (pPanel == m_pAspectRatio)
+	else if(pPanel == m_pAspectRatio)
 	{
 		PrepareResolutionList();
 	}
-	else if (pPanel == m_pWindowed || pPanel == m_pCSOModels)
+	else if(pPanel == m_pWindowed || pPanel == m_pCSOModels)
 	{
 		OnDataChanged();
 	}
@@ -631,7 +644,7 @@ void COptionsSubVideo::OnDataChanged(void)
 
 bool COptionsSubVideo::RequiresRestart(void)
 {
-	if (m_hOptionsSubVideoAdvancedDlg.Get() && m_hOptionsSubVideoAdvancedDlg->RequiresRestart())
+	if(m_hOptionsSubVideoAdvancedDlg.Get() && m_hOptionsSubVideoAdvancedDlg->RequiresRestart())
 		return true;
 
 	return m_bRequireRestart;
@@ -639,7 +652,7 @@ bool COptionsSubVideo::RequiresRestart(void)
 
 void COptionsSubVideo::OpenAdvanced(void)
 {
-	if (!m_hOptionsSubVideoAdvancedDlg.Get())
+	if(!m_hOptionsSubVideoAdvancedDlg.Get())
 		m_hOptionsSubVideoAdvancedDlg = new COptionsSubVideoAdvancedDlg(GetParent());
 
 	m_hOptionsSubVideoAdvancedDlg->Activate();
@@ -647,7 +660,7 @@ void COptionsSubVideo::OpenAdvanced(void)
 
 void COptionsSubVideo::OpenGammaDialog(void)
 {
-	if (!m_hGammaDialog.Get())
+	if(!m_hGammaDialog.Get())
 		m_hGammaDialog = new CGammaDialog(GetVParent());
 
 	m_hGammaDialog->Activate();
@@ -658,7 +671,8 @@ class COptionsSubVideoThirdPartyCreditsDlg : public vgui::Frame
 	DECLARE_CLASS_SIMPLE(COptionsSubVideoThirdPartyCreditsDlg, vgui::Frame);
 
 public:
-	COptionsSubVideoThirdPartyCreditsDlg(vgui::VPANEL hParent) : BaseClass(NULL, NULL)
+	COptionsSubVideoThirdPartyCreditsDlg(vgui::VPANEL hParent)
+	    : BaseClass(NULL, NULL)
 	{
 		SetTitle("#GameUI_ThirdPartyVideo_Title", true);
 		SetSize(500, 200);
@@ -677,7 +691,7 @@ public:
 
 	void OnKeyCodeTyped(KeyCode code)
 	{
-		if (code == KEY_ESCAPE)
+		if(code == KEY_ESCAPE)
 		{
 			SetAlpha(0);
 			Close();
@@ -689,7 +703,7 @@ public:
 
 void COptionsSubVideo::OpenThirdPartyVideoCreditsDialog(void)
 {
-	if (!m_OptionsSubVideoThirdPartyCreditsDlg.Get())
+	if(!m_OptionsSubVideoThirdPartyCreditsDlg.Get())
 		m_OptionsSubVideoThirdPartyCreditsDlg = new COptionsSubVideoThirdPartyCreditsDlg(GetVParent());
 
 	m_OptionsSubVideoThirdPartyCreditsDlg->Activate();

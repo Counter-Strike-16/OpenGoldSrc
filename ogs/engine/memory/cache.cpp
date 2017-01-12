@@ -50,12 +50,12 @@ const int CACHE_NAME_LEN = 64;
 
 typedef struct cache_system_s
 {
-	int             size;
-	
-	cache_user_t *  user;
-	
-	char            name[CACHE_NAME_LEN];
-	
+	int size;
+
+	cache_user_t *user;
+
+	char name[CACHE_NAME_LEN];
+
 	cache_system_t *prev;
 	cache_system_t *next;
 	cache_system_t *lru_prev;
@@ -166,8 +166,7 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 
 		newmem = (cache_system_t *)((char *)cs + cs->size);
 		cs     = cs->next;
-	}
-	while(cs != &cache_head);
+	} while(cs != &cache_head);
 
 	if((int)(hunk_size + hunk_base - hunk_high_used - (byte *)newmem) < size)
 		return 0;
@@ -238,7 +237,7 @@ Throw things out until the hunk can be expanded to the given point
 void Cache_FreeHigh(int new_high_hunk)
 {
 	cache_system_t *c, *prev = NULL;
-	
+
 	while(true)
 	{
 		c = cache_head.prev;
@@ -283,11 +282,11 @@ void Cache_MakeLRU(cache_system_t *cs)
 		Sys_Error("%s: active link", __FUNCTION__);
 
 	cache_head.lru_next->lru_prev = cs;
-	
-	cs->lru_next                  = cache_head.lru_next;
-	cs->lru_prev                  = &cache_head;
-	
-	cache_head.lru_next           = cs;
+
+	cs->lru_next = cache_head.lru_next;
+	cs->lru_prev = &cache_head;
+
+	cache_head.lru_next = cs;
 };
 
 void Cache_UnlinkLRU(cache_system_t *cs)
@@ -342,7 +341,7 @@ NOXREF int ComparePath1(char *path1, char *path2)
 			path2++;
 		};
 	};
-	
+
 	return 1;
 };
 
@@ -375,14 +374,14 @@ appropriate places.
 NOXREF char *CommatizeNumber(int num, char *pout)
 {
 	NOXREFCHECK;
-	
+
 	//this is probably more complex than it needs to be
 	int  len = 0;
 	int  i;
 	char outbuf[50];
-	
+
 	Q_memset(outbuf, 0, sizeof(outbuf));
-	
+
 	while(num)
 	{
 		char tempbuf[50];
@@ -433,7 +432,7 @@ Cache_Print
 NOXREF void Cache_Print()
 {
 	NOXREFCHECK;
-	
+
 	for(cache_system_t *cd = cache_head.next; cd != &cache_head; cd = cd->next)
 		Con_Printf("%8i : %s\n", cd->size, cd->name);
 };
@@ -465,7 +464,7 @@ NOXREF int Cache_TotalUsed()
 
 	cache_system_t *cd;
 	int             Total = 0;
-	
+
 	for(cd = cache_head.next; cd != &cache_head; cd = cd->next)
 		Total += cd->size;
 
@@ -552,7 +551,7 @@ NOXREF void Cache_Print_Sounds_And_Totals()
 			subtot = totalsndbytes;
 		};
 	};
-	
+
 	FS_FPrintf(file, "Total bytes in cache used by sound:  %s\n", CommatizeNumber(totalsndbytes, buf));
 	FS_Close(file);
 };

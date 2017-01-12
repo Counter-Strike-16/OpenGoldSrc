@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	void *hInstance = NULL;
 
 #ifdef _WIN32
-	hInstance = GetModuleHandle(NULL); // Any better idea?
+	hInstance       = GetModuleHandle(NULL); // Any better idea?
 #endif
 
 	return AppMain(hInstance);

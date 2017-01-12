@@ -17,10 +17,10 @@ public:
 	~CCreateMultiplayerGameGameplayPage(void);
 
 public:
-	int GetMaxPlayers(void);
+	int         GetMaxPlayers(void);
 	const char *GetPassword(void);
 	const char *GetHostName(void);
-	void SaveValues(void);
+	void        SaveValues(void);
 
 private:
 	const char *GetValue(const char *cvarName, const char *defaultValue);
@@ -28,8 +28,8 @@ private:
 	void GatherCurrentValues(void);
 
 public:
-	CDescription *m_pDescription;
-	mpcontrol_t *m_pList;
+	CDescription *   m_pDescription;
+	mpcontrol_t *    m_pList;
 	CPanelListPanel *m_pOptionsList;
 };
 

@@ -16,7 +16,8 @@ using namespace vgui;
 #include "FileSystem.h"
 #include <KeyValues.h>
 
-CCreateMultiplayerGameDialog::CCreateMultiplayerGameDialog(vgui::Panel *parent) : PropertyDialog(parent, "CreateMultiplayerGameDialog")
+CCreateMultiplayerGameDialog::CCreateMultiplayerGameDialog(vgui::Panel *parent)
+    : PropertyDialog(parent, "CreateMultiplayerGameDialog")
 {
 	m_bBotsEnabled = false;
 	SetSize(348, 460);
@@ -28,26 +29,26 @@ CCreateMultiplayerGameDialog::CCreateMultiplayerGameDialog(vgui::Panel *parent) 
 
 	m_bBotsEnabled = true;
 
-	m_pServerPage = new CCreateMultiplayerGameServerPage(this, "ServerPage");
+	m_pServerPage   = new CCreateMultiplayerGameServerPage(this, "ServerPage");
 	m_pGameplayPage = new CCreateMultiplayerGameGameplayPage(this, "GameplayPage");
-	m_pBotPage = NULL;
+	m_pBotPage      = NULL;
 
 	AddPage(m_pServerPage, "#GameUI_Server");
 	AddPage(m_pGameplayPage, "#GameUI_Game");
 
 	m_pSavedData = new KeyValues("ServerConfig");
 
-	if (m_pSavedData)
+	if(m_pSavedData)
 	{
 		m_pSavedData->LoadFromFile(g_pFullFileSystem, "cfg/ServerConfig.vdf");
 
 		const char *startMap = m_pSavedData->GetString("map", "");
 
-		if (startMap[0])
+		if(startMap[0])
 			m_pServerPage->SetMap(startMap);
 	}
 
-	if (m_bBotsEnabled)
+	if(m_bBotsEnabled)
 	{
 		m_pBotPage = new CCreateMultiplayerGameBotPage(this, "BotPage", m_pSavedData);
 		AddPage(m_pBotPage, "#GameUI_CPUPlayerOptions");
@@ -57,7 +58,7 @@ CCreateMultiplayerGameDialog::CCreateMultiplayerGameDialog(vgui::Panel *parent) 
 
 CCreateMultiplayerGameDialog::~CCreateMultiplayerGameDialog(void)
 {
-	if (m_pSavedData)
+	if(m_pSavedData)
 	{
 		m_pSavedData->deleteThis();
 		m_pSavedData = NULL;
@@ -68,19 +69,19 @@ bool CCreateMultiplayerGameDialog::OnOK(bool applyOnly)
 {
 	BaseClass::OnOK(applyOnly);
 
-	char szMapName[64], szHostName[64], szPassword[64];
+	char        szMapName[64], szHostName[64], szPassword[64];
 	const char *pszMapName = m_pServerPage->GetMapName();
 
-	if (!pszMapName)
+	if(!pszMapName)
 		return false;
 
 	strncpy(szMapName, pszMapName, sizeof(szMapName));
 	strncpy(szHostName, m_pGameplayPage->GetHostName(), sizeof(szHostName));
 	strncpy(szPassword, m_pGameplayPage->GetPassword(), sizeof(szPassword));
 
-	if (m_pSavedData)
+	if(m_pSavedData)
 	{
-		if (m_pServerPage->IsRandomMapSelected())
+		if(m_pServerPage->IsRandomMapSelected())
 			m_pSavedData->SetString("map", "");
 		else
 			m_pSavedData->SetString("map", szMapName);
@@ -96,10 +97,10 @@ bool CCreateMultiplayerGameDialog::OnOK(bool applyOnly)
 
 	char *botCmdBuf = m_pServerPage->GetBOTCommandBuffer();
 
-	if (botCmdBuf)
+	if(botCmdBuf)
 		engine->pfnClientCmd(botCmdBuf);
 
-	if (m_pBotPage)
+	if(m_pBotPage)
 		engine->pfnClientCmd(m_pBotPage->GetBOTCommandBuffer());
 
 	m_pGameplayPage->SaveValues();

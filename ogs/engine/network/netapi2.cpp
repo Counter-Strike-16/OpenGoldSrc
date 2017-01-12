@@ -2,7 +2,7 @@
 #include "winsock.h"
 #include "inetapi.h"
 
-#pragma warning(disable: 4706)
+#pragma warning(disable : 4706)
 
 class CNetAPI : public INetAPI
 {
@@ -17,33 +17,33 @@ public:
 };
 
 static CNetAPI g_NetAPI;
-INetAPI *net = (INetAPI *)&g_NetAPI;
+INetAPI *      net = (INetAPI *)&g_NetAPI;
 
 void CNetAPI::NetAdrToSockAddr(netadr_t *a, struct sockaddr *s)
 {
 	memset(s, 0, sizeof(*s));
 
-	if (a->type == NA_BROADCAST)
+	if(a->type == NA_BROADCAST)
 	{
-		((struct sockaddr_in *)s)->sin_family = AF_INET;
-		((struct sockaddr_in *)s)->sin_port = a->port;
+		((struct sockaddr_in *)s)->sin_family      = AF_INET;
+		((struct sockaddr_in *)s)->sin_port        = a->port;
 		((struct sockaddr_in *)s)->sin_addr.s_addr = INADDR_BROADCAST;
 	}
-	else if (a->type == NA_IP)
+	else if(a->type == NA_IP)
 	{
-		((struct sockaddr_in *)s)->sin_family = AF_INET;
+		((struct sockaddr_in *)s)->sin_family      = AF_INET;
 		((struct sockaddr_in *)s)->sin_addr.s_addr = *(int *)&a->ip;
-		((struct sockaddr_in *)s)->sin_port = a->port;
+		((struct sockaddr_in *)s)->sin_port        = a->port;
 	}
 }
 
 void CNetAPI::SockAddrToNetAdr(struct sockaddr *s, netadr_t *a)
 {
-	if (s->sa_family == AF_INET)
+	if(s->sa_family == AF_INET)
 	{
-		a->type = NA_IP;
+		a->type        = NA_IP;
 		*(int *)&a->ip = ((struct sockaddr_in *)s)->sin_addr.s_addr;
-		a->port = ((struct sockaddr_in *)s)->sin_port;
+		a->port        = ((struct sockaddr_in *)s)->sin_port;
 	}
 }
 
@@ -53,11 +53,11 @@ char *CNetAPI::AdrToString(netadr_t *a)
 
 	memset(s, 0, 64);
 
-	if (a)
+	if(a)
 	{
-		if (a->type == NA_LOOPBACK)
+		if(a->type == NA_LOOPBACK)
 			sprintf(s, "loopback");
-		else if (a->type == NA_IP)
+		else if(a->type == NA_IP)
 			sprintf(s, "%i.%i.%i.%i:%i", a->ip[0], a->ip[1], a->ip[2], a->ip[3], ntohs(a->port));
 	}
 
@@ -66,35 +66,35 @@ char *CNetAPI::AdrToString(netadr_t *a)
 
 static bool StringToSockaddr(const char *s, struct sockaddr *sadr)
 {
-	struct hostent *h;
-	char *colon;
-	char copy[128];
+	struct hostent *    h;
+	char *              colon;
+	char                copy[128];
 	struct sockaddr_in *p;
 
 	memset(sadr, 0, sizeof(*sadr));
 
-	p = (struct sockaddr_in *)sadr;
+	p             = (struct sockaddr_in *)sadr;
 	p->sin_family = AF_INET;
-	p->sin_port = 0;
+	p->sin_port   = 0;
 
 	strcpy(copy, s);
 
-	for (colon = copy; *colon; colon++)
+	for(colon = copy; *colon; colon++)
 	{
-		if (*colon == ':')
+		if(*colon == ':')
 		{
-			*colon = 0;
+			*colon      = 0;
 			p->sin_port = htons((short)atoi(colon + 1));
 		}
 	}
 
-	if (copy[0] >= '0' && copy[0] <= '9' && strstr(copy, "."))
+	if(copy[0] >= '0' && copy[0] <= '9' && strstr(copy, "."))
 	{
 		*(int *)&p->sin_addr = inet_addr(copy);
 	}
 	else
 	{
-		if (!(h = gethostbyname(copy)))
+		if(!(h = gethostbyname(copy)))
 			return false;
 
 		*(int *)&p->sin_addr = *(int *)h->h_addr_list[0];
@@ -107,14 +107,14 @@ bool CNetAPI::StringToAdr(const char *s, netadr_t *a)
 {
 	struct sockaddr sadr;
 
-	if (!strcmp(s, "localhost"))
+	if(!strcmp(s, "localhost"))
 	{
 		memset(a, 0, sizeof(*a));
 		a->type = NA_LOOPBACK;
 		return true;
 	}
 
-	if (!StringToSockaddr(s, &sadr))
+	if(!StringToSockaddr(s, &sadr))
 		return false;
 
 	SockAddrToNetAdr(&sadr, a);
@@ -123,9 +123,9 @@ bool CNetAPI::StringToAdr(const char *s, netadr_t *a)
 
 void CNetAPI::GetSocketAddress(int socket, netadr_t *a)
 {
-	char buff[512];
+	char               buff[512];
 	struct sockaddr_in address;
-	int namelen;
+	int                namelen;
 
 	memset(a, 0, sizeof(*a));
 
@@ -136,19 +136,19 @@ void CNetAPI::GetSocketAddress(int socket, netadr_t *a)
 
 	namelen = sizeof(address);
 
-	if (getsockname(socket, (struct sockaddr *)&address, (int *)&namelen) == 0)
+	if(getsockname(socket, (struct sockaddr *)&address, (int *)&namelen) == 0)
 		a->port = address.sin_port;
 }
 
 bool CNetAPI::CompareAdr(netadr_t *a, netadr_t *b)
 {
-	if (a->type != b->type)
+	if(a->type != b->type)
 		return false;
 
-	if (a->type == NA_LOOPBACK)
+	if(a->type == NA_LOOPBACK)
 		return true;
 
-	if (a->type == NA_IP && a->ip[0] == b->ip[0] && a->ip[1] == b->ip[1] && a->ip[2] == b->ip[2] && a->ip[3] == b->ip[3] && a->port == b->port)
+	if(a->type == NA_IP && a->ip[0] == b->ip[0] && a->ip[1] == b->ip[1] && a->ip[2] == b->ip[2] && a->ip[3] == b->ip[3] && a->port == b->port)
 		return true;
 
 	return false;
@@ -158,11 +158,11 @@ void CNetAPI::GetLocalIP(netadr_t *a)
 {
 	char s[64];
 
-	if (!::gethostname(s,64))
+	if(!::gethostname(s, 64))
 	{
 		struct hostent *localip = ::gethostbyname(s);
 
-		if (localip)
+		if(localip)
 		{
 			a->type = NA_IP;
 			a->port = 0;

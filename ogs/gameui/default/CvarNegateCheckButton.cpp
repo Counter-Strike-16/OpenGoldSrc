@@ -6,7 +6,8 @@
 
 using namespace vgui;
 
-CCvarNegateCheckButton::CCvarNegateCheckButton(Panel *parent, const char *panelName, const char *text, const char *cvarname) : CheckButton(parent, panelName, text)
+CCvarNegateCheckButton::CCvarNegateCheckButton(Panel *parent, const char *panelName, const char *text, const char *cvarname)
+    : CheckButton(parent, panelName, text)
 {
 	m_pszCvarName = cvarname ? strdup(cvarname) : NULL;
 
@@ -21,7 +22,7 @@ CCvarNegateCheckButton::~CCvarNegateCheckButton(void)
 
 void CCvarNegateCheckButton::Paint(void)
 {
-	if (!m_pszCvarName)
+	if(!m_pszCvarName)
 	{
 		BaseClass::Paint();
 		return;
@@ -29,9 +30,9 @@ void CCvarNegateCheckButton::Paint(void)
 
 	float value = engine->pfnGetCvarFloat(m_pszCvarName);
 
-	if (value < 0)
+	if(value < 0)
 	{
-		if (!m_bStartState)
+		if(!m_bStartState)
 		{
 			SetSelected(true);
 			m_bStartState = true;
@@ -39,7 +40,7 @@ void CCvarNegateCheckButton::Paint(void)
 	}
 	else
 	{
-		if (m_bStartState)
+		if(m_bStartState)
 		{
 			SetSelected(false);
 			m_bStartState = false;
@@ -53,7 +54,7 @@ void CCvarNegateCheckButton::Reset(void)
 {
 	float value = engine->pfnGetCvarFloat(m_pszCvarName);
 
-	if (value < 0)
+	if(value < 0)
 		m_bStartState = true;
 	else
 		m_bStartState = false;
@@ -73,23 +74,23 @@ void CCvarNegateCheckButton::SetSelected(bool state)
 
 void CCvarNegateCheckButton::ApplyChanges(void)
 {
-	if (!m_pszCvarName || !m_pszCvarName[0])
+	if(!m_pszCvarName || !m_pszCvarName[0])
 		return;
 
 	float value = engine->pfnGetCvarFloat(m_pszCvarName);
-	value = (float)fabs(value);
+	value       = (float)fabs(value);
 
-	if (value < 0.00001)
+	if(value < 0.00001)
 		value = 0.022f;
 
 	m_bStartState = IsSelected();
-	value = -value;
+	value         = -value;
 
 	engine->Cvar_SetValue(m_pszCvarName, m_bStartState ? value : -value);
 }
 
 void CCvarNegateCheckButton::OnButtonChecked(void)
 {
-	if (HasBeenModified())
+	if(HasBeenModified())
 		PostActionSignal(new KeyValues("ControlModified"));
 }

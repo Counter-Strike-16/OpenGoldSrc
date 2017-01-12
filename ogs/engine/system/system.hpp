@@ -177,7 +177,7 @@ NOXREF void Sys_PageIn(void *ptr, int size);
 const char *Sys_FindFirst(const char *path, char *basename);
 const char *Sys_FindFirstPathID(const char *path, char *pathid);
 const char *Sys_FindNext(char *basename);
-void       Sys_FindClose();
+void Sys_FindClose();
 
 NOBODY int glob_match_after_star(char *pattern, char *text);
 NOBODY int glob_match(char *pattern, char *text);
@@ -246,8 +246,8 @@ NOXREF void Legacy_MP3subsys_Resume_Audio();
 
 void Sys_SetupLegacyAPIs();
 
-NOXREF int  Sys_IsWin95();
-NOXREF int  Sys_IsWin98();
+NOXREF int Sys_IsWin95();
+NOXREF int Sys_IsWin98();
 
 #ifdef _WIN32
 NOXREF void Sys_CheckOSVersion();
@@ -259,8 +259,8 @@ NOXREF void Sys_Shutdown();
 void Sys_InitArgv(char *lpCmdLine);
 NOXREF void Sys_ShutdownArgv();
 
-void        Sys_InitMemory();
-void        Sys_ShutdownMemory();
+void Sys_InitMemory();
+void Sys_ShutdownMemory();
 
 void        Sys_InitLauncherInterface();
 NOXREF void Sys_ShutdownLauncherInterface();

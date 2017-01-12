@@ -16,12 +16,13 @@
 
 using namespace vgui;
 
-COptionsSubAudio::COptionsSubAudio(vgui::Panel *parent) : PropertyPage(parent, NULL)
+COptionsSubAudio::COptionsSubAudio(vgui::Panel *parent)
+    : PropertyPage(parent, NULL)
 {
 	m_pEAXCheckButton = new CCvarToggleCheckButton(this, "EAX", "#GameUI_EnableEAX", "s_eax");
 	m_pA3DCheckButton = new CCvarToggleCheckButton(this, "A3D", "#GameUI_EnableA3D", "s_a3d");
 
-	m_pSFXSlider = new CCvarSlider(this, "SFXSlider", "#GameUI_SoundEffectVolume", 0.0f, 1.0f, "volume");
+	m_pSFXSlider   = new CCvarSlider(this, "SFXSlider", "#GameUI_SoundEffectVolume", 0.0f, 1.0f, "volume");
 	m_pMusicSlider = new CCvarSlider(this, "MusicSlider", "#GameUI_MusicVolume", 0.0f, 1.0f, "mp3volume");
 
 	m_pSoundQualityCombo = new CLabeledCommandComboBox(this, "SoundQuality");
@@ -31,10 +32,10 @@ COptionsSubAudio::COptionsSubAudio(vgui::Panel *parent) : PropertyPage(parent, N
 
 	LoadControlSettingsFromScheme("OptionsSubAudio.res");
 
-	if (!engine->pfnGetCvarPointer("s_eax"))
+	if(!engine->pfnGetCvarPointer("s_eax"))
 		m_pEAXCheckButton->SetVisible(false);
 
-	if (!engine->pfnGetCvarPointer("s_a3d"))
+	if(!engine->pfnGetCvarPointer("s_a3d"))
 		m_pA3DCheckButton->SetVisible(false);
 }
 
@@ -71,7 +72,7 @@ void COptionsSubAudio::OnControlModified(void)
 
 void COptionsSubAudio::OnCommand(const char *command)
 {
-	if (!stricmp(command, "ShowThirdPartyAudioCredits"))
+	if(!stricmp(command, "ShowThirdPartyAudioCredits"))
 		OpenThirdPartySoundCreditsDialog();
 
 	BaseClass::OnCommand(command);
@@ -82,7 +83,8 @@ class COptionsSubAudioThirdPartyCreditsDlg : public vgui::Frame
 	DECLARE_CLASS_SIMPLE(COptionsSubAudioThirdPartyCreditsDlg, vgui::Frame);
 
 public:
-	COptionsSubAudioThirdPartyCreditsDlg(vgui::VPANEL hParent) : BaseClass(NULL, NULL)
+	COptionsSubAudioThirdPartyCreditsDlg(vgui::VPANEL hParent)
+	    : BaseClass(NULL, NULL)
 	{
 		SetTitle("#GameUI_ThirdPartyAudio_Title", true);
 		SetSize(500, 200);
@@ -101,7 +103,7 @@ public:
 
 	void OnKeyCodeTyped(KeyCode code)
 	{
-		if (code == KEY_ESCAPE)
+		if(code == KEY_ESCAPE)
 		{
 			SetAlpha(0);
 			Close();
@@ -113,7 +115,7 @@ public:
 
 void COptionsSubAudio::OpenThirdPartySoundCreditsDialog(void)
 {
-	if (!m_OptionsSubAudioThirdPartyCreditsDlg.Get())
+	if(!m_OptionsSubAudioThirdPartyCreditsDlg.Get())
 		m_OptionsSubAudioThirdPartyCreditsDlg = new COptionsSubAudioThirdPartyCreditsDlg(GetVParent());
 
 	m_OptionsSubAudioThirdPartyCreditsDlg->Activate();

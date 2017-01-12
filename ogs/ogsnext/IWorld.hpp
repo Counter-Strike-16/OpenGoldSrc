@@ -33,6 +33,4 @@
 #include "core/CommonTypes.hpp"
 #include "public/interface.h"
 
-interface IWorld : public IBaseInterface
-{
-};
+interface IWorld : public IBaseInterface{};

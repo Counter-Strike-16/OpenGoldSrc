@@ -14,8 +14,8 @@ class CCvarSlider;
 
 namespace vgui
 {
-	class Label;
-	class Panel;
+class Label;
+class Panel;
 }
 
 class COptionsSubMouse : public vgui::PropertyPage
@@ -48,12 +48,12 @@ private:
 
 private:
 	CCvarNegateCheckButton *m_pReverseMouseCheckBox;
-	CKeyToggleCheckButton *m_pMouseLookCheckBox;
+	CKeyToggleCheckButton * m_pMouseLookCheckBox;
 	CCvarToggleCheckButton *m_pMouseFilterCheckBox;
 	CCvarToggleCheckButton *m_pJoystickCheckBox;
-	CKeyToggleCheckButton *m_pJoystickLookCheckBox;
+	CKeyToggleCheckButton * m_pJoystickLookCheckBox;
 
-	CCvarSlider *m_pMouseSensitivitySlider;
+	CCvarSlider *    m_pMouseSensitivitySlider;
 	vgui::TextEntry *m_pMouseSensitivityLabel;
 
 	CCvarToggleCheckButton *m_pAutoAimCheckBox;

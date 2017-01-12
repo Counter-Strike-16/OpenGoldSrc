@@ -131,7 +131,7 @@ int CEngine::Frame()
 int CEngine::Frame_noVirt()
 {
 #ifndef SWDS
-	//(*(void (**)())(*(DWORD *)cdaudio + 24))();
+//(*(void (**)())(*(DWORD *)cdaudio + 24))();
 #endif // SWDS
 
 	if(!game->IsActiveApp())

@@ -38,7 +38,7 @@
 
 const int MAX_CMD_BUFFER = 16384;
 const int MAX_CMD_TOKENS = 80;
-const int MAX_CMD_LINE = 1024;
+const int MAX_CMD_LINE   = 1024;
 
 typedef struct sizebuf_s  sizebuf_t;
 typedef struct cmdalias_s cmdalias_t;
@@ -94,7 +94,7 @@ void Cbuf_AddText(char *text);
 void Cbuf_InsertText(char *text);
 void Cbuf_InsertTextLines(char *text);
 
-void  Cbuf_Execute();
+void Cbuf_Execute();
 
 void Cmd_Wait_f();
 void Cmd_StuffCmds_f();
@@ -103,14 +103,14 @@ void Cmd_Echo_f();
 
 char *CopyString(char *in);
 
-void                   Cmd_Alias_f();
+void Cmd_Alias_f();
 
 struct cmd_function_s *Cmd_GetFirstCmd();
 
-void                   Cmd_Init();
-void                   Cmd_Shutdown();
+void Cmd_Init();
+void Cmd_Shutdown();
 
-int                    Cmd_Argc();
+int Cmd_Argc();
 
 const char *Cmd_Argv(int arg);
 const char *Cmd_Args();
@@ -138,8 +138,8 @@ NOXREF char *Cmd_CompleteCommand(char *search, int forward);
 void Cmd_ExecuteString(char *text, cmd_source_t src);
 
 qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf);
-void       Cmd_ForwardToServer();
-qboolean   Cmd_ForwardToServerUnreliable();
+void     Cmd_ForwardToServer();
+qboolean Cmd_ForwardToServerUnreliable();
 
 NOXREF int Cmd_CheckParm(char *parm);
 

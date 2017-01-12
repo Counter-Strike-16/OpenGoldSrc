@@ -36,17 +36,16 @@ class CClientDLLRef
 public:
 	CClientDLLRef();
 	~CClientDLLRef();
-	
+
 	bool Load(const char *asPath);
 	bool Reload();
 	void Unload();
-	
+
 	bool IsLoaded();
-	
-	cl_exportfuncs_t &operator*(){return &ptrtofuncs;}
-	cl_exportfuncs_t *operator->(){return ptrtofuncs;}
-	
-	operator bool(){return ptrtofuncs ? true : false;}
+
+	cl_exportfuncs_t &operator*() { return &ptrtofuncs; }
+	cl_exportfuncs_t *operator->() { return ptrtofuncs; }
+	operator bool() { return ptrtofuncs ? true : false; }
 private:
 };
 

@@ -52,7 +52,7 @@ BlobFootprint_t g_blobfootprintClient;
 int Sys_Main()
 {
 	HANDLE hObject = NULL;
-	BOOL (*IsDebuggerPresent)
+	BOOL(*IsDebuggerPresent)
 	() = (BOOL(*)())GetProcAddress(GetModuleHandle("kernel32.dll"), "IsDebuggerPresent");
 
 	if(!IsDebuggerPresent())

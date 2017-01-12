@@ -18,31 +18,31 @@ using namespace vgui;
 enum BotGUITeamType
 {
 	BOT_GUI_TEAM_RANDOM = 0,
-	BOT_GUI_TEAM_CT = 1,
-	BOT_GUI_TEAM_T = 2
+	BOT_GUI_TEAM_CT     = 1,
+	BOT_GUI_TEAM_T      = 2
 };
 
-static const char *joinTeamArg[] = { "any", "ct", "t", NULL };
+static const char *joinTeamArg[] = {"any", "ct", "t", NULL};
 
 enum BotGUIChatterType
 {
-	BOT_GUI_CHATTER_NORMAL = 0,
+	BOT_GUI_CHATTER_NORMAL  = 0,
 	BOT_GUI_CHATTER_MINIMAL = 1,
-	BOT_GUI_CHATTER_RADIO = 2,
-	BOT_GUI_CHATTER_OFF = 3
+	BOT_GUI_CHATTER_RADIO   = 2,
+	BOT_GUI_CHATTER_OFF     = 3
 };
 
-static const char *chatterArg[] = { "normal", "minimal", "radio", "off", NULL };
+static const char *chatterArg[] = {"normal", "minimal", "radio", "off", NULL};
 
 extern void UTIL_StripInvalidCharacters(char *pszInput);
 
 void CCreateMultiplayerGameBotPage::SetJoinTeamCombo(const char *team)
 {
-	if (team)
+	if(team)
 	{
-		for (int i = 0; joinTeamArg[i]; ++i)
+		for(int i = 0; joinTeamArg[i]; ++i)
 		{
-			if (!stricmp(team, joinTeamArg[i]))
+			if(!stricmp(team, joinTeamArg[i]))
 			{
 				m_joinTeamCombo->ActivateItemByRow(i);
 				return;
@@ -55,11 +55,11 @@ void CCreateMultiplayerGameBotPage::SetJoinTeamCombo(const char *team)
 
 void CCreateMultiplayerGameBotPage::SetChatterCombo(const char *chatter)
 {
-	if (chatter)
+	if(chatter)
 	{
-		for (int i = 0; chatterArg[i]; ++i)
+		for(int i = 0; chatterArg[i]; ++i)
 		{
-			if (!stricmp(chatter, chatterArg[i]))
+			if(!stricmp(chatter, chatterArg[i]))
 			{
 				m_chatterCombo->ActivateItemByRow(i);
 				return;
@@ -70,18 +70,19 @@ void CCreateMultiplayerGameBotPage::SetChatterCombo(const char *chatter)
 		m_joinTeamCombo->ActivateItemByRow(BOT_GUI_CHATTER_NORMAL);
 }
 
-CCreateMultiplayerGameBotPage::CCreateMultiplayerGameBotPage(vgui::Panel *parent, const char *name, KeyValues *botKeys) : PropertyPage(parent, name)
+CCreateMultiplayerGameBotPage::CCreateMultiplayerGameBotPage(vgui::Panel *parent, const char *name, KeyValues *botKeys)
+    : PropertyPage(parent, name)
 {
 	m_pSavedData = botKeys;
 
-	m_allowRogues = new CCvarToggleCheckButton(this, "BotAllowRogueCheck", "", "bot_allow_rogues");
-	m_allowPistols = new CCvarToggleCheckButton(this, "BotAllowPistolsCheck", "", "bot_allow_pistols");
-	m_allowShotguns = new CCvarToggleCheckButton(this, "BotAllowShotgunsCheck", "", "bot_allow_shotguns");
+	m_allowRogues         = new CCvarToggleCheckButton(this, "BotAllowRogueCheck", "", "bot_allow_rogues");
+	m_allowPistols        = new CCvarToggleCheckButton(this, "BotAllowPistolsCheck", "", "bot_allow_pistols");
+	m_allowShotguns       = new CCvarToggleCheckButton(this, "BotAllowShotgunsCheck", "", "bot_allow_shotguns");
 	m_allowSubmachineGuns = new CCvarToggleCheckButton(this, "BotAllowSubmachineGunsCheck", "", "bot_allow_sub_machine_guns");
-	m_allowRifles = new CCvarToggleCheckButton(this, "BotAllowRiflesCheck", "", "bot_allow_rifles");
-	m_allowMachineGuns = new CCvarToggleCheckButton(this, "BotAllowMachineGunsCheck", "", "bot_allow_machine_guns");
-	m_allowGrenades = new CCvarToggleCheckButton(this, "BotAllowGrenadesCheck", "", "bot_allow_grenades");
-	m_allowSnipers = new CCvarToggleCheckButton(this, "BotAllowSnipersCheck", "", "bot_allow_snipers");
+	m_allowRifles         = new CCvarToggleCheckButton(this, "BotAllowRiflesCheck", "", "bot_allow_rifles");
+	m_allowMachineGuns    = new CCvarToggleCheckButton(this, "BotAllowMachineGunsCheck", "", "bot_allow_machine_guns");
+	m_allowGrenades       = new CCvarToggleCheckButton(this, "BotAllowGrenadesCheck", "", "bot_allow_grenades");
+	m_allowSnipers        = new CCvarToggleCheckButton(this, "BotAllowSnipersCheck", "", "bot_allow_snipers");
 
 	m_joinAfterPlayer = new CCvarToggleCheckButton(this, "BotJoinAfterPlayerCheck", "", "bot_join_after_player");
 
@@ -98,7 +99,7 @@ CCreateMultiplayerGameBotPage::CCreateMultiplayerGameBotPage(vgui::Panel *parent
 	m_chatterCombo->AddItem("#Cstrike_Bot_Chatter_Radio", NULL);
 	m_chatterCombo->AddItem("#Cstrike_Bot_Chatter_Off", NULL);
 
-	m_prefixEntry = new TextEntry(this, "BotPrefixEntry");
+	m_prefixEntry  = new TextEntry(this, "BotPrefixEntry");
 	m_profileEntry = new TextEntry(this, "BotProfileEntry");
 
 	LoadControlSettingsFromScheme("CreateMultiplayerGameBotPage.res");
@@ -119,12 +120,12 @@ CCreateMultiplayerGameBotPage::CCreateMultiplayerGameBotPage(vgui::Panel *parent
 
 	const char *prefix = botKeys->GetString("bot_prefix");
 
-	if (prefix)
+	if(prefix)
 		SetControlString("BotPrefixEntry", prefix);
 
 	const char *profile = botKeys->GetString("bot_profile_db");
 
-	if (profile)
+	if(profile)
 		SetControlString("BotProfileEntry", profile);
 }
 
@@ -175,7 +176,7 @@ char *CCreateMultiplayerGameBotPage::GetBOTCommandBuffer(void)
 	char entryBuffer[256], profile[256];
 	m_profileEntry->GetText(entryBuffer, sizeof(entryBuffer));
 
-	if (strlen(entryBuffer))
+	if(strlen(entryBuffer))
 		sprintf(profile, "BotProfile_%s.db", entryBuffer);
 	else
 		sprintf(profile, "BotProfile.db");

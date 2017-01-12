@@ -27,7 +27,7 @@ public:
 	virtual void GetSettings(KeyValues *outResourceData);
 
 public:
-	void ApplyChanges(void);
+	void  ApplyChanges(void);
 	float GetSliderValue(void);
 	void SetSliderValue(float fValue);
 	void Reset(void);
@@ -38,14 +38,14 @@ private:
 	MESSAGE_FUNC(OnApplyChanges, "ApplyChanges");
 
 private:
-	bool m_bAllowOutOfRange;
-	bool m_bModifiedOnce;
+	bool  m_bAllowOutOfRange;
+	bool  m_bModifiedOnce;
 	float m_fStartValue;
-	int m_iStartValue;
-	int m_iLastSliderValue;
+	int   m_iStartValue;
+	int   m_iLastSliderValue;
 	float m_fCurrentValue;
-	char m_szCvarName[64];
-	bool m_bCreatedInCode;
+	char  m_szCvarName[64];
+	bool  m_bCreatedInCode;
 	float m_flMinValue;
 	float m_flMaxValue;
 };

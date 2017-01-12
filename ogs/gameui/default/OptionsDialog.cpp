@@ -26,7 +26,8 @@
 
 using namespace vgui;
 
-COptionsDialog::COptionsDialog(vgui::Panel *parent) : PropertyDialog(parent, "OptionsDialog")
+COptionsDialog::COptionsDialog(vgui::Panel *parent)
+    : PropertyDialog(parent, "OptionsDialog")
 {
 	SetBounds(0, 0, 512, 406);
 	SetSizeable(false);
@@ -34,22 +35,22 @@ COptionsDialog::COptionsDialog(vgui::Panel *parent) : PropertyDialog(parent, "Op
 	SetTitle("#GameUI_Options", true);
 
 	m_pOptionsSubMultiplayer = NULL;
-	m_pOptionsSubKeyboard = NULL;
-	m_pOptionsSubMouse = NULL;
-	m_pOptionsSubAudio = NULL;
-	m_pOptionsSubVideo = NULL;
-	m_pOptionsSubVoice = NULL;
-	m_pOptionsSubAdvanced = NULL;
+	m_pOptionsSubKeyboard    = NULL;
+	m_pOptionsSubMouse       = NULL;
+	m_pOptionsSubAudio       = NULL;
+	m_pOptionsSubVideo       = NULL;
+	m_pOptionsSubVoice       = NULL;
+	m_pOptionsSubAdvanced    = NULL;
 
-	if ((ModInfo().IsMultiplayerOnly() && !ModInfo().IsSinglePlayerOnly()) || (!ModInfo().IsMultiplayerOnly() && !ModInfo().IsSinglePlayerOnly()))
+	if((ModInfo().IsMultiplayerOnly() && !ModInfo().IsSinglePlayerOnly()) || (!ModInfo().IsMultiplayerOnly() && !ModInfo().IsSinglePlayerOnly()))
 		m_pOptionsSubMultiplayer = new COptionsSubMultiplayer(this);
 
 	m_pOptionsSubKeyboard = new COptionsSubKeyboard(this);
-	m_pOptionsSubMouse = new COptionsSubMouse(this);
-	m_pOptionsSubAudio = new COptionsSubAudio(this);
-	m_pOptionsSubVideo = new COptionsSubVideo(this);
+	m_pOptionsSubMouse    = new COptionsSubMouse(this);
+	m_pOptionsSubAudio    = new COptionsSubAudio(this);
+	m_pOptionsSubVideo    = new COptionsSubVideo(this);
 
-	if (!ModInfo().IsSinglePlayerOnly())
+	if(!ModInfo().IsSinglePlayerOnly())
 		m_pOptionsSubVoice = new COptionsSubVoice(this);
 
 	m_pOptionsSubAdvanced = new COptionsSubAdvanced(this);
@@ -74,14 +75,14 @@ void COptionsDialog::Activate(void)
 {
 	BaseClass::Activate();
 
-	if (m_pOptionsSubMultiplayer)
+	if(m_pOptionsSubMultiplayer)
 	{
-		if (GetActivePage() != m_pOptionsSubMultiplayer)
+		if(GetActivePage() != m_pOptionsSubMultiplayer)
 			GetPropertySheet()->SetActivePage(m_pOptionsSubMultiplayer);
 	}
 	else
 	{
-		if (GetActivePage() != m_pOptionsSubKeyboard)
+		if(GetActivePage() != m_pOptionsSubKeyboard)
 			GetPropertySheet()->SetActivePage(m_pOptionsSubKeyboard);
 	}
 
@@ -102,11 +103,11 @@ void COptionsDialog::OnClose(void)
 
 void COptionsDialog::OnGameUIHidden(void)
 {
-	for (int i = 0; i < GetChildCount(); i++)
+	for(int i = 0; i < GetChildCount(); i++)
 	{
 		Panel *pChild = GetChild(i);
 
-		if (pChild)
+		if(pChild)
 			PostMessage(pChild, new KeyValues("GameUIHidden"));
 	}
 }

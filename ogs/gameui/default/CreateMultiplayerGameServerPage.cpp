@@ -17,7 +17,8 @@ using namespace vgui;
 
 #define RANDOM_MAP "#GameUI_RandomMap"
 
-CCreateMultiplayerGameServerPage::CCreateMultiplayerGameServerPage(vgui::Panel *parent, const char *name) : PropertyPage(parent, name)
+CCreateMultiplayerGameServerPage::CCreateMultiplayerGameServerPage(vgui::Panel *parent, const char *name)
+    : PropertyPage(parent, name)
 {
 	m_pSavedData = NULL;
 
@@ -38,7 +39,7 @@ CCreateMultiplayerGameServerPage::CCreateMultiplayerGameServerPage(vgui::Panel *
 
 CCreateMultiplayerGameServerPage::~CCreateMultiplayerGameServerPage(void)
 {
-	for (int i = 0; i < m_vMapCache.Size(); i++)
+	for(int i = 0; i < m_vMapCache.Size(); i++)
 		free((void *)m_vMapCache[i]);
 
 	m_vMapCache.RemoveAll();
@@ -53,14 +54,14 @@ void CCreateMultiplayerGameServerPage::EnableBots(KeyValues *data)
 	m_pEnableBotsCheck->SetSelected(quota > 0);
 
 	int difficulty = data->GetInt("bot_difficulty", 0);
-	difficulty = max(difficulty, 0);
-	difficulty = min(3, difficulty);
+	difficulty     = max(difficulty, 0);
+	difficulty     = min(3, difficulty);
 
 	char buttonName[64];
 	Q_snprintf(buttonName, sizeof(buttonName), "SkillLevel%d", difficulty);
 	vgui::RadioButton *button = dynamic_cast<vgui::RadioButton *>(FindChildByName(buttonName));
 
-	if (button)
+	if(button)
 		button->SetSelected(true);
 }
 
@@ -69,26 +70,26 @@ void CCreateMultiplayerGameServerPage::OnApplyChanges(void)
 	KeyValues *kv = m_pMapList->GetActiveItemUserData();
 	strncpy(m_szMapName, kv->GetString("mapname", ""), DATA_STR_LENGTH);
 
-	if (m_pSavedData)
+	if(m_pSavedData)
 	{
 		int quota = GetControlInt("BotQuotaCombo", 0);
 
-		if (!m_pEnableBotsCheck->IsSelected())
+		if(!m_pEnableBotsCheck->IsSelected())
 			quota = 0;
 
 		m_pSavedData->SetInt("bot_quota", quota);
 
 		int difficulty = 0;
 
-		for (int i = 0; i < 4; ++i)
+		for(int i = 0; i < 4; ++i)
 		{
 			char buttonName[64];
 			Q_snprintf(buttonName, sizeof(buttonName), "SkillLevel%d", i);
 			vgui::RadioButton *button = dynamic_cast<vgui::RadioButton *>(FindChildByName(buttonName));
 
-			if (button)
+			if(button)
 			{
-				if (button->IsSelected())
+				if(button->IsSelected())
 				{
 					difficulty = i;
 					break;
@@ -104,53 +105,53 @@ void CCreateMultiplayerGameServerPage::LoadMaps(const char *pszPathID)
 {
 	KeyValues *hiddenMaps = ModInfo().GetHiddenMaps();
 
-	FileFindHandle_t findHandle = NULL;
-	const char *pszFilename = g_pFullFileSystem->FindFirst("maps/*.bsp", &findHandle, pszPathID);
+	FileFindHandle_t findHandle  = NULL;
+	const char *     pszFilename = g_pFullFileSystem->FindFirst("maps/*.bsp", &findHandle, pszPathID);
 
-	while (pszFilename)
+	while(pszFilename)
 	{
 		char mapname[256];
 		_snprintf(mapname, sizeof(mapname), "maps/%s", pszFilename);
 
 		const char *str = Q_strstr(pszFilename, "maps");
 
-		if (str)
+		if(str)
 			strncpy(mapname, str + 5, sizeof(mapname) - 1);
 		else
 			strncpy(mapname, pszFilename, sizeof(mapname) - 1);
 
 		char *ext = Q_strstr(mapname, ".bsp");
 
-		if (ext)
+		if(ext)
 			*ext = 0;
 
-		if (!stricmp(ModInfo().GetGameName(), "Half-Life") && (mapname[0] == 'c' || mapname[0] == 't') && mapname[2] == 'a' && mapname[1] >= '0' && mapname[1] <= '5')
+		if(!stricmp(ModInfo().GetGameName(), "Half-Life") && (mapname[0] == 'c' || mapname[0] == 't') && mapname[2] == 'a' && mapname[1] >= '0' && mapname[1] <= '5')
 			goto nextFile;
 
-		if (hiddenMaps)
+		if(hiddenMaps)
 		{
-			if (hiddenMaps->GetInt(mapname, 0))
+			if(hiddenMaps->GetInt(mapname, 0))
 				goto nextFile;
 		}
 
 		bool found = false;
 
-		for (int i = 0; i < m_vMapCache.Size(); i++)
+		for(int i = 0; i < m_vMapCache.Size(); i++)
 		{
-			if (!strcmp((char *)m_vMapCache[i], mapname))
+			if(!strcmp((char *)m_vMapCache[i], mapname))
 			{
 				found = true;
 				break;
 			}
 		}
 
-		if (!found)
+		if(!found)
 		{
-			int i = m_vMapCache.AddToTail();
+			int i          = m_vMapCache.AddToTail();
 			m_vMapCache[i] = (unsigned long)strdup(mapname);
 		}
 
-nextFile:
+	nextFile:
 		pszFilename = g_pFullFileSystem->FindNext(findHandle);
 	}
 
@@ -169,12 +170,12 @@ void CCreateMultiplayerGameServerPage::LoadMapList(void)
 	m_pMapList->DeleteAllItems();
 	m_pMapList->AddItem(RANDOM_MAP, new KeyValues("data", "mapname", RANDOM_MAP));
 
-	for (int i = 0; i < m_vMapCache.Size(); i++)
+	for(int i = 0; i < m_vMapCache.Size(); i++)
 		free((void *)m_vMapCache[i]);
 
 	m_vMapCache.RemoveAll();
 
-	if (!stricmp(ModInfo().GetGameName(), "Half-Life"))
+	if(!stricmp(ModInfo().GetGameName(), "Half-Life"))
 	{
 		LoadMaps(NULL);
 	}
@@ -186,13 +187,13 @@ void CCreateMultiplayerGameServerPage::LoadMapList(void)
 
 	m_vMapCache.Sort(&CCreateMultiplayerGameServerPage::MapListCompare);
 
-	for (int i = 0; i < m_vMapCache.Size(); i++)
+	for(int i = 0; i < m_vMapCache.Size(); i++)
 	{
-		char *mapname = (char *)m_vMapCache[i];
-		char *tokenName = UTIL_va("#MapName_%s", mapname);
-		wchar_t *wtext = g_pVGuiLocalize->Find(tokenName);
+		char *   mapname   = (char *)m_vMapCache[i];
+		char *   tokenName = UTIL_va("#MapName_%s", mapname);
+		wchar_t *wtext     = g_pVGuiLocalize->Find(tokenName);
 
-		if (wtext)
+		if(wtext)
 			m_pMapList->AddItem(tokenName, new KeyValues("data", "mapname", mapname));
 		else
 			m_pMapList->AddItem(mapname, new KeyValues("data", "mapname", mapname));
@@ -205,7 +206,7 @@ bool CCreateMultiplayerGameServerPage::IsRandomMapSelected(void)
 {
 	const char *mapname = m_pMapList->GetActiveItemUserData()->GetString("mapname");
 
-	if (!stricmp(mapname, RANDOM_MAP))
+	if(!stricmp(mapname, RANDOM_MAP))
 		return true;
 
 	return false;
@@ -215,15 +216,15 @@ const char *CCreateMultiplayerGameServerPage::GetMapName(void)
 {
 	int count = m_pMapList->GetItemCount();
 
-	if (count <= 1)
+	if(count <= 1)
 		return NULL;
 
 	const char *mapname = m_pMapList->GetActiveItemUserData()->GetString("mapname");
 
-	if (!strcmp(mapname, RANDOM_MAP))
+	if(!strcmp(mapname, RANDOM_MAP))
 	{
 		int which = engine->pfnRandomLong(1, count - 1);
-		mapname = m_pMapList->GetItemUserData(which)->GetString("mapname");
+		mapname   = m_pMapList->GetItemUserData(which)->GetString("mapname");
 	}
 
 	return mapname;
@@ -231,12 +232,12 @@ const char *CCreateMultiplayerGameServerPage::GetMapName(void)
 
 void CCreateMultiplayerGameServerPage::SetMap(const char *mapName)
 {
-	for (int i = 0; i < m_pMapList->GetItemCount(); i++)
+	for(int i = 0; i < m_pMapList->GetItemCount(); i++)
 	{
-		if (!m_pMapList->IsItemIDValid(i))
+		if(!m_pMapList->IsItemIDValid(i))
 			continue;
 
-		if (!stricmp(m_pMapList->GetItemUserData(i)->GetString("mapname"), mapName))
+		if(!stricmp(m_pMapList->GetItemUserData(i)->GetString("mapname"), mapName))
 		{
 			m_pMapList->ActivateItem(i);
 			break;
@@ -257,27 +258,27 @@ void CCreateMultiplayerGameServerPage::OnCheckButtonChecked(void)
 
 char *CCreateMultiplayerGameServerPage::GetBOTCommandBuffer(void)
 {
-	if (!m_pSavedData)
+	if(!m_pSavedData)
 		return NULL;
 
 	int quota = GetControlInt("BotQuotaCombo", 0);
 
-	if (!m_pEnableBotsCheck->IsSelected())
+	if(!m_pEnableBotsCheck->IsSelected())
 		quota = 0;
 
 	m_pSavedData->SetInt("bot_quota", quota);
 
 	int difficulty = 0;
 
-	for (int i = 0; i < 4; ++i)
+	for(int i = 0; i < 4; ++i)
 	{
 		char buttonName[64];
 		Q_snprintf(buttonName, sizeof(buttonName), "SkillLevel%d", i);
 		vgui::RadioButton *button = dynamic_cast<vgui::RadioButton *>(FindChildByName(buttonName));
 
-		if (button)
+		if(button)
 		{
-			if (button->IsSelected())
+			if(button->IsSelected())
 			{
 				difficulty = i;
 				break;

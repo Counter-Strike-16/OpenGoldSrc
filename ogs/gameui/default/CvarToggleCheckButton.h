@@ -29,7 +29,7 @@ private:
 
 private:
 	char *m_pszCvarName;
-	bool m_bStartValue;
+	bool  m_bStartValue;
 };
 
 #endif

@@ -41,27 +41,27 @@ typedef enum {
 
 typedef struct modinfo_s
 {
-	qboolean            bIsMod;
-	
-	char                szInfo[256];
-	char                szDL[256];
-	char                szHLVersion[32];
-	
-	int                 version;
-	int                 size;
-	
-	qboolean            svonly;
-	qboolean            cldll;
-	qboolean            secure;
-	
+	qboolean bIsMod;
+
+	char szInfo[256];
+	char szDL[256];
+	char szHLVersion[32];
+
+	int version;
+	int size;
+
+	qboolean svonly;
+	qboolean cldll;
+	qboolean secure;
+
 	MOD_GAMEPLAY_TYPE_E type;
-	
-	int                 num_edicts;
-	int                 clientDllCRC;
+
+	int num_edicts;
+	int clientDllCRC;
 } modinfo_t;
 
 #ifdef HOOK_ENGINE
-	#define gmodinfo (*pgmodinfo)
+#define gmodinfo (*pgmodinfo)
 #endif
 
 extern modinfo_t gmodinfo;

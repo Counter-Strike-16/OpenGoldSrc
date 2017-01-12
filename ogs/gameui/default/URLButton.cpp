@@ -18,22 +18,24 @@ using namespace vgui;
 
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT(URLButton, URLButton);
 
-URLButton::URLButton(Panel *parent, const char *panelName, const char *text, Panel *pActionSignalTarget, const char *pCmd) : Label(parent, panelName, text)
+URLButton::URLButton(Panel *parent, const char *panelName, const char *text, Panel *pActionSignalTarget, const char *pCmd)
+    : Label(parent, panelName, text)
 {
 	Init();
 
-	if (pActionSignalTarget && pCmd)
+	if(pActionSignalTarget && pCmd)
 	{
 		AddActionSignalTarget(pActionSignalTarget);
 		SetCommand(pCmd);
 	}
 }
 
-URLButton::URLButton(Panel *parent, const char *panelName, const wchar_t *wszText, Panel *pActionSignalTarget, const char *pCmd) : Label(parent, panelName, wszText)
+URLButton::URLButton(Panel *parent, const char *panelName, const wchar_t *wszText, Panel *pActionSignalTarget, const char *pCmd)
+    : Label(parent, panelName, wszText)
 {
 	Init();
 
-	if (pActionSignalTarget && pCmd)
+	if(pActionSignalTarget && pCmd)
 	{
 		AddActionSignalTarget(pActionSignalTarget);
 		SetCommand(pCmd);
@@ -44,8 +46,8 @@ void URLButton::Init(void)
 {
 	_buttonFlags.SetFlag(USE_CAPTURE_MOUSE | BUTTON_BORDER_ENABLED);
 
-	_mouseClickMask = 0;
-	_actionMessage = NULL;
+	_mouseClickMask        = 0;
+	_actionMessage         = NULL;
 	m_bSelectionStateSaved = false;
 	SetTextInset(0, 0);
 	SetMouseClickEnabled(MOUSE_LEFT, true);
@@ -56,7 +58,7 @@ void URLButton::Init(void)
 
 URLButton::~URLButton(void)
 {
-	if (_actionMessage)
+	if(_actionMessage)
 		_actionMessage->deleteThis();
 }
 
@@ -67,7 +69,7 @@ void URLButton::SetButtonActivationType(ActivationType_t activationType)
 
 void URLButton::SetButtonBorderEnabled(bool state)
 {
-	if (state != _buttonFlags.IsFlagSet(BUTTON_BORDER_ENABLED))
+	if(state != _buttonFlags.IsFlagSet(BUTTON_BORDER_ENABLED))
 	{
 		_buttonFlags.SetFlag(BUTTON_BORDER_ENABLED, state);
 		InvalidateLayout(false);
@@ -76,7 +78,7 @@ void URLButton::SetButtonBorderEnabled(bool state)
 
 void URLButton::SetSelected(bool state)
 {
-	if (_buttonFlags.IsFlagSet(SELECTED) != state)
+	if(_buttonFlags.IsFlagSet(SELECTED) != state)
 	{
 		_buttonFlags.SetFlag(SELECTED, state);
 		RecalculateDepressedState();
@@ -86,7 +88,7 @@ void URLButton::SetSelected(bool state)
 
 void URLButton::ForceDepressed(bool state)
 {
-	if (_buttonFlags.IsFlagSet(FORCE_DEPRESSED) != state)
+	if(_buttonFlags.IsFlagSet(FORCE_DEPRESSED) != state)
 	{
 		_buttonFlags.SetFlag(FORCE_DEPRESSED, state);
 		RecalculateDepressedState();
@@ -98,7 +100,7 @@ void URLButton::RecalculateDepressedState(void)
 {
 	bool newState;
 
-	if (!IsEnabled())
+	if(!IsEnabled())
 		newState = false;
 	else
 		newState = _buttonFlags.IsFlagSet(FORCE_DEPRESSED) ? true : (_buttonFlags.IsFlagSet(ARMED) && _buttonFlags.IsFlagSet(SELECTED));
@@ -118,7 +120,7 @@ bool URLButton::IsUseCaptureMouseEnabled(void)
 
 void URLButton::SetArmed(bool state)
 {
-	if (_buttonFlags.IsFlagSet(ARMED) != state)
+	if(_buttonFlags.IsFlagSet(ARMED) != state)
 	{
 		_buttonFlags.SetFlag(ARMED, state);
 		RecalculateDepressedState();
@@ -221,7 +223,7 @@ void URLButton::ApplySchemeSettings(IScheme *pScheme)
 
 void URLButton::SetMouseClickEnabled(MouseCode code, bool state)
 {
-	if (state)
+	if(state)
 		_mouseClickMask |= 1 << ((int)(code + 1));
 	else
 		_mouseClickMask &= ~(1 << ((int)(code + 1)));
@@ -234,7 +236,7 @@ void URLButton::SetCommand(const char *command)
 
 void URLButton::SetCommand(KeyValues *message)
 {
-	if (_actionMessage)
+	if(_actionMessage)
 		_actionMessage->deleteThis();
 
 	_actionMessage = message;
@@ -247,9 +249,9 @@ KeyValues *URLButton::GetCommand(void)
 
 void URLButton::FireActionSignal(void)
 {
-	if (_actionMessage)
+	if(_actionMessage)
 	{
-		if (!stricmp(_actionMessage->GetName(), "command") && !strnicmp(_actionMessage->GetString("command", ""), "url ", strlen("url ")) && strstr(_actionMessage->GetString("command", ""), "://"))
+		if(!stricmp(_actionMessage->GetName(), "command") && !strnicmp(_actionMessage->GetString("command", ""), "url ", strlen("url ")) && strstr(_actionMessage->GetString("command", ""), "://"))
 			system()->ShellExecute("open", _actionMessage->GetString("command", "      ") + 4);
 
 		PostActionSignal(_actionMessage->MakeCopy());
@@ -258,14 +260,14 @@ void URLButton::FireActionSignal(void)
 
 bool URLButton::RequestInfo(KeyValues *outputData)
 {
-	if (!stricmp(outputData->GetName(), "GetState"))
+	if(!stricmp(outputData->GetName(), "GetState"))
 	{
 		outputData->SetInt("state", IsSelected());
 		return true;
 	}
-	else if (!stricmp(outputData->GetName(), "GetCommand"))
+	else if(!stricmp(outputData->GetName(), "GetCommand"))
 	{
-		if (_actionMessage)
+		if(_actionMessage)
 			outputData->SetString("command", _actionMessage->GetString("command", ""));
 		else
 			outputData->SetString("command", "");
@@ -280,12 +282,12 @@ void URLButton::GetSettings(KeyValues *outResourceData)
 {
 	BaseClass::GetSettings(outResourceData);
 
-	if (_actionMessage)
+	if(_actionMessage)
 		outResourceData->SetString("command", _actionMessage->GetString("command", ""));
 
 	outResourceData->SetInt("default", _buttonFlags.IsFlagSet(DEFAULT_BUTTON));
 
-	if (m_bSelectionStateSaved)
+	if(m_bSelectionStateSaved)
 		outResourceData->SetInt("selected", IsSelected());
 }
 
@@ -295,12 +297,12 @@ void URLButton::ApplySettings(KeyValues *inResourceData)
 
 	const char *cmd = inResourceData->GetString("command", "");
 
-	if (*cmd)
+	if(*cmd)
 		SetCommand(cmd);
 
 	int iSelected = inResourceData->GetInt("selected", -1);
 
-	if (iSelected != -1)
+	if(iSelected != -1)
 	{
 		SetSelected(iSelected != 0);
 		m_bSelectionStateSaved = true;
@@ -322,33 +324,33 @@ void URLButton::OnSetState(int state)
 
 void URLButton::OnCursorEntered(void)
 {
-	if (IsEnabled())
+	if(IsEnabled())
 		SetArmed(true);
 }
 
 void URLButton::OnCursorExited(void)
 {
-	if (!_buttonFlags.IsFlagSet(BUTTON_KEY_DOWN))
+	if(!_buttonFlags.IsFlagSet(BUTTON_KEY_DOWN))
 		SetArmed(false);
 }
 
 void URLButton::OnMousePressed(MouseCode code)
 {
-	if (!IsEnabled())
+	if(!IsEnabled())
 		return;
 
-	if (_activationType == ACTIVATE_ONPRESSED)
+	if(_activationType == ACTIVATE_ONPRESSED)
 	{
-		if (IsKeyBoardInputEnabled())
+		if(IsKeyBoardInputEnabled())
 			RequestFocus();
 
 		DoClick();
 		return;
 	}
 
-	if (IsUseCaptureMouseEnabled() && _activationType == ACTIVATE_ONPRESSEDANDRELEASED)
+	if(IsUseCaptureMouseEnabled() && _activationType == ACTIVATE_ONPRESSEDANDRELEASED)
 	{
-		if (IsKeyBoardInputEnabled())
+		if(IsKeyBoardInputEnabled())
 			RequestFocus();
 
 		SetSelected(true);
@@ -365,16 +367,16 @@ void URLButton::OnMouseDoublePressed(MouseCode code)
 
 void URLButton::OnMouseReleased(MouseCode code)
 {
-	if (IsUseCaptureMouseEnabled())
+	if(IsUseCaptureMouseEnabled())
 		input()->SetMouseCapture(NULL);
 
-	if (_activationType == ACTIVATE_ONPRESSED)
+	if(_activationType == ACTIVATE_ONPRESSED)
 		return;
 
-	if (!IsSelected() && _activationType == ACTIVATE_ONPRESSEDANDRELEASED)
+	if(!IsSelected() && _activationType == ACTIVATE_ONPRESSEDANDRELEASED)
 		return;
 
-	if (IsEnabled() && (GetVPanel() == input()->GetMouseOver() || _buttonFlags.IsFlagSet(BUTTON_KEY_DOWN)))
+	if(IsEnabled() && (GetVPanel() == input()->GetMouseOver() || _buttonFlags.IsFlagSet(BUTTON_KEY_DOWN)))
 		DoClick();
 	else
 		SetSelected(false);
@@ -384,13 +386,13 @@ void URLButton::OnMouseReleased(MouseCode code)
 
 void URLButton::OnKeyCodePressed(KeyCode code)
 {
-	if (code == KEY_SPACE || code == KEY_ENTER)
+	if(code == KEY_SPACE || code == KEY_ENTER)
 	{
 		SetArmed(true);
 		_buttonFlags.SetFlag(BUTTON_KEY_DOWN);
 		OnMousePressed(MOUSE_LEFT);
 
-		if (IsUseCaptureMouseEnabled())
+		if(IsUseCaptureMouseEnabled())
 			input()->SetMouseCapture(NULL);
 	}
 	else
@@ -402,7 +404,7 @@ void URLButton::OnKeyCodePressed(KeyCode code)
 
 void URLButton::OnKeyCodeReleased(KeyCode code)
 {
-	if (_buttonFlags.IsFlagSet(BUTTON_KEY_DOWN) && (code == KEY_SPACE || code == KEY_ENTER))
+	if(_buttonFlags.IsFlagSet(BUTTON_KEY_DOWN) && (code == KEY_SPACE || code == KEY_ENTER))
 	{
 		SetArmed(true);
 		OnMouseReleased(MOUSE_LEFT);

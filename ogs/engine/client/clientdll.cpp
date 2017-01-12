@@ -35,40 +35,40 @@
 
 bool ClientDLL_Load(const char *asPath)
 {
-	if( clgame.hInstance )
+	if(clgame.hInstance)
 		ClientDLL_Unload();
-	
-	CL_EXPORT_FUNCS F; // export 'F'
-	const dllfunc_t		*func;
-	
+
+	CL_EXPORT_FUNCS  F; // export 'F'
+	const dllfunc_t *func;
+
 	clgame.hInstance = Com_LoadLibrary(asPath, false);
-	if( !clgame.hInstance )
+	if(!clgame.hInstance)
 		return false;
-	
+
 	// clear exports
-	for( func = cdll_exports; func && func->name; func++ )
+	for(func = cdll_exports; func && func->name; func++)
 		*func->func = NULL;
 
 	// trying to get single export named 'F'
-	if(( F = (void *)Com_GetProcAddress( clgame.hInstance, "F" )) != NULL )
+	if((F = (void *)Com_GetProcAddress(clgame.hInstance, "F")) != NULL)
 	{
-		MsgDev( D_NOTE, "CL_LoadProgs: found single callback export\n" );		
+		MsgDev(D_NOTE, "CL_LoadProgs: found single callback export\n");
 
 		// trying to fill interface now
-		F( &clgame.dllFuncs );
+		F(&clgame.dllFuncs);
 
 		// check critical functions again
-		for( func = cdll_exports; func && func->name; func++ )
+		for(func = cdll_exports; func && func->name; func++)
 		{
-			if( func->func == NULL )
+			if(func->func == NULL)
 				break; // BAH critical function was missed
 		}
 
 		// because all the exports are loaded through function 'F"
-		if( !func || !func->name )
+		if(!func || !func->name)
 			critical_exports = false;
 	}
-	
+
 	return true;
 };
 
@@ -76,17 +76,17 @@ bool ClientDLL_Reload()
 {
 	if(!ClientDLL_IsLoaded())
 		return false;
-	
+
 	char sPrevPath[MAX_PATH];
 	sPrevPath[0] = '\0';
-	
+
 	Q_strncpy(sPrevPath, ClientDLL_GetPath(), charsmax(MAX_PATH));
-	
+
 	ClientDLL_Unload();
-	
+
 	if(!ClientDLL_Load(sPrevPath))
 		return false;
-	
+
 	return true;
 };
 

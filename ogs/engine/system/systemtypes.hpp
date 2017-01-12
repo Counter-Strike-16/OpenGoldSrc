@@ -55,6 +55,6 @@ const int DEFAULT_MEMORY = 0x2800000;
 const int WARNING_MEMORY = 0x0200000;
 
 const int MINIMUM_WIN_MEMORY = 0x0e00000;
-const int MAXIMUM_WIN_MEMORY = 0x8000000;		// Ask for 128 MB max
+const int MAXIMUM_WIN_MEMORY = 0x8000000; // Ask for 128 MB max
 
-const int MAXIMUM_DEDICATED_MEMORY = 0x8000000;	// Ask for 128 MB max
+const int MAXIMUM_DEDICATED_MEMORY = 0x8000000; // Ask for 128 MB max

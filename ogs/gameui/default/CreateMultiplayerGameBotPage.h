@@ -42,11 +42,11 @@ private:
 	CCvarToggleCheckButton *m_allowSnipers;
 	CCvarToggleCheckButton *m_deferToHuman;
 
-	vgui::ComboBox *m_joinTeamCombo;
-	vgui::ComboBox *m_chatterCombo;
+	vgui::ComboBox * m_joinTeamCombo;
+	vgui::ComboBox * m_chatterCombo;
 	vgui::TextEntry *m_prefixEntry;
 	vgui::TextEntry *m_profileEntry;
-	KeyValues *m_pSavedData;
+	KeyValues *      m_pSavedData;
 };
 
 #endif

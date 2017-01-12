@@ -9,9 +9,10 @@
 
 using namespace vgui;
 
-CBackgroundMenuButton::CBackgroundMenuButton(vgui::Panel *parent, const char *name) : BaseClass(parent, name, "")
+CBackgroundMenuButton::CBackgroundMenuButton(vgui::Panel *parent, const char *name)
+    : BaseClass(parent, name, "")
 {
-	m_pImage = NULL;
+	m_pImage          = NULL;
 	m_pMouseOverImage = NULL;
 }
 

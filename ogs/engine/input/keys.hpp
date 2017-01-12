@@ -33,12 +33,11 @@
 #include "public/FileSystem.h"
 
 /// Keyboard input destination/state
-typedef enum
-{
-	key_game = 0,			///< player is in game
+typedef enum {
+	key_game = 0, ///< player is in game
 	//key_console was here
-	key_message = 1,		///< player is writing a chat message
-	key_menu    = 2,		///< player is in menu
+	key_message = 1, ///< player is writing a chat message
+	key_menu    = 2, ///< player is in menu
 } keydest_t;
 
 void Key_Init();

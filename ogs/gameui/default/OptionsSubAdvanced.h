@@ -44,7 +44,7 @@ private:
 	MESSAGE_FUNC_CHARPTR(OnTextChanged, "TextChanged", text);
 
 private:
-	vgui::Label *m_pVersionInfo;
+	vgui::Label *   m_pVersionInfo;
 	vgui::ComboBox *m_pLanguage;
 };
 

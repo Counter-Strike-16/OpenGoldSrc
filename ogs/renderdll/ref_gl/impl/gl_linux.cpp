@@ -28,8 +28,8 @@
 
 /*****************************************************************************/
 
-static qboolean GLimp_SwitchFullscreen( int width, int height );
-qboolean GLimp_InitGL (void);
+static qboolean GLimp_SwitchFullscreen(int width, int height);
+qboolean GLimp_InitGL(void);
 
 extern cvar_t *vid_fullscreen;
 extern cvar_t *vid_ref;
@@ -38,24 +38,24 @@ static fxMesaContext fc = NULL;
 
 #define NUM_RESOLUTIONS 3
 
-static resolutions[NUM_RESOLUTIONS][3]={ 
-  { 512, 384, GR_RESOLUTION_512x384 },
-  { 640, 400, GR_RESOLUTION_640x400 },
-  { 640, 480, GR_RESOLUTION_640x480 }
-};
+static resolutions[NUM_RESOLUTIONS][3] = {
+    {512, 384, GR_RESOLUTION_512x384},
+    {640, 400, GR_RESOLUTION_640x400},
+    {640, 480, GR_RESOLUTION_640x480}};
 
 static int findres(int *width, int *height)
 {
 	int i;
 
-	for(i=0;i<NUM_RESOLUTIONS;i++)
-		if((*width<=resolutions[i][0]) && (*height<=resolutions[i][1])) {
-			*width = resolutions[i][0];
+	for(i = 0; i < NUM_RESOLUTIONS; i++)
+		if((*width <= resolutions[i][0]) && (*height <= resolutions[i][1]))
+		{
+			*width  = resolutions[i][0];
 			*height = resolutions[i][1];
 			return resolutions[i][2];
 		}
-        
-	*width = 640;
+
+	*width  = 640;
 	*height = 480;
 	return GR_RESOLUTION_640x480;
 }
@@ -83,25 +83,25 @@ static void InitSig(void)
 /*
 ** GLimp_SetMode
 */
-int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
+int GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 {
-	int width, height;
+	int   width, height;
 	GLint attribs[32];
 
-	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
+	ri.Con_Printf(PRINT_ALL, "Initializing OpenGL display\n");
 
-	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );
+	ri.Con_Printf(PRINT_ALL, "...setting mode %d:", mode);
 
-	if ( !ri.Vid_GetModeInfo( &width, &height, mode ) )
+	if(!ri.Vid_GetModeInfo(&width, &height, mode))
 	{
-		ri.Con_Printf( PRINT_ALL, " invalid mode\n" );
+		ri.Con_Printf(PRINT_ALL, " invalid mode\n");
 		return rserr_invalid_mode;
 	}
 
-	ri.Con_Printf( PRINT_ALL, " %d %d\n", width, height );
+	ri.Con_Printf(PRINT_ALL, " %d %d\n", width, height);
 
 	// destroy the existing window
-	GLimp_Shutdown ();
+	GLimp_Shutdown();
 
 	// set fx attribs
 	attribs[0] = FXMESA_DOUBLEBUFFER;
@@ -111,16 +111,16 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 	attribs[4] = 1;
 	attribs[5] = FXMESA_NONE;
 
-	fc = fxMesaCreateContext(0, findres(&width, &height), GR_REFRESH_75Hz, 
-		attribs);
-	if (!fc)
+	fc = fxMesaCreateContext(0, findres(&width, &height), GR_REFRESH_75Hz,
+	                         attribs);
+	if(!fc)
 		return rserr_invalid_mode;
 
-	*pwidth = width;
+	*pwidth  = width;
 	*pheight = height;
 
 	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow (width, height);
+	ri.Vid_NewWindow(width, height);
 
 	fxMesaMakeCurrent(fc);
 
@@ -136,9 +136,10 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 ** for the window.  The state structure is also nulled out.
 **
 */
-void GLimp_Shutdown( void )
+void GLimp_Shutdown(void)
 {
-	if (fc) {
+	if(fc)
+	{
 		fxMesaDestroyContext(fc);
 		fc = NULL;
 	}
@@ -150,7 +151,7 @@ void GLimp_Shutdown( void )
 ** This routine is responsible for initializing the OS specific portions
 ** of OpenGL.  
 */
-int GLimp_Init( void *hinstance, void *wndproc )
+int GLimp_Init(void *hinstance, void *wndproc)
 {
 	InitSig();
 
@@ -160,7 +161,7 @@ int GLimp_Init( void *hinstance, void *wndproc )
 /*
 ** GLimp_BeginFrame
 */
-void GLimp_BeginFrame( float camera_seperation )
+void GLimp_BeginFrame(float camera_seperation)
 {
 }
 
@@ -171,7 +172,7 @@ void GLimp_BeginFrame( float camera_seperation )
 ** as yet to be determined.  Probably better not to make this a GLimp
 ** function and instead do a call to GLimp_SwapBuffers.
 */
-void GLimp_EndFrame (void)
+void GLimp_EndFrame(void)
 {
 	glFlush();
 	fxMesaSwapBuffers();
@@ -180,21 +181,22 @@ void GLimp_EndFrame (void)
 /*
 ** GLimp_AppActivate
 */
-void GLimp_AppActivate( qboolean active )
+void GLimp_AppActivate(qboolean active)
 {
 }
 
 extern void gl3DfxSetPaletteEXT(GLuint *pal);
 
-void Fake_glColorTableEXT( GLenum target, GLenum internalformat,
-                             GLsizei width, GLenum format, GLenum type,
-                             const GLvoid *table )
+void Fake_glColorTableEXT(GLenum target, GLenum internalformat,
+                          GLsizei width, GLenum format, GLenum type,
+                          const GLvoid *table)
 {
-	byte temptable[256][4];
+	byte  temptable[256][4];
 	byte *intbl;
-	int i;
+	int   i;
 
-	for (intbl = (byte *)table, i = 0; i < 256; i++) {
+	for(intbl = (byte *)table, i = 0; i < 256; i++)
+	{
 		temptable[i][2] = *intbl++;
 		temptable[i][1] = *intbl++;
 		temptable[i][0] = *intbl++;
@@ -202,5 +204,3 @@ void Fake_glColorTableEXT( GLenum target, GLenum internalformat,
 	}
 	gl3DfxSetPaletteEXT((GLuint *)temptable);
 }
-
-

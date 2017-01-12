@@ -26,13 +26,13 @@ extern cl_enginefunc_t *engine;
 
 namespace vgui
 {
-	class ISurface;
+class ISurface;
 };
 
 class IServerBrowser;
 
 extern class IGameUIFuncs *gameuifuncs;
-extern class IEngineVGui *enginevguifuncs;
-extern vgui::ISurface *enginesurfacefuncs;
+extern class IEngineVGui * enginevguifuncs;
+extern vgui::ISurface *    enginesurfacefuncs;
 
 #endif

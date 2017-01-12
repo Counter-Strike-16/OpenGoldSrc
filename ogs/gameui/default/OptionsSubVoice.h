@@ -44,23 +44,23 @@ private:
 	void ResetVoiceParameters(void);
 
 private:
-	IVoiceTweak *m_pVoiceTweak;
+	IVoiceTweak *      m_pVoiceTweak;
 	vgui::CheckButton *m_pMicBoost;
 
-	vgui::ImagePanel *m_pMicMeter;
-	vgui::ImagePanel *m_pMicMeter2;
-	vgui::Button *m_pTestMicrophoneButton;
-	vgui::Label *m_pMicrophoneSliderLabel;
-	vgui::Slider *m_pMicrophoneVolume;
-	vgui::Label *m_pReceiveSliderLabel;
-	CCvarSlider *m_pReceiveVolume;
+	vgui::ImagePanel *      m_pMicMeter;
+	vgui::ImagePanel *      m_pMicMeter2;
+	vgui::Button *          m_pTestMicrophoneButton;
+	vgui::Label *           m_pMicrophoneSliderLabel;
+	vgui::Slider *          m_pMicrophoneVolume;
+	vgui::Label *           m_pReceiveSliderLabel;
+	CCvarSlider *           m_pReceiveVolume;
 	CCvarToggleCheckButton *m_pVoiceEnableCheckButton;
 
-	int m_nMicVolumeValue;
-	bool m_bMicBoostSelected;
+	int   m_nMicVolumeValue;
+	bool  m_bMicBoostSelected;
 	float m_fReceiveVolume;
-	int m_nReceiveSliderValue;
-	bool m_bVoiceOn;
+	int   m_nReceiveSliderValue;
+	bool  m_bVoiceOn;
 };
 
 #endif

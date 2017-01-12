@@ -28,7 +28,7 @@ private:
 
 private:
 	char *m_pszCvarName;
-	bool m_bStartState;
+	bool  m_bStartState;
 };
 
 #endif

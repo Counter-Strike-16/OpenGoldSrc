@@ -6,11 +6,12 @@
 
 using namespace vgui;
 
-CBinkPanel::CBinkPanel(Panel *parent, char const *panelName) : Panel(parent, panelName)
+CBinkPanel::CBinkPanel(Panel *parent, char const *panelName)
+    : Panel(parent, panelName)
 {
 	m_pPixelBuffer = NULL;
-	m_iTextureId = surface()->CreateNewTextureID();
-	m_color = Color(255, 255, 255, 255);
+	m_iTextureId   = surface()->CreateNewTextureID();
+	m_color        = Color(255, 255, 255, 255);
 }
 
 CBinkPanel::~CBinkPanel(void)
@@ -28,15 +29,15 @@ void CBinkPanel::Paint(void)
 	int wide, tall;
 	GetSize(wide, tall);
 
-	if (m_hBink)
+	if(m_hBink)
 	{
-		if (m_iCurrentFrame != m_iLastFrame)
+		if(m_iCurrentFrame != m_iLastFrame)
 		{
 			BinkGoto(m_hBink, m_iCurrentFrame, 0);
 			BinkDoFrame(m_hBink);
 			BinkCopyToBuffer(m_hBink, m_pPixelBuffer, m_hBink->Width * m_iPixelSize, m_hBink->Height, 0, 0, m_iBinkFlags);
 
-			if (m_iPixelSize == 3)
+			if(m_iPixelSize == 3)
 				surface()->DrawSetTextureRGB(m_iTextureId, m_pPixelBuffer, m_hBink->Width, m_hBink->Height, true, true);
 			else
 				surface()->DrawSetTextureRGBA(m_iTextureId, m_pPixelBuffer, m_hBink->Width, m_hBink->Height, true, true);
@@ -57,20 +58,20 @@ void CBinkPanel::OnThink(void)
 {
 	BaseClass::OnThink();
 
-	if (!m_bPlaying)
+	if(!m_bPlaying)
 		return;
 
-	if (m_hBink)
+	if(m_hBink)
 	{
 		float time = engine->GetAbsoluteTime();
 
-		if (time - m_flLastPaintTime > (float)m_hBink->FrameRateDiv / m_hBink->FrameRate)
+		if(time - m_flLastPaintTime > (float)m_hBink->FrameRateDiv / m_hBink->FrameRate)
 		{
 			m_iLastFrame = m_iCurrentFrame;
 			m_iCurrentFrame++;
 			m_flLastPaintTime = time;
 
-			if (m_iCurrentFrame > m_hBink->Frames)
+			if(m_iCurrentFrame > m_hBink->Frames)
 				Stop();
 		}
 	}
@@ -80,39 +81,39 @@ bool CBinkPanel::OpenBink(const char *filename, int flags)
 {
 	char fullPath[MAX_PATH];
 
-	if (!g_pFullFileSystem->GetLocalPath(filename, fullPath, sizeof(fullPath)))
+	if(!g_pFullFileSystem->GetLocalPath(filename, fullPath, sizeof(fullPath)))
 		return false;
 
 	m_hBink = BinkOpen(fullPath, BINKNOTHREADEDIO | BINKALPHA);
 
-	if (!m_hBink)
+	if(!m_hBink)
 		return false;
 
 	BinkSetSoundOnOff(m_hBink, 0);
 
-	if (flags & (BINKSURFACE24 | BINKSURFACE24R))
+	if(flags & (BINKSURFACE24 | BINKSURFACE24R))
 	{
 		m_iPixelSize = 3;
 	}
-	else if (flags & (BINKSURFACE32 | BINKSURFACE32R | BINKSURFACE32A))
+	else if(flags & (BINKSURFACE32 | BINKSURFACE32R | BINKSURFACE32A))
 	{
 		m_iPixelSize = 4;
 	}
 
-	m_iBinkFlags = flags;
-	m_pPixelBuffer = new byte [m_hBink->Width * m_hBink->Height * m_iPixelSize];
+	m_iBinkFlags   = flags;
+	m_pPixelBuffer = new byte[m_hBink->Width * m_hBink->Height * m_iPixelSize];
 	return true;
 }
 
 void CBinkPanel::CloseBink(void)
 {
-	if (m_pPixelBuffer)
+	if(m_pPixelBuffer)
 	{
-		delete [] m_pPixelBuffer;
+		delete[] m_pPixelBuffer;
 		m_pPixelBuffer = NULL;
 	}
 
-	if (m_hBink)
+	if(m_hBink)
 		BinkClose(m_hBink);
 }
 
@@ -128,9 +129,9 @@ void CBinkPanel::SetColor(Color col)
 
 void CBinkPanel::Play(void)
 {
-	m_iCurrentFrame = 0;
+	m_iCurrentFrame   = 0;
 	m_flLastPaintTime = engine->GetAbsoluteTime();
-	m_bPlaying = true;
+	m_bPlaying        = true;
 }
 
 void CBinkPanel::Pause(void)
@@ -146,5 +147,5 @@ void CBinkPanel::Continue(void)
 void CBinkPanel::Stop(void)
 {
 	m_iCurrentFrame = 0;
-	m_bPlaying = false;
+	m_bPlaying      = false;
 }

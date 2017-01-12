@@ -35,19 +35,17 @@
 const int MAX_DEMOS = 32;
 
 /// Local client states
-typedef enum cactive_e
-{
-	ca_dedicated,		///< Dedicated server mode, client is unused
-	ca_disconnected,	///< Not talking to a server
-	ca_connecting,		///< Sending request packets to the server
-	ca_connected,		///< Netchan_t established, waiting for svc_serverdata
-	ca_uninitialized,	///< Not initialized yet
-	ca_active,			///< Game views should be displayed
+typedef enum cactive_e {
+	ca_dedicated,     ///< Dedicated server mode, client is unused
+	ca_disconnected,  ///< Not talking to a server
+	ca_connecting,    ///< Sending request packets to the server
+	ca_connected,     ///< Netchan_t established, waiting for svc_serverdata
+	ca_uninitialized, ///< Not initialized yet
+	ca_active,        ///< Game views should be displayed
 } cactive_t;
 
 /// Career states
-typedef enum CareerStateType_e
-{
+typedef enum CareerStateType_e {
 	CAREER_NONE    = 0,
 	CAREER_LOADING = 1,
 	CAREER_PLAYING = 2,

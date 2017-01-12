@@ -41,7 +41,7 @@ DemoApi implementation
 
 void Demo_WriteBuffer(int size, unsigned char *buffer)
 {
-	CL_WriteDemoUserMessage( buffer, size );
+	CL_WriteDemoUserMessage(buffer, size);
 };
 
 // clang-format off

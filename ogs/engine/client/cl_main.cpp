@@ -192,7 +192,7 @@ void CL_SendConnectPacket()
 	//	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
 	        255, 255, 255, 255, PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
-	
+
 	NET_SendPacket(strlen(data), data, adr);
 }
 
@@ -218,7 +218,7 @@ void CL_CheckForResend()
 		return;
 
 	double t1 = Sys_DoubleTime();
-	
+
 	if(!NET_StringToAdr(cls.servername, &adr))
 	{
 		Con_Printf("Bad server address\n");
@@ -234,7 +234,7 @@ void CL_CheckForResend()
 
 	if(adr.port == 0)
 		adr.port = BigShort(27500);
-	
+
 	double t2 = Sys_DoubleTime();
 
 	connect_time = realtime + t2 - t1; // for retransmit requests
@@ -343,7 +343,7 @@ void CL_ClearState()
 	Con_DPrintf("Clearing memory\n");
 	D_FlushCaches();
 	Mod_ClearAll();
-	
+
 	if(host_hunklevel) // FIXME: check this...
 		Hunk_FreeToLowMark(host_hunklevel);
 
@@ -363,11 +363,11 @@ void CL_ClearState()
 	// allocate the efrags and chain together into a free list
 	//
 	cl.free_efrags = cl_efrags;
-	
-	for(i = 0; i < MAX_EFRAGS - 1; i++)
+
+	for(i                         = 0; i < MAX_EFRAGS - 1; i++)
 		cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
-	
-	cl.free_efrags[i].entnext     = NULL;
+
+	cl.free_efrags[i].entnext = NULL;
 }
 
 /*
@@ -383,29 +383,29 @@ void CL_Disconnect()
 {
 	// Stop sounds (especially looping!)
 	S_StopAllSounds(true);
-	
+
 	cls.connect_time = -1; // 0
-	
+
 	// bring the console down and fade the colors back to normal
 	//	SCR_BringDownConsole();
-	
+
 	// if running a local server, shut it down
 	if(cls.demoplayback) // TODO: demoplayback -> clientstate?
 		CL_StopPlayback();
-	
+
 	mvStates[state]->OnDisconnect();
-	
+
 	cls.demoplayback = cls.timedemo = false;
-	cls.signon = 0;
-	
+	cls.signon                      = 0;
+
 	Cam_Reset();
-	
+
 	if(cls.download)
 	{
 		fclose(cls.download);
 		cls.download = NULL;
 	};
-	
+
 	CL_StopUpload();
 };
 
@@ -437,14 +437,14 @@ void CL_User_f()
 	{
 		if(!cl.players[i].name[0])
 			continue;
-		
+
 		if(cl.players[i].userid == uid || !strcmp(cl.players[i].name, Cmd_Argv(1)))
 		{
 			Info_Print(cl.players[i].userinfo);
 			return;
 		}
 	}
-	
+
 	Con_Printf("User not on server\n");
 }
 
@@ -458,10 +458,10 @@ Dump userids for all current players
 void CL_Users_f()
 {
 	int c = 0;
-	
+
 	Con_Printf("userid frags name\n");
 	Con_Printf("------ ----- ----\n");
-	
+
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(cl.players[i].name[0])
@@ -1016,7 +1016,7 @@ void CL_Init()
 {
 	extern cvar_t baseskin;
 	extern cvar_t noskins;
-	
+
 	char st[80];
 
 	sprintf(st, "%4.2f-%04d", VERSION, build_number());

@@ -11,7 +11,8 @@ using namespace vgui;
 
 DECLARE_BUILD_FACTORY(CCvarSlider);
 
-CCvarSlider::CCvarSlider(Panel *parent, const char *name) : Slider(parent, name)
+CCvarSlider::CCvarSlider(Panel *parent, const char *name)
+    : Slider(parent, name)
 {
 	SetupSlider(0, 1, "", false);
 	m_bCreatedInCode = false;
@@ -19,7 +20,8 @@ CCvarSlider::CCvarSlider(Panel *parent, const char *name) : Slider(parent, name)
 	AddActionSignalTarget(this);
 }
 
-CCvarSlider::CCvarSlider(Panel *parent, const char *panelName, char const *caption, float minValue, float maxValue, char const *cvarname, bool bAllowOutOfRange) : Slider(parent, panelName)
+CCvarSlider::CCvarSlider(Panel *parent, const char *panelName, char const *caption, float minValue, float maxValue, char const *cvarname, bool bAllowOutOfRange)
+    : Slider(parent, panelName)
 {
 	AddActionSignalTarget(this);
 	SetupSlider(minValue, maxValue, cvarname, bAllowOutOfRange);
@@ -44,7 +46,7 @@ void CCvarSlider::SetupSlider(float minValue, float maxValue, const char *cvarna
 
 	Q_strncpy(m_szCvarName, cvarname, sizeof(m_szCvarName));
 
-	m_bModifiedOnce = false;
+	m_bModifiedOnce    = false;
 	m_bAllowOutOfRange = bAllowOutOfRange;
 
 	Reset();
@@ -58,17 +60,17 @@ void CCvarSlider::ApplySettings(KeyValues *inResourceData)
 {
 	BaseClass::ApplySettings(inResourceData);
 
-	if (!m_bCreatedInCode)
+	if(!m_bCreatedInCode)
 	{
-		float minValue = inResourceData->GetFloat("minvalue", 0);
-		float maxValue = inResourceData->GetFloat("maxvalue", 1);
-		const char *cvarname = inResourceData->GetString("cvar_name", "");
-		bool bAllowOutOfRange = inResourceData->GetInt("allowoutofrange", 0) != 0;
+		float       minValue         = inResourceData->GetFloat("minvalue", 0);
+		float       maxValue         = inResourceData->GetFloat("maxvalue", 1);
+		const char *cvarname         = inResourceData->GetString("cvar_name", "");
+		bool        bAllowOutOfRange = inResourceData->GetInt("allowoutofrange", 0) != 0;
 		SetupSlider(minValue, maxValue, cvarname, bAllowOutOfRange);
 
-		if (GetParent())
+		if(GetParent())
 		{
-			if (dynamic_cast<vgui::PropertyPage*>(GetParent()) && GetParent()->GetParent())
+			if(dynamic_cast<vgui::PropertyPage *>(GetParent()) && GetParent()->GetParent())
 				GetParent()->GetParent()->AddActionSignalTarget(this);
 			else
 				GetParent()->AddActionSignalTarget(this);
@@ -80,7 +82,7 @@ void CCvarSlider::GetSettings(KeyValues *outResourceData)
 {
 	BaseClass::GetSettings(outResourceData);
 
-	if (!m_bCreatedInCode)
+	if(!m_bCreatedInCode)
 	{
 		outResourceData->SetFloat("minvalue", m_flMinValue);
 		outResourceData->SetFloat("maxvalue", m_flMaxValue);
@@ -102,7 +104,7 @@ void CCvarSlider::SetMinMaxValues(float minValue, float maxValue, bool bSetTickD
 {
 	SetRange((int)(CVARSLIDER_SCALE_FACTOR * minValue), (int)(CVARSLIDER_SCALE_FACTOR * maxValue));
 
-	if (bSetTickDisplay)
+	if(bSetTickDisplay)
 	{
 		char szMin[32];
 		char szMax[32];
@@ -125,10 +127,10 @@ void CCvarSlider::Paint(void)
 {
 	float curvalue = engine->pfnGetCvarFloat(m_szCvarName);
 
-	if (curvalue != m_fStartValue)
+	if(curvalue != m_fStartValue)
 	{
-		int val = (int)(CVARSLIDER_SCALE_FACTOR * curvalue);
-		m_fStartValue = curvalue;
+		int val         = (int)(CVARSLIDER_SCALE_FACTOR * curvalue);
+		m_fStartValue   = curvalue;
 		m_fCurrentValue = curvalue;
 
 		SetValue(val);
@@ -140,11 +142,11 @@ void CCvarSlider::Paint(void)
 
 void CCvarSlider::ApplyChanges(void)
 {
-	if (m_bModifiedOnce)
+	if(m_bModifiedOnce)
 	{
 		m_iStartValue = GetValue();
 
-		if (m_bAllowOutOfRange)
+		if(m_bAllowOutOfRange)
 			m_fStartValue = m_fCurrentValue;
 		else
 			m_fStartValue = (float)m_iStartValue / CVARSLIDER_SCALE_FACTOR;
@@ -157,7 +159,7 @@ void CCvarSlider::ApplyChanges(void)
 
 float CCvarSlider::GetSliderValue(void)
 {
-	if (m_bAllowOutOfRange)
+	if(m_bAllowOutOfRange)
 		return m_fCurrentValue;
 	else
 		return ((float)GetValue()) / CVARSLIDER_SCALE_FACTOR;
@@ -170,7 +172,7 @@ void CCvarSlider::SetSliderValue(float fValue)
 
 	m_iLastSliderValue = GetValue();
 
-	if (m_fCurrentValue != fValue)
+	if(m_fCurrentValue != fValue)
 	{
 		m_fCurrentValue = fValue;
 		m_bModifiedOnce = true;
@@ -179,19 +181,19 @@ void CCvarSlider::SetSliderValue(float fValue)
 
 void CCvarSlider::Reset(void)
 {
-	m_fStartValue = engine->pfnGetCvarFloat(m_szCvarName);
+	m_fStartValue   = engine->pfnGetCvarFloat(m_szCvarName);
 	m_fCurrentValue = m_fStartValue;
 
 	int value = (int)(CVARSLIDER_SCALE_FACTOR * m_fStartValue);
 	SetValue(value);
 
-	m_iStartValue = GetValue();
+	m_iStartValue      = GetValue();
 	m_iLastSliderValue = m_iStartValue;
 }
 
 bool CCvarSlider::HasBeenModified(void)
 {
-	if (GetValue() != m_iStartValue)
+	if(GetValue() != m_iStartValue)
 		m_bModifiedOnce = true;
 
 	return m_bModifiedOnce;
@@ -199,12 +201,12 @@ bool CCvarSlider::HasBeenModified(void)
 
 void CCvarSlider::OnSliderMoved(void)
 {
-	if (HasBeenModified())
+	if(HasBeenModified())
 	{
-		if (m_iLastSliderValue != GetValue())
+		if(m_iLastSliderValue != GetValue())
 		{
 			m_iLastSliderValue = GetValue();
-			m_fCurrentValue = ((float) m_iLastSliderValue) / CVARSLIDER_SCALE_FACTOR;
+			m_fCurrentValue    = ((float)m_iLastSliderValue) / CVARSLIDER_SCALE_FACTOR;
 		}
 
 		PostActionSignal(new KeyValues("ControlModified"));
@@ -213,6 +215,6 @@ void CCvarSlider::OnSliderMoved(void)
 
 void CCvarSlider::OnApplyChanges(void)
 {
-	if (!m_bCreatedInCode)
+	if(!m_bCreatedInCode)
 		ApplyChanges();
 }

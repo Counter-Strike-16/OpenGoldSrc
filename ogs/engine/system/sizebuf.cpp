@@ -80,7 +80,7 @@ void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 		if(length > buf->maxsize)
 			Con_DPrintf("%s: %i is > full buffer size on %s, ignoring", __FUNCTION__, length, buffername);
 #else  // REHLDS_FIXES
-		
+
 		if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
 		{
 			if(!buf->maxsize)
@@ -120,7 +120,7 @@ void SZ_Write(sizebuf_t *buf, const void *data, int length)
 
 void SZ_Print(sizebuf_t *buf, const char *data)
 {
-	int len = Q_strlen(data) + 1;
+	int   len   = Q_strlen(data) + 1;
 	byte *pData = (byte *)SZ_GetSpace(buf, len - 1) - 1;
 
 	if(buf->data[buf->cursize - 1])

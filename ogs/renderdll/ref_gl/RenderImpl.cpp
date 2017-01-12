@@ -36,21 +36,17 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CRendererImpl, IRenderer, OGS_RENDERER_INTERFA
 
 IFileSystem *gpFileSystem = nullptr;
 
-CRendererImpl::CRendererImpl()
-{
-};
+CRendererImpl::CRendererImpl(){};
 
-CRendererImpl::~CRendererImpl()
-{
-};
+CRendererImpl::~CRendererImpl(){};
 
 bool CRendererImpl::Init(CreateInterfaceFn afnEngineFactory, void *ahInstance, void *apWndProc)
 {
-	gpFileSystem = (IFileSystem*)afnEngineFactory(FILESYSTEM_INTERFACE_VERSION, nullptr);
-	
+	gpFileSystem = (IFileSystem *)afnEngineFactory(FILESYSTEM_INTERFACE_VERSION, nullptr);
+
 	if(!mpFileSystem)
 		return false;
-	
+
 	R_Init();
 	return true;
 };
@@ -75,9 +71,38 @@ void CRendererImpl::EndRegistration()
 	R_EndRegistration();
 };
 
+void CRendererImpl::SetRenderMode(int nMode)
+{
+	switch(mode)
+	{
+	case kRenderNormal:
+	default:
+		pglDisable(GL_BLEND);
+		pglDisable(GL_ALPHA_TEST);
+		pglTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		break;
+	case kRenderTransColor:
+	case kRenderTransAlpha:
+	case kRenderTransTexture:
+		// NOTE: TriAPI doesn't have 'solid' mode
+		pglEnable(GL_BLEND);
+		pglDisable(GL_ALPHA_TEST);
+		pglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		pglTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		break;
+	case kRenderGlow:
+	case kRenderTransAdd:
+		pglEnable(GL_BLEND);
+		pglDisable(GL_ALPHA_TEST);
+		pglBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		pglTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		break;
+	};
+};
+
 void CRendererImpl::BeginRendering(int nMode)
 {
-	switch( nMode )
+	switch(nMode)
 	{
 	case TRI_POINTS:
 		mode = GL_POINTS;
@@ -106,13 +131,13 @@ void CRendererImpl::BeginRendering(int nMode)
 		break;
 	};
 
-	pglBegin( mode );
+	pglBegin(mode);
 };
 
 void CRendererImpl::EndRendering()
 {
 	pglEnd();
-	pglDisable( GL_ALPHA_TEST );
+	pglDisable(GL_ALPHA_TEST);
 };
 
 struct model_s *CRendererImpl::RegisterModel(const char *asName)

@@ -67,7 +67,7 @@ edict_t *ED_Alloc()
 	{
 		if(!g_psv.max_edicts)
 			Sys_Error("%s: no edicts yet", __FUNCTION__);
-		
+
 		Sys_Error("%s: no free edicts", __FUNCTION__);
 	}
 
@@ -226,21 +226,21 @@ char *ED_ParseEdict(char *data, edict_t *ent)
 			data = COM_Parse(data);
 			if(com_token[0] == '}')
 				break;
-			
+
 			if(!data)
 				Host_Error("%s: EOF without closing brace", __FUNCTION__);
 
 			Q_strncpy(keyname, com_token, ARRAYSIZE(keyname) - 1);
 			keyname[ARRAYSIZE(keyname) - 1] = 0;
-			
+
 			// Remove tail spaces
-			for(n = Q_strlen(keyname) - 1; n >= 0 && keyname[n] == ' '; n--)
+			for(n          = Q_strlen(keyname) - 1; n >= 0 && keyname[n] == ' '; n--)
 				keyname[n] = 0;
 
 			data = COM_Parse(data);
 			if(!data)
 				Host_Error("%s: EOF without closing brace", __FUNCTION__);
-			
+
 			if(com_token[0] == '}')
 				Host_Error("%s: closing brace without data", __FUNCTION__);
 

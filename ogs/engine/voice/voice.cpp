@@ -42,17 +42,11 @@ qboolean Voice_IsRecording()
 	return FALSE;
 };
 
-void Voice_RegisterCvars()
-{
-};
+void Voice_RegisterCvars(){};
 
-void Voice_Deinit()
-{
-};
+void Voice_Deinit(){};
 
-void Voice_Idle(float frametime)
-{
-};
+void Voice_Idle(float frametime){};
 
 qboolean Voice_RecordStop()
 {

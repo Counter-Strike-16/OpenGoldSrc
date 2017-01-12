@@ -14,7 +14,8 @@ using namespace vgui;
 class CInlineEditPanel : public vgui::Panel
 {
 public:
-	CInlineEditPanel(void) : vgui::Panel(NULL, "InlineEditPanel")
+	CInlineEditPanel(void)
+	    : vgui::Panel(NULL, "InlineEditPanel")
 	{
 	}
 
@@ -29,7 +30,7 @@ public:
 
 	virtual void OnKeyCodeTyped(KeyCode code)
 	{
-		if (GetParent())
+		if(GetParent())
 			GetParent()->OnKeyCodeTyped(code);
 	}
 
@@ -41,17 +42,18 @@ public:
 
 	void OnMousePressed(vgui::MouseCode code)
 	{
-		if (GetParent())
+		if(GetParent())
 			GetParent()->OnMousePressed(code);
 	}
 };
 
-VControlsListPanel::VControlsListPanel(vgui::Panel *parent, const char *listName) : vgui::SectionedListPanel(parent, listName)
+VControlsListPanel::VControlsListPanel(vgui::Panel *parent, const char *listName)
+    : vgui::SectionedListPanel(parent, listName)
 {
-	m_bCaptureMode = false;
-	m_nClickRow = 0;
+	m_bCaptureMode     = false;
+	m_nClickRow        = 0;
 	m_pInlineEditPanel = new CInlineEditPanel();
-	m_hFont = INVALID_FONT;
+	m_hFont            = INVALID_FONT;
 }
 
 VControlsListPanel::~VControlsListPanel(void)
@@ -72,7 +74,7 @@ void VControlsListPanel::StartCaptureMode(HCursor hCursor)
 	input()->SetMouseFocus(m_pInlineEditPanel->GetVPanel());
 	input()->SetMouseCapture(m_pInlineEditPanel->GetVPanel());
 
-	if (hCursor)
+	if(hCursor)
 	{
 		m_pInlineEditPanel->SetCursor(hCursor);
 		vgui::input()->GetCursorPos(m_iMouseX, m_iMouseY);
@@ -87,12 +89,12 @@ void VControlsListPanel::EndCaptureMode(HCursor hCursor)
 	RequestFocus();
 	input()->SetMouseFocus(GetVPanel());
 
-	if (hCursor)
+	if(hCursor)
 	{
 		m_pInlineEditPanel->SetCursor(hCursor);
 		surface()->SetCursor(hCursor);
 
-		if (hCursor != dc_none)
+		if(hCursor != dc_none)
 			vgui::input()->SetCursorPos(m_iMouseX, m_iMouseY);
 	}
 }
@@ -114,9 +116,9 @@ bool VControlsListPanel::IsCapturing(void)
 
 void VControlsListPanel::OnMousePressed(vgui::MouseCode code)
 {
-	if (IsCapturing())
+	if(IsCapturing())
 	{
-		if (GetParent())
+		if(GetParent())
 			GetParent()->OnMousePressed(code);
 	}
 	else
@@ -125,7 +127,7 @@ void VControlsListPanel::OnMousePressed(vgui::MouseCode code)
 
 void VControlsListPanel::OnMouseDoublePressed(vgui::MouseCode code)
 {
-	if (IsItemIDValid(GetSelectedItem()))
+	if(IsItemIDValid(GetSelectedItem()))
 		OnKeyCodePressed(KEY_ENTER);
 	else
 		BaseClass::OnMouseDoublePressed(code);

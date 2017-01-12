@@ -1382,10 +1382,10 @@ qboolean DELTA_ParseDescription(char *name, delta_t **ppdesc, char *pstream)
 	{
 		// Parse delta name
 		pstream = COM_Parse(pstream);
-		
+
 		if(com_token[0] == 0)
 			break;
-		
+
 		if(Q_stricmp(com_token, name))
 			DELTA_SkipDescription(&pstream);
 		else
@@ -1420,10 +1420,10 @@ qboolean DELTA_ParseDescription(char *name, delta_t **ppdesc, char *pstream)
 				pstream = COM_Parse(pstream);
 				if(com_token[0] == 0)
 					break;
-				
+
 				if(!Q_stricmp(com_token, "}"))
 					break;
-				
+
 				if(Q_stricmp(com_token, "{"))
 				{
 					Sys_Error("%s:  Expecting {, got %s\n", __FUNCTION__, com_token); // Was Con_Printf here

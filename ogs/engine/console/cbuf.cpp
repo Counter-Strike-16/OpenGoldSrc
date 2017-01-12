@@ -25,19 +25,19 @@
  *	you do not wish to do so, delete this exception statement from your
  *	version.
  */
- 
- /// @file
- 
- //#include "precompiled.hpp"
- #include "console/cmd.hpp"
- #include "system/sizebuf.hpp"
- #include "system/common.hpp"
- #include "console/console.hpp"
- #include "memory/zone.hpp"
- 
- sizebuf_t cmd_text;
- 
- void Cbuf_Init()
+
+/// @file
+
+//#include "precompiled.hpp"
+#include "console/cmd.hpp"
+#include "system/sizebuf.hpp"
+#include "system/common.hpp"
+#include "console/console.hpp"
+#include "memory/zone.hpp"
+
+sizebuf_t cmd_text;
+
+void Cbuf_Init()
 {
 	SZ_Alloc("cmd_text", &cmd_text, MAX_CMD_BUFFER);
 }

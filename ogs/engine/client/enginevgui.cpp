@@ -378,8 +378,8 @@ void CEngineVGui::OnLevelLoadingFinished()
 	meLastProgressPoint = PROGRESS_NONE;
 
 	// clear any error message
-	gfExtendedError               = false;
-	
+	gfExtendedError = false;
+
 	gsDisconnectReason[0]         = 0;
 	gsExtendedDisconnectReason[0] = 0;
 
@@ -616,7 +616,7 @@ void CEngineVGui::Simulate()
 
 		RECT rect;
 		::GetClientRect(*pmainwindow, &rect);
-		
+
 		int w = rect.right;
 		int h = rect.bottom;
 

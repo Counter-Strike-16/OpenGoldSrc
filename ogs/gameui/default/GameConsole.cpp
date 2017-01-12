@@ -16,7 +16,7 @@
 #include "common.h"
 #include "encode.h"
 
-CGameConsole g_GameConsole;
+CGameConsole  g_GameConsole;
 CGameConsole *g_pGameConsole = NULL;
 
 CGameConsole &GameConsole(void)
@@ -58,19 +58,19 @@ void CGameConsole::Initialize(void)
 
 void CGameConsole::Activate(void)
 {
-	if (!m_bInitialized)
+	if(!m_bInitialized)
 		return;
 
-	if (BasePanel()->IsInitialLoading())
+	if(BasePanel()->IsInitialLoading())
 	{
 		m_bActivatePending = true;
 		return;
 	}
 
-	if (g_pcvarEnableConsole->value == 0)
+	if(g_pcvarEnableConsole->value == 0)
 		return;
 
-	if (vgui::surface()->GetModalPanel() || vgui::input()->GetAppModalSurface())
+	if(vgui::surface()->GetModalPanel() || vgui::input()->GetAppModalSurface())
 		return;
 
 	m_pConsole->Activate();
@@ -79,7 +79,7 @@ void CGameConsole::Activate(void)
 
 void CGameConsole::Hide(void)
 {
-	if (!m_bInitialized)
+	if(!m_bInitialized)
 		return;
 
 	m_pConsole->Hide();
@@ -88,7 +88,7 @@ void CGameConsole::Hide(void)
 
 void CGameConsole::Clear(void)
 {
-	if (!m_bInitialized)
+	if(!m_bInitialized)
 		return;
 
 	m_pConsole->Clear();
@@ -96,10 +96,10 @@ void CGameConsole::Clear(void)
 
 bool CGameConsole::IsConsoleVisible(void)
 {
-	if (!m_bInitialized)
+	if(!m_bInitialized)
 		return false;
 
-	if (vgui::surface()->GetModalPanel() || vgui::input()->GetAppModalSurface())
+	if(vgui::surface()->GetModalPanel() || vgui::input()->GetAppModalSurface())
 		return false;
 
 	return m_pConsole->IsVisible();
@@ -107,10 +107,10 @@ bool CGameConsole::IsConsoleVisible(void)
 
 void CGameConsole::Printf(const char *format, ...)
 {
-	if (!m_bInitialized)
+	if(!m_bInitialized)
 		return;
 
-	va_list argptr;
+	va_list     argptr;
 	static char text[4096];
 
 	va_start(argptr, format);
@@ -122,10 +122,10 @@ void CGameConsole::Printf(const char *format, ...)
 
 void CGameConsole::DPrintf(const char *format, ...)
 {
-	if (!m_bInitialized)
+	if(!m_bInitialized)
 		return;
 
-	va_list argptr;
+	va_list     argptr;
 	static char text[4096];
 
 	va_start(argptr, format);
@@ -137,7 +137,7 @@ void CGameConsole::DPrintf(const char *format, ...)
 
 void CGameConsole::SetParent(int parent)
 {
-	if (!m_bInitialized)
+	if(!m_bInitialized)
 		return;
 
 	m_pConsole->SetParent(static_cast<vgui::VPANEL>(parent));
@@ -145,9 +145,9 @@ void CGameConsole::SetParent(int parent)
 
 void CGameConsole::CheckPending(void)
 {
-	if (m_bActivatePending)
+	if(m_bActivatePending)
 	{
-		if (!IsConsoleVisible())
+		if(!IsConsoleVisible())
 			Activate();
 	}
 }

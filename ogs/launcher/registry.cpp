@@ -8,13 +8,14 @@ class CRegistry : public IRegistry
 public:
 	CRegistry();
 	virtual ~CRegistry();
-	
+
 	void Init();
 	void Shutdown();
 	int ReadInt(const char *key, int defaultValue = 0);
 	void WriteInt(const char *key, int value);
 	const char *ReadString(const char *key, const char *defaultValue = NULL);
 	void WriteString(const char *key, const char *value);
+
 private:
 	bool m_bValid;
 	HKEY m_hKey;

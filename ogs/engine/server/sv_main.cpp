@@ -320,7 +320,7 @@ delta_t *SV_LookupDelta(char *name)
 	{
 		if(!Q_stricmp(name, p->name))
 			return p->delta;
-		
+
 		p = p->next;
 	}
 

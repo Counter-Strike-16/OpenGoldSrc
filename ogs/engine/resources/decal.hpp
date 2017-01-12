@@ -67,11 +67,11 @@ typedef struct lumplist_s
 extern cachewad_t *decal_wad;
 extern cachewad_t *menu_wad;
 
-extern char        szCustName[10];
-extern char        decal_names[MAX_DECALS][16];
+extern char szCustName[10];
+extern char decal_names[MAX_DECALS][16];
 
-extern qboolean    m_bDrawInitialized;
-extern qboolean    gfCustomBuild;
+extern qboolean m_bDrawInitialized;
+extern qboolean gfCustomBuild;
 
 void Draw_Shutdown();
 void Draw_DecalShutdown();

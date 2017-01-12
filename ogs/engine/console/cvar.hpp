@@ -38,7 +38,7 @@
 const int MAX_CVAR_VALUE = 1024;
 
 #ifdef HOOK_ENGINE
-	#define cvar_vars (*pcvar_vars)
+#define cvar_vars (*pcvar_vars)
 #endif
 
 typedef struct cvar_s cvar_t;

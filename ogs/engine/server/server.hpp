@@ -60,26 +60,26 @@ typedef struct decalname_s decalname_t;
 
 typedef struct server_s
 {
-	qboolean               active;
-	qboolean               paused;
-	qboolean               loadgame;
-	
-	double                 time;
-	double                 oldtime;
-	
-	int                    lastcheck;
-	double                 lastchecktime;
-	
-	char                   name[64];
-	char                   oldname[64];
-	char                   startspot[64];
-	char                   modelname[64];
-	
-	struct model_s *       worldmodel;
-	CRC32_t                worldmapCRC;
-	
-	unsigned char          clientdllmd5[16];
-	
+	qboolean active;
+	qboolean paused;
+	qboolean loadgame;
+
+	double time;
+	double oldtime;
+
+	int    lastcheck;
+	double lastchecktime;
+
+	char name[64];
+	char oldname[64];
+	char startspot[64];
+	char modelname[64];
+
+	struct model_s *worldmodel;
+	CRC32_t         worldmapCRC;
+
+	unsigned char clientdllmd5[16];
+
 	resource_t             resourcelist[MAX_RESOURCE_LIST];
 	int                    num_resources;
 	consistency_t          consistency_list[MAX_CONSISTENCY_LIST];
@@ -100,23 +100,23 @@ typedef struct server_s
 	edict_t *              edicts;
 	struct entity_state_s *baselines;
 	extra_baselines_t *    instance_baselines;
-	
-	server_state_t         state;
-	
-	sizebuf_t              datagram;
-	unsigned char          datagram_buf[MAX_DATAGRAM];
-	
-	sizebuf_t              reliable_datagram;
-	unsigned char          reliable_datagram_buf[MAX_DATAGRAM];
-	
-	sizebuf_t              multicast;
-	unsigned char          multicast_buf[1024];
-	
-	sizebuf_t              spectator;
-	unsigned char          spectator_buf[1024];
-	
-	sizebuf_t              signon;
-	unsigned char          signon_data[32768];
+
+	server_state_t state;
+
+	sizebuf_t     datagram;
+	unsigned char datagram_buf[MAX_DATAGRAM];
+
+	sizebuf_t     reliable_datagram;
+	unsigned char reliable_datagram_buf[MAX_DATAGRAM];
+
+	sizebuf_t     multicast;
+	unsigned char multicast_buf[1024];
+
+	sizebuf_t     spectator;
+	unsigned char spectator_buf[1024];
+
+	sizebuf_t     signon;
+	unsigned char signon_data[32768];
 } server_t;
 
 struct rehlds_server_t
@@ -151,46 +151,46 @@ typedef struct client_frame_s
 
 typedef struct client_s
 {
-	qboolean        active;
-	qboolean        spawned;
-	qboolean        fully_connected;
-	qboolean        connected;
-	qboolean        uploading;
-	qboolean        hasusrmsgs;
-	qboolean        has_force_unmodified;
-	
-	netchan_t       netchan;
-	
-	int             chokecount;
-	int             delta_sequence;
-	
-	qboolean        fakeclient;
-	qboolean        proxy;
-	
-	usercmd_t       lastcmd;
-	
-	double          connecttime;
-	double          cmdtime;
-	double          ignorecmdtime;
-	
-	float           latency;
-	float           packet_loss;
-	
-	double          localtime;
-	double          nextping;
-	double          svtimebase;
-	
-	sizebuf_t       datagram;
-	byte            datagram_buf[MAX_DATAGRAM];
-	
-	double          connection_started;
-	
-	double          next_messagetime;
-	double          next_messageinterval;
-	
-	qboolean        send_message;
-	qboolean        skip_message;
-	
+	qboolean active;
+	qboolean spawned;
+	qboolean fully_connected;
+	qboolean connected;
+	qboolean uploading;
+	qboolean hasusrmsgs;
+	qboolean has_force_unmodified;
+
+	netchan_t netchan;
+
+	int chokecount;
+	int delta_sequence;
+
+	qboolean fakeclient;
+	qboolean proxy;
+
+	usercmd_t lastcmd;
+
+	double connecttime;
+	double cmdtime;
+	double ignorecmdtime;
+
+	float latency;
+	float packet_loss;
+
+	double localtime;
+	double nextping;
+	double svtimebase;
+
+	sizebuf_t datagram;
+	byte      datagram_buf[MAX_DATAGRAM];
+
+	double connection_started;
+
+	double next_messagetime;
+	double next_messageinterval;
+
+	qboolean send_message;
+	qboolean skip_message;
+
 	client_frame_t *frames;
 	event_state_t   events;
 	edict_t *       edict;
@@ -205,26 +205,26 @@ typedef struct client_s
 	int             topcolor;
 	int             bottomcolor;
 	int             entityId;
-	
-	resource_t      resourcesonhand;
-	resource_t      resourcesneeded;
-	
-	FileHandle_t    upload;
-	
-	qboolean        uploaddoneregistering;
-	
+
+	resource_t resourcesonhand;
+	resource_t resourcesneeded;
+
+	FileHandle_t upload;
+
+	qboolean uploaddoneregistering;
+
 	customization_t customdata;
-	
-	int             crcValue;
-	
-	int             lw;
-	int             lc;
-	
-	char            physinfo[MAX_INFO_STRING];
-	qboolean        m_bLoopback;
-	uint32          m_VoiceStreams[2];
-	double          m_lastvoicetime;
-	int             m_sendrescount;
+
+	int crcValue;
+
+	int lw;
+	int lc;
+
+	char     physinfo[MAX_INFO_STRING];
+	qboolean m_bLoopback;
+	uint32   m_VoiceStreams[2];
+	double   m_lastvoicetime;
+	int      m_sendrescount;
 } client_t;
 
 typedef struct rcon_failure_s rcon_failure_t;

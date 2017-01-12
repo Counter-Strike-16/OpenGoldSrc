@@ -34,7 +34,7 @@ public:
 
 public:
 	bool OpenBink(const char *filename, int flags);
-	void CloseBink(void);
+	void  CloseBink(void);
 	float GetPlayTime(void);
 	void SetColor(Color col);
 
@@ -44,18 +44,17 @@ public:
 	void Continue(void);
 	void Stop(void);
 	bool IsPlaying(void) { return m_bPlaying; }
-
 private:
-	HBINK m_hBink;
-	int m_iBinkFlags;
-	byte *m_pPixelBuffer;
-	int m_iPixelSize;
-	int m_iTextureId;
+	HBINK        m_hBink;
+	int          m_iBinkFlags;
+	byte *       m_pPixelBuffer;
+	int          m_iPixelSize;
+	int          m_iTextureId;
 	unsigned int m_iLastFrame;
 	unsigned int m_iCurrentFrame;
-	float m_flLastPaintTime;
-	bool m_bPlaying;
-	Color m_color;
+	float        m_flLastPaintTime;
+	bool         m_bPlaying;
+	Color        m_color;
 };
 
 #endif

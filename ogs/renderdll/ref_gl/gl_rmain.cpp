@@ -47,7 +47,7 @@ image_t *r_notexture;       // use for bad textures
 image_t *r_particletexture; // little dot for particles
 
 cl_entity_t *currententity;
-model_t * currentmodel;
+model_t *    currentmodel;
 
 cplane_t frustum[4];
 
@@ -86,24 +86,24 @@ cvar_t *r_nocull;
 cvar_t *r_lerpmodels;
 cvar_t *r_lefthand;
 
-cvar_t *r_bmodelinterp = NULL;
+cvar_t *r_bmodelinterp   = NULL;
 cvar_t *r_bmodelhighfrac = NULL;
-cvar_t *r_norefresh = NULL;
-cvar_t *r_drawentities = NULL;
-cvar_t *r_drawviewmodel = NULL;
-cvar_t *r_speeds = NULL;
-cvar_t *r_fullbright = NULL;
-cvar_t *r_decals = NULL;
-cvar_t *r_lightmap = NULL;
-cvar_t *r_shadows = NULL;
-cvar_t *r_mirroralpha = NULL;
-cvar_t *r_wateralpha = NULL;
-cvar_t *r_dynamic = NULL;
-cvar_t *r_novis = NULL;
-cvar_t *r_mmx = NULL;
-cvar_t *r_traceglow = NULL;
-cvar_t *r_wadtextures = NULL;
-cvar_t *r_glowshellfreq = NULL;
+cvar_t *r_norefresh      = NULL;
+cvar_t *r_drawentities   = NULL;
+cvar_t *r_drawviewmodel  = NULL;
+cvar_t *r_speeds         = NULL;
+cvar_t *r_fullbright     = NULL;
+cvar_t *r_decals         = NULL;
+cvar_t *r_lightmap       = NULL;
+cvar_t *r_shadows        = NULL;
+cvar_t *r_mirroralpha    = NULL;
+cvar_t *r_wateralpha     = NULL;
+cvar_t *r_dynamic        = NULL;
+cvar_t *r_novis          = NULL;
+cvar_t *r_mmx            = NULL;
+cvar_t *r_traceglow      = NULL;
+cvar_t *r_wadtextures    = NULL;
+cvar_t *r_glowshellfreq  = NULL;
 
 cvar_t *r_lightlevel; // FIXME: This is a HACK to get the client's light level
 
@@ -148,37 +148,37 @@ cvar_t *gl_texturealphamode;
 cvar_t *gl_texturesolidmode;
 cvar_t *gl_lockpvs;
 
-cvar_t *gl_vsync = NULL;
-cvar_t *gl_ztrick = NULL;
-cvar_t *gl_finish = NULL;
-cvar_t *gl_clear = NULL;
-cvar_t *gl_cull = NULL;
-cvar_t *gl_texsort = NULL;
-cvar_t *gl_smoothmodels = NULL;
-cvar_t *gl_affinemodels = NULL;
-cvar_t *gl_flashblend = NULL;
-cvar_t *gl_playermip = NULL;
-cvar_t *gl_nocolors = NULL;
-cvar_t *gl_keeptjunctions = NULL;
+cvar_t *gl_vsync            = NULL;
+cvar_t *gl_ztrick           = NULL;
+cvar_t *gl_finish           = NULL;
+cvar_t *gl_clear            = NULL;
+cvar_t *gl_cull             = NULL;
+cvar_t *gl_texsort          = NULL;
+cvar_t *gl_smoothmodels     = NULL;
+cvar_t *gl_affinemodels     = NULL;
+cvar_t *gl_flashblend       = NULL;
+cvar_t *gl_playermip        = NULL;
+cvar_t *gl_nocolors         = NULL;
+cvar_t *gl_keeptjunctions   = NULL;
 cvar_t *gl_reporttjunctions = NULL;
-cvar_t *gl_wateramp = NULL;
-cvar_t *gl_dither = NULL;
-cvar_t *gl_spriteblend = NULL;
-cvar_t *gl_polyoffset = NULL;
-cvar_t *gl_lightholes = NULL;
-cvar_t *gl_zmax = NULL;
-cvar_t *gl_alphamin = NULL;
-cvar_t *gl_overdraw = NULL;
-cvar_t *gl_watersides = NULL;
-cvar_t *gl_overbright = NULL;
-cvar_t *gl_envmapsize = NULL;
-cvar_t *gl_flipmatrix = NULL;
-cvar_t *gl_monolights = NULL;
-cvar_t *gl_fog = NULL;
-cvar_t *gl_wireframe = NULL;
-cvar_t *gl_reflectwater = NULL;
-cvar_t *gl_shaderprogram = NULL;
-cvar_t *gl_ansio = NULL;
+cvar_t *gl_wateramp         = NULL;
+cvar_t *gl_dither           = NULL;
+cvar_t *gl_spriteblend      = NULL;
+cvar_t *gl_polyoffset       = NULL;
+cvar_t *gl_lightholes       = NULL;
+cvar_t *gl_zmax             = NULL;
+cvar_t *gl_alphamin         = NULL;
+cvar_t *gl_overdraw         = NULL;
+cvar_t *gl_watersides       = NULL;
+cvar_t *gl_overbright       = NULL;
+cvar_t *gl_envmapsize       = NULL;
+cvar_t *gl_flipmatrix       = NULL;
+cvar_t *gl_monolights       = NULL;
+cvar_t *gl_fog              = NULL;
+cvar_t *gl_wireframe        = NULL;
+cvar_t *gl_reflectwater     = NULL;
+cvar_t *gl_shaderprogram    = NULL;
+cvar_t *gl_ansio            = NULL;
 
 cvar_t *gl_3dlabs_broken;
 
@@ -188,7 +188,7 @@ cvar_t *vid_ref;
 
 cvar_t *v_lightgamma = NULL;
 cvar_t *v_brightness = NULL;
-cvar_t *v_gamma = NULL;
+cvar_t *v_gamma      = NULL;
 
 /*
 =================
@@ -205,7 +205,7 @@ qboolean R_CullBox(vec3_t mins, vec3_t maxs)
 	for(int i = 0; i < 4; i++)
 		if(BOX_ON_PLANE_SIDE(mins, maxs, &frustum[i]) == 2)
 			return true;
-	
+
 	return false;
 }
 

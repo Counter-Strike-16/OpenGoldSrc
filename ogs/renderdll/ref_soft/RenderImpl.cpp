@@ -35,21 +35,17 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CRenderImpl, IRender, OGS_RENDER_INTERFACE_VER
 
 IFileSystem *gpFileSystem = nullptr;
 
-CRenderImpl::CRenderImpl()
-{
-};
+CRenderImpl::CRenderImpl(){};
 
-CRenderImpl::~CRenderImpl()
-{
-};
+CRenderImpl::~CRenderImpl(){};
 
 bool CRenderImpl::Init(CreateInterfaceFn afnEngineFactory, void *ahInstance, void *apWndProc)
 {
-	gpFileSystem = (IFileSystem*)afnEngineFactory(FILESYSTEM_INTERFACE_VERSION, nullptr);
-	
+	gpFileSystem = (IFileSystem *)afnEngineFactory(FILESYSTEM_INTERFACE_VERSION, nullptr);
+
 	if(!gpFileSystem)
 		return false;
-	
+
 	R_Init();
 	return true;
 };
