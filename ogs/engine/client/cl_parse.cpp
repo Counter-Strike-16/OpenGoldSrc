@@ -1042,14 +1042,13 @@ CL_ParseStaticSound
 void CL_ParseStaticSound()
 {
 	vec3_t org;
-	int    sound_num, vol, atten;
-	int    i;
-
-	for(i      = 0; i < 3; i++)
+	
+	for(int i = 0; i < 3; ++i)
 		org[i] = MSG_ReadCoord();
-	sound_num  = MSG_ReadByte();
-	vol        = MSG_ReadByte();
-	atten      = MSG_ReadByte();
+	
+	int sound_num  = MSG_ReadByte();
+	int vol        = MSG_ReadByte();
+	int atten      = MSG_ReadByte();
 
 	S_StaticSound(cl.sound_precache[sound_num], org, vol, atten);
 };
@@ -1235,7 +1234,7 @@ void CL_ParseTimeScale()
 	float fTimeScale = MSG_ReadFloat();
 };
 
-void CL_ParseResouceLocation()
+void CL_ParseResourceLocation()
 {
 	// sv_downloadurl
 	char *sURL = MSG_ReadString();
@@ -1252,7 +1251,7 @@ and sent it back to the server
 void CL_ParseCvarValue()
 {
 	const char *cvarName = MSG_ReadString();
-	convar_t *  cvar     = Cvar_FindVar(cvarName);
+	cvar_t *cvar = Cvar_FindVar(cvarName);
 
 	// build the answer
 	MSG_WriteByte(&cls.netchan.message, clc_requestcvarvalue);
@@ -1271,7 +1270,7 @@ void CL_ParseCvarValue2()
 {
 	int         requestID = MSG_ReadLong();
 	const char *cvarName  = MSG_ReadString();
-	convar_t *  cvar      = Cvar_FindVar(cvarName);
+	cvar_t *  cvar      = Cvar_FindVar(cvarName);
 
 	// build the answer
 	MSG_WriteByte(&cls.netchan.message, clc_requestcvarvalue2);

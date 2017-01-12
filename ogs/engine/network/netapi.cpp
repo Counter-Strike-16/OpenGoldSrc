@@ -136,6 +136,8 @@ void NET_CancelAllRequests()
 
 }; // namespace
 
+// clang-format off
+
 net_api_t gNetAPI =
     {
         NET_Init, // Net_Config(true)?
@@ -152,3 +154,5 @@ net_api_t gNetAPI =
         Info_ValueForKey,
         Info_RemoveKey,
         Info_SetValueForKey};
+
+// clang-format on

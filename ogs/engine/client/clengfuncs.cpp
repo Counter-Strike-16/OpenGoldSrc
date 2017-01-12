@@ -30,9 +30,11 @@
 #include "system/system.hpp"
 #include "client/view.hpp"
 #include "input/keys.hpp"
+#include "graphics/spriteapi.hpp"
 
 namespace
 {
+
 void EngFunc_FillRGBA(int x, int y, int width, int height, int r, int g, int b, int a)
 {
 	float x1 = x, y1 = y, w1 = width, h1 = height;
@@ -142,7 +144,34 @@ int EngFunc_ClientCmd(char *szCmdString)
 	return 1;
 };
 
-void EngFunc_GetPlayerInfo(int ent_num, hud_player_info_t *pinfo){};
+void EngFunc_GetPlayerInfo(int ent_num, hud_player_info_t *pinfo)
+{
+	player_info_t	*player;
+	cl_entity_t	*ent;
+	qboolean		spec = false;
+
+	ent = CL_GetEntityByIndex( ent_num );
+	ent_num -= 1; // player list if offset by 1 from ents
+
+	if( ent_num >= cl.maxclients || ent_num < 0 || !cl.players[ent_num].name[0] )
+	{
+		Q_memset( pinfo, 0, sizeof( *pinfo ));
+		return;
+	}
+
+	player = &cl.players[ent_num];
+	pinfo->thisplayer = ( ent_num == cl.playernum ) ? true : false;
+	if( ent ) spec = ent->curstate.spectator;
+
+	pinfo->name = player->name;
+	pinfo->model = player->model;
+
+	pinfo->spectator = spec;		
+	pinfo->ping = player->ping;
+	pinfo->packetloss = player->packet_loss;
+	pinfo->topcolor = Q_atoi( Info_ValueForKey( player->userinfo, "topcolor" ));
+	pinfo->bottomcolor = Q_atoi( Info_ValueForKey( player->userinfo, "bottomcolor" ));
+};
 
 void EngFunc_PlaySoundByName(char *szSound, float volume)
 {
@@ -291,7 +320,17 @@ void EngFunc_SetViewAngles(float *angles)
 		VectorCopy(angles, cl.refdef.cl_viewangles);
 };
 
-int EngFunc_GetMaxClients(){};
+/*
+====================
+CL_GetMaxClients
+
+Render callback for studio models
+====================
+*/
+int EngFunc_GetMaxClients() // CL_
+{
+	return cl.maxclients;
+};
 
 const char *EngFunc_PhysInfo_ValueForKey(const char *key)
 {
@@ -324,7 +363,9 @@ int EngFunc_CheckParm(char *parm, char **ppnext)
 	return 0;
 };
 
-void EngFunc_GetMousePosition(int *mx, int *my){};
+void EngFunc_GetMousePosition(int *mx, int *my)
+{
+};
 
 int EngFunc_IsNoClipping()
 {
@@ -336,33 +377,72 @@ int EngFunc_IsNoClipping()
 	return pl->curstate.movetype == MOVETYPE_NOCLIP;
 };
 
-struct cl_entity_s *EngFunc_GetLocalPlayer(){};
+struct cl_entity_s *EngFunc_GetLocalPlayer()
+{
+};
 
 struct cl_entity_s *EngFunc_GetViewModel()
 {
 	return &clgame.viewent;
 };
 
-struct cl_entity_s *EngFunc_GetEntityByIndex(int idx){};
+struct cl_entity_s *EngFunc_GetEntityByIndex(int idx)
+{
+};
 
 float EngFunc_GetClientTime()
 {
 	return cl.time;
 };
 
-int EngFunc_PM_PointContents(float *point, int *truecontents){};
+int EngFunc_PM_PointContents(float *point, int *truecontents)
+{
+	int	cont, truecont;
 
-int EngFunc_PM_WaterEntity(float *p){};
+	truecont = cont = CL_TruePointContents( p );
+	if( truecontents )
+		*truecontents = truecont;
 
-struct pmtrace_s *EngFunc_PM_TraceLine(float *start, float *end, int flags, int usehull, int ignore_pe){};
+	if( cont <= CONTENTS_CURRENT_0 && cont >= CONTENTS_CURRENT_DOWN )
+		cont = CONTENTS_WATER;
+	
+	return cont;
+};
 
-struct model_s *EngFunc_CL_LoadModel(const char *modelname, int *index){};
+int PM_WaterEntity(float *p)
+{
+};
 
-int EngFunc_CL_CreateVisibleEntity(int type, struct cl_entity_s *ent){};
+struct pmtrace_s *PM_TraceLine(float *start, float *end, int flags, int usehull, int ignore_pe)
+{
+};
 
-void EngFunc_PlaySoundByNameAtLocation(char *szSound, float volume, float *origin){};
+struct model_s *CL_LoadModel(const char *modelname, int *index)
+{
+	int	idx = CL_FindModelIndex( modelname );
+	
+	if( !idx )
+		return NULL;
+	
+	if( index )
+		*index = idx;
+	
+	return Mod_Handle( idx );
+};
 
-unsigned short EngFunc_PrecacheEvent(int type, const char *psz){};
+int CL_CreateVisibleEntity(int type, struct cl_entity_s *ent)
+{
+};
+
+void EngFunc_PlaySoundByNameAtLocation(char *szSound, float volume, float *origin)
+{
+	int hSound = S_RegisterSound( szSound );
+	S_StartSound( origin, 0, CHAN_AUTO, hSound, volume, ATTN_NORM, PITCH_NORM, 0 );
+};
+
+unsigned short EngFunc_PrecacheEvent(int type, const char *psz)
+{
+};
 
 void EngFunc_PlaybackEvent(int                   flags,
                            const struct edict_s *pInvoker,
@@ -375,13 +455,47 @@ void EngFunc_PlaybackEvent(int                   flags,
                            int                   iparam1,
                            int                   iparam2,
                            int                   bparam1,
-                           int                   bparam2){};
+                           int                   bparam2)
+{
+};
 
-void EngFunc_WeaponAnim(int iAnim, int body){};
+void EngFunc_WeaponAnim(int iAnim, int body)
+{
+};
 
-long EngFunc_RandomLong(long lLow, long lHigh){};
+long EngFunc_RandomLong(long lLow, long lHigh)
+{
+};
 
-void EngFunc_HookEvent(char *name, void (*pfnEvent)(struct event_args_s *args)){};
+//pfnHookEvent( const char *filename, pfnEventHook pfn )
+void EngFunc_HookEvent(char *name, void (*pfnEvent)(struct event_args_s *args))
+{
+	char		name[64];
+	cl_user_event_t	*ev;
+	int		i;
+
+	// ignore blank names
+	if( !filename || !*filename )
+		return;	
+
+	Q_strncpy( name, filename, sizeof( name ));
+	COM_FixSlashes( name );
+
+	// find an empty slot
+	for( i = 0; i < MAX_EVENTS; i++ )
+	{
+		ev = clgame.events[i];		
+		if( !ev ) break;
+
+		if( !Q_stricmp( name, ev->name ) && ev->func != NULL )
+		{
+			MsgDev( D_WARN, "CL_HookEvent: %s already hooked!\n", name );
+			return;
+		}
+	}
+
+	CL_RegisterEvent( i, name, pfn );
+};
 
 const char *EngFunc_GetGameDirectory()
 {
@@ -394,11 +508,10 @@ const char *EngFunc_GetGameDirectory()
 const char *EngFunc_GetLevelName()
 {
 	static char mapname[64];
-
+	mapname[0] = '\0';
+	
 	if(cls.state >= ca_connected)
 		Q_snprintf(mapname, sizeof(mapname), "maps/%s.bsp", clgame.mapname);
-	else
-		mapname[0] = '\0'; // not in game
 
 	return mapname;
 };
@@ -415,9 +528,64 @@ void EngFunc_SetScreenFade(struct screenfade_s *fade)
 		clgame.fade = *fade;
 };
 
-int EngFunc_IsSpectateOnly(){};
+int EngFunc_IsSpectateOnly()
+{
+	cl_entity_t *pPlayer = CL_GetLocalPlayer();
+	return pPlayer ? (pPlayer->curstate.spectator != 0) : 0;
+};
 
-struct model_s *EngFunc_LoadMapSprite(const char *filename){};
+struct model_s *EngFunc_LoadMapSprite(const char *filename)
+{
+	char	name[64];
+	int	i;
+	int texFlags = TF_NOPICMIP;
+
+
+	if( cl_sprite_nearest->value )
+		texFlags |= TF_NEAREST;
+
+	if( !filename || !*filename )
+	{
+		MsgDev( D_ERROR, "CL_LoadMapSprite: bad name!\n" );
+		return NULL;
+	}
+
+	Q_strncpy( name, filename, sizeof( name ));
+	COM_FixSlashes( name );
+
+	// slot 0 isn't used
+	for( i = 1; i < MAX_IMAGES; i++ )
+	{
+		if( !Q_stricmp( clgame.sprites[i].name, name ))
+		{
+			// prolonge registration
+			clgame.sprites[i].needload = clgame.load_sequence;
+			return &clgame.sprites[i];
+		}
+	}
+
+	// find a free model slot spot
+	for( i = 1; i < MAX_IMAGES; i++ )
+	{
+		if( !clgame.sprites[i].name[0] )
+			break; // this is a valid spot
+	}
+
+	if( i == MAX_IMAGES ) 
+	{
+		MsgDev( D_ERROR, "LoadMapSprite: can't load %s, MAX_HSPRITES limit exceeded\n", filename );
+		return NULL;
+	}
+
+	// load new map sprite
+	if( CL_LoadHudSprite( name, &clgame.sprites[i], true, texFlags ))
+	{
+		clgame.sprites[i].needload = clgame.load_sequence;
+		return &clgame.sprites[i];
+	};
+	
+	return NULL;
+};
 
 const char *EngFunc_PlayerInfo_ValueForKey(int playerNum, const char *key)
 {
@@ -433,12 +601,11 @@ const char *EngFunc_PlayerInfo_ValueForKey(int playerNum, const char *key)
 
 void EngFunc_PlayerInfo_SetValueForKey(const char *key, const char *value)
 {
-	cvar_t *var;
-
-	var = (cvar_t *)Cvar_FindVar(key);
+	cvar_t *var = (cvar_t *)Cvar_FindVar(key);
+	
 	if(!var || !(var->flags & CVAR_USERINFO))
 		return;
-
+	
 	Cvar_DirectSet(var, value);
 };
 
@@ -462,9 +629,7 @@ int EngFunc_GetTrackerIDForPlayer(int playerSlot)
 
 int EngFunc_GetPlayerForTrackerID(int trackerID)
 {
-	int i;
-
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if(!cl.players[i].userinfo[0] || !cl.players[i].name[0])
 			continue;
@@ -484,15 +649,19 @@ int EngFunc_ServerCmdUnreliable(char *szCmdString)
 	if(!szCmdString || !szCmdString[0])
 		return 0;
 
-	BF_WriteByte(&cls.datagram, clc_stringcmd);
-	BF_WriteString(&cls.datagram, szCmdString);
+	MSG_WriteByte(&cls.datagram, clc_stringcmd);
+	MSG_WriteString(&cls.datagram, szCmdString);
 
 	return 1;
 };
 
-void EngFunc_GetMousePos(struct tagPOINT *ppt){};
+void EngFunc_GetMousePos(struct tagPOINT *ppt)
+{
+};
 
-void EngFunc_SetMousePos(int x, int y){};
+void EngFunc_SetMousePos(int x, int y)
+{
+};
 
 void EngFunc_SetMouseEnable(qboolean fEnable)
 {
@@ -509,27 +678,34 @@ float EngFunc_GetClientOldTime()
 
 float EngFunc_GetGravity()
 {
-	return clmove.gravity;
+	return g_clmove.gravity;
 };
 
-struct model_s *EngFunc_GetModelByIndex(int index){};
-
-void EngFunc_SetFilterMode(int mode){};
-
-void EngFunc_SetFilterColor(float red, float green, float blue){};
-
-void EngFunc_SetFilterBrightness(float brightness){};
-
-void *EngFunc_SequenceGet(const char *fileName, const char *entryName){};
-
-void EngFunc_SPR_DrawGeneric(int frame, int x, int y, const wrect_t *prc, int blendsrc, int blenddst, int width, int height)
+struct model_s *EngFunc_GetModelByIndex(int index)
 {
-	pglEnable(GL_BLEND);
-	pglBlendFunc(blendsrc, blenddst); // g-cont. are params is valid?
-	SPR_DrawGeneric(frame, x, y, width, height, prc);
 };
 
-void *EngFunc_SequencePickSentence(const char *groupName, int pickMethod, int *entryPicked){};
+void EngFunc_SetFilterMode(int mode)
+{
+};
+
+void EngFunc_SetFilterColor(float red, float green, float blue)
+{
+};
+
+void EngFunc_SetFilterBrightness(float brightness)
+{
+};
+
+void *EngFunc_SequenceGet(const char *fileName, const char *entryName)
+{
+	return nullptr;
+};
+
+void *EngFunc_SequencePickSentence(const char *groupName, int pickMethod, int *entryPicked)
+{
+	return nullptr;
+};
 
 int EngFunc_DrawString(int x, int y, const char *str, int r, int g, int b)
 {
@@ -545,9 +721,7 @@ int EngFunc_DrawString(int x, int y, const char *str, int r, int g, int b)
 int EngFunc_DrawStringReverse(int x, int y, const char *str, int r, int g, int b)
 {
 	// find the end of the string
-	char *szIt;
-
-	for(szIt = (char *)str; *szIt != 0; szIt++)
+	for(char *szIt = (char *)str; *szIt != 0; szIt++)
 		x -= clgame.scrInfo.charWidths[(unsigned char)*szIt];
 
 	pfnDrawString(x, y, str, r, g, b);
@@ -581,7 +755,9 @@ void EngFunc_PlaySoundVoiceByName(char *szSound, float volume, int pitch)
 	S_StartSound(NULL, cl.refdef.viewentity, CHAN_AUTO, hSound, volume, ATTN_NORM, pitch, SND_STOP_LOOPING);
 };
 
-void EngFunc_PrimeMusicStream(char *filename, int looping){};
+void EngFunc_PrimeMusicStream(char *filename, int looping)
+{
+};
 
 void EngFunc_PlaySoundByNameAtPitch(char *szSound, float volume, int pitch)
 {
@@ -616,25 +792,34 @@ int EngFunc_GetAppID()
 	return 130; //return 220; // standard Valve value
 };
 
-void EngFunc_VguiWrap2_GetMouseDelta(int *x, int *y){
+void EngFunc_VguiWrap2_GetMouseDelta(int *x, int *y)
+{
     // TODO: implement
 };
 
 }; // namespace
 
+// clang-format off
+
 cl_enginefunc_t gClEngFuncs =
     {
-        pfnSPR_Load,
-        pfnSPR_Frames,
-        pfnSPR_Height,
-        pfnSPR_Width,
-        pfnSPR_Set,
-        pfnSPR_Draw,
-        pfnSPR_DrawHoles,
-        pfnSPR_DrawAdditive,
+        SPR_Load,
+		
+        SPR_Frames,
+		
+        SPR_Height,
+        SPR_Width,
+		
+        SPR_Set,
+		
+        SPR_Draw,
+        SPR_DrawHoles,
+        SPR_DrawAdditive,
+		
         SPR_EnableScissor,
         SPR_DisableScissor,
-        pfnSPR_GetList,
+		
+        SPR_GetList,
 
         pfnFillRGBA,
 
@@ -709,30 +894,39 @@ cl_enginefunc_t gClEngFuncs =
         CL_AddEntity,
         CL_GetSpritePointer,
         pfnPlaySoundByNameAtLocation,
+		
         pfnPrecacheEvent,
         CL_PlaybackEvent,
+		
         CL_WeaponAnim,
+		
         Com_RandomFloat,
         Com_RandomLong,
+		
         (void *)pfnHookEvent,
         (void *)Con_Visible,
         pfnGetGameDirectory,
         pfnCVarGetPointer,
         Key_LookupBinding,
         pfnGetLevelName,
+		
         pfnGetScreenFade,
         pfnSetScreenFade,
+		
         VGui_GetPanel,
         VGui_ViewportPaintBackground,
+		
         (void *)COM_LoadFile,
         COM_ParseFile,
         COM_FreeFile,
+		
         &gTriApi,
         &gEfxApi,
         &gEventApi,
         &gDemoApi,
         &gNetApi,
         &gVoiceApi,
+		
         pfnIsSpectateOnly,
         pfnLoadMapSprite,
         COM_AddAppDirectoryToSearchPath,
@@ -743,9 +937,12 @@ cl_enginefunc_t gClEngFuncs =
         pfnGetTrackerIDForPlayer,
         pfnGetPlayerForTrackerID,
         pfnServerCmdUnreliable,
+		
         pfnGetMousePos,
         pfnSetMousePos,
+		
         pfnSetMouseEnable,
+		
         Cvar_GetList,
         (void *)Cmd_GetFirstFunctionHandle,
         (void *)Cmd_GetNextFunctionHandle,
@@ -779,3 +976,5 @@ cl_enginefunc_t gClEngFuncs =
         pfnGetAppID,
         Cmd_AliasGetList,
         pfnVguiWrap2_GetMouseDelta};
+
+// clang-format on

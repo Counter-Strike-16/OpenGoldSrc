@@ -221,12 +221,16 @@ void CL_ParseTempEntity()
 		byte nBrightness  = MSG_ReadByte();
 		byte nScrollSpeed = MSG_ReadByte();
 		break;
-	case TE_GUNSHOT:
-		for(int i        = 0; i < 3; ++i)
+	case TE_GUNSHOT: // bullet hitting wall
+		//cnt = MSG_ReadByte();
+		
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
+		
+		R_RunParticleEffect(vStartPos, vec3_origin, 0, 20 * cnt);
 		break;
-	case TE_EXPLOSION:
-		for(int i        = 0; i < 3; ++i)
+	case TE_EXPLOSION: // rocket explosion particles
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
 		short nSprIndex = MSG_ReadShort();
@@ -235,9 +239,13 @@ void CL_ParseTempEntity()
 		byte nFrameRate = MSG_ReadByte();
 		byte nFlags     = MSG_ReadByte();
 		break;
-	case TE_TAREXPLOSION:
-		for(int i        = 0; i < 3; ++i)
+	case TE_TAREXPLOSION: // tarbaby explosion
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
+		
+		R_BlobExplosion(vStartPos);
+
+		S_StartSound(-1, 0, cl_sfx_r_exp3, vStartPos, 1, 1);
 		break;
 	case TE_SMOKE:
 		for(int i        = 0; i < 3; ++i)
@@ -291,12 +299,16 @@ void CL_ParseTempEntity()
 			vStartPos[i] = MSG_ReadCoord();
 		break;
 	case TE_LAVASPLASH:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
+		
+		R_LavaSplash(vStartPos);
 		break;
 	case TE_TELEPORT:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
+		
+		R_TeleportSplash(vStartPos);
 		break;
 	case TE_EXPLOSION2:
 		for(int i        = 0; i < 3; ++i)
@@ -446,11 +458,13 @@ void CL_ParseTempEntity()
 		byte nLifeTime   = MSG_ReadByte();
 		byte nLineWidth  = MSG_ReadByte();
 		byte nNoiseAmpl  = MSG_ReadByte();
-
-		byte, byte, byte(color)
-
-		                byte nBrightness  = MSG_ReadByte();
-		byte                 nScrollSpeed = MSG_ReadByte();
+		
+		byte nColor[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
+		
+		byte nBrightness  = MSG_ReadByte();
+		byte nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_STREAK_SPLASH:
 		coord coord coord(start position)
@@ -471,9 +485,11 @@ void CL_ParseTempEntity()
 		for(int i   = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		byte(radius in 10's) = MSG_ReadByte();
-
-		byte byte byte(color) = MSG_ReadByte();
+		byte nRadius = MSG_ReadByte();
+		
+		byte nColor[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
 
 		byte nBrightness = MSG_ReadByte();
 		byte nLifeTime   = MSG_ReadByte();
@@ -489,9 +505,11 @@ void CL_ParseTempEntity()
 
 		float fRadius = MSG_ReadCoord();
 
-		byte byte byte(color)
-
-		    byte nLifeTime = MSG_ReadByte();
+		byte nColor[3] = {0};
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
+		
+		byte nLifeTime = MSG_ReadByte();
 
 		coord(decay rate) = MSG_ReadCoord();
 		break;
@@ -551,14 +569,24 @@ void CL_ParseTempEntity()
 	case TE_SHOWLINE:
 		coord coord coord(start position)
 		    coord coord
-		    coord(end position) break;
-	case TE_BLOOD:
+		    coord(end position)
+		break;
+	case TE_BLOOD: // // bullets hitting body
 		coord coord coord(start position)
 		    coord coord
 		    coord(spray vector)
 
 		        byte nColor = MSG_ReadByte();
 		byte         nSpeed = MSG_ReadByte();
+		
+		//
+		
+		cnt    = MSG_ReadByte();
+		pos[0] = MSG_ReadCoord();
+		pos[1] = MSG_ReadCoord();
+		pos[2] = MSG_ReadCoord();
+		
+		R_RunParticleEffect(vStartPos, vec3_origin, 73, 20 * cnt);
 		break;
 	case TE_DECAL:
 		coord, coord, coord(x, y, z), decal position(center of texture in world)
@@ -826,6 +854,7 @@ void CL_ParseTempEntity()
 		byte nLength     = MSG_ReadByte();
 		break;
 	default:
+		//Sys_Error("CL_ParseTEnt: bad type");
 		break;
 	};
 };
@@ -900,8 +929,8 @@ void CL_ParseTEnt()
 		}
 		break;
 
-	case TE_EXPLOSION: // rocket explosion
-		               // particles
+	case TE_EXPLOSION: 
+		               // 
 		pos[0] = MSG_ReadCoord();
 		pos[1] = MSG_ReadCoord();
 		pos[2] = MSG_ReadCoord();
@@ -928,15 +957,6 @@ void CL_ParseTEnt()
 		ex->model = Mod_ForName("progs/s_explod.spr", true);
 		break;
 
-	case TE_TAREXPLOSION: // tarbaby explosion
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_BlobExplosion(pos);
-
-		S_StartSound(-1, 0, cl_sfx_r_exp3, pos, 1, 1);
-		break;
-
 	case TE_LIGHTNING1: // lightning bolts
 		CL_ParseBeam(Mod_ForName("progs/bolt.mdl", true));
 		break;
@@ -949,45 +969,12 @@ void CL_ParseTEnt()
 		CL_ParseBeam(Mod_ForName("progs/bolt3.mdl", true));
 		break;
 
-	case TE_LAVASPLASH:
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_LavaSplash(pos);
-		break;
-
-	case TE_TELEPORT:
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_TeleportSplash(pos);
-		break;
-
-	case TE_GUNSHOT: // bullet hitting wall
-		cnt    = MSG_ReadByte();
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_RunParticleEffect(pos, vec3_origin, 0, 20 * cnt);
-		break;
-
-	case TE_BLOOD: // bullets hitting body
-		cnt    = MSG_ReadByte();
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_RunParticleEffect(pos, vec3_origin, 73, 20 * cnt);
-		break;
-
 	case TE_LIGHTNINGBLOOD: // lightning hitting body
 		pos[0] = MSG_ReadCoord();
 		pos[1] = MSG_ReadCoord();
 		pos[2] = MSG_ReadCoord();
 		R_RunParticleEffect(pos, vec3_origin, 225, 50);
 		break;
-
-	default:
-		Sys_Error("CL_ParseTEnt: bad type");
 	}
 }
 */

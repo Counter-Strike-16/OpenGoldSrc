@@ -1,45 +1,86 @@
+/*
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
+
 /// @file
 
 //#include "precompiled.hpp"
 
+// clang-format off
+
 efx_api_t gEfxAPI =
     {
         CL_AllocParticle,
-        (void *)CL_BlobExplosion,
-        (void *)CL_Blood,
-        (void *)CL_BloodSprite,
-        (void *)CL_BloodStream,
+        (void *)R_BlobExplosion,
+		
+        (void *)R_Blood,
+        (void *)R_BloodSprite,
+        (void *)R_BloodStream,
+		
         (void *)CL_BreakModel,
-        (void *)CL_Bubbles,
+		
+        (void *)R_Bubbles,
         (void *)CL_BubbleTrail,
+		
         (void *)CL_BulletImpactParticles,
         CL_EntityParticles,
-        CL_Explosion,
-        CL_FizzEffect,
-        CL_FireField,
+        R_Explosion,
+        R_FizzEffect,
+        R_FireField,
         (void *)CL_FlickerParticles,
         (void *)CL_FunnelSprite,
-        (void *)CL_Implosion,
+        (void *)R_Implosion,
         (void *)CL_Large_Funnel,
-        (void *)CL_LavaSplash,
-        (void *)CL_MultiGunshot,
-        (void *)CL_MuzzleFlash,
+        (void *)R_LavaSplash,
+        (void *)R_MultiGunshot,
+        (void *)R_MuzzleFlash,
+		
         (void *)CL_ParticleBox,
         (void *)CL_ParticleBurst,
         (void *)CL_ParticleExplosion,
         (void *)CL_ParticleExplosion2,
         (void *)CL_ParticleLine,
+		
         CL_PlayerSprites,
         (void *)CL_Projectile,
+		
         (void *)CL_RicochetSound,
         (void *)CL_RicochetSprite,
+		
         (void *)CL_RocketFlare,
         CL_RocketTrail,
+		
         (void *)CL_RunParticleEffect,
         (void *)CL_ShowLine,
+		
         (void *)CL_SparkEffect,
         (void *)CL_SparkShower,
         (void *)CL_SparkStreaks,
+		
         (void *)CL_Spray,
         CL_Sprite_Explode,
         CL_Sprite_Smoke,
@@ -78,3 +119,5 @@ efx_api_t gEfxAPI =
         CL_LookupColor,
         CL_DecalRemoveAll,
         CL_FireCustomDecal};
+
+// clang-format on

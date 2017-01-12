@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,38 +30,26 @@
 
 #pragma once
 
-void SCR_Init();
+#include "common/wrect.h"
+#include "engine/cdll_int.h"
 
-void SCR_UpdateScreen();
+HSPRITE_ SPR_Load(const char *szPicName);
 
-void SCR_SizeUp();
-void SCR_SizeDown();
+int SPR_Frames(HSPRITE_ hPic);
 
-void SCR_BringDownConsole();
-void SCR_CenterPrint(char *str);
+int SPR_Height(HSPRITE_ hPic, int frame);
+int SPR_Width(HSPRITE_ hPic, int frame);
 
-int SCR_ModalMessage(char *text);
+void SPR_Set(HSPRITE_ hPic, int r, int g, int b);
 
-void SCR_BeginLoadingPlaque(qboolean reconnect);
-void SCR_EndLoadingPlaque();
+void SPR_DrawGeneric(int frame, int x, int y, const wrect_t *prc, int blendsrc, int blenddst, int width, int height);
+void SPR_Draw(int frame, int x, int y, const wrect_t *prc);
+void SPR_DrawHoles(int frame, int x, int y, const wrect_t *prc);
+void SPR_DrawAdditive(int frame, int x, int y, const wrect_t *prc);
 
-extern float scr_con_current;
-extern float scr_conlines; // lines of console to display
+void SPR_EnableScissor(int x, int y, int width, int height);
+void SPR_DisableScissor();
 
-extern int scr_fullupdate; // set to 0 to force full redraw
-extern int sb_lines;
+client_sprite_t *SPR_GetList(char *psz, int *piCount);
 
-extern int      clearnotify; // set to 0 whenever notify text is drawn
-extern qboolean scr_disabled_for_loading;
-
-extern cvar_t scr_viewsize;
-
-extern cvar_t scr_viewsize;
-
-// only the refresh window will be updated unless these variables are flagged
-extern int scr_copytop;
-extern int scr_copyeverything;
-
-qboolean scr_skipupdate;
-
-qboolean block_drawing;
+const struct model_s *EngFunc_GetSpritePointer(HSPRITE hSprite);

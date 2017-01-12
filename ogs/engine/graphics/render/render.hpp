@@ -112,12 +112,14 @@ void R_InitEfrags();
 void R_RenderView(); // must set r_refdef first
 void R_ViewChanged(vrect_t *pvrect, int lineadj, float aspect);
 // called whenever r_refdef or vid change
-void R_InitSky(struct texture_s *mt); // called at level load
+void R_InitSky(/*struct texture_s *mt*/); // called at level load
 
 void R_AddEfrags(cl_entity_t *ent);
 void R_RemoveEfrags(cl_entity_t *ent);
 
 void R_NewMap();
+
+void R_MarkLeaves();
 
 void R_ParseParticleEffect();
 void R_RunParticleEffect(vec3_t org, vec3_t dir, int color, int count);

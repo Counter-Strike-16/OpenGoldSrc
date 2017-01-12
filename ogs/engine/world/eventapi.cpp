@@ -162,6 +162,8 @@ void EventAPI_KillEvents(int entnum, const char *eventname)
 
 }; // namespace
 
+// clang-format off
+
 event_api_t gEventAPI =
     {
         EVENT_API_VERSION,
@@ -198,3 +200,5 @@ event_api_t gEventAPI =
         EventAPI_TraceTexture,
         EventAPI_StopAllSounds,
         EventAPI_KillEvents};
+
+// clang-format on
