@@ -7,6 +7,11 @@
 
 #include "VGUI.h"
 #include "VGUI_TaskBar.h"
+#include "VGUI_FocusChangeSignal.h"
+#include "VGUI_FrameSignal.h"
+#include "VGUI_LayoutInfo.h"
+#include "VGUI_ActionSignal.h"
+#include "VGUI_TickSignal.h"
 
 using namespace vgui;
 

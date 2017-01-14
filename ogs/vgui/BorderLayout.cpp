@@ -7,6 +7,7 @@
 
 #include "VGUI.h"
 #include "VGUI_BorderLayout.h"
+#include "VGUI_LayoutInfo.h"
 
 using namespace vgui;
 

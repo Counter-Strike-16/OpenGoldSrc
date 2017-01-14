@@ -32,7 +32,6 @@
 #pragma once
 #endif
 
-//#include "maintypes.h"
 #include "public/interface.h"
 
 #define VENGINE_LAUNCHER_API_VERSION "VENGINE_LAUNCHER_API_VERSION002"
@@ -47,7 +46,7 @@ enum
 class IEngineAPI : public IBaseInterface
 {
 public:
-	virtual int Run(/*HINSTANCE*/ void *instance, char *basedir, /*const*/ char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
+	virtual int Run(/*HINSTANCE*/ void *instance, char *basedir, const char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
 };
 
 #endif // ENGINE_LAUNCHER_API_H

@@ -6,7 +6,7 @@
 #endif
 
 #include <vgui/VGUI.h>
-#include "interface.h"
+#include "tier1/interface.h"
 
 class IGameUI : public IBaseInterface
 {

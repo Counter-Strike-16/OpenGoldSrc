@@ -23,6 +23,8 @@ Color::Color(int r,int g,int b,int a)
 
 Color::Color(Scheme::SchemeColor sc)
 {
+	init();
+	setColor(sc);
 }
 
 void Color::init()

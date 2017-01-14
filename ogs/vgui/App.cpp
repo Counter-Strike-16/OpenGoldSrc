@@ -554,11 +554,6 @@ void App::setMinimumTickMillisInterval(int interval)
 	_minimumTickMillisInterval=interval;
 }
 
-void App::main(int argc,char* argv[])
-{
-	//dummy
-}
-
 void App::run()
 {
 	_running=true;
@@ -663,7 +658,37 @@ void App::internalKeyReleased(KeyCode code,SurfaceBase* surfaceBase)
 
 void App::init()
 {
-	// dummy
+	_instance=this;
+	_externalMain=false;
+	_running=false;
+	_keyFocus=null;
+	_oldMouseFocus=null;
+	_mouseFocus=null;
+	_mouseCapture=null;
+	_wantedKeyFocus=null;
+	_scheme=new Scheme();
+	_buildMode=false;
+	_wantedBuildMode=false;
+	_mouseArenaPanel=null;
+	_cursorOveride=null;
+	_nextTickMillis=getTimeMillis();
+	_minimumTickMillisInterval=50;
+
+	for(int i=0;i<MOUSE_LAST;i++)
+	{
+		_mousePressed[i]=false;
+		_mouseDoublePressed[i]=false;
+		_mouseDown[i]=false;
+		_mouseReleased[i]=false;
+	}
+
+	for(int i=0;i<KEY_LAST;i++)
+	{
+		_keyPressed[i]=false;
+		_keyTyped[i]=false;
+		_keyDown[i]=false;
+		_keyReleased[i]=false;
+	}
 }
 
 void App::updateMouseFocus(int x,int y,SurfaceBase* surfaceBase)

@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "interface.h"
+#include "tier1/interface.h"
 
 class Color;
 
@@ -21,7 +21,7 @@ public:
 	virtual void Printf(const char *format, ...) = 0;
 	virtual void DPrintf(const char *format, ...) = 0;
 	
-	virtual void ColorPrintf(Color &clr) = 0;
+	virtual void ColorPrintf(Color &clr) = 0; // ???
 	
 	virtual void SetParent(int parent) = 0;
 };

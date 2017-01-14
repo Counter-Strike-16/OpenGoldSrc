@@ -623,14 +623,12 @@ CL_ParseSoundlist
 */
 void CL_ParseSoundlist()
 {
-	int   numsounds;
 	char *str;
-	int   n;
 
 	// precache sounds
 	//	memset (cl.sound_precache, 0, sizeof(cl.sound_precache));
 
-	numsounds = MSG_ReadByte();
+	int numsounds = MSG_ReadByte();
 
 	for(;;)
 	{
@@ -643,7 +641,7 @@ void CL_ParseSoundlist()
 		strcpy(cl.sound_name[numsounds], str);
 	}
 
-	n = MSG_ReadByte();
+	int n = MSG_ReadByte();
 
 	if(n)
 	{

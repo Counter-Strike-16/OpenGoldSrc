@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "tier0/platform.h"
+#include "vstdlib.h"
 
 class ICommandLine
 {
@@ -23,6 +23,6 @@ public:
 // Gets a singleton to the commandline interface
 // NOTE: this interface used to lie in the vstdlib library
 //-----------------------------------------------------------------------------
-PLATFORM_INTERFACE ICommandLine *CommandLine(void);
+VSTDLIB_INTERFACE ICommandLine *CommandLine(void);
 
 #endif // ICOMMANDLINE_H

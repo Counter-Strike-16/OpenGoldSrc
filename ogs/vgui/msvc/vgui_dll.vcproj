@@ -113,7 +113,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine=""
+				CommandLine="copy &quot;Debug\vgui.dll&quot; &quot;F:\Half-Life DBG\vgui.dll&quot;"
 			/>
 		</Configuration>
 		<Configuration

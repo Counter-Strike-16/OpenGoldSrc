@@ -32,6 +32,7 @@
 #pragma once
 
 #include "common/commontypes.h"
+#include "common/shake.h"
 
 extern cvar_t v_gamma;
 extern cvar_t lcd_x;
@@ -55,7 +56,4 @@ void V_ParseDamage();
 void V_SetContentsColor(int contents);
 
 void  V_CalcBlend();
-void  V_CalcShake();
 float V_CalcRoll(vec3_t angles, vec3_t velocity);
-
-void V_ApplyShake(float *origin, float *angles, float factor);
