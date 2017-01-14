@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief general definitions
 
 #pragma once
 
@@ -97,8 +98,10 @@ extern qboolean bigendien;
 
 extern short (*BigShort)(short l);
 extern short (*LittleShort)(short l);
+
 extern int (*BigLong)(int l);
 extern int (*LittleLong)(int l);
+
 extern float (*BigFloat)(float l);
 extern float (*LittleFloat)(float l);
 
@@ -109,6 +112,7 @@ extern char com_token[COM_TOKEN_LEN];
 
 extern qboolean com_ignorecolons;
 extern qboolean s_com_token_unget;
+
 extern char     com_clientfallback[MAX_PATH];
 extern char     com_gamedir[MAX_PATH];
 extern char     com_cmdline[COM_MAX_CMD_LINE];
@@ -211,7 +215,7 @@ NOBODY uint64 Q_strtoull(char *str);
 
 #endif // Q_functions
 
-//strcpy that works correctly with overlapping src and dst buffers
+// strcpy that works correctly with overlapping src and dst buffers
 char *strcpy_safe(char *dst, char *src);
 
 char *Info_Serverinfo();
@@ -241,7 +245,10 @@ int COM_TokenWaiting(char *buffer);
 int COM_CheckParm(char *parm);
 void COM_InitArgv(int argc, char *argv[]);
 void COM_Init(char *basedir);
+
+// does a varargs printf into a temp buffer
 char *va(char *format, ...);
+
 char *vstr(vec_t *v);
 NOXREF int memsearch(unsigned char *start, int count, int search);
 NOXREF void COM_WriteFile(char *filename, void *data, int len);
@@ -272,10 +279,14 @@ int COM_CompareFileTime(char *filename1, char *filename2, int *iCompare);
 void COM_GetGameDir(char *szGameDir);
 int COM_EntsForPlayerSlots(int nPlayers);
 void COM_NormalizeAngles(vec_t *angles);
+
 void COM_Munge(unsigned char *data, int len, int seq);
 void COM_UnMunge(unsigned char *data, int len, int seq);
+
 void COM_Munge2(unsigned char *data, int len, int seq);
 void COM_UnMunge2(unsigned char *data, int len, int seq);
+
 void COM_Munge3(unsigned char *data, int len, int seq);
 NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq);
+
 unsigned int COM_GetApproxWavePlayLength(const char *filepath);

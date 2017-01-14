@@ -40,13 +40,14 @@ static char mond[12] =
 
 int build_number()
 {
-	int        m = 0;
-	int        d = 0;
-	int        y = 0;
 	static int b = 0;
 
 	if(b != 0)
 		return b;
+	
+	int m = 0;
+	int d = 0;
+	int y = 0;
 
 	for(m = 0; m < 11; m++)
 	{
@@ -63,7 +64,7 @@ int build_number()
 		b += 1;
 
 #ifdef REHLDS_FIXES
-	b -= 41374; // return days since initial commit on Apr 12 2014 (Happy Cosmonautics Day!)
+	b -= 0; // TODO: return days since initial commit on Oct 12 2016
 #else           // REHLDS_FIXES
 	b -= 34995; // return days since Oct 24 1996
 #endif          // REHLDS_FIXES

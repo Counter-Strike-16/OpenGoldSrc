@@ -37,3 +37,13 @@ extern demo_api_t gDemoAPI;
 int CL_IsRecording();
 int CL_IsPlayingback();
 int CL_IsTimeDemo();
+
+/*
+void CL_WriteDemoCmd(usercmd_t *pcmd);
+
+void CL_Stop_f();
+void CL_Record_f();
+void CL_ReRecord_f();
+void CL_PlayDemo_f();
+void CL_TimeDemo_f();
+*/

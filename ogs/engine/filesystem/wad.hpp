@@ -33,6 +33,12 @@
 #include "maintypes.h"
 #include "common/commontypes.h"
 
+#define NUM_WADS 2
+
+#ifdef HOOK_ENGINE
+#define wads (*pwads)
+#endif
+
 typedef struct qpic_s
 {
 	int width;
@@ -70,15 +76,6 @@ typedef struct wadlist_s
 	lumpinfo_t *wad_lumps;
 	byte *      wad_base;
 } wadlist_t;
-
-typedef struct wadlist_s  wadlist_t;
-typedef struct lumpinfo_s lumpinfo_t;
-
-#define NUM_WADS 2
-
-#ifdef HOOK_ENGINE
-#define wads (*pwads)
-#endif
 
 extern wadlist_t wads[NUM_WADS];
 

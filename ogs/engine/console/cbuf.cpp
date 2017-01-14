@@ -29,6 +29,7 @@
 /// @file
 
 //#include "precompiled.hpp"
+#include "console/cbuf.hpp"
 #include "console/cmd.hpp"
 #include "system/sizebuf.hpp"
 #include "system/common.hpp"

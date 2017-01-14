@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief console command system
 
 //#include "precompiled.hpp"
 //#include "system/quakedef.hpp"
@@ -40,11 +41,13 @@
 #include "memory/zone.hpp"
 #include "memory/mem.hpp"
 
+#define	MAX_ARGS 80
+
 int   cmd_argc;
-char *cmd_argv[80];
+char *cmd_argv[MAX_ARGS];
 
 // Complete arguments string
-char *cmd_args;
+char *cmd_args = NULL;
 
 cmd_source_t cmd_source;
 qboolean     cmd_wait;
@@ -56,9 +59,18 @@ cmdalias_t * cmd_alias;
 cmd_function_t *cmd_functions;
 char *const     cmd_null_string = "";
 
+/*
+============
+Cmd_Wait_f
+
+Causes execution of the remainder of the command buffer to be delayed until
+next frame.  This allows commands like:
+bind g "impulse 5 ; +attack ; wait ; -attack ; impulse 2"
+============
+*/
 void Cmd_Wait_f()
 {
-	cmd_wait = 1;
+	cmd_wait = true;
 }
 
 void Cmd_StuffCmds_f()
@@ -854,18 +866,14 @@ NOXREF int Cmd_CheckParm(char *parm)
 	NOXREFCHECK;
 
 	if(!parm)
-	{
 		Sys_Error("%s: NULL", __FUNCTION__);
-	}
 
 	int c = Cmd_Argc();
 
-	for(int i = 1; i < c; i++)
+	for(int i = 1; i < c; ++i)
 	{
 		if(!Q_stricmp(Cmd_Argv(i), parm))
-		{
 			return i;
-		}
 	}
 
 	return 0;

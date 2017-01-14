@@ -31,6 +31,13 @@
 
 #pragma once
 
+/// Camera types
+enum
+{
+	CAM_NONE = 0,
+	CAM_TRACK
+};
+
 /// Maximum number of recorded demo files
 const int MAX_DEMOS = 32;
 

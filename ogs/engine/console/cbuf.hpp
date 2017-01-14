@@ -27,5 +27,6 @@
  */
 
 /// @file
+/// @brief script command processing component
 
 #pragma once

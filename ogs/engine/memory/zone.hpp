@@ -87,7 +87,9 @@ void Memory_Init(void *buf, int size);
 
 ////////////////////////////////////////
 
+/// @return 0 filled memory
 void *Z_Malloc(int size);
+
 void *Z_TagMalloc(int size, int tag);
 
 void Z_Free(void *ptr);
@@ -98,7 +100,9 @@ NOXREF void Z_Print(memzone_t *zone);
 
 ////////////////////////////////////////
 
+/// @return 0 filled memory
 void *Hunk_Alloc(int size);
+
 void *Hunk_TempAlloc(int size);
 
 void *Hunk_AllocName(int size, const char *name);
@@ -118,7 +122,9 @@ NOXREF void Hunk_Print(qboolean all);
 
 void Cache_Init();
 
+/// Returns NULL if all purgable data was tossed and there still wasn't enough room
 void *Cache_Alloc(cache_user_t *c, int size, char *name);
+
 cache_system_t *Cache_TryAlloc(int size, qboolean nobottom);
 
 void Cache_Free(cache_user_t *c);
@@ -139,6 +145,7 @@ NOXREF int CacheSystemCompare(const void *ppcs1, const void *ppcs2);
 
 NOXREF char *CommatizeNumber(int num, char *pout);
 
+/// Returns the cached data, and moves to the head of the LRU list if present, otherwise returns NULL
 void *Cache_Check(cache_user_t *c);
 
 NOXREF void Cache_Print();

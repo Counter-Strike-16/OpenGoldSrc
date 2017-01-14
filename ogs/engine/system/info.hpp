@@ -33,7 +33,7 @@
 #include "common/commontypes.h"
 #include "common/com_model.h"
 
-// Max key/value length (with a NULL char)
+/// Max key/value length (with a NULL char)
 const int MAX_KV_LEN = 127;
 
 // Key + value + 2 x slash + NULL
