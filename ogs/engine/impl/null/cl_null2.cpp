@@ -1,14 +1,5 @@
 
-// cl_null.c -- this file can stub out the entire client system
-// for pure dedicated servers
-
-#include "../qcommon/qcommon.h"
-
 void Key_Bind_Null_f(void)
-{
-}
-
-void CL_Init (void)
 {
 }
 

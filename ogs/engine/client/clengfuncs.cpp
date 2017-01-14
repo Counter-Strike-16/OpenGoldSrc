@@ -38,10 +38,12 @@ namespace
 void EngFunc_FillRGBA(int x, int y, int width, int height, int r, int g, int b, int a)
 {
 	float x1 = x, y1 = y, w1 = width, h1 = height;
+	
 	r = bound(0, r, 255);
 	g = bound(0, g, 255);
 	b = bound(0, b, 255);
 	a = bound(0, a, 255);
+	
 	pglColor4ub(r, g, b, a);
 
 	SPR_AdjustSize(&x1, &y1, &w1, &h1);
@@ -56,6 +58,7 @@ int EngFunc_GetScreenInfo(SCREENINFO *pscrinfo)
 {
 	// setup screen info
 	float scale_factor   = hud_scale->value;
+	
 	clgame.scrInfo.iSize = sizeof(clgame.scrInfo);
 
 	if(scale_factor && scale_factor != 1.0f)
@@ -69,7 +72,7 @@ int EngFunc_GetScreenInfo(SCREENINFO *pscrinfo)
 		clgame.scrInfo.iWidth  = scr_width->integer;
 		clgame.scrInfo.iHeight = scr_height->integer;
 		clgame.scrInfo.iFlags &= ~SCRINFO_STRETCHED;
-	}
+	};
 
 	if(!pscrinfo)
 		return 0;
@@ -88,6 +91,7 @@ void EngFunc_SetCrosshair(HSPRITE_ hspr, wrect_t rc, int r, int g, int b)
 	clgame.ds.rgbaCrosshair[1] = (byte)g;
 	clgame.ds.rgbaCrosshair[2] = (byte)b;
 	clgame.ds.rgbaCrosshair[3] = (byte)0xFF;
+	
 	clgame.ds.pCrosshair       = CL_GetSpritePointer(hspr);
 	clgame.ds.rcCrosshair      = rc;
 };
@@ -202,14 +206,14 @@ client_textmessage_t *EngFunc_TextMessageGet(const char *pName)
 	int i;
 
 	// first check internal messages
-	for(i = 0; i < MAX_TEXTCHANNELS; i++)
+	for(i = 0; i < MAX_TEXTCHANNELS; ++i)
 	{
 		if(!Q_strcmp(pName, va(TEXT_MSGNAME, i)))
 			return cl_textmessage + i;
 	};
 
 	// find desired message
-	for(i = 0; i < clgame.numTitles; i++)
+	for(i = 0; i < clgame.numTitles; ++i)
 	{
 		if(!Q_stricmp(pName, clgame.titles[i].pName))
 			return clgame.titles + i;
@@ -243,14 +247,14 @@ int EngFunc_DrawCharacter(int x, int y, int number, int r, int g, int b)
 
 int EngFunc_DrawConsoleString(int x, int y, char *string)
 {
-	int drawLen;
-
 	if(!string || !*string)
 		return 0; // silent ignore
 
 	clgame.ds.adjust_size = true;
 	Con_SetFont(con_fontsize->integer);
-	drawLen = Con_DrawString(x, y, string, clgame.ds.textColor);
+	
+	int drawLen = Con_DrawString(x, y, string, clgame.ds.textColor);
+	
 	MakeRGBA(clgame.ds.textColor, 255, 255, 255, 255);
 	clgame.ds.adjust_size = false;
 	Con_RestoreFont();
@@ -395,7 +399,7 @@ float EngFunc_GetClientTime()
 	return cl.time;
 };
 
-int EngFunc_PM_PointContents(float *point, int *truecontents)
+int PM_PointContents(float *point, int *truecontents)
 {
 	int	cont, truecont;
 
@@ -485,14 +489,15 @@ void EngFunc_HookEvent(char *name, void (*pfnEvent)(struct event_args_s *args))
 	for( i = 0; i < MAX_EVENTS; i++ )
 	{
 		ev = clgame.events[i];		
-		if( !ev ) break;
+		if( !ev )
+			break;
 
 		if( !Q_stricmp( name, ev->name ) && ev->func != NULL )
 		{
 			MsgDev( D_WARN, "CL_HookEvent: %s already hooked!\n", name );
 			return;
-		}
-	}
+		};
+	};
 
 	CL_RegisterEvent( i, name, pfn );
 };
@@ -601,7 +606,7 @@ const char *EngFunc_PlayerInfo_ValueForKey(int playerNum, const char *key)
 
 void EngFunc_PlayerInfo_SetValueForKey(const char *key, const char *value)
 {
-	cvar_t *var = (cvar_t *)Cvar_FindVar(key);
+	cvar_t *var = Cvar_FindVar(key);
 	
 	if(!var || !(var->flags & CVAR_USERINFO))
 		return;
@@ -638,7 +643,7 @@ int EngFunc_GetPlayerForTrackerID(int trackerID)
 		{
 			// make into a player slot
 			return (i + 1);
-		}
+		};
 	};
 
 	return 0;
@@ -683,6 +688,7 @@ float EngFunc_GetGravity()
 
 struct model_s *EngFunc_GetModelByIndex(int index)
 {
+	return nullptr;
 };
 
 void EngFunc_SetFilterMode(int mode)

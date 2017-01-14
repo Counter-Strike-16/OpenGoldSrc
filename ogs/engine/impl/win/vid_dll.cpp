@@ -1,34 +1,45 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
 // Main windowed and fullscreen graphics interface module. This module
 // is used for both the software and OpenGL rendering versions of the
-// Quake refresh engine.
+// rendering engine
+
 #include <assert.h>
 #include <float.h>
 
-#include "..\client\client.h"
+#include "client/client.hpp"
 #include "winquake.h"
 //#include "zmouse.h"
 
-// Structure containing functions exported from refresh DLL
-refexport_t	re;
+// Structure containing functions exported from render DLL
+//refexport_t	re;
+IRender *gpRender = nullptr;
 
 cvar_t *win_noalttab;
 
@@ -353,7 +364,7 @@ LONG WINAPI MainWndProc (
 			AppActivate( fActive != WA_INACTIVE, fMinimized);
 
 			if ( reflib_active )
-				re.AppActivate( !( fActive == WA_INACTIVE ) );
+				gpRender->AppActivate( !( fActive == WA_INACTIVE ) );
 		}
         return DefWindowProc (hWnd, uMsg, wParam, lParam);
 
@@ -460,7 +471,7 @@ simply by setting the modified flag for the vid_ref variable, which will
 cause the entire video mode and refresh DLL to be reset on the next frame.
 ============
 */
-void VID_Restart_f (void)
+void VID_Restart_f ()
 {
 	vid_ref->modified = true;
 }
@@ -483,16 +494,21 @@ typedef struct vidmode_s
 
 vidmode_t vid_modes[] =
 {
-	{ "Mode 0: 320x240",   320, 240,   0 },
-	{ "Mode 1: 400x300",   400, 300,   1 },
-	{ "Mode 2: 512x384",   512, 384,   2 },
-	{ "Mode 3: 640x480",   640, 480,   3 },
-	{ "Mode 4: 800x600",   800, 600,   4 },
-	{ "Mode 5: 960x720",   960, 720,   5 },
-	{ "Mode 6: 1024x768",  1024, 768,  6 },
-	{ "Mode 7: 1152x864",  1152, 864,  7 },
-	{ "Mode 8: 1280x960",  1280, 960, 8 },
-	{ "Mode 9: 1600x1200", 1600, 1200, 9 }
+	{ "320x240",   320, 240,   0 },
+	{ "400x300",   400, 300,   1 },
+	{ "512x384",   512, 384,   2 },
+	{ "640x480",   640, 480,   3 },
+	{ "800x600",   800, 600,   4 },
+	{ "960x720",   960, 720,   5 },
+	{ "1024x600",  1024, 600,  6 },
+	{ "1024x768",  1024, 768,  7 },
+	{ "1152x864",  1152, 864,  8 },
+	{ "1280x720",  1280, 720, 9 },
+	{ "1280x960",  1280, 960, 10 },
+	{ "1600x900", 1600, 900, 11 }
+	{ "1600x1200", 1600, 1200, 12 }
+	{ "1920x1080", 1600, 1200, 13 }
+	{ "1920x1200", 1600, 1200, 14 }
 };
 
 qboolean VID_GetModeInfo( int *width, int *height, int mode )
@@ -506,9 +522,6 @@ qboolean VID_GetModeInfo( int *width, int *height, int mode )
 	return true;
 }
 
-/*
-** VID_UpdateWindowPosAndSize
-*/
 void VID_UpdateWindowPosAndSize( int x, int y )
 {
 	RECT r;
@@ -540,7 +553,7 @@ void VID_NewWindow ( int width, int height)
 	cl.force_refdef = true;		// can't use a paused refdef
 }
 
-void VID_FreeReflib (void)
+void VID_FreeReflib ()
 {
 	if ( !FreeLibrary( reflib_library ) )
 		Com_Error( ERR_FATAL, "Reflib FreeLibrary failed" );
@@ -561,40 +574,50 @@ qboolean VID_LoadRefresh( char *name )
 	
 	if ( reflib_active )
 	{
-		re.Shutdown();
+		gpRender->Shutdown();
 		VID_FreeReflib ();
 	}
 
-	Com_Printf( "------- Loading %s -------\n", name );
+	Con_Printf( "------- Loading %s -------\n", name );
 
-	if ( ( reflib_library = LoadLibrary( name ) ) == 0 )
+	if ( ( fnRenderFactory = Sys_LoadModule( name ) ) == 0 )
 	{
-		Com_Printf( "LoadLibrary(\"%s\") failed\n", name );
+		Con_Printf( "LoadLibrary(\"%s\") failed\n", name );
 
 		return false;
 	}
 
 	ri.Cmd_AddCommand = Cmd_AddCommand;
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
+	
 	ri.Cmd_Argc = Cmd_Argc;
 	ri.Cmd_Argv = Cmd_Argv;
+	
 	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
+	
 	ri.Con_Printf = VID_Printf;
+	
 	ri.Sys_Error = VID_Error;
+	
 	ri.FS_LoadFile = FS_LoadFile;
 	ri.FS_FreeFile = FS_FreeFile;
 	ri.FS_Gamedir = FS_Gamedir;
+	
 	ri.Cvar_Get = Cvar_Get;
 	ri.Cvar_Set = Cvar_Set;
 	ri.Cvar_SetValue = Cvar_SetValue;
+	
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
 
-	if ( ( GetRefAPI = (void *) GetProcAddress( reflib_library, "GetRefAPI" ) ) == 0 )
-		Com_Error( ERR_FATAL, "GetProcAddress failed on %s", name );
-
-	re = GetRefAPI( ri );
+	gpRender = afnRenderFactory(OGS_RENDER_INTERFACE_VERSION, nullptr);
+	
+	if(!gpRender)
+	{
+		Sys_Error( ERR_FATAL, "Failed to load render dll %s", name );
+		return false;
+	};
 
 	if (re.api_version != API_VERSION)
 	{
@@ -602,9 +625,9 @@ qboolean VID_LoadRefresh( char *name )
 		Com_Error (ERR_FATAL, "%s has incompatible api_version", name);
 	}
 
-	if ( re.Init( global_hInstance, MainWndProc ) == -1 )
+	if ( gpRender->Init( fnEngineFactory, global_hInstance, MainWndProc ) == -1 )
 	{
-		re.Shutdown();
+		gpRender->Shutdown();
 		VID_FreeReflib ();
 		return false;
 	}
@@ -637,7 +660,7 @@ is to check to see if any of the video mode parameters have changed, and if they
 update the rendering DLL and/or video mode to match.
 ============
 */
-void VID_CheckChanges (void)
+void VID_CheckChanges ()
 {
 	char name[100];
 
@@ -669,7 +692,8 @@ void VID_CheckChanges (void)
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
-		Com_sprintf( name, sizeof(name), "ref_%s.dll", vid_ref->string );
+		Q_sprintf( name, sizeof(name), "r_%s.dll", vid_ref->string );
+		
 		if ( !VID_LoadRefresh( name ) )
 		{
 			if ( strcmp (vid_ref->string, "soft") == 0 )
@@ -705,7 +729,7 @@ void VID_CheckChanges (void)
 VID_Init
 ============
 */
-void VID_Init (void)
+void VID_Init ()
 {
 	/* Create the video variables so we know how to start the graphics drivers */
 	vid_ref = Cvar_Get ("vid_ref", "soft", CVAR_ARCHIVE);
@@ -748,13 +772,11 @@ void VID_Init (void)
 VID_Shutdown
 ============
 */
-void VID_Shutdown (void)
+void VID_Shutdown ()
 {
 	if ( reflib_active )
 	{
-		re.Shutdown ();
+		gpRender->Shutdown ();
 		VID_FreeReflib ();
 	}
 }
-
-

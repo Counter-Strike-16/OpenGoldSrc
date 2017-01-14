@@ -447,16 +447,17 @@ static int   upload_size;
 void CL_NextUpload()
 {
 	byte buffer[1024];
-	int  r;
 	int  percent;
 	int  size;
 
 	if(!upload_data)
 		return;
 
-	r = upload_size - upload_pos;
+	int r = upload_size - upload_pos;
+	
 	if(r > 768)
 		r = 768;
+	
 	memcpy(buffer, upload_data + upload_pos, r);
 	MSG_WriteByte(&cls.netchan.message, clc_upload);
 	MSG_WriteShort(&cls.netchan.message, r);

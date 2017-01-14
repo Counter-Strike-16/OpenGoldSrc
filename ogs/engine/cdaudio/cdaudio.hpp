@@ -34,9 +34,12 @@
 #include "common/commontypes.h"
 
 int  CDAudio_Init();
+void CDAudio_Shutdown();
+
+void CDAudio_Update();
+
 void CDAudio_Play(byte track, qboolean looping);
 void CDAudio_Stop();
+
 void CDAudio_Pause();
 void CDAudio_Resume();
-void CDAudio_Shutdown();
-void CDAudio_Update();

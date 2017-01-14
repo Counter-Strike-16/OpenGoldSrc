@@ -28,29 +28,30 @@
 
 /// @file
 
-#include "quakedef.h"
+//#include "precompiled.hpp"
+#include "quakedef.hpp"
 
 void CDAudio_Play(byte track, qboolean looping)
 {
-}
+};
 
 void CDAudio_Stop()
 {
-}
+};
 
 void CDAudio_Resume()
 {
-}
+};
 
 void CDAudio_Update()
 {
-}
+};
 
 int CDAudio_Init()
 {
 	return 0;
-}
+};
 
 void CDAudio_Shutdown()
 {
-}
+};

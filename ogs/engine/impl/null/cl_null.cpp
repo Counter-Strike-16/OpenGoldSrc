@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief this file can stub out the entire client system for pure dedicated servers
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"

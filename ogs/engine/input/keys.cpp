@@ -40,7 +40,7 @@
 
 // key up events are sent even if in console mode
 
-#define MAXCMDLINE 256
+const int MAXCMDLINE = 256;
 
 char key_lines[32][MAXCMDLINE];
 int  key_linepos;
@@ -434,18 +434,18 @@ the K_* names are matched up.
 */
 int Key_StringToKeynum(char *str)
 {
-	keyname_t *kn;
-
 	if(!str || !str[0])
 		return -1;
+	
 	if(!str[1])
 		return str[0];
 
-	for(kn = keynames; kn->name; kn++)
+	for(keyname_t *kn = keynames; kn->name; kn++)
 	{
 		if(!Q_strcasecmp(str, kn->name))
 			return kn->keynum;
-	}
+	};
+	
 	return -1;
 }
 
@@ -735,7 +735,6 @@ void Key_Event(int key, qboolean down)
 			M_Keydown(key);
 			break;
 		case key_game:
-		case key_console:
 			M_ToggleMenu_f();
 			break;
 		default:
@@ -814,12 +813,10 @@ void Key_Event(int key, qboolean down)
 		Key_Message(key);
 		break;
 	case key_menu:
-		M_Keydown(key);
+		M_Keydown(key); // Key_Menu
 		break;
-
 	case key_game:
-	case key_console:
-		Key_Console(key);
+		Key_Console(key); // Key_Game
 		break;
 	default:
 		Sys_Error("Bad key_dest");
@@ -833,14 +830,12 @@ Key_ClearStates
 */
 void Key_ClearStates()
 {
-	int i;
-
-	for(i = 0; i < 256; i++)
+	for(int i = 0; i < 256; ++i)
 	{
 		keydown[i]     = false;
 		key_repeats[i] = false;
-	}
-}
+	};
+};
 
 /*
 const char *EngFunc_Key_LookupBinding(const char *pBinding)

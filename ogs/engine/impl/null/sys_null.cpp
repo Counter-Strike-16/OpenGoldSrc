@@ -27,8 +27,9 @@
  */
 
 /// @file
+/// @brief null system driver to aid porting efforts
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 #include "errno.h"
 
 /*
@@ -38,34 +39,31 @@ filelength
 */
 int filelength(FILE *f)
 {
-	int pos;
-	int end;
-
-	pos = ftell(f);
+	int pos = ftell(f);
 	fseek(f, 0, SEEK_END);
-	end = ftell(f);
+	
+	int end = ftell(f);
 	fseek(f, pos, SEEK_SET);
 
 	return end;
-}
+};
 
 int Sys_FileTime(char *path)
 {
-	FILE *f;
-
-	f = fopen(path, "rb");
+	FILE *f = fopen(path, "rb");
+	
 	if(f)
 	{
 		fclose(f);
 		return 1;
-	}
+	};
 
 	return -1;
-}
+};
 
 void Sys_mkdir(char *path)
 {
-}
+};
 
 /*
 ===============================================================================
@@ -77,11 +75,11 @@ SYSTEM IO
 
 void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length)
 {
-}
+};
 
 void Sys_DebugLog(char *file, char *fmt, ...)
 {
-}
+};
 
 void Sys_Error(char *error, ...)
 {
@@ -94,7 +92,7 @@ void Sys_Error(char *error, ...)
 	printf("\n");
 
 	exit(1);
-}
+};
 
 void Sys_Printf(char *fmt, ...)
 {
@@ -103,28 +101,28 @@ void Sys_Printf(char *fmt, ...)
 	va_start(argptr, fmt);
 	vprintf(fmt, argptr);
 	va_end(argptr);
-}
+};
 
-double Sys_FloatTime(void)
+double Sys_FloatTime()
 {
 	static double t;
 
-	t += 0.1;
+	t += 0.1f;
 
 	return t;
-}
+};
 
-void Sys_Sleep(void)
+void Sys_Sleep()
 {
-}
+};
 
-void Sys_HighFPPrecision(void)
+void Sys_HighFPPrecision()
 {
-}
+};
 
-void Sys_LowFPPrecision(void)
+void Sys_LowFPPrecision()
 {
-}
+};
 
 //=============================================================================
 
@@ -143,8 +141,7 @@ void main(int argc, char **argv)
 
 	printf("Host_Init\n");
 	Host_Init(&parms);
+	
 	while(1)
-	{
-		Host_Frame(0.1);
-	}
-}
+		Host_Frame(0.1f);
+};

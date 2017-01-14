@@ -28,7 +28,7 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "graphics/sprite.hpp"
 
 /*
@@ -40,14 +40,12 @@ draw hudsprite routine
 */
 static void SPR_AdjustSize( float *x, float *y, float *w, float *h )
 {
-	float	xscale, yscale;
-
 	if( !x && !y && !w && !h )
 		return;
 
 	// scale for screen sizes
-	xscale = scr_width->integer / (float)clgame.scrInfo.iWidth;
-	yscale = scr_height->integer / (float)clgame.scrInfo.iHeight;
+	float xscale = scr_width->integer / (float)clgame.scrInfo.iWidth;
+	float yscale = scr_height->integer / (float)clgame.scrInfo.iHeight;
 
 	if( x ) *x *= xscale;
 	if( y ) *y *= yscale;
@@ -146,9 +144,8 @@ HSPRITE SPR_LoadExt( const char *szPicName, uint texFlags )
 	if( CL_LoadHudSprite( name, &clgame.sprites[i], false, texFlags ))
 	{
 		if( i < MAX_IMAGES - 1 )
-		{
 			clgame.sprites[i].needload = clgame.load_sequence;
-		}
+		
 		return i;
 	}
 	return 0;
@@ -235,6 +232,7 @@ void SPR_EnableScissor(int x, int y, int width, int height)
 	// check bounds
 	x = bound( 0, x, clgame.scrInfo.iWidth );
 	y = bound( 0, y, clgame.scrInfo.iHeight );
+	
 	width = bound( 0, width, clgame.scrInfo.iWidth - x );
 	height = bound( 0, height, clgame.scrInfo.iHeight - y );
 

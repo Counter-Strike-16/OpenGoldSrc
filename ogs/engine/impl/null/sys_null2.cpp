@@ -1,16 +1,8 @@
-// sys_null.h -- null system driver to aid porting efforts
 
-#include "../qcommon/qcommon.h"
-#include "errno.h"
 
 int	curtime;
 
 unsigned	sys_frame_time;
-
-
-void Sys_mkdir (char *path)
-{
-}
 
 void Sys_Error (char *error, ...)
 {
@@ -89,10 +81,6 @@ int		Sys_Milliseconds (void)
 	return 0;
 }
 
-void	Sys_Mkdir (char *path)
-{
-}
-
 char	*Sys_FindFirst (char *path, unsigned musthave, unsigned canthave)
 {
 	return NULL;
@@ -110,18 +98,3 @@ void	Sys_FindClose (void)
 void	Sys_Init (void)
 {
 }
-
-
-//=============================================================================
-
-void main (int argc, char **argv)
-{
-	Qcommon_Init (argc, argv);
-
-	while (1)
-	{
-		Qcommon_Frame (0.1);
-	}
-}
-
-

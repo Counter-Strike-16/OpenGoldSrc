@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief export api for the network module
 
 #include "common/net_api.h"
 #include "network/network.hpp"
@@ -41,6 +42,7 @@ NetworkApi implementation
 
 namespace
 {
+
 void NET_Status(struct net_status_s *status)
 {
 	ASSERT(status != NULL);
@@ -79,7 +81,7 @@ void NET_SendRequest(int context, int request, int flags, double timeout, struct
 		double max_timeout = 0;
 
 		// no free requests? use older
-		for(i = 0, nr = NULL; i < MAX_REQUESTS; i++)
+		for(i = 0, nr = NULL; i < MAX_REQUESTS; ++i)
 		{
 			if((host.realtime - clgame.net_requests[i].timesend) > max_timeout)
 			{

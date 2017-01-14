@@ -1,9 +1,9 @@
 /// @file
 /// @brief null video driver to aid porting efforts
 
-#include "precompiled.h"
-#include "quakedef.h"
-#include "d_local.h"
+#include "precompiled.hpp"
+#include "quakedef.hpp"
+#include "d_local.hpp"
 
 viddef_t vid; // global video state
 
