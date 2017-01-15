@@ -31,7 +31,7 @@
 //#include "precompiled.hpp"
 #include "quakedef.hpp"
 
-void CDAudio_Play(byte track, qboolean looping)
+void CDAudio_Play(byte track, qboolean looping) // int track
 {
 };
 

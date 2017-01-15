@@ -1,13 +1,9 @@
 
-void Key_Bind_Null_f(void)
+void Key_Bind_Null_f()
 {
 }
 
-void CL_Drop (void)
-{
-}
-
-void CL_Shutdown (void)
+void CL_Drop ()
 {
 }
 
@@ -19,7 +15,7 @@ void Con_Print (char *text)
 {
 }
 
-void Cmd_ForwardToServer (void)
+void Cmd_ForwardToServer ()
 {
 	char *cmd;
 
@@ -31,15 +27,15 @@ void SCR_DebugGraph (float value, int color)
 {
 }
 
-void SCR_BeginLoadingPlaque (void)
+void SCR_BeginLoadingPlaque ()
 {
 }
 
-void SCR_EndLoadingPlaque (void)
+void SCR_EndLoadingPlaque ()
 {
 }
 
-void Key_Init (void)
+void Key_Init ()
 {
 	Cmd_AddCommand ("bind", Key_Bind_Null_f);
 }

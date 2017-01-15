@@ -107,9 +107,7 @@ void EXT_FUNC PM_StuckTouch(int hitent, pmtrace_t *ptraceresult)
 {
 #ifdef REHLDS_CHECKS
 	if(hitent >= MAX_PHYSENTS) // FIXED: added for preventing buffer overrun
-	{
 		return;
-	}
 #endif
 
 	if(pmove->server)
@@ -123,7 +121,8 @@ void EXT_FUNC PM_StuckTouch(int hitent, pmtrace_t *ptraceresult)
 void PM_Init(playermove_t *ppm)
 {
 	PM_InitBoxHull();
-	for(int i = 0; i < 4; i++)
+	
+	for(int i = 0; i < 4; ++i)
 	{
 		ppm->_player_mins[i][0] = player_mins[i][0];
 		ppm->_player_mins[i][1] = player_mins[i][1];
@@ -190,4 +189,4 @@ void PM_Init(playermove_t *ppm)
 	ppm->PM_TestPlayerPositionEx = PM_TestPlayerPositionEx;
 	ppm->PM_TraceLineEx          = PM_TraceLineEx;
 #endif
-}
+};

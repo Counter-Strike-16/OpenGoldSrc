@@ -49,88 +49,107 @@ cvar_t gl_vsync;
 
 void VID_SetPalette(unsigned char *palette)
 {
-}
+};
+
 void VID_ShiftPalette(unsigned char *palette)
 {
-}
+};
+
 void VID_WriteBuffer(const char *pFilename)
 {
-}
+};
+
 int VID_Init(unsigned short *palette)
 {
 	return 1;
-}
+};
+
 void D_FlushCaches()
 {
-}
+};
+
 void R_SetStackBase()
 {
-}
+};
+
 void SCR_UpdateScreen()
 {
-}
+};
+
 void V_Init()
 {
-}
+};
+
 void Draw_Init()
 {
-}
+};
+
 void SCR_Init()
 {
-}
+};
+
 void R_Init()
 {
-}
+};
+
 void R_ForceCVars(qboolean multiplayer)
 {
-}
+};
+
 void SCR_BeginLoadingPlaque(qboolean reconnect)
 {
-}
+};
+
 void SCR_EndLoadingPlaque()
 {
-}
+};
+
 void R_InitSky()
 {
-}
+};
+
 void R_MarkLeaves()
 {
-}
+};
 
 void R_InitTextures()
 {
 	r_notexture_mip             = (texture_t *)Hunk_AllocName(404, "notexture");
+	
 	r_notexture_mip->height     = 16;
 	r_notexture_mip->width      = 16;
+	
 	r_notexture_mip->offsets[0] = 64;
 	r_notexture_mip->offsets[1] = 320;
 	r_notexture_mip->offsets[2] = 384;
 	r_notexture_mip->offsets[3] = 400;
 
-	for(int m = 0; m < 4; m++)
+	for(int m = 0; m < 4; ++m)
 	{
-		int            texSize = 16 >> m;
-		unsigned char *dest    = (unsigned char *)r_notexture_mip + r_notexture_mip->offsets[m];
+		int texSize = 16 >> m;
+		
+		byte *dest    = (byte *)r_notexture_mip + r_notexture_mip->offsets[m];
 
-		for(int x = 0; x < texSize; x++)
+		for(int y = 0; y < texSize; ++y)
 		{
-			for(int y = 0; y < texSize; y++, dest++)
+			for(int x = 0; x < texSize; ++x, ++dest)
 			{
-				if(x < (texSize / 2) == y < (texSize / 2))
+				if(x < (texSize * 0.5f) == y < (texSize * 0.5f))
 					*dest = -1;
 				else
 					*dest = 0;
-			}
-		}
-	}
-}
+			};
+		};
+	};
+};
 
 void StartLoadingProgressBar(const char *loadingType, int numProgressPoints)
 {
-}
+};
+
 void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction)
 {
-}
+};
 void SetLoadingProgressBarStatusText(const char *statusText)
 {
-}
+};
