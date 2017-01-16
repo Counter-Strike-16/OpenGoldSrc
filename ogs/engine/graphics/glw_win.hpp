@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #ifndef _WIN32
-#  error You should not be including this file on this platform
+#error You should not be including this file on this platform
 #endif
 
 #ifndef __GLW_WIN_H__
@@ -26,14 +26,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct
 {
-	HINSTANCE	hInstance;
-	void	*wndproc;
+	HINSTANCE hInstance;
+	void *    wndproc;
 
-	HDC     hDC;			// handle to device context
-	HWND    hWnd;			// handle to window
-	HGLRC   hGLRC;			// handle to GL rendering context
+	HDC   hDC;   // handle to device context
+	HWND  hWnd;  // handle to window
+	HGLRC hGLRC; // handle to GL rendering context
 
-	HINSTANCE hinstOpenGL;	// HINSTANCE for the OpenGL library
+	HINSTANCE hinstOpenGL; // HINSTANCE for the OpenGL library
 
 	qboolean minidriver;
 	qboolean allowdisplaydepthchange;

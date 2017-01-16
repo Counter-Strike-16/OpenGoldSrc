@@ -33,7 +33,6 @@
 
 namespace
 {
-
 void EngFunc_FillRGBA(int x, int y, int width, int height, int r, int g, int b, int a){};
 
 int EngFunc_GetScreenInfo(SCREENINFO *pscrinfo)

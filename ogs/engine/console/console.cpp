@@ -34,10 +34,10 @@
 #include "client/client.hpp"
 #include "system/system.hpp"
 
-int        con_ormask;
+int con_ormask;
 
-console_t  con_main;
-console_t  con_chat;
+console_t con_main;
+console_t con_chat;
 
 console_t *con; // point to either con_main or con_chat
 

@@ -45,8 +45,8 @@ typedef struct cvar_s cvar_t;
 
 extern cvar_t *cvar_vars;
 
-void    Cvar_Init();
-void    Cvar_Shutdown();
+void Cvar_Init();
+void Cvar_Shutdown();
 
 cvar_t *Cvar_FindVar(const char *var_name);
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name);

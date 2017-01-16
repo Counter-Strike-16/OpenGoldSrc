@@ -121,7 +121,7 @@ void EXT_FUNC PM_StuckTouch(int hitent, pmtrace_t *ptraceresult)
 void PM_Init(playermove_t *ppm)
 {
 	PM_InitBoxHull();
-	
+
 	for(int i = 0; i < 4; ++i)
 	{
 		ppm->_player_mins[i][0] = player_mins[i][0];

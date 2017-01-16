@@ -41,7 +41,7 @@ int filelength(FILE *f)
 {
 	int pos = ftell(f);
 	fseek(f, 0, SEEK_END);
-	
+
 	int end = ftell(f);
 	fseek(f, pos, SEEK_SET);
 
@@ -51,7 +51,7 @@ int filelength(FILE *f)
 int Sys_FileTime(char *path)
 {
 	FILE *f = fopen(path, "rb");
-	
+
 	if(f)
 	{
 		fclose(f);
@@ -61,9 +61,7 @@ int Sys_FileTime(char *path)
 	return -1;
 };
 
-void Sys_mkdir(char *path)
-{
-};
+void Sys_mkdir(char *path){};
 
 /*
 ===============================================================================
@@ -73,13 +71,9 @@ SYSTEM IO
 ===============================================================================
 */
 
-void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length)
-{
-};
+void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length){};
 
-void Sys_DebugLog(char *file, char *fmt, ...)
-{
-};
+void Sys_DebugLog(char *file, char *fmt, ...){};
 
 void Sys_Error(char *error, ...)
 {
@@ -112,17 +106,11 @@ double Sys_FloatTime()
 	return t;
 };
 
-void Sys_Sleep()
-{
-};
+void Sys_Sleep(){};
 
-void Sys_HighFPPrecision()
-{
-};
+void Sys_HighFPPrecision(){};
 
-void Sys_LowFPPrecision()
-{
-};
+void Sys_LowFPPrecision(){};
 
 //=============================================================================
 
@@ -141,7 +129,7 @@ void main(int argc, char **argv)
 
 	printf("Host_Init\n");
 	Host_Init(&parms);
-	
+
 	while(1)
 		Host_Frame(0.1f);
 };

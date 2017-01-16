@@ -34,7 +34,7 @@
 #include "common/com_model.h"
 
 // max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in dlls\util.h!!!
-#define CVOXFILESENTENCEMAX 1536
+const int CVOXFILESENTENCEMAX = 1536;
 
 typedef struct sfx_s
 {
@@ -44,21 +44,34 @@ typedef struct sfx_s
 } sfx_t;
 
 void S_Init();
-void S_AmbientOff();
-void S_AmbientOn();
 void S_Shutdown();
+
+void S_AmbientOn();
+void S_AmbientOff();
+
 void S_TouchSound(char *sample);
+
 void S_ClearBuffer();
+
 void S_StartStaticSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, float vol, float attenuation, int flags, int pitch);
 void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, float fvol, float attenuation, int flags, int pitch);
 void S_StopSound(int entnum, int entchannel);
+
 sfx_t *S_PrecacheSound(char *sample);
+
 void S_ClearPrecache();
+
 void S_Update(vec_t *origin, vec_t *v_forward, vec_t *v_right, vec_t *v_up);
+
 void S_StopAllSounds(qboolean clear);
+
 void S_BeginPrecaching();
 void S_EndPrecaching();
+
 void S_ExtraUpdate();
+
 void S_LocalSound(char *s);
+
 void S_BlockSound();
+
 void S_PrintStats();

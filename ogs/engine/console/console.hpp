@@ -37,14 +37,14 @@ const int CON_TEXTSIZE = 16384;
 typedef struct
 {
 	char text[CON_TEXTSIZE];
-	
-	int  current; // line where next message will be printed
-	int  x;       // offset in current line for next print
-	int  display; // bottom of console displays this line
+
+	int current; // line where next message will be printed
+	int x;       // offset in current line for next print
+	int display; // bottom of console displays this line
 } console_t;
 
-extern console_t  con_main;
-extern console_t  con_chat;
+extern console_t con_main;
+extern console_t con_chat;
 
 extern console_t *con; // point to either con_main or con_chat
 

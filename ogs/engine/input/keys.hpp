@@ -33,7 +33,7 @@
 #include "public/FileSystem.h"
 
 #ifdef HOOK_ENGINE
-	#define key_dest (*pkey_dest)
+#define key_dest (*pkey_dest)
 #endif
 
 /// Keyboard input destination/state

@@ -39,13 +39,13 @@ NETWORK PROTOCOL
 ==============================================================
 */
 
-#define	PROTOCOL_VERSION 48
+const int PROTOCOL_VERSION = 48;
 
 //=========================================
 
-#define	PORT_CLIENT	27005
-#define	PORT_MASTER	27010
-#define	PORT_SERVER	27015
+const int PORT_CLIENT = 27005;
+const int PORT_MASTER = 27010;
+const int PORT_SERVER = 27015;
 
 //=========================================
 
@@ -109,8 +109,10 @@ typedef enum svc_commands_e {
 	svc_resourcelocation,
 	svc_sendcvarvalue,
 	svc_sendcvarvalue2,
-	svc_startofusermessages = svc_sendcvarvalue2,
-	svc_endoflist           = 255,
+
+	svc_startofusermessages = svc_sendcvarvalue2, // + 1?
+
+	svc_endoflist = 255,
 } svc_commands_t;
 
 typedef enum clc_commands_e {
@@ -126,5 +128,6 @@ typedef enum clc_commands_e {
 	clc_hltv,
 	clc_cvarvalue,
 	clc_cvarvalue2,
+
 	clc_endoflist = 255,
 } clc_commands_t;

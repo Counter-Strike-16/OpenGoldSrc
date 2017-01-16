@@ -28,8 +28,8 @@
 
 /// @file
 
-#include "quakedef.h"
-#include "winquake.h"
+#include "quakedef.hpp"
+#include "winquake.hpp"
 
 netadr_t net_local_adr;
 
@@ -138,40 +138,9 @@ qboolean NET_StringToAdr(char *s, netadr_t *a)
 	return true;
 }
 
-// Returns true if we can't bind the address locally--in other words,
-// the IP is NOT one of our interfaces.
-qboolean NET_IsClientLegal(netadr_t *adr)
-{
-	struct sockaddr_in sadr;
-	int                newsocket;
-
-#if 0
-	if (adr->ip[0] == 127)
-		return false; // no local connections period
-
-	NetadrToSockadr (adr, &sadr);
-
-	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-		Sys_Error ("NET_IsClientLegal: socket:", strerror(errno));
-
-	sadr.sin_port = 0;
-
-	if( bind (newsocket, (void *)&sadr, sizeof(sadr)) == -1) 
-	{
-		// It is not a local address
-		close(newsocket);
-		return true;
-	}
-	close(newsocket);
-	return false;
-#else
-	return true;
-#endif
-}
-
 //=============================================================================
 
-qboolean NET_GetPacket(void)
+qboolean NET_GetPacket()
 {
 	int                ret;
 	struct sockaddr_in from;
@@ -270,7 +239,7 @@ int UDP_OpenSocket(int port)
 	return newsocket;
 }
 
-void NET_GetLocalAddress(void)
+void NET_GetLocalAddress()
 {
 	char               buff[512];
 	struct sockaddr_in address;
@@ -330,7 +299,7 @@ void NET_Init(int port)
 NET_Shutdown
 ====================
 */
-void NET_Shutdown(void)
+void NET_Shutdown()
 {
 	closesocket(net_socket);
 	WSACleanup();

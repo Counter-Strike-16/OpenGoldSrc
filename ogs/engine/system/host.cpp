@@ -824,42 +824,43 @@ void Host_Speeds(double *time)
 		}
 #endif // SWDS
 	}
+};
 
-	/*
+/*
 ==================
 Host_UpdateScreen
 
 Refresh the screen
 ==================
 */
-	void Host_UpdateScreen()
+void Host_UpdateScreen()
+{
+	if(!gfBackground)
 	{
-		if(!gfBackground)
+		SCR_UpdateScreen();
+		if(cl_inmovie)
 		{
-			SCR_UpdateScreen();
-			if(cl_inmovie)
-			{
-				if(*(float *)&scr_con_current == 0.0f)
-					VID_WriteBuffer(NULL);
-			}
+			if(*(float *)&scr_con_current == 0.0f)
+				VID_WriteBuffer(NULL);
 		}
 	}
+}
 
-	/*
+/*
 ==================
 Host_UpdateSounds
 
 Update sound subsystem and cd audio
 ==================
 */
-	void Host_UpdateSounds()
+void Host_UpdateSounds()
+{
+	if(!gfBackground)
 	{
-		if(!gfBackground)
-		{
-			//S_PrintStats();
-		}
+		//S_PrintStats();
+	}
 
-		/*
+	/*
 		#if defined( _WIN32 ) && !defined( SWDS )
 		// update audio
 		if ( cl.IsActive() )
@@ -872,475 +873,479 @@ Update sound subsystem and cd audio
 		}
 		#endif
 	*/
-	}
+}
 
-	void Host_CheckConnectionFailure()
+void Host_CheckConnectionFailure()
+{
+	static int frames = 5;
+	if(cls.state == ca_disconnected && (giSubState & 4 || console.value == 0.0f))
 	{
-		static int frames = 5;
-		if(cls.state == ca_disconnected && (giSubState & 4 || console.value == 0.0f))
-		{
-			if(frames-- > 0)
-				return;
+		if(frames-- > 0)
+			return;
 
-			giActive = DLL_PAUSED;
-			frames   = 5;
-		}
+		giActive = DLL_PAUSED;
+		frames   = 5;
 	}
+}
 
-	/*
+/*
 ==================
 Host_Frame
 
 Runs all active servers
 ==================
 */
-	void _Host_Frame(float time)
-	{
-		static double host_times[6];
+void _Host_Frame(float time)
+{
+	static double host_times[6];
 
-		if(setjmp(host_enddemo))
-			return;
+	if(setjmp(host_enddemo))
+		return;
 
-		//Unknown_windows_func_01D37CD0();
-		if(!Host_FilterTime(time))
-			return;
-
-#ifdef REHLDS_FLIGHT_REC
-		static long frameCounter = 0;
-		if(rehlds_flrec_frame.string[0] != '0')
-			FR_StartFrame(frameCounter);
-#endif //REHLDS_FLIGHT_REC
-
-		//SystemWrapper_RunFrame(host_frametime);
-
-		if(g_modfuncs.m_pfnFrameBegin)
-			g_modfuncs.m_pfnFrameBegin();
-
-		Host_ComputeFPS(host_frametime);
-		R_SetStackBase();
-		CL_CheckClientState();
-
-		// process console commands
-		Cbuf_Execute();
-
-		ClientDLL_UpdateClientData();
-
-		if(g_psv.active)
-			CL_Move();
-
-		host_times[1] = Sys_FloatTime();
-		SV_Frame();
-
-		host_times[2] = Sys_FloatTime();
-		SV_CheckForRcon();
-
-		if(!g_psv.active)
-			CL_Move();
-
-		ClientDLL_Frame(host_frametime);
-		CL_SetLastUpdate();
-
-		// fetch results from server
-		CL_ReadPackets();
-
-		CL_RedoPrediction();
-		CL_VoiceIdle();
-		CL_EmitEntities();
-		CL_CheckForResend();
-
-		while(CL_RequestMissingResources())
-			;
-
-		CL_UpdateSoundFade();
-		Host_CheckConnectionFailure();
-		//CL_HTTPUpdate();
-		Steam_ClientRunFrame();
-		ClientDLL_CAM_Think();
-		CL_MoveSpectatorCamera();
-
-		host_times[3] = Sys_FloatTime();
-
-		Host_UpdateScreen(); // SCR_Update
-
-		host_times[4] = Sys_FloatTime();
-
-		CL_DecayLights();
-
-		Host_UpdateSounds();
-
-		host_times[0] = host_times[5];
-		host_times[5] = Sys_FloatTime();
-
-		Host_Speeds(host_times);
-
-		++host_framecount;
-
-		CL_AdjustClock();
-
-		if(sv_stats.value == 1.0f)
-			Host_UpdateStats();
-
-		if(host_killtime.value != 0.0 && host_killtime.value < g_psv.time)
-			Host_Quit_f();
-
-		//Rehlds Security
-		Rehlds_Security_Frame();
+	//Unknown_windows_func_01D37CD0();
+	if(!Host_FilterTime(time))
+		return;
 
 #ifdef REHLDS_FLIGHT_REC
-		if(rehlds_flrec_frame.string[0] != '0')
-			FR_EndFrame(frameCounter);
-
-		frameCounter++;
+	static long frameCounter = 0;
+	if(rehlds_flrec_frame.string[0] != '0')
+		FR_StartFrame(frameCounter);
 #endif //REHLDS_FLIGHT_REC
-	}
 
-	int Host_Frame(float time, int iState, int *stateInfo)
+	//SystemWrapper_RunFrame(host_frametime);
+
+	if(g_modfuncs.m_pfnFrameBegin)
+		g_modfuncs.m_pfnFrameBegin();
+
+	Host_ComputeFPS(host_frametime);
+	R_SetStackBase();
+	CL_CheckClientState();
+
+	// process console commands
+	Cbuf_Execute();
+
+	ClientDLL_UpdateClientData();
+
+	if(g_psv.active)
+		CL_Move();
+
+	host_times[1] = Sys_FloatTime();
+	SV_Frame();
+
+	host_times[2] = Sys_FloatTime();
+	SV_CheckForRcon();
+
+	if(!g_psv.active)
+		CL_Move();
+
+	ClientDLL_Frame(host_frametime);
+	CL_SetLastUpdate();
+
+	// fetch results from server
+	CL_ReadPackets();
+
+	CL_RedoPrediction();
+	CL_VoiceIdle();
+	CL_EmitEntities();
+	CL_CheckForResend();
+
+	while(CL_RequestMissingResources())
+		;
+
+	CL_UpdateSoundFade();
+	Host_CheckConnectionFailure();
+	//CL_HTTPUpdate();
+	Steam_ClientRunFrame();
+	ClientDLL_CAM_Think();
+	CL_MoveSpectatorCamera();
+
+	host_times[3] = Sys_FloatTime();
+
+	Host_UpdateScreen(); // SCR_Update
+
+	host_times[4] = Sys_FloatTime();
+
+	CL_DecayLights();
+
+	Host_UpdateSounds();
+
+	host_times[0] = host_times[5];
+	host_times[5] = Sys_FloatTime();
+
+	Host_Speeds(host_times);
+
+	++host_framecount;
+
+	CL_AdjustClock();
+
+	if(sv_stats.value == 1.0f)
+		Host_UpdateStats();
+
+	if(host_killtime.value != 0.0 && host_killtime.value < g_psv.time)
+		Host_Quit_f();
+
+	//Rehlds Security
+	Rehlds_Security_Frame();
+
+#ifdef REHLDS_FLIGHT_REC
+	if(rehlds_flrec_frame.string[0] != '0')
+		FR_EndFrame(frameCounter);
+
+	frameCounter++;
+#endif //REHLDS_FLIGHT_REC
+}
+
+int Host_Frame(float time, int iState, int *stateInfo)
+{
+	double time1;
+	double time2;
+
+	if(setjmp(host_abortserver))
 	{
-		double time1;
-		double time2;
-
-		if(setjmp(host_abortserver))
-		{
-			return giActive;
-		}
-
-		if(giActive != 3 || !g_iQuitCommandIssued)
-			giActive = iState;
-
-		*stateInfo = 0;
-		if(host_profile.value != 0.0f)
-			time1 = Sys_FloatTime();
-
-		_Host_Frame(time);
-		if(host_profile.value != 0.0)
-			time2 = Sys_FloatTime();
-
-		if(giStateInfo)
-		{
-			*stateInfo  = giStateInfo;
-			giStateInfo = 0;
-			Cbuf_Execute();
-		}
-
-		if(host_profile.value != 0.0)
-		{
-			static double timetotal;
-			static int    timecount;
-
-			timecount++;
-			timetotal += time2 - time1;
-			if(++timecount >= 1000)
-			{
-				int m     = (timetotal * 1000.0 / (double)timecount);
-				int c     = 0;
-				timecount = 0;
-				timetotal = 0.0;
-				for(int i = 0; i < g_psvs.maxclients; i++)
-				{
-					if(g_psvs.clients[i].active)
-						++c;
-				}
-
-				Con_Printf("host_profile: %2i clients %2i msec\n", c, m);
-			}
-		}
-
 		return giActive;
 	}
 
-	void CheckGore()
+	if(giActive != 3 || !g_iQuitCommandIssued)
+		giActive = iState;
+
+	*stateInfo = 0;
+	if(host_profile.value != 0.0f)
+		time1 = Sys_FloatTime();
+
+	_Host_Frame(time);
+	if(host_profile.value != 0.0)
+		time2 = Sys_FloatTime();
+
+	if(giStateInfo)
 	{
-		if(bLowViolenceBuild)
-		{
-			Cvar_SetValue("violence_hblood", 0.0);
-			Cvar_SetValue("violence_hgibs", 0.0);
-			Cvar_SetValue("violence_ablood", 0.0);
-			Cvar_SetValue("violence_agibs", 0.0);
-		}
-		else
-		{
-			Cvar_SetValue("violence_hblood", 1.0);
-			Cvar_SetValue("violence_hgibs", 1.0);
-			Cvar_SetValue("violence_ablood", 1.0);
-			Cvar_SetValue("violence_agibs", 1.0);
-		}
+		*stateInfo  = giStateInfo;
+		giStateInfo = 0;
+		Cbuf_Execute();
 	}
 
-	qboolean Host_IsSinglePlayerGame()
+	if(host_profile.value != 0.0)
 	{
-		if(g_psv.active)
-			return g_psvs.maxclients == 1;
-		else
-			return cl.maxclients == 1;
-	}
+		static double timetotal;
+		static int    timecount;
 
-	qboolean Host_IsServerActive()
-	{
-		return g_psv.active;
-	}
-
-	void Host_Version()
-	{
-		char szFileName[MAX_PATH];
-
-		Q_strcpy(gpszVersionString, "1.0.1.4");
-		Q_strcpy(gpszProductString, "valve");
-		Q_strcpy(szFileName, "steam.inf");
-		FileHandle_t fp = FS_Open(szFileName, "r");
-		if(fp)
+		timecount++;
+		timetotal += time2 - time1;
+		if(++timecount >= 1000)
 		{
-			int   bufsize = FS_Size(fp);
-			char *buffer  = (char *)Mem_Malloc(bufsize + 1);
-			FS_Read(buffer, bufsize, 1, fp);
-			char *pbuf = buffer;
-			FS_Close(fp);
-			buffer[bufsize] = 0;
-			int gotKeys     = 0;
-
-			pbuf = COM_Parse(pbuf);
-			if(pbuf)
+			int m     = (timetotal * 1000.0 / (double)timecount);
+			int c     = 0;
+			timecount = 0;
+			timetotal = 0.0;
+			for(int i = 0; i < g_psvs.maxclients; i++)
 			{
-				while(Q_strlen(com_token) > 0 && gotKeys <= 1)
-				{
-					if(!Q_strnicmp(com_token, "PatchVersion=", Q_strlen("PatchVersion=")))
-					{
-						Q_strncpy(gpszVersionString, &com_token[Q_strlen("PatchVersion=")], sizeof(gpszVersionString));
-						gpszVersionString[sizeof(gpszVersionString) - 1] = 0;
-						if(COM_CheckParm("-steam"))
-						{
-							char szSteamVersionId[32];
-							FS_GetInterfaceVersion(szSteamVersionId, sizeof(szSteamVersionId) - 1);
-							Q_snprintf(gpszVersionString, sizeof(gpszVersionString), "%s/%s", &com_token[Q_strlen("PatchVersion=")], szSteamVersionId);
-							gpszVersionString[sizeof(gpszVersionString) - 1] = 0;
-						}
-						++gotKeys;
-					}
-					else if(!Q_strnicmp(com_token, "ProductName=", Q_strlen("ProductName=")))
-					{
-						++gotKeys;
-						Q_strncpy(gpszProductString, &com_token[Q_strlen("ProductName=")], sizeof(gpszProductString) - 1);
-						gpszProductString[sizeof(gpszProductString) - 1] = 0;
-					}
-
-					pbuf = COM_Parse(pbuf);
-					if(!pbuf)
-						break;
-				}
+				if(g_psvs.clients[i].active)
+					++c;
 			}
-			if(buffer)
-				Mem_Free(buffer);
-		}
 
-		if(cls.state != ca_dedicated)
-		{
-			Con_DPrintf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
-			Con_DPrintf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
-		}
-		else
-		{
-			Con_Printf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
-			Con_Printf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
+			Con_Printf("host_profile: %2i clients %2i msec\n", c, m);
 		}
 	}
 
-	/*
+	return giActive;
+}
+
+void CheckGore()
+{
+	if(bLowViolenceBuild)
+	{
+		Cvar_SetValue("violence_hblood", 0.0);
+		Cvar_SetValue("violence_hgibs", 0.0);
+		Cvar_SetValue("violence_ablood", 0.0);
+		Cvar_SetValue("violence_agibs", 0.0);
+	}
+	else
+	{
+		Cvar_SetValue("violence_hblood", 1.0);
+		Cvar_SetValue("violence_hgibs", 1.0);
+		Cvar_SetValue("violence_ablood", 1.0);
+		Cvar_SetValue("violence_agibs", 1.0);
+	}
+}
+
+qboolean Host_IsSinglePlayerGame()
+{
+	if(g_psv.active)
+		return g_psvs.maxclients == 1;
+	else
+		return cl.maxclients == 1;
+}
+
+qboolean Host_IsServerActive()
+{
+	return g_psv.active;
+}
+
+void Host_Version()
+{
+	char szFileName[MAX_PATH];
+
+	Q_strcpy(gpszVersionString, "1.0.1.4");
+	Q_strcpy(gpszProductString, "valve");
+	Q_strcpy(szFileName, "steam.inf");
+	FileHandle_t fp = FS_Open(szFileName, "r");
+	if(fp)
+	{
+		int   bufsize = FS_Size(fp);
+		char *buffer  = (char *)Mem_Malloc(bufsize + 1);
+		FS_Read(buffer, bufsize, 1, fp);
+		char *pbuf = buffer;
+		FS_Close(fp);
+		buffer[bufsize] = 0;
+		int gotKeys     = 0;
+
+		pbuf = COM_Parse(pbuf);
+		if(pbuf)
+		{
+			while(Q_strlen(com_token) > 0 && gotKeys <= 1)
+			{
+				if(!Q_strnicmp(com_token, "PatchVersion=", Q_strlen("PatchVersion=")))
+				{
+					Q_strncpy(gpszVersionString, &com_token[Q_strlen("PatchVersion=")], sizeof(gpszVersionString));
+					gpszVersionString[sizeof(gpszVersionString) - 1] = 0;
+					if(COM_CheckParm("-steam"))
+					{
+						char szSteamVersionId[32];
+						FS_GetInterfaceVersion(szSteamVersionId, sizeof(szSteamVersionId) - 1);
+						Q_snprintf(gpszVersionString, sizeof(gpszVersionString), "%s/%s", &com_token[Q_strlen("PatchVersion=")], szSteamVersionId);
+						gpszVersionString[sizeof(gpszVersionString) - 1] = 0;
+					}
+					++gotKeys;
+				}
+				else if(!Q_strnicmp(com_token, "ProductName=", Q_strlen("ProductName=")))
+				{
+					++gotKeys;
+					Q_strncpy(gpszProductString, &com_token[Q_strlen("ProductName=")], sizeof(gpszProductString) - 1);
+					gpszProductString[sizeof(gpszProductString) - 1] = 0;
+				}
+
+				pbuf = COM_Parse(pbuf);
+				if(!pbuf)
+					break;
+			}
+		}
+		if(buffer)
+			Mem_Free(buffer);
+	}
+
+	if(cls.state != ca_dedicated)
+	{
+		Con_DPrintf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
+		Con_DPrintf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
+	}
+	else
+	{
+		Con_Printf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
+		Con_Printf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
+	}
+}
+
+/*
 ====================
 Host_Init
 ====================
 */
-	int Host_Init(quakeparms_t * parms)
-	{
-		char versionString[256];
+int Host_Init(quakeparms_t *parms)
+{
+	char versionString[256];
 
-		CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
+	CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
 
-		Q_memcpy(&host_parms, parms, sizeof(host_parms));
-		com_argc = parms->argc;
-		com_argv = parms->argv;
-		realtime = 0;
+	Q_memcpy(&host_parms, parms, sizeof(host_parms));
+	com_argc = parms->argc;
+	com_argv = parms->argv;
+	realtime = 0;
 
-		Memory_Init(parms->membase, parms->memsize);
+	Memory_Init(parms->membase, parms->memsize);
 
-		Voice_RegisterCvars();
-		Cvar_RegisterVariable(&console);
+	Voice_RegisterCvars();
+	Cvar_RegisterVariable(&console);
 
-		if(COM_CheckParm("-console") || COM_CheckParm("-toconsole") || COM_CheckParm("-dev"))
-			Cvar_DirectSet(&console, "1.0");
+	if(COM_CheckParm("-console") || COM_CheckParm("-toconsole") || COM_CheckParm("-dev"))
+		Cvar_DirectSet(&console, "1.0");
 
-		Host_InitLocal();
+	Host_InitLocal();
 
-		if(COM_CheckParm("-dev"))
-			Cvar_SetValue("developer", 1.0);
+	if(COM_CheckParm("-dev"))
+		Cvar_SetValue("developer", 1.0);
 
 //Engine string pooling
 #ifdef REHLDS_FIXES
-		Ed_StrPool_Init();
+	Ed_StrPool_Init();
 #endif //REHLDS_FIXES
 
-		FR_Init(); //don't put it under REHLDS_FLIGHT_REC to allow recording via Rehlds API
+	FR_Init(); //don't put it under REHLDS_FLIGHT_REC to allow recording via Rehlds API
 
-		Cbuf_Init();
-		Cmd_Init();
-		Cvar_Init();
-		Cvar_CmdInit();
+	Cbuf_Init();
+	Cmd_Init();
+	Cvar_Init();
+	Cvar_CmdInit();
 
 #ifdef REHLDS_FLIGHT_REC
-		FR_Rehlds_Init();
+	FR_Rehlds_Init();
 #endif //REHLDS_FLIGHT_REC
 
-		V_Init();
-		Chase_Init();
-		COM_Init(parms->basedir);
-		Host_ClearSaveDirectory();
-		HPAK_Init();
-		W_LoadWadFile("gfx.wad");
-		W_LoadWadFile("fonts.wad");
-		Key_Init();
-		Con_Init();
-		Decal_Init();
-		Mod_Init();
-		NET_Init();
-		Netchan_Init();
-		DELTA_Init();
-		SV_Init();
-		//SystemWrapper_Init();
-		Host_Version();
+	V_Init();
+	Chase_Init();
+	COM_Init(parms->basedir);
+	Host_ClearSaveDirectory();
+	HPAK_Init();
+	W_LoadWadFile("gfx.wad");
+	W_LoadWadFile("fonts.wad");
+	Key_Init();
+	Con_Init();
+	Decal_Init();
+	Mod_Init();
+	
+	NET_Init();
+	Netchan_Init();
+	
+	DELTA_Init();
+	
+	SV_Init();
+	
+	//SystemWrapper_Init();
+	Host_Version();
 
-		//Rehlds Security
-		Rehlds_Security_Init();
+	//Rehlds Security
+	Rehlds_Security_Init();
 
-		Q_snprintf(versionString, sizeof(versionString), "%s,%i,%i", gpszVersionString, PROTOCOL_VERSION, build_number());
-		Cvar_Set("sv_version", versionString);
-		Con_DPrintf("%4.1f Mb heap\n", (double)parms->memsize / (1024.0f * 1024.0f));
-		R_InitTextures();
-		HPAK_CheckIntegrity("custom");
-		Q_memset(&g_module, 0, sizeof(g_module));
-		if(cls.state != ca_dedicated)
-		{
-			//Sys_Error("Only dedicated server mode is supported");
-
-			color24 *disk_basepal = (color24 *)COM_LoadHunkFile("gfx/palette.lmp");
-			if(!disk_basepal)
-				Sys_Error("Host_Init: Couldn't load gfx/palette.lmp");
-
-			host_basepal = (unsigned short *)Hunk_AllocName(sizeof(PackedColorVec) * 256, "palette.lmp");
-			for(int i = 0; i < 256; i++)
-			{
-				PackedColorVec *basepal = (PackedColorVec *)&host_basepal[i];
-
-				basepal->b = disk_basepal->r;
-				basepal->g = disk_basepal->g;
-				basepal->r = disk_basepal->b;
-				basepal->a = 0; //alpha
-
-				disk_basepal++;
-			}
-
-			GL_Init();
-			PM_Init(&g_clmove);
-			CL_InitEventSystem();
-			ClientDLL_Init();
-			//VGui_Startup();
-
-			if(!VID_Init(host_basepal))
-			{
-				//VGui_Shutdown();
-				return 0;
-			}
-
-			//IN_Init ();
-			Draw_Init();
-			SCR_Init();
-			R_Init();
-			S_Init();
-			//CDAudio_Init();
-			//Voice_Init("voice_speex", 1);
-			//DemoPlayer_Init();
-			//cls.state = ca_disconnected;
-			//Sbar_Init ();
-			CL_Init();
-		}
-		else
-			Cvar_RegisterVariable(&suitvolume);
-
-		Cbuf_InsertText("exec valve.rc\n");
-		Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
-		host_hunklevel = Hunk_LowMark();
-		giActive       = DLL_ACTIVE;
-		scr_skipupdate = FALSE;
-
-		CheckGore();
-
-		host_initialized = TRUE;
-		return 1;
-	}
-
-	void Host_Shutdown()
+	Q_snprintf(versionString, sizeof(versionString), "%s,%i,%i", gpszVersionString, PROTOCOL_VERSION, build_number());
+	Cvar_Set("sv_version", versionString);
+	Con_DPrintf("%4.1f Mb heap\n", (double)parms->memsize / (1024.0f * 1024.0f));
+	R_InitTextures();
+	HPAK_CheckIntegrity("custom");
+	Q_memset(&g_module, 0, sizeof(g_module));
+	if(cls.state != ca_dedicated)
 	{
-		static qboolean isdown = FALSE;
+		//Sys_Error("Only dedicated server mode is supported");
 
-		int       i;
-		client_t *pclient;
+		color24 *disk_basepal = (color24 *)COM_LoadHunkFile("gfx/palette.lmp");
+		if(!disk_basepal)
+			Sys_Error("Host_Init: Couldn't load gfx/palette.lmp");
 
-		if(isdown)
+		host_basepal = (unsigned short *)Hunk_AllocName(sizeof(PackedColorVec) * 256, "palette.lmp");
+		for(int i = 0; i < 256; i++)
 		{
-			printf("recursive shutdown\n");
-			return;
+			PackedColorVec *basepal = (PackedColorVec *)&host_basepal[i];
+
+			basepal->b = disk_basepal->r;
+			basepal->g = disk_basepal->g;
+			basepal->r = disk_basepal->b;
+			basepal->a = 0; //alpha
+
+			disk_basepal++;
 		}
 
-		isdown = TRUE;
-		if(host_initialized) // Client-side
-			Host_WriteConfiguration();
+		GL_Init();
+		PM_Init(&g_clmove);
+		CL_InitEventSystem();
+		ClientDLL_Init();
+		//VGui_Startup();
 
-		SV_ServerShutdown();
-		Voice_Deinit();
-		host_initialized = FALSE;
-
-		//CDAudio_Shutdown();
-		//VGui_Shutdown();
-		if(cls.state != ca_dedicated)
-			ClientDLL_Shutdown();
-
-		//Rehlds Security
-		Rehlds_Security_Shutdown();
-
-		Cmd_RemoveGameCmds();
-		Cmd_Shutdown();
-		Cvar_Shutdown();
-		HPAK_FlushHostQueue();
-		SV_DeallocateDynamicData();
-
-		pclient = g_psvs.clients;
-		for(i = 0; i < g_psvs.maxclientslimit; i++, pclient++)
-			SV_ClearFrames(&pclient->frames);
-
-		SV_Shutdown();
-		//SystemWrapper_ShutDown();
-		NET_Shutdown();
-		S_Shutdown();
-		Con_Shutdown();
-		ReleaseEntityDlls();
-		CL_ShutDownClientStatic();
-		CM_FreePAS();
-
-		if(wadpath)
+		if(!VID_Init(host_basepal))
 		{
-			Mem_Free(wadpath);
-			wadpath = NULL;
+			//VGui_Shutdown();
+			return 0;
 		}
 
-		if(cls.state != ca_dedicated)
-			Draw_Shutdown();
-
-		Draw_DecalShutdown();
-		W_Shutdown();
-		Log_Printf("Server shutdown\n");
-		Log_Close();
-		COM_Shutdown();
-		CL_Shutdown();
-		DELTA_Shutdown();
-		Key_Shutdown();
-		realtime   = 0.0f;
-		g_psv.time = 0.0f;
-		cl.time    = 0.0f;
+		//IN_Init ();
+		Draw_Init();
+		SCR_Init();
+		R_Init();
+		S_Init();
+		//CDAudio_Init();
+		//Voice_Init("voice_speex", 1);
+		//DemoPlayer_Init();
+		//cls.state = ca_disconnected;
+		//Sbar_Init ();
+		CL_Init();
 	}
+	else
+		Cvar_RegisterVariable(&suitvolume);
+
+	Cbuf_InsertText("exec valve.rc\n");
+	Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
+	host_hunklevel = Hunk_LowMark();
+	giActive       = DLL_ACTIVE;
+	scr_skipupdate = FALSE;
+
+	CheckGore();
+
+	host_initialized = TRUE;
+	return 1;
+}
+
+void Host_Shutdown()
+{
+	static qboolean isdown = FALSE;
+
+	int       i;
+	client_t *pclient;
+
+	if(isdown)
+	{
+		printf("recursive shutdown\n");
+		return;
+	}
+
+	isdown = TRUE;
+	if(host_initialized) // Client-side
+		Host_WriteConfiguration();
+
+	SV_ServerShutdown();
+	Voice_Deinit();
+	host_initialized = FALSE;
+
+	//CDAudio_Shutdown();
+	//VGui_Shutdown();
+	if(cls.state != ca_dedicated)
+		ClientDLL_Shutdown();
+
+	//Rehlds Security
+	Rehlds_Security_Shutdown();
+
+	Cmd_RemoveGameCmds();
+	Cmd_Shutdown();
+	Cvar_Shutdown();
+	HPAK_FlushHostQueue();
+	SV_DeallocateDynamicData();
+
+	pclient = g_psvs.clients;
+	for(i = 0; i < g_psvs.maxclientslimit; i++, pclient++)
+		SV_ClearFrames(&pclient->frames);
+
+	SV_Shutdown();
+	//SystemWrapper_ShutDown();
+	NET_Shutdown();
+	S_Shutdown();
+	Con_Shutdown();
+	ReleaseEntityDlls();
+	CL_ShutDownClientStatic();
+	CM_FreePAS();
+
+	if(wadpath)
+	{
+		Mem_Free(wadpath);
+		wadpath = NULL;
+	}
+
+	if(cls.state != ca_dedicated)
+		Draw_Shutdown();
+
+	Draw_DecalShutdown();
+	W_Shutdown();
+	Log_Printf("Server shutdown\n");
+	Log_Close();
+	COM_Shutdown();
+	CL_Shutdown();
+	DELTA_Shutdown();
+	Key_Shutdown();
+	realtime   = 0.0f;
+	g_psv.time = 0.0f;
+	cl.time    = 0.0f;
+};

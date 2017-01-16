@@ -38,19 +38,13 @@ qboolean SNDDMA_Init()
 	return false;
 };
 
-int	SNDDMA_GetDMAPos()
+int SNDDMA_GetDMAPos()
 {
 	return 0;
 };
 
-void SNDDMA_Shutdown()
-{
-};
+void SNDDMA_Shutdown(){};
 
-void SNDDMA_BeginPainting()
-{
-};
+void SNDDMA_BeginPainting(){};
 
-void SNDDMA_Submit()
-{
-};
+void SNDDMA_Submit(){};

@@ -50,146 +50,141 @@ static int report_func_ret(void *stack_base, int stack_size, reg386_t *reg, uint
 //#define TRACE printf
 
 //WINE_MODREF *local_wm=NULL;
-modref_list* local_wm=NULL;
+modref_list *local_wm = NULL;
 
 HANDLE SegptrHeap;
 
-WINE_MODREF* MODULE_FindModule(LPCSTR m)
+WINE_MODREF *MODULE_FindModule(LPCSTR m)
 {
-    modref_list* list=local_wm;
-    TRACE("FindModule: Module %s request\n", m);
-    if(list==NULL)
-	return NULL;
-//    while(strcmp(m, list->wm->filename))
-    while(!strstr(list->wm->filename, m))
-    {
-	TRACE("%s: %x\n", list->wm->filename, list->wm->module);
-	list=list->prev;
-	if(list==NULL)
-	    return NULL;
-    }
-    TRACE("Resolved to %s\n", list->wm->filename);
-    return list->wm;
+	modref_list *list = local_wm;
+	TRACE("FindModule: Module %s request\n", m);
+	if(list == NULL)
+		return NULL;
+	//    while(strcmp(m, list->wm->filename))
+	while(!strstr(list->wm->filename, m))
+	{
+		TRACE("%s: %x\n", list->wm->filename, list->wm->module);
+		list = list->prev;
+		if(list == NULL)
+			return NULL;
+	}
+	TRACE("Resolved to %s\n", list->wm->filename);
+	return list->wm;
 }
-WINE_MODREF* MODULE_FindNearFunctionName(FARPROC f)
+WINE_MODREF *MODULE_FindNearFunctionName(FARPROC f)
 {
-    modref_list* list=local_wm;
-    //TRACE("FindModule: Module %s request\n", m);
-    if(list==NULL)
+	modref_list *list = local_wm;
+	//TRACE("FindModule: Module %s request\n", m);
+	if(list == NULL)
 		return NULL;
 	const char *s = NULL;
-//    while(strcmp(m, list->wm->filename))
-    while(list && !s)
-    {
-		s=PE_FindNearFunctionName(list->wm, f);
+	//    while(strcmp(m, list->wm->filename))
+	while(list && !s)
+	{
+		s    = PE_FindNearFunctionName(list->wm, f);
 		list = list->prev;
 	}
 	return s;
 }
 
-
 static void MODULE_RemoveFromList(WINE_MODREF *mod)
 {
-    modref_list* list=local_wm;
-    if(list==0)
-	return;
-    if(mod==0)
-	return;
-    if((list->prev==NULL)&&(list->next==NULL))
-    {
-	free(list);
-	local_wm=NULL;
-//	uninstall_fs();
-	return;
-    }
-    for(;list;list=list->prev)
-    {
-	if(list->wm==mod)
+	modref_list *list = local_wm;
+	if(list == 0)
+		return;
+	if(mod == 0)
+		return;
+	if((list->prev == NULL) && (list->next == NULL))
 	{
-	    if(list->prev)
-		list->prev->next=list->next;
-	    if(list->next)
-		list->next->prev=list->prev;
-	    if(list==local_wm)
-		local_wm=list->prev;
-	    free(list);
-	    return;
+		free(list);
+		local_wm = NULL;
+		//	uninstall_fs();
+		return;
 	}
-    }
-
+	for(; list; list = list->prev)
+	{
+		if(list->wm == mod)
+		{
+			if(list->prev)
+				list->prev->next = list->next;
+			if(list->next)
+				list->next->prev = list->prev;
+			if(list == local_wm)
+				local_wm = list->prev;
+			free(list);
+			return;
+		}
+	}
 }
 
 WINE_MODREF *MODULE32_LookupHMODULE(HMODULE m)
 {
-    modref_list* list=local_wm;
-    TRACE("LookupHMODULE: Module %X request\n", m);
-    if(list==NULL)
-    {
-	TRACE("LookupHMODULE failed\n");
-	return NULL;
-    }
-    while(m!=list->wm->module)
-    {
-//      printf("Checking list %X wm %X module %X\n",
-//	list, list->wm, list->wm->module);
-	list=list->prev;
-	if(list==NULL)
+	modref_list *list = local_wm;
+	TRACE("LookupHMODULE: Module %X request\n", m);
+	if(list == NULL)
 	{
-	    TRACE("LookupHMODULE failed\n");
-	    return NULL;
+		TRACE("LookupHMODULE failed\n");
+		return NULL;
 	}
-    }
-    TRACE("LookupHMODULE hit %p\n", list->wm);
-    return list->wm;
+	while(m != list->wm->module)
+	{
+		//      printf("Checking list %X wm %X module %X\n",
+		//	list, list->wm, list->wm->module);
+		list = list->prev;
+		if(list == NULL)
+		{
+			TRACE("LookupHMODULE failed\n");
+			return NULL;
+		}
+	}
+	TRACE("LookupHMODULE hit %p\n", list->wm);
+	return list->wm;
 }
 
 /*************************************************************************
  *		MODULE_InitDll
  */
-static WIN_BOOL MODULE_InitDll( WINE_MODREF *wm, DWORD type, LPVOID lpReserved )
+static WIN_BOOL MODULE_InitDll(WINE_MODREF *wm, DWORD type, LPVOID lpReserved)
 {
-    WIN_BOOL retv = TRUE;
+	WIN_BOOL retv = TRUE;
 
-    #ifdef DEBUG
-    static LPCSTR typeName[] = { "PROCESS_DETACH", "PROCESS_ATTACH",
-                                 "THREAD_ATTACH", "THREAD_DETACH" };
-    #endif
+#ifdef DEBUG
+	static LPCSTR typeName[] = {"PROCESS_DETACH", "PROCESS_ATTACH",
+	                            "THREAD_ATTACH", "THREAD_DETACH"};
+#endif
 
-    assert( wm );
+	assert(wm);
 
+	/* Skip calls for modules loaded with special load flags */
 
-    /* Skip calls for modules loaded with special load flags */
+	if((wm->flags & WINE_MODREF_DONT_RESOLVE_REFS) || (wm->flags & WINE_MODREF_LOAD_AS_DATAFILE))
+		return TRUE;
 
-    if (    ( wm->flags & WINE_MODREF_DONT_RESOLVE_REFS )
-         || ( wm->flags & WINE_MODREF_LOAD_AS_DATAFILE ) )
-        return TRUE;
+	TRACE("(%s,%s,%p) - CALL\n", wm->modname, typeName[type], lpReserved);
 
+	/* Call the initialization routine */
+	switch(wm->type)
+	{
+	case MODULE32_PE:
+		retv = PE_InitDLL(wm, type, lpReserved);
+		break;
 
-    TRACE("(%s,%s,%p) - CALL\n", wm->modname, typeName[type], lpReserved );
+	case MODULE32_ELF:
+		/* no need to do that, dlopen() already does */
+		break;
 
-    /* Call the initialization routine */
-    switch ( wm->type )
-    {
-    case MODULE32_PE:
-        retv = PE_InitDLL( wm, type, lpReserved );
-        break;
+	default:
+		ERR("wine_modref type %d not handled.\n", wm->type);
+		retv = FALSE;
+		break;
+	}
 
-    case MODULE32_ELF:
-        /* no need to do that, dlopen() already does */
-        break;
-
-    default:
-        ERR("wine_modref type %d not handled.\n", wm->type );
-        retv = FALSE;
-        break;
-    }
-
-    /* The state of the module list may have changed due to the call
+	/* The state of the module list may have changed due to the call
        to PE_InitDLL. We cannot assume that this module has not been
        deleted.  */
-    TRACE("(%p,%s,%p) - RETURN %d\n", wm, typeName[type], lpReserved, retv );
+	TRACE("(%p,%s,%p) - RETURN %d\n", wm, typeName[type], lpReserved, retv);
 
-    return retv;
+	return retv;
 }
 
 /*************************************************************************
@@ -224,58 +219,56 @@ static WIN_BOOL MODULE_InitDll( WINE_MODREF *wm, DWORD type, LPVOID lpReserved )
  * NOTE: Assumes that the process critical section is held!
  *
  */
-static WIN_BOOL MODULE_DllProcessAttach( WINE_MODREF *wm, LPVOID lpReserved )
+static WIN_BOOL MODULE_DllProcessAttach(WINE_MODREF *wm, LPVOID lpReserved)
 {
-    WIN_BOOL retv = TRUE;
-    //int i;
-    assert( wm );
+	WIN_BOOL retv = TRUE;
+	//int i;
+	assert(wm);
 
-    /* prevent infinite recursion in case of cyclical dependencies */
-    if (    ( wm->flags & WINE_MODREF_MARKER )
-         || ( wm->flags & WINE_MODREF_PROCESS_ATTACHED ) )
-        return retv;
+	/* prevent infinite recursion in case of cyclical dependencies */
+	if((wm->flags & WINE_MODREF_MARKER) || (wm->flags & WINE_MODREF_PROCESS_ATTACHED))
+		return retv;
 
-    TRACE("(%s,%p) - START\n", wm->modname, lpReserved );
+	TRACE("(%s,%p) - START\n", wm->modname, lpReserved);
 
-    /* Tag current MODREF to prevent recursive loop */
-    wm->flags |= WINE_MODREF_MARKER;
+	/* Tag current MODREF to prevent recursive loop */
+	wm->flags |= WINE_MODREF_MARKER;
 
-    /* Recursively attach all DLLs this one depends on */
-/*    for ( i = 0; retv && i < wm->nDeps; i++ )
+	/* Recursively attach all DLLs this one depends on */
+	/*    for ( i = 0; retv && i < wm->nDeps; i++ )
         if ( wm->deps[i] )
             retv = MODULE_DllProcessAttach( wm->deps[i], lpReserved );
 */
-    /* Call DLL entry point */
+	/* Call DLL entry point */
 
-    //local_wm=wm;
-    if(local_wm)
-    {
-        local_wm->next = malloc(sizeof(modref_list));
-        local_wm->next->prev=local_wm;
-        local_wm->next->next=NULL;
-        local_wm->next->wm=wm;
-        local_wm=local_wm->next;
-    }
-    else
-    {
-	local_wm = malloc(sizeof(modref_list));
-	local_wm->next=local_wm->prev=NULL;
-	local_wm->wm=wm;
-    }
-    /* Remove recursion flag */
-    wm->flags &= ~WINE_MODREF_MARKER;
+	//local_wm=wm;
+	if(local_wm)
+	{
+		local_wm->next       = malloc(sizeof(modref_list));
+		local_wm->next->prev = local_wm;
+		local_wm->next->next = NULL;
+		local_wm->next->wm   = wm;
+		local_wm             = local_wm->next;
+	}
+	else
+	{
+		local_wm       = malloc(sizeof(modref_list));
+		local_wm->next = local_wm->prev = NULL;
+		local_wm->wm                    = wm;
+	}
+	/* Remove recursion flag */
+	wm->flags &= ~WINE_MODREF_MARKER;
 
-    if ( retv )
-    {
-        retv = MODULE_InitDll( wm, DLL_PROCESS_ATTACH, lpReserved );
-        if ( retv )
-            wm->flags |= WINE_MODREF_PROCESS_ATTACHED;
-    }
+	if(retv)
+	{
+		retv = MODULE_InitDll(wm, DLL_PROCESS_ATTACH, lpReserved);
+		if(retv)
+			wm->flags |= WINE_MODREF_PROCESS_ATTACHED;
+	}
 
+	TRACE("(%s,%p) - END\n", wm->modname, lpReserved);
 
-    TRACE("(%s,%p) - END\n", wm->modname, lpReserved );
-
-    return retv;
+	return retv;
 }
 
 /*************************************************************************
@@ -285,13 +278,13 @@ static WIN_BOOL MODULE_DllProcessAttach( WINE_MODREF *wm, LPVOID lpReserved )
  * sequence at MODULE_DllProcessAttach.  Unless the bForceDetach flag
  * is set, only DLLs with zero refcount are notified.
  */
-static void MODULE_DllProcessDetach( WINE_MODREF* wm, WIN_BOOL bForceDetach, LPVOID lpReserved )
+static void MODULE_DllProcessDetach(WINE_MODREF *wm, WIN_BOOL bForceDetach, LPVOID lpReserved)
 {
-    //    WINE_MODREF *wm=local_wm;
-    //modref_list* l = local_wm;
-    wm->flags &= ~WINE_MODREF_PROCESS_ATTACHED;
-    MODULE_InitDll( wm, DLL_PROCESS_DETACH, lpReserved );
-/*    while (l)
+	//    WINE_MODREF *wm=local_wm;
+	//modref_list* l = local_wm;
+	wm->flags &= ~WINE_MODREF_PROCESS_ATTACHED;
+	MODULE_InitDll(wm, DLL_PROCESS_DETACH, lpReserved);
+	/*    while (l)
     {
 	modref_list* f = l;
 	l = l->next;
@@ -311,24 +304,24 @@ static void MODULE_DllProcessDetach( WINE_MODREF* wm, WIN_BOOL bForceDetach, LPV
  * integrate this with different types of module represenations.
  *
  */
-static WINE_MODREF *MODULE_LoadLibraryExA( LPCSTR libname, HFILE hfile, DWORD flags )
+static WINE_MODREF *MODULE_LoadLibraryExA(LPCSTR libname, HFILE hfile, DWORD flags)
 {
-	DWORD err = GetLastError();
+	DWORD        err = GetLastError();
 	WINE_MODREF *pwm;
-//	module_loadorder_t *plo;
+	//	module_loadorder_t *plo;
 
-        SetLastError( ERROR_FILE_NOT_FOUND );
+	SetLastError(ERROR_FILE_NOT_FOUND);
 	TRACE("Trying native dll '%s'\n", libname);
 	pwm = PE_LoadLibraryExA(libname, flags);
 #ifdef HAVE_LIBDL
 	if(!pwm)
 	{
-    	    TRACE("Trying ELF dll '%s'\n", libname);
-	    pwm=(WINE_MODREF*)ELFDLL_LoadLibraryExA(libname, flags);
+		TRACE("Trying ELF dll '%s'\n", libname);
+		pwm = (WINE_MODREF *)ELFDLL_LoadLibraryExA(libname, flags);
 	}
 #endif
-//		printf("0x%08x\n", pwm);
-//		break;
+	//		printf("0x%08x\n", pwm);
+	//		break;
 	if(pwm)
 	{
 		/* Initialize DLL just loaded */
@@ -337,10 +330,9 @@ static WINE_MODREF *MODULE_LoadLibraryExA( LPCSTR libname, HFILE hfile, DWORD fl
 		/* decrement the dependencies through the MODULE_FreeLibrary call. */
 		pwm->refCount++;
 
-                SetLastError( err );  /* restore last error */
+		SetLastError(err); /* restore last error */
 		return pwm;
 	}
-
 
 	WARN("Failed to load module '%s'; error=0x%08lx, \n", libname, GetLastError());
 	return NULL;
@@ -351,18 +343,18 @@ static WINE_MODREF *MODULE_LoadLibraryExA( LPCSTR libname, HFILE hfile, DWORD fl
  *
  * NOTE: Assumes that the process critical section is held!
  */
-static WIN_BOOL MODULE_FreeLibrary( WINE_MODREF *wm )
+static WIN_BOOL MODULE_FreeLibrary(WINE_MODREF *wm)
 {
-    TRACE("(%s) - START\n", wm->modname );
+	TRACE("(%s) - START\n", wm->modname);
 
-    /* Call process detach notifications */
-    MODULE_DllProcessDetach( wm, FALSE, NULL );
+	/* Call process detach notifications */
+	MODULE_DllProcessDetach(wm, FALSE, NULL);
 
-    PE_UnloadLibrary(wm);
+	PE_UnloadLibrary(wm);
 
-    TRACE("END\n");
+	TRACE("END\n");
 
-    return TRUE;
+	return TRUE;
 }
 
 /***********************************************************************
@@ -370,79 +362,80 @@ static WIN_BOOL MODULE_FreeLibrary( WINE_MODREF *wm )
  */
 HMODULE WINAPI LoadLibraryExA(LPCSTR libname, HANDLE hfile, DWORD flags)
 {
-	WINE_MODREF *wm = 0;
-	char* listpath[] = { "", "", 0 };
-	char path[512];
-	char checked[2000];
-        int i = -1;
+	WINE_MODREF *wm         = 0;
+	char *       listpath[] = {"", "", 0};
+	char         path[512];
+	char         checked[2000];
+	int          i = -1;
 
-        checked[0] = 0;
+	checked[0] = 0;
 	if(!libname)
 	{
 		SetLastError(ERROR_INVALID_PARAMETER);
 		return 0;
 	}
 
-	wm=MODULE_FindModule(libname);
-	if(wm) return wm->module;
+	wm = MODULE_FindModule(libname);
+	if(wm)
+		return wm->module;
 
-//	if(fs_installed==0)
-//	    install_fs();
+	//	if(fs_installed==0)
+	//	    install_fs();
 
 	// Do not load libraries from a path relative to the current directory
-	if (*libname != '/')
-	    i++;
+	if(*libname != '/')
+		i++;
 
-	while (wm == 0 && listpath[++i])
+	while(wm == 0 && listpath[++i])
 	{
-	    if (i < 2)
-	    {
-		if (i == 0)
-		    /* check just original file name */
-		    strncpy(path, libname, 511);
-                else
-		    /* check default user path */
-		    strncpy(path, "./", 300);
-	    }
-	    else if (strcmp("./", listpath[i]))
-                /* path from the list */
-		strncpy(path, listpath[i], 300);
-	    else
-		continue;
-
-	    if (i > 0)
-	    {
-		strcat(path, "/");
-		strncat(path, libname, 100);
-	    }
-	    path[511] = 0;
-	    wm = MODULE_LoadLibraryExA( path, hfile, flags );
-
-	    if (!wm)
-	    {
-		if (checked[0])
-		    strcat(checked, ", ");
-		strcat(checked, path);
-                checked[1500] = 0;
-
-	    }
-	}
-	if ( wm )
-	{
-		if ( !MODULE_DllProcessAttach( wm, NULL ) )
+		if(i < 2)
 		{
-			WARN_(module)("Attach failed for module '%s', \n", libname);
+			if(i == 0)
+				/* check just original file name */
+				strncpy(path, libname, 511);
+			else
+				/* check default user path */
+				strncpy(path, "./", 300);
+		}
+		else if(strcmp("./", listpath[i]))
+			/* path from the list */
+			strncpy(path, listpath[i], 300);
+		else
+			continue;
+
+		if(i > 0)
+		{
+			strcat(path, "/");
+			strncat(path, libname, 100);
+		}
+		path[511] = 0;
+		wm        = MODULE_LoadLibraryExA(path, hfile, flags);
+
+		if(!wm)
+		{
+			if(checked[0])
+				strcat(checked, ", ");
+			strcat(checked, path);
+			checked[1500] = 0;
+		}
+	}
+	if(wm)
+	{
+		if(!MODULE_DllProcessAttach(wm, NULL))
+		{
+			WARN_(module)
+			("Attach failed for module '%s', \n", libname);
 			MODULE_FreeLibrary(wm);
 			SetLastError(ERROR_DLL_INIT_FAILED);
 			MODULE_RemoveFromList(wm);
 			wm = NULL;
 		}
 	}
-	#if 0
+#if 0
 	if (!wm && !strstr(checked, "avisynth.dll"))
 	    printf("Win32 LoadLibrary failed to load: %s\n", checked);
 
-#define RVA(x) ((char *)wm->module+(unsigned int)(x))
+#define RVA(x) ((char *)wm->module + (unsigned int)(x))
 	if (strstr(libname, "CFDecode2.ax") && wm)
 	{
 	    if (PE_FindExportedFunction(wm, "DllGetClassObject", TRUE) == RVA(0xd00e0))
@@ -593,16 +586,16 @@ HMODULE WINAPI LoadLibraryExA(LPCSTR libname, HANDLE hfile, DWORD flags)
 
 	}
 #undef RVA
-	#endif
+#endif
 	return wm ? wm->module : 0;
 }
-
 
 /***********************************************************************
  *           LoadLibraryA         (KERNEL32)
  */
-HMODULE WINAPI LoadLibraryA(LPCSTR libname) {
-	return LoadLibraryExA(libname,0,0);
+HMODULE WINAPI LoadLibraryA(LPCSTR libname)
+{
+	return LoadLibraryExA(libname, 0, 0);
 }
 
 /***********************************************************************
@@ -610,76 +603,80 @@ HMODULE WINAPI LoadLibraryA(LPCSTR libname) {
  */
 WIN_BOOL WINAPI FreeLibrary(HINSTANCE hLibModule)
 {
-    WIN_BOOL retv = FALSE;
-    WINE_MODREF *wm;
+	WIN_BOOL     retv = FALSE;
+	WINE_MODREF *wm;
 
-    wm=MODULE32_LookupHMODULE(hLibModule);
+	wm = MODULE32_LookupHMODULE(hLibModule);
 
-    if ( !wm || !hLibModule )
-    {
-        SetLastError( ERROR_INVALID_HANDLE );
-	return 0;
-    }
-    else
-        retv = MODULE_FreeLibrary( wm );
+	if(!wm || !hLibModule)
+	{
+		SetLastError(ERROR_INVALID_HANDLE);
+		return 0;
+	}
+	else
+		retv = MODULE_FreeLibrary(wm);
 
-    MODULE_RemoveFromList(wm);
+	MODULE_RemoveFromList(wm);
 
-    /* garbage... */
-    if (local_wm == NULL) my_garbagecollection();
+	/* garbage... */
+	if(local_wm == NULL)
+		my_garbagecollection();
 
-    return retv;
+	return retv;
 }
 
 /***********************************************************************
  *           GetProcAddress   		(KERNEL32.257)
  */
-FARPROC WINAPI GetProcAddress( HMODULE hModule, LPCSTR function )
+FARPROC WINAPI GetProcAddress(HMODULE hModule, LPCSTR function)
 {
-    return MODULE_GetProcAddress( hModule, function, TRUE );
+	return MODULE_GetProcAddress(hModule, function, TRUE);
 }
 
 /***********************************************************************
  *           MODULE_GetProcAddress   		(internal)
  */
 FARPROC MODULE_GetProcAddress(
-	HMODULE hModule, 	/* [in] current module handle */
-	LPCSTR function,	/* [in] function to be looked up */
-	WIN_BOOL snoop )
+    HMODULE  hModule,  /* [in] current module handle */
+    LPCSTR   function, /* [in] function to be looked up */
+    WIN_BOOL snoop)
 {
-    WINE_MODREF	*wm = MODULE32_LookupHMODULE( hModule );
-//    WINE_MODREF *wm=local_wm;
-    FARPROC	retproc;
+	WINE_MODREF *wm = MODULE32_LookupHMODULE(hModule);
+	//    WINE_MODREF *wm=local_wm;
+	FARPROC retproc;
 #ifdef DEBUG
-    if (HIWORD(function))
-	fprintf(stderr,"XXX GetProcAddress(%08lx,%s)\n",(DWORD)hModule,function);
-    else
-	fprintf(stderr,"XXX GetProcAddress(%08lx,%p)\n",(DWORD)hModule,function);
+	if(HIWORD(function))
+		fprintf(stderr, "XXX GetProcAddress(%08lx,%s)\n", (DWORD)hModule, function);
+	else
+		fprintf(stderr, "XXX GetProcAddress(%08lx,%p)\n", (DWORD)hModule, function);
 #endif
-//	TRACE_(win32)("(%08lx,%s)\n",(DWORD)hModule,function);
-//    else
-//	TRACE_(win32)("(%08lx,%p)\n",(DWORD)hModule,function);
+	//	TRACE_(win32)("(%08lx,%s)\n",(DWORD)hModule,function);
+	//    else
+	//	TRACE_(win32)("(%08lx,%p)\n",(DWORD)hModule,function);
 
-    if (!wm) {
-    	SetLastError(ERROR_INVALID_HANDLE);
-        return (FARPROC)0;
-    }
-    switch (wm->type)
-    {
-    case MODULE32_PE:
-     	retproc = PE_FindExportedFunction( wm, function, snoop );
-	if (!retproc) SetLastError(ERROR_PROC_NOT_FOUND);
-	break;
+	if(!wm)
+	{
+		SetLastError(ERROR_INVALID_HANDLE);
+		return (FARPROC)0;
+	}
+	switch(wm->type)
+	{
+	case MODULE32_PE:
+		retproc = PE_FindExportedFunction(wm, function, snoop);
+		if(!retproc)
+			SetLastError(ERROR_PROC_NOT_FOUND);
+		break;
 #ifdef HAVE_LIBDL
-    case MODULE32_ELF:
-	retproc = (FARPROC) dlsym( (void*) wm->module, function);
-	if (!retproc) SetLastError(ERROR_PROC_NOT_FOUND);
-	return retproc;
+	case MODULE32_ELF:
+		retproc = (FARPROC)dlsym((void *)wm->module, function);
+		if(!retproc)
+			SetLastError(ERROR_PROC_NOT_FOUND);
+		return retproc;
 #endif
-    default:
-    	ERR("wine_modref type %d not handled.\n",wm->type);
-    	SetLastError(ERROR_INVALID_HANDLE);
-    	return (FARPROC)0;
-    }
-    return retproc;
+	default:
+		ERR("wine_modref type %d not handled.\n", wm->type);
+		SetLastError(ERROR_INVALID_HANDLE);
+		return (FARPROC)0;
+	}
+	return retproc;
 }

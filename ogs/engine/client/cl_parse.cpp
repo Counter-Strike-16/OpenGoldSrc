@@ -454,10 +454,10 @@ void CL_NextUpload()
 		return;
 
 	int r = upload_size - upload_pos;
-	
+
 	if(r > 768)
 		r = 768;
-	
+
 	memcpy(buffer, upload_data + upload_pos, r);
 	MSG_WriteByte(&cls.netchan.message, clc_upload);
 	MSG_WriteShort(&cls.netchan.message, r);
@@ -1041,13 +1041,13 @@ CL_ParseStaticSound
 void CL_ParseStaticSound()
 {
 	vec3_t org;
-	
-	for(int i = 0; i < 3; ++i)
+
+	for(int i  = 0; i < 3; ++i)
 		org[i] = MSG_ReadCoord();
-	
-	int sound_num  = MSG_ReadByte();
-	int vol        = MSG_ReadByte();
-	int atten      = MSG_ReadByte();
+
+	int sound_num = MSG_ReadByte();
+	int vol       = MSG_ReadByte();
+	int atten     = MSG_ReadByte();
 
 	S_StaticSound(cl.sound_precache[sound_num], org, vol, atten);
 };
@@ -1250,7 +1250,7 @@ and sent it back to the server
 void CL_ParseCvarValue()
 {
 	const char *cvarName = MSG_ReadString();
-	cvar_t *cvar = Cvar_FindVar(cvarName);
+	cvar_t *    cvar     = Cvar_FindVar(cvarName);
 
 	// build the answer
 	MSG_WriteByte(&cls.netchan.message, clc_requestcvarvalue);
@@ -1269,7 +1269,7 @@ void CL_ParseCvarValue2()
 {
 	int         requestID = MSG_ReadLong();
 	const char *cvarName  = MSG_ReadString();
-	cvar_t *  cvar      = Cvar_FindVar(cvarName);
+	cvar_t *    cvar      = Cvar_FindVar(cvarName);
 
 	// build the answer
 	MSG_WriteByte(&cls.netchan.message, clc_requestcvarvalue2);

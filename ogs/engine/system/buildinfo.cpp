@@ -44,7 +44,7 @@ int build_number()
 
 	if(b != 0)
 		return b;
-	
+
 	int m = 0;
 	int d = 0;
 	int y = 0;
@@ -65,9 +65,9 @@ int build_number()
 
 #ifdef REHLDS_FIXES
 	b -= 0; // TODO: return days since initial commit on Oct 12 2016
-#else           // REHLDS_FIXES
+#else       // REHLDS_FIXES
 	b -= 34995; // return days since Oct 24 1996
-#endif          // REHLDS_FIXES
+#endif      // REHLDS_FIXES
 
 	return b;
 };

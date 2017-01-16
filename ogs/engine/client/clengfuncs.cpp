@@ -40,16 +40,15 @@
 
 namespace
 {
-
 void EngFunc_FillRGBA(int x, int y, int width, int height, int r, int g, int b, int a)
 {
 	float x1 = x, y1 = y, w1 = width, h1 = height;
-	
+
 	r = bound(0, r, 255);
 	g = bound(0, g, 255);
 	b = bound(0, b, 255);
 	a = bound(0, a, 255);
-	
+
 	pglColor4ub(r, g, b, a);
 
 	SPR_AdjustSize(&x1, &y1, &w1, &h1);
@@ -63,8 +62,8 @@ void EngFunc_FillRGBA(int x, int y, int width, int height, int r, int g, int b, 
 int EngFunc_GetScreenInfo(SCREENINFO *pscrinfo)
 {
 	// setup screen info
-	float scale_factor   = hud_scale->value;
-	
+	float scale_factor = hud_scale->value;
+
 	clgame.scrInfo.iSize = sizeof(clgame.scrInfo);
 
 	if(scale_factor && scale_factor != 1.0f)
@@ -97,9 +96,9 @@ void EngFunc_SetCrosshair(HSPRITE_ hspr, wrect_t rc, int r, int g, int b)
 	clgame.ds.rgbaCrosshair[1] = (byte)g;
 	clgame.ds.rgbaCrosshair[2] = (byte)b;
 	clgame.ds.rgbaCrosshair[3] = (byte)0xFF;
-	
-	clgame.ds.pCrosshair       = CL_GetSpritePointer(hspr);
-	clgame.ds.rcCrosshair      = rc;
+
+	clgame.ds.pCrosshair  = CL_GetSpritePointer(hspr);
+	clgame.ds.rcCrosshair = rc;
 };
 
 int EngFunc_HookUserMsg(char *szMsgName, pfnUserMsgHook pfn)
@@ -156,31 +155,32 @@ int EngFunc_ClientCmd(char *szCmdString)
 
 void EngFunc_GetPlayerInfo(int ent_num, hud_player_info_t *pinfo)
 {
-	player_info_t	*player;
-	cl_entity_t	*ent;
-	qboolean		spec = false;
+	player_info_t *player;
+	cl_entity_t *  ent;
+	qboolean       spec = false;
 
-	ent = CL_GetEntityByIndex( ent_num );
+	ent = CL_GetEntityByIndex(ent_num);
 	ent_num -= 1; // player list if offset by 1 from ents
 
-	if( ent_num >= cl.maxclients || ent_num < 0 || !cl.players[ent_num].name[0] )
+	if(ent_num >= cl.maxclients || ent_num < 0 || !cl.players[ent_num].name[0])
 	{
-		Q_memset( pinfo, 0, sizeof( *pinfo ));
+		Q_memset(pinfo, 0, sizeof(*pinfo));
 		return;
 	}
 
-	player = &cl.players[ent_num];
-	pinfo->thisplayer = ( ent_num == cl.playernum ) ? true : false;
-	if( ent ) spec = ent->curstate.spectator;
+	player            = &cl.players[ent_num];
+	pinfo->thisplayer = (ent_num == cl.playernum) ? true : false;
+	if(ent)
+		spec = ent->curstate.spectator;
 
-	pinfo->name = player->name;
+	pinfo->name  = player->name;
 	pinfo->model = player->model;
 
-	pinfo->spectator = spec;		
-	pinfo->ping = player->ping;
-	pinfo->packetloss = player->packet_loss;
-	pinfo->topcolor = Q_atoi( Info_ValueForKey( player->userinfo, "topcolor" ));
-	pinfo->bottomcolor = Q_atoi( Info_ValueForKey( player->userinfo, "bottomcolor" ));
+	pinfo->spectator   = spec;
+	pinfo->ping        = player->ping;
+	pinfo->packetloss  = player->packet_loss;
+	pinfo->topcolor    = Q_atoi(Info_ValueForKey(player->userinfo, "topcolor"));
+	pinfo->bottomcolor = Q_atoi(Info_ValueForKey(player->userinfo, "bottomcolor"));
 };
 
 void EngFunc_PlaySoundByName(char *szSound, float volume)
@@ -258,9 +258,9 @@ int EngFunc_DrawConsoleString(int x, int y, char *string)
 
 	clgame.ds.adjust_size = true;
 	Con_SetFont(con_fontsize->integer);
-	
+
 	int drawLen = Con_DrawString(x, y, string, clgame.ds.textColor);
-	
+
 	MakeRGBA(clgame.ds.textColor, 255, 255, 255, 255);
 	clgame.ds.adjust_size = false;
 	Con_RestoreFont();
@@ -373,9 +373,7 @@ int EngFunc_CheckParm(char *parm, char **ppnext)
 	return 0;
 };
 
-void EngFunc_GetMousePosition(int *mx, int *my)
-{
-};
+void EngFunc_GetMousePosition(int *mx, int *my){};
 
 int EngFunc_IsNoClipping()
 {
@@ -387,18 +385,14 @@ int EngFunc_IsNoClipping()
 	return pl->curstate.movetype == MOVETYPE_NOCLIP;
 };
 
-struct cl_entity_s *EngFunc_GetLocalPlayer()
-{
-};
+struct cl_entity_s *EngFunc_GetLocalPlayer(){};
 
 struct cl_entity_s *EngFunc_GetViewModel()
 {
 	return &clgame.viewent;
 };
 
-struct cl_entity_s *EngFunc_GetEntityByIndex(int idx)
-{
-};
+struct cl_entity_s *EngFunc_GetEntityByIndex(int idx){};
 
 float EngFunc_GetClientTime()
 {
@@ -407,53 +401,45 @@ float EngFunc_GetClientTime()
 
 int PM_PointContents(float *point, int *truecontents)
 {
-	int	cont, truecont;
+	int cont, truecont;
 
-	truecont = cont = CL_TruePointContents( p );
-	
-	if( truecontents )
+	truecont = cont = CL_TruePointContents(p);
+
+	if(truecontents)
 		*truecontents = truecont;
 
-	if( cont <= CONTENTS_CURRENT_0 && cont >= CONTENTS_CURRENT_DOWN )
+	if(cont <= CONTENTS_CURRENT_0 && cont >= CONTENTS_CURRENT_DOWN)
 		cont = CONTENTS_WATER;
-	
+
 	return cont;
 };
 
-int PM_WaterEntity(float *p)
-{
-};
+int PM_WaterEntity(float *p){};
 
-struct pmtrace_s *PM_TraceLine(float *start, float *end, int flags, int usehull, int ignore_pe)
-{
-};
+struct pmtrace_s *PM_TraceLine(float *start, float *end, int flags, int usehull, int ignore_pe){};
 
 struct model_s *CL_LoadModel(const char *modelname, int *index)
 {
-	int	idx = CL_FindModelIndex( modelname );
-	
-	if( !idx )
+	int idx = CL_FindModelIndex(modelname);
+
+	if(!idx)
 		return NULL;
-	
-	if( index )
+
+	if(index)
 		*index = idx;
-	
-	return Mod_Handle( idx );
+
+	return Mod_Handle(idx);
 };
 
-int CL_CreateVisibleEntity(int type, struct cl_entity_s *ent)
-{
-};
+int CL_CreateVisibleEntity(int type, struct cl_entity_s *ent){};
 
 void EngFunc_PlaySoundByNameAtLocation(char *szSound, float volume, float *origin)
 {
-	int hSound = S_RegisterSound( szSound );
-	S_StartSound( origin, 0, CHAN_AUTO, hSound, volume, ATTN_NORM, PITCH_NORM, 0 );
+	int hSound = S_RegisterSound(szSound);
+	S_StartSound(origin, 0, CHAN_AUTO, hSound, volume, ATTN_NORM, PITCH_NORM, 0);
 };
 
-unsigned short EngFunc_PrecacheEvent(int type, const char *psz)
-{
-};
+unsigned short EngFunc_PrecacheEvent(int type, const char *psz){};
 
 void EngFunc_PlaybackEvent(int                   flags,
                            const struct edict_s *pInvoker,
@@ -466,47 +452,41 @@ void EngFunc_PlaybackEvent(int                   flags,
                            int                   iparam1,
                            int                   iparam2,
                            int                   bparam1,
-                           int                   bparam2)
-{
-};
+                           int                   bparam2){};
 
-void EngFunc_WeaponAnim(int iAnim, int body)
-{
-};
+void EngFunc_WeaponAnim(int iAnim, int body){};
 
-long EngFunc_RandomLong(long lLow, long lHigh)
-{
-};
+long EngFunc_RandomLong(long lLow, long lHigh){};
 
 //pfnHookEvent( const char *filename, pfnEventHook pfn )
 void EngFunc_HookEvent(char *name, void (*pfnEvent)(struct event_args_s *args))
 {
-	char		name[64];
-	cl_user_event_t	*ev;
-	int		i;
+	char             name[64];
+	cl_user_event_t *ev;
+	int              i;
 
 	// ignore blank names
-	if( !filename || !*filename )
-		return;	
+	if(!filename || !*filename)
+		return;
 
-	Q_strncpy( name, filename, sizeof( name ));
-	COM_FixSlashes( name );
+	Q_strncpy(name, filename, sizeof(name));
+	COM_FixSlashes(name);
 
 	// find an empty slot
-	for( i = 0; i < MAX_EVENTS; i++ )
+	for(i = 0; i < MAX_EVENTS; i++)
 	{
-		ev = clgame.events[i];		
-		if( !ev )
+		ev = clgame.events[i];
+		if(!ev)
 			break;
 
-		if( !Q_stricmp( name, ev->name ) && ev->func != NULL )
+		if(!Q_stricmp(name, ev->name) && ev->func != NULL)
 		{
-			MsgDev( D_WARN, "CL_HookEvent: %s already hooked!\n", name );
+			MsgDev(D_WARN, "CL_HookEvent: %s already hooked!\n", name);
 			return;
 		};
 	};
 
-	CL_RegisterEvent( i, name, pfn );
+	CL_RegisterEvent(i, name, pfn);
 };
 
 const char *EngFunc_GetGameDirectory()
@@ -521,7 +501,7 @@ const char *EngFunc_GetLevelName()
 {
 	static char mapname[64];
 	mapname[0] = '\0';
-	
+
 	if(cls.state >= ca_connected)
 		Q_snprintf(mapname, sizeof(mapname), "maps/%s.bsp", clgame.mapname);
 
@@ -548,27 +528,26 @@ int EngFunc_IsSpectateOnly()
 
 struct model_s *EngFunc_LoadMapSprite(const char *filename)
 {
-	char	name[64];
-	int	i;
-	int texFlags = TF_NOPICMIP;
+	char name[64];
+	int  i;
+	int  texFlags = TF_NOPICMIP;
 
-
-	if( cl_sprite_nearest->value )
+	if(cl_sprite_nearest->value)
 		texFlags |= TF_NEAREST;
 
-	if( !filename || !*filename )
+	if(!filename || !*filename)
 	{
-		MsgDev( D_ERROR, "CL_LoadMapSprite: bad name!\n" );
+		MsgDev(D_ERROR, "CL_LoadMapSprite: bad name!\n");
 		return NULL;
 	}
 
-	Q_strncpy( name, filename, sizeof( name ));
-	COM_FixSlashes( name );
+	Q_strncpy(name, filename, sizeof(name));
+	COM_FixSlashes(name);
 
 	// slot 0 isn't used
-	for( i = 1; i < MAX_IMAGES; i++ )
+	for(i = 1; i < MAX_IMAGES; i++)
 	{
-		if( !Q_stricmp( clgame.sprites[i].name, name ))
+		if(!Q_stricmp(clgame.sprites[i].name, name))
 		{
 			// prolonge registration
 			clgame.sprites[i].needload = clgame.load_sequence;
@@ -577,25 +556,25 @@ struct model_s *EngFunc_LoadMapSprite(const char *filename)
 	}
 
 	// find a free model slot spot
-	for( i = 1; i < MAX_IMAGES; i++ )
+	for(i = 1; i < MAX_IMAGES; i++)
 	{
-		if( !clgame.sprites[i].name[0] )
+		if(!clgame.sprites[i].name[0])
 			break; // this is a valid spot
 	}
 
-	if( i == MAX_IMAGES ) 
+	if(i == MAX_IMAGES)
 	{
-		MsgDev( D_ERROR, "LoadMapSprite: can't load %s, MAX_HSPRITES limit exceeded\n", filename );
+		MsgDev(D_ERROR, "LoadMapSprite: can't load %s, MAX_HSPRITES limit exceeded\n", filename);
 		return NULL;
 	}
 
 	// load new map sprite
-	if( CL_LoadHudSprite( name, &clgame.sprites[i], true, texFlags ))
+	if(CL_LoadHudSprite(name, &clgame.sprites[i], true, texFlags))
 	{
 		clgame.sprites[i].needload = clgame.load_sequence;
 		return &clgame.sprites[i];
 	};
-	
+
 	return NULL;
 };
 
@@ -614,10 +593,10 @@ const char *EngFunc_PlayerInfo_ValueForKey(int playerNum, const char *key)
 void EngFunc_PlayerInfo_SetValueForKey(const char *key, const char *value)
 {
 	cvar_t *var = Cvar_FindVar(key);
-	
+
 	if(!var || !(var->flags & CVAR_USERINFO))
 		return;
-	
+
 	Cvar_DirectSet(var, value);
 };
 
@@ -667,13 +646,9 @@ int EngFunc_ServerCmdUnreliable(char *szCmdString)
 	return 1;
 };
 
-void EngFunc_GetMousePos(struct tagPOINT *ppt)
-{
-};
+void EngFunc_GetMousePos(struct tagPOINT *ppt){};
 
-void EngFunc_SetMousePos(int x, int y)
-{
-};
+void EngFunc_SetMousePos(int x, int y){};
 
 void EngFunc_SetMouseEnable(qboolean fEnable)
 {
@@ -698,17 +673,11 @@ struct model_s *EngFunc_GetModelByIndex(int index)
 	return nullptr;
 };
 
-void EngFunc_SetFilterMode(int mode)
-{
-};
+void EngFunc_SetFilterMode(int mode){};
 
-void EngFunc_SetFilterColor(float red, float green, float blue)
-{
-};
+void EngFunc_SetFilterColor(float red, float green, float blue){};
 
-void EngFunc_SetFilterBrightness(float brightness)
-{
-};
+void EngFunc_SetFilterBrightness(float brightness){};
 
 void *EngFunc_SequenceGet(const char *fileName, const char *entryName)
 {
@@ -768,9 +737,7 @@ void EngFunc_PlaySoundVoiceByName(char *szSound, float volume, int pitch)
 	S_StartSound(NULL, cl.refdef.viewentity, CHAN_AUTO, hSound, volume, ATTN_NORM, pitch, SND_STOP_LOOPING);
 };
 
-void EngFunc_PrimeMusicStream(char *filename, int looping)
-{
-};
+void EngFunc_PrimeMusicStream(char *filename, int looping){};
 
 void EngFunc_PlaySoundByNameAtPitch(char *szSound, float volume, int pitch)
 {
@@ -805,8 +772,7 @@ int EngFunc_GetAppID()
 	return 130; //return 220; // standard Valve value
 };
 
-void EngFunc_VguiWrap2_GetMouseDelta(int *x, int *y)
-{
+void EngFunc_VguiWrap2_GetMouseDelta(int *x, int *y){
     // TODO: implement
 };
 

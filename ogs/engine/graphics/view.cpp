@@ -48,20 +48,9 @@ cvar_t lcd_x = {"lcd_x", "0"}; // FIXME: make this work sometime...
 cvar_t cl_rollspeed = {"cl_rollspeed", "200"};
 cvar_t cl_rollangle = {"cl_rollangle", "2.0"};
 
-cvar_t cl_bob      = {"cl_bob", "0.02", false};
-cvar_t cl_bobcycle = {"cl_bobcycle", "0.6", false};
-cvar_t cl_bobup    = {"cl_bobup", "0.5", false};
-
 cvar_t v_kicktime  = {"v_kicktime", "0.5", false};
 cvar_t v_kickroll  = {"v_kickroll", "0.6", false};
 cvar_t v_kickpitch = {"v_kickpitch", "0.6", false};
-
-cvar_t v_iyaw_cycle   = {"v_iyaw_cycle", "2", false};
-cvar_t v_iroll_cycle  = {"v_iroll_cycle", "0.5", false};
-cvar_t v_ipitch_cycle = {"v_ipitch_cycle", "1", false};
-cvar_t v_iyaw_level   = {"v_iyaw_level", "0.3", false};
-cvar_t v_iroll_level  = {"v_iroll_level", "0.1", false};
-cvar_t v_ipitch_level = {"v_ipitch_level", "0.3", false};
 
 cvar_t v_idlescale = {"v_idlescale", "0", false};
 
@@ -84,171 +73,7 @@ extern int in_forward, in_forward2, in_back;
 frame_t *       view_frame;
 player_state_t *view_message;
 
-/*
-===============
-V_CalcRoll
-
-===============
-*/
-float V_CalcRoll(vec3_t angles, vec3_t velocity)
-{
-	vec3_t forward, right, up;
-	float  sign;
-	float  side;
-	float  value;
-
-	AngleVectors(angles, forward, right, up);
-	side = DotProduct(velocity, right);
-	sign = side < 0 ? -1 : 1;
-	side = fabs(side);
-
-	value = cl_rollangle.value;
-
-	if(side < cl_rollspeed.value)
-		side = side * value / cl_rollspeed.value;
-	else
-		side = value;
-
-	return side * sign;
-}
-
-/*
-===============
-V_CalcBob
-
-===============
-*/
-float V_CalcBob()
-{
-	static double bobtime;
-	static float  bob;
-	float         cycle;
-
-	if(cl.spectator)
-		return 0;
-
-	if(onground == -1)
-		return bob; // just use old value
-
-	bobtime += host_frametime;
-	cycle = bobtime - (int)(bobtime / cl_bobcycle.value) * cl_bobcycle.value;
-	cycle /= cl_bobcycle.value;
-	if(cycle < cl_bobup.value)
-		cycle = M_PI * cycle / cl_bobup.value;
-	else
-		cycle = M_PI + M_PI * (cycle - cl_bobup.value) / (1.0 - cl_bobup.value);
-
-	// bob is proportional to simulated velocity in the xy plane
-	// (don't count Z, or jumping messes it up)
-
-	bob = sqrt(cl.simvel[0] * cl.simvel[0] + cl.simvel[1] * cl.simvel[1]) * cl_bob.value;
-	bob = bob * 0.3 + bob * 0.7 * sin(cycle);
-	if(bob > 4)
-		bob = 4;
-	else if(bob < -7)
-		bob = -7;
-	return bob;
-}
-
 //=============================================================================
-
-cvar_t v_centermove  = {"v_centermove", "0.15", false};
-cvar_t v_centerspeed = {"v_centerspeed", "500"};
-
-void V_StartPitchDrift()
-{
-#if 1
-	if(cl.laststop == cl.time)
-	{
-		return; // something else is keeping it from drifting
-	}
-#endif
-	if(cl.nodrift || !cl.pitchvel)
-	{
-		cl.pitchvel  = v_centerspeed.value;
-		cl.nodrift   = false;
-		cl.driftmove = 0;
-	}
-}
-
-void V_StopPitchDrift()
-{
-	cl.laststop = cl.time;
-	cl.nodrift  = true;
-	cl.pitchvel = 0;
-}
-
-/*
-===============
-V_DriftPitch
-
-Moves the client pitch angle towards cl.idealpitch sent by the server.
-
-If the user is adjusting pitch manually, either with lookup/lookdown,
-mlook and mouse, or klook and keyboard, pitch drifting is constantly stopped.
-
-Drifting is enabled when the center view key is hit, mlook is released and
-lookspring is non 0, or when 
-===============
-*/
-void V_DriftPitch()
-{
-	float delta, move;
-
-	if(view_message->onground == -1 || cls.demoplayback)
-	{
-		cl.driftmove = 0;
-		cl.pitchvel  = 0;
-		return;
-	}
-
-	// don't count small mouse motion
-	if(cl.nodrift)
-	{
-		if(fabs(cl.frames[(cls.netchan.outgoing_sequence - 1) & UPDATE_MASK].cmd.forwardmove) < 200)
-			cl.driftmove = 0;
-		else
-			cl.driftmove += host_frametime;
-
-		if(cl.driftmove > v_centermove.value)
-		{
-			V_StartPitchDrift();
-		}
-		return;
-	}
-
-	delta = 0 - cl.viewangles[PITCH];
-
-	if(!delta)
-	{
-		cl.pitchvel = 0;
-		return;
-	}
-
-	move = host_frametime * cl.pitchvel;
-	cl.pitchvel += host_frametime * v_centerspeed.value;
-
-	//Con_Printf ("move: %f (%f)\n", move, host_frametime);
-
-	if(delta > 0)
-	{
-		if(move > delta)
-		{
-			cl.pitchvel = 0;
-			move        = delta;
-		}
-		cl.viewangles[PITCH] += move;
-	}
-	else if(delta < 0)
-	{
-		if(move > -delta)
-		{
-			cl.pitchvel = 0;
-			move        = -delta;
-		}
-		cl.viewangles[PITCH] -= move;
-	}
-}
 
 /*
 ============================================================================== 
@@ -397,21 +222,6 @@ void V_cshift_f()
 }
 
 /*
-==================
-V_BonusFlash_f
-
-When you run over an item, the server sends this command
-==================
-*/
-void V_BonusFlash_f()
-{
-	cl.cshifts[CSHIFT_BONUS].destcolor[0] = 215;
-	cl.cshifts[CSHIFT_BONUS].destcolor[1] = 186;
-	cl.cshifts[CSHIFT_BONUS].destcolor[2] = 69;
-	cl.cshifts[CSHIFT_BONUS].percent      = 50;
-}
-
-/*
 =============
 V_SetContentsColor
 
@@ -536,7 +346,7 @@ V_UpdatePalette
 void V_UpdatePalette()
 {
 	int i, j;
-	qboolean new;
+	qboolean bnew;
 	byte *   basepal, *newpal;
 	byte     pal[768];
 	float    r, g, b, a;
@@ -545,19 +355,19 @@ void V_UpdatePalette()
 
 	V_CalcPowerupCshift();
 
-	new = false;
+	bnew = false;
 
 	for(i = 0; i < NUM_CSHIFTS; i++)
 	{
 		if(cl.cshifts[i].percent != cl.prev_cshifts[i].percent)
 		{
-			new                        = true;
+			bnew                        = true;
 			cl.prev_cshifts[i].percent = cl.cshifts[i].percent;
 		}
 		for(j = 0; j < 3; j++)
 			if(cl.cshifts[i].destcolor[j] != cl.prev_cshifts[i].destcolor[j])
 			{
-				new                             = true;
+				bnew                             = true;
 				cl.prev_cshifts[i].destcolor[j] = cl.cshifts[i].destcolor[j];
 			}
 	}
@@ -573,7 +383,7 @@ void V_UpdatePalette()
 		cl.cshifts[CSHIFT_BONUS].percent = 0;
 
 	force = V_CheckGamma();
-	if(!new && !force)
+	if(!bnew && !force)
 		return;
 
 	V_CalcBlend();
@@ -714,60 +524,6 @@ float angledelta(float a)
 }
 
 /*
-==================
-CalcGunAngle
-==================
-*/
-void CalcGunAngle()
-{
-	float        yaw, pitch, move;
-	static float oldyaw   = 0;
-	static float oldpitch = 0;
-
-	yaw   = r_refdef.viewangles[YAW];
-	pitch = -r_refdef.viewangles[PITCH];
-
-	yaw = angledelta(yaw - r_refdef.viewangles[YAW]) * 0.4;
-	if(yaw > 10)
-		yaw = 10;
-	if(yaw < -10)
-		yaw = -10;
-	pitch   = angledelta(-pitch - r_refdef.viewangles[PITCH]) * 0.4;
-	if(pitch > 10)
-		pitch = 10;
-	if(pitch < -10)
-		pitch = -10;
-	move      = host_frametime * 20;
-	if(yaw > oldyaw)
-	{
-		if(oldyaw + move < yaw)
-			yaw = oldyaw + move;
-	}
-	else
-	{
-		if(oldyaw - move > yaw)
-			yaw = oldyaw - move;
-	}
-
-	if(pitch > oldpitch)
-	{
-		if(oldpitch + move < pitch)
-			pitch = oldpitch + move;
-	}
-	else
-	{
-		if(oldpitch - move > pitch)
-			pitch = oldpitch - move;
-	}
-
-	oldyaw   = yaw;
-	oldpitch = pitch;
-
-	cl.viewent.angles[YAW]   = r_refdef.viewangles[YAW] + yaw;
-	cl.viewent.angles[PITCH] = -(r_refdef.viewangles[PITCH] + pitch);
-}
-
-/*
 ==============
 V_BoundOffsets
 ==============
@@ -789,189 +545,6 @@ void V_BoundOffsets()
 		r_refdef.vieworg[2] = cl.simorg[2] - 22;
 	else if(r_refdef.vieworg[2] > cl.simorg[2] + 30)
 		r_refdef.vieworg[2] = cl.simorg[2] + 30;
-}
-
-/*
-==============
-V_AddIdle
-
-Idle swaying
-==============
-*/
-void V_AddIdle()
-{
-	r_refdef.viewangles[ROLL] += v_idlescale.value * sin(cl.time * v_iroll_cycle.value) * v_iroll_level.value;
-	r_refdef.viewangles[PITCH] += v_idlescale.value * sin(cl.time * v_ipitch_cycle.value) * v_ipitch_level.value;
-	r_refdef.viewangles[YAW] += v_idlescale.value * sin(cl.time * v_iyaw_cycle.value) * v_iyaw_level.value;
-
-	cl.viewent.angles[ROLL] -= v_idlescale.value * sin(cl.time * v_iroll_cycle.value) * v_iroll_level.value;
-	cl.viewent.angles[PITCH] -= v_idlescale.value * sin(cl.time * v_ipitch_cycle.value) * v_ipitch_level.value;
-	cl.viewent.angles[YAW] -= v_idlescale.value * sin(cl.time * v_iyaw_cycle.value) * v_iyaw_level.value;
-}
-
-/*
-==============
-V_CalcViewRoll
-
-Roll is induced by movement and damage
-==============
-*/
-void V_CalcViewRoll()
-{
-	float side;
-
-	side = V_CalcRoll(cl.simangles, cl.simvel);
-	r_refdef.viewangles[ROLL] += side;
-
-	if(v_dmg_time > 0)
-	{
-		r_refdef.viewangles[ROLL] += v_dmg_time / v_kicktime.value * v_dmg_roll;
-		r_refdef.viewangles[PITCH] += v_dmg_time / v_kicktime.value * v_dmg_pitch;
-		v_dmg_time -= host_frametime;
-	}
-}
-
-/*
-==================
-V_CalcIntermissionRefdef
-
-==================
-*/
-void V_CalcIntermissionRefdef()
-{
-	cl_entity_t *view;
-	float        old;
-
-	// view is the weapon model
-	view = &cl.viewent;
-
-	VectorCopy(cl.simorg, r_refdef.vieworg);
-	VectorCopy(cl.simangles, r_refdef.viewangles);
-	view->model = NULL;
-
-	// allways idle in intermission
-	old               = v_idlescale.value;
-	v_idlescale.value = 1;
-	V_AddIdle();
-	v_idlescale.value = old;
-}
-
-/*
-==================
-V_CalcRefdef
-
-==================
-*/
-void V_CalcRefdef()
-{
-	cl_entity_t *view;
-	int          i;
-	vec3_t       forward, right, up;
-	float        bob;
-	static float oldz = 0;
-
-	V_DriftPitch();
-
-	// view is the weapon model (only visible from inside body)
-	view = &cl.viewent;
-
-	bob = V_CalcBob();
-
-	// refresh position from simulated origin
-	VectorCopy(cl.simorg, r_refdef.vieworg);
-
-	r_refdef.vieworg[2] += bob;
-
-	// never let it sit exactly on a node line, because a water plane can
-	// dissapear when viewed with the eye exactly on it.
-	// the server protocol only specifies to 1/8 pixel, so add 1/16 in each axis
-	r_refdef.vieworg[0] += 1.0 / 16;
-	r_refdef.vieworg[1] += 1.0 / 16;
-	r_refdef.vieworg[2] += 1.0 / 16;
-
-	VectorCopy(cl.simangles, r_refdef.viewangles);
-	V_CalcViewRoll();
-	V_AddIdle();
-
-	if(view_message->flags & PF_GIB)
-		r_refdef.vieworg[2] += 8; // gib view height
-	else if(view_message->flags & PF_DEAD)
-		r_refdef.vieworg[2] -= 16; // corpse view height
-	else
-		r_refdef.vieworg[2] += 22; // view height
-
-	if(view_message->flags & PF_DEAD)   // PF_GIB will also set PF_DEAD
-		r_refdef.viewangles[ROLL] = 80; // dead view angle
-
-	// offsets
-	AngleVectors(cl.simangles, forward, right, up);
-
-	// set up gun position
-	VectorCopy(cl.simangles, view->angles);
-
-	CalcGunAngle();
-
-	VectorCopy(cl.simorg, view->origin);
-	view->origin[2] += 22;
-
-	for(i = 0; i < 3; i++)
-	{
-		view->origin[i] += forward[i] * bob * 0.4;
-		//		view->origin[i] += right[i]*bob*0.4;
-		//		view->origin[i] += up[i]*bob*0.8;
-	}
-	view->origin[2] += bob;
-
-	// fudge position around to keep amount of weapon visible
-	// roughly equal with different FOV
-	if(scr_viewsize.value == 110)
-		view->origin[2] += 1;
-	else if(scr_viewsize.value == 100)
-		view->origin[2] += 2;
-	else if(scr_viewsize.value == 90)
-		view->origin[2] += 1;
-	else if(scr_viewsize.value == 80)
-		view->origin[2] += 0.5;
-
-	if(view_message->flags & (PF_GIB | PF_DEAD))
-		view->model = NULL;
-	else
-		view->model = cl.model_precache[cl.stats[STAT_WEAPON]];
-	view->frame     = view_message->weaponframe;
-	view->colormap  = vid.colormap;
-
-	// set up the refresh position
-	r_refdef.viewangles[PITCH] += cl.punchangle;
-
-	// smooth out stair step ups
-	if((view_message->onground != -1) && (cl.simorg[2] - oldz > 0))
-	{
-		float steptime;
-
-		steptime = host_frametime;
-
-		oldz += steptime * 80;
-		if(oldz > cl.simorg[2])
-			oldz = cl.simorg[2];
-		if(cl.simorg[2] - oldz > 12)
-			oldz = cl.simorg[2] - 12;
-		r_refdef.vieworg[2] += oldz - cl.simorg[2];
-		view->origin[2] += oldz - cl.simorg[2];
-	}
-	else
-		oldz = cl.simorg[2];
-}
-
-/*
-=============
-DropPunchAngle
-=============
-*/
-void DropPunchAngle()
-{
-	cl.punchangle -= 10 * host_frametime;
-	if(cl.punchangle < 0)
-		cl.punchangle = 0;
 }
 
 /*
@@ -1023,18 +596,6 @@ V_Init
 void V_Init()
 {
 	Cmd_AddCommand("v_cshift", V_cshift_f);
-	Cmd_AddCommand("bf", V_BonusFlash_f);
-	Cmd_AddCommand("centerview", V_StartPitchDrift);
-
-	Cvar_RegisterVariable(&v_centermove);
-	Cvar_RegisterVariable(&v_centerspeed);
-
-	Cvar_RegisterVariable(&v_iyaw_cycle);
-	Cvar_RegisterVariable(&v_iroll_cycle);
-	Cvar_RegisterVariable(&v_ipitch_cycle);
-	Cvar_RegisterVariable(&v_iyaw_level);
-	Cvar_RegisterVariable(&v_iroll_level);
-	Cvar_RegisterVariable(&v_ipitch_level);
 
 	Cvar_RegisterVariable(&v_contentblend);
 
@@ -1049,10 +610,7 @@ void V_Init()
 
 	Cvar_RegisterVariable(&cl_rollspeed);
 	Cvar_RegisterVariable(&cl_rollangle);
-	Cvar_RegisterVariable(&cl_bob);
-	Cvar_RegisterVariable(&cl_bobcycle);
-	Cvar_RegisterVariable(&cl_bobup);
-
+	
 	Cvar_RegisterVariable(&v_kicktime);
 	Cvar_RegisterVariable(&v_kickroll);
 	Cvar_RegisterVariable(&v_kickpitch);

@@ -32,26 +32,17 @@
 #include "quakedef.hpp"
 
 void CDAudio_Play(byte track, qboolean looping) // int track
-{
-};
+    {};
 
-void CDAudio_Stop()
-{
-};
+void CDAudio_Stop(){};
 
-void CDAudio_Resume()
-{
-};
+void CDAudio_Resume(){};
 
-void CDAudio_Update()
-{
-};
+void CDAudio_Update(){};
 
 int CDAudio_Init()
 {
 	return 0;
 };
 
-void CDAudio_Shutdown()
-{
-};
+void CDAudio_Shutdown(){};

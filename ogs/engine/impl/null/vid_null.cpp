@@ -47,78 +47,48 @@ cvar_t gl_vsync;
 
 #endif // HOOK_ENGINE
 
-void VID_SetPalette(unsigned char *palette)
-{
-};
+void VID_SetPalette(unsigned char *palette){};
 
-void VID_ShiftPalette(unsigned char *palette)
-{
-};
+void VID_ShiftPalette(unsigned char *palette){};
 
-void VID_WriteBuffer(const char *pFilename)
-{
-};
+void VID_WriteBuffer(const char *pFilename){};
 
 int VID_Init(unsigned short *palette)
 {
 	return 1;
 };
 
-void D_FlushCaches()
-{
-};
+void D_FlushCaches(){};
 
-void R_SetStackBase()
-{
-};
+void R_SetStackBase(){};
 
-void SCR_UpdateScreen()
-{
-};
+void SCR_UpdateScreen(){};
 
-void V_Init()
-{
-};
+void V_Init(){};
 
-void Draw_Init()
-{
-};
+void Draw_Init(){};
 
-void SCR_Init()
-{
-};
+void SCR_Init(){};
 
-void R_Init()
-{
-};
+void R_Init(){};
 
-void R_ForceCVars(qboolean multiplayer)
-{
-};
+void R_ForceCVars(qboolean multiplayer){};
 
-void SCR_BeginLoadingPlaque(qboolean reconnect)
-{
-};
+void SCR_BeginLoadingPlaque(qboolean reconnect){};
 
-void SCR_EndLoadingPlaque()
-{
-};
+void SCR_EndLoadingPlaque(){};
 
-void R_InitSky()
-{
-};
+void R_InitSky(){};
 
-void R_MarkLeaves()
-{
-};
+void R_MarkLeaves(){};
 
 void R_InitTextures()
 {
-	r_notexture_mip             = (texture_t *)Hunk_AllocName(404, "notexture");
-	
-	r_notexture_mip->height     = 16;
-	r_notexture_mip->width      = 16;
-	
+	r_notexture_mip = (texture_t *)Hunk_AllocName(404, "notexture");
+
+	r_notexture_mip->height = 16;
+	r_notexture_mip->width  = 16;
+
 	r_notexture_mip->offsets[0] = 64;
 	r_notexture_mip->offsets[1] = 320;
 	r_notexture_mip->offsets[2] = 384;
@@ -127,8 +97,8 @@ void R_InitTextures()
 	for(int m = 0; m < 4; ++m)
 	{
 		int texSize = 16 >> m;
-		
-		byte *dest    = (byte *)r_notexture_mip + r_notexture_mip->offsets[m];
+
+		byte *dest = (byte *)r_notexture_mip + r_notexture_mip->offsets[m];
 
 		for(int y = 0; y < texSize; ++y)
 		{
@@ -143,13 +113,7 @@ void R_InitTextures()
 	};
 };
 
-void StartLoadingProgressBar(const char *loadingType, int numProgressPoints)
-{
-};
+void StartLoadingProgressBar(const char *loadingType, int numProgressPoints){};
 
-void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction)
-{
-};
-void SetLoadingProgressBarStatusText(const char *statusText)
-{
-};
+void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction){};
+void SetLoadingProgressBarStatusText(const char *statusText){};

@@ -42,7 +42,6 @@ NetworkApi implementation
 
 namespace
 {
-
 void NET_Status(struct net_status_s *status)
 {
 	ASSERT(status != NULL);

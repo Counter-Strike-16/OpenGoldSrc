@@ -29,7 +29,6 @@
 #include <ctype.h>
 #include <dlfcn.h>
 
-
 /*------------------ HACKS -----------------*/
 DWORD fixup_imports(WINE_MODREF *wm);
 void dump_exports(HMODULE hModule);
@@ -37,10 +36,9 @@ void dump_exports(HMODULE hModule);
 
 struct elfdll_image
 {
-	HMODULE		pe_module_start;
-	DWORD		pe_module_size;
+	HMODULE pe_module_start;
+	DWORD   pe_module_size;
 };
-
 
 /****************************************************************************
  *	ELFDLL_dlopen
@@ -51,8 +49,8 @@ struct elfdll_image
  */
 void *ELFDLL_dlopen(const char *libname, int flags)
 {
-	char buffer[256];
-	int namelen;
+	char  buffer[256];
+	int   namelen;
 	void *handle;
 	char *ldpath;
 
@@ -63,10 +61,10 @@ void *ELFDLL_dlopen(const char *libname, int flags)
 
 	/* Now try to construct searches through our extra search-path */
 	namelen = strlen(libname);
-	ldpath = codec_path;
+	ldpath  = codec_path;
 	while(ldpath && *ldpath)
 	{
-		int len;
+		int   len;
 		char *cptr;
 		char *from;
 
@@ -74,12 +72,12 @@ void *ELFDLL_dlopen(const char *libname, int flags)
 		cptr = strchr(ldpath, ':');
 		if(!cptr)
 		{
-			len = strlen(ldpath);
+			len    = strlen(ldpath);
 			ldpath = NULL;
 		}
 		else
 		{
-			len = cptr - ldpath;
+			len    = cptr - ldpath;
 			ldpath = cptr + 1;
 		}
 
@@ -107,7 +105,6 @@ void *ELFDLL_dlopen(const char *libname, int flags)
 	return NULL;
 }
 
-
 /****************************************************************************
  *	get_sobasename	(internal)
  *
@@ -119,7 +116,7 @@ static LPSTR get_sobasename(LPCSTR path, LPSTR name)
 	/* Strip the path from the library name */
 	if((cptr = strrchr(path, '/')))
 	{
-		char *cp = strrchr(cptr+1, '\\');
+		char *cp = strrchr(cptr + 1, '\\');
 		if(cp && cp > cptr)
 			cptr = cp;
 	}
@@ -127,14 +124,14 @@ static LPSTR get_sobasename(LPCSTR path, LPSTR name)
 		cptr = strrchr(path, '\\');
 
 	if(!cptr)
-		cptr = (char *)path;	/* No '/' nor '\\' in path */
+		cptr = (char *)path; /* No '/' nor '\\' in path */
 	else
 		cptr++;
 
 	strcpy(name, cptr);
 	cptr = strrchr(name, '.');
 	if(cptr)
-		*cptr = '\0';	/* Strip extension */
+		*cptr = '\0'; /* Strip extension */
 
 	/* Convert to lower case.
 	 * This must be done manually because it is not sure that
@@ -145,7 +142,6 @@ static LPSTR get_sobasename(LPCSTR path, LPSTR name)
 
 	return name;
 }
-
 
 /****************************************************************************
  *	ELFDLL_CreateModref	(internal)
@@ -161,15 +157,15 @@ static LPSTR get_sobasename(LPCSTR path, LPSTR name)
  *	- Does not handle errors due to dependencies correctly
  *	- path can be wrong
  */
-#define RVA(base, va)	(((DWORD)base) + ((DWORD)va))
+#define RVA(base, va) (((DWORD)base) + ((DWORD)va))
 
 static WINE_MODREF *ELFDLL_CreateModref(HMODULE hModule, LPCSTR path)
 {
-//	IMAGE_NT_HEADERS *nt = PE_HEADER(hModule);
-//	IMAGE_DATA_DIRECTORY *dir;
-//	IMAGE_IMPORT_DESCRIPTOR *pe_import = NULL;
+	//	IMAGE_NT_HEADERS *nt = PE_HEADER(hModule);
+	//	IMAGE_DATA_DIRECTORY *dir;
+	//	IMAGE_IMPORT_DESCRIPTOR *pe_import = NULL;
 	WINE_MODREF *wm;
-//	int len;
+	//	int len;
 	HANDLE procheap = GetProcessHeap();
 
 	wm = (WINE_MODREF *)HeapAlloc(procheap, HEAP_ZERO_MEMORY, sizeof(*wm));
@@ -177,27 +173,28 @@ static WINE_MODREF *ELFDLL_CreateModref(HMODULE hModule, LPCSTR path)
 		return NULL;
 
 	wm->module = hModule;
-	wm->type = MODULE32_ELF;		/* FIXME */
+	wm->type   = MODULE32_ELF; /* FIXME */
 
-//	dir = nt->OptionalHeader.DataDirectory+IMAGE_DIRECTORY_ENTRY_EXPORT;
-//	if(dir->Size)
-//		wm->binfmt.pe.pe_export = (PIMAGE_EXPORT_DIRECTORY)RVA(hModule, dir->VirtualAddress);
+	//	dir = nt->OptionalHeader.DataDirectory+IMAGE_DIRECTORY_ENTRY_EXPORT;
+	//	if(dir->Size)
+	//		wm->binfmt.pe.pe_export = (PIMAGE_EXPORT_DIRECTORY)RVA(hModule, dir->VirtualAddress);
 
-//	dir = nt->OptionalHeader.DataDirectory+IMAGE_DIRECTORY_ENTRY_IMPORT;
-//	if(dir->Size)
-//		pe_import = wm->binfmt.pe.pe_import = (PIMAGE_IMPORT_DESCRIPTOR)RVA(hModule, dir->VirtualAddress);
+	//	dir = nt->OptionalHeader.DataDirectory+IMAGE_DIRECTORY_ENTRY_IMPORT;
+	//	if(dir->Size)
+	//		pe_import = wm->binfmt.pe.pe_import = (PIMAGE_IMPORT_DESCRIPTOR)RVA(hModule, dir->VirtualAddress);
 
-//	dir = nt->OptionalHeader.DataDirectory+IMAGE_DIRECTORY_ENTRY_RESOURCE;
-//	if(dir->Size)
-//		wm->binfmt.pe.pe_resource = (PIMAGE_RESOURCE_DIRECTORY)RVA(hModule, dir->VirtualAddress);
+	//	dir = nt->OptionalHeader.DataDirectory+IMAGE_DIRECTORY_ENTRY_RESOURCE;
+	//	if(dir->Size)
+	//		wm->binfmt.pe.pe_resource = (PIMAGE_RESOURCE_DIRECTORY)RVA(hModule, dir->VirtualAddress);
 
-
-	wm->filename = malloc(strlen(path)+1);
+	wm->filename = malloc(strlen(path) + 1);
 	strcpy(wm->filename, path);
-	wm->modname = strrchr( wm->filename, '\\' );
-	if (!wm->modname) wm->modname = wm->filename;
-	else wm->modname++;
-/*
+	wm->modname = strrchr(wm->filename, '\\');
+	if(!wm->modname)
+		wm->modname = wm->filename;
+	else
+		wm->modname++;
+	/*
 	len = GetShortPathNameA( wm->filename, NULL, 0 );
 	wm->short_filename = (char *)HeapAlloc( procheap, 0, len+1 );
 	GetShortPathNameA( wm->filename, wm->short_filename, len+1 );
@@ -207,24 +204,24 @@ static WINE_MODREF *ELFDLL_CreateModref(HMODULE hModule, LPCSTR path)
 */
 	/* Link MODREF into process list */
 
-//	EnterCriticalSection( &PROCESS_Current()->crit_section );
+	//	EnterCriticalSection( &PROCESS_Current()->crit_section );
 
 	if(local_wm)
-        {
-    	    local_wm->next = malloc(sizeof(modref_list));
-    	    local_wm->next->prev=local_wm;
-    	    local_wm->next->next=NULL;
-            local_wm->next->wm=wm;
-    	    local_wm=local_wm->next;
+	{
+		local_wm->next       = malloc(sizeof(modref_list));
+		local_wm->next->prev = local_wm;
+		local_wm->next->next = NULL;
+		local_wm->next->wm   = wm;
+		local_wm             = local_wm->next;
 	}
 	else
-        {
-	    local_wm = malloc(sizeof(modref_list));
-	    local_wm->next=local_wm->prev=NULL;
-    	    local_wm->wm=wm;
+	{
+		local_wm       = malloc(sizeof(modref_list));
+		local_wm->next = local_wm->prev = NULL;
+		local_wm->wm                    = wm;
 	}
 
-//	LeaveCriticalSection( &PROCESS_Current()->crit_section );
+	//	LeaveCriticalSection( &PROCESS_Current()->crit_section );
 	return wm;
 }
 
@@ -236,9 +233,9 @@ static WINE_MODREF *ELFDLL_CreateModref(HMODULE hModule, LPCSTR path)
 WINE_MODREF *ELFDLL_LoadLibraryExA(LPCSTR path, DWORD flags)
 {
 	LPVOID dlhandle;
-//	struct elfdll_image *image;
-	char name[129];
-	char soname[129];
+	//	struct elfdll_image *image;
+	char         name[129];
+	char         soname[129];
 	WINE_MODREF *wm;
 
 	get_sobasename(path, name);
@@ -250,12 +247,12 @@ WINE_MODREF *ELFDLL_LoadLibraryExA(LPCSTR path, DWORD flags)
 	if(!dlhandle)
 	{
 		WARN("Could not load %s (%s)\n", soname, dlerror());
-		SetLastError( ERROR_FILE_NOT_FOUND );
+		SetLastError(ERROR_FILE_NOT_FOUND);
 		return NULL;
 	}
 
 	/* Get the 'dllname_elfdll_image' variable */
-/*	strcpy(soname, name);
+	/*	strcpy(soname, name);
 	strcat(soname, "_elfdll_image");
 	image = (struct elfdll_image *)dlsym(dlhandle, soname);
 	if(!image)
@@ -272,13 +269,12 @@ WINE_MODREF *ELFDLL_LoadLibraryExA(LPCSTR path, DWORD flags)
 	{
 		ERR("Could not create WINE_MODREF for %s\n", path);
 		dlclose(dlhandle);
-		SetLastError( ERROR_OUTOFMEMORY );
+		SetLastError(ERROR_OUTOFMEMORY);
 		return NULL;
 	}
 
 	return wm;
 }
-
 
 /****************************************************************************
  *	ELFDLL_UnloadLibrary	(internal)

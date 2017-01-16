@@ -309,7 +309,7 @@ void CL_Init(); //+
 void CL_InitClosest();
 void CL_InitEventSystem();
 
-void CL_Shutdown();
+void CL_Shutdown();//+
 void CL_ShutDownUsrMessages();
 void CL_ShutDownClientStatic();
 
@@ -330,22 +330,22 @@ void R_DecalRemoveAll(int textureIndex);
 
 qboolean CL_CheckFile(sizebuf_t *msg, char *filename);
 
-void CL_DecayLights();
+void CL_DecayLights();//+
 
-void CL_EmitEntities();
+void CL_EmitEntities();//+
 
 void CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel);
 
-void CL_PredictMove(qboolean repredicting);
+void CL_PredictMove(qboolean repredicting);//+
 
 void CL_PrintLogos();
-void CL_ReadPackets();
+void CL_ReadPackets();//+
 
 qboolean CL_RequestMissingResources();
 
 void CL_Move();
-void CL_SendConnectPacket();
-void CL_StopPlayback();
+void CL_SendConnectPacket();//+
+void CL_StopPlayback();//+
 void CL_UpdateSoundFade();
 void CL_AdjustClock();
 void CL_Save(const char *name);
@@ -355,12 +355,13 @@ void Chase_Init();
 
 int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf);
 
-void CL_RedoPrediction();
+void CL_RedoPrediction();//+
 
 void CL_SetLastUpdate();
 
 void CL_WriteMessageHistory(int starting_count, int cmd);
 void CL_MoveSpectatorCamera();
+
 void CL_AddVoiceToDatagram(qboolean bFinal);
 void CL_VoiceIdle();
 

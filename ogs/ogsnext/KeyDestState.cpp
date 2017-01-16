@@ -2,16 +2,15 @@ class CInputHandler
 {
 public:
 	void Update();
-	
+
 	void HandleKey(int anKey);
+
 private:
-	std::vector<IKeyDestState*> mvKeyDestStates;
-	IKeyDestState meKeyDestState;
+	std::vector<IKeyDestState *> mvKeyDestStates;
+	IKeyDestState                meKeyDestState;
 };
 
-void CInputHandler::Update()
-{
-};
+void CInputHandler::Update(){};
 
 void CInputHandler::HandleKey(int anKey)
 {
@@ -32,8 +31,7 @@ IKeyDestState CInputHandler::GetKeyDestState()
 class IKeyDestState
 {
 public:
-	virtual ~IKeyDestState(){}
-	
+	virtual ~IKeyDestState() {}
 	virtual void HandleKey(int anKey) = 0;
 };
 
@@ -41,7 +39,7 @@ class CKeyDestState_Menu : public IKeyDestState
 {
 public:
 	~CKeyDestState_Menu();
-	
+
 	void HandleKey(int anKey);
 };
 
@@ -49,7 +47,7 @@ class CKeyDestState_Message : public IKeyDestState
 {
 public:
 	~CKeyDestState_Message();
-	
+
 	void HandleKey(int anKey);
 };
 
@@ -57,6 +55,6 @@ class CKeyDestState_Game : public IKeyDestState
 {
 public:
 	~CKeyDestState_Game();
-	
+
 	void HandleKey(int anKey);
 };

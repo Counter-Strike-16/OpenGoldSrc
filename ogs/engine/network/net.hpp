@@ -135,7 +135,7 @@ enum
 {
 	FLOW_OUTGOING = 0,
 	FLOW_INCOMING,
-	
+
 	MAX_FLOWS
 };
 

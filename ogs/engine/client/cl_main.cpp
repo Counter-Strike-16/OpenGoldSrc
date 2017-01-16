@@ -62,15 +62,6 @@ cvar_t cl_shownet = {"cl_shownet", "0"}; // can be 0, 1, or 2
 cvar_t cl_sbar    = {"cl_sbar", "0", FCVAR_ARCHIVE};
 cvar_t cl_hudswap = {"cl_hudswap", "0", FCVAR_ARCHIVE};
 
-cvar_t lookspring  = {"lookspring", "0", FCVAR_ARCHIVE};
-cvar_t lookstrafe  = {"lookstrafe", "0", FCVAR_ARCHIVE};
-cvar_t sensitivity = {"sensitivity", "3", FCVAR_ARCHIVE};
-
-cvar_t m_pitch   = {"m_pitch", "0.022", FCVAR_ARCHIVE};
-cvar_t m_yaw     = {"m_yaw", "0.022"};
-cvar_t m_forward = {"m_forward", "1"};
-cvar_t m_side    = {"m_side", "0.8"};
-
 cvar_t entlatency          = {"entlatency", "20"};
 cvar_t cl_predict_players  = {"cl_predict_players", "1"};
 cvar_t cl_predict_players2 = {"cl_predict_players2", "1"};
@@ -179,13 +170,6 @@ void CL_SendConnectPacket()
 		return;
 	}
 
-	if(!NET_IsClientLegal(&adr))
-	{
-		Con_Printf("Illegal server address\n");
-		connect_time = -1;
-		return;
-	}
-
 	if(adr.port == 0)
 		adr.port = BigShort(PORT_SERVER);
 
@@ -233,13 +217,6 @@ void CL_CheckForResend()
 		connect_time = -1;
 		return;
 	};
-	
-	if(!NET_IsClientLegal(&adr))
-	{
-		Con_Printf("Illegal server address\n");
-		connect_time = -1;
-		return;
-	}
 
 	if(adr.port == 0)
 		adr.port = BigShort(27500);
@@ -312,7 +289,7 @@ void CL_Rcon_f()
 	strcat(message, rcon_password.string);
 	strcat(message, " ");
 
-	for(i = 1; i < Cmd_Argc(); i++)
+	for(i = 1; i < Cmd_Argc(); ++i)
 	{
 		strcat(message, Cmd_Argv(i));
 		strcat(message, " ");
@@ -441,7 +418,7 @@ void CL_User_f()
 
 	int uid = atoi(Cmd_Argv(1));
 
-	for(int i = 0; i < MAX_CLIENTS; i++)
+	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if(!cl.players[i].name[0])
 			continue;
@@ -470,7 +447,7 @@ void CL_Users_f()
 	Con_Printf("userid frags name\n");
 	Con_Printf("------ ----- ----\n");
 
-	for(int i = 0; i < MAX_CLIENTS; i++)
+	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if(cl.players[i].name[0])
 		{
@@ -663,7 +640,7 @@ void CL_Packet_f()
 	send[0] = send[1] = send[2] = send[3] = 0xff;
 
 	l = strlen(in);
-	for(i = 0; i < l; i++)
+	for(i = 0; i < l; ++i)
 	{
 		if(in[i] == '\\' && in[i + 1] == 'n')
 		{
@@ -697,7 +674,7 @@ void CL_NextDemo()
 		cls.demonum = 0;
 		if(!cls.demos[cls.demonum][0])
 		{
-			//			Con_Printf ("No demos listed with startdemos\n");
+			//Con_Printf ("No demos listed with startdemos\n");
 			cls.demonum = -1;
 			return;
 		}
@@ -723,7 +700,9 @@ void CL_Changing_f()
 
 	S_StopAllSounds(true);
 	cl.intermission = 0;
+	
 	cls.state       = ca_connected; // not active anymore, but not disconnected
+	
 	Con_Printf("\nChanging map...\n");
 }
 
@@ -806,11 +785,13 @@ void CL_ConnectionlessPacket()
 		{
 			Con_Printf("Command packet from remote host.  Ignored.\n");
 			return;
-		}
+		};
+		
 #ifdef _WIN32
 		ShowWindow(mainwindow, SW_RESTORE);
 		SetForegroundWindow(mainwindow);
 #endif
+		
 		s = MSG_ReadString();
 
 		strncpy(cmdtext, s, sizeof(cmdtext) - 1);
@@ -881,7 +862,9 @@ void CL_ConnectionlessPacket()
 		Con_Printf("challenge\n");
 
 		s             = MSG_ReadString();
+		
 		cls.challenge = atoi(s);
+		
 		CL_SendConnectPacket();
 		return;
 	}
@@ -1138,6 +1121,7 @@ qboolean Host_SimulationTime(float time)
 #endif
 
 int  nopacketcount;
+/*
 void Host_Frame(float time)
 {
 	static double time1 = 0;
@@ -1228,6 +1212,7 @@ void Host_Frame(float time)
 	host_framecount++;
 	fps_count++;
 }
+*/
 
 static void simple_crypt(char *buf, int len)
 {
@@ -1246,6 +1231,7 @@ void Host_FixupModelNames()
 
 //============================================================================
 
+/*
 void Host_Init(quakeparms_t *parms)
 {
 	COM_InitArgv(parms->argc, parms->argv);
@@ -1276,3 +1262,4 @@ void Host_Init(quakeparms_t *parms)
 
 	Con_Printf("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
 }
+*/

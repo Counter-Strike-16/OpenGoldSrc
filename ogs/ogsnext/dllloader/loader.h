@@ -21,16 +21,15 @@
 #include "wine/msacm.h"
 #include "wine/module.h"
 
+extern modref_list *local_wm;
 
-extern modref_list* local_wm;
+unsigned int GetPrivateProfileIntA_(const char *appname, const char *keyname, int default_value, const char *filename);
+int GetPrivateProfileStringA_(const char *appname, const char *keyname,
+                              const char *def_val, char *dest, unsigned int len, const char *filename);
+int WritePrivateProfileStringA_(const char *appname, const char *keyname,
+                                const char *string, const char *filename);
 
-unsigned int GetPrivateProfileIntA_(const char* appname, const char* keyname, int default_value, const char* filename);
-int GetPrivateProfileStringA_(const char* appname, const char* keyname,
-	const char* def_val, char* dest, unsigned int len, const char* filename);
-int WritePrivateProfileStringA_(const char* appname, const char* keyname,
-	const char* string, const char* filename);
-
-INT WINAPI LoadStringA( HINSTANCE instance, UINT resource_id,
-                            LPSTR buffer, INT buflen );
+INT WINAPI LoadStringA(HINSTANCE instance, UINT resource_id,
+                       LPSTR buffer, INT buflen);
 
 #endif /* MPLAYER_LOADER_H */

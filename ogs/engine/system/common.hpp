@@ -113,9 +113,9 @@ extern char com_token[COM_TOKEN_LEN];
 extern qboolean com_ignorecolons;
 extern qboolean s_com_token_unget;
 
-extern char     com_clientfallback[MAX_PATH];
-extern char     com_gamedir[MAX_PATH];
-extern char     com_cmdline[COM_MAX_CMD_LINE];
+extern char com_clientfallback[MAX_PATH];
+extern char com_gamedir[MAX_PATH];
+extern char com_cmdline[COM_MAX_CMD_LINE];
 
 typedef struct cache_user_s cache_user_t;
 

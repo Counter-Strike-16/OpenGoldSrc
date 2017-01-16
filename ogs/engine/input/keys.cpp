@@ -191,15 +191,15 @@ qboolean CheckForCommand()
 void CompleteCommand()
 {
 	char *s = key_lines[edit_line] + 1;
-	
+
 	if(*s == '\\' || *s == '/')
 		s++;
 
 	char *cmd = Cmd_CompleteCommand(s);
-	
+
 	if(!cmd)
 		cmd = Cvar_CompleteVariable(s);
-	
+
 	if(cmd)
 	{
 		key_lines[edit_line][1] = '/';
@@ -437,7 +437,7 @@ int Key_StringToKeynum(char *str)
 {
 	if(!str || !str[0])
 		return -1;
-	
+
 	if(!str[1])
 		return str[0];
 
@@ -446,7 +446,7 @@ int Key_StringToKeynum(char *str)
 		if(!Q_strcasecmp(str, kn->name))
 			return kn->keynum;
 	};
-	
+
 	return -1;
 }
 
