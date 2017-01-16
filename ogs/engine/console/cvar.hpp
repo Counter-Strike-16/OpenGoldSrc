@@ -35,11 +35,11 @@
 #include "common/commontypes.h"
 #include "public/FileSystem.h"
 
-const int MAX_CVAR_VALUE = 1024;
-
 #ifdef HOOK_ENGINE
 #define cvar_vars (*pcvar_vars)
 #endif
+
+const int MAX_CVAR_VALUE = 1024;
 
 typedef struct cvar_s cvar_t;
 
@@ -47,16 +47,23 @@ extern cvar_t *cvar_vars;
 
 void    Cvar_Init();
 void    Cvar_Shutdown();
+
 cvar_t *Cvar_FindVar(const char *var_name);
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name);
+
 float Cvar_VariableValue(const char *var_name);
 NOXREF int Cvar_VariableInt(const char *var_name);
 char *Cvar_VariableString(const char *var_name);
+
 NOXREF const char *Cvar_CompleteVariable(const char *search, int forward);
+
 void Cvar_DirectSet(struct cvar_s *var, const char *value);
+
 void Cvar_Set(const char *var_name, const char *value);
 void Cvar_SetValue(const char *var_name, float value);
+
 void Cvar_RegisterVariable(cvar_t *variable);
+
 NOXREF void Cvar_RemoveHudCvars();
 const char *Cvar_IsMultipleTokens(const char *varname);
 qboolean    Cvar_Command();

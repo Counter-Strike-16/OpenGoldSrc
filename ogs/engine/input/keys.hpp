@@ -32,6 +32,10 @@
 
 #include "public/FileSystem.h"
 
+#ifdef HOOK_ENGINE
+	#define key_dest (*pkey_dest)
+#endif
+
 /// Keyboard input destination/state
 typedef enum {
 	key_game = 0, ///< player is in game
@@ -39,6 +43,8 @@ typedef enum {
 	key_message = 1, ///< player is writing a chat message
 	key_menu    = 2, ///< player is in menu
 } keydest_t;
+
+extern keydest_t key_dest;
 
 void Key_Init();
 

@@ -35,8 +35,6 @@
 #include "common/enums.h"
 #include "common/netadr.h"
 
-#define PROTOCOL_VERSION 48
-
 // MAX_CHALLENGES is made large to prevent a denial
 //  of service attack that could cycle all of them
 //  out before legitimate users connected
@@ -133,90 +131,13 @@
 // This is currently used value in the engine. TODO: define above gives 4016, check it why.
 #define NET_MAX_MESSAGE 4037
 
-typedef enum svc_commands_e {
-	svc_bad,
-	svc_nop,
-	svc_disconnect,
-	svc_event,
-	svc_version,
-	svc_setview,
-	svc_sound,
-	svc_time,
-	svc_print,
-	svc_stufftext,
-	svc_setangle,
-	svc_serverinfo,
-	svc_lightstyle,
-	svc_updateuserinfo,
-	svc_deltadescription,
-	svc_clientdata,
-	svc_stopsound,
-	svc_pings,
-	svc_particle,
-	svc_damage,
-	svc_spawnstatic,
-	svc_event_reliable,
-	svc_spawnbaseline,
-	svc_temp_entity,
-	svc_setpause,
-	svc_signonnum,
-	svc_centerprint,
-	svc_killedmonster,
-	svc_foundsecret,
-	svc_spawnstaticsound,
-	svc_intermission,
-	svc_finale,
-	svc_cdtrack,
-	svc_restore,
-	svc_cutscene,
-	svc_weaponanim,
-	svc_decalname,
-	svc_roomtype,
-	svc_addangle,
-	svc_newusermsg,
-	svc_packetentities,
-	svc_deltapacketentities,
-	svc_choke,
-	svc_resourcelist,
-	svc_newmovevars,
-	svc_resourcerequest,
-	svc_customization,
-	svc_crosshairangle,
-	svc_soundfade,
-	svc_filetxferfailed,
-	svc_hltv,
-	svc_director,
-	svc_voiceinit,
-	svc_voicedata,
-	svc_sendextrainfo,
-	svc_timescale,
-	svc_resourcelocation,
-	svc_sendcvarvalue,
-	svc_sendcvarvalue2,
-	svc_startofusermessages = svc_sendcvarvalue2,
-	svc_endoflist           = 255,
-} svc_commands_t;
-
-typedef enum clc_commands_e {
-	clc_bad,
-	clc_nop,
-	clc_move,
-	clc_stringcmd,
-	clc_delta,
-	clc_resourcelist,
-	clc_tmove,
-	clc_fileconsistency,
-	clc_voicedata,
-	clc_hltv,
-	clc_cvarvalue,
-	clc_cvarvalue2,
-	clc_endoflist = 255,
-} clc_commands_t;
-
-#define MAX_FLOWS 2
-
-#define FLOW_OUTGOING 0
-#define FLOW_INCOMING 1
+enum
+{
+	FLOW_OUTGOING = 0,
+	FLOW_INCOMING,
+	
+	MAX_FLOWS
+};
 
 // Message data
 typedef struct flowstats_s
@@ -308,89 +229,6 @@ typedef struct fragbufwaiting_s
 	// The actual buffers
 	fragbuf_t *fragbufs;
 } fragbufwaiting_t;
-
-// Network Connection Channel
-typedef struct netchan_s
-{
-	// NS_SERVER or NS_CLIENT, depending on channel.
-	netsrc_t sock;
-
-	// Address this channel is talking to.
-	netadr_t remote_address;
-
-	int player_slot;
-	// For timeouts.  Time last message was received.
-	float last_received;
-	// Time when channel was connected.
-	float connect_time;
-
-	// Bandwidth choke
-	// Bytes per second
-	double rate;
-	// If realtime > cleartime, free to send next packet
-	double cleartime;
-
-	// Sequencing variables
-	//
-	// Increasing count of sequence numbers
-	int incoming_sequence;
-	// # of last outgoing message that has been ack'd.
-	int incoming_acknowledged;
-	// Toggles T/F as reliable messages are received.
-	int incoming_reliable_acknowledged;
-	// single bit, maintained local
-	int incoming_reliable_sequence;
-	// Message we are sending to remote
-	int outgoing_sequence;
-	// Whether the message contains reliable payload, single bit
-	int reliable_sequence;
-	// Outgoing sequence number of last send that had reliable data
-	int last_reliable_sequence;
-
-	void *connection_status;
-	int (*pfnNetchan_Blocksize)(void *);
-
-	// Staging and holding areas
-	sizebuf_t message;
-	byte      message_buf[MAX_MSGLEN];
-
-	// Reliable message buffer. We keep adding to it until reliable is acknowledged. Then we clear it.
-	int  reliable_length;
-	byte reliable_buf[MAX_MSGLEN];
-
-	// Waiting list of buffered fragments to go onto queue. Multiple outgoing buffers can be queued in succession.
-	fragbufwaiting_t *waitlist[MAX_STREAMS];
-
-	// Is reliable waiting buf a fragment?
-	int reliable_fragment[MAX_STREAMS];
-	// Buffer id for each waiting fragment
-	unsigned int reliable_fragid[MAX_STREAMS];
-
-	// The current fragment being set
-	fragbuf_t *fragbufs[MAX_STREAMS];
-	// The total number of fragments in this stream
-	int fragbufcount[MAX_STREAMS];
-
-	// Position in outgoing buffer where frag data starts
-	short int frag_startpos[MAX_STREAMS];
-	// Length of frag data in the buffer
-	short int frag_length[MAX_STREAMS];
-
-	// Incoming fragments are stored here
-	fragbuf_t *incomingbufs[MAX_STREAMS];
-	// Set to true when incoming data is ready
-	qboolean incomingready[MAX_STREAMS];
-
-	// Only referenced by the FRAG_FILE_STREAM component
-	// Name of file being downloaded
-	char incomingfilename[MAX_PATH];
-
-	void *tempbuffer;
-	int   tempbuffersize;
-
-	// Incoming and outgoing flow metrics
-	flow_t flow[MAX_FLOWS];
-} netchan_t;
 
 #ifdef REHLDS_FIXES
 #define Con_NetPrintf Con_DPrintf

@@ -31,9 +31,13 @@
 //#include "precompiled.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
+#include "system/unicode_strtools.h"
+#include "memory/mem.hpp"
 #include "memory/zone.hpp"
 #include "console/console.hpp"
+#include "filesystem/filesystem_.hpp"
 #include "filesystem/filesystem_internal.hpp"
+#include "resources/modinfo.hpp"
 
 char serverinfo[MAX_INFO_STRING];
 
@@ -805,13 +809,13 @@ NOXREF void COM_WriteFile(char *filename, void *data, int len)
 
 	if(fp)
 	{
-		Sys_Printf(__FUNCTION__ ": %s\n", path);
+		Sys_Printf("%s: %s\n", __FUNCTION__, path);
 		FS_Write(data, len, 1, fp);
 		FS_Close(fp);
 	}
 	else
 	{
-		Sys_Printf(__FUNCTION__ ": failed on %s\n", path);
+		Sys_Printf("%s: failed on %s\n", __FUNCTION__, path);
 	}
 }
 
@@ -981,7 +985,7 @@ unsigned char *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength
 #ifdef REHLDS_FIXES
 		FS_Close(hFile);
 #endif
-		Sys_Error(__FUNCTION__ ": bad usehunk");
+		Sys_Error("%s: bad usehunk", __FUNCTION__);
 	}
 
 	if(!buf)
@@ -989,7 +993,7 @@ unsigned char *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength
 #ifdef REHLDS_FIXES
 		FS_Close(hFile);
 #endif
-		Sys_Error(__FUNCTION__ ": not enough space for %s", path);
+		Sys_Error("%s: not enough space for %s", __FUNCTION__, path);
 	}
 
 	FS_Read(buf, len, 1, hFile);
@@ -1059,7 +1063,7 @@ NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcb
 #ifdef REHLDS_FIXES
 		FS_Close(hFile);
 #endif
-		Sys_Error(__FUNCTION__ ": invalid seek position for %s", path);
+		Sys_Error("%s: invalid seek position for %s", __FUNCTION__, path);
 	}
 
 	FS_Seek(hFile, pos, FILESYSTEM_SEEK_HEAD);
@@ -1082,7 +1086,7 @@ NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcb
 #ifdef REHLDS_FIXES
 			FS_Close(hFile);
 #endif
-			Sys_Error(__FUNCTION__ ": not enough space for %s", path);
+			Sys_Error("%s: not enough space for %s", __FUNCTION__, path);
 		}
 
 		FS_Close(hFile);

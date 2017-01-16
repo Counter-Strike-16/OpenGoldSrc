@@ -26,10 +26,14 @@
  *	version.
  */
 
+/// @file
+/// @brief null implementation for export client engine funcs
+
 #include "engine/cdll_int.h"
 
 namespace
 {
+
 void EngFunc_FillRGBA(int x, int y, int width, int height, int r, int g, int b, int a){};
 
 int EngFunc_GetScreenInfo(SCREENINFO *pscrinfo)
@@ -356,5 +360,10 @@ void EngFunc_VguiWrap2_GetMouseDelta(int *x, int *y){};
 
 }; // namespace
 
+// clang-format off
+
 cl_enginefunc_t gClEngFuncsNull =
-    {};
+{
+};
+
+// clang-format on

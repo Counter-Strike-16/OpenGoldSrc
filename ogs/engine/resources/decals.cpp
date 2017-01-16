@@ -28,7 +28,16 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "resources/decal.hpp"
+#include "memory/mem.hpp"
+#include "memory/zone.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "filesystem/wad.hpp"
+#include "console/console.hpp"
+#include "client/client.hpp"
 
 cachewad_t *decal_wad;
 cachewad_t *menu_wad; // NOXREF, reference of client-side code

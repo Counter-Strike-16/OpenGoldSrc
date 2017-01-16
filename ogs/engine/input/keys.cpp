@@ -190,15 +190,16 @@ qboolean CheckForCommand()
 
 void CompleteCommand()
 {
-	char *cmd, *s;
-
-	s = key_lines[edit_line] + 1;
+	char *s = key_lines[edit_line] + 1;
+	
 	if(*s == '\\' || *s == '/')
 		s++;
 
-	cmd = Cmd_CompleteCommand(s);
+	char *cmd = Cmd_CompleteCommand(s);
+	
 	if(!cmd)
 		cmd = Cvar_CompleteVariable(s);
+	
 	if(cmd)
 	{
 		key_lines[edit_line][1] = '/';

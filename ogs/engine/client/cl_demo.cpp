@@ -34,6 +34,8 @@
 #include "system/common.hpp"
 #include "client/client.hpp"
 #include "console/console.hpp"
+#include "console/cmd.hpp"
+#include "network/net_msg.hpp"
 
 enum
 {

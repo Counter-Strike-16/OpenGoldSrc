@@ -26,11 +26,17 @@
  *	version.
  */
 
+/// @file
+/// @brief export engine functions for client side
+
 #include "engine/cdll_int.h"
 #include "system/system.hpp"
-#include "client/view.hpp"
+#include "client/cl_demo.hpp"
 #include "input/keys.hpp"
+#include "graphics/view.hpp"
 #include "graphics/spriteapi.hpp"
+#include "network/netapi.hpp"
+#include "voice/voicetweak.hpp"
 
 namespace
 {
@@ -404,6 +410,7 @@ int PM_PointContents(float *point, int *truecontents)
 	int	cont, truecont;
 
 	truecont = cont = CL_TruePointContents( p );
+	
 	if( truecontents )
 		*truecontents = truecont;
 
@@ -926,12 +933,12 @@ cl_enginefunc_t gClEngFuncs =
         COM_ParseFile,
         COM_FreeFile,
 		
-        &gTriApi,
-        &gEfxApi,
-        &gEventApi,
-        &gDemoApi,
-        &gNetApi,
-        &gVoiceApi,
+        &gTriAPI,
+        &gEfxAPI,
+        &gEventAPI,
+        &gDemoAPI,
+        &gNetAPI,
+        &gVoiceAPI,
 		
         pfnIsSpectateOnly,
         pfnLoadMapSprite,

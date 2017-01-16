@@ -35,8 +35,10 @@
 #include "system/system.hpp"
 
 int        con_ormask;
+
 console_t  con_main;
 console_t  con_chat;
+
 console_t *con; // point to either con_main or con_chat
 
 int con_linewidth;  // characters across screen
@@ -126,7 +128,7 @@ Con_ClearNotify
 */
 void Con_ClearNotify()
 {
-	for(int i        = 0; i < NUM_CON_TIMES; i++)
+	for(int i        = 0; i < NUM_CON_TIMES; ++i)
 		con_times[i] = 0;
 };
 
@@ -303,15 +305,13 @@ void Con_Print(char *txt)
 	int        y;
 	int        c, l;
 	static int cr;
-	int        mask;
+	int        mask = 0;
 
 	if(txt[0] == 1 || txt[0] == 2)
 	{
 		mask = 128; // go to colored text
 		txt++;
-	}
-	else
-		mask = 0;
+	};
 
 	while((c = *txt))
 	{
@@ -397,8 +397,7 @@ void Con_Printf(char *fmt, ...)
 	// update the screen immediately if the console is displayed
 	if(cls.state != ca_active)
 	{
-		// protect against infinite loop if something in SCR_UpdateScreen calls
-		// Con_Printd
+		// protect against infinite loop if something in SCR_UpdateScreen calls Con_Printf
 		if(!inupdate)
 		{
 			inupdate = true;
@@ -417,7 +416,7 @@ A Con_Printf that only shows up if the "developer" cvar is set
 */
 void EXT_FUNC Con_DPrintf(const char *fmt, ...)
 {
-	// don't confuse non-developers with techie stuff...
+	// don't confuse non-developers with techical stuff...
 	if(!developer.value)
 		return;
 

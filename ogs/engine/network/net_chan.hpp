@@ -33,6 +33,7 @@
 #include "maintypes.h"
 #include "common/commontypes.h"
 #include "common/enums.h"
+#include "network/net.hpp"
 
 #ifdef HOOK_ENGINE
 
@@ -55,7 +56,6 @@ typedef struct sizebuf_s        sizebuf_t;
 typedef struct netchan_s        netchan_t;
 typedef struct fragbuf_s        fragbuf_t;
 typedef struct fragbufwaiting_s fragbufwaiting_t;
-typedef struct netadr_s         netadr_t;
 
 extern char gDownloadFile[256];
 
@@ -68,6 +68,89 @@ extern cvar_t net_drawslider;
 extern cvar_t net_chokeloopback;
 extern cvar_t sv_filetransfercompression;
 extern cvar_t sv_filetransfermaxsize;
+
+// Network Connection Channel
+typedef struct netchan_s
+{
+	// NS_SERVER or NS_CLIENT, depending on channel.
+	netsrc_t sock;
+
+	// Address this channel is talking to.
+	netadr_t remote_address;
+
+	int player_slot;
+	// For timeouts.  Time last message was received.
+	float last_received;
+	// Time when channel was connected.
+	float connect_time;
+
+	// Bandwidth choke
+	// Bytes per second
+	double rate;
+	// If realtime > cleartime, free to send next packet
+	double cleartime;
+
+	// Sequencing variables
+	//
+	// Increasing count of sequence numbers
+	int incoming_sequence;
+	// # of last outgoing message that has been ack'd.
+	int incoming_acknowledged;
+	// Toggles T/F as reliable messages are received.
+	int incoming_reliable_acknowledged;
+	// single bit, maintained local
+	int incoming_reliable_sequence;
+	// Message we are sending to remote
+	int outgoing_sequence;
+	// Whether the message contains reliable payload, single bit
+	int reliable_sequence;
+	// Outgoing sequence number of last send that had reliable data
+	int last_reliable_sequence;
+
+	void *connection_status;
+	int (*pfnNetchan_Blocksize)(void *);
+
+	// Staging and holding areas
+	sizebuf_t message;
+	byte      message_buf[MAX_MSGLEN];
+
+	// Reliable message buffer. We keep adding to it until reliable is acknowledged. Then we clear it.
+	int  reliable_length;
+	byte reliable_buf[MAX_MSGLEN];
+
+	// Waiting list of buffered fragments to go onto queue. Multiple outgoing buffers can be queued in succession.
+	fragbufwaiting_t *waitlist[MAX_STREAMS];
+
+	// Is reliable waiting buf a fragment?
+	int reliable_fragment[MAX_STREAMS];
+	// Buffer id for each waiting fragment
+	unsigned int reliable_fragid[MAX_STREAMS];
+
+	// The current fragment being set
+	fragbuf_t *fragbufs[MAX_STREAMS];
+	// The total number of fragments in this stream
+	int fragbufcount[MAX_STREAMS];
+
+	// Position in outgoing buffer where frag data starts
+	short int frag_startpos[MAX_STREAMS];
+	// Length of frag data in the buffer
+	short int frag_length[MAX_STREAMS];
+
+	// Incoming fragments are stored here
+	fragbuf_t *incomingbufs[MAX_STREAMS];
+	// Set to true when incoming data is ready
+	qboolean incomingready[MAX_STREAMS];
+
+	// Only referenced by the FRAG_FILE_STREAM component
+	// Name of file being downloaded
+	char incomingfilename[MAX_PATH];
+
+	void *tempbuffer;
+	int   tempbuffersize;
+
+	// Incoming and outgoing flow metrics
+	flow_t flow[MAX_FLOWS];
+} netchan_t;
 
 void Netchan_UnlinkFragment(fragbuf_t *buf, fragbuf_t **list);
 void Netchan_OutOfBand(netsrc_t sock, netadr_t adr, int length, byte *data);

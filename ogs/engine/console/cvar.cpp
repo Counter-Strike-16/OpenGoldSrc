@@ -89,10 +89,8 @@ cvar_t *Cvar_FindVar(const char *var_name)
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 {
 	NOXREFCHECK;
-
-	cvar_t *var;
-
-	for(var = cvar_vars; var && var->next; var = var->next)
+	
+	for(cvar_t *var = cvar_vars; var && var->next; var = var->next)
 	{
 		if(!Q_stricmp(var_name, var->next->name))
 			return var;

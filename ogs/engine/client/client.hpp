@@ -41,7 +41,6 @@
 #include "common/netadr.h"
 #include "filesystem/filesystem_internal.hpp"
 #include "network/net_chan.hpp"
-#include "input/keys.hpp"
 #include "system/common.hpp"
 #include "resources/consistency.hpp"
 #include "world/event.hpp"
@@ -54,8 +53,6 @@
 #define cls (*pcls)
 #define cl (*pcl)
 
-#define key_dest (*pkey_dest)
-
 #define g_clmove (*pg_clmove)
 #define cl_inmovie (*pcl_inmovie)
 
@@ -63,8 +60,6 @@
 #define rate_ (*prate)
 #define console (*pconsole)
 #endif // HOOK_ENGINE
-
-extern keydest_t key_dest;
 
 extern playermove_t g_clmove;
 extern qboolean     cl_inmovie;

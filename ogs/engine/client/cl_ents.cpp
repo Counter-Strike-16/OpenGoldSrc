@@ -31,6 +31,8 @@
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"
+#include "network/net_msg.hpp"
+#include "common/dlight.h"
 
 extern cvar_t cl_predict_players;
 extern cvar_t cl_predict_players2;
@@ -738,7 +740,7 @@ CL_AddFlagModels
 Called when the CTF flags are set
 ================
 */
-void CL_AddFlagModels(entity_t *ent, int team)
+void CL_AddFlagModels(cl_entity_t *ent, int team)
 {
 	int          i;
 	float        f;

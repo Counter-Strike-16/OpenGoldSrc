@@ -32,16 +32,17 @@
 //#include "precompiled.hpp"
 //#include "system/quakedef.hpp"
 #include "console/cmd.hpp"
-#include "system/common.hpp"
-#include "filesystem/filesystem_internal.hpp"
-#include "console/console.hpp"
-#include "system/system.hpp"
-#include "client/client.hpp"
-#include "system/sizebuf.hpp"
 #include "memory/zone.hpp"
 #include "memory/mem.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "system/sizebuf.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "console/console.hpp"
+#include "client/client.hpp"
+#include "network/net_msg.hpp"
 
-#define	MAX_ARGS 80
+const int MAX_ARGS = 80;
 
 int   cmd_argc;
 char *cmd_argv[MAX_ARGS];

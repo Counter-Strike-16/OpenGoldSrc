@@ -34,7 +34,6 @@
 
 client_static_t cls;
 client_state_t  cl;
-keydest_t       key_dest;
 
 playermove_t g_clmove;
 qboolean     cl_inmovie;

@@ -28,7 +28,16 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "common/commontypes.h"
+#include "engine/custom.h"
+#include "rehlds/model.h"
+#include "memory/mem.hpp"
+#include "memory/zone.hpp"
+#include "system/common.hpp"
+#include "client/client.hpp"
+#include "resources/decal.hpp"
+#include "filesystem/hashpak.hpp"
 
 void COM_ClearCustomizationList(customization_t *pHead, qboolean bCleanDecals)
 {

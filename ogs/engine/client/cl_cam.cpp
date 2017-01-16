@@ -39,6 +39,8 @@
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"
+#include "console/console.hpp"
+#include "network/net_msg.hpp"
 
 #define PM_SPECTATORMAXSPEED 500
 #define PM_STOPSPEED 100

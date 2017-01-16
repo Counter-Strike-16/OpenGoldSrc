@@ -137,7 +137,7 @@ int CEngine::Frame_noVirt()
 	if(!game->IsActiveApp())
 		game->SleepUntilInput(m_nDLLState != DLL_PAUSED ? MINIMIZED_SLEEP : NOT_FOCUS_SLEEP);
 
-	m_fCurTime   = Sys_FloatTime();
+	m_fCurTime   = Sys_DoubleTime();
 	m_fFrameTime = m_fCurTime - m_fOldTime;
 	m_fOldTime   = m_fCurTime;
 	if(m_fFrameTime < 0.0)

@@ -43,6 +43,8 @@
 #include "network/delta_packet.hpp"
 #include "rehlds/model.h"
 #include "network/net.hpp"
+#include "network/net_chan.hpp"
+#include "network/net_ws.hpp"
 #include "engine/progs.h"
 #include "network/filter.hpp"
 #include "server/server_static.hpp"
@@ -50,7 +52,6 @@
 #include "userid.h"
 #include "pm_shared/pm_defs.h"
 #include "world/inst_baseline.hpp"
-#include "network/net_ws.hpp"
 #include "system/info.hpp"
 #include "qlimits.h"
 

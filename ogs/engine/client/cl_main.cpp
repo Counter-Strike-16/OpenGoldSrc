@@ -30,6 +30,16 @@
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"
+#include "memory/zone.hpp"
+#include "system/buildinfo.hpp"
+#include "system/system.hpp"
+#include "system/sizebuf.hpp"
+#include "system/host.hpp"
+#include "console/console.hpp"
+#include "console/cmd.hpp"
+#include "network/protocol.hpp"
+#include "network/net_msg.hpp"
+#include "sound/sound.hpp"
 
 #ifdef _WIN32
 #include "winsock.h"
@@ -90,8 +100,6 @@ extern cvar_t cl_hightrack;
 
 client_static_t cls;
 client_state_t  cl;
-
-keydest_t key_dest;
 
 playermove_t g_clmove;
 qboolean     cl_inmovie;
@@ -224,7 +232,8 @@ void CL_CheckForResend()
 		Con_Printf("Bad server address\n");
 		connect_time = -1;
 		return;
-	}
+	};
+	
 	if(!NET_IsClientLegal(&adr))
 	{
 		Con_Printf("Illegal server address\n");
@@ -288,8 +297,7 @@ void CL_Rcon_f()
 
 	if(!rcon_password.string)
 	{
-		Con_Printf("You must set 'rcon_password' before\n"
-		           "issuing an rcon command.\n");
+		Con_Printf("You must set 'rcon_password' before issuing an rcon command.\n");
 		return;
 	}
 
@@ -364,7 +372,7 @@ void CL_ClearState()
 	//
 	cl.free_efrags = cl_efrags;
 
-	for(i                         = 0; i < MAX_EFRAGS - 1; i++)
+	for(i                         = 0; i < MAX_EFRAGS - 1; ++i)
 		cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
 
 	cl.free_efrags[i].entnext = NULL;

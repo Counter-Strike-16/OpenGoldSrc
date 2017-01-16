@@ -113,10 +113,10 @@ public:
 	virtual void SteamAPI_UnregisterCallback(CCallbackBase *pCallback);
 };
 
-class CRehldsPlatformHolder {
+class CRehldsPlatformHolder
+{
 private:
 	static IReHLDSPlatform* m_Platform;
-
 public:
 	static IReHLDSPlatform* get();
 	static void set(IReHLDSPlatform* p);

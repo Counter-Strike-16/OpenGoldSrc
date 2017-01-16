@@ -32,6 +32,12 @@
 #include "filesystem/filesystem_.hpp"
 #include "filesystem/filesystem_internal.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
+#include "system/host.hpp"
+#include "console/cmd.hpp"
+#include "client/client.hpp"
+#include "IRegistry.h"
+#include "platform.h"
 
 CUtlVector<char *> g_fallbackLocalizationFiles;
 char               s_pBaseDir[512];

@@ -93,6 +93,9 @@
 
 // clang-format on
 
+
+extern qboolean g_bIsDedicatedServer;
+
 extern qboolean g_bIsWin95;
 extern qboolean g_bIsWin98;
 
@@ -200,7 +203,9 @@ NOXREF void Sys_Warning(const char *pszWarning, ...);
 void Sys_Printf(const char *fmt, ...);
 
 void   Sys_Quit();
-double Sys_FloatTime();
+
+double Sys_DoubleTime();
+
 void Dispatch_Substate(int iSubState);
 void GameSetSubState(int iSubState);
 void GameSetState(int iState);

@@ -43,7 +43,7 @@ public:
 	int Run(void *instance,
 
 	        char *basedir,
-	        char *cmdline,
+	        const char *cmdline,
 	        char *postRestartCmdLineArgs,
 
 	        CreateInterfaceFn launcherFactory,

@@ -39,7 +39,7 @@ LIST(REMOVE_ITEM PROJECT_SOURCES
 )
 
 # Detect current platform
-else(WIN32)
+if(WIN32)
 	set(PROJECT_TARGET_PLATFORM win)
 elseif(UNIX)
 	set(PROJECT_TARGET_PLATFORM linux) # unix?
