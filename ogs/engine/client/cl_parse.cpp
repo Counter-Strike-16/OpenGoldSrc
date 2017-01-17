@@ -739,7 +739,8 @@ void CL_ParseEventData(bool bReliable)
 	};
 };
 
-void CL_ParseVersion(){
+void CL_ParseVersion()
+{
     // Seems to be unused
 
     //long nServerProtocol = MSG_ReadLong();
@@ -823,7 +824,7 @@ void CL_ParsePrint()
 
 void CL_ParseStuffText()
 {
-	s = MSG_ReadString();
+	char *s = MSG_ReadString();
 	Con_DPrintf("stufftext: %s\n", s);
 	Cbuf_AddText(s);
 };
@@ -871,6 +872,11 @@ void CL_ParseServerInfo()
 	Info_SetValueForKey(cl.serverinfo, key, value, MAX_SERVERINFO_STRING);
 };
 
+/*
+================
+CL_ParseLightStyle
+================
+*/
 void CL_ParseLightStyle()
 {
 	i = MSG_ReadByte();
@@ -882,7 +888,37 @@ void CL_ParseLightStyle()
 	cl_lightstyle[i].length = Q_strlen(cl_lightstyle[i].map);
 };
 
-void CL_ParseUserinfo(){};
+/*
+================
+CL_UpdateUserinfo
+
+collect userinfo from all players
+================
+*/
+void CL_ParseUserinfo()
+{
+	int slot = MSG_ReadUBitLong(MAX_CLIENT_BITS );
+
+	if( slot >= MAX_CLIENTS )
+		Host_Error( "CL_ParseServerMessage: svc_updateuserinfo > MAX_CLIENTS\n" );
+
+	player_info_t *player = &cl.players[slot];
+	qboolean active = MSG_ReadOneBit() ? true : false;
+
+	if( active )
+	{
+		Q_strncpy( player->userinfo, MSG_ReadString(), sizeof( player->userinfo ));
+		Q_strncpy( player->name, Info_ValueForKey( player->userinfo, "name" ), sizeof( player->name ));
+		Q_strncpy( player->model, Info_ValueForKey( player->userinfo, "model" ), sizeof( player->model ));
+		player->topcolor = Q_atoi( Info_ValueForKey( player->userinfo, "topcolor" ));
+		player->bottomcolor = Q_atoi( Info_ValueForKey( player->userinfo, "bottomcolor" ));
+
+		if( slot == cl.playernum )
+			Q_memcpy( &menu.playerinfo, player, sizeof( player_info_t ));
+	}
+	else
+		Q_memset( player, 0, sizeof( *player ));
+};
 
 void CL_ParseDeltaDescription(){};
 
@@ -934,6 +970,13 @@ void CL_HandleStopSound()
 	S_StopSound(i >> 3, i & 7);
 };
 
+/*
+================
+CL_UpdateUserPings
+
+collect pings and packet lossage from clients
+================
+*/
 void CL_ParsePings()
 {
 	i = MSG_ReadByte();
@@ -1130,6 +1173,13 @@ void CL_ParseRoomType()
 	Cvar_SetFloat("room_type", nRoomType);
 };
 
+/*
+================
+CL_ParseAddAngle
+
+add the view angle yaw
+================
+*/
 void CL_ParseAddAngle()
 {
 	/*

@@ -691,6 +691,7 @@ void V_ApplyShake(float *origin, float *angles, float factor)
 {
 	if(origin)
 		VectorMA(origin, factor, clgame.shake.applied_offset, origin);
+	
 	if(angles)
 		angles[ROLL] += clgame.shake.applied_angle * factor;
-}
+};

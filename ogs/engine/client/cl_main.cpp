@@ -47,9 +47,6 @@
 #include <netinet/in.h>
 #endif
 
-// we need to declare some mouse variables here, because the menu system
-// references them even when on a unix system.
-
 qboolean noclip_anglehack; // remnant from old quake
 
 cvar_t rcon_password = {"rcon_password", ""};
@@ -67,23 +64,19 @@ cvar_t cl_predict_players  = {"cl_predict_players", "1"};
 cvar_t cl_predict_players2 = {"cl_predict_players2", "1"};
 cvar_t cl_solid_players    = {"cl_solid_players", "1"};
 
-cvar_t localid = {"localid", ""};
-
 static qboolean allowremotecmd = true;
 
 //
-// info mirrors
+// userinfo mirrors
 //
 cvar_t password    = {"password", "", FCVAR_USERINFO};
-cvar_t spectator   = {"spectator", "", FCVAR_USERINFO};
 cvar_t name        = {"name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO};
 cvar_t team        = {"team", "", FCVAR_ARCHIVE | FCVAR_USERINFO};
+cvar_t model       = {"model", "", FCVAR_ARCHIVE | FCVAR_USERINFO};
 cvar_t skin        = {"skin", "", FCVAR_ARCHIVE | FCVAR_USERINFO};
 cvar_t topcolor    = {"topcolor", "0", FCVAR_ARCHIVE | FCVAR_USERINFO};
 cvar_t bottomcolor = {"bottomcolor", "0", FCVAR_ARCHIVE | FCVAR_USERINFO};
 cvar_t rate        = {"rate", "2500", FCVAR_ARCHIVE | FCVAR_USERINFO};
-cvar_t noaim       = {"noaim", "0", FCVAR_ARCHIVE | FCVAR_USERINFO};
-cvar_t msg         = {"msg", "1", FCVAR_ARCHIVE | FCVAR_USERINFO};
 
 cvar_t console = {"console", "1", FCVAR_ARCHIVE};
 
@@ -168,7 +161,7 @@ void CL_SendConnectPacket()
 		Con_Printf("Bad server address\n");
 		cls.connect_time = -1; // 0
 		return;
-	}
+	};
 
 	if(adr.port == 0)
 		adr.port = BigShort(PORT_SERVER);
@@ -186,7 +179,7 @@ void CL_SendConnectPacket()
 	        255, 255, 255, 255, PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
 
 	NET_SendPacket(strlen(data), data, adr);
-}
+};
 
 /*
 =================
@@ -219,7 +212,7 @@ void CL_CheckForResend()
 	};
 
 	if(adr.port == 0)
-		adr.port = BigShort(27500);
+		adr.port = BigShort(PORT_SERVER);
 
 	double t2 = Sys_DoubleTime();
 
@@ -228,13 +221,13 @@ void CL_CheckForResend()
 	Con_Printf("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
 	NET_SendPacket(strlen(data), data, adr);
-}
+};
 
 void CL_BeginServerConnect()
 {
 	connect_time = 0;
 	CL_CheckForResend();
-}
+};
 
 /*
 ================
@@ -256,7 +249,7 @@ void CL_Connect_f()
 
 	strncpy(cls.servername, server, charsmax(cls.servername));
 	CL_BeginServerConnect();
-}
+};
 
 /*
 =====================
@@ -276,7 +269,7 @@ void CL_Rcon_f()
 	{
 		Con_Printf("You must set 'rcon_password' before issuing an rcon command.\n");
 		return;
-	}
+	};
 
 	message[0] = 255;
 	message[1] = 255;
@@ -293,7 +286,7 @@ void CL_Rcon_f()
 	{
 		strcat(message, Cmd_Argv(i));
 		strcat(message, " ");
-	}
+	};
 
 	if(cls.state >= ca_connected)
 		to = cls.netchan.remote_address;
@@ -306,12 +299,13 @@ void CL_Rcon_f()
 			           "to issue rcon commands\n");
 
 			return;
-		}
+		};
+		
 		NET_StringToAdr(rcon_address.string, &to);
-	}
+	};
 
 	NET_SendPacket(strlen(message) + 1, message, to);
-}
+};
 
 /*
 =====================
@@ -353,7 +347,7 @@ void CL_ClearState()
 		cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
 
 	cl.free_efrags[i].entnext = NULL;
-}
+};
 
 /*
 =====================
@@ -397,7 +391,7 @@ void CL_Disconnect()
 void CL_Disconnect_f()
 {
 	CL_Disconnect();
-}
+};
 
 /*
 ====================
@@ -414,7 +408,7 @@ void CL_User_f()
 	{
 		Con_Printf("Usage: user <username / userid>\n");
 		return;
-	}
+	};
 
 	int uid = atoi(Cmd_Argv(1));
 
@@ -427,11 +421,11 @@ void CL_User_f()
 		{
 			Info_Print(cl.players[i].userinfo);
 			return;
-		}
-	}
+		};
+	};
 
 	Con_Printf("User not on server\n");
-}
+};
 
 /*
 ====================
@@ -453,11 +447,11 @@ void CL_Users_f()
 		{
 			Con_Printf("%6i %4i %s\n", cl.players[i].userid, cl.players[i].frags, cl.players[i].name);
 			c++;
-		}
-	}
+		};
+	};
 
 	Con_Printf("%i total users\n", c);
-}
+};
 
 void CL_Color_f()
 {
@@ -471,7 +465,7 @@ void CL_Color_f()
 		           Info_ValueForKey(cls.userinfo, "bottomcolor"));
 		Con_Printf("color <0-13> [0-13]\n");
 		return;
-	}
+	};
 
 	if(Cmd_Argc() == 2)
 		top = bottom = atoi(Cmd_Argv(1));
@@ -479,7 +473,7 @@ void CL_Color_f()
 	{
 		top    = atoi(Cmd_Argv(1));
 		bottom = atoi(Cmd_Argv(2));
-	}
+	};
 
 	top &= 15;
 	if(top > 13)
@@ -492,7 +486,7 @@ void CL_Color_f()
 	Cvar_Set("topcolor", num);
 	sprintf(num, "%i", bottom);
 	Cvar_Set("bottomcolor", num);
-}
+};
 
 /*
 ==================
@@ -510,7 +504,7 @@ void CL_FullServerinfo_f()
 	{
 		Con_Printf("usage: fullserverinfo <complete info string>\n");
 		return;
-	}
+	};
 
 	strcpy(cl.serverinfo, Cmd_Argv(1));
 
@@ -522,9 +516,9 @@ void CL_FullServerinfo_f()
 			if(!server_version)
 				Con_Printf("Version %1.2f Server\n", v);
 			server_version = v;
-		}
-	}
-}
+		};
+	};
+};
 
 /*
 ==================
@@ -544,23 +538,26 @@ void CL_FullInfo_f()
 	{
 		Con_Printf("fullinfo <complete info string>\n");
 		return;
-	}
+	};
 
 	s = Cmd_Argv(1);
 	if(*s == '\\')
 		s++;
+	
 	while(*s)
 	{
 		o = key;
+		
 		while(*s && *s != '\\')
 			*o++ = *s++;
+		
 		*o       = 0;
 
 		if(!*s)
 		{
 			Con_Printf("MISSING VALUE\n");
 			return;
-		}
+		};
 
 		o = value;
 		s++;
@@ -575,8 +572,8 @@ void CL_FullInfo_f()
 			continue;
 
 		Info_SetValueForKey(cls.userinfo, key, value, MAX_INFO_STRING);
-	}
-}
+	};
+};
 
 /*
 ==================
@@ -591,13 +588,13 @@ void CL_SetInfo_f()
 	{
 		Info_Print(cls.userinfo);
 		return;
-	}
+	};
 
 	if(Cmd_Argc() != 3)
 	{
 		Con_Printf("usage: setinfo [ <key> <value> ]\n");
 		return;
-	}
+	};
 
 	if(!stricmp(Cmd_Argv(1), pmodel_name) || !strcmp(Cmd_Argv(1), emodel_name))
 		return;
@@ -605,7 +602,7 @@ void CL_SetInfo_f()
 	Info_SetValueForKey(cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING);
 	if(cls.state >= ca_connected)
 		Cmd_ForwardToServer();
-}
+};
 
 /*
 ====================
@@ -627,13 +624,13 @@ void CL_Packet_f()
 	{
 		Con_Printf("packet <destination> <contents>\n");
 		return;
-	}
+	};
 
 	if(!NET_StringToAdr(Cmd_Argv(1), &adr))
 	{
 		Con_Printf("Bad address\n");
 		return;
-	}
+	};
 
 	in      = Cmd_Argv(2);
 	out     = send + 4;
@@ -649,11 +646,12 @@ void CL_Packet_f()
 		}
 		else
 			*out++ = in[i];
-	}
+	};
+	
 	*out = 0;
 
 	NET_SendPacket(out - send, send, adr);
-}
+};
 
 /*
 =====================
@@ -683,7 +681,7 @@ void CL_NextDemo()
 	sprintf(str, "playdemo %s\n", cls.demos[cls.demonum]);
 	Cbuf_InsertText(str);
 	cls.demonum++;
-}
+};
 
 /*
 =================
@@ -695,16 +693,21 @@ drop to full console
 */
 void CL_Changing_f()
 {
-	if(cls.download) // don't change when downloading
+	// don't change when downloading
+	// so we don't suddenly stop downloading a map
+	if(cls.download)
 		return;
 
 	S_StopAllSounds(true);
 	cl.intermission = 0;
 	
-	cls.state       = ca_connected; // not active anymore, but not disconnected
+	SCR_BeginLoadingPlaque();
+	
+	// not active anymore, but not disconnected
+	cls.state = ca_connected;
 	
 	Con_Printf("\nChanging map...\n");
-}
+};
 
 /*
 =================
@@ -726,17 +729,17 @@ void CL_Reconnect_f()
 		MSG_WriteChar(&cls.netchan.message, clc_stringcmd);
 		MSG_WriteString(&cls.netchan.message, "new");
 		return;
-	}
+	};
 
 	if(!*cls.servername)
 	{
 		Con_Printf("No server to reconnect to...\n");
 		return;
-	}
+	};
 
 	CL_Disconnect();
 	CL_BeginServerConnect();
-}
+};
 
 /*
 =================
@@ -765,7 +768,8 @@ void CL_ConnectionlessPacket()
 			if(!cls.demoplayback)
 				Con_Printf("Dup connect received.  Ignored.\n");
 			return;
-		}
+		};
+		
 		Netchan_Setup(&cls.netchan, net_from, cls.qport);
 		MSG_WriteChar(&cls.netchan.message, clc_stringcmd);
 		MSG_WriteString(&cls.netchan.message, "new");
@@ -773,7 +777,8 @@ void CL_ConnectionlessPacket()
 		Con_Printf("Connected.\n");
 		allowremotecmd = false; // localid required now for remote cmds
 		return;
-	}
+	};
+	
 	// remote command from gui front end
 	if(c == A2C_CLIENT_COMMAND)
 	{
@@ -823,12 +828,13 @@ void CL_ConnectionlessPacket()
 			Con_Printf("===========================\n");
 			Cvar_Set("localid", "");
 			return;
-		}
+		};
 
 		Cbuf_AddText(cmdtext);
 		allowremotecmd = false;
 		return;
-	}
+	};
+	
 	// print command from somewhere
 	if(c == A2C_PRINT)
 	{
@@ -837,7 +843,7 @@ void CL_ConnectionlessPacket()
 		s = MSG_ReadString();
 		Con_Print(s);
 		return;
-	}
+	};
 
 	// ping from somewhere
 	if(c == A2A_PING)
@@ -855,7 +861,7 @@ void CL_ConnectionlessPacket()
 
 		NET_SendPacket(6, &data, net_from);
 		return;
-	}
+	};
 
 	if(c == S2C_CHALLENGE)
 	{
@@ -867,7 +873,7 @@ void CL_ConnectionlessPacket()
 		
 		CL_SendConnectPacket();
 		return;
-	}
+	};
 
 #if 0
 	if (c == svc_disconnect)
@@ -876,11 +882,11 @@ void CL_ConnectionlessPacket()
 
 		Host_EndGame ("Server disconnected");
 		return;
-	}
+	};
 #endif
 
 	Con_Printf("unknown:  %c\n", c);
-}
+};
 
 /*
 =================
@@ -899,30 +905,31 @@ void CL_ReadPackets()
 		{
 			CL_ConnectionlessPacket();
 			continue;
-		}
+		};
 
 		if(net_message.cursize < 8)
 		{
 			Con_Printf("%s: Runt packet\n", NET_AdrToString(net_from));
 			continue;
-		}
+		};
 
 		//
 		// packet from server
 		//
-		if(!cls.demoplayback &&
-		   !NET_CompareAdr(net_from, cls.netchan.remote_address))
+		if(!cls.demoplayback && !NET_CompareAdr(net_from, cls.netchan.remote_address))
 		{
 			Con_DPrintf("%s:sequenced packet without connection\n", NET_AdrToString(net_from));
 			continue;
-		}
+		};
+		
 		if(!Netchan_Process(&cls.netchan))
 			continue; // wasn't accepted for some reason
+		
 		CL_ParseServerMessage();
 
 		//		if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())
 		//			return;
-	}
+	};
 
 	//
 	// check timeout
@@ -932,8 +939,8 @@ void CL_ReadPackets()
 		Con_Printf("\nServer connection timed out.\n");
 		CL_Disconnect();
 		return;
-	}
-}
+	};
+};
 
 //=============================================================================
 
@@ -950,13 +957,13 @@ void CL_Download_f()
 	{
 		Con_Printf("Must be connected.\n");
 		return;
-	}
+	};
 
 	if(Cmd_Argc() != 2)
 	{
 		Con_Printf("Usage: download <datafile>\n");
 		return;
-	}
+	};
 
 	sprintf(cls.downloadname, "%s/%s", com_gamedir, Cmd_Argv(1));
 
@@ -972,7 +979,7 @@ void CL_Download_f()
 		}
 		else
 			break;
-	}
+	};
 
 	strcpy(cls.downloadtempname, cls.downloadname);
 	cls.download     = fopen(cls.downloadname, "wb");
@@ -980,23 +987,7 @@ void CL_Download_f()
 
 	MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
 	SZ_Print(&cls.netchan.message, va("download %s\n", Cmd_Argv(1)));
-}
-
-#ifdef _WINDOWS
-#include <windows.h>
-/*
-=================
-CL_Minimize_f
-=================
-*/
-void CL_Windows_f()
-{
-	//	if (modestate == MS_WINDOWED)
-	//		ShowWindow(mainwindow, SW_MINIMIZE);
-	//	else
-	SendMessage(mainwindow, WM_SYSKEYUP, VK_TAB, 1 | (0x0F << 16) | (1 << 29));
-}
-#endif
+};
 
 /*
 =================
@@ -1050,7 +1041,11 @@ void CL_Init()
 	Cvar_RegisterVariable(&rate);
 	Cvar_RegisterVariable(&msg);
 	Cvar_RegisterVariable(&noaim);
-
+	
+	Cmd_AddCommand ("cmd", CL_ForwardToServer_f);
+	Cmd_AddCommand ("pause", CL_Pause_f);
+	Cmd_AddCommand ("pingservers", CL_PingServers_f);
+	
 	Cmd_AddCommand("changing", CL_Changing_f);
 	Cmd_AddCommand("rerecord", CL_ReRecord_f);
 
@@ -1061,7 +1056,7 @@ void CL_Init()
 	Cmd_AddCommand("reconnect", CL_Reconnect_f);
 
 	Cmd_AddCommand("rcon", CL_Rcon_f);
-	Cmd_AddCommand("packet", CL_Packet_f);
+	//Cmd_AddCommand("packet", CL_Packet_f); // this is dangerous to leave in
 	Cmd_AddCommand("user", CL_User_f);
 	Cmd_AddCommand("users", CL_Users_f);
 
@@ -1069,28 +1064,29 @@ void CL_Init()
 	Cmd_AddCommand("fullinfo", CL_FullInfo_f);
 	Cmd_AddCommand("fullserverinfo", CL_FullServerinfo_f);
 
-	Cmd_AddCommand("color", CL_Color_f);
-	Cmd_AddCommand("download", CL_Download_f);
-
-	Cmd_AddCommand("nextul", CL_NextUpload);
-	Cmd_AddCommand("stopul", CL_StopUpload);
-
 	//
 	// forward to server commands
 	//
+	// the only thing this does is allow command completion
+	// to work -- all unknown commands are automatically
+	// forwarded to the server
+	//
+	
+	Cmd_AddCommand("dropclient", NULL);
 	Cmd_AddCommand("kill", NULL);
 	Cmd_AddCommand("pause", NULL);
+	
 	Cmd_AddCommand("say", NULL);
 	Cmd_AddCommand("say_team", NULL);
+	
 	Cmd_AddCommand("serverinfo", NULL);
-
-//
-//  Windows commands
-//
-#ifdef _WINDOWS
-	Cmd_AddCommand("windows", CL_Windows_f);
-#endif
-}
+	Cmd_AddCommand ("god", NULL);
+	Cmd_AddCommand ("notarget", NULL);
+	Cmd_AddCommand ("noclip", NULL);
+	
+	Cmd_AddCommand ("invprev", NULL);
+	Cmd_AddCommand ("invnext", NULL);
+};
 
 //============================================================================
 
@@ -1116,8 +1112,9 @@ qboolean Host_SimulationTime(float time)
 
 	if (!cls.timedemo && (realtime + time) - oldrealtime < 1.0/fps)
 		return false;			// framerate is too high
+	
 	return true;
-}
+};
 #endif
 
 int  nopacketcount;
@@ -1218,7 +1215,7 @@ static void simple_crypt(char *buf, int len)
 {
 	while(len--)
 		*buf++ ^= 0xff;
-}
+};
 
 void Host_FixupModelNames()
 {
@@ -1227,7 +1224,7 @@ void Host_FixupModelNames()
 	simple_crypt(prespawn_name, sizeof(prespawn_name) - 1);
 	simple_crypt(modellist_name, sizeof(modellist_name) - 1);
 	simple_crypt(soundlist_name, sizeof(soundlist_name) - 1);
-}
+};
 
 //============================================================================
 
