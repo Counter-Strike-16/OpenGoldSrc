@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 
 ////////////////////////////////////////
 
@@ -59,15 +59,15 @@ const int ZONE_DYNAMIC_SIZE = 0x20000;
 
 ////////////////////////////////////////
 
-typedef struct cvar_s    cvar_t;
+typedef struct cvar_s cvar_t;
 typedef struct memzone_s memzone_t;
 
-typedef struct cache_user_s   cache_user_t;
+typedef struct cache_user_s cache_user_t;
 typedef struct cache_system_s cache_system_t;
 
 ////////////////////////////////////////
 
-extern cvar_t     mem_dbgfile;
+extern cvar_t mem_dbgfile;
 extern memzone_t *mainzone;
 
 extern byte *hunk_base;
@@ -122,7 +122,8 @@ NOXREF void Hunk_Print(qboolean all);
 
 void Cache_Init();
 
-/// Returns NULL if all purgable data was tossed and there still wasn't enough room
+/// Returns NULL if all purgable data was tossed and there still wasn't enough
+/// room
 void *Cache_Alloc(cache_user_t *c, int size, char *name);
 
 cache_system_t *Cache_TryAlloc(int size, qboolean nobottom);
@@ -145,7 +146,8 @@ NOXREF int CacheSystemCompare(const void *ppcs1, const void *ppcs2);
 
 NOXREF char *CommatizeNumber(int num, char *pout);
 
-/// Returns the cached data, and moves to the head of the LRU list if present, otherwise returns NULL
+/// Returns the cached data, and moves to the head of the LRU list if present,
+/// otherwise returns NULL
 void *Cache_Check(cache_user_t *c);
 
 NOXREF void Cache_Print();

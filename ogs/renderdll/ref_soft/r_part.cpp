@@ -39,8 +39,8 @@ vec3_t r_pright, r_pup, r_ppn;
 typedef struct
 {
 	particle_t *particle;
-	int         level;
-	int         color;
+	int level;
+	int color;
 } partparms_t;
 
 static partparms_t partparms;
@@ -68,19 +68,19 @@ __declspec(naked) void BlendParticle33()
 	//	return vid.alphamap[color + dstcolor*256];
 	__asm mov ebp, vid.alphamap __asm xor ebx, ebx
 
-	    __asm mov bl,
-	    byte ptr[edi] __asm shl ebx, 8
+	__asm mov bl,
+	byte ptr[edi] __asm shl ebx, 8
 
-	    __asm add     ebp,
-	    ebx __asm add ebp, eax
+	__asm add ebp,
+	ebx __asm add ebp, eax
 
-	    __asm mov al,
-	    byte      ptr[ebp]
+	__asm mov al,
+	byte ptr[ebp]
 
-	    __asm mov byte ptr[edi],
-	    al
+	__asm mov byte ptr[edi],
+	al
 
-	    __asm ret
+	__asm ret
 }
 
 __declspec(naked) void BlendParticle66()
@@ -88,19 +88,19 @@ __declspec(naked) void BlendParticle66()
 	//	return vid.alphamap[pcolor*256 + dstcolor];
 	__asm mov ebp, vid.alphamap __asm xor ebx, ebx
 
-	    __asm shl   eax,
-	    8 __asm mov bl, byte ptr[edi]
+	__asm shl eax,
+	8 __asm mov bl, byte ptr[edi]
 
-	    __asm add     ebp,
-	    ebx __asm add ebp, eax
+	__asm add ebp,
+	ebx __asm add ebp, eax
 
-	    __asm mov al,
-	    byte      ptr[ebp]
+	__asm mov al,
+	byte ptr[ebp]
 
-	    __asm mov byte ptr[edi],
-	    al
+	__asm mov byte ptr[edi],
+	al
 
-	    __asm ret
+	__asm ret
 }
 
 __declspec(naked) void BlendParticle100()
@@ -121,10 +121,10 @@ __declspec(naked) void BlendParticle100()
 __declspec(naked) void R_DrawParticle()
 {
 	static vec3_t local, transformed;
-	static float  zi;
-	static int    u, v, tmp;
-	static short  izi;
-	static int    ebpsave;
+	static float zi;
+	static int u, v, tmp;
+	static short izi;
+	static int ebpsave;
 
 	static byte (*blendfunc)();
 
@@ -133,9 +133,9 @@ __declspec(naked) void R_DrawParticle()
 	** directly.  I guess I could use fld1, but that
 	** actually costs one more clock than fld [one]!
 	*/
-	static float particle_z_clip    = PARTICLE_Z_CLIP;
-	static float one                = 1.0F;
-	static float point_five         = 0.5F;
+	static float particle_z_clip = PARTICLE_Z_CLIP;
+	static float one = 1.0F;
+	static float point_five = 0.5F;
 	static float eight_thousand_hex = 0x8000;
 
 	/*
@@ -143,27 +143,27 @@ __declspec(naked) void R_DrawParticle()
 	*/
 	__asm mov ebpsave, ebp __asm push esi __asm push edi
 
-	    /*
+	/*
 	** transform the particle
 	*/
-	    // VectorSubtract (pparticle->origin, r_origin, local);
-	    __asm mov                    esi,
-	    partparms.particle __asm fld dword ptr[esi + 0];
-	p_o.x __asm fsub dword  ptr[r_origin + 0];
-	p_o.x - r_o.x __asm fld dword    ptr[esi + 4];
-	p_o.y | p_o.x - r_o.x __asm fsub dword  ptr[r_origin + 4];
-	p_o.y - r_o.y | p_o.x - r_o.x __asm fld dword    ptr[esi + 8];
-	p_o.z | p_o.y - r_o.y | p_o.x - r_o.x __asm fsub dword   ptr[r_origin + 8];
+	// VectorSubtract (pparticle->origin, r_origin, local);
+	__asm mov esi,
+	partparms.particle __asm fld dword ptr[esi + 0];
+	p_o.x __asm fsub dword ptr[r_origin + 0];
+	p_o.x - r_o.x __asm fld dword ptr[esi + 4];
+	p_o.y | p_o.x - r_o.x __asm fsub dword ptr[r_origin + 4];
+	p_o.y - r_o.y | p_o.x - r_o.x __asm fld dword ptr[esi + 8];
+	p_o.z | p_o.y - r_o.y | p_o.x - r_o.x __asm fsub dword ptr[r_origin + 8];
 	p_o.z - r_o.z | p_o.y - r_o.y | p_o.x - r_o.x __asm fxch st(2);
 	p_o.x - r_o.x | p_o.y - r_o.y | p_o.z - r_o.z __asm fstp dword ptr[local + 0];
 	p_o.y - r_o.y | p_o.z - r_o.z __asm fstp dword ptr[local + 4];
 	p_o.z - r_o.z __asm fstp dword ptr[local + 8];
 	(empty)
 
-	    // transformed[0] = DotProduct(local, r_pright);
-	    // transformed[1] = DotProduct(local, r_pup);
-	    // transformed[2] = DotProduct(local, r_ppn);
-	    __asm fld dword ptr[local + 0];
+	// transformed[0] = DotProduct(local, r_pright);
+	// transformed[1] = DotProduct(local, r_pup);
+	// transformed[2] = DotProduct(local, r_ppn);
+	__asm fld dword ptr[local + 0];
 	l.x __asm fmul dword ptr[r_pright + 0];
 	l.x *pr.x __asm fld dword ptr[local + 4];
 	l.y | l.x *pr.x __asm fmul dword ptr[r_pright + 4];
@@ -175,7 +175,7 @@ __declspec(naked) void R_DrawParticle()
 	l.x *pr.x + l.y *pr.y + l.z *pr.z __asm fstp dword ptr[transformed + 0];
 	(empty)
 
-	    __asm fld dword ptr[local + 0];
+	__asm fld dword ptr[local + 0];
 	l.x __asm fmul dword ptr[r_pup + 0];
 	l.x *pr.x __asm fld dword ptr[local + 4];
 	l.y | l.x *pr.x __asm fmul dword ptr[r_pup + 4];
@@ -187,7 +187,7 @@ __declspec(naked) void R_DrawParticle()
 	l.x *pr.x + l.y *pr.y + l.z *pr.z __asm fstp dword ptr[transformed + 4];
 	(empty)
 
-	    __asm fld dword ptr[local + 0];
+	__asm fld dword ptr[local + 0];
 	l.x __asm fmul dword ptr[r_ppn + 0];
 	l.x *pr.x __asm fld dword ptr[local + 4];
 	l.y | l.x *pr.x __asm fmul dword ptr[r_ppn + 4];
@@ -199,55 +199,55 @@ __declspec(naked) void R_DrawParticle()
 	l.x *pr.x + l.y *pr.y + l.z *pr.z __asm fstp dword ptr[transformed + 8];
 	(empty)
 
-	    /*
+	/*
 	** make sure that the transformed particle is not in front of
 	** the particle Z clip plane.  We can do the comparison in 
 	** integer space since we know the sign of one of the inputs
 	** and can figure out the sign of the other easily enough.
 	*/
-	    //	if (transformed[2] < PARTICLE_Z_CLIP)
-	    //		return;
+	//	if (transformed[2] < PARTICLE_Z_CLIP)
+	//		return;
 
-	    __asm mov eax,
-	    dword ptr[transformed + 8] __asm and eax, eax __asm js end __asm cmp eax, particle_z_clip __asm jl end
+	__asm mov eax,
+	dword ptr[transformed + 8] __asm and eax, eax __asm js end __asm cmp eax, particle_z_clip __asm jl end
 
-	                                                                              /*
+	                                                                          /*
 	** project the point by initiating the 1/z calc
 	*/
-	                                                                              //	zi = 1.0 / transformed[2];
-	                                                                              __asm fld one __asm fdiv dword ptr[transformed + 8]
+	                                                                          //	zi = 1.0 / transformed[2];
+	                                                                          __asm fld one __asm fdiv dword ptr[transformed + 8]
 
-	                                                                              /*
+	                                                                          /*
 	** bind the blend function pointer to the appropriate blender
 	** while we're dividing
 	*/
-	                                                                              //if ( level == PARTICLE_33 )
-	                                                                              //	blendparticle = BlendParticle33;
-	                                                                              //else if ( level == PARTICLE_66 )
-	                                                                              //	blendparticle = BlendParticle66;
-	                                                                              //else
-	                                                                              //	blendparticle = BlendParticle100;
+	                                                                          //if ( level == PARTICLE_33 )
+	                                                                          //	blendparticle = BlendParticle33;
+	                                                                          //else if ( level == PARTICLE_66 )
+	                                                                          //	blendparticle = BlendParticle66;
+	                                                                          //else
+	                                                                          //	blendparticle = BlendParticle100;
 
-	                                                                              __asm cmp partparms.level,
-	    PARTICLE_66 __asm je blendfunc_66 __asm jl blendfunc_33 __asm lea ebx, BlendParticle100 __asm jmp done_selecting_blend_func
-	                                                                               blendfunc_33 : __asm lea                 ebx,
-	                                                                                              BlendParticle33 __asm jmp done_selecting_blend_func
-	                                                                                                  blendfunc_66 : __asm lea ebx,
-	                                                                                                                 BlendParticle66
-	                                                                                                                     done_selecting_blend_func : __asm mov blendfunc,
-	                                                                                                                                                 ebx
+	                                                                          __asm cmp partparms.level,
+	PARTICLE_66 __asm je blendfunc_66 __asm jl blendfunc_33 __asm lea ebx, BlendParticle100 __asm jmp done_selecting_blend_func
+	                                                                       blendfunc_33 : __asm lea ebx,
+	                                                                                      BlendParticle33 __asm jmp done_selecting_blend_func
+	                                                                                      blendfunc_66 : __asm lea ebx,
+	                                                                                                     BlendParticle66
+	                                                                                                     done_selecting_blend_func : __asm mov blendfunc,
+	                                                                                                                                 ebx
 
-	                                                                                                                                                 // prefetch the next particle
-	                                                                                                                                                 __asm mov                    ebp,
-	                                                                                                                                                 s_prefetch_address __asm mov ebp,
-	                                                                                                                                                 [ebp]
+	                                                                                                                                 // prefetch the next particle
+	                                                                                                                                 __asm mov ebp,
+	                                                                                                                                 s_prefetch_address __asm mov ebp,
+	                                                                                                                                 [ebp]
 
-	                                                                                                                                                 // finish the above divide
-	                                                                                                                                                 __asm fstp zi
+	                                                                                                                                 // finish the above divide
+	                                                                                                                                 __asm fstp zi
 
-	                                                                                                                                                 // u = (int)(xcenter + zi * transformed[0] + 0.5);
-	                                                                                                                                                 // v = (int)(ycenter - zi * transformed[1] + 0.5);
-	                                                                                                                                                 __asm fld zi;
+	                                                                                                                                 // u = (int)(xcenter + zi * transformed[0] + 0.5);
+	                                                                                                                                 // v = (int)(ycenter - zi * transformed[1] + 0.5);
+	                                                                                                                                 __asm fld zi;
 	zi __asm fmul dword ptr[transformed + 0];
 	zi *transformed[0] __asm fld zi;
 	zi | zi *transformed[0] __asm fmul dword ptr[transformed + 4];
@@ -265,22 +265,22 @@ __declspec(naked) void R_DrawParticle()
 	v __asm fistp dword ptr[v];
 	(empty)
 
-	    /*
+	/*
 	** clip out the particle
 	*/
 
-	    //	if ((v > d_vrectbottom_particle) ||
-	    //		(u > d_vrectright_particle) ||
-	    //		(v < d_vrecty) ||
-	    //		(u < d_vrectx))
-	    //	{
-	    //		return;
-	    //	}
+	//	if ((v > d_vrectbottom_particle) ||
+	//		(u > d_vrectright_particle) ||
+	//		(v < d_vrecty) ||
+	//		(u < d_vrectx))
+	//	{
+	//		return;
+	//	}
 
-	    __asm mov   ebx,
-	    u __asm mov ecx, v __asm cmp ecx, d_vrectbottom_particle __asm jg end __asm cmp ecx, d_vrecty __asm jl end __asm cmp ebx, d_vrectright_particle __asm jg end __asm cmp ebx, d_vrectx __asm jl end
+	__asm mov ebx,
+	u __asm mov ecx, v __asm cmp ecx, d_vrectbottom_particle __asm jg end __asm cmp ecx, d_vrecty __asm jl end __asm cmp ebx, d_vrectright_particle __asm jg end __asm cmp ebx, d_vrectx __asm jl end
 
-	    /*
+	/*
 	** compute addresses of zbuffer, framebuffer, and 
 	** compute the Z-buffer reference value.
 	**
@@ -291,52 +291,52 @@ __declspec(naked) void R_DrawParticle()
 	** ESI = Z-buffer address
 	** EDI = framebuffer address
 	*/
-	    // ESI = d_pzbuffer + (d_zwidth * v) + u;
-	    __asm mov esi,
-	    d_pzbuffer;
-	esi = d_pzbuffer __asm mov             eax, d_zwidth;
-	eax = d_zwidth __asm mul               ecx;
-	eax = d_zwidth * v __asm add           eax, ebx;
-	eax = d_zwidth * v + u __asm shl       eax, 1;
+	// ESI = d_pzbuffer + (d_zwidth * v) + u;
+	__asm mov esi,
+	d_pzbuffer;
+	esi = d_pzbuffer __asm mov eax, d_zwidth;
+	eax = d_zwidth __asm mul ecx;
+	eax = d_zwidth * v __asm add eax, ebx;
+	eax = d_zwidth * v + u __asm shl eax, 1;
 	eax = 2 * (d_zwidth * v + u) __asm add esi, eax;
 	esi = (short *)(d_pzbuffer + (d_zwidth * v) + u)
 
-	    // initiate
-	    // izi = (int)(zi * 0x8000);
-	    __asm fld zi __asm fmul eight_thousand_hex
+	// initiate
+	// izi = (int)(zi * 0x8000);
+	__asm fld zi __asm fmul eight_thousand_hex
 
-	    // EDI = pdest = d_viewbuffer + d_scantable[v] + u;
-	    __asm lea                     edi,
+	// EDI = pdest = d_viewbuffer + d_scantable[v] + u;
+	__asm lea edi,
 	[d_scantable + ecx * 4] __asm mov edi, [edi] __asm add edi, d_viewbuffer __asm add edi, ebx
 
-	    // complete
-	    // izi = (int)(zi * 0x8000);
-	    __asm fistp tmp __asm mov eax,
-	tmp __asm mov                 izi, ax
+	// complete
+	// izi = (int)(zi * 0x8000);
+	__asm fistp tmp __asm mov eax,
+	tmp __asm mov izi, ax
 
-	    /*
+	/*
 	** determine the screen area covered by the particle,
 	** which also means clamping to a min and max
 	*/
-	    //	pix = izi >> d_pix_shift;
-	    __asm xor
-	    edx,
+	//	pix = izi >> d_pix_shift;
+	__asm xor
+	edx,
 	edx __asm mov dx, izi __asm mov ecx, d_pix_shift __asm shr dx, cl
 
-	    //	if (pix < d_pix_min)
-	    //		pix = d_pix_min;
-	    __asm cmp       edx,
+	//	if (pix < d_pix_min)
+	//		pix = d_pix_min;
+	__asm cmp edx,
 	d_pix_min __asm jge check_pix_max __asm mov edx, d_pix_min __asm jmp skip_pix_clamp
 
-	    //	else if (pix > d_pix_max)
-	    //		pix = d_pix_max;
-	    check_pix_max : __asm cmp edx,
+	//	else if (pix > d_pix_max)
+	//		pix = d_pix_max;
+	check_pix_max : __asm cmp edx,
 	d_pix_max __asm jle skip_pix_clamp __asm mov edx,
 	d_pix_max
 
-	                        skip_pix_clamp :
+	                skip_pix_clamp :
 
-	                    /*
+	                /*
 	** render the appropriate pixels
 	**
 	** ECX = count (used for inner loop)
@@ -344,83 +344,83 @@ __declspec(naked) void R_DrawParticle()
 	** ESI = zbuffer
 	** EDI = framebuffer
 	*/
-	                    __asm mov ecx,
+	                __asm mov ecx,
 	edx
 
-	                    __asm cmp ecx,
-	1 __asm ja                    over
+	                __asm cmp ecx,
+	1 __asm ja over
 
-	                            over :
+	                over :
 
-	                        /*
+	                /*
 	** at this point:
 	**
 	** ECX = count
 	*/
-	                        __asm push ecx __asm push edi __asm push esi
+	                __asm push ecx __asm push edi __asm push esi
 
-	                            top_of_pix_vert_loop :
+	                top_of_pix_vert_loop :
 
-	                        top_of_pix_horiz_loop :
+	                top_of_pix_horiz_loop :
 
-	                        //	for ( ; count ; count--, pz += d_zwidth, pdest += screenwidth)
-	                        //	{
-	                        //		for (i=0 ; i<pix ; i++)
-	                        //		{
-	                        //			if (pz[i] <= izi)
-	                        //			{
-	                        //				pdest[i] = blendparticle( color, pdest[i] );
-	                        //			}
-	                        //		}
-	                        //	}
-	                        __asm xor
-	                        eax,
+	                //	for ( ; count ; count--, pz += d_zwidth, pdest += screenwidth)
+	                //	{
+	                //		for (i=0 ; i<pix ; i++)
+	                //		{
+	                //			if (pz[i] <= izi)
+	                //			{
+	                //				pdest[i] = blendparticle( color, pdest[i] );
+	                //			}
+	                //		}
+	                //	}
+	                __asm xor
+	                eax,
 	eax
 
-	                    __asm mov ax,
-	word                          ptr[esi]
+	                __asm mov ax,
+	word ptr[esi]
 
-	                    __asm cmp ax,
-	izi __asm jg                  end_of_horiz_loop
+	                __asm cmp ax,
+	izi __asm jg end_of_horiz_loop
 
 #if ENABLE_ZWRITES_FOR_PARTICLES
-	                    __asm mov bp,
+	                __asm mov bp,
 	izi __asm mov word ptr[esi],
 	bp
 #endif
 
-	                    __asm mov eax,
+	                __asm mov eax,
 	partparms.color
 
-	                    __asm call[blendfunc]
+	                __asm call[blendfunc]
 
-	                    __asm add edi,
-	1 __asm add                   esi,
+	                __asm add edi,
+	1 __asm add esi,
 	2
 
-	                    end_of_horiz_loop :
+	                end_of_horiz_loop :
 
-	                    __asm dec ecx __asm jnz top_of_pix_horiz_loop
+	                __asm dec ecx __asm jnz top_of_pix_horiz_loop
 
-	                    __asm pop esi __asm pop edi
+	                __asm pop esi __asm pop edi
 
-	                    __asm mov ebp,
-	d_zwidth __asm shl            ebp,
+	                __asm mov ebp,
+	d_zwidth __asm shl ebp,
 	1
 
-	                    __asm add esi,
-	ebp __asm add                 edi,
+	                __asm add esi,
+	ebp __asm add edi,
 	[r_screenwidth]
 
-	                    __asm pop ecx __asm push ecx
+	                __asm pop ecx __asm push ecx
 
-	                    __asm push edi __asm push esi
+	                __asm push edi __asm push esi
 
-	                    __asm dec edx __asm jnz top_of_pix_vert_loop
+	                __asm dec edx __asm jnz top_of_pix_vert_loop
 
-	                    __asm pop ecx __asm pop ecx __asm pop ecx
+	                __asm pop ecx __asm pop ecx __asm pop ecx
 
-	                        end : __asm pop edi __asm pop esi __asm mov ebp,
+	                end : __asm pop edi __asm pop esi __asm mov ebp,
 	ebpsave __asm ret
 }
 
@@ -458,13 +458,13 @@ static byte BlendParticle100(int pcolor, int dstcolor)
 void R_DrawParticle()
 {
 	particle_t *pparticle = partparms.particle;
-	int         level     = partparms.level;
-	vec3_t      local, transformed;
-	float       zi;
-	byte *      pdest;
-	short *     pz;
-	int         color = pparticle->color;
-	int         i, izi, pix, count, u, v;
+	int level = partparms.level;
+	vec3_t local, transformed;
+	float zi;
+	byte *pdest;
+	short *pz;
+	int color = pparticle->color;
+	int i, izi, pix, count, u, v;
 	byte (*blendparticle)(int, int);
 
 	/*
@@ -494,8 +494,8 @@ void R_DrawParticle()
 	*/
 	// FIXME: preadjust xcenter and ycenter
 	zi = 1.0 / transformed[2];
-	u  = (int)(xcenter + zi * transformed[0] + 0.5);
-	v  = (int)(ycenter - zi * transformed[1] + 0.5);
+	u = (int)(xcenter + zi * transformed[0] + 0.5);
+	v = (int)(ycenter - zi * transformed[1] + 0.5);
 
 	if((v > d_vrectbottom_particle) ||
 	   (u > d_vrectright_particle) ||
@@ -509,9 +509,9 @@ void R_DrawParticle()
 	** compute addresses of zbuffer, framebuffer, and 
 	** compute the Z-buffer reference value.
 	*/
-	pz    = d_pzbuffer + (d_zwidth * v) + u;
+	pz = d_pzbuffer + (d_zwidth * v) + u;
 	pdest = d_viewbuffer + d_scantable[v] + u;
-	izi   = (int)(zi * 0x8000);
+	izi = (int)(zi * 0x8000);
 
 	/*
 	** determine the screen area covered by the particle,
@@ -538,7 +538,7 @@ void R_DrawParticle()
 			{
 				if(pz[i] <= izi)
 				{
-					pz[i]    = izi;
+					pz[i] = izi;
 					pdest[i] = vid.alphamap[color + ((int)pdest[i] << 8)];
 				}
 			}
@@ -552,7 +552,7 @@ void R_DrawParticle()
 			{
 				if(pz[i] <= izi)
 				{
-					pz[i]    = izi;
+					pz[i] = izi;
 					pdest[i] = vid.alphamap[(color << 8) + (int)pdest[i]];
 				}
 			}
@@ -566,7 +566,7 @@ void R_DrawParticle()
 			{
 				if(pz[i] <= izi)
 				{
-					pz[i]    = izi;
+					pz[i] = izi;
 					pdest[i] = color;
 				}
 			}
@@ -587,8 +587,8 @@ void R_DrawParticle()
 */
 void R_DrawParticles()
 {
-	particle_t *         p;
-	int                  i;
+	particle_t *p;
+	int i;
 	extern unsigned long fpu_sp24_cw, fpu_chop_cw;
 
 	VectorScale(vright, xscaleshrink, r_pright);
@@ -599,7 +599,7 @@ void R_DrawParticles()
 	__asm fldcw word ptr[fpu_sp24_cw]
 #endif
 
-	    for(p = r_newrefdef.particles, i = 0; i < r_newrefdef.num_particles; i++, p++)
+	for(p = r_newrefdef.particles, i = 0; i < r_newrefdef.num_particles; i++, p++)
 	{
 		if(p->alpha > 0.66)
 			partparms.level = PARTICLE_OPAQUE;
@@ -609,7 +609,7 @@ void R_DrawParticles()
 			partparms.level = PARTICLE_33;
 
 		partparms.particle = p;
-		partparms.color    = p->color;
+		partparms.color = p->color;
 
 #if id386 && !defined __linux__
 		if(i < r_newrefdef.num_particles - 1)

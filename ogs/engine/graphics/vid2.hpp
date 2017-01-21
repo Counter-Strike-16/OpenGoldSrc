@@ -1,4 +1,4 @@
-extern int    r_pixbytes;
+extern int r_pixbytes;
 extern cvar_t gl_vsync;
 
 void D_FlushCaches();

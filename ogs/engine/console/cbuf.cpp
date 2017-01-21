@@ -31,10 +31,10 @@
 //#include "precompiled.hpp"
 #include "console/cbuf.hpp"
 #include "console/cmd.hpp"
-#include "system/sizebuf.hpp"
-#include "system/common.hpp"
 #include "console/console.hpp"
 #include "memory/zone.hpp"
+#include "system/common.hpp"
+#include "system/sizebuf.hpp"
 
 sizebuf_t cmd_text;
 
@@ -63,7 +63,7 @@ void Cbuf_AddText(char *text)
 // commands.
 void Cbuf_InsertText(char *text)
 {
-	int addLen  = Q_strlen(text);
+	int addLen = Q_strlen(text);
 	int currLen = cmd_text.cursize;
 
 	if(cmd_text.cursize + addLen >= cmd_text.maxsize)
@@ -83,7 +83,8 @@ void Cbuf_InsertText(char *text)
 	char *temp = NULL;
 	if(currLen)
 	{
-		temp = (char *)Z_Malloc(currLen); // TODO: Optimize: better use memmove without need for a temp buffer
+		temp = (char *)Z_Malloc(currLen); // TODO: Optimize: better use memmove
+		                                  // without need for a temp buffer
 		Q_memcpy(temp, cmd_text.data, currLen);
 		SZ_Clear(&cmd_text);
 	}
@@ -100,7 +101,7 @@ void Cbuf_InsertText(char *text)
 
 void Cbuf_InsertTextLines(char *text)
 {
-	int addLen  = Q_strlen(text);
+	int addLen = Q_strlen(text);
 	int currLen = cmd_text.cursize;
 
 	if(cmd_text.cursize + addLen + 2 >= cmd_text.maxsize)
@@ -113,7 +114,8 @@ void Cbuf_InsertTextLines(char *text)
 	if(currLen)
 		Q_memmove(cmd_text.data + addLen + 2, cmd_text.data, currLen);
 
-	cmd_text.data[0] = '\n'; // TODO: Why we need leading \n, if there is no commands in the start?
+	cmd_text.data[0] = '\n'; // TODO: Why we need leading \n, if there is no
+	                         // commands in the start?
 	Q_memcpy(&cmd_text.data[1], text, addLen);
 	cmd_text.data[addLen + 1] = '\n';
 
@@ -129,7 +131,8 @@ void Cbuf_InsertTextLines(char *text)
 		SZ_Clear(&cmd_text);
 	}
 
-	Cbuf_AddText("\n"); // TODO: Why we need leading \n, if there is no commands in the start?
+	Cbuf_AddText("\n"); // TODO: Why we need leading \n, if there is no commands
+	                    // in the start?
 	Cbuf_AddText(text);
 	Cbuf_AddText("\n");
 
@@ -147,10 +150,10 @@ void Cbuf_InsertTextLines(char *text)
 // Do not call inside a command function!
 void Cbuf_Execute()
 {
-	int   i;
+	int i;
 	char *text;
-	char  line[MAX_CMD_LINE];
-	int   quotes;
+	char line[MAX_CMD_LINE];
+	int quotes;
 
 	while(cmd_text.cursize)
 	{

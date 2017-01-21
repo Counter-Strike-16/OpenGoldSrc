@@ -31,8 +31,8 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 #include "public/FileSystem.h"
 
 #ifdef HOOK_ENGINE
@@ -66,10 +66,10 @@ void Cvar_RegisterVariable(cvar_t *variable);
 
 NOXREF void Cvar_RemoveHudCvars();
 const char *Cvar_IsMultipleTokens(const char *varname);
-qboolean    Cvar_Command();
+qboolean Cvar_Command();
 NOXREF void Cvar_WriteVariables(FileHandle_t f);
 void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f);
-void       Cmd_CvarList_f();
+void Cmd_CvarList_f();
 NOXREF int Cvar_CountServerVariables();
-void       Cvar_UnlinkExternals();
-void       Cvar_CmdInit();
+void Cvar_UnlinkExternals();
+void Cvar_CmdInit();

@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 
 #define DI_NODIR -1
 

@@ -1,13 +1,13 @@
-#include <unistd.h>
 #include <fcntl.h>
+#include <linux/soundcard.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/shm.h>
+#include <sys/types.h>
 #include <sys/wait.h>
-#include <linux/soundcard.h>
-#include <stdio.h>
+#include <unistd.h>
 
 #include "../client/client.h"
 #include "../client/snd_loc.h"
@@ -20,28 +20,28 @@ cvar_t *sndspeed;
 cvar_t *sndchannels;
 cvar_t *snddevice;
 
-static int tryrates[] = {11025, 22051, 44100, 8000};
+static int tryrates[] = { 11025, 22051, 44100, 8000 };
 
 qboolean SNDDMA_Init(void)
 {
-	int                   rc;
-	int                   fmt;
-	int                   tmp;
-	int                   i;
-	char *                s;
+	int rc;
+	int fmt;
+	int tmp;
+	int i;
+	char *s;
 	struct audio_buf_info info;
-	int                   caps;
-	extern uid_t          saved_euid;
+	int caps;
+	extern uid_t saved_euid;
 
 	if(snd_inited)
 		return;
 
 	if(!snddevice)
 	{
-		sndbits     = Cvar_Get("sndbits", "16", CVAR_ARCHIVE);
-		sndspeed    = Cvar_Get("sndspeed", "0", CVAR_ARCHIVE);
+		sndbits = Cvar_Get("sndbits", "16", CVAR_ARCHIVE);
+		sndspeed = Cvar_Get("sndspeed", "0", CVAR_ARCHIVE);
 		sndchannels = Cvar_Get("sndchannels", "2", CVAR_ARCHIVE);
-		snddevice   = Cvar_Get("snddevice", "/dev/dsp", CVAR_ARCHIVE);
+		snddevice = Cvar_Get("snddevice", "/dev/dsp", CVAR_ARCHIVE);
 	}
 
 	// open /dev/dsp, confirm capability to mmap, and get size of dma buffer
@@ -119,13 +119,14 @@ qboolean SNDDMA_Init(void)
 	if(dma.channels < 1 || dma.channels > 2)
 		dma.channels = 2;
 
-	dma.samples          = info.fragstotal * info.fragsize / (dma.samplebits / 8);
+	dma.samples = info.fragstotal * info.fragsize / (dma.samplebits / 8);
 	dma.submission_chunk = 1;
 
 	// memory map the dma buffer
 
 	if(!dma.buffer)
-		dma.buffer = (unsigned char *)mmap(NULL, info.fragstotal * info.fragsize, PROT_WRITE, MAP_FILE | MAP_SHARED, audio_fd, 0);
+		dma.buffer =
+		(unsigned char *)mmap(NULL, info.fragstotal * info.fragsize, PROT_WRITE, MAP_FILE | MAP_SHARED, audio_fd, 0);
 	if(!dma.buffer)
 	{
 		perror(snddevice->string);
@@ -137,7 +138,7 @@ qboolean SNDDMA_Init(void)
 	tmp = 0;
 	if(dma.channels == 2)
 		tmp = 1;
-	rc      = ioctl(audio_fd, SNDCTL_DSP_STEREO, &tmp);
+	rc = ioctl(audio_fd, SNDCTL_DSP_STEREO, &tmp);
 	if(rc < 0)
 	{
 		perror(snddevice->string);
@@ -194,7 +195,7 @@ qboolean SNDDMA_Init(void)
 	// toggle the trigger & start her up
 
 	tmp = 0;
-	rc  = ioctl(audio_fd, SNDCTL_DSP_SETTRIGGER, &tmp);
+	rc = ioctl(audio_fd, SNDCTL_DSP_SETTRIGGER, &tmp);
 	if(rc < 0)
 	{
 		perror(snddevice->string);
@@ -203,7 +204,7 @@ qboolean SNDDMA_Init(void)
 		return 0;
 	}
 	tmp = PCM_ENABLE_OUTPUT;
-	rc  = ioctl(audio_fd, SNDCTL_DSP_SETTRIGGER, &tmp);
+	rc = ioctl(audio_fd, SNDCTL_DSP_SETTRIGGER, &tmp);
 	if(rc < 0)
 	{
 		perror(snddevice->string);

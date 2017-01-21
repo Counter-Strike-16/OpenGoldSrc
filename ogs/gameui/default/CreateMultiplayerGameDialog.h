@@ -22,11 +22,11 @@ protected:
 	virtual bool OnOK(bool applyOnly);
 
 private:
-	CCreateMultiplayerGameServerPage *  m_pServerPage;
+	CCreateMultiplayerGameServerPage *m_pServerPage;
 	CCreateMultiplayerGameGameplayPage *m_pGameplayPage;
-	CCreateMultiplayerGameBotPage *     m_pBotPage;
+	CCreateMultiplayerGameBotPage *m_pBotPage;
 
-	bool       m_bBotsEnabled;
+	bool m_bBotsEnabled;
 	KeyValues *m_pSavedData;
 };
 

@@ -58,10 +58,10 @@ private:
 private:
 	CCvarTextEntry *m_pNameTextEntry;
 
-	CBitmapImagePanel *      m_pLogoImage;
+	CBitmapImagePanel *m_pLogoImage;
 	CLabeledCommandComboBox *m_pLogoList;
 	CLabeledCommandComboBox *m_pColorList;
-	char                     m_LogoName[128];
+	char m_LogoName[128];
 
 	CCvarToggleCheckButton *m_pHighQualityModelCheckBox;
 
@@ -69,9 +69,9 @@ private:
 
 	CLabeledCommandComboBox *m_pCrosshairSize;
 	CLabeledCommandComboBox *m_pCrosshairType;
-	CCvarToggleCheckButton * m_pCrosshairTranslucencyCheckbox;
+	CCvarToggleCheckButton *m_pCrosshairTranslucencyCheckbox;
 	CLabeledCommandComboBox *m_pCrosshairColorComboBox;
-	CrosshairImagePanel *    m_pCrosshairImage;
+	CrosshairImagePanel *m_pCrosshairImage;
 
 	int m_nLogoR, m_nLogoG, m_nLogoB;
 

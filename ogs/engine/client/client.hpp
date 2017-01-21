@@ -31,23 +31,23 @@
 
 #pragma once
 
-#include "common/commontypes.h"
 #include "client/clienttypes.hpp"
+#include "client/frame.hpp"
+#include "common/cl_entity.h"
+#include "common/com_model.h"
+#include "common/commontypes.h"
 #include "common/cvardef.h"
 #include "common/entity_state.h"
-#include "common/com_model.h"
-#include "common/cl_entity.h"
-#include "common/usercmd.h"
 #include "common/netadr.h"
+#include "common/screenfade.h"
+#include "common/usercmd.h"
 #include "filesystem/filesystem_internal.hpp"
 #include "network/net_chan.hpp"
-#include "system/common.hpp"
 #include "resources/consistency.hpp"
-#include "world/event.hpp"
 #include "server/server.hpp"
-#include "common/screenfade.h"
 #include "sound/soundfade.hpp"
-#include "client/frame.hpp"
+#include "system/common.hpp"
+#include "world/event.hpp"
 
 #ifdef HOOK_ENGINE
 #define cls (*pcls)
@@ -62,15 +62,15 @@
 #endif // HOOK_ENGINE
 
 extern playermove_t g_clmove;
-extern qboolean     cl_inmovie;
+extern qboolean cl_inmovie;
 
 extern cvar_t cl_name;
 extern cvar_t rate_;
 extern cvar_t console;
 
-typedef struct dlight_s     dlight_t;
+typedef struct dlight_s dlight_t;
 typedef struct playermove_s playermove_t;
-typedef struct sfx_s        sfx_t;
+typedef struct sfx_s sfx_t;
 
 typedef struct cmd_s
 {
@@ -101,7 +101,7 @@ typedef struct client_static_s
 	netchan_t netchan;
 
 	sizebuf_t datagram;
-	byte      datagram_buf[MAX_DATAGRAM];
+	byte datagram_buf[MAX_DATAGRAM];
 
 	double connect_time;
 
@@ -135,7 +135,7 @@ typedef struct client_static_s
 	qboolean timedemo;
 
 	float demostarttime;
-	int   demostartframe;
+	int demostartframe;
 
 	int forcetrack;
 
@@ -146,15 +146,15 @@ typedef struct client_static_s
 	qboolean demoappending;
 
 	char demofilename[MAX_PATH];
-	int  demoframecount;
+	int demoframecount;
 
-	int   td_lastframe;
-	int   td_startframe;
+	int td_lastframe;
+	int td_startframe;
 	float td_starttime;
 
 	incomingtransfer_t dl;
 
-	float  packet_loss;
+	float packet_loss;
 	double packet_loss_recalc_time;
 
 	int playerbits;
@@ -244,8 +244,8 @@ typedef struct client_state_s
 	double time;
 	double oldtime;
 
-	frame_t       frames[64];
-	cmd_t         commands[64];
+	frame_t frames[64];
+	cmd_t commands[64];
 	local_state_t predicted_frames[64];
 
 	int delta_sequence;
@@ -254,12 +254,12 @@ typedef struct client_state_s
 	event_t event_precache[HL_EVENT_MAX];
 
 	model_t *model_precache[HL_MODEL_MAX];
-	int      model_precache_count;
+	int model_precache_count;
 
 	sfx_s *sound_precache[HL_SOUND_MAX];
 
 	consistency_t consistency_list[MAX_CONSISTENCY_LIST];
-	int           num_consistency;
+	int num_consistency;
 
 	int highentity;
 
@@ -285,7 +285,7 @@ typedef struct client_state_s
 	unsigned char clientdllmd5[16];
 
 	float weaponstarttime;
-	int   weaponsequence;
+	int weaponsequence;
 
 	int fPrecaching;
 
@@ -294,7 +294,7 @@ typedef struct client_state_s
 	player_info_t players[32];
 
 	entity_state_t instanced_baseline[64];
-	int            instanced_baseline_number;
+	int instanced_baseline_number;
 
 	CRC32_t mapCRC;
 
@@ -309,7 +309,7 @@ void CL_Init(); //+
 void CL_InitClosest();
 void CL_InitEventSystem();
 
-void CL_Shutdown();//+
+void CL_Shutdown(); //+
 void CL_ShutDownUsrMessages();
 void CL_ShutDownClientStatic();
 
@@ -330,22 +330,22 @@ void R_DecalRemoveAll(int textureIndex);
 
 qboolean CL_CheckFile(sizebuf_t *msg, char *filename);
 
-void CL_DecayLights();//+
+void CL_DecayLights(); //+
 
-void CL_EmitEntities();//+
+void CL_EmitEntities(); //+
 
 void CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel);
 
-void CL_PredictMove(qboolean repredicting);//+
+void CL_PredictMove(qboolean repredicting); //+
 
 void CL_PrintLogos();
-void CL_ReadPackets();//+
+void CL_ReadPackets(); //+
 
 qboolean CL_RequestMissingResources();
 
 void CL_Move();
-void CL_SendConnectPacket();//+
-void CL_StopPlayback();//+
+void CL_SendConnectPacket(); //+
+void CL_StopPlayback();      //+
 void CL_UpdateSoundFade();
 void CL_AdjustClock();
 void CL_Save(const char *name);
@@ -355,7 +355,7 @@ void Chase_Init();
 
 int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf);
 
-void CL_RedoPrediction();//+
+void CL_RedoPrediction(); //+
 
 void CL_SetLastUpdate();
 
@@ -367,10 +367,11 @@ void CL_VoiceIdle();
 
 void CL_UpdateModuleC();
 
-int  VGuiWrap2_IsInCareerMatch();
+int VGuiWrap2_IsInCareerMatch();
 void VguiWrap2_GetCareerUI();
 int VGuiWrap2_GetLocalizedStringLength(const char *label);
-void VGuiWrap2_LoadingStarted(const char *resourceType, const char *resourceName);
+void VGuiWrap2_LoadingStarted(const char *resourceType,
+                              const char *resourceName);
 
 void ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength);
 void ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength);

@@ -31,8 +31,8 @@
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"
-#include "network/net_msg.hpp"
 #include "common/dlight.h"
+#include "network/net_msg.hpp"
 
 extern cvar_t cl_predict_players;
 extern cvar_t cl_predict_players2;
@@ -40,9 +40,9 @@ extern cvar_t cl_solid_players;
 
 static struct predicted_player
 {
-	int      flags;
+	int flags;
 	qboolean active;
-	vec3_t   origin; // predicted origin
+	vec3_t origin; // predicted origin
 } predicted_players[MAX_CLIENTS];
 
 //============================================================
@@ -55,7 +55,7 @@ CL_AllocDlight
 */
 dlight_t *CL_AllocDlight(int key)
 {
-	int       i;
+	int i;
 	dlight_t *dl;
 
 	// first look for an exact key match
@@ -103,8 +103,8 @@ void CL_NewDlight(int key, float x, float y, float z, float radius, float time, 
 	dl->origin[0] = x;
 	dl->origin[1] = y;
 	dl->origin[2] = z;
-	dl->radius    = radius;
-	dl->die       = cl.time + time;
+	dl->radius = radius;
+	dl->die = cl.time + time;
 
 	switch(type)
 	{
@@ -170,7 +170,7 @@ CL_ParseDelta
 Can go from either a baseline or a previous packet_entity
 ==================
 */
-int  bitcounts[32]; /// just for protocol profiling
+int bitcounts[32]; /// just for protocol profiling
 void CL_ParseDelta(entity_state_t *from, entity_state_t *to, int bits)
 {
 	int i;
@@ -240,14 +240,14 @@ CL_FlushEntityPacket
 */
 void CL_FlushEntityPacket()
 {
-	int            word;
+	int word;
 	entity_state_t olde, newe;
 
 	Con_DPrintf("CL_FlushEntityPacket\n");
 
 	memset(&olde, 0, sizeof(olde));
 
-	cl.validsequence                                               = 0; // can't render a frame
+	cl.validsequence = 0; // can't render a frame
 	cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK].invalid = true;
 
 	// read it all, but ignore it
@@ -277,15 +277,15 @@ rest of the data stream.
 */
 void CL_ParsePacketEntities(qboolean delta)
 {
-	int                oldpacket, newpacket;
+	int oldpacket, newpacket;
 	packet_entities_t *oldp, *newp, dummy;
-	int                oldindex, newindex;
-	int                word, newnum, oldnum;
-	qboolean           full;
-	byte               from;
+	int oldindex, newindex;
+	int word, newnum, oldnum;
+	qboolean full;
+	byte from;
 
-	newpacket                    = cls.netchan.incoming_sequence & UPDATE_MASK;
-	newp                         = &cl.frames[newpacket].packet_entities;
+	newpacket = cls.netchan.incoming_sequence & UPDATE_MASK;
+	newp = &cl.frames[newpacket].packet_entities;
 	cl.frames[newpacket].invalid = false;
 
 	if(delta)
@@ -303,24 +303,25 @@ void CL_ParsePacketEntities(qboolean delta)
 	full = false;
 	if(oldpacket != -1)
 	{
-		if(cls.netchan.outgoing_sequence - oldpacket >= UPDATE_BACKUP - 1)
+		if(cls.netchan.outgoing_sequence - oldpacket >=
+		   UPDATE_BACKUP - 1)
 		{ // we can't use this, it is too old
 			CL_FlushEntityPacket();
 			return;
 		}
 		cl.validsequence = cls.netchan.incoming_sequence;
-		oldp             = &cl.frames[oldpacket & UPDATE_MASK].packet_entities;
+		oldp = &cl.frames[oldpacket & UPDATE_MASK].packet_entities;
 	}
 	else
 	{ // this is a full update that we can start delta compressing from now
-		oldp               = &dummy;
+		oldp = &dummy;
 		dummy.num_entities = 0;
-		cl.validsequence   = cls.netchan.incoming_sequence;
-		full               = true;
+		cl.validsequence = cls.netchan.incoming_sequence;
+		full = true;
 	}
 
-	oldindex           = 0;
-	newindex           = 0;
+	oldindex = 0;
+	newindex = 0;
 	newp->num_entities = 0;
 
 	while(1)
@@ -335,10 +336,12 @@ void CL_ParsePacketEntities(qboolean delta)
 		if(!word)
 		{
 			while(oldindex < oldp->num_entities)
-			{ // copy all the rest of the entities from the old packet
-				//Con_Printf ("copy %i\n", oldp->entities[oldindex].number);
+			{ // copy all the rest of the
+				// entities from the old packet
+				// Con_Printf ("copy %i\n", oldp->entities[oldindex].number);
 				if(newindex >= MAX_PACKET_ENTITIES)
-					Host_EndGame("CL_ParsePacketEntities: newindex == MAX_PACKET_ENTITIES");
+					Host_EndGame(
+					"CL_ParsePacketEntities: newindex == MAX_PACKET_ENTITIES");
 				newp->entities[newindex] = oldp->entities[oldindex];
 				newindex++;
 				oldindex++;
@@ -346,7 +349,8 @@ void CL_ParsePacketEntities(qboolean delta)
 			break;
 		}
 		newnum = word & 511;
-		oldnum = oldindex >= oldp->num_entities ? 9999 : oldp->entities[oldindex].number;
+		oldnum =
+		oldindex >= oldp->num_entities ? 9999 : oldp->entities[oldindex].number;
 
 		while(newnum > oldnum)
 		{
@@ -357,19 +361,20 @@ void CL_ParsePacketEntities(qboolean delta)
 				return;
 			}
 
-			//Con_Printf ("copy %i\n", oldnum);
+			// Con_Printf ("copy %i\n", oldnum);
 			// copy one of the old entities over to the new packet unchanged
 			if(newindex >= MAX_PACKET_ENTITIES)
 				Host_EndGame("CL_ParsePacketEntities: newindex == MAX_PACKET_ENTITIES");
 			newp->entities[newindex] = oldp->entities[oldindex];
 			newindex++;
 			oldindex++;
-			oldnum = oldindex >= oldp->num_entities ? 9999 : oldp->entities[oldindex].number;
+			oldnum = oldindex >= oldp->num_entities ? 9999
+			                                        : oldp->entities[oldindex].number;
 		}
 
 		if(newnum < oldnum)
 		{ // new from baseline
-			//Con_Printf ("baseline %i\n", newnum);
+			// Con_Printf ("baseline %i\n", newnum);
 			if(word & U_REMOVE)
 			{
 				if(full)
@@ -400,7 +405,7 @@ void CL_ParsePacketEntities(qboolean delta)
 				oldindex++;
 				continue;
 			}
-			//Con_Printf ("delta %i\n",newnum);
+			// Con_Printf ("delta %i\n",newnum);
 			CL_ParseDelta(&oldp->entities[oldindex], &newp->entities[newindex], word);
 			newindex++;
 			oldindex++;
@@ -418,18 +423,19 @@ CL_LinkPacketEntities
 */
 void CL_LinkPacketEntities()
 {
-	cl_entity_t *      ent;
+	cl_entity_t *ent;
 	packet_entities_t *pack;
-	entity_state_t *   s1, *s2;
-	float              f;
-	model_t *          model;
-	vec3_t             old_origin;
-	float              autorotate;
-	int                i;
-	int                pnum;
-	dlight_t *         dl;
+	entity_state_t *s1, *s2;
+	float f;
+	model_t *model;
+	vec3_t old_origin;
+	float autorotate;
+	int i;
+	int pnum;
+	dlight_t *dl;
 
-	pack = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK].packet_entities;
+	pack =
+	&cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK].packet_entities;
 
 	autorotate = anglemod(100 * cl.time);
 
@@ -467,14 +473,15 @@ void CL_LinkPacketEntities()
 		ent->model = model = cl.model_precache[s1->modelindex];
 
 		// set colormap
-		if(s1->colormap && (s1->colormap < MAX_CLIENTS) && !strcmp(ent->model->name, "progs/player.mdl"))
+		if(s1->colormap && (s1->colormap < MAX_CLIENTS) &&
+		   !strcmp(ent->model->name, "progs/player.mdl"))
 		{
-			ent->colormap   = cl.players[s1->colormap - 1].translations;
+			ent->colormap = cl.players[s1->colormap - 1].translations;
 			ent->scoreboard = &cl.players[s1->colormap - 1];
 		}
 		else
 		{
-			ent->colormap   = vid.colormap;
+			ent->colormap = vid.colormap;
 			ent->scoreboard = NULL;
 		}
 
@@ -508,9 +515,8 @@ void CL_LinkPacketEntities()
 		}
 
 		// calculate origin
-		for(i              = 0; i < 3; i++)
-			ent->origin[i] = s2->origin[i] +
-			    f * (s1->origin[i] - s2->origin[i]);
+		for(i = 0; i < 3; i++)
+			ent->origin[i] = s2->origin[i] + f * (s1->origin[i] - s2->origin[i]);
 
 		// add automatic particle trails
 		if(!model->flags)
@@ -540,7 +546,7 @@ void CL_LinkPacketEntities()
 			dl = CL_AllocDlight(s1->number);
 			VectorCopy(ent->origin, dl->origin);
 			dl->radius = 200;
-			dl->die    = cl.time + 0.1;
+			dl->die = cl.time + 0.1;
 		}
 		else if(model->flags & EF_GRENADE)
 			R_RocketTrail(old_origin, ent->origin, 1);
@@ -567,14 +573,14 @@ PROJECTILE PARSING / LINKING
 
 typedef struct
 {
-	int    modelindex;
+	int modelindex;
 	vec3_t origin;
 	vec3_t angles;
 } projectile_t;
 
 #define MAX_PROJECTILES 32
 projectile_t cl_projectiles[MAX_PROJECTILES];
-int          cl_num_projectiles;
+int cl_num_projectiles;
 
 extern int cl_spikeindex;
 
@@ -592,14 +598,14 @@ Nails are passed as efficient temporary entities
 */
 void CL_ParseProjectiles()
 {
-	int           i, c, j;
-	byte          bits[6];
+	int i, c, j;
+	byte bits[6];
 	projectile_t *pr;
 
 	c = MSG_ReadByte();
 	for(i = 0; i < c; i++)
 	{
-		for(j       = 0; j < 6; j++)
+		for(j = 0; j < 6; j++)
 			bits[j] = MSG_ReadByte();
 
 		if(cl_num_projectiles == MAX_PROJECTILES)
@@ -609,11 +615,11 @@ void CL_ParseProjectiles()
 		cl_num_projectiles++;
 
 		pr->modelindex = cl_spikeindex;
-		pr->origin[0]  = ((bits[0] + ((bits[1] & 15) << 8)) << 1) - 4096;
-		pr->origin[1]  = (((bits[1] >> 4) + (bits[2] << 4)) << 1) - 4096;
-		pr->origin[2]  = ((bits[3] + ((bits[4] & 15) << 8)) << 1) - 4096;
-		pr->angles[0]  = 360 * (bits[4] >> 4) / 16;
-		pr->angles[1]  = 360 * bits[5] / 256;
+		pr->origin[0] = ((bits[0] + ((bits[1] & 15) << 8)) << 1) - 4096;
+		pr->origin[1] = (((bits[1] >> 4) + (bits[2] << 4)) << 1) - 4096;
+		pr->origin[2] = ((bits[3] + ((bits[4] & 15) << 8)) << 1) - 4096;
+		pr->angles[0] = 360 * (bits[4] >> 4) / 16;
+		pr->angles[1] = 360 * bits[5] / 256;
 	}
 }
 
@@ -625,9 +631,9 @@ CL_LinkProjectiles
 */
 void CL_LinkProjectiles()
 {
-	int           i;
+	int i;
 	projectile_t *pr;
-	cl_entity_t * ent;
+	cl_entity_t *ent;
 
 	for(i = 0, pr = cl_projectiles; i < cl_num_projectiles; i++, pr++)
 	{
@@ -640,10 +646,10 @@ void CL_LinkProjectiles()
 
 		if(pr->modelindex < 1)
 			continue;
-		ent->model      = cl.model_precache[pr->modelindex];
-		ent->skinnum    = 0;
-		ent->frame      = 0;
-		ent->colormap   = vid.colormap;
+		ent->model = cl.model_precache[pr->modelindex];
+		ent->skinnum = 0;
+		ent->frame = 0;
+		ent->colormap = vid.colormap;
 		ent->scoreboard = NULL;
 		VectorCopy(pr->origin, ent->origin);
 		VectorCopy(pr->angles, ent->angles);
@@ -661,16 +667,16 @@ cl_entity_t *CL_NewTempEntity();
 CL_ParsePlayerinfo
 ===================
 */
-extern int    parsecountmod;
+extern int parsecountmod;
 extern double parsecounttime;
-void          CL_ParsePlayerinfo()
+void CL_ParsePlayerinfo()
 {
-	int             msec;
-	int             flags;
-	player_info_t * info;
+	int msec;
+	int flags;
+	player_info_t *info;
 	entity_state_t *state;
-	int             num;
-	int             i;
+	int num;
+	int i;
 
 	num = MSG_ReadByte();
 	if(num > MAX_CLIENTS)
@@ -683,9 +689,9 @@ void          CL_ParsePlayerinfo()
 	flags = state->flags = MSG_ReadShort();
 
 	state->messagenum = cl.parsecount;
-	state->origin[0]  = MSG_ReadCoord();
-	state->origin[1]  = MSG_ReadCoord();
-	state->origin[2]  = MSG_ReadCoord();
+	state->origin[0] = MSG_ReadCoord();
+	state->origin[1] = MSG_ReadCoord();
+	state->origin[2] = MSG_ReadCoord();
 
 	state->frame = MSG_ReadByte();
 
@@ -694,7 +700,7 @@ void          CL_ParsePlayerinfo()
 	// the exact time it was valid at
 	if(flags & PF_MSEC)
 	{
-		msec              = MSG_ReadByte();
+		msec = MSG_ReadByte();
 		state->state_time = parsecounttime - msec * 0.001f;
 	}
 	else
@@ -742,9 +748,9 @@ Called when the CTF flags are set
 */
 void CL_AddFlagModels(cl_entity_t *ent, int team)
 {
-	int          i;
-	float        f;
-	vec3_t       v_forward, v_right, v_up;
+	int i;
+	float f;
+	vec3_t v_forward, v_right, v_up;
 	cl_entity_t *newent;
 
 	if(cl_flagindex == -1)
@@ -754,7 +760,7 @@ void CL_AddFlagModels(cl_entity_t *ent, int team)
 	if(ent->frame >= 29 && ent->frame <= 40)
 	{
 		if(ent->frame >= 29 && ent->frame <= 34)
-		{ //axpain
+		{ // axpain
 			if(ent->frame == 29)
 				f = f + 2;
 			else if(ent->frame == 30)
@@ -787,27 +793,26 @@ void CL_AddFlagModels(cl_entity_t *ent, int team)
 	else if(ent->frame >= 103 && ent->frame <= 118)
 	{
 		if(ent->frame >= 103 && ent->frame <= 104)
-			f = f + 6; //nailattack
+			f = f + 6; // nailattack
 		else if(ent->frame >= 105 && ent->frame <= 106)
-			f = f + 6; //light
+			f = f + 6; // light
 		else if(ent->frame >= 107 && ent->frame <= 112)
-			f = f + 7; //rocketattack
+			f = f + 7; // rocketattack
 		else if(ent->frame >= 112 && ent->frame <= 118)
-			f = f + 7; //shotattack
+			f = f + 7; // shotattack
 	}
 
-	newent          = CL_NewTempEntity();
-	newent->model   = cl.model_precache[cl_flagindex];
+	newent = CL_NewTempEntity();
+	newent->model = cl.model_precache[cl_flagindex];
 	newent->skinnum = team;
 
 	AngleVectors(ent->angles, v_forward, v_right, v_up);
 	v_forward[2] = -v_forward[2]; // reverse z component
-	for(i                 = 0; i < 3; i++)
+	for(i = 0; i < 3; i++)
 		newent->origin[i] = ent->origin[i] - f * v_forward[i] + 22 * v_right[i];
 	newent->origin[2] -= 16;
 
-	VectorCopy(ent->angles, newent->angles)
-	    newent->angles[2] -= 45;
+	VectorCopy(ent->angles, newent->angles) newent->angles[2] -= 45;
 }
 
 /*
@@ -820,15 +825,15 @@ for all current players
 */
 void CL_LinkPlayers()
 {
-	int             j;
-	player_info_t * info;
+	int j;
+	player_info_t *info;
 	entity_state_t *state;
-	entity_state_t  exact;
-	double          playertime;
-	cl_entity_t *   ent;
-	int             msec;
-	frame_t *       frame;
-	int             oldphysent;
+	entity_state_t exact;
+	double playertime;
+	cl_entity_t *ent;
+	int msec;
+	frame_t *frame;
+	int oldphysent;
 
 	playertime = realtime - cls.latency + 0.02;
 	if(playertime > realtime)
@@ -836,7 +841,8 @@ void CL_LinkPlayers()
 
 	frame = &cl.frames[cl.parsecount & UPDATE_MASK];
 
-	for(j = 0, info = cl.players, state = frame->playerstate; j < MAX_CLIENTS; j++, info++, state++)
+	for(j = 0, info = cl.players, state = frame->playerstate; j < MAX_CLIENTS;
+	    j++, info++, state++)
 	{
 		if(state->messagenum != cl.parsecount)
 			continue; // not present this frame
@@ -877,9 +883,9 @@ void CL_LinkPlayers()
 		cl_numvisedicts++;
 		ent->keynum = 0;
 
-		ent->model    = cl.model_precache[state->modelindex];
-		ent->skinnum  = state->skinnum;
-		ent->frame    = state->frame;
+		ent->model = cl.model_precache[state->modelindex];
+		ent->skinnum = state->skinnum;
+		ent->frame = state->frame;
 		ent->colormap = info->translations;
 		if(state->modelindex == cl_playerindex)
 			ent->scoreboard = info; // use custom skin
@@ -890,24 +896,25 @@ void CL_LinkPlayers()
 		// angles
 		//
 		ent->angles[PITCH] = -state->viewangles[PITCH] / 3;
-		ent->angles[YAW]   = state->viewangles[YAW];
-		ent->angles[ROLL]  = 0;
-		ent->angles[ROLL]  = V_CalcRoll(ent->angles, state->velocity) * 4;
+		ent->angles[YAW] = state->viewangles[YAW];
+		ent->angles[ROLL] = 0;
+		ent->angles[ROLL] = V_CalcRoll(ent->angles, state->velocity) * 4;
 
 		// only predict half the move to minimize overruns
 		msec = 500 * (playertime - state->state_time);
-		if(msec <= 0 || (!cl_predict_players.value && !cl_predict_players2.value))
+		if(msec <= 0 ||
+		   (!cl_predict_players.value && !cl_predict_players2.value))
 		{
 			VectorCopy(state->origin, ent->origin);
-			//Con_DPrintf ("nopredict\n");
+			// Con_DPrintf ("nopredict\n");
 		}
 		else
 		{
 			// predict players movement
 			if(msec > 255)
-				msec            = 255;
+				msec = 255;
 			state->command.msec = msec;
-			//Con_DPrintf ("predict: %i\n", msec);
+			// Con_DPrintf ("predict: %i\n", msec);
 
 			oldphysent = pmove.numphysent;
 			CL_SetSolidPlayers(j);
@@ -934,18 +941,18 @@ Builds all the pmove physents for the current frame
 */
 void CL_SetSolidEntities()
 {
-	int                i;
-	frame_t *          frame;
+	int i;
+	frame_t *frame;
 	packet_entities_t *pak;
-	entity_state_t *   state;
+	entity_state_t *state;
 
 	pmove.physents[0].model = cl.worldmodel;
 	VectorCopy(vec3_origin, pmove.physents[0].origin);
 	pmove.physents[0].info = 0;
-	pmove.numphysent       = 1;
+	pmove.numphysent = 1;
 
 	frame = &cl.frames[parsecountmod];
-	pak   = &frame->packet_entities;
+	pak = &frame->packet_entities;
 
 	for(i = 0; i < pak->num_entities; i++)
 	{
@@ -955,9 +962,11 @@ void CL_SetSolidEntities()
 			continue;
 		if(!cl.model_precache[state->modelindex])
 			continue;
-		if(cl.model_precache[state->modelindex]->hulls[1].firstclipnode || cl.model_precache[state->modelindex]->clipbox)
+		if(cl.model_precache[state->modelindex]->hulls[1].firstclipnode ||
+		   cl.model_precache[state->modelindex]->clipbox)
 		{
-			pmove.physents[pmove.numphysent].model = cl.model_precache[state->modelindex];
+			pmove.physents[pmove.numphysent].model =
+			cl.model_precache[state->modelindex];
 			VectorCopy(state->origin, pmove.physents[pmove.numphysent].origin);
 			pmove.numphysent++;
 		}
@@ -976,12 +985,12 @@ This sets up the first phase.
 */
 void CL_SetUpPlayerPrediction(qboolean dopred)
 {
-	int                      j;
-	entity_state_t *         state;
-	entity_state_t           exact;
-	double                   playertime;
-	int                      msec;
-	frame_t *                frame;
+	int j;
+	entity_state_t *state;
+	entity_state_t exact;
+	double playertime;
+	int msec;
+	frame_t *frame;
 	struct predicted_player *pplayer;
 
 	playertime = realtime - cls.latency + 0.02f;
@@ -990,7 +999,9 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 
 	frame = &cl.frames[cl.parsecount & UPDATE_MASK];
 
-	for(j = 0, pplayer = predicted_players, state = frame->playerstate; j < MAX_CLIENTS; j++, pplayer++, state++)
+	for(j = 0, pplayer = predicted_players, state = frame->playerstate;
+	    j < MAX_CLIENTS;
+	    j++, pplayer++, state++)
 	{
 		pplayer->active = false;
 
@@ -1001,13 +1012,15 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 			continue;
 
 		pplayer->active = true;
-		pplayer->flags  = state->flags;
+		pplayer->flags = state->flags;
 
 		// note that the local player is special, since he moves locally
 		// we use his last predicted postition
 		if(j == cl.playernum)
 		{
-			VectorCopy(cl.frames[cls.netchan.outgoing_sequence & UPDATE_MASK].playerstate[cl.playernum].origin,
+			VectorCopy(cl.frames[cls.netchan.outgoing_sequence & UPDATE_MASK]
+			           .playerstate[cl.playernum]
+			           .origin,
 			           pplayer->origin);
 		}
 		else
@@ -1019,15 +1032,15 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
 			   !dopred)
 			{
 				VectorCopy(state->origin, pplayer->origin);
-				//Con_DPrintf ("nopredict\n");
+				// Con_DPrintf ("nopredict\n");
 			}
 			else
 			{
 				// predict players movement
 				if(msec > 255)
-					msec            = 255;
+					msec = 255;
 				state->command.msec = msec;
-				//Con_DPrintf ("predict: %i\n", msec);
+				// Con_DPrintf ("predict: %i\n", msec);
 
 				CL_PredictUsercmd(state, &exact, &state->command, false);
 				VectorCopy(exact.origin, pplayer->origin);
@@ -1058,7 +1071,8 @@ void CL_SetSolidPlayers(int playernum)
 
 	physent_t *pent = pmove.physents + pmove.numphysent;
 
-	for(int j = 0, pplayer = predicted_players; j < MAX_CLIENTS; j++, pplayer++)
+	for(int j = 0, pplayer = predicted_players; j < MAX_CLIENTS;
+	    j++, pplayer++)
 	{
 		if(!pplayer->active)
 			continue; // not present this frame
@@ -1097,8 +1111,8 @@ void CL_EmitEntities()
 		return;
 
 	cl_oldnumvisedicts = cl_numvisedicts;
-	cl_oldvisedicts    = cl_visedicts_list[(cls.netchan.incoming_sequence - 1) & 1];
-	cl_visedicts       = cl_visedicts_list[cls.netchan.incoming_sequence & 1];
+	cl_oldvisedicts = cl_visedicts_list[(cls.netchan.incoming_sequence - 1) & 1];
+	cl_visedicts = cl_visedicts_list[cls.netchan.incoming_sequence & 1];
 
 	cl_numvisedicts = 0;
 

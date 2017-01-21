@@ -63,7 +63,7 @@ private:
 	KeyValues *GetItemForBinding(const char *binding);
 
 private:
-	void                                                OpenKeyboardAdvancedDialog(void);
+	void OpenKeyboardAdvancedDialog(void);
 	vgui::DHANDLE<class COptionsSubKeyboardAdvancedDlg> m_OptionsSubKeyboardAdvancedDlg;
 
 private:
@@ -72,7 +72,7 @@ private:
 	vgui::Button *m_pSetBindingButton;
 	vgui::Button *m_pClearBindingButton;
 
-	KeyBinding             m_Bindings[256];
+	KeyBinding m_Bindings[256];
 	CUtlVector<CUtlSymbol> m_KeysToUnbind;
 };
 

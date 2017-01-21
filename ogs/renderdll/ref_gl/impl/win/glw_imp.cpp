@@ -64,22 +64,22 @@ const char WINDOW_CLASS_NAME[] = "OGS";
 qboolean VID_CreateWindow(int width, int height, qboolean fullscreen)
 {
 	WNDCLASS wc;
-	RECT     r;
-	cvar_t * vid_xpos, *vid_ypos;
-	int      stylebits;
-	int      x, y, w, h;
-	int      exstyle;
+	RECT r;
+	cvar_t *vid_xpos, *vid_ypos;
+	int stylebits;
+	int x, y, w, h;
+	int exstyle;
 
 	/* Register the frame class */
-	wc.style         = 0;
-	wc.lpfnWndProc   = (WNDPROC)glw_state.wndproc;
-	wc.cbClsExtra    = 0;
-	wc.cbWndExtra    = 0;
-	wc.hInstance     = glw_state.hInstance;
-	wc.hIcon         = 0;
-	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wc.style = 0;
+	wc.lpfnWndProc = (WNDPROC)glw_state.wndproc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = glw_state.hInstance;
+	wc.hIcon = 0;
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (void *)COLOR_GRAYTEXT;
-	wc.lpszMenuName  = 0;
+	wc.lpszMenuName = 0;
 	wc.lpszClassName = WINDOW_CLASS_NAME;
 
 	if(!RegisterClass(&wc))
@@ -87,18 +87,18 @@ qboolean VID_CreateWindow(int width, int height, qboolean fullscreen)
 
 	if(fullscreen)
 	{
-		exstyle   = WS_EX_TOPMOST;
+		exstyle = WS_EX_TOPMOST;
 		stylebits = WS_POPUP | WS_VISIBLE;
 	}
 	else
 	{
-		exstyle   = 0;
+		exstyle = 0;
 		stylebits = WINDOW_STYLE;
 	}
 
-	r.left   = 0;
-	r.top    = 0;
-	r.right  = width;
+	r.left = 0;
+	r.top = 0;
+	r.right = width;
 	r.bottom = height;
 
 	AdjustWindowRect(&r, stylebits, FALSE);
@@ -115,20 +115,20 @@ qboolean VID_CreateWindow(int width, int height, qboolean fullscreen)
 	{
 		vid_xpos = ri.Cvar_Get("vid_xpos", "0", 0);
 		vid_ypos = ri.Cvar_Get("vid_ypos", "0", 0);
-		x        = vid_xpos->value;
-		y        = vid_ypos->value;
+		x = vid_xpos->value;
+		y = vid_ypos->value;
 	}
 
 	glw_state.hWnd = CreateWindowEx(
-	    exstyle,
-	    WINDOW_CLASS_NAME,
-	    "OGS",
-	    stylebits,
-	    x, y, w, h,
-	    NULL,
-	    NULL,
-	    glw_state.hInstance,
-	    NULL);
+	exstyle,
+	WINDOW_CLASS_NAME,
+	"OGS",
+	stylebits,
+	x, y, w, h,
+	NULL,
+	NULL,
+	glw_state.hInstance,
+	NULL);
 
 	if(!glw_state.hWnd)
 		ri.Sys_Error(ERR_FATAL, "Couldn't create window");
@@ -157,8 +157,8 @@ qboolean VID_CreateWindow(int width, int height, qboolean fullscreen)
 */
 rserr_t GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 {
-	int         width, height;
-	const char *win_fs[] = {"W", "FS"};
+	int width, height;
+	const char *win_fs[] = { "W", "FS" };
 
 	ri.Con_Printf(PRINT_ALL, "Initializing OpenGL display\n");
 
@@ -189,9 +189,9 @@ rserr_t GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 
 		dm.dmSize = sizeof(dm);
 
-		dm.dmPelsWidth  = width;
+		dm.dmPelsWidth = width;
 		dm.dmPelsHeight = height;
-		dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT;
+		dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
 
 		if(gl_bitdepth->value != 0)
 		{
@@ -201,7 +201,7 @@ rserr_t GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 		}
 		else
 		{
-			HDC hdc       = GetDC(NULL);
+			HDC hdc = GetDC(NULL);
 			int bitspixel = GetDeviceCaps(hdc, BITSPIXEL);
 
 			ri.Con_Printf(PRINT_ALL, "...using desktop display depth of %d\n", bitspixel);
@@ -212,7 +212,7 @@ rserr_t GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 		ri.Con_Printf(PRINT_ALL, "...calling CDS: ");
 		if(ChangeDisplaySettings(&dm, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL)
 		{
-			*pwidth  = width;
+			*pwidth = width;
 			*pheight = height;
 
 			gl_state.fullscreen = true;
@@ -226,16 +226,16 @@ rserr_t GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 		}
 		else
 		{
-			*pwidth  = width;
+			*pwidth = width;
 			*pheight = height;
 
 			ri.Con_Printf(PRINT_ALL, "failed\n");
 
 			ri.Con_Printf(PRINT_ALL, "...calling CDS assuming dual monitors:");
 
-			dm.dmPelsWidth  = width * 2;
+			dm.dmPelsWidth = width * 2;
 			dm.dmPelsHeight = height;
-			dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT;
+			dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
 
 			if(gl_bitdepth->value != 0)
 			{
@@ -255,8 +255,8 @@ rserr_t GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 
 				ChangeDisplaySettings(0, 0);
 
-				*pwidth             = width;
-				*pheight            = height;
+				*pwidth = width;
+				*pheight = height;
 				gl_state.fullscreen = false;
 				if(!VID_CreateWindow(width, height, false))
 					return rserr_invalid_mode;
@@ -279,8 +279,8 @@ rserr_t GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 
 		ChangeDisplaySettings(0, 0);
 
-		*pwidth             = width;
-		*pheight            = height;
+		*pwidth = width;
+		*pheight = height;
 		gl_state.fullscreen = false;
 		if(!VID_CreateWindow(width, height, false))
 			return rserr_invalid_mode;
@@ -380,7 +380,7 @@ qboolean GLimp_Init(void *hinstance, void *wndproc)
 	}
 
 	glw_state.hInstance = (HINSTANCE)hinstance;
-	glw_state.wndproc   = wndproc;
+	glw_state.wndproc = wndproc;
 
 	return true;
 }
@@ -388,28 +388,28 @@ qboolean GLimp_Init(void *hinstance, void *wndproc)
 qboolean GLimp_InitGL(void)
 {
 	PIXELFORMATDESCRIPTOR pfd =
-	    {
-	        sizeof(PIXELFORMATDESCRIPTOR), // size of this pfd
-	        1,                             // version number
-	        PFD_DRAW_TO_WINDOW |           // support window
-	            PFD_SUPPORT_OPENGL |       // support OpenGL
-	            PFD_DOUBLEBUFFER,          // double buffered
-	        PFD_TYPE_RGBA,                 // RGBA type
-	        24,                            // 24-bit color depth
-	        0,
-	        0, 0, 0, 0, 0,  // color bits ignored
-	        0,              // no alpha buffer
-	        0,              // shift bit ignored
-	        0,              // no accumulation buffer
-	        0, 0, 0, 0,     // accum bits ignored
-	        32,             // 32-bit z-buffer
-	        0,              // no stencil buffer
-	        0,              // no auxiliary buffer
-	        PFD_MAIN_PLANE, // main layer
-	        0,              // reserved
-	        0, 0, 0         // layer masks ignored
-	    };
-	int     pixelformat;
+	{
+	  sizeof(PIXELFORMATDESCRIPTOR), // size of this pfd
+	  1,                             // version number
+	  PFD_DRAW_TO_WINDOW |           // support window
+	  PFD_SUPPORT_OPENGL |           // support OpenGL
+	  PFD_DOUBLEBUFFER,              // double buffered
+	  PFD_TYPE_RGBA,                 // RGBA type
+	  24,                            // 24-bit color depth
+	  0,
+	  0, 0, 0, 0, 0,  // color bits ignored
+	  0,              // no alpha buffer
+	  0,              // shift bit ignored
+	  0,              // no accumulation buffer
+	  0, 0, 0, 0,     // accum bits ignored
+	  32,             // 32-bit z-buffer
+	  0,              // no stencil buffer
+	  0,              // no auxiliary buffer
+	  PFD_MAIN_PLANE, // main layer
+	  0,              // reserved
+	  0, 0, 0         // layer masks ignored
+	};
+	int pixelformat;
 	cvar_t *stereo;
 
 	stereo = ri.Cvar_Get("cl_stereo", "0", 0);

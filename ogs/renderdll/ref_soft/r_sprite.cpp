@@ -49,9 +49,9 @@ extern void R_ClipAndDrawPoly(float alpha, qboolean isturbulent, qboolean textur
 */
 void R_DrawSprite()
 {
-	vec5_t *     pverts;
-	vec3_t       left, up, right, down;
-	dsprite_t *  s_psprite;
+	vec5_t *pverts;
+	vec3_t left, up, right, down;
+	dsprite_t *s_psprite;
 	dsprframe_t *s_psprframe;
 
 	s_psprite = (dsprite_t *)currentmodel->extradata;
@@ -68,10 +68,10 @@ void R_DrawSprite()
 
 	s_psprframe = &s_psprite->frames[currententity->frame];
 
-	r_polydesc.pixels       = currentmodel->skins[currententity->frame]->pixels[0];
-	r_polydesc.pixel_width  = s_psprframe->width;
+	r_polydesc.pixels = currentmodel->skins[currententity->frame]->pixels[0];
+	r_polydesc.pixel_width = s_psprframe->width;
 	r_polydesc.pixel_height = s_psprframe->height;
-	r_polydesc.dist         = 0;
+	r_polydesc.dist = 0;
 
 	// generate the sprite's axes, completely parallel to the viewplane.
 	VectorCopy(vup, r_polydesc.vup);
@@ -117,7 +117,7 @@ void R_DrawSprite()
 	pverts[3][3] = 0;
 	pverts[3][4] = s_psprframe->height;
 
-	r_polydesc.nump     = 4;
+	r_polydesc.nump = 4;
 	r_polydesc.s_offset = (r_polydesc.pixel_width >> 1);
 	r_polydesc.t_offset = (r_polydesc.pixel_height >> 1);
 	VectorCopy(modelorg, r_polydesc.viewer_position);

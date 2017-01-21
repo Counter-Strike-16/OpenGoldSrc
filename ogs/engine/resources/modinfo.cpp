@@ -50,13 +50,13 @@ void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue)
 	}
 	else if(!Q_stricmp(pkey, "version"))
 	{
-		pinfo->bIsMod  = 1;
+		pinfo->bIsMod = 1;
 		pinfo->version = Q_atoi(pvalue);
 	}
 	else if(!Q_stricmp(pkey, "size"))
 	{
 		pinfo->bIsMod = 1;
-		pinfo->size   = Q_atoi(pvalue);
+		pinfo->size = Q_atoi(pvalue);
 	}
 	else if(!Q_stricmp(pkey, "svonly"))
 	{
@@ -66,7 +66,7 @@ void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue)
 	else if(!Q_stricmp(pkey, "cldll"))
 	{
 		pinfo->bIsMod = 1;
-		pinfo->cldll  = Q_atoi(pvalue) != 0;
+		pinfo->cldll = Q_atoi(pvalue) != 0;
 	}
 	else if(!Q_stricmp(pkey, "secure"))
 	{
@@ -86,7 +86,7 @@ void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue)
 	}
 	else if(!Q_stricmp(pkey, "crcclientdll"))
 	{
-		pinfo->bIsMod       = 1;
+		pinfo->bIsMod = 1;
 		pinfo->clientDllCRC = Q_atoi(pvalue) != 0;
 	}
 	else if(!Q_stricmp(pkey, "type"))

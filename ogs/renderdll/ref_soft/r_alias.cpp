@@ -49,18 +49,18 @@ vec3_t r_plightvec;
 vec3_t r_lerped[1024];
 vec3_t r_lerp_frontv, r_lerp_backv, r_lerp_move;
 
-int   r_ambientlight;
-int   r_aliasblendcolor;
+int r_ambientlight;
+int r_aliasblendcolor;
 float r_shadelight;
 
 daliasframe_t *r_thisframe, *r_lastframe;
-dmdl_t *       s_pmdl;
+dmdl_t *s_pmdl;
 
 float aliastransform[3][4];
 float aliasworldtransform[3][4];
 float aliasoldworldtransform[3][4];
 
-static float  s_ziscale;
+static float s_ziscale;
 static vec3_t s_alias_forward, s_alias_right, s_alias_up;
 
 #define NUMVERTEXNORMALS 162
@@ -90,7 +90,8 @@ typedef struct
 } aedge_t;
 
 static aedge_t aedges[12] = {
-    {0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 5}, {1, 4}, {2, 7}, {3, 6}};
+	{ 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }, { 0, 5 }, { 1, 4 }, { 2, 7 }, { 3, 6 }
+};
 
 #define BBOX_TRIVIAL_ACCEPT 0
 #define BBOX_MUST_CLIP_XY 1
@@ -105,12 +106,12 @@ static aedge_t aedges[12] = {
 unsigned long R_AliasCheckFrameBBox(daliasframe_t *frame, float worldxf[3][4])
 {
 	unsigned long aggregate_and_clipcode = ~0U,
-	              aggregate_or_clipcode  = 0;
-	int      i;
-	vec3_t   mins, maxs;
-	vec3_t   transformed_min, transformed_max;
+	              aggregate_or_clipcode = 0;
+	int i;
+	vec3_t mins, maxs;
+	vec3_t transformed_min, transformed_max;
 	qboolean zclipped = false, zfullyclipped = true;
-	float    minz = 9999.0F;
+	float minz = 9999.0F;
 
 	/*
 	** get the exact frame bounding box
@@ -146,8 +147,8 @@ unsigned long R_AliasCheckFrameBBox(daliasframe_t *frame, float worldxf[3][4])
 	*/
 	for(i = 0; i < 8; i++)
 	{
-		int           j;
-		vec3_t        tmp, transformed;
+		int j;
+		vec3_t tmp, transformed;
 		unsigned long clipcode = 0;
 
 		if(i & 1)
@@ -193,7 +194,7 @@ unsigned long R_AliasCheckFrameBBox(daliasframe_t *frame, float worldxf[3][4])
 
 qboolean R_AliasCheckBBox()
 {
-	unsigned long ccodes[2] = {0, 0};
+	unsigned long ccodes[2] = { 0, 0 };
 
 	ccodes[0] = R_AliasCheckFrameBBox(r_thisframe, aliasworldtransform);
 
@@ -241,7 +242,7 @@ General clipped case
 */
 typedef struct
 {
-	int          num_points;
+	int num_points;
 	dtrivertx_t *last_verts; // verts from the last frame
 	dtrivertx_t *this_verts; // verts from this frame
 	finalvert_t *dest_verts; // destination for transformed verts
@@ -251,11 +252,11 @@ aliasbatchedtransformdata_t aliasbatchedtransformdata;
 
 void R_AliasPreparePoints()
 {
-	int          i;
-	dstvert_t *  pstverts;
+	int i;
+	dstvert_t *pstverts;
 	dtriangle_t *ptri;
 	finalvert_t *pfv[3];
-	finalvert_t  finalverts[MAXALIASVERTS +
+	finalvert_t finalverts[MAXALIASVERTS +
 	                       ((CACHE_SIZE - 1) / sizeof(finalvert_t)) + 3];
 	finalvert_t *pfinalverts;
 
@@ -282,7 +283,7 @@ void R_AliasPreparePoints()
 	// clip and draw all triangles
 	//
 	pstverts = (dstvert_t *)((byte *)s_pmdl + s_pmdl->ofs_st);
-	ptri     = (dtriangle_t *)((byte *)s_pmdl + s_pmdl->ofs_tris);
+	ptri = (dtriangle_t *)((byte *)s_pmdl + s_pmdl->ofs_tris);
 
 	if((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
 	{
@@ -363,17 +364,17 @@ R_AliasSetUpTransform
 */
 void R_AliasSetUpTransform()
 {
-	int          i;
+	int i;
 	static float viewmatrix[3][4];
-	vec3_t       angles;
+	vec3_t angles;
 
 	// TODO: should really be stored with the entity instead of being reconstructed
 	// TODO: should use a look-up table
 	// TODO: could cache lazily, stored in the entity
 	//
-	angles[ROLL]  = currententity->angles[ROLL];
+	angles[ROLL] = currententity->angles[ROLL];
 	angles[PITCH] = currententity->angles[PITCH];
-	angles[YAW]   = currententity->angles[YAW];
+	angles[YAW] = currententity->angles[YAW];
 	AngleVectors(angles, s_alias_forward, s_alias_right, s_alias_up);
 
 	// TODO: can do this with simple matrix rearrangement
@@ -434,95 +435,95 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 {
 	float lightcos;
 	float lerped_vert[3];
-	int   byte_to_dword_ptr_var;
-	int   tmpint;
+	int byte_to_dword_ptr_var;
+	int tmpint;
 
 	float one = 1.0F;
 	float zi;
 
 	static float FALIAS_Z_CLIP_PLANE = ALIAS_Z_CLIP_PLANE;
-	static float PS_SCALE            = POWERSUIT_SCALE;
+	static float PS_SCALE = POWERSUIT_SCALE;
 
 	__asm mov ecx, numpoints
 
-	    /*
+	/*
 	lerped_vert[0] = r_lerp_move[0] + oldv->v[0]*r_lerp_backv[0] + newv->v[0]*r_lerp_frontv[0];
 	lerped_vert[1] = r_lerp_move[1] + oldv->v[1]*r_lerp_backv[1] + newv->v[1]*r_lerp_frontv[1];
 	lerped_vert[2] = r_lerp_move[2] + oldv->v[2]*r_lerp_backv[2] + newv->v[2]*r_lerp_frontv[2];
 	*/
-	    top_of_loop :
+	top_of_loop :
 
-	    __asm mov      esi,
-	    oldv __asm mov edi,
-	    newv
+	__asm mov esi,
+	oldv __asm mov edi,
+	newv
 
-	    __asm xor
-	    ebx,
-	    ebx
+	__asm xor
+	ebx,
+	ebx
 
-	    __asm mov bl,
-	    byte ptr[esi + DTRIVERTX_V0] __asm mov byte_to_dword_ptr_var,
-	    ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_backv + 0];
+	__asm mov bl,
+	byte ptr[esi + DTRIVERTX_V0] __asm mov byte_to_dword_ptr_var,
+	ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_backv + 0];
 	oldv[0] * rlb[0]
 
-	    __asm mov bl,
-	    byte ptr[esi + DTRIVERTX_V1] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_backv + 4];
+	__asm mov bl,
+	byte ptr[esi + DTRIVERTX_V1] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_backv + 4];
 	oldv[1] * rlb[1] | oldv[0] * rlb[0]
 
-	        __asm mov bl,
-	    byte ptr[esi + DTRIVERTX_V2] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_backv + 8];
+	__asm mov bl,
+	byte ptr[esi + DTRIVERTX_V2] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_backv + 8];
 	oldv[2] * rlb[2] | oldv[1] * rlb[1] | oldv[0] * rlb[0]
 
-	        __asm mov bl,
-	    byte ptr[edi + DTRIVERTX_V0] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_frontv + 0];
+	__asm mov bl,
+	byte ptr[edi + DTRIVERTX_V0] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_frontv + 0];
 	newv[0] * rlf[0] | oldv[2] * rlb[2] | oldv[1] * rlb[1] | oldv[0] * rlb[0]
 
-	        __asm mov bl,
-	    byte ptr[edi + DTRIVERTX_V1] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_frontv + 4];
+	__asm mov bl,
+	byte ptr[edi + DTRIVERTX_V1] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_frontv + 4];
 	newv[1] * rlf[1] | newv[0] * rlf[0] | oldv[2] * rlb[2] | oldv[1] * rlb[1] | oldv[0] * rlb[0]
 
-	        __asm mov bl,
-	    byte ptr[edi + DTRIVERTX_V2] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_frontv + 8];
+	__asm mov bl,
+	byte ptr[edi + DTRIVERTX_V2] __asm mov byte_to_dword_ptr_var, ebx __asm fild dword ptr byte_to_dword_ptr_var __asm fmul dword ptr[r_lerp_frontv + 8];
 	newv[2] * rlf[2] | newv[1] * rlf[1] | newv[0] * rlf[0] | oldv[2] * rlb[2] | oldv[1] * rlb[1] | oldv[0] * rlb[0]
 
-	        __asm fxch                                                                                                          st(5);
+	__asm fxch st(5);
 	oldv[0] * rlb[0] | newv[1] * rlf[1] | newv[0] * rlf[0] | oldv[2] * rlb[2] | oldv[1] * rlb[1] | newv[2] * rlf[2] __asm faddp st(2), st;
 	newv[1] * rlf[1] | oldv[0] * rlb[0] + newv[0] * rlf[0] | oldv[2] * rlb[2] | oldv[1] * rlb[1] | newv[2] * rlf[2] __asm faddp st(3), st;
-	oldv[0] * rlb[0] + newv[0] * rlf[0] | oldv[2] * rlb[2] | oldv[1] * rlb[1] + newv[1] * rlf[1] | newv[2] * rlf[2] __asm fxch  st(1);
+	oldv[0] * rlb[0] + newv[0] * rlf[0] | oldv[2] * rlb[2] | oldv[1] * rlb[1] + newv[1] * rlf[1] | newv[2] * rlf[2] __asm fxch st(1);
 	oldv[2] * rlb[2] | oldv[0] * rlb[0] + newv[0] * rlf[0] | oldv[1] * rlb[1] + newv[1] * rlf[1] | newv[2] * rlf[2] __asm faddp st(3), st;
 	oldv[0] * rlb[0] + newv[0] * rlf[0] | oldv[1] * rlb[1] + newv[1] * rlf[1] | oldv[2] * rlb[2] + newv[2] * rlf[2] __asm fadd dword ptr[r_lerp_move + 0];
-	lv0 | oldv[1] * rlb[1] + newv[1] * rlf[1] | oldv[2] * rlb[2] + newv[2] * rlf[2] __asm fxch                                       st(1);
+	lv0 | oldv[1] * rlb[1] + newv[1] * rlf[1] | oldv[2] * rlb[2] + newv[2] * rlf[2] __asm fxch st(1);
 	oldv[1] * rlb[1] + newv[1] * rlf[1] | lv0 | oldv[2] * rlb[2] + newv[2] * rlf[2] __asm fadd dword ptr[r_lerp_move + 4];
-	lv1 | lv0 | oldv[2] * rlb[2] + newv[2] * rlf[2] __asm fxch                                       st(2);
+	lv1 | lv0 | oldv[2] * rlb[2] + newv[2] * rlf[2] __asm fxch st(2);
 	oldv[2] * rlb[2] + newv[2] * rlf[2] | lv0 | lv1 __asm fadd dword ptr[r_lerp_move + 8];
-	lv2 | lv0 | lv1 __asm fxch                                       st(1);
+	lv2 | lv0 | lv1 __asm fxch st(1);
 	lv0 | lv2 | lv1 __asm fstp dword ptr[lerped_vert + 0];
 	lv2 | lv1 __asm fstp dword ptr[lerped_vert + 8];
 	lv2 __asm fstp dword ptr[lerped_vert + 4];
 	(empty)
 
-	    __asm mov               eax,
-	    currententity __asm mov eax, dword ptr[eax + ENTITY_FLAGS] __asm mov ebx, RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM __asm and eax, ebx __asm jz not_powersuit
+	__asm mov eax,
+	currententity __asm mov eax, dword ptr[eax + ENTITY_FLAGS] __asm mov ebx, RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM __asm and eax, ebx __asm jz not_powersuit
 
-	    /*
+	/*
 	**    lerped_vert[0] += lightnormal[0] * POWERSUIT_SCALE
 	**    lerped_vert[1] += lightnormal[1] * POWERSUIT_SCALE
 	**    lerped_vert[2] += lightnormal[2] * POWERSUIT_SCALE
 	*/
 
-	    __asm xor
-	    ebx,
-	    ebx __asm mov bl, byte ptr[edi + DTRIVERTX_LNI] __asm mov eax, 12 __asm mul ebx __asm lea eax, [r_avertexnormals + eax]
+	__asm xor
+	ebx,
+	ebx __asm mov bl, byte ptr[edi + DTRIVERTX_LNI] __asm mov eax, 12 __asm mul ebx __asm lea eax, [r_avertexnormals + eax]
 
-	    __asm fld dword ptr[eax + 0];
-	n[0] __asm fmul     PS_SCALE;
-	n[0] * PS __asm fld dword       ptr[eax + 4];
-	n[1] | n[0] * PS __asm fmul     PS_SCALE;
-	n[1] * PS | n[0] * PS __asm fld dword       ptr[eax + 8];
-	n[2] | n[1] * PS | n[0] * PS __asm fmul     PS_SCALE;
-	n[2] * PS | n[1] * PS | n[0] * PS __asm fld dword   ptr[lerped_vert + 0];
+	__asm fld dword ptr[eax + 0];
+	n[0] __asm fmul PS_SCALE;
+	n[0] * PS __asm fld dword ptr[eax + 4];
+	n[1] | n[0] * PS __asm fmul PS_SCALE;
+	n[1] * PS | n[0] * PS __asm fld dword ptr[eax + 8];
+	n[2] | n[1] * PS | n[0] * PS __asm fmul PS_SCALE;
+	n[2] * PS | n[1] * PS | n[0] * PS __asm fld dword ptr[lerped_vert + 0];
 	lv0 | n[2] * PS | n[1] * PS | n[0] * PS __asm faddp st(3), st;
-	n[2] * PS | n[1] * PS | n[0] * PS + lv0 __asm fld dword   ptr[lerped_vert + 4];
+	n[2] * PS | n[1] * PS | n[0] * PS + lv0 __asm fld dword ptr[lerped_vert + 4];
 	lv1 | n[2] * PS | n[1] * PS | n[0] * PS + lv0 __asm faddp st(2), st;
 	n[2] * PS | n[1] * PS + lv1 | n[0] * PS + lv0 __asm fadd dword ptr[lerped_vert + 8];
 	n[2] * PS + lv2 | n[1] * PS + lv1 | n[0] * PS + lv0 __asm fxch st(2);
@@ -531,20 +532,20 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 	LV2 __asm fstp dword ptr[lerped_vert + 8];
 	(empty)
 
-	    not_powersuit :
+	not_powersuit :
 
-	    /*
+	/*
 	fv->flags = 0;
 
 	fv->xyz[0] = DotProduct(lerped_vert, aliastransform[0]) + aliastransform[0][3];
 	fv->xyz[1] = DotProduct(lerped_vert, aliastransform[1]) + aliastransform[1][3];
 	fv->xyz[2] = DotProduct(lerped_vert, aliastransform[2]) + aliastransform[2][3];
 	*/
-	    __asm mov    eax,
-	    fv __asm mov dword ptr[eax + FINALVERT_FLAGS],
-	    0
+	__asm mov eax,
+	fv __asm mov dword ptr[eax + FINALVERT_FLAGS],
+	0
 
-	    __asm fld dword ptr[lerped_vert + 0];
+	__asm fld dword ptr[lerped_vert + 0];
 	lv0 __asm fmul dword ptr[aliastransform + 0];
 	lv0 *at[0][0] __asm fld dword ptr[lerped_vert + 4];
 	lv1 | lv0 *at[0][0] __asm fmul dword ptr[aliastransform + 4];
@@ -556,7 +557,7 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 	lv0 *at[0][0] + lv1 *at[0][1] + lv2 *at[0][2] __asm fadd dword ptr[aliastransform + 12];
 	FV.X
 
-	    __asm fld dword ptr[lerped_vert + 0];
+	__asm fld dword ptr[lerped_vert + 0];
 	lv0 __asm fmul dword ptr[aliastransform + 16];
 	lv0 *at[1][0] __asm fld dword ptr[lerped_vert + 4];
 	lv1 | lv0 *at[1][0] __asm fmul dword ptr[aliastransform + 20];
@@ -566,11 +567,11 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 	lv0 *at[1][0] | lv1 *at[1][1] | lv2 *at[1][2] __asm faddp st(1), st;
 	lv0 *at[1][0] + lv1 *at[1][1] | lv2 *at[1][2] __asm faddp st(1), st;
 	lv0 *at[1][0] + lv1 *at[1][1] + lv2 *at[1][2] __asm fadd dword ptr[aliastransform + 28];
-	FV.Y | FV.X __asm fxch                                         st(1);
+	FV.Y | FV.X __asm fxch st(1);
 	FV.X | FV.Y __asm fstp dword ptr[eax + FINALVERT_X];
 	FV.Y
 
-	    __asm fld dword ptr[lerped_vert + 0];
+	__asm fld dword ptr[lerped_vert + 0];
 	lv0 __asm fmul dword ptr[aliastransform + 32];
 	lv0 *at[2][0] __asm fld dword ptr[lerped_vert + 4];
 	lv1 | lv0 *at[2][0] __asm fmul dword ptr[aliastransform + 36];
@@ -580,26 +581,26 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 	lv0 *at[2][0] | lv1 *at[2][1] | lv2 *at[2][2] __asm faddp st(1), st;
 	lv0 *at[2][0] + lv1 *at[2][1] | lv2 *at[2][2] __asm faddp st(1), st;
 	lv0 *at[2][0] + lv1 *at[2][1] + lv2 *at[2][2] __asm fadd dword ptr[aliastransform + 44];
-	FV.Z | FV.Y __asm fxch                                         st(1);
+	FV.Z | FV.Y __asm fxch st(1);
 	FV.Y | FV.Z __asm fstp dword ptr[eax + FINALVERT_Y];
 	FV.Z __asm fstp dword ptr[eax + FINALVERT_Z];
 	(empty)
 
-	    /*
+	/*
 	**  lighting
 	**
 	**  plightnormal = r_avertexnormals[newv->lightnormalindex];
 	**	lightcos = DotProduct (plightnormal, r_plightvec);
 	**	temp = r_ambientlight;
 	*/
-	    __asm xor
-	    ebx,
-	    ebx __asm mov bl, byte ptr[edi + DTRIVERTX_LNI] __asm mov eax, 12 __asm mul ebx __asm lea eax, [r_avertexnormals + eax] __asm lea ebx, r_plightvec
+	__asm xor
+	ebx,
+	ebx __asm mov bl, byte ptr[edi + DTRIVERTX_LNI] __asm mov eax, 12 __asm mul ebx __asm lea eax, [r_avertexnormals + eax] __asm lea ebx, r_plightvec
 
-	    __asm fld dword ptr[eax + 0] __asm fmul dword ptr[ebx + 0] __asm fld dword ptr[eax + 4] __asm fmul dword ptr[ebx + 4] __asm fld dword ptr[eax + 8] __asm fmul dword ptr[ebx + 8] __asm fxch st(2) __asm faddp st(1),
-	    st __asm faddp st(1), st __asm fstp dword ptr lightcos __asm mov eax, lightcos __asm mov ebx, r_ambientlight
+	__asm fld dword ptr[eax + 0] __asm fmul dword ptr[ebx + 0] __asm fld dword ptr[eax + 4] __asm fmul dword ptr[ebx + 4] __asm fld dword ptr[eax + 8] __asm fmul dword ptr[ebx + 8] __asm fxch st(2) __asm faddp st(1),
+	st __asm faddp st(1), st __asm fstp dword ptr lightcos __asm mov eax, lightcos __asm mov ebx, r_ambientlight
 
-	    /*
+	/*
 	if (lightcos < 0)
 	{
 		temp += (int)(r_shadelight * lightcos);
@@ -612,28 +613,28 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 
 	fv->v[4] = temp;
 	*/
-	    __asm or
-	    eax,
-	    eax __asm jns store_fv4
+	__asm or
+	eax,
+	eax __asm jns store_fv4
 
-	    __asm fld dword ptr r_shadelight __asm fmul dword ptr lightcos __asm fistp dword ptr tmpint __asm add ebx,
-	    tmpint
+	__asm fld dword ptr r_shadelight __asm fmul dword ptr lightcos __asm fistp dword ptr tmpint __asm add ebx,
+	tmpint
 
-	    __asm or
-	    ebx,
-	    ebx __asm jns store_fv4 __asm mov ebx, 0
+	__asm or
+	ebx,
+	ebx __asm jns store_fv4 __asm mov ebx, 0
 
-	    store_fv4 : __asm mov    edi,
-	                fv __asm mov dword ptr[edi + FINALVERT_V4],
-	                ebx
+	store_fv4 : __asm mov edi,
+	            fv __asm mov dword ptr[edi + FINALVERT_V4],
+	            ebx
 
-	                __asm mov edx,
-	                dword     ptr[edi + FINALVERT_FLAGS]
+	            __asm mov edx,
+	            dword ptr[edi + FINALVERT_FLAGS]
 
-	                /*
+	            /*
 	** do clip testing and projection here
 	*/
-	                /*
+	            /*
 	if ( dest_vert->xyz[2] < ALIAS_Z_CLIP_PLANE )
 	{
 		dest_vert->flags |= ALIAS_Z_CLIP;
@@ -643,12 +644,12 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 		R_AliasProjectAndClipTestFinalVert( dest_vert );
 	}
 	*/
-	                __asm mov eax,
-	                dword ptr[edi + FINALVERT_Z] __asm and eax,
-	                eax __asm js alias_z_clip __asm cmp eax,
-	                FALIAS_Z_CLIP_PLANE __asm jl        alias_z_clip
+	            __asm mov eax,
+	            dword ptr[edi + FINALVERT_Z] __asm and eax,
+	            eax __asm js alias_z_clip __asm cmp eax,
+	            FALIAS_Z_CLIP_PLANE __asm jl alias_z_clip
 
-	                /*
+	            /*
 	This is the code to R_AliasProjectAndClipTestFinalVert
 
 	float	zi;
@@ -664,17 +665,17 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 	fv->v[0] = (x * aliasxscale * zi) + aliasxcenter;
 	fv->v[1] = (y * aliasyscale * zi) + aliasycenter;
 	*/
-	                __asm fld one;
+	            __asm fld one;
 	1 __asm fdiv dword ptr[edi + FINALVERT_Z];
 	zi
 
-	    __asm mov eax,
-	    dword ptr[edi + 32] __asm mov eax, dword ptr[edi + 64]
+	__asm mov eax,
+	dword ptr[edi + 32] __asm mov eax, dword ptr[edi + 64]
 
-	    __asm fst zi;
+	__asm fst zi;
 	zi __asm fmul s_ziscale;
 	fv5 __asm fld dword ptr[edi + FINALVERT_X];
-	x | fv5 __asm fmul  aliasxscale;
+	x | fv5 __asm fmul aliasxscale;
 	x *aliasxscale | fv5 __asm fld dword ptr[edi + FINALVERT_Y];
 	y | x *aliasxscale | fv5 __asm fmul aliasyscale;
 	y *aliasyscale | x *aliasxscale | fv5 __asm fxch st(1);
@@ -683,13 +684,13 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 	fv0 | y *asy | fv5 __asm fxch st(1);
 	y *asy | fv0 | fv5 __asm fmul zi;
 	y *asy *zi | fv0 | fv5 __asm fadd aliasycenter;
-	fv1 | fv0 | fv5 __asm fxch        st(2);
+	fv1 | fv0 | fv5 __asm fxch st(2);
 	fv5 | fv0 | fv1 __asm fistp dword ptr[edi + FINALVERT_V5];
 	fv0 | fv1 __asm fistp dword ptr[edi + FINALVERT_V0];
 	fv1 __asm fistp dword ptr[edi + FINALVERT_V1];
 	(empty)
 
-	    /*
+	/*
 	if (fv->v[0] < r_refdef.aliasvrect.x)
 		fv->flags |= ALIAS_LEFT_CLIP;
 	if (fv->v[1] < r_refdef.aliasvrect.y)
@@ -699,36 +700,36 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 	if (fv->v[1] > r_refdef.aliasvrectbottom)
 		fv->flags |= ALIAS_BOTTOM_CLIP;
 	*/
-	    __asm mov eax,
-	    dword ptr[edi + FINALVERT_V0] __asm mov ebx, dword ptr[edi + FINALVERT_V1]
+	__asm mov eax,
+	dword ptr[edi + FINALVERT_V0] __asm mov ebx, dword ptr[edi + FINALVERT_V1]
 
-	    __asm cmp                                                      eax,
-	    r_refdef.aliasvrect.x __asm jge                                ct_alias_top __asm or edx, ALIAS_LEFT_CLIP
-	                                                                   ct_alias_top : __asm cmp                       ebx,
-	                                                                                  r_refdef.aliasvrect.y __asm jge ct_alias_right __asm or edx,
-	                                                                                  ALIAS_TOP_CLIP
-	                                                                                      ct_alias_right : __asm cmp                          eax,
-	                                                                                                       r_refdef.aliasvrectright __asm jle ct_alias_bottom __asm or edx,
-	                                                                                                       ALIAS_RIGHT_CLIP
-	                                                                                                           ct_alias_bottom : __asm cmp                           ebx,
-	                                                                                                                             r_refdef.aliasvrectbottom __asm jle end_of_loop __asm or edx,
-	                                                                                                                             ALIAS_BOTTOM_CLIP
+	__asm cmp eax,
+	r_refdef.aliasvrect.x __asm jge ct_alias_top __asm or edx, ALIAS_LEFT_CLIP
+	                                                           ct_alias_top : __asm cmp ebx,
+	                                                                          r_refdef.aliasvrect.y __asm jge ct_alias_right __asm or edx,
+	                                                                          ALIAS_TOP_CLIP
+	                                                                          ct_alias_right : __asm cmp eax,
+	                                                                                           r_refdef.aliasvrectright __asm jle ct_alias_bottom __asm or edx,
+	                                                                                           ALIAS_RIGHT_CLIP
+	                                                                                           ct_alias_bottom : __asm cmp ebx,
+	                                                                                                             r_refdef.aliasvrectbottom __asm jle end_of_loop __asm or edx,
+	                                                                                                             ALIAS_BOTTOM_CLIP
 
-	                                                                                                                                 __asm jmp end_of_loop
+	                                                                                                             __asm jmp end_of_loop
 
-	                                                                                                                                     alias_z_clip : __asm or
-	                                                                                                                                                    edx,
-	                                                                                                                             ALIAS_Z_CLIP
+	                                                                                                             alias_z_clip : __asm or
+	                                                                                                                            edx,
+	                                                                                                             ALIAS_Z_CLIP
 
-	                                                                                                                                 end_of_loop :
+	                                                                                                             end_of_loop :
 
-	                                                                                                                             __asm mov dword          ptr[edi + FINALVERT_FLAGS],
-	                                                                                                                             edx __asm add            oldv,
-	                                                                                                                             DTRIVERTX_SIZE __asm add newv,
-	                                                                                                                             DTRIVERTX_SIZE __asm add fv,
-	                                                                                                                             FINALVERT_SIZE
+	                                                                                                             __asm mov dword ptr[edi + FINALVERT_FLAGS],
+	                                                                                                             edx __asm add oldv,
+	                                                                                                             DTRIVERTX_SIZE __asm add newv,
+	                                                                                                             DTRIVERTX_SIZE __asm add fv,
+	                                                                                                             FINALVERT_SIZE
 
-	                                                                                                                             __asm dec ecx __asm jnz top_of_loop
+	                                                                                                             __asm dec ecx __asm jnz top_of_loop
 }
 #else
 void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *oldv, dtrivertx_t *newv)
@@ -737,8 +738,8 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 
 	for(i = 0; i < numpoints; i++, fv++, oldv++, newv++)
 	{
-		int    temp;
-		float  lightcos, *plightnormal;
+		int temp;
+		float lightcos, *plightnormal;
 		vec3_t lerped_vert;
 
 		lerped_vert[0] = r_lerp_move[0] + oldv->v[0] * r_lerp_backv[0] + newv->v[0] * r_lerp_frontv[0];
@@ -763,7 +764,7 @@ void R_AliasTransformFinalVerts(int numpoints, finalvert_t *fv, dtrivertx_t *old
 
 		// lighting
 		lightcos = DotProduct(plightnormal, r_plightvec);
-		temp     = r_ambientlight;
+		temp = r_ambientlight;
 
 		if(lightcos < 0)
 		{
@@ -801,9 +802,9 @@ void R_AliasProjectAndClipTestFinalVert(finalvert_t *fv)
 	float x, y, z;
 
 	// project points
-	x  = fv->xyz[0];
-	y  = fv->xyz[1];
-	z  = fv->xyz[2];
+	x = fv->xyz[0];
+	y = fv->xyz[1];
+	z = fv->xyz[2];
 	zi = 1.0 / z;
 
 	fv->zi = zi * s_ziscale;
@@ -828,7 +829,7 @@ R_AliasSetupSkin
 */
 static qboolean R_AliasSetupSkin()
 {
-	int      skinnum;
+	int skinnum;
 	image_t *pskindesc;
 
 	if(currententity->skin)
@@ -849,8 +850,8 @@ static qboolean R_AliasSetupSkin()
 	if(!pskindesc)
 		return false;
 
-	r_affinetridesc.pskin      = pskindesc->pixels[0];
-	r_affinetridesc.skinwidth  = pskindesc->width;
+	r_affinetridesc.pskin = pskindesc->pixels[0];
+	r_affinetridesc.skinwidth = pskindesc->width;
 	r_affinetridesc.skinheight = pskindesc->height;
 
 	R_PolysetUpdateTables(); // FIXME: precalc edge lookups
@@ -868,14 +869,14 @@ R_AliasSetupLighting
 void R_AliasSetupLighting()
 {
 	alight_t lighting;
-	float    lightvec[3] = {-1, 0, 0};
-	vec3_t   light;
-	int      i, j;
+	float lightvec[3] = { -1, 0, 0 };
+	vec3_t light;
+	int i, j;
 
 	// all components of light should be identical in software
 	if(currententity->flags & RF_FULLBRIGHT)
 	{
-		for(i        = 0; i < 3; i++)
+		for(i = 0; i < 3; i++)
 			light[i] = 1.0;
 	}
 	else
@@ -912,7 +913,7 @@ void R_AliasSetupLighting()
 	j = (light[0] + light[1] + light[2]) * 0.3333 * 255;
 
 	lighting.ambientlight = j;
-	lighting.shadelight   = j;
+	lighting.shadelight = j;
 
 	lighting.plightvec = lightvec;
 
@@ -983,9 +984,9 @@ void R_AliasSetupFrames(dmdl_t *pmdl)
 */
 void R_AliasSetUpLerpData(dmdl_t *pmdl, float backlerp)
 {
-	float  frontlerp;
+	float frontlerp;
 	vec3_t translation, vectors[3];
-	int    i;
+	int i;
 
 	frontlerp = 1.0F - backlerp;
 
@@ -1016,7 +1017,7 @@ void R_AliasSetUpLerpData(dmdl_t *pmdl, float backlerp)
 	for(i = 0; i < 3; i++)
 	{
 		r_lerp_frontv[i] = frontlerp * r_thisframe->scale[i];
-		r_lerp_backv[i]  = backlerp * r_lastframe->scale[i];
+		r_lerp_backv[i] = backlerp * r_lastframe->scale[i];
 	}
 }
 

@@ -94,16 +94,16 @@ typedef enum {
 
 typedef struct image_s
 {
-	char               name[MAX_QPATH]; // game path, including extension
-	imagetype_t        type;
-	int                width, height;               // source image
-	int                upload_width, upload_height; // after power of two and picmip
-	int                registration_sequence;       // 0 = free
-	struct msurface_s *texturechain;                // for sort-by-texture world drawing
-	int                texnum;                      // gl texture binding
-	float              sl, tl, sh, th;              // 0,0 - 1,1 unless part of the scrap
-	qboolean           scrap;
-	qboolean           has_alpha;
+	char name[MAX_QPATH]; // game path, including extension
+	imagetype_t type;
+	int width, height;               // source image
+	int upload_width, upload_height; // after power of two and picmip
+	int registration_sequence;       // 0 = free
+	struct msurface_s *texturechain; // for sort-by-texture world drawing
+	int texnum;                      // gl texture binding
+	float sl, tl, sh, th;            // 0,0 - 1,1 unless part of the scrap
+	qboolean scrap;
+	qboolean has_alpha;
 
 	qboolean paletted;
 } image_t;
@@ -149,16 +149,16 @@ typedef struct
 //====================================================
 
 extern image_t gltextures[MAX_GLTEXTURES];
-extern int     numgltextures;
+extern int numgltextures;
 
-extern image_t * r_notexture;
-extern image_t * r_particletexture;
+extern image_t *r_notexture;
+extern image_t *r_particletexture;
 extern entity_t *currententity;
-extern model_t * currentmodel;
-extern int       r_visframecount;
-extern int       r_framecount;
-extern cplane_t  frustum[4];
-extern int       c_brush_polys, c_alias_polys;
+extern model_t *currentmodel;
+extern int r_visframecount;
+extern int r_framecount;
+extern cplane_t frustum[4];
+extern int c_brush_polys, c_alias_polys;
 
 extern int gl_filter_min, gl_filter_max;
 
@@ -174,7 +174,7 @@ extern vec3_t r_origin;
 // screen size info
 //
 extern refdef_t r_newrefdef;
-extern int      r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
+extern int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 extern cvar_t *r_norefresh;
 extern cvar_t *r_lefthand;
@@ -397,7 +397,7 @@ void GL_DrawParticles(int n, const particle_t particles[], const unsigned colort
 
 typedef struct
 {
-	int         renderer;
+	int renderer;
 	const char *renderer_string;
 	const char *vendor_string;
 	const char *version_string;
@@ -408,7 +408,7 @@ typedef struct
 
 typedef struct
 {
-	float    inverse_intensity;
+	float inverse_intensity;
 	qboolean fullscreen;
 
 	int prev_mode;
@@ -420,7 +420,7 @@ typedef struct
 	int currenttextures[2];
 	int currenttmu;
 
-	float    camera_separation;
+	float camera_separation;
 	qboolean stereo_enabled;
 
 	unsigned char originalRedGammaTable[256];
@@ -429,7 +429,7 @@ typedef struct
 } glstate_t;
 
 extern glconfig_t gl_config;
-extern glstate_t  gl_state;
+extern glstate_t gl_state;
 
 /*
 ====================================================================

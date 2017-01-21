@@ -10,15 +10,15 @@
 typedef struct
 {
 	char identification[4];
-	int  numlumps;
-	int  infotableofs;
+	int numlumps;
+	int infotableofs;
 } wadinfo_t;
 
 typedef struct
 {
-	int  filepos;
-	int  disksize;
-	int  size;
+	int filepos;
+	int disksize;
+	int size;
 	char type;
 	char compression;
 	char pad1, pad2;
@@ -27,18 +27,18 @@ typedef struct
 
 typedef struct
 {
-	char     name[16];
+	char name[16];
 	unsigned width, height;
 	unsigned offsets[4];
 } miptex_t;
 
 unsigned char pixdata[256];
 
-float         linearpalette[256][3];
-float         d_red, d_green, d_blue;
-int           colors_used;
-int           color_used[256];
-float         maxdistortion;
+float linearpalette[256][3];
+float d_red, d_green, d_blue;
+int colors_used;
+int color_used[256];
+float maxdistortion;
 unsigned char palLogo[768];
 
 unsigned char AveragePixels(int count)
@@ -48,24 +48,24 @@ unsigned char AveragePixels(int count)
 
 int GrabMip(HANDLE hdib, unsigned char *lump_p, char *lumpname, COLORREF crf, int *width, int *height)
 {
-	int            x, y, xl, yl, xh, yh, w, h;
+	int x, y, xl, yl, xh, yh, w, h;
 	unsigned char *screen_p, *source;
-	miptex_t *     qtex;
-	int            miplevel, mipstep;
-	int            xx, yy;
-	int            count;
-	int            byteimagewidth, byteimageheight;
+	miptex_t *qtex;
+	int miplevel, mipstep;
+	int xx, yy;
+	int count;
+	int byteimagewidth, byteimageheight;
 	unsigned char *byteimage;
-	LPBITMAPINFO   lpbmi;
+	LPBITMAPINFO lpbmi;
 
-	lpbmi                     = (LPBITMAPINFO)::GlobalLock((HGLOBAL)hdib);
+	lpbmi = (LPBITMAPINFO)::GlobalLock((HGLOBAL)hdib);
 	unsigned char *lump_start = lump_p;
 
 	xl = yl = 0;
-	w       = lpbmi->bmiHeader.biWidth;
-	h       = lpbmi->bmiHeader.biHeight;
+	w = lpbmi->bmiHeader.biWidth;
+	h = lpbmi->bmiHeader.biHeight;
 
-	*width  = w;
+	*width = w;
 	*height = h;
 
 	byteimage = (unsigned char *)((LPSTR)lpbmi + sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD));
@@ -76,18 +76,18 @@ int GrabMip(HANDLE hdib, unsigned char *lump_p, char *lumpname, COLORREF crf, in
 	xh = xl + w;
 	yh = yl + h;
 
-	qtex         = (miptex_t *)lump_p;
-	qtex->width  = (unsigned)(w);
+	qtex = (miptex_t *)lump_p;
+	qtex->width = (unsigned)(w);
 	qtex->height = (unsigned)(h);
 	strcpy(qtex->name, lumpname);
 	lump_p = (unsigned char *)&qtex->offsets[4];
 
-	byteimagewidth  = w;
+	byteimagewidth = w;
 	byteimageheight = h;
 
-	source           = (unsigned char *)lump_p;
+	source = (unsigned char *)lump_p;
 	qtex->offsets[0] = (unsigned)((unsigned char *)lump_p - (unsigned char *)qtex);
-	screen_p         = byteimage + (h - 1) * w;
+	screen_p = byteimage + (h - 1) * w;
 
 	for(y = yl; y < yh; y++)
 	{
@@ -101,22 +101,22 @@ int GrabMip(HANDLE hdib, unsigned char *lump_p, char *lumpname, COLORREF crf, in
 	{
 		for(int j = 0; j < 3; j++)
 		{
-			float f             = (float)(palLogo[i * 3 + j] / 255.0);
+			float f = (float)(palLogo[i * 3 + j] / 255.0);
 			linearpalette[i][j] = f;
 		}
 	}
 
 	maxdistortion = 0;
-	colors_used   = 256;
+	colors_used = 256;
 
-	for(int i         = 0; i < 256; i++)
+	for(int i = 0; i < 256; i++)
 		color_used[i] = 1;
 
 	for(miplevel = 1; miplevel < 4; miplevel++)
 	{
 		d_red = d_green = d_blue = 0;
-		qtex->offsets[miplevel]  = (unsigned)(lump_p - (unsigned char *)qtex);
-		mipstep                  = 1 << miplevel;
+		qtex->offsets[miplevel] = (unsigned)(lump_p - (unsigned char *)qtex);
+		mipstep = 1 << miplevel;
 
 		for(y = 0; y < h; y += mipstep)
 		{
@@ -126,7 +126,7 @@ int GrabMip(HANDLE hdib, unsigned char *lump_p, char *lumpname, COLORREF crf, in
 
 				for(yy = 0; yy < mipstep; yy++)
 				{
-					for(xx               = 0; xx < mipstep; xx++)
+					for(xx = 0; xx < mipstep; xx++)
 						pixdata[count++] = source[(y + yy) * w + x + xx];
 				}
 
@@ -156,8 +156,8 @@ void UpdateLogoWAD(void *phdib, int r, int g, int b)
 	sprintf(logoname, "LOGO");
 	char *pszName = &logoname[0];
 
-	HANDLE   hdib = (HANDLE)phdib;
-	COLORREF crf  = RGB(r, g, b);
+	HANDLE hdib = (HANDLE)phdib;
+	COLORREF crf = RGB(r, g, b);
 
 	if((!pszName) || (pszName[0] == 0) || (hdib == NULL))
 		return;
@@ -191,8 +191,8 @@ void UpdateLogoWAD(void *phdib, int r, int g, int b)
 	header.identification[1] = 'A';
 	header.identification[2] = 'D';
 	header.identification[3] = '3';
-	header.numlumps          = 1;
-	header.infotableofs      = 0;
+	header.numlumps = 1;
+	header.infotableofs = 0;
 	buffer.Put(&header, sizeof(wadinfo_t));
 
 	lumpinfo_t info;
@@ -200,8 +200,8 @@ void UpdateLogoWAD(void *phdib, int r, int g, int b)
 	strcpy(&info.name[0], pszName);
 	info.filepos = (int)sizeof(wadinfo_t);
 	info.size = info.disksize = length;
-	info.type                 = TYP_LUMPY;
-	info.compression          = 0;
+	info.type = TYP_LUMPY;
+	info.compression = 0;
 
 	buffer.Put(buf, length);
 	buffer.Put(&info, sizeof(lumpinfo_t));

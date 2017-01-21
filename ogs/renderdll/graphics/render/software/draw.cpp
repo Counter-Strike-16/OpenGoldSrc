@@ -27,15 +27,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct
 {
 	vrect_t rect;
-	int     width;
-	int     height;
-	byte *  ptexbytes;
-	int     rowbytes;
+	int width;
+	int height;
+	byte *ptexbytes;
+	int rowbytes;
 } rectdesc_t;
 
 static rectdesc_t r_rectdesc;
 
-byte *  draw_chars; // 8*8 graphic characters
+byte *draw_chars; // 8*8 graphic characters
 qpic_t *draw_disc;
 qpic_t *draw_backtile;
 
@@ -44,13 +44,13 @@ qpic_t *draw_backtile;
 
 typedef struct cachepic_s
 {
-	char         name[MAX_QPATH];
+	char name[MAX_QPATH];
 	cache_user_t cache;
 } cachepic_t;
 
 #define MAX_CACHED_PICS 128
 cachepic_t menu_cachepics[MAX_CACHED_PICS];
-int        menu_numcachepics;
+int menu_numcachepics;
 
 qpic_t *Draw_PicFromWad(char *name)
 {
@@ -65,8 +65,8 @@ Draw_CachePic
 qpic_t *Draw_CachePic(char *path)
 {
 	cachepic_t *pic;
-	int         i;
-	qpic_t *    dat;
+	int i;
+	qpic_t *dat;
 
 	for(pic = menu_cachepics, i = 0; i < menu_numcachepics; pic++, i++)
 		if(!strcmp(path, pic->name))
@@ -108,14 +108,14 @@ Draw_Init
 */
 void Draw_Init(void)
 {
-	draw_chars    = W_GetLumpName("conchars");
-	draw_disc     = W_GetLumpName("disc");
+	draw_chars = W_GetLumpName("conchars");
+	draw_disc = W_GetLumpName("disc");
 	draw_backtile = W_GetLumpName("backtile");
 
-	r_rectdesc.width     = draw_backtile->width;
-	r_rectdesc.height    = draw_backtile->height;
+	r_rectdesc.width = draw_backtile->width;
+	r_rectdesc.height = draw_backtile->height;
 	r_rectdesc.ptexbytes = draw_backtile->data;
-	r_rectdesc.rowbytes  = draw_backtile->width;
+	r_rectdesc.rowbytes = draw_backtile->width;
 }
 
 /*
@@ -129,11 +129,11 @@ smoothly scrolled off.
 */
 void Draw_Character(int x, int y, int num)
 {
-	byte *          dest;
-	byte *          source;
+	byte *dest;
+	byte *source;
 	unsigned short *pusdest;
-	int             drawline;
-	int             row, col;
+	int drawline;
+	int row, col;
 
 	num &= 255;
 
@@ -145,8 +145,8 @@ void Draw_Character(int x, int y, int num)
 	if(num < 0 || num > 255)
 		return;
 
-	row    = num >> 4;
-	col    = num & 15;
+	row = num >> 4;
+	col = num & 15;
 	source = draw_chars + (row << 10) + (col << 3);
 
 	if(y < 0)
@@ -246,28 +246,28 @@ void Draw_Alt_String(int x, int y, char *str)
 
 void Draw_Pixel(int x, int y, byte color)
 {
-	byte *          dest;
+	byte *dest;
 	unsigned short *pusdest;
 
 	if(r_pixbytes == 1)
 	{
-		dest  = vid.conbuffer + y * vid.conrowbytes + x;
+		dest = vid.conbuffer + y * vid.conrowbytes + x;
 		*dest = color;
 	}
 	else
 	{
 		// FIXME: pre-expand to native format?
-		pusdest  = (unsigned short *)((byte *)vid.conbuffer + y * vid.conrowbytes + (x << 1));
+		pusdest = (unsigned short *)((byte *)vid.conbuffer + y * vid.conrowbytes + (x << 1));
 		*pusdest = d_8to16table[color];
 	}
 }
 
 void Draw_Crosshair(void)
 {
-	int            x, y;
-	extern cvar_t  crosshair, cl_crossx, cl_crossy, crosshaircolor;
+	int x, y;
+	extern cvar_t crosshair, cl_crossx, cl_crossy, crosshaircolor;
 	extern vrect_t scr_vrect;
-	byte           c = (byte)crosshaircolor.value;
+	byte c = (byte)crosshaircolor.value;
 
 	if(crosshair.value == 2)
 	{
@@ -284,9 +284,9 @@ void Draw_Crosshair(void)
 	}
 	else if(crosshair.value)
 		Draw_Character(
-		    scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx.value,
-		    scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy.value,
-		    '+');
+		scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx.value,
+		scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy.value,
+		'+');
 }
 
 /*
@@ -300,19 +300,19 @@ of the code.
 */
 void Draw_DebugChar(char num)
 {
-	byte *       dest;
-	byte *       source;
-	int          drawline;
+	byte *dest;
+	byte *source;
+	int drawline;
 	extern byte *draw_chars;
-	int          row, col;
+	int row, col;
 
 	if(!vid.direct)
 		return; // don't have direct FB access, so no debugchars...
 
 	drawline = 8;
 
-	row    = num >> 4;
-	col    = num & 15;
+	row = num >> 4;
+	col = num & 15;
 	source = draw_chars + (row << 10) + (col << 3);
 
 	dest = vid.direct + 312;
@@ -339,9 +339,9 @@ Draw_Pic
 */
 void Draw_Pic(int x, int y, qpic_t *pic)
 {
-	byte *          dest, *source;
+	byte *dest, *source;
 	unsigned short *pusdest;
-	int             v, u;
+	int v, u;
 
 	if((x < 0) ||
 	   (x + pic->width > vid.width) ||
@@ -389,9 +389,9 @@ Draw_SubPic
 */
 void Draw_SubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height)
 {
-	byte *          dest, *source;
+	byte *dest, *source;
 	unsigned short *pusdest;
-	int             v, u;
+	int v, u;
 
 	if((x < 0) ||
 	   (x + width > vid.width) ||
@@ -439,9 +439,9 @@ Draw_TransPic
 */
 void Draw_TransPic(int x, int y, qpic_t *pic)
 {
-	byte *          dest, *source, tbyte;
+	byte *dest, *source, tbyte;
 	unsigned short *pusdest;
-	int             v, u;
+	int v, u;
 
 	if(x < 0 || (unsigned)(x + pic->width) > vid.width || y < 0 ||
 	   (unsigned)(y + pic->height) > vid.height)
@@ -460,7 +460,7 @@ void Draw_TransPic(int x, int y, qpic_t *pic)
 			for(v = 0; v < pic->height; v++)
 			{
 				for(u = 0; u < pic->width; u++)
-					if((tbyte   = source[u]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u]) != TRANSPARENT_COLOR)
 						dest[u] = tbyte;
 
 				dest += vid.rowbytes;
@@ -473,21 +473,21 @@ void Draw_TransPic(int x, int y, qpic_t *pic)
 			{
 				for(u = 0; u < pic->width; u += 8)
 				{
-					if((tbyte   = source[u]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u]) != TRANSPARENT_COLOR)
 						dest[u] = tbyte;
-					if((tbyte       = source[u + 1]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 1]) != TRANSPARENT_COLOR)
 						dest[u + 1] = tbyte;
-					if((tbyte       = source[u + 2]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 2]) != TRANSPARENT_COLOR)
 						dest[u + 2] = tbyte;
-					if((tbyte       = source[u + 3]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 3]) != TRANSPARENT_COLOR)
 						dest[u + 3] = tbyte;
-					if((tbyte       = source[u + 4]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 4]) != TRANSPARENT_COLOR)
 						dest[u + 4] = tbyte;
-					if((tbyte       = source[u + 5]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 5]) != TRANSPARENT_COLOR)
 						dest[u + 5] = tbyte;
-					if((tbyte       = source[u + 6]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 6]) != TRANSPARENT_COLOR)
 						dest[u + 6] = tbyte;
-					if((tbyte       = source[u + 7]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 7]) != TRANSPARENT_COLOR)
 						dest[u + 7] = tbyte;
 				}
 				dest += vid.rowbytes;
@@ -525,9 +525,9 @@ Draw_TransPicTranslate
 */
 void Draw_TransPicTranslate(int x, int y, qpic_t *pic, byte *translation)
 {
-	byte *          dest, *source, tbyte;
+	byte *dest, *source, tbyte;
 	unsigned short *pusdest;
-	int             v, u;
+	int v, u;
 
 	if(x < 0 || (unsigned)(x + pic->width) > vid.width || y < 0 ||
 	   (unsigned)(y + pic->height) > vid.height)
@@ -546,7 +546,7 @@ void Draw_TransPicTranslate(int x, int y, qpic_t *pic, byte *translation)
 			for(v = 0; v < pic->height; v++)
 			{
 				for(u = 0; u < pic->width; u++)
-					if((tbyte   = source[u]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u]) != TRANSPARENT_COLOR)
 						dest[u] = translation[tbyte];
 
 				dest += vid.rowbytes;
@@ -559,21 +559,21 @@ void Draw_TransPicTranslate(int x, int y, qpic_t *pic, byte *translation)
 			{
 				for(u = 0; u < pic->width; u += 8)
 				{
-					if((tbyte   = source[u]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u]) != TRANSPARENT_COLOR)
 						dest[u] = translation[tbyte];
-					if((tbyte       = source[u + 1]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 1]) != TRANSPARENT_COLOR)
 						dest[u + 1] = translation[tbyte];
-					if((tbyte       = source[u + 2]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 2]) != TRANSPARENT_COLOR)
 						dest[u + 2] = translation[tbyte];
-					if((tbyte       = source[u + 3]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 3]) != TRANSPARENT_COLOR)
 						dest[u + 3] = translation[tbyte];
-					if((tbyte       = source[u + 4]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 4]) != TRANSPARENT_COLOR)
 						dest[u + 4] = translation[tbyte];
-					if((tbyte       = source[u + 5]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 5]) != TRANSPARENT_COLOR)
 						dest[u + 5] = translation[tbyte];
-					if((tbyte       = source[u + 6]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 6]) != TRANSPARENT_COLOR)
 						dest[u + 6] = translation[tbyte];
-					if((tbyte       = source[u + 7]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 7]) != TRANSPARENT_COLOR)
 						dest[u + 7] = translation[tbyte];
 				}
 				dest += vid.rowbytes;
@@ -606,13 +606,13 @@ void Draw_TransPicTranslate(int x, int y, qpic_t *pic, byte *translation)
 
 void Draw_CharToConback(int num, byte *dest)
 {
-	int   row, col;
+	int row, col;
 	byte *source;
-	int   drawline;
-	int   x;
+	int drawline;
+	int x;
 
-	row    = num >> 4;
-	col    = num & 15;
+	row = num >> 4;
+	col = num & 15;
 	source = draw_chars + (row << 10) + (col << 3);
 
 	drawline = 8;
@@ -635,13 +635,13 @@ Draw_ConsoleBackground
 */
 void Draw_ConsoleBackground(int lines)
 {
-	int             x, y, v;
-	byte *          src, *dest;
+	int x, y, v;
+	byte *src, *dest;
 	unsigned short *pusdest;
-	int             f, fstep;
-	qpic_t *        conback;
-	char            ver[100];
-	static char     saveback[320 * 8];
+	int f, fstep;
+	qpic_t *conback;
+	char ver[100];
+	static char saveback[320 * 8];
 
 	conback = Draw_CachePic("gfx/conback.lmp");
 
@@ -675,13 +675,13 @@ void Draw_ConsoleBackground(int lines)
 
 		for(y = 0; y < lines; y++, dest += vid.conrowbytes)
 		{
-			v   = (vid.conheight - lines + y) * 200 / vid.conheight;
+			v = (vid.conheight - lines + y) * 200 / vid.conheight;
 			src = conback->data + v * 320;
 			if(vid.conwidth == 320)
 				memcpy(dest, src, vid.conwidth);
 			else
 			{
-				f     = 0;
+				f = 0;
 				fstep = 320 * 0x10000 / vid.conwidth;
 				for(x = 0; x < vid.conwidth; x += 4)
 				{
@@ -705,9 +705,9 @@ void Draw_ConsoleBackground(int lines)
 		{
 			// FIXME: pre-expand to native format?
 			// FIXME: does the endian switching go away in production?
-			v     = (vid.conheight - lines + y) * 200 / vid.conheight;
-			src   = conback->data + v * 320;
-			f     = 0;
+			v = (vid.conheight - lines + y) * 200 / vid.conheight;
+			src = conback->data + v * 320;
+			f = 0;
 			fstep = 320 * 0x10000 / vid.conwidth;
 			for(x = 0; x < vid.conwidth; x += 4)
 			{
@@ -734,13 +734,13 @@ R_DrawRect8
 void R_DrawRect8(vrect_t *prect, int rowbytes, byte *psrc,
                  int transparent)
 {
-	byte  t;
-	int   i, j, srcdelta, destdelta;
+	byte t;
+	int i, j, srcdelta, destdelta;
 	byte *pdest;
 
 	pdest = vid.buffer + (prect->y * vid.rowbytes) + prect->x;
 
-	srcdelta  = rowbytes - prect->width;
+	srcdelta = rowbytes - prect->width;
 	destdelta = vid.rowbytes - prect->width;
 
 	if(transparent)
@@ -782,16 +782,16 @@ R_DrawRect16
 void R_DrawRect16(vrect_t *prect, int rowbytes, byte *psrc,
                   int transparent)
 {
-	byte            t;
-	int             i, j, srcdelta, destdelta;
+	byte t;
+	int i, j, srcdelta, destdelta;
 	unsigned short *pdest;
 
 	// FIXME: would it be better to pre-expand native-format versions?
 
 	pdest = (unsigned short *)vid.buffer +
-	    (prect->y * (vid.rowbytes >> 1)) + prect->x;
+	(prect->y * (vid.rowbytes >> 1)) + prect->x;
 
-	srcdelta  = rowbytes - prect->width;
+	srcdelta = rowbytes - prect->width;
 	destdelta = (vid.rowbytes >> 1) - prect->width;
 
 	if(transparent)
@@ -841,23 +841,23 @@ refresh window.
 */
 void Draw_TileClear(int x, int y, int w, int h)
 {
-	int     width, height, tileoffsetx, tileoffsety;
-	byte *  psrc;
+	int width, height, tileoffsetx, tileoffsety;
+	byte *psrc;
 	vrect_t vr;
 
-	r_rectdesc.rect.x      = x;
-	r_rectdesc.rect.y      = y;
-	r_rectdesc.rect.width  = w;
+	r_rectdesc.rect.x = x;
+	r_rectdesc.rect.y = y;
+	r_rectdesc.rect.width = w;
 	r_rectdesc.rect.height = h;
 
-	vr.y   = r_rectdesc.rect.y;
+	vr.y = r_rectdesc.rect.y;
 	height = r_rectdesc.rect.height;
 
 	tileoffsety = vr.y % r_rectdesc.height;
 
 	while(height > 0)
 	{
-		vr.x  = r_rectdesc.rect.x;
+		vr.x = r_rectdesc.rect.x;
 		width = r_rectdesc.rect.width;
 
 		if(tileoffsety != 0)
@@ -881,7 +881,7 @@ void Draw_TileClear(int x, int y, int w, int h)
 				vr.width = width;
 
 			psrc = r_rectdesc.ptexbytes +
-			    (tileoffsety * r_rectdesc.rowbytes) + tileoffsetx;
+			(tileoffsety * r_rectdesc.rowbytes) + tileoffsetx;
 
 			if(r_pixbytes == 1)
 			{
@@ -912,10 +912,10 @@ Fills a box of pixels with a single color
 */
 void Draw_Fill(int x, int y, int w, int h, int c)
 {
-	byte *          dest;
+	byte *dest;
 	unsigned short *pusdest;
-	unsigned        uc;
-	int             u, v;
+	unsigned uc;
+	int u, v;
 
 	if(x < 0 || x + w > vid.width ||
 	   y < 0 || y + h > vid.height)
@@ -929,7 +929,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 	{
 		dest = vid.buffer + y * vid.rowbytes + x;
 		for(v = 0; v < h; v++, dest += vid.rowbytes)
-			for(u       = 0; u < w; u++)
+			for(u = 0; u < w; u++)
 				dest[u] = c;
 	}
 	else
@@ -938,7 +938,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 
 		pusdest = (unsigned short *)vid.buffer + y * (vid.rowbytes >> 1) + x;
 		for(v = 0; v < h; v++, pusdest += (vid.rowbytes >> 1))
-			for(u          = 0; u < w; u++)
+			for(u = 0; u < w; u++)
 				pusdest[u] = uc;
 	}
 }
@@ -952,7 +952,7 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen(void)
 {
-	int   x, y;
+	int x, y;
 	byte *pbuf;
 
 	VID_UnlockBuffer();
@@ -964,7 +964,7 @@ void Draw_FadeScreen(void)
 		int t;
 
 		pbuf = (byte *)(vid.buffer + vid.rowbytes * y);
-		t    = (y & 1) << 1;
+		t = (y & 1) << 1;
 
 		for(x = 0; x < vid.width; x++)
 		{

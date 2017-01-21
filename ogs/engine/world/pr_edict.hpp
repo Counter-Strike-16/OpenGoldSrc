@@ -33,9 +33,9 @@
 #include "maintypes.h"
 #include "public/archtypes.h"
 
-typedef struct edict_s   edict_t;
+typedef struct edict_s edict_t;
 typedef struct entvars_s entvars_t;
-typedef struct cvar_s    cvar_t;
+typedef struct cvar_s cvar_t;
 
 void ED_ClearEdict(edict_t *e);
 edict_t *ED_Alloc(void);
@@ -53,7 +53,7 @@ void InitEntityDLLFields(edict_t *pEdict);
 void *PvAllocEntPrivateData(edict_t *pEdict, int32 cb);
 void *PvEntPrivateData(edict_t *pEdict);
 void FreeEntPrivateData(edict_t *pEdict);
-void     FreeAllEntPrivateData(void);
+void FreeAllEntPrivateData(void);
 edict_t *PEntityOfEntOffset(int iEntOffset);
 int EntOffsetOfPEntity(const edict_t *pEdict);
 int IndexOfEdict(const edict_t *pEdict);

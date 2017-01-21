@@ -30,22 +30,22 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
-#include "public/archtypes.h"
-#include "rehlds/studio.h"
-#include "rehlds/model.h"
-#include "common/r_studioint.h"
 #include "common/cvardef.h"
+#include "common/r_studioint.h"
+#include "maintypes.h"
+#include "public/archtypes.h"
+#include "rehlds/model.h"
+#include "rehlds/studio.h"
 
 typedef struct r_studiocache_s r_studiocache_t;
 
-typedef hull_t          studio_hull_t[STUDIO_NUM_HULLS];
-typedef int             studio_hull_hitgroup_t[STUDIO_NUM_HULLS];
-typedef dclipnode_t     studio_clipnodes_t[6];
-typedef mplane_t        studio_planes_t[STUDIO_NUM_PLANES];
+typedef hull_t studio_hull_t[STUDIO_NUM_HULLS];
+typedef int studio_hull_hitgroup_t[STUDIO_NUM_HULLS];
+typedef dclipnode_t studio_clipnodes_t[6];
+typedef mplane_t studio_planes_t[STUDIO_NUM_PLANES];
 typedef r_studiocache_t rgStudioCache_t[STUDIO_CACHE_SIZE];
-typedef float           bonetransform_t[STUDIO_NUM_HULLS][3][4];
+typedef float bonetransform_t[STUDIO_NUM_HULLS][3][4];
 
 #ifdef HOOK_ENGINE
 
@@ -71,27 +71,27 @@ typedef float           bonetransform_t[STUDIO_NUM_HULLS][3][4];
 
 #endif // HOOK_ENGINE
 
-extern int      cache_hull_hitgroup[128];
-extern hull_t   cache_hull[128];
+extern int cache_hull_hitgroup[128];
+extern hull_t cache_hull[128];
 extern mplane_t cache_planes[768];
 
-extern studiohdr_t *            pstudiohdr;
-extern studio_hull_t            studio_hull;
-extern studio_hull_hitgroup_t   studio_hull_hitgroup;
-extern studio_clipnodes_t       studio_clipnodes;
-extern studio_planes_t          studio_planes;
-extern rgStudioCache_t          rgStudioCache;
-extern int                      r_cachecurrent;
-extern int                      nCurrentHull;
-extern int                      nCurrentPlane;
-extern bonetransform_t          bonetransform;
+extern studiohdr_t *pstudiohdr;
+extern studio_hull_t studio_hull;
+extern studio_hull_hitgroup_t studio_hull_hitgroup;
+extern studio_clipnodes_t studio_clipnodes;
+extern studio_planes_t studio_planes;
+extern rgStudioCache_t rgStudioCache;
+extern int r_cachecurrent;
+extern int nCurrentHull;
+extern int nCurrentPlane;
+extern bonetransform_t bonetransform;
 extern sv_blending_interface_t *g_pSvBlendingAPI;
-extern sv_blending_interface_t  svBlending;
-extern server_studio_api_t      server_studio_api;
-extern cvar_t                   r_cachestudio;
-extern float                    rotationmatrix[3][4];
+extern sv_blending_interface_t svBlending;
+extern server_studio_api_t server_studio_api;
+extern cvar_t r_cachestudio;
+extern float rotationmatrix[3][4];
 
-void             SV_InitStudioHull(void);
+void SV_InitStudioHull(void);
 r_studiocache_t *R_CheckStudioCache(model_t *pModel, float frame, int sequence, const vec_t *angles, const vec_t *origin, const vec_t *size, const unsigned char *controller, const unsigned char *blending);
 NOXREF void R_AddToStudioCache(float frame, int sequence, const vec_t *angles, const vec_t *origin, const vec_t *size, const unsigned char *controller, const unsigned char *pblending, model_t *pModel, hull_t *pHulls, int numhulls);
 void AngleQuaternion(vec_t *angles, vec_t *quaternion);

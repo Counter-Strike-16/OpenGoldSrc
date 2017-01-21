@@ -41,9 +41,9 @@ double g_flLastSteamProgressUpdateTime;
 */
 #ifndef HOOK_ENGINE
 
-char *szCommonPreloads  = "multiplayer_preloads";
+char *szCommonPreloads = "multiplayer_preloads";
 char *szReslistsBaseDir = "reslists";
-char *szReslistsExt     = ".lst";
+char *szReslistsExt = ".lst";
 
 #else // HOOK_ENGINE
 
@@ -55,7 +55,8 @@ char *szReslistsExt;
 
 const char *GetCurrentSteamAppName()
 {
-	if(!Q_stricmp(com_gamedir, "cstrike") || !Q_stricmp(com_gamedir, "cstrike_beta"))
+	if(!Q_stricmp(com_gamedir, "cstrike") ||
+	   !Q_stricmp(com_gamedir, "cstrike_beta"))
 		return "Counter-Strike";
 
 	else if(!Q_stricmp(com_gamedir, "valve"))
@@ -102,11 +103,7 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 		hostinfo = CRehldsPlatformHolder::get()->gethostbyname(hostname);
 		if(hostinfo && hostinfo->h_length == 4 && *hostinfo->h_addr_list != NULL)
 		{
-			Q_snprintf(key, sizeof(key), "%u.%u.%u.%u",
-			           (*hostinfo->h_addr_list)[0],
-			           (*hostinfo->h_addr_list)[1],
-			           (*hostinfo->h_addr_list)[2],
-			           (*hostinfo->h_addr_list)[3]);
+			Q_snprintf(key, sizeof(key), "%u.%u.%u.%u", (*hostinfo->h_addr_list)[0], (*hostinfo->h_addr_list)[1], (*hostinfo->h_addr_list)[2], (*hostinfo->h_addr_list)[3]);
 		}
 		else
 		{
@@ -135,7 +132,7 @@ NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage)
 void Legacy_Sys_Printf(char *fmt, ...)
 {
 	va_list argptr;
-	char    text[1024];
+	char text[1024];
 
 	va_start(argptr, fmt);
 	Q_vsnprintf(text, sizeof(text), fmt, argptr);
@@ -156,7 +153,7 @@ NOXREF void Legacy_MP3subsys_Resume_Audio()
 void Sys_SetupLegacyAPIs()
 {
 #ifndef SWDS
-	VID_FlipScreen       = Sys_VID_FlipScreen;
+	VID_FlipScreen = Sys_VID_FlipScreen;
 	D_SurfaceCacheForRes = Sys_GetSurfaceCacheSize;
 #endif // SWDS
 	Launcher_ConsolePrintf = Legacy_Sys_Printf;
@@ -237,15 +234,16 @@ void Sys_Shutdown()
 
 void Sys_InitArgv(char *lpCmdLine)
 {
-	static char * argv[MAX_COMMAND_LINE_PARAMS];
+	static char *argv[MAX_COMMAND_LINE_PARAMS];
 	unsigned char c;
 #ifdef REHLDS_FIXES
 	bool inQuotes;
 #endif
 
 	argv[0] = "";
-	c       = *lpCmdLine;
-	for(host_parms.argc = 1; c && host_parms.argc < MAX_COMMAND_LINE_PARAMS; c = *(++lpCmdLine))
+	c = *lpCmdLine;
+	for(host_parms.argc = 1; c && host_parms.argc < MAX_COMMAND_LINE_PARAMS;
+	    c = *(++lpCmdLine))
 	{
 #ifdef REHLDS_FIXES
 		// Skip whitespace
@@ -259,7 +257,8 @@ void Sys_InitArgv(char *lpCmdLine)
 			break;
 		}
 
-		// TODO: Add MultiByteToWideChar conversion under Windows, to correctly get UTF8, but need to alloc memory to store it
+		// TODO: Add MultiByteToWideChar conversion under Windows, to correctly get
+		// UTF8, but need to alloc memory to store it
 		// Store arg pointer
 		argv[host_parms.argc] = lpCmdLine;
 		host_parms.argc++;
@@ -357,11 +356,12 @@ void Sys_InitMemory()
 #ifdef _WIN32
 	host_parms.membase = (void *)GlobalAlloc(GMEM_FIXED, host_parms.memsize);
 #else
-	host_parms.membase     = Mem_Malloc(host_parms.memsize);
+	host_parms.membase = Mem_Malloc(host_parms.memsize);
 #endif // _WIN32
 
 	if(!host_parms.membase)
-		Sys_Error("Unable to allocate %.2f MB\n", (float)host_parms.memsize / (1024.0f * 1024.0f));
+		Sys_Error("Unable to allocate %.2f MB\n",
+		          (float)host_parms.memsize / (1024.0f * 1024.0f));
 }
 
 void Sys_ShutdownMemory()
@@ -378,7 +378,7 @@ void Sys_ShutdownMemory()
 void Sys_InitLauncherInterface()
 {
 #ifdef _WIN32
-	//TODO: client-side code
+	// TODO: client-side code
 	Launcher_ConsolePrintf = Legacy_Sys_Printf;
 #else
 #ifndef SWDS
@@ -404,8 +404,8 @@ NOXREF void Sys_ShutdownAuthentication()
 
 void Sys_ShowProgressTicks(char *specialProgressMsg)
 {
-	static bool  recursionGuard = false;
-	static int32 numTics        = 0;
+	static bool recursionGuard = false;
+	static int32 numTics = 0;
 
 	double currentTime;
 	if(!recursionGuard)
@@ -431,8 +431,8 @@ void Sys_ShowProgressTicks(char *specialProgressMsg)
 				}
 				else
 				{
-					int  i;
-					int  numTicsToPrint = (numTics % 5 + 1);
+					int i;
+					int numTicsToPrint = (numTics % 5 + 1);
 					char msg[128];
 
 					Q_strncpy(msg, "Updating game resources", sizeof(msg) - 1);
@@ -506,7 +506,7 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 	else
 		ClientDLL_ActivateMouse();
 
-	char       MessageText[512];
+	char MessageText[512];
 	const char en_US[12];
 
 	Q_strcpy(en_US, "en_US.UTF-8");
@@ -518,7 +518,11 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 
 	if(Q_stricmp(cat, en_US))
 	{
-		Q_snprintf(MessageText, sizeof(MessageText), "SetLocale('%s') failed. Using '%s'.\nYou may have limited glyph support.\nPlease install '%s' locale.", en_US, cat, en_US);
+		Q_snprintf(MessageText, sizeof(MessageText), "SetLocale('%s') failed. Using '%s'.\nYou may have limited "
+		                                             "glyph support.\nPlease install '%s' locale.",
+		           en_US,
+		           cat,
+		           en_US);
 		SDL_ShowSimpleMessageBox(0, "Warning", MessageText, *pmainwindow);
 	}
 #endif // SWDS
@@ -561,68 +565,75 @@ void ClearIOStates()
 /*
 NOXREF int BuildMapCycleListHints(char **hints)
 {
-	char szMap[262];
-	unsigned int length;
-	char *pFileList;
-	char szMod[MAX_PATH];
-	char cszMapCycleTxtFile[MAX_PATH];
-	FileHandle_t pFile;
+        char szMap[262];
+        unsigned int length;
+        char *pFileList;
+        char szMod[MAX_PATH];
+        char cszMapCycleTxtFile[MAX_PATH];
+        FileHandle_t pFile;
 
-	COM_FileBase(com_gamedir, szMod);
-	Q_sprintf(cszMapCycleTxtFile, "%s/%s", szMod, mapcyclefile.string);
-	pFile = FS_Open(cszMapCycleTxtFile, "rb");
-	if (!pFile)
-	{
-		Con_Printf("Unable to open %s\n", cszMapCycleTxtFile);
-		return 0;
-	}
-	Q_sprintf(szMap, "%s\\%s\\%s%s\r\n", szReslistsBaseDir, GetCurrentSteamAppName(), szCommonPreloads, szReslistsExt);
+        COM_FileBase(com_gamedir, szMod);
+        Q_sprintf(cszMapCycleTxtFile, "%s/%s", szMod, mapcyclefile.string);
+        pFile = FS_Open(cszMapCycleTxtFile, "rb");
+        if (!pFile)
+        {
+                Con_Printf("Unable to open %s\n", cszMapCycleTxtFile);
+                return 0;
+        }
+        Q_sprintf(szMap, "%s\\%s\\%s%s\r\n", szReslistsBaseDir,
+GetCurrentSteamAppName(), szCommonPreloads, szReslistsExt);
 
-	*hints = (char *)Mem_Malloc(strlen(szMap) + 1);
-	if (*hints == NULL)
-	{
-		Con_Printf("Unable to allocate memory for map cycle hints list");
-		return 0;
-	}
-	Q_strcpy(*hints, szMap);
-	length = FS_Size(pFile);
-	if (length)
-	{
-		pFileList = (char *)malloc(length);
-		if (pFileList && FS_Read(pFileList, length, 1, pFile) != 1)
-		{
-			while (1)
-			{
-				pFileList = COM_Parse(pFileList);
-				if (strlen(com_token) <= 0)
-				{
-					Mem_Free(*hints);
-					break;
-				}
+        *hints = (char *)Mem_Malloc(strlen(szMap) + 1);
+        if (*hints == NULL)
+        {
+                Con_Printf("Unable to allocate memory for map cycle hints
+list");
+                return 0;
+        }
+        Q_strcpy(*hints, szMap);
+        length = FS_Size(pFile);
+        if (length)
+        {
+                pFileList = (char *)malloc(length);
+                if (pFileList && FS_Read(pFileList, length, 1, pFile) != 1)
+                {
+                        while (1)
+                        {
+                                pFileList = COM_Parse(pFileList);
+                                if (strlen(com_token) <= 0)
+                                {
+                                        Mem_Free(*hints);
+                                        break;
+                                }
 
-				Q_strncpy(szMap, com_token, sizeof(szMap) - 1);
-				szMap[sizeof(szMap) - 1] = '\0';
+                                Q_strncpy(szMap, com_token, sizeof(szMap) - 1);
+                                szMap[sizeof(szMap) - 1] = '\0';
 
-				if (COM_TokenWaiting(pFileList))
-					pFileList = COM_Parse(pFileList);
+                                if (COM_TokenWaiting(pFileList))
+                                        pFileList = COM_Parse(pFileList);
 
-				char mapLine[sizeof(szMap)];
-				Q_snprintf(mapLine, sizeof(mapLine), "%s\\%s\\%s%s\r\n", szReslistsBaseDir, szMod, szMap, szReslistsExt);
+                                char mapLine[sizeof(szMap)];
+                                Q_snprintf(mapLine, sizeof(mapLine),
+"%s\\%s\\%s%s\r\n", szReslistsBaseDir, szMod, szMap, szReslistsExt);
 
-				*hints = (char *)Mem_Realloc(*hints, strlen(*hints) + 1 + strlen(mapLine) + 1);
-				if (*hints == NULL)
-				{
-					Con_Printf("Unable to reallocate memory for map cycle hints list");
-					return 0;
-				}
-				Q_strcat(*hints, mapLine);
-			}
-		}
-	}
-	FS_Close(pFile);
-	Q_sprintf(szMap, "%s\\%s\\mp_maps.txt\r\n", szReslistsBaseDir, GetCurrentSteamAppName());
-	*hints = (char *)Mem_Realloc(*hints, strlen(*hints) + 1 + strlen(szMap) + 1);
-	Q_strcat(*hints, szMap);
-	return 1;
+                                *hints = (char *)Mem_Realloc(*hints,
+strlen(*hints) + 1 + strlen(mapLine) + 1);
+                                if (*hints == NULL)
+                                {
+                                        Con_Printf("Unable to reallocate memory
+for map cycle hints list");
+                                        return 0;
+                                }
+                                Q_strcat(*hints, mapLine);
+                        }
+                }
+        }
+        FS_Close(pFile);
+        Q_sprintf(szMap, "%s\\%s\\mp_maps.txt\r\n", szReslistsBaseDir,
+GetCurrentSteamAppName());
+        *hints = (char *)Mem_Realloc(*hints, strlen(*hints) + 1 + strlen(szMap)
++ 1);
+        Q_strcat(*hints, szMap);
+        return 1;
 }
 */

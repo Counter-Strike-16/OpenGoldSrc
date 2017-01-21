@@ -16,14 +16,14 @@ COptionsSubVoice::COptionsSubVoice(vgui::Panel *parent)
 {
 	m_pVoiceTweak = engine->pVoiceTweak;
 
-	m_pMicMeter  = new ImagePanel(this, "MicMeter");
+	m_pMicMeter = new ImagePanel(this, "MicMeter");
 	m_pMicMeter2 = new ImagePanel(this, "MicMeter2");
 
 	m_pReceiveSliderLabel = new Label(this, "ReceiveLabel", "#GameUI_VoiceReceiveVolume");
-	m_pReceiveVolume      = new CCvarSlider(this, "VoiceReceive", "#GameUI_ReceiveVolume", 0.0f, 1.0f, "voice_scale");
+	m_pReceiveVolume = new CCvarSlider(this, "VoiceReceive", "#GameUI_ReceiveVolume", 0.0f, 1.0f, "voice_scale");
 
 	m_pMicrophoneSliderLabel = new Label(this, "MicrophoneLabel", "#GameUI_VoiceTransmitVolume");
-	m_pMicrophoneVolume      = new Slider(this, "#GameUI_MicrophoneVolume");
+	m_pMicrophoneVolume = new Slider(this, "#GameUI_MicrophoneVolume");
 	m_pMicrophoneVolume->SetRange(0, 100);
 	m_pMicrophoneVolume->AddActionSignalTarget(this);
 
@@ -103,7 +103,7 @@ void COptionsSubVoice::OnApplyChanges(void)
 		return;
 
 	m_nMicVolumeValue = m_pMicrophoneVolume->GetValue();
-	float fMicVolume  = (float)m_nMicVolumeValue / 100.0f;
+	float fMicVolume = (float)m_nMicVolumeValue / 100.0f;
 	m_pVoiceTweak->SetControlFloat(MicrophoneVolume, fMicVolume);
 
 	m_bMicBoostSelected = m_pMicBoost->IsSelected();
@@ -147,12 +147,12 @@ void COptionsSubVoice::StartTestMicrophone(void)
 
 void COptionsSubVoice::UseCurrentVoiceParameters(void)
 {
-	int   nVal = m_pMicrophoneVolume->GetValue();
-	float val  = (float)nVal / 100.0f;
+	int nVal = m_pMicrophoneVolume->GetValue();
+	float val = (float)nVal / 100.0f;
 	m_pVoiceTweak->SetControlFloat(MicrophoneVolume, val);
 
 	bool bSelected = m_pMicBoost->IsSelected();
-	val            = bSelected ? 1.0f : 0.0f;
+	val = bSelected ? 1.0f : 0.0f;
 	m_pVoiceTweak->SetControlFloat(MicBoost, val);
 
 	m_nReceiveSliderValue = m_pReceiveVolume->GetValue();
@@ -228,7 +228,7 @@ void COptionsSubVoice::OnThink(void)
 		float nValue = m_pVoiceTweak->GetSpeakingVolume();
 
 		int width = (BAR_WIDTH * nValue) / 32768;
-		width     = ((width + (BAR_INCREMENT - 1)) / BAR_INCREMENT) * BAR_INCREMENT;
+		width = ((width + (BAR_INCREMENT - 1)) / BAR_INCREMENT) * BAR_INCREMENT;
 
 		int wide, tall;
 		m_pMicMeter2->GetSize(wide, tall);

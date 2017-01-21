@@ -25,7 +25,7 @@ enum objtype_t
 typedef struct
 {
 	objtype_t type;
-	char      szDescription[32];
+	char szDescription[32];
 } objtypedesc_t;
 
 class CScriptListItem
@@ -66,13 +66,13 @@ public:
 
 	float fMin, fMax;
 
-	char  defValue[128];
+	char defValue[128];
 	float fdefValue;
 
-	char  curValue[128];
+	char curValue[128];
 	float fcurValue;
 
-	bool           bSetInfo;
+	bool bSetInfo;
 	CScriptObject *pNext;
 };
 
@@ -93,13 +93,20 @@ public:
 
 public:
 	virtual void WriteScriptHeader(FileHandle_t fp) = 0;
-	virtual void WriteFileHeader(FileHandle_t fp)   = 0;
+	virtual void WriteFileHeader(FileHandle_t fp) = 0;
 
 public:
 	void setDescription(const char *pszDesc);
 	void setHint(const char *pszHint);
-	const char *GetDescription(void) { return m_pszDescriptionType; }
-	const char *getHint(void) { return m_pszHintText; }
+	const char *GetDescription(void)
+	{
+		return m_pszDescriptionType;
+	}
+	const char *getHint(void)
+	{
+		return m_pszHintText;
+	}
+
 public:
 	CScriptObject *pObjList;
 
@@ -107,8 +114,8 @@ private:
 	CScriptObject *FindObject(const char *pszObjectName);
 
 private:
-	char *           m_pszHintText;
-	char *           m_pszDescriptionType;
+	char *m_pszHintText;
+	char *m_pszDescriptionType;
 	CPanelListPanel *m_pListPanel;
 };
 
@@ -127,11 +134,11 @@ public:
 	virtual void OnSizeChanged(int wide, int tall);
 
 public:
-	objtype_t      type;
-	vgui::Panel *  pControl;
-	vgui::Label *  pPrompt;
+	objtype_t type;
+	vgui::Panel *pControl;
+	vgui::Label *pPrompt;
 	CScriptObject *pScrObj;
-	mpcontrol_t *  next;
+	mpcontrol_t *next;
 };
 
 class CInfoDescription : public CDescription

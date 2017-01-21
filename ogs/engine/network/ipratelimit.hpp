@@ -37,34 +37,39 @@ typedef struct netadr_s netadr_t;
 class CIPRateLimit
 {
 public:
-	CIPRateLimit() {}
-	~CIPRateLimit() {}
+	CIPRateLimit()
+	{
+	}
+	~CIPRateLimit()
+	{
+	}
 	bool CheckIP(netadr_t adr);
 
 private:
 	enum
 	{
-		MAX_TREE_SIZE   = 512,
+		MAX_TREE_SIZE = 512,
 		START_TREE_SIZE = 256,
-		FLUSH_TIMEOUT   = 120,
+		FLUSH_TIMEOUT = 120,
 	};
 
 	typedef struct iprate_s
 	{
 		typedef int ip_t;
-		ip_t        ip;
+		ip_t ip;
 
 		long lastTime;
-		int  count;
+		int count;
 	} iprate_t;
 
 private:
 	CUtlRBTree<CIPRateLimit::iprate_s, int> m_IPTree;
 
-	int  m_iGlobalCount;
+	int m_iGlobalCount;
 	long m_lLastTime;
 
 	bool LessIP(const struct iprate_s &, const struct iprate_s &);
 };
 
-//extern bool (__fastcall *pCIPRateLimit__CheckIP)(CIPRateLimit *obj, int none, netadr_t adr);
+// extern bool (__fastcall *pCIPRateLimit__CheckIP)(CIPRateLimit *obj, int none,
+// netadr_t adr);

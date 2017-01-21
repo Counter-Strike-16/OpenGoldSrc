@@ -1,35 +1,35 @@
 // Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All
 // rights reserved.
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <sys/file.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <string.h>
-#include <time.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 
 #include <linux/cdrom.h>
 
 #include "../client/client.h"
 
-static qboolean cdValid     = false;
-static qboolean playing     = false;
-static qboolean wasPlaying  = false;
+static qboolean cdValid = false;
+static qboolean playing = false;
+static qboolean wasPlaying = false;
 static qboolean initialized = false;
-static qboolean enabled     = true;
+static qboolean enabled = true;
 static qboolean playLooping = false;
-static float    cdvolume;
-static byte     remap[100];
-static byte     playTrack;
-static byte     maxTrack;
+static float cdvolume;
+static byte remap[100];
+static byte playTrack;
+static byte maxTrack;
 
 static int cdfile = -1;
 
-//static char cd_dev[64] = "/dev/cdrom";
+// static char cd_dev[64] = "/dev/cdrom";
 
 cvar_t *cd_volume;
 cvar_t *cd_nocd;
@@ -73,7 +73,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 		return -1;
 	}
 
-	cdValid  = true;
+	cdValid = true;
 	maxTrack = tochdr.cdth_trk1;
 
 	return 0;
@@ -82,7 +82,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 void CDAudio_Play(int track, qboolean looping)
 {
 	struct cdrom_tocentry entry;
-	struct cdrom_ti       ti;
+	struct cdrom_ti ti;
 
 	if(cdfile == -1 || !enabled)
 		return;
@@ -103,7 +103,7 @@ void CDAudio_Play(int track, qboolean looping)
 	}
 
 	// don't try to play a non-audio track
-	entry.cdte_track  = track;
+	entry.cdte_track = track;
 	entry.cdte_format = CDROM_MSF;
 	if(ioctl(cdfile, CDROMREADTOCENTRY, &entry) == -1)
 	{
@@ -138,8 +138,8 @@ void CDAudio_Play(int track, qboolean looping)
 		Com_DPrintf("ioctl cdromresume failed\n");
 
 	playLooping = looping;
-	playTrack   = track;
-	playing     = true;
+	playTrack = track;
+	playing = true;
 
 	if(cd_volume->value == 0.0)
 		CDAudio_Pause();
@@ -157,7 +157,7 @@ void CDAudio_Stop(void)
 		Com_DPrintf("ioctl cdromstop failed (%d)\n", errno);
 
 	wasPlaying = false;
-	playing    = false;
+	playing = false;
 }
 
 void CDAudio_Pause(void)
@@ -172,7 +172,7 @@ void CDAudio_Pause(void)
 		Com_DPrintf("ioctl cdrompause failed\n");
 
 	wasPlaying = playing;
-	playing    = false;
+	playing = false;
 }
 
 void CDAudio_Resume(void)
@@ -194,8 +194,8 @@ void CDAudio_Resume(void)
 static void CD_f(void)
 {
 	char *command;
-	int   ret;
-	int   n;
+	int ret;
+	int n;
 
 	if(Cmd_Argc() < 2)
 		return;
@@ -221,7 +221,7 @@ static void CD_f(void)
 		enabled = true;
 		if(playing)
 			CDAudio_Stop();
-		for(n        = 0; n < 100; n++)
+		for(n = 0; n < 100; n++)
 			remap[n] = n;
 		CDAudio_GetAudioDiskInfo();
 		return;
@@ -237,7 +237,7 @@ static void CD_f(void)
 					Com_Printf("  %u -> %u\n", n, remap[n]);
 			return;
 		}
-		for(n        = 1; n <= ret; n++)
+		for(n = 1; n <= ret; n++)
 			remap[n] = atoi(Cmd_Argv(n + 1));
 		return;
 	}
@@ -312,7 +312,7 @@ static void CD_f(void)
 void CDAudio_Update(void)
 {
 	struct cdrom_subchnl subchnl;
-	static time_t        lastchk;
+	static time_t lastchk;
 
 	if(cdfile == -1 || !enabled)
 		return;
@@ -335,7 +335,7 @@ void CDAudio_Update(void)
 
 	if(playing && lastchk < time(NULL))
 	{
-		lastchk             = time(NULL) + 2; //two seconds between chks
+		lastchk = time(NULL) + 2; // two seconds between chks
 		subchnl.cdsc_format = CDROM_MSF;
 		if(ioctl(cdfile, CDROMSUBCHNL, &subchnl) == -1)
 		{
@@ -355,8 +355,8 @@ void CDAudio_Update(void)
 
 int CDAudio_Init(void)
 {
-	int          i;
-	cvar_t *     cv;
+	int i;
+	cvar_t *cv;
 	extern uid_t saved_euid;
 
 	cv = Cvar_Get("nocdaudio", "0", CVAR_NOSET);
@@ -384,10 +384,10 @@ int CDAudio_Init(void)
 		return -1;
 	}
 
-	for(i        = 0; i < 100; i++)
+	for(i = 0; i < 100; i++)
 		remap[i] = i;
-	initialized  = true;
-	enabled      = true;
+	initialized = true;
+	enabled = true;
 
 	if(CDAudio_GetAudioDiskInfo())
 	{

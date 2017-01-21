@@ -43,9 +43,19 @@ public:
 
 	bool IsLoaded();
 
-	cl_exportfuncs_t &operator*() { return &ptrtofuncs; }
-	cl_exportfuncs_t *operator->() { return ptrtofuncs; }
-	operator bool() { return ptrtofuncs ? true : false; }
+	cl_exportfuncs_t &operator*()
+	{
+		return &ptrtofuncs;
+	}
+	cl_exportfuncs_t *operator->()
+	{
+		return ptrtofuncs;
+	}
+	operator bool()
+	{
+		return ptrtofuncs ? true : false;
+	}
+
 private:
 };
 

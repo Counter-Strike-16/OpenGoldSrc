@@ -10,7 +10,7 @@ CLabeledCommandComboBox::CLabeledCommandComboBox(vgui::Panel *parent, const char
 {
 	AddActionSignalTarget(this);
 	m_iCurrentSelection = -1;
-	m_iStartSelection   = -1;
+	m_iStartSelection = -1;
 }
 
 CLabeledCommandComboBox::~CLabeledCommandComboBox(void)
@@ -25,7 +25,7 @@ void CLabeledCommandComboBox::DeleteAllItems(void)
 
 void CLabeledCommandComboBox::AddItem(char const *text, char const *engineCommand)
 {
-	int          idx  = m_Items.AddToTail();
+	int idx = m_Items.AddToTail();
 	COMMANDITEM *item = &m_Items[idx];
 
 	item->comboBoxID = BaseClass::AddItem(text, NULL);
@@ -58,7 +58,7 @@ void CLabeledCommandComboBox::SetInitialItem(int index)
 	if(index < m_Items.Count())
 	{
 		m_iStartSelection = index;
-		int comboBoxID    = m_Items[index].comboBoxID;
+		int comboBoxID = m_Items[index].comboBoxID;
 		ActivateItem(comboBoxID);
 	}
 }

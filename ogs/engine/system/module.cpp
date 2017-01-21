@@ -34,4 +34,4 @@
 cl_enginefunc_dst_t *pg_engdstAddrs;
 
 modfuncs_t g_modfuncs;
-module_t   g_module;
+module_t g_module;

@@ -35,24 +35,24 @@
 #include "common/commontypes.h"
 
 #ifdef _WIN32
-typedef wchar_t      uchar16;
+typedef wchar_t uchar16;
 typedef unsigned int uchar32;
 #else
 typedef unsigned short uchar16;
-typedef wchar_t        uchar32;
+typedef wchar_t uchar32;
 #endif
 
 enum EStringConvertErrorPolicy
 {
-	_STRINGCONVERTFLAG_SKIP      = 1,
-	_STRINGCONVERTFLAG_FAIL      = 2,
-	_STRINGCONVERTFLAG_ASSERT    = 4,
-	STRINGCONVERT_REPLACE        = 0,
-	STRINGCONVERT_SKIP           = 1,
-	STRINGCONVERT_FAIL           = 2,
+	_STRINGCONVERTFLAG_SKIP = 1,
+	_STRINGCONVERTFLAG_FAIL = 2,
+	_STRINGCONVERTFLAG_ASSERT = 4,
+	STRINGCONVERT_REPLACE = 0,
+	STRINGCONVERT_SKIP = 1,
+	STRINGCONVERT_FAIL = 2,
 	STRINGCONVERT_ASSERT_REPLACE = 4,
-	STRINGCONVERT_ASSERT_SKIP    = 5,
-	STRINGCONVERT_ASSERT_FAIL    = 6,
+	STRINGCONVERT_ASSERT_SKIP = 5,
+	STRINGCONVERT_ASSERT_FAIL = 6,
 };
 
 qboolean Q_IsValidUChar32(uchar32 uVal);

@@ -5,13 +5,13 @@
 #pragma once
 #endif
 
-#include "vgui_controls/Panel.h"
-#include "vgui_controls/PHandle.h"
-#include "vgui_controls/MenuItem.h"
-#include "vgui_controls/messagedialog.h"
 #include "KeyValues.h"
 #include "UtlVector.h"
 #include "tier1/CommandBuffer.h"
+#include "vgui_controls/MenuItem.h"
+#include "vgui_controls/PHandle.h"
+#include "vgui_controls/Panel.h"
+#include "vgui_controls/messagedialog.h"
 
 class CGameMenu;
 class CBackgroundMenuButton;
@@ -42,36 +42,43 @@ public:
 	void ShowButtonLabel(const char *name, bool show = true);
 	void SetButtonText(const char *buttonName, const char *text);
 	void ClearButtons(void);
-	void SetButtonGap(int nButtonGap) { m_nButtonGap = nButtonGap; }
-	void                  UseDefaultButtonGap(void) { m_nButtonGap = m_nButtonGapDefault; }
+	void SetButtonGap(int nButtonGap)
+	{
+		m_nButtonGap = nButtonGap;
+	}
+	void UseDefaultButtonGap(void)
+	{
+		m_nButtonGap = m_nButtonGapDefault;
+	}
+
 private:
 	struct ButtonLabel_t
 	{
-		bool    bVisible;
-		char    name[MAX_PATH];
+		bool bVisible;
+		char name[MAX_PATH];
 		wchar_t text[MAX_PATH];
 		wchar_t icon[2];
 	};
 
 private:
 	CUtlVector<ButtonLabel_t *> m_ButtonLabels;
-	vgui::Label *               m_pSizingLabel;
-	bool                        m_bPaintBackground;
-	bool                        m_bCenterHorizontal;
-	int                         m_ButtonPinRight;
-	int                         m_nButtonGap;
-	int                         m_nButtonGapDefault;
-	int                         m_FooterTall;
-	int                         m_ButtonOffsetFromTop;
-	int                         m_ButtonSeparator;
-	int                         m_TextAdjust;
-	char                        m_szTextFont[64];
-	char                        m_szButtonFont[64];
-	char                        m_szFGColor[64];
-	char                        m_szBGColor[64];
-	vgui::HFont                 m_hButtonFont;
-	vgui::HFont                 m_hTextFont;
-	char *                      m_pHelpName;
+	vgui::Label *m_pSizingLabel;
+	bool m_bPaintBackground;
+	bool m_bCenterHorizontal;
+	int m_ButtonPinRight;
+	int m_nButtonGap;
+	int m_nButtonGapDefault;
+	int m_FooterTall;
+	int m_ButtonOffsetFromTop;
+	int m_ButtonSeparator;
+	int m_TextAdjust;
+	char m_szTextFont[64];
+	char m_szButtonFont[64];
+	char m_szFGColor[64];
+	char m_szBGColor[64];
+	vgui::HFont m_hButtonFont;
+	vgui::HFont m_hTextFont;
+	char *m_pHelpName;
 };
 
 class CMainMenuGameLogo : public vgui::EditablePanel
@@ -86,8 +93,15 @@ public:
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
 
 public:
-	int GetOffsetX(void) { return m_nOffsetX; }
-	int GetOffsetY(void) { return m_nOffsetY; }
+	int GetOffsetX(void)
+	{
+		return m_nOffsetX;
+	}
+	int GetOffsetY(void)
+	{
+		return m_nOffsetY;
+	}
+
 private:
 	int m_nOffsetX;
 	int m_nOffsetY;
@@ -172,7 +186,7 @@ private:
 
 	enum
 	{
-		BACKGROUND_ROWS    = 3,
+		BACKGROUND_ROWS = 3,
 		BACKGROUND_COLUMNS = 4
 	};
 
@@ -181,12 +195,12 @@ public:
 	void SetBackgroundRenderState(EBackgroundState state);
 	void UpdateBackgroundState(void);
 	void SetMenuAlpha(int alpha);
-	void       CreateGameMenu(void);
-	void       CreateGameLogo(void);
-	void       CreateBinkPanel(void);
-	void       CreateBackGround(void);
-	void       CreateToolbar(void);
-	void       UpdateGameMenus(void);
+	void CreateGameMenu(void);
+	void CreateGameLogo(void);
+	void CreateBinkPanel(void);
+	void CreateBackGround(void);
+	void CreateToolbar(void);
+	void UpdateGameMenus(void);
 	CGameMenu *RecursiveLoadGameMenu(KeyValues *datafile);
 	void DrawBackgroundImage(void);
 
@@ -198,39 +212,39 @@ private:
 	MESSAGE_FUNC_INT(OnActivateModule, "ActivateModule", moduleIndex);
 
 private:
-	CMainMenuGameLogo *                 m_pGameLogo;
+	CMainMenuGameLogo *m_pGameLogo;
 	CUtlVector<CBackgroundMenuButton *> m_pGameMenuButtons;
-	CGameMenu *                         m_pGameMenu;
-	int                                 m_iGameMenuInset;
-	CUtlVector<coord>                   m_iGameTitlePos;
-	coord                               m_iGameMenuPos;
+	CGameMenu *m_pGameMenu;
+	int m_iGameMenuInset;
+	CUtlVector<coord> m_iGameTitlePos;
+	coord m_iGameMenuPos;
 	vgui::DHANDLE<vgui::PropertyDialog> m_hOptionsDialog;
-	vgui::DHANDLE<vgui::Frame>          m_hCreateMultiplayerGameDialog;
-	vgui::DHANDLE<vgui::QueryBox>       m_hQuitQueryBox;
-	EBackgroundState                    m_eBackgroundState;
-	vgui::AnimationController *         m_pConsoleAnimationController;
-	KeyValues *                         m_pConsoleControlSettings;
-	bimage_t                            m_ImageID[BACKGROUND_ROWS][BACKGROUND_COLUMNS];
-	int                                 m_iLoadingImageID;
-	bool                                m_bLevelLoading;
-	bool                                m_bEverActivated;
-	bool                                m_bFadingInMenus;
-	bool                                m_bInitialLoading;
-	float                               m_flFadeMenuStartTime;
-	float                               m_flFadeMenuEndTime;
-	bool                                m_bRenderingBackgroundTransition;
-	float                               m_flTransitionStartTime;
-	float                               m_flTransitionEndTime;
-	bool                                m_bHaveDarkenedBackground;
-	bool                                m_bHaveDarkenedTitleText;
-	bool                                m_bForceTitleTextUpdate;
-	float                               m_flFrameFadeInTime;
-	Color                               m_BackdropColor;
-	CBinkPanel *                        m_pBinkPanel;
-	vgui::VPANEL                        m_pFocusPanel;
-	vgui::VPANEL                        m_pFocusParent;
-	int                                 m_iToolBarSize;
-	CToolBar *                          m_pToolBar;
+	vgui::DHANDLE<vgui::Frame> m_hCreateMultiplayerGameDialog;
+	vgui::DHANDLE<vgui::QueryBox> m_hQuitQueryBox;
+	EBackgroundState m_eBackgroundState;
+	vgui::AnimationController *m_pConsoleAnimationController;
+	KeyValues *m_pConsoleControlSettings;
+	bimage_t m_ImageID[BACKGROUND_ROWS][BACKGROUND_COLUMNS];
+	int m_iLoadingImageID;
+	bool m_bLevelLoading;
+	bool m_bEverActivated;
+	bool m_bFadingInMenus;
+	bool m_bInitialLoading;
+	float m_flFadeMenuStartTime;
+	float m_flFadeMenuEndTime;
+	bool m_bRenderingBackgroundTransition;
+	float m_flTransitionStartTime;
+	float m_flTransitionEndTime;
+	bool m_bHaveDarkenedBackground;
+	bool m_bHaveDarkenedTitleText;
+	bool m_bForceTitleTextUpdate;
+	float m_flFrameFadeInTime;
+	Color m_BackdropColor;
+	CBinkPanel *m_pBinkPanel;
+	vgui::VPANEL m_pFocusPanel;
+	vgui::VPANEL m_pFocusParent;
+	int m_iToolBarSize;
+	CToolBar *m_pToolBar;
 
 private:
 	CPanelAnimationVar(float, m_flBackgroundFillAlpha, "m_flBackgroundFillAlpha", "0");

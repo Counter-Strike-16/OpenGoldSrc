@@ -30,16 +30,16 @@
 
 #include "r_local.hpp"
 
-viddef_t    vid;
+viddef_t vid;
 refimport_t ri;
 
 unsigned d_8to24table[256];
 
 cl_entity_t r_worldentity;
 
-char     skyname[MAX_QPATH];
-float    skyrotate;
-vec3_t   skyaxis;
+char skyname[MAX_QPATH];
+float skyrotate;
+vec3_t skyaxis;
 image_t *sky_images[6];
 
 refdef_t r_newrefdef;
@@ -51,23 +51,23 @@ byte r_warpbuffer[WARP_WIDTH * WARP_HEIGHT];
 
 swstate_t sw_state;
 
-void *   colormap;
-vec3_t   viewlightvec;
-alight_t r_viewlighting = {128, 192, viewlightvec};
-float    r_time1;
-int      r_numallocatededges;
-float    r_aliasuvscale = 1.0;
-int      r_outofsurfaces;
-int      r_outofedges;
+void *colormap;
+vec3_t viewlightvec;
+alight_t r_viewlighting = { 128, 192, viewlightvec };
+float r_time1;
+int r_numallocatededges;
+float r_aliasuvscale = 1.0;
+int r_outofsurfaces;
+int r_outofedges;
 
 qboolean r_dowarp;
 
 mvertex_t *r_pcurrentvertbase;
 
-int      c_surf;
-int      r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
+int c_surf;
+int r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
 qboolean r_surfsonstack;
-int      r_clipflags;
+int r_clipflags;
 
 //
 // view origin
@@ -81,11 +81,11 @@ vec3_t r_origin;
 // screen size info
 //
 oldrefdef_t r_refdef;
-float       xcenter, ycenter;
-float       xscale, yscale;
-float       xscaleinv, yscaleinv;
-float       xscaleshrink, yscaleshrink;
-float       aliasxscale, aliasyscale, aliasxcenter, aliasycenter;
+float xcenter, ycenter;
+float xscale, yscale;
+float xscaleinv, yscaleinv;
+float xscaleshrink, yscaleshrink;
+float aliasxscale, aliasyscale, aliasxcenter, aliasycenter;
 
 int r_screenwidth;
 
@@ -105,10 +105,10 @@ int r_drawnpolycount;
 int r_wholepolycount;
 
 int *pfrustum_indexes[4];
-int  r_frustum_indexes[4 * 6];
+int r_frustum_indexes[4 * 6];
 
 mleaf_t *r_viewleaf;
-int      r_viewcluster, r_oldviewcluster;
+int r_viewcluster, r_oldviewcluster;
 
 image_t *r_notexture_mip;
 
@@ -183,10 +183,10 @@ float d_sdivzorigin, d_tdivzorigin, d_ziorigin;
 
 fixed16_t sadjust, tadjust, bbextents, bbextentt;
 
-pixel_t *    cacheblock;
-int          cachewidth;
-pixel_t *    d_viewbuffer;
-short *      d_pzbuffer;
+pixel_t *cacheblock;
+int cachewidth;
+pixel_t *d_viewbuffer;
+short *d_pzbuffer;
 unsigned int d_zrowbytes;
 unsigned int d_zwidth;
 
@@ -201,17 +201,17 @@ R_InitTextures
 */
 void R_InitTextures()
 {
-	int   x, y, m;
+	int x, y, m;
 	byte *dest;
 
 	// create a simple checkerboard texture for the default
 	r_notexture_mip = (image_t *)&r_notexture_buffer;
 
 	r_notexture_mip->width = r_notexture_mip->height = 16;
-	r_notexture_mip->pixels[0]                       = &r_notexture_buffer[sizeof(image_t)];
-	r_notexture_mip->pixels[1]                       = r_notexture_mip->pixels[0] + 16 * 16;
-	r_notexture_mip->pixels[2]                       = r_notexture_mip->pixels[1] + 8 * 8;
-	r_notexture_mip->pixels[3]                       = r_notexture_mip->pixels[2] + 4 * 4;
+	r_notexture_mip->pixels[0] = &r_notexture_buffer[sizeof(image_t)];
+	r_notexture_mip->pixels[1] = r_notexture_mip->pixels[0] + 16 * 16;
+	r_notexture_mip->pixels[2] = r_notexture_mip->pixels[1] + 8 * 8;
+	r_notexture_mip->pixels[3] = r_notexture_mip->pixels[2] + 4 * 4;
 
 	for(m = 0; m < 4; m++)
 	{
@@ -239,9 +239,9 @@ void R_InitTurb()
 
 	for(i = 0; i < 1280; i++)
 	{
-		sintable[i]    = AMP + sin(i * 3.14159 * 2 / CYCLE) * AMP;
+		sintable[i] = AMP + sin(i * 3.14159 * 2 / CYCLE) * AMP;
 		intsintable[i] = AMP2 + sin(i * 3.14159 * 2 / CYCLE) * AMP2; // AMP2, not 20
-		blanktable[i]  = 0;                                          //PGM
+		blanktable[i] = 0;                                           //PGM
 	}
 }
 
@@ -249,40 +249,40 @@ void R_ImageList_f();
 
 void R_Register()
 {
-	sw_aliasstats        = ri.Cvar_Get("sw_polymodelstats", "0", 0);
-	sw_allow_modex       = ri.Cvar_Get("sw_allow_modex", "1", CVAR_ARCHIVE);
-	sw_clearcolor        = ri.Cvar_Get("sw_clearcolor", "2", 0);
-	sw_drawflat          = ri.Cvar_Get("sw_drawflat", "0", 0);
-	sw_draworder         = ri.Cvar_Get("sw_draworder", "0", 0);
-	sw_maxedges          = ri.Cvar_Get("sw_maxedges", STRINGER(MAXSTACKSURFACES), 0);
-	sw_maxsurfs          = ri.Cvar_Get("sw_maxsurfs", "0", 0);
-	sw_mipcap            = ri.Cvar_Get("sw_mipcap", "0", 0);
-	sw_mipscale          = ri.Cvar_Get("sw_mipscale", "1", 0);
-	sw_reportedgeout     = ri.Cvar_Get("sw_reportedgeout", "0", 0);
-	sw_reportsurfout     = ri.Cvar_Get("sw_reportsurfout", "0", 0);
-	sw_stipplealpha      = ri.Cvar_Get("sw_stipplealpha", "0", CVAR_ARCHIVE);
+	sw_aliasstats = ri.Cvar_Get("sw_polymodelstats", "0", 0);
+	sw_allow_modex = ri.Cvar_Get("sw_allow_modex", "1", CVAR_ARCHIVE);
+	sw_clearcolor = ri.Cvar_Get("sw_clearcolor", "2", 0);
+	sw_drawflat = ri.Cvar_Get("sw_drawflat", "0", 0);
+	sw_draworder = ri.Cvar_Get("sw_draworder", "0", 0);
+	sw_maxedges = ri.Cvar_Get("sw_maxedges", STRINGER(MAXSTACKSURFACES), 0);
+	sw_maxsurfs = ri.Cvar_Get("sw_maxsurfs", "0", 0);
+	sw_mipcap = ri.Cvar_Get("sw_mipcap", "0", 0);
+	sw_mipscale = ri.Cvar_Get("sw_mipscale", "1", 0);
+	sw_reportedgeout = ri.Cvar_Get("sw_reportedgeout", "0", 0);
+	sw_reportsurfout = ri.Cvar_Get("sw_reportsurfout", "0", 0);
+	sw_stipplealpha = ri.Cvar_Get("sw_stipplealpha", "0", CVAR_ARCHIVE);
 	sw_surfcacheoverride = ri.Cvar_Get("sw_surfcacheoverride", "0", 0);
-	sw_waterwarp         = ri.Cvar_Get("sw_waterwarp", "1", 0);
-	sw_mode              = ri.Cvar_Get("sw_mode", "0", CVAR_ARCHIVE);
+	sw_waterwarp = ri.Cvar_Get("sw_waterwarp", "1", 0);
+	sw_mode = ri.Cvar_Get("sw_mode", "0", CVAR_ARCHIVE);
 
-	r_lefthand     = ri.Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
-	r_speeds       = ri.Cvar_Get("r_speeds", "0", 0);
-	r_fullbright   = ri.Cvar_Get("r_fullbright", "0", 0);
+	r_lefthand = ri.Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
+	r_speeds = ri.Cvar_Get("r_speeds", "0", 0);
+	r_fullbright = ri.Cvar_Get("r_fullbright", "0", 0);
 	r_drawentities = ri.Cvar_Get("r_drawentities", "1", 0);
-	r_drawworld    = ri.Cvar_Get("r_drawworld", "1", 0);
-	r_dspeeds      = ri.Cvar_Get("r_dspeeds", "0", 0);
-	r_lightlevel   = ri.Cvar_Get("r_lightlevel", "0", 0);
-	r_lerpmodels   = ri.Cvar_Get("r_lerpmodels", "1", 0);
-	r_novis        = ri.Cvar_Get("r_novis", "0", 0);
+	r_drawworld = ri.Cvar_Get("r_drawworld", "1", 0);
+	r_dspeeds = ri.Cvar_Get("r_dspeeds", "0", 0);
+	r_lightlevel = ri.Cvar_Get("r_lightlevel", "0", 0);
+	r_lerpmodels = ri.Cvar_Get("r_lerpmodels", "1", 0);
+	r_novis = ri.Cvar_Get("r_novis", "0", 0);
 
 	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-	vid_gamma      = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
+	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
 
 	ri.Cmd_AddCommand("modellist", Mod_Modellist_f);
 	ri.Cmd_AddCommand("screenshot", R_ScreenShot_f);
 	ri.Cmd_AddCommand("imagelist", R_ImageList_f);
 
-	sw_mode->modified   = true; // force us to do mode specific stuff later
+	sw_mode->modified = true;   // force us to do mode specific stuff later
 	vid_gamma->modified = true; // force us to rebuild the gamma table later
 
 	//PGM
@@ -311,12 +311,12 @@ qboolean R_Init(void *hInstance, void *wndProc)
 
 	R_InitTurb();
 
-	view_clipplanes[0].leftedge      = true;
-	view_clipplanes[1].rightedge     = true;
-	view_clipplanes[1].leftedge      = view_clipplanes[2].leftedge =
-	    view_clipplanes[3].leftedge  = false;
-	view_clipplanes[0].rightedge     = view_clipplanes[2].rightedge =
-	    view_clipplanes[3].rightedge = false;
+	view_clipplanes[0].leftedge = true;
+	view_clipplanes[1].rightedge = true;
+	view_clipplanes[1].leftedge = view_clipplanes[2].leftedge =
+	view_clipplanes[3].leftedge = false;
+	view_clipplanes[0].rightedge = view_clipplanes[2].rightedge =
+	view_clipplanes[3].rightedge = false;
 
 	r_refdef.xOrigin = XCENTERING;
 	r_refdef.yOrigin = YCENTERING;
@@ -392,9 +392,9 @@ void R_NewMap()
 
 	if(r_cnumsurfs > NUMSTACKSURFACES)
 	{
-		surfaces       = malloc(r_cnumsurfs * sizeof(surf_t));
-		surface_p      = surfaces;
-		surf_max       = &surfaces[r_cnumsurfs];
+		surfaces = malloc(r_cnumsurfs * sizeof(surf_t));
+		surface_p = surfaces;
+		surf_max = &surfaces[r_cnumsurfs];
 		r_surfsonstack = false;
 		// surface 0 doesn't really exist; it's just a dummy because index 0
 		// is used to indicate no edge attached to surface
@@ -434,11 +434,11 @@ cluster
 */
 void R_MarkLeaves()
 {
-	byte *   vis;
+	byte *vis;
 	mnode_t *node;
-	int      i;
+	int i;
 	mleaf_t *leaf;
-	int      cluster;
+	int cluster;
 
 	if(r_oldviewcluster == r_viewcluster && !r_novis->value && r_viewcluster != -1)
 		return;
@@ -454,9 +454,9 @@ void R_MarkLeaves()
 	if(r_novis->value || r_viewcluster == -1 || !r_worldmodel->vis)
 	{
 		// mark everything
-		for(i                               = 0; i < r_worldmodel->numleafs; i++)
+		for(i = 0; i < r_worldmodel->numleafs; i++)
 			r_worldmodel->leafs[i].visframe = r_visframecount;
-		for(i                               = 0; i < r_worldmodel->numnodes; i++)
+		for(i = 0; i < r_worldmodel->numnodes; i++)
 			r_worldmodel->nodes[i].visframe = r_visframecount;
 		return;
 	}
@@ -476,7 +476,7 @@ void R_MarkLeaves()
 				if(node->visframe == r_visframecount)
 					break;
 				node->visframe = r_visframecount;
-				node           = node->parent;
+				node = node->parent;
 			} while(node);
 		}
 	}
@@ -515,7 +515,7 @@ R_DrawEntitiesOnList
 */
 void R_DrawEntitiesOnList()
 {
-	int      i;
+	int i;
 	qboolean translucent_entities = false;
 
 	if(!r_drawentities->value)
@@ -620,9 +620,9 @@ R_BmodelCheckBBox
 */
 int R_BmodelCheckBBox(float *minmaxs)
 {
-	int    i, *pindex, clipflags;
+	int i, *pindex, clipflags;
 	vec3_t acceptpt, rejectpt;
-	float  d;
+	float d;
 
 	clipflags = 0;
 
@@ -668,8 +668,8 @@ Find the first node that splits the given box
 mnode_t *R_FindTopnode(vec3_t mins, vec3_t maxs)
 {
 	mplane_t *splitplane;
-	int       sides;
-	mnode_t * node;
+	int sides;
+	mnode_t *node;
 
 	node = r_worldmodel->nodes;
 
@@ -687,7 +687,7 @@ mnode_t *R_FindTopnode(vec3_t mins, vec3_t maxs)
 		}
 
 		splitplane = node->plane;
-		sides      = BOX_ON_PLANE_SIDE(mins, maxs, (cplane_t *)splitplane);
+		sides = BOX_ON_PLANE_SIDE(mins, maxs, (cplane_t *)splitplane);
 
 		if(sides == 3)
 			return node; // this is the splitter
@@ -710,7 +710,7 @@ Returns an axially aligned box that contains the input box at the given rotation
 void RotatedBBox(vec3_t mins, vec3_t maxs, vec3_t angles, vec3_t tmins, vec3_t tmaxs)
 {
 	vec3_t tmp, v;
-	int    i, j;
+	int i, j;
 	vec3_t forward, right, up;
 
 	if(!angles[0] && !angles[1] && !angles[2])
@@ -766,23 +766,23 @@ R_DrawBEntitiesOnList
 */
 void R_DrawBEntitiesOnList()
 {
-	int      i, clipflags;
-	vec3_t   oldorigin;
-	vec3_t   mins, maxs;
-	float    minmaxs[6];
+	int i, clipflags;
+	vec3_t oldorigin;
+	vec3_t mins, maxs;
+	float minmaxs[6];
 	mnode_t *topnode;
 
 	if(!r_drawentities->value)
 		return;
 
 	VectorCopy(modelorg, oldorigin);
-	insubmodel         = true;
+	insubmodel = true;
 	r_dlightframecount = r_framecount;
 
 	for(i = 0; i < r_newrefdef.num_entities; i++)
 	{
 		currententity = &r_newrefdef.entities[i];
-		currentmodel  = currententity->model;
+		currentmodel = currententity->model;
 		if(!currentmodel)
 			continue;
 		if(currentmodel->nummodelsurfaces == 0)
@@ -914,11 +914,11 @@ R_CalcPalette
 void R_CalcPalette()
 {
 	static qboolean modified;
-	byte            palette[256][4], *in, *out;
-	int             i, j;
-	float           alpha, one_minus_alpha;
-	vec3_t          premult;
-	int             v;
+	byte palette[256][4], *in, *out;
+	int i, j;
+	float alpha, one_minus_alpha;
+	vec3_t premult;
+	int v;
 
 	alpha = r_newrefdef.blend[3];
 	if(alpha <= 0)
@@ -942,7 +942,7 @@ void R_CalcPalette()
 
 	one_minus_alpha = (1.0 - alpha);
 
-	in  = (byte *)d_8to24table;
+	in = (byte *)d_8to24table;
 	out = palette[0];
 	for(i = 0; i < 256; i++, in += 4, out += 4)
 	{
@@ -950,7 +950,7 @@ void R_CalcPalette()
 		{
 			v = premult[j] + one_minus_alpha * in[j];
 			if(v > 255)
-				v  = 255;
+				v = 255;
 			out[j] = v;
 		}
 		out[3] = 255;
@@ -1059,7 +1059,7 @@ void R_RenderFrame(refdef_t *fd)
 */
 void R_InitGraphics(int width, int height)
 {
-	vid.width  = width;
+	vid.width = width;
 	vid.height = height;
 
 	// free z buffer
@@ -1114,9 +1114,9 @@ void R_BeginFrame(float camera_separation)
 		{
 			R_InitGraphics(vid.width, vid.height);
 
-			sw_state.prev_mode       = sw_mode->value;
+			sw_state.prev_mode = sw_mode->value;
 			vid_fullscreen->modified = false;
-			sw_mode->modified        = false;
+			sw_mode->modified = false;
 		}
 		else
 		{
@@ -1166,7 +1166,7 @@ void R_GammaCorrectAndSetPalette(const unsigned char *palette)
 void R_CinematicSetPalette(const unsigned char *palette)
 {
 	byte palette32[1024];
-	int  i, j, w;
+	int i, j, w;
 	int *d;
 
 	// clear screen to black to avoid any palette flash
@@ -1174,7 +1174,7 @@ void R_CinematicSetPalette(const unsigned char *palette)
 	for(i = 0; i < vid.height; i++, d += w)
 	{
 		d = (int *)(vid.buffer + i * vid.rowbytes);
-		for(j    = 0; j < w; j++)
+		for(j = 0; j < w; j++)
 			d[j] = 0;
 	}
 	// flush it to the screen
@@ -1205,14 +1205,14 @@ Draw_BuildGammaTable
 */
 void Draw_BuildGammaTable()
 {
-	int   i, inf;
+	int i, inf;
 	float g;
 
 	g = vid_gamma->value;
 
 	if(g == 1.0)
 	{
-		for(i                      = 0; i < 256; i++)
+		for(i = 0; i < 256; i++)
 			sw_state.gammatable[i] = i;
 		return;
 	}
@@ -1223,7 +1223,7 @@ void Draw_BuildGammaTable()
 		if(inf < 0)
 			inf = 0;
 		if(inf > 255)
-			inf                = 255;
+			inf = 255;
 		sw_state.gammatable[i] = inf;
 	}
 }
@@ -1286,12 +1286,12 @@ R_SetSky
 ============
 */
 // 3dstudio environment map names
-char *            suf[6]            = {"rt", "bk", "lf", "ft", "up", "dn"};
-int               r_skysideimage[6] = {5, 2, 4, 1, 0, 3};
+char *suf[6] = { "rt", "bk", "lf", "ft", "up", "dn" };
+int r_skysideimage[6] = { 5, 2, 4, 1, 0, 3 };
 extern mtexinfo_t r_skytexinfo[6];
 void R_SetSky(char *name, float rotate, vec3_t axis)
 {
-	int  i;
+	int i;
 	char pathname[MAX_QPATH];
 
 	strncpy(skyname, name, sizeof(skyname) - 1);
@@ -1313,8 +1313,8 @@ Draw_GetPalette
 void Draw_GetPalette()
 {
 	byte *pal, *out;
-	int   i;
-	int   r, g, b;
+	int i;
+	int r, g, b;
 
 	// get the palette and colormap
 	LoadPCX("pics/colormap.pcx", &vid.colormap, &pal, NULL, NULL);
@@ -1354,30 +1354,30 @@ refexport_t GetRefAPI(refimport_t rimp)
 	re.api_version = API_VERSION;
 
 	re.BeginRegistration = R_BeginRegistration;
-	re.RegisterModel     = R_RegisterModel;
-	re.RegisterSkin      = R_RegisterSkin;
-	re.RegisterPic       = Draw_FindPic;
-	re.SetSky            = R_SetSky;
-	re.EndRegistration   = R_EndRegistration;
+	re.RegisterModel = R_RegisterModel;
+	re.RegisterSkin = R_RegisterSkin;
+	re.RegisterPic = Draw_FindPic;
+	re.SetSky = R_SetSky;
+	re.EndRegistration = R_EndRegistration;
 
 	re.RenderFrame = R_RenderFrame;
 
 	re.DrawGetPicSize = Draw_GetPicSize;
-	re.DrawPic        = Draw_Pic;
+	re.DrawPic = Draw_Pic;
 	re.DrawStretchPic = Draw_StretchPic;
-	re.DrawChar       = Draw_Char;
-	re.DrawTileClear  = Draw_TileClear;
-	re.DrawFill       = Draw_Fill;
+	re.DrawChar = Draw_Char;
+	re.DrawTileClear = Draw_TileClear;
+	re.DrawFill = Draw_Fill;
 	re.DrawFadeScreen = Draw_FadeScreen;
 
 	re.DrawStretchRaw = Draw_StretchRaw;
 
-	re.Init     = R_Init;
+	re.Init = R_Init;
 	re.Shutdown = R_Shutdown;
 
 	re.CinematicSetPalette = R_CinematicSetPalette;
-	re.BeginFrame          = R_BeginFrame;
-	re.EndFrame            = SWimp_EndFrame;
+	re.BeginFrame = R_BeginFrame;
+	re.EndFrame = SWimp_EndFrame;
 
 	re.AppActivate = SWimp_AppActivate;
 
@@ -1391,7 +1391,7 @@ refexport_t GetRefAPI(refimport_t rimp)
 void Sys_Error(char *error, ...)
 {
 	va_list argptr;
-	char    text[1024];
+	char text[1024];
 
 	va_start(argptr, error);
 	vsprintf(text, error, argptr);
@@ -1403,7 +1403,7 @@ void Sys_Error(char *error, ...)
 void Com_Printf(char *fmt, ...)
 {
 	va_list argptr;
-	char    text[1024];
+	char text[1024];
 
 	va_start(argptr, fmt);
 	vsprintf(text, fmt, argptr);

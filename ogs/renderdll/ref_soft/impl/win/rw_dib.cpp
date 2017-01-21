@@ -35,27 +35,28 @@ static qboolean s_systemcolors_saved;
 static HGDIOBJ previously_selected_GDI_obj;
 
 static int s_syspalindices[] =
-    {
-        COLOR_ACTIVEBORDER,
-        COLOR_ACTIVECAPTION,
-        COLOR_APPWORKSPACE,
-        COLOR_BACKGROUND,
-        COLOR_BTNFACE,
-        COLOR_BTNSHADOW,
-        COLOR_BTNTEXT,
-        COLOR_CAPTIONTEXT,
-        COLOR_GRAYTEXT,
-        COLOR_HIGHLIGHT,
-        COLOR_HIGHLIGHTTEXT,
-        COLOR_INACTIVEBORDER,
+{
+  COLOR_ACTIVEBORDER,
+  COLOR_ACTIVECAPTION,
+  COLOR_APPWORKSPACE,
+  COLOR_BACKGROUND,
+  COLOR_BTNFACE,
+  COLOR_BTNSHADOW,
+  COLOR_BTNTEXT,
+  COLOR_CAPTIONTEXT,
+  COLOR_GRAYTEXT,
+  COLOR_HIGHLIGHT,
+  COLOR_HIGHLIGHTTEXT,
+  COLOR_INACTIVEBORDER,
 
-        COLOR_INACTIVECAPTION,
-        COLOR_MENU,
-        COLOR_MENUTEXT,
-        COLOR_SCROLLBAR,
-        COLOR_WINDOW,
-        COLOR_WINDOWFRAME,
-        COLOR_WINDOWTEXT};
+  COLOR_INACTIVECAPTION,
+  COLOR_MENU,
+  COLOR_MENUTEXT,
+  COLOR_SCROLLBAR,
+  COLOR_WINDOW,
+  COLOR_WINDOWFRAME,
+  COLOR_WINDOWTEXT
+};
 
 #define NUM_SYS_COLORS (sizeof(s_syspalindices) / sizeof(int))
 
@@ -64,13 +65,13 @@ static int s_oldsyscolors[NUM_SYS_COLORS];
 typedef struct dibinfo
 {
 	BITMAPINFOHEADER header;
-	RGBQUAD          acolors[256];
+	RGBQUAD acolors[256];
 } dibinfo_t;
 
 typedef struct
 {
-	WORD         palVersion;
-	WORD         palNumEntries;
+	WORD palVersion;
+	WORD palNumEntries;
 	PALETTEENTRY palEntries[256];
 } identitypalette_t;
 
@@ -86,9 +87,9 @@ static void DIB_RestoreSystemColors(void);
 */
 qboolean DIB_Init(unsigned char **ppbuffer, int *ppitch)
 {
-	dibinfo_t   dibheader;
+	dibinfo_t dibheader;
 	BITMAPINFO *pbmiDIB = (BITMAPINFO *)&dibheader;
-	int         i;
+	int i;
 
 	memset(&dibheader, 0, sizeof(dibheader));
 
@@ -123,26 +124,26 @@ qboolean DIB_Init(unsigned char **ppbuffer, int *ppitch)
 	/*
 	** fill in the BITMAPINFO struct
 	*/
-	pbmiDIB->bmiHeader.biSize          = sizeof(BITMAPINFOHEADER);
-	pbmiDIB->bmiHeader.biWidth         = vid.width;
-	pbmiDIB->bmiHeader.biHeight        = vid.height;
-	pbmiDIB->bmiHeader.biPlanes        = 1;
-	pbmiDIB->bmiHeader.biBitCount      = 8;
-	pbmiDIB->bmiHeader.biCompression   = BI_RGB;
-	pbmiDIB->bmiHeader.biSizeImage     = 0;
+	pbmiDIB->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	pbmiDIB->bmiHeader.biWidth = vid.width;
+	pbmiDIB->bmiHeader.biHeight = vid.height;
+	pbmiDIB->bmiHeader.biPlanes = 1;
+	pbmiDIB->bmiHeader.biBitCount = 8;
+	pbmiDIB->bmiHeader.biCompression = BI_RGB;
+	pbmiDIB->bmiHeader.biSizeImage = 0;
 	pbmiDIB->bmiHeader.biXPelsPerMeter = 0;
 	pbmiDIB->bmiHeader.biYPelsPerMeter = 0;
-	pbmiDIB->bmiHeader.biClrUsed       = 256;
-	pbmiDIB->bmiHeader.biClrImportant  = 256;
+	pbmiDIB->bmiHeader.biClrUsed = 256;
+	pbmiDIB->bmiHeader.biClrImportant = 256;
 
 	/*
 	** fill in the palette
 	*/
 	for(i = 0; i < 256; i++)
 	{
-		dibheader.acolors[i].rgbRed   = (d_8to24table[i] >> 0) & 0xff;
+		dibheader.acolors[i].rgbRed = (d_8to24table[i] >> 0) & 0xff;
 		dibheader.acolors[i].rgbGreen = (d_8to24table[i] >> 8) & 0xff;
-		dibheader.acolors[i].rgbBlue  = (d_8to24table[i] >> 16) & 0xff;
+		dibheader.acolors[i].rgbBlue = (d_8to24table[i] >> 16) & 0xff;
 	}
 
 	/*
@@ -165,13 +166,13 @@ qboolean DIB_Init(unsigned char **ppbuffer, int *ppitch)
 	{
 		// bottom up
 		*ppbuffer = sww_state.pDIBBase + (vid.height - 1) * vid.width;
-		*ppitch   = -vid.width;
+		*ppitch = -vid.width;
 	}
 	else
 	{
 		// top down
 		*ppbuffer = sww_state.pDIBBase;
-		*ppitch   = vid.width;
+		*ppitch = vid.width;
 	}
 
 	/*
@@ -212,12 +213,12 @@ fail:
 */
 void DIB_SetPalette(const unsigned char *_pal)
 {
-	const unsigned char *pal     = _pal;
-	LOGPALETTE *         pLogPal = (LOGPALETTE *)&s_ipal;
-	RGBQUAD              colors[256];
-	int                  i;
-	int                  ret;
-	HDC                  hDC = sww_state.hDC;
+	const unsigned char *pal = _pal;
+	LOGPALETTE *pLogPal = (LOGPALETTE *)&s_ipal;
+	RGBQUAD colors[256];
+	int i;
+	int ret;
+	HDC hDC = sww_state.hDC;
 
 	/*
 	** set the DIB color table
@@ -226,19 +227,19 @@ void DIB_SetPalette(const unsigned char *_pal)
 	{
 		for(i = 0; i < 256; i++, pal += 4)
 		{
-			colors[i].rgbRed      = pal[0];
-			colors[i].rgbGreen    = pal[1];
-			colors[i].rgbBlue     = pal[2];
+			colors[i].rgbRed = pal[0];
+			colors[i].rgbGreen = pal[1];
+			colors[i].rgbBlue = pal[2];
 			colors[i].rgbReserved = 0;
 		}
 
-		colors[0].rgbRed   = 0;
+		colors[0].rgbRed = 0;
 		colors[0].rgbGreen = 0;
-		colors[0].rgbBlue  = 0;
+		colors[0].rgbBlue = 0;
 
-		colors[255].rgbRed   = 0xff;
+		colors[255].rgbRed = 0xff;
 		colors[255].rgbGreen = 0xff;
-		colors[255].rgbBlue  = 0xff;
+		colors[255].rgbBlue = 0xff;
 
 		if(SetDIBColorTable(sww_state.hdcDIBSection, 0, 256, colors) == 0)
 		{
@@ -252,7 +253,7 @@ void DIB_SetPalette(const unsigned char *_pal)
 	*/
 	if(sww_state.palettized)
 	{
-		int      i;
+		int i;
 		HPALETTE hpalOld;
 
 		if(SetSystemPaletteUse(hDC, SYSPAL_NOSTATIC) == SYSPAL_ERROR)
@@ -273,23 +274,23 @@ void DIB_SetPalette(const unsigned char *_pal)
 		** take up all physical palette entries to flush out anything that's currently
 		** in the palette
 		*/
-		pLogPal->palVersion    = 0x300;
+		pLogPal->palVersion = 0x300;
 		pLogPal->palNumEntries = 256;
 
 		for(i = 0, pal = _pal; i < 256; i++, pal += 4)
 		{
-			pLogPal->palPalEntry[i].peRed   = pal[0];
+			pLogPal->palPalEntry[i].peRed = pal[0];
 			pLogPal->palPalEntry[i].peGreen = pal[1];
-			pLogPal->palPalEntry[i].peBlue  = pal[2];
+			pLogPal->palPalEntry[i].peBlue = pal[2];
 			pLogPal->palPalEntry[i].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 		}
-		pLogPal->palPalEntry[0].peRed     = 0;
-		pLogPal->palPalEntry[0].peGreen   = 0;
-		pLogPal->palPalEntry[0].peBlue    = 0;
-		pLogPal->palPalEntry[0].peFlags   = 0;
-		pLogPal->palPalEntry[255].peRed   = 0xff;
+		pLogPal->palPalEntry[0].peRed = 0;
+		pLogPal->palPalEntry[0].peGreen = 0;
+		pLogPal->palPalEntry[0].peBlue = 0;
+		pLogPal->palPalEntry[0].peFlags = 0;
+		pLogPal->palPalEntry[255].peRed = 0xff;
 		pLogPal->palPalEntry[255].peGreen = 0xff;
-		pLogPal->palPalEntry[255].peBlue  = 0xff;
+		pLogPal->palPalEntry[255].peBlue = 0xff;
 		pLogPal->palPalEntry[255].peFlags = 0;
 
 		if((sww_state.hPal = CreatePalette(pLogPal)) == NULL)
@@ -344,7 +345,7 @@ void DIB_Shutdown(void)
 	{
 		DeleteObject(sww_state.hDIBSection);
 		sww_state.hDIBSection = NULL;
-		sww_state.pDIBBase    = NULL;
+		sww_state.pDIBBase = NULL;
 	}
 
 	if(sww_state.hDC)
@@ -367,6 +368,6 @@ static void DIB_SaveSystemColors(void)
 {
 	int i;
 
-	for(i                 = 0; i < NUM_SYS_COLORS; i++)
+	for(i = 0; i < NUM_SYS_COLORS; i++)
 		s_oldsyscolors[i] = GetSysColor(s_syspalindices[i]);
 }

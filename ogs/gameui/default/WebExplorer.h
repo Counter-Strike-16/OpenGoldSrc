@@ -27,7 +27,7 @@ public:
 
 public:
 	vgui::HTML *m_pMessage;
-	int         m_iXOffset, m_iYOffset;
+	int m_iXOffset, m_iYOffset;
 };
 
 #endif

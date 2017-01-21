@@ -34,7 +34,7 @@ typedef struct entity_state_s entity_state_t;
 
 typedef struct packet_entities_s
 {
-	int             num_entities;
-	unsigned char   flags[32];
+	int num_entities;
+	unsigned char flags[32];
 	entity_state_t *entities;
 } packet_entities_t;

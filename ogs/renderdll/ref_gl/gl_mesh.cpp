@@ -51,13 +51,13 @@ static vec4_t s_lerped[MAX_VERTS];
 //static	vec3_t	lerped[MAX_VERTS];
 
 vec3_t shadevector;
-float  shadelight[3];
+float shadelight[3];
 
 // precalculated dot products for quantized angles
 #define SHADEDOT_QUANT 16
 float r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 #include "anormtab.h"
-    ;
+;
 
 float *shadedots = r_avertexnormal_dots[0];
 
@@ -98,24 +98,24 @@ FIXME: batch lerp all vertexes
 */
 void GL_DrawAliasFrameLerp(dmdl_t *paliashdr, float backlerp)
 {
-	float          l;
+	float l;
 	daliasframe_t *frame, *oldframe;
-	dtrivertx_t *  v, *ov, *verts;
-	int *          order;
-	int            count;
-	float          frontlerp;
-	float          alpha;
-	vec3_t         move, delta, vectors[3];
-	vec3_t         frontv, backv;
-	int            i;
-	int            index_xyz;
-	float *        lerp;
+	dtrivertx_t *v, *ov, *verts;
+	int *order;
+	int count;
+	float frontlerp;
+	float alpha;
+	vec3_t move, delta, vectors[3];
+	vec3_t frontv, backv;
+	int i;
+	int index_xyz;
+	float *lerp;
 
 	frame = (daliasframe_t *)((byte *)paliashdr + paliashdr->ofs_frames + currententity->frame * paliashdr->framesize);
 	verts = v = frame->verts;
 
 	oldframe = (daliasframe_t *)((byte *)paliashdr + paliashdr->ofs_frames + currententity->oldframe * paliashdr->framesize);
-	ov       = oldframe->verts;
+	ov = oldframe->verts;
 
 	order = (int *)((byte *)paliashdr + paliashdr->ofs_glcmds);
 
@@ -151,7 +151,7 @@ void GL_DrawAliasFrameLerp(dmdl_t *paliashdr, float backlerp)
 	for(i = 0; i < 3; i++)
 	{
 		frontv[i] = frontlerp * frame->scale[i];
-		backv[i]  = backlerp * oldframe->scale[i];
+		backv[i] = backlerp * oldframe->scale[i];
 	}
 
 	lerp = s_lerped[0];
@@ -217,7 +217,6 @@ void GL_DrawAliasFrameLerp(dmdl_t *paliashdr, float backlerp)
 					order += 3;
 
 					qglVertex3fv(s_lerped[index_xyz]);
-
 				} while(--count);
 			}
 			else
@@ -235,7 +234,6 @@ void GL_DrawAliasFrameLerp(dmdl_t *paliashdr, float backlerp)
 
 					//					qglColor4f (l* shadelight[0], l*shadelight[1], l*shadelight[2], alpha);
 					qglArrayElement(index_xyz);
-
 				} while(--count);
 			}
 			qglEnd();
@@ -271,7 +269,6 @@ void GL_DrawAliasFrameLerp(dmdl_t *paliashdr, float backlerp)
 
 					qglColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
 					qglVertex3fv(s_lerped[index_xyz]);
-
 				} while(--count);
 			}
 			else
@@ -311,11 +308,11 @@ extern vec3_t lightspot;
 
 void GL_DrawAliasShadow(dmdl_t *paliashdr, int posenum)
 {
-	dtrivertx_t *  verts;
-	int *          order;
-	vec3_t         point;
-	float          height, lheight;
-	int            count;
+	dtrivertx_t *verts;
+	int *order;
+	vec3_t point;
+	float height, lheight;
+	int count;
 	daliasframe_t *frame;
 
 	lheight = currententity->origin[2] - lightspot[2];
@@ -363,7 +360,6 @@ void GL_DrawAliasShadow(dmdl_t *paliashdr, int posenum)
 			order += 3;
 
 			//			verts++;
-
 		} while(--count);
 
 		qglEnd();
@@ -377,13 +373,13 @@ void GL_DrawAliasShadow(dmdl_t *paliashdr, int posenum)
 */
 static qboolean R_CullAliasModel(vec3_t bbox[8], entity_t *e)
 {
-	int            i;
-	vec3_t         mins, maxs;
-	dmdl_t *       paliashdr;
-	vec3_t         vectors[3];
-	vec3_t         thismins, oldmins, thismaxs, oldmaxs;
+	int i;
+	vec3_t mins, maxs;
+	dmdl_t *paliashdr;
+	vec3_t vectors[3];
+	vec3_t thismins, oldmins, thismaxs, oldmaxs;
 	daliasframe_t *pframe, *poldframe;
-	vec3_t         angles;
+	vec3_t angles;
 
 	paliashdr = (dmdl_t *)currentmodel->extradata;
 
@@ -523,10 +519,10 @@ R_DrawAliasModel
 */
 void R_DrawAliasModel(entity_t *e)
 {
-	int      i;
-	dmdl_t * paliashdr;
-	float    an;
-	vec3_t   bbox[8];
+	int i;
+	dmdl_t *paliashdr;
+	float an;
+	vec3_t bbox[8];
 	image_t *skin;
 
 	if(!(e->flags & RF_WEAPONMODEL))
@@ -555,7 +551,7 @@ void R_DrawAliasModel(entity_t *e)
 		   (currententity->flags & RF_SHELL_BLUE) &&
 		   (currententity->flags & RF_SHELL_GREEN))
 		{
-			for(i             = 0; i < 3; i++)
+			for(i = 0; i < 3; i++)
 				shadelight[i] = 1.0;
 		}
 		else if(currententity->flags & (RF_SHELL_RED | RF_SHELL_BLUE | RF_SHELL_DOUBLE))
@@ -614,7 +610,7 @@ void R_DrawAliasModel(entity_t *e)
 	// pmm
 	else if(currententity->flags & RF_FULLBRIGHT)
 	{
-		for(i             = 0; i < 3; i++)
+		for(i = 0; i < 3; i++)
 			shadelight[i] = 1.0;
 	}
 	else
@@ -699,7 +695,7 @@ void R_DrawAliasModel(entity_t *e)
 
 	shadedots = r_avertexnormal_dots[((int)(currententity->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 
-	an             = currententity->angles[1] / 180 * M_PI;
+	an = currententity->angles[1] / 180 * M_PI;
 	shadevector[0] = cos(-an);
 	shadevector[1] = sin(-an);
 	shadevector[2] = 1;
@@ -768,7 +764,7 @@ void R_DrawAliasModel(entity_t *e)
 	{
 		ri.Con_Printf(PRINT_ALL, "R_DrawAliasModel %s: no such frame %d\n",
 		              currentmodel->name, currententity->frame);
-		currententity->frame    = 0;
+		currententity->frame = 0;
 		currententity->oldframe = 0;
 	}
 
@@ -776,7 +772,7 @@ void R_DrawAliasModel(entity_t *e)
 	{
 		ri.Con_Printf(PRINT_ALL, "R_DrawAliasModel %s: no such oldframe %d\n",
 		              currentmodel->name, currententity->oldframe);
-		currententity->frame    = 0;
+		currententity->frame = 0;
 		currententity->oldframe = 0;
 	}
 

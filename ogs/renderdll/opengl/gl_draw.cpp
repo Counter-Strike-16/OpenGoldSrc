@@ -27,11 +27,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern unsigned char d_15to8table[65536];
 
-cvar_t gl_nobind   = {"gl_nobind", "0"};
-cvar_t gl_max_size = {"gl_max_size", "1024"};
-cvar_t gl_picmip   = {"gl_picmip", "0"};
+cvar_t gl_nobind = { "gl_nobind", "0" };
+cvar_t gl_max_size = { "gl_max_size", "1024" };
+cvar_t gl_picmip = { "gl_picmip", "0" };
 
-byte *  draw_chars; // 8*8 graphic characters
+byte *draw_chars; // 8*8 graphic characters
 qpic_t *draw_disc;
 qpic_t *draw_backtile;
 
@@ -40,16 +40,16 @@ int char_texture;
 
 typedef struct
 {
-	int   texnum;
+	int texnum;
 	float sl, tl, sh, th;
 } glpic_t;
 
-byte    conback_buffer[sizeof(qpic_t) + sizeof(glpic_t)];
+byte conback_buffer[sizeof(qpic_t) + sizeof(glpic_t)];
 qpic_t *conback = (qpic_t *)&conback_buffer;
 
 int gl_lightmap_format = 4;
-int gl_solid_format    = 3;
-int gl_alpha_format    = 4;
+int gl_solid_format = 3;
+int gl_alpha_format = 4;
 
 int gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
 int gl_filter_max = GL_LINEAR;
@@ -58,15 +58,15 @@ int texels;
 
 typedef struct
 {
-	int      texnum;
-	char     identifier[64];
-	int      width, height;
+	int texnum;
+	char identifier[64];
+	int width, height;
 	qboolean mipmap;
 } gltexture_t;
 
 #define MAX_GLTEXTURES 1024
 gltexture_t gltextures[MAX_GLTEXTURES];
-int         numgltextures;
+int numgltextures;
 
 void GL_Bind(int texnum)
 {
@@ -97,10 +97,10 @@ void GL_Bind(int texnum)
 #define BLOCK_WIDTH 256
 #define BLOCK_HEIGHT 256
 
-int      scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
-byte     scrap_texels[MAX_SCRAPS][BLOCK_WIDTH * BLOCK_HEIGHT * 4];
+int scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
+byte scrap_texels[MAX_SCRAPS][BLOCK_WIDTH * BLOCK_HEIGHT * 4];
 qboolean scrap_dirty;
-int      scrap_texnum;
+int scrap_texnum;
 
 // returns a texture number and the position inside it
 int Scrap_AllocBlock(int w, int h, int *x, int *y)
@@ -135,7 +135,7 @@ int Scrap_AllocBlock(int w, int h, int *x, int *y)
 		if(best + h > BLOCK_HEIGHT)
 			continue;
 
-		for(i                               = 0; i < w; i++)
+		for(i = 0; i < w; i++)
 			scrap_allocated[texnum][*x + i] = best + h;
 
 		return texnum;
@@ -165,14 +165,14 @@ void Scrap_Upload(void)
 
 typedef struct cachepic_s
 {
-	char   name[MAX_QPATH];
+	char name[MAX_QPATH];
 	qpic_t pic;
-	byte   padding[32]; // for appended glpic
+	byte padding[32]; // for appended glpic
 } cachepic_t;
 
 #define MAX_CACHED_PICS 128
 cachepic_t menu_cachepics[MAX_CACHED_PICS];
-int        menu_numcachepics;
+int menu_numcachepics;
 
 byte menuplyr_pixels[4096];
 
@@ -181,10 +181,10 @@ int pic_count;
 
 qpic_t *Draw_PicFromWad(char *name)
 {
-	qpic_t * p;
+	qpic_t *p;
 	glpic_t *gl;
 
-	p  = W_GetLumpName(name);
+	p = W_GetLumpName(name);
 	gl = (glpic_t *)p->data;
 
 	// load little ones into the scrap
@@ -194,18 +194,18 @@ qpic_t *Draw_PicFromWad(char *name)
 		int i, j, k;
 		int texnum;
 
-		texnum      = Scrap_AllocBlock(p->width, p->height, &x, &y);
+		texnum = Scrap_AllocBlock(p->width, p->height, &x, &y);
 		scrap_dirty = true;
-		k           = 0;
+		k = 0;
 		for(i = 0; i < p->height; i++)
-			for(j                                                   = 0; j < p->width; j++, k++)
+			for(j = 0; j < p->width; j++, k++)
 				scrap_texels[texnum][(y + i) * BLOCK_WIDTH + x + j] = p->data[k];
 		texnum += scrap_texnum;
 		gl->texnum = texnum;
-		gl->sl     = (x + 0.01) / (float)BLOCK_WIDTH;
-		gl->sh     = (x + p->width - 0.01) / (float)BLOCK_WIDTH;
-		gl->tl     = (y + 0.01) / (float)BLOCK_WIDTH;
-		gl->th     = (y + p->height - 0.01) / (float)BLOCK_WIDTH;
+		gl->sl = (x + 0.01) / (float)BLOCK_WIDTH;
+		gl->sh = (x + p->width - 0.01) / (float)BLOCK_WIDTH;
+		gl->tl = (y + 0.01) / (float)BLOCK_WIDTH;
+		gl->th = (y + p->height - 0.01) / (float)BLOCK_WIDTH;
 
 		pic_count++;
 		pic_texels += p->width * p->height;
@@ -213,10 +213,10 @@ qpic_t *Draw_PicFromWad(char *name)
 	else
 	{
 		gl->texnum = GL_LoadPicTexture(p);
-		gl->sl     = 0;
-		gl->sh     = 1;
-		gl->tl     = 0;
-		gl->th     = 1;
+		gl->sl = 0;
+		gl->sh = 1;
+		gl->tl = 0;
+		gl->th = 1;
 	}
 	return p;
 }
@@ -229,9 +229,9 @@ Draw_CachePic
 qpic_t *Draw_CachePic(char *path)
 {
 	cachepic_t *pic;
-	int         i;
-	qpic_t *    dat;
-	glpic_t *   gl;
+	int i;
+	qpic_t *dat;
+	glpic_t *gl;
 
 	for(pic = menu_cachepics, i = 0; i < menu_numcachepics; pic++, i++)
 		if(!strcmp(path, pic->name))
@@ -256,28 +256,28 @@ qpic_t *Draw_CachePic(char *path)
 	if(!strcmp(path, "gfx/menuplyr.lmp"))
 		memcpy(menuplyr_pixels, dat->data, dat->width * dat->height);
 
-	pic->pic.width  = dat->width;
+	pic->pic.width = dat->width;
 	pic->pic.height = dat->height;
 
-	gl         = (glpic_t *)pic->pic.data;
+	gl = (glpic_t *)pic->pic.data;
 	gl->texnum = GL_LoadPicTexture(dat);
-	gl->sl     = 0;
-	gl->sh     = 1;
-	gl->tl     = 0;
-	gl->th     = 1;
+	gl->sl = 0;
+	gl->sh = 1;
+	gl->tl = 0;
+	gl->th = 1;
 
 	return &pic->pic;
 }
 
 void Draw_CharToConback(int num, byte *dest)
 {
-	int   row, col;
+	int row, col;
 	byte *source;
-	int   drawline;
-	int   x;
+	int drawline;
+	int x;
 
-	row    = num >> 4;
-	col    = num & 15;
+	row = num >> 4;
+	col = num & 15;
 	source = draw_chars + (row << 10) + (col << 3);
 
 	drawline = 8;
@@ -295,16 +295,17 @@ void Draw_CharToConback(int num, byte *dest)
 typedef struct
 {
 	char *name;
-	int   minimize, maximize;
+	int minimize, maximize;
 } glmode_t;
 
 glmode_t modes[] = {
-    {"GL_NEAREST", GL_NEAREST, GL_NEAREST},
-    {"GL_LINEAR", GL_LINEAR, GL_LINEAR},
-    {"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
-    {"GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR},
-    {"GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST},
-    {"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}};
+	{ "GL_NEAREST", GL_NEAREST, GL_NEAREST },
+	{ "GL_LINEAR", GL_LINEAR, GL_LINEAR },
+	{ "GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST },
+	{ "GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR },
+	{ "GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST },
+	{ "GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR }
+};
 
 /*
 ===============
@@ -313,7 +314,7 @@ Draw_TextureMode_f
 */
 void Draw_TextureMode_f(void)
 {
-	int          i;
+	int i;
 	gltexture_t *glt;
 
 	if(Cmd_Argc() == 1)
@@ -361,15 +362,15 @@ Draw_Init
 */
 void Draw_Init(void)
 {
-	int      i;
-	qpic_t * cb;
-	byte *   dest, *src;
-	int      x, y;
-	char     ver[40];
+	int i;
+	qpic_t *cb;
+	byte *dest, *src;
+	int x, y;
+	char ver[40];
 	glpic_t *gl;
-	int      start;
-	byte *   ncdata;
-	int      f, fstep;
+	int start;
+	byte *ncdata;
+	int f, fstep;
 
 	Cvar_RegisterVariable(&gl_nobind);
 	Cvar_RegisterVariable(&gl_max_size);
@@ -408,7 +409,7 @@ void Draw_Init(void)
 	sprintf(ver, "(gl %4.2f) %4.2f", (float)GLQUAKE_VERSION, (float)VERSION);
 #endif
 	dest = cb->data + 320 * 186 + 320 - 11 - 8 * strlen(ver);
-	y    = strlen(ver);
+	y = strlen(ver);
 	for(x = 0; x < y; x++)
 		Draw_CharToConback(ver[x], dest + (x << 3));
 
@@ -442,21 +443,21 @@ void Draw_Init(void)
  		}
  	}
 #else
-	conback->width  = cb->width;
+	conback->width = cb->width;
 	conback->height = cb->height;
-	ncdata          = cb->data;
+	ncdata = cb->data;
 #endif
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	gl              = (glpic_t *)conback->data;
-	gl->texnum      = GL_LoadTexture("conback", conback->width, conback->height, ncdata, false, false);
-	gl->sl          = 0;
-	gl->sh          = 1;
-	gl->tl          = 0;
-	gl->th          = 1;
-	conback->width  = vid.width;
+	gl = (glpic_t *)conback->data;
+	gl->texnum = GL_LoadTexture("conback", conback->width, conback->height, ncdata, false, false);
+	gl->sl = 0;
+	gl->sh = 1;
+	gl->tl = 0;
+	gl->th = 1;
+	conback->width = vid.width;
 	conback->height = vid.height;
 
 	// free loaded console
@@ -472,7 +473,7 @@ void Draw_Init(void)
 	//
 	// get the other pics we need
 	//
-	draw_disc     = Draw_PicFromWad("disc");
+	draw_disc = Draw_PicFromWad("disc");
 	draw_backtile = Draw_PicFromWad("backtile");
 }
 
@@ -487,12 +488,12 @@ smoothly scrolled off.
 */
 void Draw_Character(int x, int y, int num)
 {
-	byte *          dest;
-	byte *          source;
+	byte *dest;
+	byte *source;
 	unsigned short *pusdest;
-	int             drawline;
-	int             row, col;
-	float           frow, fcol, size;
+	int drawline;
+	int row, col;
+	float frow, fcol, size;
 
 	if(num == 32)
 		return; // space
@@ -558,10 +559,10 @@ Draw_AlphaPic
 */
 void Draw_AlphaPic(int x, int y, qpic_t *pic, float alpha)
 {
-	byte *          dest, *source;
+	byte *dest, *source;
 	unsigned short *pusdest;
-	int             v, u;
-	glpic_t *       gl;
+	int v, u;
+	glpic_t *gl;
 
 	if(scrap_dirty)
 		Scrap_Upload();
@@ -594,10 +595,10 @@ Draw_Pic
 */
 void Draw_Pic(int x, int y, qpic_t *pic)
 {
-	byte *          dest, *source;
+	byte *dest, *source;
 	unsigned short *pusdest;
-	int             v, u;
-	glpic_t *       gl;
+	int v, u;
+	glpic_t *gl;
 
 	if(scrap_dirty)
 		Scrap_Upload();
@@ -623,9 +624,9 @@ Draw_TransPic
 */
 void Draw_TransPic(int x, int y, qpic_t *pic)
 {
-	byte *          dest, *source, tbyte;
+	byte *dest, *source, tbyte;
 	unsigned short *pusdest;
-	int             v, u;
+	int v, u;
 
 	if(x < 0 || (unsigned)(x + pic->width) > vid.width || y < 0 ||
 	   (unsigned)(y + pic->height) > vid.height)
@@ -645,10 +646,10 @@ Only used for the player color selection menu
 */
 void Draw_TransPicTranslate(int x, int y, qpic_t *pic, byte *translation)
 {
-	int      v, u, c;
+	int v, u, c;
 	unsigned trans[64 * 64], *dest;
-	byte *   src;
-	int      p;
+	byte *src;
+	int p;
 
 	GL_Bind(translate_texture);
 
@@ -846,7 +847,7 @@ GL_FindTexture
 */
 int GL_FindTexture(char *identifier)
 {
-	int          i;
+	int i;
 	gltexture_t *glt;
 
 	for(i = 0, glt = gltextures; i < numgltextures; i++, glt++)
@@ -865,15 +866,15 @@ GL_ResampleTexture
 */
 void GL_ResampleTexture(unsigned *in, int inwidth, int inheight, unsigned *out, int outwidth, int outheight)
 {
-	int       i, j;
+	int i, j;
 	unsigned *inrow;
-	unsigned  frac, fracstep;
+	unsigned frac, fracstep;
 
 	fracstep = inwidth * 0x10000 / outwidth;
 	for(i = 0; i < outheight; i++, out += outwidth)
 	{
 		inrow = in + inwidth * (i * inheight / outheight);
-		frac  = fracstep >> 1;
+		frac = fracstep >> 1;
 		for(j = 0; j < outwidth; j += 4)
 		{
 			out[j] = inrow[frac >> 16];
@@ -895,15 +896,15 @@ GL_Resample8BitTexture -- JACK
 */
 void GL_Resample8BitTexture(unsigned char *in, int inwidth, int inheight, unsigned char *out, int outwidth, int outheight)
 {
-	int            i, j;
+	int i, j;
 	unsigned char *inrow;
-	unsigned       frac, fracstep;
+	unsigned frac, fracstep;
 
 	fracstep = inwidth * 0x10000 / outwidth;
 	for(i = 0; i < outheight; i++, out += outwidth)
 	{
 		inrow = in + inwidth * (i * inheight / outheight);
-		frac  = fracstep >> 1;
+		frac = fracstep >> 1;
 		for(j = 0; j < outwidth; j += 4)
 		{
 			out[j] = inrow[frac >> 16];
@@ -927,7 +928,7 @@ Operates in place, quartering the size of the texture
 */
 void GL_MipMap(byte *in, int width, int height)
 {
-	int   i, j;
+	int i, j;
 	byte *out;
 
 	width <<= 2;
@@ -954,9 +955,9 @@ Mipping for 8 bit textures
 */
 void GL_MipMap8Bit(byte *in, int width, int height)
 {
-	int            i, j;
+	int i, j;
 	unsigned short r, g, b;
-	byte *         out, *at1, *at2, *at3, *at4;
+	byte *out, *at1, *at2, *at3, *at4;
 
 	//	width <<=2;
 	height >>= 1;
@@ -989,9 +990,9 @@ GL_Upload32
 */
 void GL_Upload32(unsigned *data, int width, int height, qboolean mipmap, qboolean alpha)
 {
-	int             samples;
+	int samples;
 	static unsigned scaled[1024 * 512]; // [512*256];
-	int             scaled_width, scaled_height;
+	int scaled_width, scaled_height;
 
 	for(scaled_width = 1; scaled_width < width; scaled_width <<= 1)
 		;
@@ -1073,13 +1074,13 @@ done:;
 
 void GL_Upload8_EXT(byte *data, int width, int height, qboolean mipmap, qboolean alpha)
 {
-	int                  i, s;
-	qboolean             noalpha;
-	int                  p;
-	static unsigned      j;
-	int                  samples;
+	int i, s;
+	qboolean noalpha;
+	int p;
+	static unsigned j;
+	int samples;
 	static unsigned char scaled[1024 * 512]; // [512*256];
-	int                  scaled_width, scaled_height;
+	int scaled_width, scaled_height;
 
 	s = width * height;
 	// if there are no transparent pixels, make it a 3 component
@@ -1169,9 +1170,9 @@ GL_Upload8
 void GL_Upload8(byte *data, int width, int height, qboolean mipmap, qboolean alpha)
 {
 	static unsigned trans[640 * 480]; // FIXME, temporary
-	int             i, s;
-	qboolean        noalpha;
-	int             p;
+	int i, s;
+	qboolean noalpha;
+	int p;
 
 	s = width * height;
 	// if there are no transparent pixels, make it a 3 component
@@ -1184,7 +1185,7 @@ void GL_Upload8(byte *data, int width, int height, qboolean mipmap, qboolean alp
 			p = data[i];
 			if(p == 255)
 				noalpha = false;
-			trans[i]    = d_8to24table[p];
+			trans[i] = d_8to24table[p];
 		}
 
 		if(alpha && noalpha)
@@ -1196,7 +1197,7 @@ void GL_Upload8(byte *data, int width, int height, qboolean mipmap, qboolean alp
 			Sys_Error("GL_Upload8: s&3");
 		for(i = 0; i < s; i += 4)
 		{
-			trans[i]     = d_8to24table[data[i]];
+			trans[i] = d_8to24table[data[i]];
 			trans[i + 1] = d_8to24table[data[i + 1]];
 			trans[i + 2] = d_8to24table[data[i + 2]];
 			trans[i + 3] = d_8to24table[data[i + 3]];
@@ -1218,8 +1219,8 @@ GL_LoadTexture
 */
 int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha)
 {
-	qboolean     noalpha;
-	int          i, p, s;
+	qboolean noalpha;
+	int i, p, s;
 	gltexture_t *glt;
 
 	// see if the texture is allready present
@@ -1243,7 +1244,7 @@ int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean
 
 	strcpy(glt->identifier, identifier);
 	glt->texnum = texture_extension_number;
-	glt->width  = width;
+	glt->width = width;
 	glt->height = height;
 	glt->mipmap = mipmap;
 
@@ -1278,6 +1279,6 @@ void GL_SelectTexture(GLenum target)
 	if(target == oldtarget)
 		return;
 	cnttextures[oldtarget - TEXTURE0_SGIS] = currenttexture;
-	currenttexture                         = cnttextures[target - TEXTURE0_SGIS];
-	oldtarget                              = target;
+	currenttexture = cnttextures[target - TEXTURE0_SGIS];
+	oldtarget = target;
 }

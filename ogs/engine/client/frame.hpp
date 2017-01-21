@@ -32,9 +32,9 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "public/archtypes.h"
 #include "common/entity_state.h"
 #include "network/delta_packet.hpp"
+#include "public/archtypes.h"
 
 typedef struct frame_s
 {
@@ -48,8 +48,8 @@ typedef struct frame_s
 
 	double time;
 
-	clientdata_t      clientdata;
-	weapon_data_t     weapondata[64];
+	clientdata_t clientdata;
+	weapon_data_t weapondata[64];
 	packet_entities_t packet_entities;
 
 	uint16 clientbytes;

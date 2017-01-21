@@ -47,10 +47,10 @@ private:
 private:
 	struct CVidSettings
 	{
-		int  w, h;
-		int  bpp;
-		int  windowed;
-		int  csomodels;
+		int w, h;
+		int bpp;
+		int windowed;
+		int csomodels;
 		char renderer[128];
 	};
 
@@ -58,7 +58,7 @@ private:
 	CVidSettings m_CurrentSettings;
 
 private:
-	int  m_nSelectedMode;
+	int m_nSelectedMode;
 	bool m_bRequireRestart;
 
 	CCvarSlider *m_pBrightnessSlider;
@@ -67,19 +67,19 @@ private:
 	char m_pszRenderNames[3][32];
 	char m_pszAspectName[2][32];
 
-	vgui::ComboBox *                                 m_pColorDepth;
-	vgui::ComboBox *                                 m_pMode;
-	vgui::CheckButton *                              m_pWindowed;
-	vgui::CheckButton *                              m_pCSOModels;
-	vgui::ComboBox *                                 m_pAspectRatio;
-	vgui::Button *                                   m_pGammaButton;
-	vgui::Button *                                   m_pAdvanced;
+	vgui::ComboBox *m_pColorDepth;
+	vgui::ComboBox *m_pMode;
+	vgui::CheckButton *m_pWindowed;
+	vgui::CheckButton *m_pCSOModels;
+	vgui::ComboBox *m_pAspectRatio;
+	vgui::Button *m_pGammaButton;
+	vgui::Button *m_pAdvanced;
 	vgui::DHANDLE<class COptionsSubVideoAdvancedDlg> m_hOptionsSubVideoAdvancedDlg;
-	vgui::DHANDLE<class CGammaDialog>                m_hGammaDialog;
+	vgui::DHANDLE<class CGammaDialog> m_hGammaDialog;
 
 private:
 	MESSAGE_FUNC(OpenThirdPartyVideoCreditsDialog, "OpenThirdPartyVideoCreditsDialog");
-	vgui::URLButton *                                         m_pThirdPartyCredits;
+	vgui::URLButton *m_pThirdPartyCredits;
 	vgui::DHANDLE<class COptionsSubVideoThirdPartyCreditsDlg> m_OptionsSubVideoThirdPartyCreditsDlg;
 };
 

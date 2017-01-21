@@ -31,28 +31,28 @@ typedef DWORD CALLBACK (*LPTHREAD_START_ROUTINE)(LPVOID);
 typedef struct EXCEPTION_DEBUG_INFO
 {
 	EXCEPTION_RECORD ExceptionRecord;
-	DWORD            dwFirstChance;
+	DWORD dwFirstChance;
 } EXCEPTION_DEBUG_INFO;
 
 typedef struct CREATE_THREAD_DEBUG_INFO
 {
-	HANDLE                 hThread;
-	LPVOID                 lpThreadLocalBase;
+	HANDLE hThread;
+	LPVOID lpThreadLocalBase;
 	LPTHREAD_START_ROUTINE lpStartAddress;
 } CREATE_THREAD_DEBUG_INFO;
 
 typedef struct CREATE_PROCESS_DEBUG_INFO
 {
-	HANDLE                 hFile;
-	HANDLE                 hProcess;
-	HANDLE                 hThread;
-	LPVOID                 lpBaseOfImage;
-	DWORD                  dwDebugInfoFileOffset;
-	DWORD                  nDebugInfoSize;
-	LPVOID                 lpThreadLocalBase;
+	HANDLE hFile;
+	HANDLE hProcess;
+	HANDLE hThread;
+	LPVOID lpBaseOfImage;
+	DWORD dwDebugInfoFileOffset;
+	DWORD nDebugInfoSize;
+	LPVOID lpThreadLocalBase;
 	LPTHREAD_START_ROUTINE lpStartAddress;
-	LPVOID                 lpImageName;
-	WORD                   fUnicode;
+	LPVOID lpImageName;
+	WORD fUnicode;
 } CREATE_PROCESS_DEBUG_INFO;
 
 typedef struct EXIT_THREAD_DEBUG_INFO
@@ -69,10 +69,10 @@ typedef struct LOAD_DLL_DEBUG_INFO
 {
 	HANDLE hFile;
 	LPVOID lpBaseOfDll;
-	DWORD  dwDebugInfoFileOffset;
-	DWORD  nDebugInfoSize;
+	DWORD dwDebugInfoFileOffset;
+	DWORD nDebugInfoSize;
 	LPVOID lpImageName;
-	WORD   fUnicode;
+	WORD fUnicode;
 } LOAD_DLL_DEBUG_INFO;
 
 typedef struct UNLOAD_DLL_DEBUG_INFO
@@ -83,8 +83,8 @@ typedef struct UNLOAD_DLL_DEBUG_INFO
 typedef struct OUTPUT_DEBUG_STRING_INFO
 {
 	LPSTR lpDebugStringData;
-	WORD  fUnicode;
-	WORD  nDebugStringLength;
+	WORD fUnicode;
+	WORD nDebugStringLength;
 } OUTPUT_DEBUG_STRING_INFO;
 
 typedef struct RIP_INFO
@@ -100,15 +100,15 @@ typedef struct DEBUG_EVENT
 	DWORD dwThreadId;
 	union
 	{
-		EXCEPTION_DEBUG_INFO      Exception;
-		CREATE_THREAD_DEBUG_INFO  CreateThread;
+		EXCEPTION_DEBUG_INFO Exception;
+		CREATE_THREAD_DEBUG_INFO CreateThread;
 		CREATE_PROCESS_DEBUG_INFO CreateProcessInfo;
-		EXIT_THREAD_DEBUG_INFO    ExitThread;
-		EXIT_PROCESS_DEBUG_INFO   ExitProcess;
-		LOAD_DLL_DEBUG_INFO       LoadDll;
-		UNLOAD_DLL_DEBUG_INFO     UnloadDll;
-		OUTPUT_DEBUG_STRING_INFO  DebugString;
-		RIP_INFO                  RipInfo;
+		EXIT_THREAD_DEBUG_INFO ExitThread;
+		EXIT_PROCESS_DEBUG_INFO ExitProcess;
+		LOAD_DLL_DEBUG_INFO LoadDll;
+		UNLOAD_DLL_DEBUG_INFO UnloadDll;
+		OUTPUT_DEBUG_STRING_INFO DebugString;
+		RIP_INFO RipInfo;
 	} u;
 } DEBUG_EVENT, *LPDEBUG_EVENT;
 
@@ -166,8 +166,8 @@ typedef struct
 /* The security attributes structure */
 typedef struct SECURITY_ATTRIBUTES
 {
-	DWORD    nLength;
-	LPVOID   lpSecurityDescriptor;
+	DWORD nLength;
+	LPVOID lpSecurityDescriptor;
 	WIN_BOOL bInheritHandle;
 } SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
 
@@ -184,30 +184,30 @@ typedef struct
 /* Find* structures */
 typedef struct
 {
-	DWORD    dwFileAttributes;
+	DWORD dwFileAttributes;
 	FILETIME ftCreationTime;
 	FILETIME ftLastAccessTime;
 	FILETIME ftLastWriteTime;
-	DWORD    nFileSizeHigh;
-	DWORD    nFileSizeLow;
-	DWORD    dwReserved0;
-	DWORD    dwReserved1;
-	CHAR     cFileName[260];
-	CHAR     cAlternateFileName[14];
+	DWORD nFileSizeHigh;
+	DWORD nFileSizeLow;
+	DWORD dwReserved0;
+	DWORD dwReserved1;
+	CHAR cFileName[260];
+	CHAR cAlternateFileName[14];
 } WIN32_FIND_DATAA, *LPWIN32_FIND_DATAA;
 
 typedef struct
 {
-	DWORD    dwFileAttributes;
+	DWORD dwFileAttributes;
 	FILETIME ftCreationTime;
 	FILETIME ftLastAccessTime;
 	FILETIME ftLastWriteTime;
-	DWORD    nFileSizeHigh;
-	DWORD    nFileSizeLow;
-	DWORD    dwReserved0;
-	DWORD    dwReserved1;
-	WCHAR    cFileName[260];
-	WCHAR    cAlternateFileName[14];
+	DWORD nFileSizeHigh;
+	DWORD nFileSizeLow;
+	DWORD dwReserved0;
+	DWORD dwReserved1;
+	WCHAR cFileName[260];
+	WCHAR cAlternateFileName[14];
 } WIN32_FIND_DATAW, *LPWIN32_FIND_DATAW;
 
 DECL_WINELIB_TYPE_AW(WIN32_FIND_DATA)
@@ -216,21 +216,21 @@ DECL_WINELIB_TYPE_AW(LPWIN32_FIND_DATA)
 typedef struct
 {
 	LPVOID lpData;
-	DWORD  cbData;
-	BYTE   cbOverhead;
-	BYTE   iRegionIndex;
-	WORD   wFlags;
+	DWORD cbData;
+	BYTE cbOverhead;
+	BYTE iRegionIndex;
+	WORD wFlags;
 	union
 	{
 		struct
 		{
 			HANDLE hMem;
-			DWORD  dwReserved[3];
+			DWORD dwReserved[3];
 		} Block;
 		struct
 		{
-			DWORD  dwCommittedSize;
-			DWORD  dwUnCommittedSize;
+			DWORD dwCommittedSize;
+			DWORD dwUnCommittedSize;
 			LPVOID lpFirstBlock;
 			LPVOID lpLastBlock;
 		} Region;
@@ -543,7 +543,7 @@ typedef struct
 	UINT16 flags;
 	DWORD dwOptions WINE_PACKED;
 	DWORD dwFilter WINE_PACKED;
-	CHAR           achAllocModule[8];
+	CHAR achAllocModule[8];
 	DWORD dwAllocBreak WINE_PACKED;
 	DWORD dwAllocCount WINE_PACKED;
 } WINDEBUGINFO, *LPWINDEBUGINFO;
@@ -603,10 +603,10 @@ typedef struct
  */
 typedef struct
 {
-	DWORD  Internal;
-	DWORD  InternalHigh;
-	DWORD  Offset;
-	DWORD  OffsetHigh;
+	DWORD Internal;
+	DWORD InternalHigh;
+	DWORD Offset;
+	DWORD OffsetHigh;
 	HANDLE hEvent;
 } OVERLAPPED, *LPOVERLAPPED;
 
@@ -627,43 +627,43 @@ typedef struct
 
 typedef struct
 {
-	DWORD  cb;              /* 00: size of struct */
-	LPSTR  lpReserved;      /* 04: */
-	LPSTR  lpDesktop;       /* 08: */
-	LPSTR  lpTitle;         /* 0c: */
-	DWORD  dwX;             /* 10: */
-	DWORD  dwY;             /* 14: */
-	DWORD  dwXSize;         /* 18: */
-	DWORD  dwYSize;         /* 1c: */
-	DWORD  dwXCountChars;   /* 20: */
-	DWORD  dwYCountChars;   /* 24: */
-	DWORD  dwFillAttribute; /* 28: */
-	DWORD  dwFlags;         /* 2c: */
-	WORD   wShowWindow;     /* 30: */
-	WORD   cbReserved2;     /* 32: */
-	BYTE * lpReserved2;     /* 34: */
-	HANDLE hStdInput;       /* 38: */
-	HANDLE hStdOutput;      /* 3c: */
-	HANDLE hStdError;       /* 40: */
+	DWORD cb;              /* 00: size of struct */
+	LPSTR lpReserved;      /* 04: */
+	LPSTR lpDesktop;       /* 08: */
+	LPSTR lpTitle;         /* 0c: */
+	DWORD dwX;             /* 10: */
+	DWORD dwY;             /* 14: */
+	DWORD dwXSize;         /* 18: */
+	DWORD dwYSize;         /* 1c: */
+	DWORD dwXCountChars;   /* 20: */
+	DWORD dwYCountChars;   /* 24: */
+	DWORD dwFillAttribute; /* 28: */
+	DWORD dwFlags;         /* 2c: */
+	WORD wShowWindow;      /* 30: */
+	WORD cbReserved2;      /* 32: */
+	BYTE *lpReserved2;     /* 34: */
+	HANDLE hStdInput;      /* 38: */
+	HANDLE hStdOutput;     /* 3c: */
+	HANDLE hStdError;      /* 40: */
 } STARTUPINFOA, *LPSTARTUPINFOA;
 
 typedef struct
 {
-	DWORD  cb;
+	DWORD cb;
 	LPWSTR lpReserved;
 	LPWSTR lpDesktop;
 	LPWSTR lpTitle;
-	DWORD  dwX;
-	DWORD  dwY;
-	DWORD  dwXSize;
-	DWORD  dwYSize;
-	DWORD  dwXCountChars;
-	DWORD  dwYCountChars;
-	DWORD  dwFillAttribute;
-	DWORD  dwFlags;
-	WORD   wShowWindow;
-	WORD   cbReserved2;
-	BYTE * lpReserved2;
+	DWORD dwX;
+	DWORD dwY;
+	DWORD dwXSize;
+	DWORD dwYSize;
+	DWORD dwXCountChars;
+	DWORD dwYCountChars;
+	DWORD dwFillAttribute;
+	DWORD dwFlags;
+	WORD wShowWindow;
+	WORD cbReserved2;
+	BYTE *lpReserved2;
 	HANDLE hStdInput;
 	HANDLE hStdOutput;
 	HANDLE hStdError;
@@ -676,19 +676,19 @@ typedef struct
 {
 	HANDLE hProcess;
 	HANDLE hThread;
-	DWORD  dwProcessId;
-	DWORD  dwThreadId;
+	DWORD dwProcessId;
+	DWORD dwThreadId;
 } PROCESS_INFORMATION, *LPPROCESS_INFORMATION;
 
 typedef struct
 {
-	LONG       Bias;
-	WCHAR      StandardName[32];
+	LONG Bias;
+	WCHAR StandardName[32];
 	SYSTEMTIME StandardDate;
-	LONG       StandardBias;
-	WCHAR      DaylightName[32];
+	LONG StandardBias;
+	WCHAR DaylightName[32];
 	SYSTEMTIME DaylightDate;
-	LONG       DaylightBias;
+	LONG DaylightBias;
 } TIME_ZONE_INFORMATION, *LPTIME_ZONE_INFORMATION;
 
 #define TIME_ZONE_ID_UNKNOWN 0
@@ -748,37 +748,37 @@ typedef struct
 
 typedef struct
 {
-	int      dwFileAttributes;
+	int dwFileAttributes;
 	FILETIME ftCreationTime;
 	FILETIME ftLastAccessTime;
 	FILETIME ftLastWriteTime;
-	int      dwVolumeSerialNumber;
-	int      nFileSizeHigh;
-	int      nFileSizeLow;
-	int      nNumberOfLinks;
-	int      nFileIndexHigh;
-	int      nFileIndexLow;
+	int dwVolumeSerialNumber;
+	int nFileSizeHigh;
+	int nFileSizeLow;
+	int nNumberOfLinks;
+	int nFileIndexHigh;
+	int nFileIndexLow;
 } BY_HANDLE_FILE_INFORMATION;
 
 typedef struct SYSTEM_POWER_STATUS
 {
 	WIN_BOOL16 ACLineStatus;
-	BYTE       BatteryFlag;
-	BYTE       BatteryLifePercent;
-	BYTE       reserved;
-	DWORD      BatteryLifeTime;
-	DWORD      BatteryFullLifeTime;
+	BYTE BatteryFlag;
+	BYTE BatteryLifePercent;
+	BYTE reserved;
+	DWORD BatteryLifeTime;
+	DWORD BatteryFullLifeTime;
 } SYSTEM_POWER_STATUS, *LPSYSTEM_POWER_STATUS;
 
 typedef struct MEMORY_BASIC_INFORMATION
 {
 	LPVOID BaseAddress;
 	LPVOID AllocationBase;
-	DWORD  AllocationProtect;
-	DWORD  RegionSize;
-	DWORD  State;
-	DWORD  Protect;
-	DWORD  Type;
+	DWORD AllocationProtect;
+	DWORD RegionSize;
+	DWORD State;
+	DWORD Protect;
+	DWORD Type;
 } MEMORY_BASIC_INFORMATION, *LPMEMORY_BASIC_INFORMATION;
 
 typedef WIN_BOOL CALLBACK (*CODEPAGE_ENUMPROCA)(LPSTR);
@@ -799,15 +799,15 @@ typedef struct tagSYSTEM_INFO
 			WORD wReserved;
 		} DUMMYSTRUCTNAME;
 	} DUMMYUNIONNAME;
-	DWORD  dwPageSize;
+	DWORD dwPageSize;
 	LPVOID lpMinimumApplicationAddress;
 	LPVOID lpMaximumApplicationAddress;
-	DWORD  dwActiveProcessorMask;
-	DWORD  dwNumberOfProcessors;
-	DWORD  dwProcessorType;
-	DWORD  dwAllocationGranularity;
-	WORD   wProcessorLevel;
-	WORD   wProcessorRevision;
+	DWORD dwActiveProcessorMask;
+	DWORD dwNumberOfProcessors;
+	DWORD dwProcessorType;
+	DWORD dwAllocationGranularity;
+	WORD wProcessorLevel;
+	WORD wProcessorRevision;
 } SYSTEM_INFO, *LPSYSTEM_INFO;
 
 /* {G,S}etPriorityClass */
@@ -868,12 +868,12 @@ typedef enum GET_FILEEX_INFO_LEVELS {
 
 typedef struct WIN32_FILE_ATTRIBUTES_DATA
 {
-	DWORD    dwFileAttributes;
+	DWORD dwFileAttributes;
 	FILETIME ftCreationTime;
 	FILETIME ftLastAccessTime;
 	FILETIME ftLastWriteTime;
-	DWORD    nFileSizeHigh;
-	DWORD    nFileSizeLow;
+	DWORD nFileSizeHigh;
+	DWORD nFileSizeLow;
 } WIN32_FILE_ATTRIBUTE_DATA, *LPWIN32_FILE_ATTRIBUTE_DATA;
 
 typedef struct DllVersionInfo
@@ -998,11 +998,11 @@ typedef DWORD WINAPI (*LPPROGRESS_ROUTINE)(LARGE_INTEGER, LARGE_INTEGER, LARGE_I
 typedef struct
 {
 	LPVOID DebugInfo;
-	LONG   LockCount;
-	LONG   RecursionCount;
+	LONG LockCount;
+	LONG RecursionCount;
 	HANDLE OwningThread;
 	HANDLE LockSemaphore;
-	DWORD  Reserved;
+	DWORD Reserved;
 } CRITICAL_SECTION;
 
 #define CRITICAL_SECTION_INIT \
@@ -1017,7 +1017,7 @@ typedef struct
 	DWORD dwMinorVersion;
 	DWORD dwBuildNumber;
 	DWORD dwPlatformId;
-	CHAR  szCSDVersion[128];
+	CHAR szCSDVersion[128];
 } OSVERSIONINFO16;
 
 typedef struct
@@ -1027,7 +1027,7 @@ typedef struct
 	DWORD dwMinorVersion;
 	DWORD dwBuildNumber;
 	DWORD dwPlatformId;
-	CHAR  szCSDVersion[128];
+	CHAR szCSDVersion[128];
 } OSVERSIONINFOA;
 
 typedef struct
@@ -1055,8 +1055,8 @@ typedef struct tagCOMSTAT
 
 typedef struct tagDCB
 {
-	DWORD    DCBlength;
-	DWORD    BaudRate;
+	DWORD DCBlength;
+	DWORD BaudRate;
 	unsigned fBinary : 1;
 	unsigned fParity : 1;
 	unsigned fOutxCtsFlow : 1;
@@ -1071,17 +1071,17 @@ typedef struct tagDCB
 	unsigned fRtsControl : 2;
 	unsigned fAbortOnError : 1;
 	unsigned fDummy2 : 17;
-	WORD     wReserved;
-	WORD     XonLim;
-	WORD     XoffLim;
-	BYTE     ByteSize;
-	BYTE     Parity;
-	BYTE     StopBits;
-	char     XonChar;
-	char     XoffChar;
-	char     ErrorChar;
-	char     EofChar;
-	char     EvtChar;
+	WORD wReserved;
+	WORD XonLim;
+	WORD XoffLim;
+	BYTE ByteSize;
+	BYTE Parity;
+	BYTE StopBits;
+	char XonChar;
+	char XoffChar;
+	char ErrorChar;
+	char EofChar;
+	char EvtChar;
 } DCB, *LPDCB;
 
 typedef struct tagCOMMTIMEOUTS
@@ -1332,7 +1332,7 @@ WIN_BOOL WINAPI GetSecurityDescriptorDacl(PSECURITY_DESCRIPTOR, LPWIN_BOOL, PACL
 WIN_BOOL WINAPI GetSecurityDescriptorGroup(PSECURITY_DESCRIPTOR, PSID *, LPWIN_BOOL);
 DWORD WINAPI GetSecurityDescriptorLength(PSECURITY_DESCRIPTOR);
 WIN_BOOL WINAPI GetSecurityDescriptorOwner(PSECURITY_DESCRIPTOR, PSID *, LPWIN_BOOL);
-WIN_BOOL WINAPI           GetSecurityDescriptorSacl(PSECURITY_DESCRIPTOR, LPWIN_BOOL, PACL *, LPWIN_BOOL);
+WIN_BOOL WINAPI GetSecurityDescriptorSacl(PSECURITY_DESCRIPTOR, LPWIN_BOOL, PACL *, LPWIN_BOOL);
 PSID_IDENTIFIER_AUTHORITY WINAPI GetSidIdentifierAuthority(PSID);
 DWORD WINAPI GetSidLengthRequired(BYTE);
 PDWORD WINAPI GetSidSubAuthority(PSID, DWORD);

@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 
 #define NUM_WADS 2
 
@@ -70,11 +70,11 @@ typedef struct lumpinfo_s
 
 typedef struct wadlist_s
 {
-	qboolean    loaded;
-	char        wadname[32];
-	int         wad_numlumps;
+	qboolean loaded;
+	char wadname[32];
+	int wad_numlumps;
 	lumpinfo_t *wad_lumps;
-	byte *      wad_base;
+	byte *wad_base;
 } wadlist_t;
 
 extern wadlist_t wads[NUM_WADS];

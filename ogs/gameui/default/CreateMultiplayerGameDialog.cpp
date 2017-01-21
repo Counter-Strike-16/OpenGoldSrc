@@ -1,11 +1,11 @@
-#include "EngineInterface.h"
 #include "CreateMultiplayerGameDialog.h"
-#include "CreateMultiplayerGameServerPage.h"
-#include "CreateMultiplayerGameGameplayPage.h"
 #include "CreateMultiplayerGameBotPage.h"
+#include "CreateMultiplayerGameGameplayPage.h"
+#include "CreateMultiplayerGameServerPage.h"
+#include "EngineInterface.h"
 
-#include "ModInfo.h"
 #include "GameUI_Interface.h"
+#include "ModInfo.h"
 
 #include <stdio.h>
 
@@ -29,9 +29,10 @@ CCreateMultiplayerGameDialog::CCreateMultiplayerGameDialog(vgui::Panel *parent)
 
 	m_bBotsEnabled = true;
 
-	m_pServerPage   = new CCreateMultiplayerGameServerPage(this, "ServerPage");
-	m_pGameplayPage = new CCreateMultiplayerGameGameplayPage(this, "GameplayPage");
-	m_pBotPage      = NULL;
+	m_pServerPage = new CCreateMultiplayerGameServerPage(this, "ServerPage");
+	m_pGameplayPage =
+	new CCreateMultiplayerGameGameplayPage(this, "GameplayPage");
+	m_pBotPage = NULL;
 
 	AddPage(m_pServerPage, "#GameUI_Server");
 	AddPage(m_pGameplayPage, "#GameUI_Game");
@@ -50,7 +51,8 @@ CCreateMultiplayerGameDialog::CCreateMultiplayerGameDialog(vgui::Panel *parent)
 
 	if(m_bBotsEnabled)
 	{
-		m_pBotPage = new CCreateMultiplayerGameBotPage(this, "BotPage", m_pSavedData);
+		m_pBotPage =
+		new CCreateMultiplayerGameBotPage(this, "BotPage", m_pSavedData);
 		AddPage(m_pBotPage, "#GameUI_CPUPlayerOptions");
 		m_pServerPage->EnableBots(m_pSavedData);
 	}
@@ -69,7 +71,7 @@ bool CCreateMultiplayerGameDialog::OnOK(bool applyOnly)
 {
 	BaseClass::OnOK(applyOnly);
 
-	char        szMapName[64], szHostName[64], szPassword[64];
+	char szMapName[64], szHostName[64], szPassword[64];
 	const char *pszMapName = m_pServerPage->GetMapName();
 
 	if(!pszMapName)
@@ -92,7 +94,12 @@ bool CCreateMultiplayerGameDialog::OnOK(bool applyOnly)
 	SetVisible(false);
 
 	char szMapCommand[1024];
-	Q_snprintf(szMapCommand, sizeof(szMapCommand), "disconnect\nsv_lan 1\nsetmaster disable\nmaxplayers %i\nsv_password \"%s\"\nhostname \"%s\"\ncd fadeout\nmap %s\n", m_pGameplayPage->GetMaxPlayers(), szPassword, szHostName, szMapName);
+	Q_snprintf(szMapCommand, sizeof(szMapCommand), "disconnect\nsv_lan 1\nsetmaster disable\nmaxplayers "
+	                                               "%i\nsv_password \"%s\"\nhostname \"%s\"\ncd fadeout\nmap %s\n",
+	           m_pGameplayPage->GetMaxPlayers(),
+	           szPassword,
+	           szHostName,
+	           szMapName);
 	engine->pfnClientCmd(szMapCommand);
 
 	char *botCmdBuf = m_pServerPage->GetBOTCommandBuffer();

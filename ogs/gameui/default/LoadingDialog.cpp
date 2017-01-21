@@ -29,19 +29,19 @@ CLoadingDialog::CLoadingDialog(vgui::Panel *parent)
 	SetDeleteSelfOnClose(true);
 	SetTitle("#GameUI_Loading", true);
 
-	m_bCenter              = true;
-	m_pParent              = parent;
+	m_bCenter = true;
+	m_pParent = parent;
 	m_szBackgroundImage[0] = 0;
 
-	m_bShowingSecondaryProgress         = false;
-	m_flSecondaryProgress               = 0.0f;
+	m_bShowingSecondaryProgress = false;
+	m_flSecondaryProgress = 0.0f;
 	m_flLastSecondaryProgressUpdateTime = 0.0f;
-	m_flSecondaryProgressStartTime      = 0.0f;
+	m_flSecondaryProgressStartTime = 0.0f;
 
-	m_pProgress           = new ProgressBar(this, "Progress");
-	m_pProgress2          = new ProgressBar(this, "Progress2");
-	m_pInfoLabel          = new Label(this, "InfoLabel", "");
-	m_pCancelButton       = new Button(this, "CancelButton", "#GameUI_Cancel");
+	m_pProgress = new ProgressBar(this, "Progress");
+	m_pProgress2 = new ProgressBar(this, "Progress2");
+	m_pInfoLabel = new Label(this, "InfoLabel", "");
+	m_pCancelButton = new Button(this, "CancelButton", "#GameUI_Cancel");
 	m_pTimeRemainingLabel = new Label(this, "TimeRemainingLabel", "");
 	m_pCancelButton->SetCommand("Cancel");
 
@@ -322,16 +322,16 @@ void CLoadingDialog::SetSecondaryProgress(float progress)
 	if(progress > m_flSecondaryProgress)
 	{
 		m_pProgress2->SetProgress(progress);
-		m_flSecondaryProgress               = progress;
+		m_flSecondaryProgress = progress;
 		m_flLastSecondaryProgressUpdateTime = (float)system()->GetFrameTime();
 	}
 
 	if(progress < m_flSecondaryProgress)
 	{
 		m_pProgress2->SetProgress(progress);
-		m_flSecondaryProgress               = progress;
+		m_flSecondaryProgress = progress;
 		m_flLastSecondaryProgressUpdateTime = (float)system()->GetFrameTime();
-		m_flSecondaryProgressStartTime      = (float)system()->GetFrameTime();
+		m_flSecondaryProgressStartTime = (float)system()->GetFrameTime();
 	}
 }
 

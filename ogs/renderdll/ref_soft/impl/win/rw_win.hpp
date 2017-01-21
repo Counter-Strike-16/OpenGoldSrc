@@ -26,19 +26,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct
 {
 	HINSTANCE hInstance;
-	void *    wndproc;
-	HDC       hDC;  // global DC we're using
-	HWND      hWnd; // HWND of parent window
+	void *wndproc;
+	HDC hDC;   // global DC we're using
+	HWND hWnd; // HWND of parent window
 
-	HDC            hdcDIBSection; // DC compatible with DIB section
-	HBITMAP        hDIBSection;   // DIB section
-	unsigned char *pDIBBase;      // DIB base pointer, NOT used directly for rendering!
+	HDC hdcDIBSection;       // DC compatible with DIB section
+	HBITMAP hDIBSection;     // DIB section
+	unsigned char *pDIBBase; // DIB base pointer, NOT used directly for rendering!
 
 	HPALETTE hPal;             // palette we're using
 	HPALETTE hpalOld;          // original system palette
 	COLORREF oldsyscolors[20]; // original system colors
 
-	HINSTANCE    hinstDDRAW;   // library instance for DDRAW.DLL
+	HINSTANCE hinstDDRAW;      // library instance for DDRAW.DLL
 	LPDIRECTDRAW lpDirectDraw; // pointer to DirectDraw object
 
 	LPDIRECTDRAWSURFACE lpddsFrontBuffer;     // video card display memory front buffer

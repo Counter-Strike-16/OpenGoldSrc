@@ -32,7 +32,7 @@
 
 #define MAX_RIMAGES 1024
 image_t r_images[MAX_RIMAGES];
-int     numr_images;
+int numr_images;
 
 /*
 ===============
@@ -41,9 +41,9 @@ R_ImageList_f
 */
 void R_ImageList_f()
 {
-	int      i;
+	int i;
 	image_t *image;
-	int      texels;
+	int texels;
 
 	ri.Con_Printf(PRINT_ALL, "------------------\n");
 	texels = 0;
@@ -93,12 +93,12 @@ LoadPCX
 */
 void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height)
 {
-	byte * raw;
+	byte *raw;
 	pcx_t *pcx;
-	int    x, y;
-	int    len;
-	int    dataByte, runLength;
-	byte * out, *pix;
+	int x, y;
+	int len;
+	int dataByte, runLength;
+	byte *out, *pix;
 
 	*pic = NULL;
 
@@ -117,14 +117,14 @@ void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height
 	//
 	pcx = (pcx_t *)raw;
 
-	pcx->xmin           = LittleShort(pcx->xmin);
-	pcx->ymin           = LittleShort(pcx->ymin);
-	pcx->xmax           = LittleShort(pcx->xmax);
-	pcx->ymax           = LittleShort(pcx->ymax);
-	pcx->hres           = LittleShort(pcx->hres);
-	pcx->vres           = LittleShort(pcx->vres);
+	pcx->xmin = LittleShort(pcx->xmin);
+	pcx->ymin = LittleShort(pcx->ymin);
+	pcx->xmax = LittleShort(pcx->xmax);
+	pcx->ymax = LittleShort(pcx->ymax);
+	pcx->hres = LittleShort(pcx->hres);
+	pcx->vres = LittleShort(pcx->vres);
 	pcx->bytes_per_line = LittleShort(pcx->bytes_per_line);
-	pcx->palette_type   = LittleShort(pcx->palette_type);
+	pcx->palette_type = LittleShort(pcx->palette_type);
 
 	raw = &pcx->data;
 
@@ -160,7 +160,7 @@ void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height
 			if((dataByte & 0xC0) == 0xC0)
 			{
 				runLength = dataByte & 0x3F;
-				dataByte  = *raw++;
+				dataByte = *raw++;
 			}
 			else
 				runLength = 1;
@@ -190,11 +190,11 @@ TARGA LOADING
 
 typedef struct _TargaHeader
 {
-	unsigned char  id_length, colormap_type, image_type;
+	unsigned char id_length, colormap_type, image_type;
 	unsigned short colormap_index, colormap_length;
-	unsigned char  colormap_size;
+	unsigned char colormap_size;
 	unsigned short x_origin, y_origin, width, height;
-	unsigned char  pixel_size, attributes;
+	unsigned char pixel_size, attributes;
 } TargaHeader;
 
 /*
@@ -204,14 +204,14 @@ LoadTGA
 */
 void LoadTGA(char *name, byte **pic, int *width, int *height)
 {
-	int         columns, rows, numPixels;
-	byte *      pixbuf;
-	int         row, column;
-	byte *      buf_p;
-	byte *      buffer;
-	int         length;
+	int columns, rows, numPixels;
+	byte *pixbuf;
+	int row, column;
+	byte *buf_p;
+	byte *buffer;
+	int length;
 	TargaHeader targa_header;
-	byte *      targa_rgba;
+	byte *targa_rgba;
 
 	*pic = NULL;
 
@@ -227,16 +227,16 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 
 	buf_p = buffer;
 
-	targa_header.id_length     = *buf_p++;
+	targa_header.id_length = *buf_p++;
 	targa_header.colormap_type = *buf_p++;
-	targa_header.image_type    = *buf_p++;
+	targa_header.image_type = *buf_p++;
 
 	targa_header.colormap_index = LittleShort(*((short *)buf_p));
 	buf_p += 2;
 	targa_header.colormap_length = LittleShort(*((short *)buf_p));
 	buf_p += 2;
 	targa_header.colormap_size = *buf_p++;
-	targa_header.x_origin      = LittleShort(*((short *)buf_p));
+	targa_header.x_origin = LittleShort(*((short *)buf_p));
 	buf_p += 2;
 	targa_header.y_origin = LittleShort(*((short *)buf_p));
 	buf_p += 2;
@@ -253,8 +253,8 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 	if(targa_header.colormap_type != 0 || (targa_header.pixel_size != 32 && targa_header.pixel_size != 24))
 		ri.Sys_Error(ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
 
-	columns   = targa_header.width;
-	rows      = targa_header.height;
+	columns = targa_header.width;
+	rows = targa_header.height;
 	numPixels = columns * rows;
 
 	if(width)
@@ -263,7 +263,7 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 		*height = rows;
 
 	targa_rgba = malloc(numPixels * 4);
-	*pic       = targa_rgba;
+	*pic = targa_rgba;
 
 	if(targa_header.id_length != 0)
 		buf_p += targa_header.id_length; // skip TARGA image comment
@@ -280,18 +280,18 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 				{
 				case 24:
 
-					blue      = *buf_p++;
-					green     = *buf_p++;
-					red       = *buf_p++;
+					blue = *buf_p++;
+					green = *buf_p++;
+					red = *buf_p++;
 					*pixbuf++ = red;
 					*pixbuf++ = green;
 					*pixbuf++ = blue;
 					*pixbuf++ = 255;
 					break;
 				case 32:
-					blue      = *buf_p++;
-					green     = *buf_p++;
-					red       = *buf_p++;
+					blue = *buf_p++;
+					green = *buf_p++;
+					red = *buf_p++;
 					alphabyte = *buf_p++;
 					*pixbuf++ = red;
 					*pixbuf++ = green;
@@ -311,21 +311,21 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 			for(column = 0; column < columns;)
 			{
 				packetHeader = *buf_p++;
-				packetSize   = 1 + (packetHeader & 0x7f);
+				packetSize = 1 + (packetHeader & 0x7f);
 				if(packetHeader & 0x80)
 				{ // run-length packet
 					switch(targa_header.pixel_size)
 					{
 					case 24:
-						blue      = *buf_p++;
-						green     = *buf_p++;
-						red       = *buf_p++;
+						blue = *buf_p++;
+						green = *buf_p++;
+						red = *buf_p++;
 						alphabyte = 255;
 						break;
 					case 32:
-						blue      = *buf_p++;
-						green     = *buf_p++;
-						red       = *buf_p++;
+						blue = *buf_p++;
+						green = *buf_p++;
+						red = *buf_p++;
 						alphabyte = *buf_p++;
 						break;
 					}
@@ -355,18 +355,18 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 						switch(targa_header.pixel_size)
 						{
 						case 24:
-							blue      = *buf_p++;
-							green     = *buf_p++;
-							red       = *buf_p++;
+							blue = *buf_p++;
+							green = *buf_p++;
+							red = *buf_p++;
 							*pixbuf++ = red;
 							*pixbuf++ = green;
 							*pixbuf++ = blue;
 							*pixbuf++ = 255;
 							break;
 						case 32:
-							blue      = *buf_p++;
-							green     = *buf_p++;
-							red       = *buf_p++;
+							blue = *buf_p++;
+							green = *buf_p++;
+							red = *buf_p++;
 							alphabyte = *buf_p++;
 							*pixbuf++ = red;
 							*pixbuf++ = green;
@@ -399,7 +399,7 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 image_t *R_FindFreeImage()
 {
 	image_t *image;
-	int      i;
+	int i;
 
 	// find a free image_t
 	for(i = 0, image = r_images; i < numr_images; i++, image++)
@@ -427,7 +427,7 @@ GL_LoadPic
 image_t *GL_LoadPic(char *name, byte *pic, int width, int height, imagetype_t type)
 {
 	image_t *image;
-	int      i, c, b;
+	int i, c, b;
 
 	image = R_FindFreeImage();
 	if(strlen(name) >= sizeof(image->name))
@@ -435,19 +435,19 @@ image_t *GL_LoadPic(char *name, byte *pic, int width, int height, imagetype_t ty
 	strcpy(image->name, name);
 	image->registration_sequence = registration_sequence;
 
-	image->width  = width;
+	image->width = width;
 	image->height = height;
-	image->type   = type;
+	image->type = type;
 
-	c                  = width * height;
-	image->pixels[0]   = malloc(c);
+	c = width * height;
+	image->pixels[0] = malloc(c);
 	image->transparent = false;
 	for(i = 0; i < c; i++)
 	{
 		b = pic[i];
 		if(b == 255)
 			image->transparent = true;
-		image->pixels[0][i]    = b;
+		image->pixels[0][i] = b;
 	}
 
 	return image;
@@ -461,9 +461,9 @@ R_LoadWal
 image_t *R_LoadWal(char *name)
 {
 	miptex_t *mt;
-	int       ofs;
-	image_t * image;
-	int       size;
+	int ofs;
+	image_t *image;
+	int size;
 
 	gpFileSystem->LoadFile(name, (void **)&mt);
 	if(!mt)
@@ -474,12 +474,12 @@ image_t *R_LoadWal(char *name)
 
 	image = R_FindFreeImage();
 	strcpy(image->name, name);
-	image->width                 = LittleLong(mt->width);
-	image->height                = LittleLong(mt->height);
-	image->type                  = it_wall;
+	image->width = LittleLong(mt->width);
+	image->height = LittleLong(mt->height);
+	image->type = it_wall;
 	image->registration_sequence = registration_sequence;
 
-	size             = image->width * image->height * (256 + 64 + 16 + 4) / 256;
+	size = image->width * image->height * (256 + 64 + 16 + 4) / 256;
 	image->pixels[0] = malloc(size);
 	image->pixels[1] = image->pixels[0] + image->width * image->height;
 	image->pixels[2] = image->pixels[1] + image->width * image->height / 4;
@@ -503,9 +503,9 @@ Finds or loads the given image
 image_t *R_FindImage(char *name, imagetype_t type)
 {
 	image_t *image;
-	int      i, len;
-	byte *   pic, *palette;
-	int      width, height;
+	int i, len;
+	byte *pic, *palette;
+	int width, height;
 
 	if(!name)
 		return NULL; // ri.Sys_Error (ERR_DROP, "R_FindImage: NULL name");
@@ -526,7 +526,7 @@ image_t *R_FindImage(char *name, imagetype_t type)
 	//
 	// load the pic from disk
 	//
-	pic     = NULL;
+	pic = NULL;
 	palette = NULL;
 	if(!strcmp(name + len - 4, ".pcx"))
 	{
@@ -572,7 +572,7 @@ will be freed.
 */
 void R_FreeUnusedImages()
 {
-	int      i;
+	int i;
 	image_t *image;
 
 	for(i = 0, image = r_images; i < numr_images; i++, image++)
@@ -609,7 +609,7 @@ R_ShutdownImages
 */
 void R_ShutdownImages()
 {
-	int      i;
+	int i;
 	image_t *image;
 
 	for(i = 0, image = r_images; i < numr_images; i++, image++)

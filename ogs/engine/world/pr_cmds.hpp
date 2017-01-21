@@ -30,11 +30,11 @@
 
 #pragma once
 
-#include "maintypes.h"
-#include "common/commontypes.h"
-#include "public/archtypes.h"
-#include "engine/eiface.h"
 #include "common/com_model.h"
+#include "common/commontypes.h"
+#include "engine/eiface.h"
+#include "maintypes.h"
+#include "public/archtypes.h"
 
 #define MAX_RANDOM_RANGE 0x7FFFFFFFUL
 
@@ -68,18 +68,18 @@
 #define r_visframecount (*pr_visframecount)
 #endif // HOOK_ENGINE
 
-typedef struct edict_s      edict_t;
-typedef struct client_s     client_t;
+typedef struct edict_s edict_t;
+typedef struct client_s client_t;
 typedef struct event_args_s event_args_t;
-typedef struct sizebuf_s    sizebuf_t;
+typedef struct sizebuf_s sizebuf_t;
 
 extern unsigned char gMsgData[512];
-extern sizebuf_t     gMsgBuffer;
-extern edict_t *     gMsgEntity;
-extern int           gMsgDest;
-extern int           gMsgType;
-extern qboolean      gMsgStarted;
-extern vec3_t        gMsgOrigin;
+extern sizebuf_t gMsgBuffer;
+extern edict_t *gMsgEntity;
+extern int gMsgDest;
+extern int gMsgType;
+extern qboolean gMsgStarted;
+extern vec3_t gMsgOrigin;
 
 extern int32 idum;
 
@@ -136,7 +136,7 @@ edict_t *PVSFindEntities(edict_t *pplayer);
 qboolean ValidCmd(const char *pCmd);
 void PF_stuffcmd_I(edict_t *pEdict, char *szFmt, ...);
 void PF_localcmd_I(char *str);
-void     PF_localexec_I(void);
+void PF_localexec_I(void);
 edict_t *FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *org, float rad);
 edict_t *PF_Spawn_I(void);
 edict_t *CreateNamedEntity(int className);
@@ -144,7 +144,9 @@ void PF_Remove_I(edict_t *ed);
 void PF_Remove_I_internal(edict_t *ed);
 edict_t *PF_find_Shared(int eStartSearchAfter, int iFieldToMatch, const char *szValueToFind);
 int iGetIndex(const char *pszField);
-edict_t *FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue);
+edict_t *FindEntityByString(edict_t *pEdictStartSearchAfter,
+                            const char *pszField,
+                            const char *pszValue);
 int GetEntityIllum(edict_t *pEnt);
 qboolean PR_IsEmptyString(const char *s);
 int PF_precache_sound_I(const char *s);
@@ -157,7 +159,7 @@ void EV_SV_Playback(int flags, int clientindex, unsigned short eventindex, float
 int PF_precache_model_I(const char *s);
 int PF_precache_generic_I(char *s);
 int PF_IsMapValid_I(char *mapname);
-int   PF_NumberOfEntities_I(void);
+int PF_NumberOfEntities_I(void);
 char *PF_GetInfoKeyBuffer_I(edict_t *e);
 char *PF_InfoKeyValue_I(char *infobuffer, const char *key);
 void PF_SetKeyValue_I(char *infobuffer, const char *key, const char *value);
@@ -191,7 +193,7 @@ void PF_makestatic_I(edict_t *ent);
 void PF_StaticDecal(const float *origin, int decalIndex, int entityIndex, int modelIndex);
 void PF_setspawnparms_I(edict_t *ent);
 void PF_changelevel_I(const char *s1, const char *s2);
-void  SeedRandomNumberGenerator(void);
+void SeedRandomNumberGenerator(void);
 int32 ran1(void);
 float fran1(void);
 float RandomFloat(float flLow, float flHigh);
@@ -203,7 +205,7 @@ unsigned int PF_GetPlayerWONId(edict_t *e);
 const char *PF_GetPlayerAuthId(edict_t *e);
 void PF_BuildSoundMsg_I(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed);
 void PF_BuildSoundMsg_I_internal(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed);
-int         PF_IsDedicatedServer(void);
+int PF_IsDedicatedServer(void);
 const char *PF_GetPhysicsInfoString(const edict_t *pClient);
 const char *PF_GetPhysicsKeyValue(const edict_t *pClient, const char *key);
 void PF_SetPhysicsKeyValue(const edict_t *pClient, const char *key, const char *value);

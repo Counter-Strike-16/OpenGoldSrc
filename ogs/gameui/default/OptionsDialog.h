@@ -28,12 +28,12 @@ public:
 
 private:
 	class COptionsSubMultiplayer *m_pOptionsSubMultiplayer;
-	class COptionsSubKeyboard *   m_pOptionsSubKeyboard;
-	class COptionsSubMouse *      m_pOptionsSubMouse;
-	class COptionsSubAudio *      m_pOptionsSubAudio;
-	class COptionsSubVideo *      m_pOptionsSubVideo;
-	class COptionsSubVoice *      m_pOptionsSubVoice;
-	class COptionsSubAdvanced *   m_pOptionsSubAdvanced;
+	class COptionsSubKeyboard *m_pOptionsSubKeyboard;
+	class COptionsSubMouse *m_pOptionsSubMouse;
+	class COptionsSubAudio *m_pOptionsSubAudio;
+	class COptionsSubVideo *m_pOptionsSubVideo;
+	class COptionsSubVoice *m_pOptionsSubVoice;
+	class COptionsSubAdvanced *m_pOptionsSubAdvanced;
 };
 
 #endif

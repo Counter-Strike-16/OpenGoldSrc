@@ -29,11 +29,12 @@
 /// @file
 
 //#include "precompiled.hpp"
-#include "maintypes.h"
-#include "common/netadr.h"
 #include "network/ipratelimit.hpp"
+#include "common/netadr.h"
+#include "maintypes.h"
 
-//bool (__fastcall *pCIPRateLimit__CheckIP)(CIPRateLimit *obj, int none, netadr_t adr);
+// bool (__fastcall *pCIPRateLimit__CheckIP)(CIPRateLimit *obj, int none,
+// netadr_t adr);
 
 NOBODY bool CIPRateLimit::CheckIP(netadr_t adr)
 {
@@ -46,22 +47,32 @@ NOBODY bool CIPRateLimit::CheckIP(netadr_t adr)
 	//	{
 	//		ip_t tmp;                                     //    37
 	//		int i;                                        //    38
-	//		LastInorder(const class CUtlRBTree<CIPRateLimit::iprate_s, int>  *const this); /* size=169106148, low_pc=0 */ //    37
-	//		IsValidIndex(const class CUtlRBTree<CIPRateLimit::iprate_s, int>  *const this,
-	//					 int i); /* size=524288, low_pc=0 */ //    41
-	//		operator[](class CUtlRBTree<CIPRateLimit::iprate_s, int> *const this,
-	//				   int i); /* size=169107280, low_pc=0 */ //    42
+	//		LastInorder(const class CUtlRBTree<CIPRateLimit::iprate_s, int>
+	//*const this); /* size=169106148, low_pc=0 */ //    37
+	//		IsValidIndex(const class CUtlRBTree<CIPRateLimit::iprate_s, int>
+	//*const this,
+	//					 int i); /* size=524288, low_pc=0 */ //
+	//41
+	//		operator[](class CUtlRBTree<CIPRateLimit::iprate_s, int> *const
+	//this,
+	//				   int i); /* size=169107280, low_pc=0 */ // 42
 	//		{
 	//			ip_t removeIPT;                       //    45
-	//			PrevInorder(const class CUtlRBTree<CIPRateLimit::iprate_s, int>  *const this,
-	//						int i); /* size=0, low_pc=0 */ //    46
+	//			PrevInorder(const class CUtlRBTree<CIPRateLimit::iprate_s, int>
+	//*const this,
+	//						int i); /* size=0, low_pc=0 */ //
+	//46
 	//		}
-	//		PrevInorder(const class CUtlRBTree<CIPRateLimit::iprate_s, int>  *const this,
-	//					int i); /* size=2019913216, low_pc=0 */ //    51
+	//		PrevInorder(const class CUtlRBTree<CIPRateLimit::iprate_s, int>
+	//*const this,
+	//					int i); /* size=2019913216, low_pc=0 */ //
+	//51
 	//	}
 	//	Find(const class CUtlRBTree<CIPRateLimit::iprate_s, int>  *const this,
-	//		 const class iprate_s  &const search); /* size=1967350639, low_pc=0 */ //    57
-	//	IsValidIndex(const class CUtlRBTree<CIPRateLimit::iprate_s, int>  *const this,
+	//		 const class iprate_s  &const search); /* size=1967350639, low_pc=0
+	//*/ //    57
+	//	IsValidIndex(const class CUtlRBTree<CIPRateLimit::iprate_s, int>  *const
+	//this,
 	//				 int i); /* size=7626612, low_pc=0 */ //    59
 	//	operator[](class CUtlRBTree<CIPRateLimit::iprate_s, int> *const this,
 	//			   int i); /* size=1936875856, low_pc=0 */ //    61
@@ -72,8 +83,10 @@ NOBODY bool CIPRateLimit::CheckIP(netadr_t adr)
 	//	}
 	//	{
 	//		class iprate_s newEntry;                      //    80
-	//		Insert(class CUtlRBTree<CIPRateLimit::iprate_s, int> *const this,
-	//			   const class iprate_s  &const insert); /* size=1399744112, low_pc=0 */ //    84
+	//		Insert(class CUtlRBTree<CIPRateLimit::iprate_s, int> *const
+	//this,
+	//			   const class iprate_s  &const insert); /* size=1399744112,
+	//low_pc=0 */ //    84
 	//	}
 	//	{
 	//		float query_rate;                             //    97

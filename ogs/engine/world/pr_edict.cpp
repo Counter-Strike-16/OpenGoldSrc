@@ -30,13 +30,13 @@
 
 //#include "precompiled.hpp"
 #include "world/pr_edict.hpp"
-#include "system/common.hpp"
-#include "system/system.hpp"
-#include "system/host.hpp"
-#include "server/server.hpp"
 #include "console/console.hpp"
 #include "console/cvar.hpp"
 #include "memory/mem.hpp"
+#include "server/server.hpp"
+#include "system/common.hpp"
+#include "system/host.hpp"
+#include "system/system.hpp"
 
 void ED_ClearEdict(edict_t *e)
 {
@@ -48,7 +48,7 @@ void ED_ClearEdict(edict_t *e)
 
 edict_t *ED_Alloc()
 {
-	int      i;
+	int i;
 	edict_t *e;
 
 	// Search for free entity
@@ -87,19 +87,19 @@ void ED_Free(edict_t *ed)
 		FreeEntPrivateData(ed);
 		ed->serialnumber++;
 		ed->freetime = (float)g_psv.time;
-		ed->free     = TRUE;
-		ed->v.flags  = 0;
-		ed->v.model  = 0;
+		ed->free = TRUE;
+		ed->v.flags = 0;
+		ed->v.model = 0;
 
 		ed->v.takedamage = 0;
 		ed->v.modelindex = 0;
-		ed->v.colormap   = 0;
-		ed->v.skin       = 0;
-		ed->v.frame      = 0;
-		ed->v.scale      = 0;
-		ed->v.gravity    = 0;
-		ed->v.nextthink  = -1.0;
-		ed->v.solid      = SOLID_NOT;
+		ed->v.colormap = 0;
+		ed->v.skin = 0;
+		ed->v.frame = 0;
+		ed->v.scale = 0;
+		ed->v.gravity = 0;
+		ed->v.nextthink = -1.0;
+		ed->v.solid = SOLID_NOT;
 
 		ed->v.origin[0] = vec3_origin[0];
 		ed->v.origin[1] = vec3_origin[1];
@@ -114,9 +114,9 @@ NOXREF void ED_Count()
 {
 	NOXREFCHECK;
 
-	int      i;
+	int i;
 	edict_t *ent;
-	int      active = 0, models = 0, solid = 0, step = 0;
+	int active = 0, models = 0, solid = 0, step = 0;
 
 	for(i = 0; i < g_psv.num_edicts; i++)
 	{
@@ -149,8 +149,8 @@ char *ED_NewString(const char *string)
 
 #else // REHLDS_FIXES
 
-	int l       = Q_strlen(string);
-	new_s       = (char *)Hunk_Alloc(l + 1);
+	int l = Q_strlen(string);
+	new_s = (char *)Hunk_Alloc(l + 1);
 	char *new_p = new_s;
 
 	for(int i = 0; i < l; i++, new_p++)
@@ -177,11 +177,11 @@ char *ED_NewString(const char *string)
 
 char *ED_ParseEdict(char *data, edict_t *ent)
 {
-	qboolean     init = FALSE;
-	char         keyname[256];
-	int          n;
-	ENTITYINIT   pEntityInit;
-	char *       className;
+	qboolean init = FALSE;
+	char keyname[256];
+	int n;
+	ENTITYINIT pEntityInit;
+	char *className;
 	KeyValueData kvd;
 
 	if(ent != g_psv.edicts)
@@ -208,9 +208,9 @@ char *ED_ParseEdict(char *data, edict_t *ent)
 			{
 				pEntityInit(&ent->v);
 				kvd.szClassName = "custom";
-				kvd.szKeyName   = "customclass";
-				kvd.szValue     = className;
-				kvd.fHandled    = FALSE;
+				kvd.szKeyName = "customclass";
+				kvd.szValue = className;
+				kvd.fHandled = FALSE;
 				gEntityInterface.pfnKeyValue(ent, &kvd);
 				init = TRUE;
 			}
@@ -234,7 +234,7 @@ char *ED_ParseEdict(char *data, edict_t *ent)
 			keyname[ARRAYSIZE(keyname) - 1] = 0;
 
 			// Remove tail spaces
-			for(n          = Q_strlen(keyname) - 1; n >= 0 && keyname[n] == ' '; n--)
+			for(n = Q_strlen(keyname) - 1; n >= 0 && keyname[n] == ' '; n--)
 				keyname[n] = 0;
 
 			data = COM_Parse(data);
@@ -267,9 +267,9 @@ char *ED_ParseEdict(char *data, edict_t *ent)
 			}
 
 			kvd.szClassName = className;
-			kvd.szKeyName   = keyname;
-			kvd.szValue     = com_token;
-			kvd.fHandled    = 0;
+			kvd.szKeyName = keyname;
+			kvd.szValue = com_token;
+			kvd.fHandled = 0;
 			gEntityInterface.pfnKeyValue(ent, &kvd);
 		}
 	}
@@ -285,11 +285,11 @@ char *ED_ParseEdict(char *data, edict_t *ent)
 void ED_LoadFromFile(char *data)
 {
 	edict_t *ent;
-	int      inhibit;
+	int inhibit;
 
 	gGlobalVariables.time = (float)g_psv.time;
 
-	ent     = NULL;
+	ent = NULL;
 	inhibit = 0;
 	while(1)
 	{
@@ -310,7 +310,8 @@ void ED_LoadFromFile(char *data)
 		else
 		{
 			ent = g_psv.edicts;
-			ReleaseEntityDLLFields(g_psv.edicts); // TODO: May be better to call ED_ClearEdict here?
+			ReleaseEntityDLLFields(
+			g_psv.edicts); // TODO: May be better to call ED_ClearEdict here?
 			InitEntityDLLFields(ent);
 		}
 
@@ -373,7 +374,7 @@ int NUM_FOR_EDICT(const edict_t *e)
 
 bool SuckOutClassname(char *szInputStream, edict_t *pEdict)
 {
-	char         szKeyName[256];
+	char szKeyName[256];
 	KeyValueData kvd;
 
 	// key
@@ -389,9 +390,9 @@ bool SuckOutClassname(char *szInputStream, edict_t *pEdict)
 		if(!Q_strcmp(szKeyName, "classname"))
 		{
 			kvd.szClassName = NULL;
-			kvd.szKeyName   = szKeyName;
-			kvd.szValue     = com_token;
-			kvd.fHandled    = FALSE;
+			kvd.szKeyName = szKeyName;
+			kvd.szValue = com_token;
+			kvd.fHandled = FALSE;
 
 			gEntityInterface.pfnKeyValue(pEdict, &kvd);
 
@@ -416,9 +417,9 @@ bool SuckOutClassname(char *szInputStream, edict_t *pEdict)
 	if(pEdict == g_psv.edicts)
 	{
 		kvd.szClassName = NULL;
-		kvd.szKeyName   = "classname";
-		kvd.szValue     = "worldspawn";
-		kvd.fHandled    = FALSE;
+		kvd.szKeyName = "classname";
+		kvd.szValue = "worldspawn";
+		kvd.fHandled = FALSE;
 
 		gEntityInterface.pfnKeyValue(pEdict, &kvd);
 
@@ -522,10 +523,11 @@ int EXT_FUNC IndexOfEdict(const edict_t *pEdict)
 	{
 		index = pEdict - g_psv.edicts;
 #ifdef REHLDS_FIXES
-		if(index < 0 || index >= g_psv.max_edicts) // max_edicts is not valid entity index
-#else                                              // REHLDS_FIXES
+		if(index < 0 ||
+		   index >= g_psv.max_edicts) // max_edicts is not valid entity index
+#else                                 // REHLDS_FIXES
 		if(index < 0 || index > g_psv.max_edicts)
-#endif                                             // REHLDS_FIXES
+#endif                                // REHLDS_FIXES
 		{
 			Sys_Error("%s: bad entity", __FUNCTION__);
 		}
@@ -543,12 +545,15 @@ edict_t *EXT_FUNC PEntityOfEntIndex(int iEntIndex)
 	edict_t *pEdict = EDICT_NUM(iEntIndex);
 
 #ifdef REHLDS_FIXES
-	if(pEdict && (pEdict->free || (iEntIndex > g_psvs.maxclients && !pEdict->pvPrivateData))) // Simplified confition
+	if(pEdict &&
+	   (pEdict->free || (iEntIndex > g_psvs.maxclients &&
+	                     !pEdict->pvPrivateData))) // Simplified confition
 	{
 		return NULL;
 	}
 #else  // REHLDS_FIXES
-	if((!pEdict || pEdict->free || !pEdict->pvPrivateData) && (iEntIndex >= g_psvs.maxclients || pEdict->free))
+	if((!pEdict || pEdict->free || !pEdict->pvPrivateData) &&
+	   (iEntIndex >= g_psvs.maxclients || pEdict->free))
 	{
 		if(iEntIndex >= g_psvs.maxclients || pEdict->free)
 		{

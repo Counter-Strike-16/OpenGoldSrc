@@ -189,7 +189,7 @@ DrawGLPoly
 */
 void DrawGLPoly(glpoly_t *p)
 {
-	int    i;
+	int i;
 	float *v;
 
 	qglBegin(GL_POLYGON);
@@ -211,10 +211,10 @@ DrawGLFlowingPoly -- version of DrawGLPoly that handles scrolling texture
 */
 void DrawGLFlowingPoly(msurface_t *fa)
 {
-	int       i;
-	float *   v;
+	int i;
+	float *v;
 	glpoly_t *p;
-	float     scroll;
+	float scroll;
 
 	p = fa->polys;
 
@@ -239,7 +239,7 @@ void DrawGLFlowingPoly(msurface_t *fa)
 */
 void R_DrawTriangleOutlines()
 {
-	int       i, j;
+	int i, j;
 	glpoly_t *p;
 
 	if(!gl_showtris->value)
@@ -285,7 +285,7 @@ void DrawGLPolyChain(glpoly_t *p, float soffset, float toffset)
 		for(; p != 0; p = p->chain)
 		{
 			float *v;
-			int    j;
+			int j;
 
 			qglBegin(GL_POLYGON);
 			v = p->verts[0];
@@ -302,7 +302,7 @@ void DrawGLPolyChain(glpoly_t *p, float soffset, float toffset)
 		for(; p != 0; p = p->chain)
 		{
 			float *v;
-			int    j;
+			int j;
 
 			qglBegin(GL_POLYGON);
 			v = p->verts[0];
@@ -324,7 +324,7 @@ void DrawGLPolyChain(glpoly_t *p, float soffset, float toffset)
 */
 void R_BlendLightmaps()
 {
-	int         i;
+	int i;
 	msurface_t *surf, *newdrawsurf = 0;
 
 	// don't bother if we're set to fullbright
@@ -411,7 +411,7 @@ void R_BlendLightmaps()
 
 		for(surf = gl_lms.lightmap_surfaces[0]; surf != 0; surf = surf->lightmapchain)
 		{
-			int   smax, tmax;
+			int smax, tmax;
 			byte *base;
 
 			smax = (surf->extents[0] >> 4) + 1;
@@ -486,7 +486,7 @@ R_RenderBrushPoly
 */
 void R_RenderBrushPoly(msurface_t *fa)
 {
-	int      maps;
+	int maps;
 	image_t *image;
 	qboolean is_dynamic = false;
 
@@ -552,7 +552,7 @@ void R_RenderBrushPoly(msurface_t *fa)
 		if((fa->styles[maps] >= 32 || fa->styles[maps] == 0) && (fa->dlightframe != r_framecount))
 		{
 			unsigned temp[34 * 34];
-			int      smax, tmax;
+			int smax, tmax;
 
 			smax = (fa->extents[0] >> 4) + 1;
 			tmax = (fa->extents[1] >> 4) + 1;
@@ -568,18 +568,18 @@ void R_RenderBrushPoly(msurface_t *fa)
 			                 GL_LIGHTMAP_FORMAT,
 			                 GL_UNSIGNED_BYTE, temp);
 
-			fa->lightmapchain                                = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+			fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
 			gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
 		}
 		else
 		{
-			fa->lightmapchain           = gl_lms.lightmap_surfaces[0];
+			fa->lightmapchain = gl_lms.lightmap_surfaces[0];
 			gl_lms.lightmap_surfaces[0] = fa;
 		}
 	}
 	else
 	{
-		fa->lightmapchain                                = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+		fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
 		gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
 	}
 }
@@ -596,7 +596,7 @@ of alpha_surfaces will draw back to front, giving proper ordering.
 void R_DrawAlphaSurfaces()
 {
 	msurface_t *s;
-	float       intens;
+	float intens;
 
 	//
 	// go back to the world matrix
@@ -640,9 +640,9 @@ DrawTextureChains
 */
 void DrawTextureChains()
 {
-	int         i;
+	int i;
 	msurface_t *s;
-	image_t *   image;
+	image_t *image;
 
 	c_visible_textures = 0;
 
@@ -707,12 +707,12 @@ void DrawTextureChains()
 
 static void GL_RenderLightmappedPoly(msurface_t *surf)
 {
-	int       i, nv = surf->polys->numverts;
-	int       map;
-	float *   v;
-	image_t * image      = R_TextureAnimation(surf->texinfo);
-	qboolean  is_dynamic = false;
-	unsigned  lmtex      = surf->lightmaptexturenum;
+	int i, nv = surf->polys->numverts;
+	int map;
+	float *v;
+	image_t *image = R_TextureAnimation(surf->texinfo);
+	qboolean is_dynamic = false;
+	unsigned lmtex = surf->lightmaptexturenum;
 	glpoly_t *p;
 
 	for(map = 0; map < MAXLIGHTMAPS && surf->styles[map] != 255; map++)
@@ -737,7 +737,7 @@ static void GL_RenderLightmappedPoly(msurface_t *surf)
 	if(is_dynamic)
 	{
 		unsigned temp[128 * 128];
-		int      smax, tmax;
+		int smax, tmax;
 
 		if((surf->styles[map] >= 32 || surf->styles[map] == 0) && (surf->dlightframe != r_framecount))
 		{
@@ -882,11 +882,11 @@ R_DrawInlineBModel
 */
 void R_DrawInlineBModel()
 {
-	int         i, k;
-	cplane_t *  pplane;
-	float       dot;
+	int i, k;
+	cplane_t *pplane;
+	float dot;
 	msurface_t *psurf;
-	dlight_t *  lt;
+	dlight_t *lt;
 
 	// calculate dynamic lighting for bmodel
 	if(!gl_flashblend->value)
@@ -924,7 +924,7 @@ void R_DrawInlineBModel()
 			if(psurf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
 			{ // add to the translucent chain
 				psurf->texturechain = r_alpha_surfaces;
-				r_alpha_surfaces    = psurf;
+				r_alpha_surfaces = psurf;
 			}
 			else if(qglMTexCoord2fSGIS && !(psurf->flags & SURF_DRAWTURB))
 			{
@@ -959,14 +959,14 @@ R_DrawBrushModel
 */
 void R_DrawBrushModel(entity_t *e)
 {
-	vec3_t   mins, maxs;
-	int      i;
+	vec3_t mins, maxs;
+	int i;
 	qboolean rotated;
 
 	if(currentmodel->nummodelsurfaces == 0)
 		return;
 
-	currententity               = e;
+	currententity = e;
 	gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
 
 	if(e->angles[0] || e->angles[1] || e->angles[2])
@@ -1038,12 +1038,12 @@ R_RecursiveWorldNode
 */
 void R_RecursiveWorldNode(mnode_t *node)
 {
-	int         c, side, sidebit;
-	cplane_t *  plane;
+	int c, side, sidebit;
+	cplane_t *plane;
 	msurface_t *surf, **mark;
-	mleaf_t *   pleaf;
-	float       dot;
-	image_t *   image;
+	mleaf_t *pleaf;
+	float dot;
+	image_t *image;
 
 	if(node->contents == CONTENTS_SOLID)
 		return; // solid
@@ -1066,7 +1066,7 @@ void R_RecursiveWorldNode(mnode_t *node)
 		}
 
 		mark = pleaf->firstmarksurface;
-		c    = pleaf->nummarksurfaces;
+		c = pleaf->nummarksurfaces;
 
 		if(c)
 		{
@@ -1103,12 +1103,12 @@ void R_RecursiveWorldNode(mnode_t *node)
 
 	if(dot >= 0)
 	{
-		side    = 0;
+		side = 0;
 		sidebit = 0;
 	}
 	else
 	{
-		side    = 1;
+		side = 1;
 		sidebit = SURF_PLANEBACK;
 	}
 
@@ -1131,7 +1131,7 @@ void R_RecursiveWorldNode(mnode_t *node)
 		else if(surf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
 		{ // add to the translucent chain
 			surf->texturechain = r_alpha_surfaces;
-			r_alpha_surfaces   = surf;
+			r_alpha_surfaces = surf;
 		}
 		else
 		{
@@ -1144,8 +1144,8 @@ void R_RecursiveWorldNode(mnode_t *node)
 				// the polygon is visible, so add it to the texture
 				// sorted chain
 				// FIXME: this is a hack for animation
-				image               = R_TextureAnimation(surf->texinfo);
-				surf->texturechain  = image->texturechain;
+				image = R_TextureAnimation(surf->texinfo);
+				surf->texturechain = image->texturechain;
 				image->texturechain = surf;
 			}
 		}
@@ -1212,7 +1212,7 @@ void R_DrawWorld()
 
 	// auto cycle the world frame for texture animation
 	memset(&ent, 0, sizeof(ent));
-	ent.frame     = (int)(r_newrefdef.time * 2);
+	ent.frame = (int)(r_newrefdef.time * 2);
 	currententity = &ent;
 
 	gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
@@ -1265,12 +1265,12 @@ cluster
 */
 void R_MarkLeaves()
 {
-	byte *   vis;
-	byte     fatvis[MAX_MAP_LEAFS / 8];
+	byte *vis;
+	byte fatvis[MAX_MAP_LEAFS / 8];
 	mnode_t *node;
-	int      i, c;
+	int i, c;
 	mleaf_t *leaf;
-	int      cluster;
+	int cluster;
 
 	if(r_oldviewcluster == r_viewcluster && r_oldviewcluster2 == r_viewcluster2 && !r_novis->value && r_viewcluster != -1)
 		return;
@@ -1281,15 +1281,15 @@ void R_MarkLeaves()
 		return;
 
 	r_visframecount++;
-	r_oldviewcluster  = r_viewcluster;
+	r_oldviewcluster = r_viewcluster;
 	r_oldviewcluster2 = r_viewcluster2;
 
 	if(r_novis->value || r_viewcluster == -1 || !r_worldmodel->vis)
 	{
 		// mark everything
-		for(i                               = 0; i < r_worldmodel->numleafs; i++)
+		for(i = 0; i < r_worldmodel->numleafs; i++)
 			r_worldmodel->leafs[i].visframe = r_visframecount;
-		for(i                               = 0; i < r_worldmodel->numnodes; i++)
+		for(i = 0; i < r_worldmodel->numnodes; i++)
 			r_worldmodel->nodes[i].visframe = r_visframecount;
 		return;
 	}
@@ -1300,7 +1300,7 @@ void R_MarkLeaves()
 	{
 		memcpy(fatvis, vis, (r_worldmodel->numleafs + 7) / 8);
 		vis = Mod_ClusterPVS(r_viewcluster2, r_worldmodel);
-		c   = (r_worldmodel->numleafs + 31) / 32;
+		c = (r_worldmodel->numleafs + 31) / 32;
 		for(i = 0; i < c; i++)
 			((int *)fatvis)[i] |= ((int *)vis)[i];
 		vis = fatvis;
@@ -1319,7 +1319,7 @@ void R_MarkLeaves()
 				if(node->visframe == r_visframecount)
 					break;
 				node->visframe = r_visframecount;
-				node           = node->parent;
+				node = node->parent;
 			} while(node);
 		}
 	}
@@ -1435,7 +1435,7 @@ static qboolean LM_AllocBlock(int w, int h, int *x, int *y)
 	if(best + h > BLOCK_HEIGHT)
 		return false;
 
-	for(i                        = 0; i < w; i++)
+	for(i = 0; i < w; i++)
 		gl_lms.allocated[*x + i] = best + h;
 
 	return true;
@@ -1448,27 +1448,27 @@ GL_BuildPolygonFromSurface
 */
 void GL_BuildPolygonFromSurface(msurface_t *fa)
 {
-	int       i, lindex, lnumverts;
-	medge_t * pedges, *r_pedge;
-	int       vertpage;
-	float *   vec;
-	float     s, t;
+	int i, lindex, lnumverts;
+	medge_t *pedges, *r_pedge;
+	int vertpage;
+	float *vec;
+	float s, t;
 	glpoly_t *poly;
-	vec3_t    total;
+	vec3_t total;
 
 	// reconstruct the polygon
-	pedges    = currentmodel->edges;
+	pedges = currentmodel->edges;
 	lnumverts = fa->numedges;
-	vertpage  = 0;
+	vertpage = 0;
 
 	VectorClear(total);
 	//
 	// draw texture
 	//
-	poly           = Hunk_Alloc(sizeof(glpoly_t) + (lnumverts - 4) * VERTEXSIZE * sizeof(float));
-	poly->next     = fa->polys;
-	poly->flags    = fa->flags;
-	fa->polys      = poly;
+	poly = Hunk_Alloc(sizeof(glpoly_t) + (lnumverts - 4) * VERTEXSIZE * sizeof(float));
+	poly->next = fa->polys;
+	poly->flags = fa->flags;
+	fa->polys = poly;
 	poly->numverts = lnumverts;
 
 	for(i = 0; i < lnumverts; i++)
@@ -1478,12 +1478,12 @@ void GL_BuildPolygonFromSurface(msurface_t *fa)
 		if(lindex > 0)
 		{
 			r_pedge = &pedges[lindex];
-			vec     = currentmodel->vertexes[r_pedge->v[0]].position;
+			vec = currentmodel->vertexes[r_pedge->v[0]].position;
 		}
 		else
 		{
 			r_pedge = &pedges[-lindex];
-			vec     = currentmodel->vertexes[r_pedge->v[1]].position;
+			vec = currentmodel->vertexes[r_pedge->v[1]].position;
 		}
 		s = DotProduct(vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
 		s /= fa->texinfo->image->width;
@@ -1525,7 +1525,7 @@ GL_CreateSurfaceLightmap
 */
 void GL_CreateSurfaceLightmap(msurface_t *surf)
 {
-	int   smax, tmax;
+	int smax, tmax;
 	byte *base;
 
 	if(surf->flags & (SURF_DRAWSKY | SURF_DRAWTURB))
@@ -1562,8 +1562,8 @@ GL_BeginBuildingLightmaps
 void GL_BeginBuildingLightmaps(model_t *m)
 {
 	static lightstyle_t lightstyles[MAX_LIGHTSTYLES];
-	int                 i;
-	unsigned            dummy[128 * 128];
+	int i;
+	unsigned dummy[128 * 128];
 
 	memset(gl_lms.allocated, 0, sizeof(gl_lms.allocated));
 
@@ -1581,7 +1581,7 @@ void GL_BeginBuildingLightmaps(model_t *m)
 		lightstyles[i].rgb[0] = 1;
 		lightstyles[i].rgb[1] = 1;
 		lightstyles[i].rgb[2] = 1;
-		lightstyles[i].white  = 3;
+		lightstyles[i].white = 3;
 	}
 	r_newrefdef.lightstyles = lightstyles;
 

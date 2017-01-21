@@ -30,14 +30,14 @@
 
 #pragma once
 
-#include "common/commontypes.h"
 #include "common/com_model.h"
+#include "common/commontypes.h"
 
 /// Max key/value length (with a NULL char)
 const int MAX_KV_LEN = 127;
 
 // Key + value + 2 x slash + NULL
-//const int MAX_INFO_STRING = 256;
+// const int MAX_INFO_STRING = 256;
 
 const int INFO_MAX_BUFFER_VALUES = 4;
 

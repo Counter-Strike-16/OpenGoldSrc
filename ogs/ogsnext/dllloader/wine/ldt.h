@@ -10,21 +10,21 @@
 #include "windef.h"
 enum seg_type
 {
-	SEGMENT_DATA  = 0,
+	SEGMENT_DATA = 0,
 	SEGMENT_STACK = 1,
-	SEGMENT_CODE  = 2
+	SEGMENT_CODE = 2
 };
 
 /* This structure represents a real LDT entry.        */
 /* It is used by get_ldt_entry() and set_ldt_entry(). */
 typedef struct
 {
-	unsigned long base;           /* base address */
-	unsigned long limit;          /* segment limit (in pages or bytes) */
-	int           seg_32bit;      /* is segment 32-bit? */
-	int           read_only;      /* is segment read-only? */
-	int           limit_in_pages; /* is the limit in pages or bytes? */
-	enum seg_type type;           /* segment type */
+	unsigned long base;  /* base address */
+	unsigned long limit; /* segment limit (in pages or bytes) */
+	int seg_32bit;       /* is segment 32-bit? */
+	int read_only;       /* is segment read-only? */
+	int limit_in_pages;  /* is the limit in pages or bytes? */
+	enum seg_type type;  /* segment type */
 } ldt_entry;
 void LDT_BytesToEntry(const unsigned long *buffer, ldt_entry *content);
 void LDT_EntryToBytes(unsigned long *buffer, const ldt_entry *content);

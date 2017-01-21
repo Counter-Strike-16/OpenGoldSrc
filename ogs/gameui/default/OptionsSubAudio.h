@@ -37,7 +37,7 @@ private:
 	CCvarToggleCheckButton *m_pEAXCheckButton;
 	CCvarToggleCheckButton *m_pA3DCheckButton;
 
-	vgui::ComboBox *         m_pSpeakerSetupCombo;
+	vgui::ComboBox *m_pSpeakerSetupCombo;
 	CLabeledCommandComboBox *m_pSoundQualityCombo;
 
 	CCvarSlider *m_pSFXSlider;

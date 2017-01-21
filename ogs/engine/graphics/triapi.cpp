@@ -217,9 +217,9 @@ void TriAPI_Fog(float flFogColor[3], float flStart, float flEnd, int bOn)
 	RI.fogColor[0] = flFogColor[0] / 255.0f;
 	RI.fogColor[1] = flFogColor[1] / 255.0f;
 	RI.fogColor[2] = flFogColor[2] / 255.0f;
-	RI.fogStart    = flStart;
-	RI.fogDensity  = 0.0f;
-	RI.fogEnd      = flEnd;
+	RI.fogStart = flStart;
+	RI.fogDensity = 0.0f;
+	RI.fogEnd = flEnd;
 
 	if(VectorIsNull(RI.fogColor))
 	{
@@ -293,7 +293,7 @@ void TriAPI_Color4fRendermode(float r, float g, float b, float a, int rendermode
 void TriAPI_FogParams(float flDensity, int iFogSkybox)
 {
 	RI.fogDensity = flDensity;
-	RI.fogCustom  = iFogSkybox;
+	RI.fogCustom = iFogSkybox;
 };
 
 #else // if OGS_TRIAPI_NULL_IMPL defined

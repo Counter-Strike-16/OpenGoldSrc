@@ -27,7 +27,8 @@
  */
 
 /// @file
-/// @brief these are the only functions outside the refresh allowed to touch the vid buffer
+/// @brief these are the only functions outside the refresh allowed to touch the
+/// vid buffer
 
 #pragma once
 

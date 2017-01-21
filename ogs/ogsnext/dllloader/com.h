@@ -21,7 +21,7 @@ typedef struct
 	uint32_t f1;
 	uint16_t f2;
 	uint16_t f3;
-	uint8_t  f4[8];
+	uint8_t f4[8];
 } GUID;
 #endif
 

@@ -62,11 +62,11 @@
 typedef struct client_textmessage_s client_textmessage_t;
 
 extern client_textmessage_t *gMessageTable;
-extern int                   gMessageTableCount;
-extern client_textmessage_t  gMessageParms;
+extern int gMessageTableCount;
+extern client_textmessage_t gMessageParms;
 
-extern char                 gNetworkTextMessageBuffer[MAX_NETMESSAGE][512];
-extern const char *         gNetworkMessageNames[MAX_NETMESSAGE];
+extern char gNetworkTextMessageBuffer[MAX_NETMESSAGE][512];
+extern const char *gNetworkMessageNames[MAX_NETMESSAGE];
 extern client_textmessage_t gNetworkTextMessage[MAX_NETMESSAGE];
 
 char *memfgets(unsigned char *pMemFile, int fileSize, int *pFilePos, char *pBuffer, int bufferSize);

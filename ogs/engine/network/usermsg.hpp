@@ -37,11 +37,11 @@ typedef int (*pfnUserMsgHook)(const char *pszName, int iSize, void *pbuf);
 
 typedef struct _UserMsg
 {
-	int              iMsg;
-	int              iSize;
-	char             szName[16];
+	int iMsg;
+	int iSize;
+	char szName[16];
 	struct _UserMsg *next;
-	pfnUserMsgHook   pfn;
+	pfnUserMsgHook pfn;
 } UserMsg;
 
 class CUserMsg

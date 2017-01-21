@@ -30,7 +30,8 @@
 
 #include "precompiled.hpp"
 
-bool (CSteam3Server::*pNotifyClientConnect)(client_t *client, const void *pvSteam2Key, uint32 ucbSteam2Key) = &CSteam3Server::NotifyClientConnect;
+bool (CSteam3Server::*pNotifyClientConnect)(
+client_t *client, const void *pvSteam2Key, uint32 ucbSteam2Key) = &CSteam3Server::NotifyClientConnect;
 
 void CSteam3Server::OnGSPolicyResponse(GSPolicyResponse_t *pPolicyResponse)
 {
@@ -61,7 +62,8 @@ void CSteam3Server::OnLogonSuccess(SteamServersConnected_t *pLogonSuccess)
 uint64 CSteam3Server::GetSteamID()
 {
 	if(m_bLanOnly)
-		return CSteamID(0, k_EUniversePublic, k_EAccountTypeInvalid).ConvertToUint64();
+		return CSteamID(0, k_EUniversePublic, k_EAccountTypeInvalid)
+		.ConvertToUint64();
 	else
 		return m_SteamIDGS.ConvertToUint64();
 }
@@ -105,7 +107,8 @@ void CSteam3Server::OnGSClientDenyHelper(client_t *cl, EDenyReason eDenyReason, 
 	switch(eDenyReason)
 	{
 	case k_EDenyInvalidVersion:
-		SV_DropClient(cl, 0, "Client version incompatible with server. \nPlease exit and restart");
+		SV_DropClient(
+		cl, 0, "Client version incompatible with server. \nPlease exit and restart");
 		break;
 
 	case k_EDenyNotLoggedOn:
@@ -119,7 +122,8 @@ void CSteam3Server::OnGSClientDenyHelper(client_t *cl, EDenyReason eDenyReason, 
 		break;
 
 	case k_EDenyNoLicense:
-		SV_DropClient(cl, 0, "This Steam account does not own this game. \nPlease login to the correct Steam account.");
+		SV_DropClient(cl, 0, "This Steam account does not own this game. \nPlease "
+		                     "login to the correct Steam account.");
 		break;
 
 	case k_EDenyCheater:
@@ -134,7 +138,8 @@ void CSteam3Server::OnGSClientDenyHelper(client_t *cl, EDenyReason eDenyReason, 
 		break;
 
 	case k_EDenyIncompatibleAnticheat:
-		SV_DropClient(cl, 0, "You are running an external tool that is incompatible with Secure servers.");
+		SV_DropClient(cl, 0, "You are running an external tool that is "
+		                     "incompatible with Secure servers.");
 		break;
 
 	case k_EDenyMemoryCorruption:
@@ -142,7 +147,8 @@ void CSteam3Server::OnGSClientDenyHelper(client_t *cl, EDenyReason eDenyReason, 
 		break;
 
 	case k_EDenyIncompatibleSoftware:
-		SV_DropClient(cl, 0, "You are running software that is not compatible with Secure servers.");
+		SV_DropClient(
+		cl, 0, "You are running software that is not compatible with Secure servers.");
 		break;
 
 	case k_EDenySteamConnectionLost:
@@ -156,7 +162,11 @@ void CSteam3Server::OnGSClientDenyHelper(client_t *cl, EDenyReason eDenyReason, 
 		break;
 
 	case k_EDenySteamResponseTimedOut:
-		SV_DropClient(cl, 0, "Client timed out while answering challenge.\n---> Please make sure that you have opened the appropriate ports on any firewall you are connected behind.\n---> See http://support.steampowered.com for help with firewall configuration.");
+		SV_DropClient(cl, 0, "Client timed out while answering challenge.\n---> "
+		                     "Please make sure that you have opened the "
+		                     "appropriate ports on any firewall you are connected "
+		                     "behind.\n---> See http://support.steampowered.com "
+		                     "for help with firewall configuration.");
 		break;
 
 	case k_EDenySteamValidationStalled:
@@ -170,7 +180,8 @@ void CSteam3Server::OnGSClientDenyHelper(client_t *cl, EDenyReason eDenyReason, 
 	}
 }
 
-void CSteam3Server::OnGSClientApprove(GSClientApprove_t *pGSClientSteam2Accept)
+void CSteam3Server::OnGSClientApprove(
+GSClientApprove_t *pGSClientSteam2Accept)
 {
 	client_t *cl = ClientFindFromSteamID(pGSClientSteam2Accept->m_SteamID);
 	if(!cl)
@@ -237,42 +248,42 @@ CSteam3Server::CSteam3Server()
       m_SteamIDGS(1, 0, k_EUniverseInvalid, k_EAccountTypeInvalid)
 {
 	m_bHasActivePlayers = false;
-	m_bWantToBeSecure   = false;
-	m_bLanOnly          = false;
+	m_bWantToBeSecure = false;
+	m_bLanOnly = false;
 }
 
 void CSteam3Server::Activate()
 {
-	bool        bLanOnly;
-	int         argSteamPort;
+	bool bLanOnly;
+	int argSteamPort;
 	EServerMode eSMode;
-	int         gamePort;
-	char        gamedir[MAX_PATH];
-	int         usSteamPort;
-	uint32      unIP;
+	int gamePort;
+	char gamedir[MAX_PATH];
+	int usSteamPort;
+	uint32 unIP;
 
 	if(m_bLoggedOn)
 	{
 		bLanOnly = sv_lan.value != 0.0;
 		if(this->m_bLanOnly != bLanOnly)
 		{
-			m_bLanOnly        = bLanOnly;
+			m_bLanOnly = bLanOnly;
 			m_bWantToBeSecure = !COM_CheckParm("-insecure") && !bLanOnly;
 		}
 	}
 	else
 	{
-		m_bLoggedOn  = 1;
-		unIP         = 0;
-		usSteamPort  = 26900;
+		m_bLoggedOn = 1;
+		unIP = 0;
+		usSteamPort = 26900;
 		argSteamPort = COM_CheckParm("-sport");
 		if(argSteamPort > 0)
 			usSteamPort = Q_atoi(com_argv[argSteamPort + 1]);
-		eSMode          = eServerModeAuthenticationAndSecure;
+		eSMode = eServerModeAuthenticationAndSecure;
 		if(net_local_adr.type == NA_IP)
 			unIP = ntohl(*(u_long *)&net_local_adr.ip[0]);
 
-		m_bLanOnly        = sv_lan.value > 0.0;
+		m_bLanOnly = sv_lan.value > 0.0;
 		m_bWantToBeSecure = !COM_CheckParm("-insecure") && !m_bLanOnly;
 		COM_FileBase(com_gamedir, gamedir);
 
@@ -297,13 +308,17 @@ void CSteam3Server::Activate()
 			}
 		}
 
-		if(!CRehldsPlatformHolder::get()->SteamGameServer_Init(unIP, usSteamPort, gamePort, 0xFFFFu, eSMode, gpszVersionString))
+		if(!CRehldsPlatformHolder::get()->SteamGameServer_Init(
+		   unIP, usSteamPort, gamePort, 0xFFFFu, eSMode, gpszVersionString))
 			Sys_Error("Unable to initialize Steam.");
 
-		CRehldsPlatformHolder::get()->SteamGameServer()->SetProduct(gpszProductString);
+		CRehldsPlatformHolder::get()->SteamGameServer()->SetProduct(
+		gpszProductString);
 		CRehldsPlatformHolder::get()->SteamGameServer()->SetModDir(gamedir);
-		CRehldsPlatformHolder::get()->SteamGameServer()->SetDedicatedServer(cls.state == ca_dedicated);
-		CRehldsPlatformHolder::get()->SteamGameServer()->SetGameDescription(gEntityInterface.pfnGetGameDescription());
+		CRehldsPlatformHolder::get()->SteamGameServer()->SetDedicatedServer(
+		cls.state == ca_dedicated);
+		CRehldsPlatformHolder::get()->SteamGameServer()->SetGameDescription(
+		gEntityInterface.pfnGetGameDescription());
 		CRehldsPlatformHolder::get()->SteamGameServer()->LogOnAnonymous();
 		m_bLogOnResult = false;
 
@@ -325,7 +340,8 @@ void CSteam3Server::Activate()
 				if(!Q_strcmp(gamedir, "cstrike"))
 					fMasterHeartbeatTimeout = 400.0;
 
-				CRehldsPlatformHolder::get()->SteamGameServer()->SetHeartbeatInterval((int)fMasterHeartbeatTimeout);
+				CRehldsPlatformHolder::get()->SteamGameServer()->SetHeartbeatInterval(
+				(int)fMasterHeartbeatTimeout);
 				CSteam3Server::NotifyOfLevelChange(true);
 			}
 		}
@@ -344,17 +360,22 @@ void CSteam3Server::Shutdown()
 	}
 }
 
-bool CSteam3Server::NotifyClientConnect(client_t *client, const void *pvSteam2Key, uint32 ucbSteam2Key)
+bool CSteam3Server::NotifyClientConnect(client_t *client,
+                                        const void *pvSteam2Key,
+                                        uint32 ucbSteam2Key)
 {
 	class CSteamID steamIDClient;
-	bool           bRet = false;
+	bool bRet = false;
 
 	if(client == NULL || !m_bLoggedOn)
 		return false;
 
 	client->network_userid.idtype = AUTH_IDTYPE_STEAM;
 
-	bRet                             = CRehldsPlatformHolder::get()->SteamGameServer()->SendUserConnectAndAuthenticate(htonl(client->network_userid.clientip), pvSteam2Key, ucbSteam2Key, &steamIDClient);
+	bRet = CRehldsPlatformHolder::get()
+	       ->SteamGameServer()
+	       ->SendUserConnectAndAuthenticate(
+	       htonl(client->network_userid.clientip), pvSteam2Key, ucbSteam2Key, &steamIDClient);
 	client->network_userid.m_SteamID = steamIDClient.ConvertToUint64();
 
 	return bRet;
@@ -365,8 +386,10 @@ bool CSteam3Server::NotifyBotConnect(client_t *client)
 	if(client == NULL || !m_bLoggedOn)
 		return false;
 
-	client->network_userid.idtype    = AUTH_IDTYPE_LOCAL;
-	CSteamID steamId                 = CRehldsPlatformHolder::get()->SteamGameServer()->CreateUnauthenticatedUserConnection();
+	client->network_userid.idtype = AUTH_IDTYPE_LOCAL;
+	CSteamID steamId = CRehldsPlatformHolder::get()
+	                   ->SteamGameServer()
+	                   ->CreateUnauthenticatedUserConnection();
 	client->network_userid.m_SteamID = steamId.ConvertToUint64();
 	return true;
 }
@@ -376,16 +399,19 @@ void CSteam3Server::NotifyClientDisconnect(client_t *cl)
 	if(!cl || !m_bLoggedOn)
 		return;
 
-	if(cl->network_userid.idtype == AUTH_IDTYPE_STEAM || cl->network_userid.idtype == AUTH_IDTYPE_LOCAL)
+	if(cl->network_userid.idtype == AUTH_IDTYPE_STEAM ||
+	   cl->network_userid.idtype == AUTH_IDTYPE_LOCAL)
 	{
-		CRehldsPlatformHolder::get()->SteamGameServer()->SendUserDisconnect(cl->network_userid.m_SteamID);
+		CRehldsPlatformHolder::get()->SteamGameServer()->SendUserDisconnect(
+		cl->network_userid.m_SteamID);
 	}
 }
 
 void CSteam3Server::NotifyOfLevelChange(bool bForce)
 {
 	SendUpdatedServerDetails();
-	bool iHasPW = (sv_password.string[0] && Q_stricmp(sv_password.string, "none"));
+	bool iHasPW =
+	(sv_password.string[0] && Q_stricmp(sv_password.string, "none"));
 	CRehldsPlatformHolder::get()->SteamGameServer()->SetPasswordProtected(iHasPW);
 	CRehldsPlatformHolder::get()->SteamGameServer()->ClearAllKeyValues();
 
@@ -406,14 +432,15 @@ void CSteam3Server::NotifyOfLevelChange(bool bForce)
 		{
 			szVal = var->string;
 		}
-		CRehldsPlatformHolder::get()->SteamGameServer()->SetKeyValue(var->name, szVal);
+		CRehldsPlatformHolder::get()->SteamGameServer()->SetKeyValue(var->name,
+		                                                             szVal);
 	}
 }
 
 void CSteam3Server::RunFrame()
 {
-	bool   bHasPlayers;
-	char   szOutBuf[4096];
+	bool bHasPlayers;
+	char szOutBuf[4096];
 	double fCurTime;
 
 	static double s_fLastRunFragsUpdate;
@@ -427,7 +454,7 @@ void CSteam3Server::RunFrame()
 	if(fCurTime - s_fLastRunFragsUpdate > 1.0)
 	{
 		s_fLastRunFragsUpdate = fCurTime;
-		bHasPlayers           = false;
+		bHasPlayers = false;
 		for(int i = 0; i < g_psvs.maxclients; i++)
 		{
 			client_t *cl = &g_psvs.clients[i];
@@ -440,8 +467,10 @@ void CSteam3Server::RunFrame()
 
 		m_bHasActivePlayers = bHasPlayers;
 		SendUpdatedServerDetails();
-		bool iHasPW = (sv_password.string[0] && Q_stricmp(sv_password.string, "none"));
-		CRehldsPlatformHolder::get()->SteamGameServer()->SetPasswordProtected(iHasPW);
+		bool iHasPW =
+		(sv_password.string[0] && Q_stricmp(sv_password.string, "none"));
+		CRehldsPlatformHolder::get()->SteamGameServer()->SetPasswordProtected(
+		iHasPW);
 
 		for(int i = 0; i < g_psvs.maxclients; i++)
 		{
@@ -452,17 +481,22 @@ void CSteam3Server::RunFrame()
 #ifdef REHLDS_FIXES
 			ISteamGameServer_BUpdateUserData(cl->network_userid.m_SteamID, cl->name, cl->edict->v.frags);
 #else
-			CRehldsPlatformHolder::get()->SteamGameServer()->BUpdateUserData(cl->network_userid.m_SteamID, cl->name, cl->edict->v.frags);
+			CRehldsPlatformHolder::get()->SteamGameServer()->BUpdateUserData(
+			cl->network_userid.m_SteamID, cl->name, cl->edict->v.frags);
 #endif
 		}
 
-		if(CRehldsPlatformHolder::get()->SteamGameServer()->WasRestartRequested())
+		if(CRehldsPlatformHolder::get()
+		   ->SteamGameServer()
+		   ->WasRestartRequested())
 		{
 			Con_Printf("%cMasterRequestRestart\n", 3);
 			if(COM_CheckParm("-steam"))
 			{
-				Con_Printf("Your server needs to be restarted in order to receive the latest update.\n");
-				Log_Printf("Your server needs to be restarted in order to receive the latest update.\n");
+				Con_Printf("Your server needs to be restarted in order to receive the "
+				           "latest update.\n");
+				Log_Printf("Your server needs to be restarted in order to receive the "
+				           "latest update.\n");
 			}
 			else
 			{
@@ -483,17 +517,22 @@ void CSteam3Server::RunFrame()
 
 		uint16 port;
 		uint32 ip;
-		int    iLen = CRehldsPlatformHolder::get()->SteamGameServer()->GetNextOutgoingPacket(szOutBuf, sizeof(szOutBuf), &ip, &port);
+		int iLen =
+		CRehldsPlatformHolder::get()->SteamGameServer()->GetNextOutgoingPacket(
+		szOutBuf, sizeof(szOutBuf), &ip, &port);
 		while(iLen > 0)
 		{
 			netadr_t netAdr;
 			*((uint32 *)&netAdr.ip[0]) = htonl(ip);
-			netAdr.port                = htons(port);
-			netAdr.type                = NA_IP;
+			netAdr.port = htons(port);
+			netAdr.type = NA_IP;
 
 			NET_SendPacket(NS_SERVER, iLen, szOutBuf, netAdr);
 
-			iLen = CRehldsPlatformHolder::get()->SteamGameServer()->GetNextOutgoingPacket(szOutBuf, sizeof(szOutBuf), &ip, &port);
+			iLen =
+			CRehldsPlatformHolder::get()
+			->SteamGameServer()
+			->GetNextOutgoingPacket(szOutBuf, sizeof(szOutBuf), &ip, &port);
 		}
 	}
 }
@@ -515,9 +554,11 @@ void CSteam3Server::SendUpdatedServerDetails()
 	if(maxPlayers < 0)
 		maxPlayers = g_psvs.maxclients;
 
-	CRehldsPlatformHolder::get()->SteamGameServer()->SetMaxPlayerCount(maxPlayers);
+	CRehldsPlatformHolder::get()->SteamGameServer()->SetMaxPlayerCount(
+	maxPlayers);
 	CRehldsPlatformHolder::get()->SteamGameServer()->SetBotPlayerCount(botCount);
-	CRehldsPlatformHolder::get()->SteamGameServer()->SetServerName(Cvar_VariableString("hostname"));
+	CRehldsPlatformHolder::get()->SteamGameServer()->SetServerName(
+	Cvar_VariableString("hostname"));
 	CRehldsPlatformHolder::get()->SteamGameServer()->SetMapName(g_psv.name);
 }
 
@@ -532,10 +573,12 @@ void CSteam3Client::Shutdown()
 
 int CSteam3Client::InitiateGameConnection(void *pData, int cbMaxData, uint64 steamID, uint32 unIPServer, uint16 usPortServer, bool bSecure)
 {
-	return SteamUser()->InitiateGameConnection(pData, cbMaxData, CSteamID(steamID), ntohl(unIPServer), ntohs(usPortServer), bSecure);
+	return SteamUser()->InitiateGameConnection(
+	pData, cbMaxData, CSteamID(steamID), ntohl(unIPServer), ntohs(usPortServer), bSecure);
 }
 
-void CSteam3Client::TerminateConnection(uint32 unIPServer, uint16 usPortServer)
+void CSteam3Client::TerminateConnection(uint32 unIPServer,
+                                        uint16 usPortServer)
 {
 	SteamUser()->TerminateGameConnection(ntohl(unIPServer), ntohs(usPortServer));
 }
@@ -567,13 +610,15 @@ void CSteam3Client::InitClient()
 	m_bLogOnResult = false;
 }
 
-void CSteam3Client::OnClientGameServerDeny(ClientGameServerDeny_t *pClientGameServerDeny)
+void CSteam3Client::OnClientGameServerDeny(
+ClientGameServerDeny_t *pClientGameServerDeny)
 {
 	COM_ExplainDisconnection(TRUE, "Invalid server version, unable to connect.");
 	CL_Disconnect();
 }
 
-void CSteam3Client::OnGameServerChangeRequested(GameServerChangeRequested_t *pGameServerChangeRequested)
+void CSteam3Client::OnGameServerChangeRequested(
+GameServerChangeRequested_t *pGameServerChangeRequested)
 {
 #ifndef SWDS
 	char *cmd;
@@ -585,7 +630,8 @@ void CSteam3Client::OnGameServerChangeRequested(GameServerChangeRequested_t *pGa
 #endif
 }
 
-void CSteam3Client::OnGameOverlayActivated(GameOverlayActivated_t *pGameOverlayActivated)
+void CSteam3Client::OnGameOverlayActivated(
+GameOverlayActivated_t *pGameOverlayActivated)
 {
 #ifndef SWDS
 	if(Host_IsSinglePlayerGame())
@@ -617,12 +663,16 @@ uint64 ISteamGameServer_CreateUnauthenticatedUserConnection()
 		return 0L;
 	}
 
-	return CRehldsPlatformHolder::get()->SteamGameServer()->CreateUnauthenticatedUserConnection().ConvertToUint64();
+	return CRehldsPlatformHolder::get()
+	->SteamGameServer()
+	->CreateUnauthenticatedUserConnection()
+	.ConvertToUint64();
 }
 
 bool Steam_GSBUpdateUserData(uint64 steamIDUser, const char *pchPlayerName, uint32 uScore)
 {
-	return CRehldsPlatformHolder::get()->SteamGameServer()->BUpdateUserData(steamIDUser, pchPlayerName, uScore);
+	return CRehldsPlatformHolder::get()->SteamGameServer()->BUpdateUserData(
+	steamIDUser, pchPlayerName, uScore);
 }
 
 bool ISteamGameServer_BUpdateUserData(uint64 steamid, const char *netname, uint32 score)
@@ -632,7 +682,8 @@ bool ISteamGameServer_BUpdateUserData(uint64 steamid, const char *netname, uint3
 		return false;
 	}
 
-	return g_RehldsHookchains.m_Steam_GSBUpdateUserData.callChain(Steam_GSBUpdateUserData, steamid, netname, score);
+	return g_RehldsHookchains.m_Steam_GSBUpdateUserData.callChain(
+	Steam_GSBUpdateUserData, steamid, netname, score);
 }
 
 bool ISteamApps_BIsSubscribedApp(uint32 appid)
@@ -654,18 +705,22 @@ const char *Steam_GetCommunityName()
 	return NULL;
 }
 
-qboolean EXT_FUNC Steam_NotifyClientConnect_api(IGameClient *cl, const void *pvSteam2Key, unsigned int ucbSteam2Key)
+qboolean EXT_FUNC Steam_NotifyClientConnect_api(IGameClient *cl,
+                                                const void *pvSteam2Key,
+                                                unsigned int ucbSteam2Key)
 {
 	return Steam_NotifyClientConnect_internal(cl->GetClient(), pvSteam2Key, ucbSteam2Key);
 }
 
 qboolean Steam_NotifyClientConnect(client_t *cl, const void *pvSteam2Key, unsigned int ucbSteam2Key)
 {
-	return g_RehldsHookchains.m_Steam_NotifyClientConnect
-	    .callChain(Steam_NotifyClientConnect_api, GetRehldsApiClient(cl), pvSteam2Key, ucbSteam2Key);
+	return g_RehldsHookchains.m_Steam_NotifyClientConnect.callChain(
+	Steam_NotifyClientConnect_api, GetRehldsApiClient(cl), pvSteam2Key, ucbSteam2Key);
 }
 
-qboolean Steam_NotifyClientConnect_internal(client_t *cl, const void *pvSteam2Key, unsigned int ucbSteam2Key)
+qboolean Steam_NotifyClientConnect_internal(client_t *cl,
+                                            const void *pvSteam2Key,
+                                            unsigned int ucbSteam2Key)
 {
 	if(Steam3Server())
 	{
@@ -681,7 +736,8 @@ qboolean EXT_FUNC Steam_NotifyBotConnect_api(IGameClient *cl)
 
 qboolean Steam_NotifyBotConnect(client_t *cl)
 {
-	return g_RehldsHookchains.m_Steam_NotifyBotConnect.callChain(Steam_NotifyBotConnect_api, GetRehldsApiClient(cl));
+	return g_RehldsHookchains.m_Steam_NotifyBotConnect.callChain(
+	Steam_NotifyBotConnect_api, GetRehldsApiClient(cl));
 }
 
 qboolean Steam_NotifyBotConnect_internal(client_t *cl)
@@ -695,7 +751,8 @@ qboolean Steam_NotifyBotConnect_internal(client_t *cl)
 
 void EXT_FUNC Steam_NotifyClientDisconnect_api(IGameClient *cl)
 {
-	g_RehldsHookchains.m_Steam_NotifyClientDisconnect.callChain(Steam_NotifyClientDisconnect_internal, cl);
+	g_RehldsHookchains.m_Steam_NotifyClientDisconnect.callChain(
+	Steam_NotifyClientDisconnect_internal, cl);
 }
 
 void Steam_NotifyClientDisconnect(client_t *cl)
@@ -753,7 +810,8 @@ void Steam_SetCVar(const char *pchKey, const char *pchValue)
 {
 	if(Steam3Server())
 	{
-		CRehldsPlatformHolder::get()->SteamGameServer()->SetKeyValue(pchKey, pchValue);
+		CRehldsPlatformHolder::get()->SteamGameServer()->SetKeyValue(pchKey,
+		                                                             pchValue);
 	}
 }
 
@@ -769,7 +827,8 @@ void Steam_InitClient()
 
 int Steam_GSInitiateGameConnection(void *pData, int cbMaxData, uint64 steamID, uint32 unIPServer, uint16 usPortServer, qboolean bSecure)
 {
-	return Steam3Client()->InitiateGameConnection(pData, cbMaxData, steamID, unIPServer, usPortServer, bSecure != 0);
+	return Steam3Client()->InitiateGameConnection(
+	pData, cbMaxData, steamID, unIPServer, usPortServer, bSecure != 0);
 }
 
 void Steam_GSTerminateGameConnection(uint32 unIPServer, uint16 usPortServer)
@@ -789,14 +848,15 @@ uint64 Steam_GSGetSteamID()
 
 qboolean Steam_GSBSecure()
 {
-	//useless call
-	//Steam3Server();
+	// useless call
+	// Steam3Server();
 	return CRehldsPlatformHolder::get()->SteamGameServer()->BSecure();
 }
 
 qboolean Steam_GSBLoggedOn()
 {
-	return Steam3Server()->BLoggedOn() && CRehldsPlatformHolder::get()->SteamGameServer()->BLoggedOn();
+	return Steam3Server()->BLoggedOn() &&
+	CRehldsPlatformHolder::get()->SteamGameServer()->BLoggedOn();
 }
 
 qboolean Steam_GSBSecurePreference()
@@ -806,7 +866,7 @@ qboolean Steam_GSBSecurePreference()
 
 TSteamGlobalUserID Steam_Steam3IDtoSteam2(uint64 unSteamID)
 {
-	class CSteamID     steamID = unSteamID;
+	class CSteamID steamID = unSteamID;
 	TSteamGlobalUserID steam2ID;
 	steamID.ConvertToSteam2(&steam2ID);
 	return steam2ID;
@@ -848,7 +908,7 @@ const char *Steam_GetGSUniverse()
 }
 
 CSteam3Server *s_Steam3Server;
-CSteam3Client  s_Steam3Client;
+CSteam3Client s_Steam3Client;
 
 CSteam3Server *Steam3Server()
 {
@@ -862,7 +922,7 @@ CSteam3Client *Steam3Client()
 
 void Master_SetMaster_f()
 {
-	int         i;
+	int i;
 	const char *pszCmd;
 
 	i = Cmd_Argc();
@@ -889,18 +949,21 @@ void Master_SetMaster_f()
 			if(gfNoMasterServer)
 			{
 				gfNoMasterServer = 0;
-				CRehldsPlatformHolder::get()->SteamGameServer()->EnableHeartbeats(gfNoMasterServer != 0);
+				CRehldsPlatformHolder::get()->SteamGameServer()->EnableHeartbeats(
+				gfNoMasterServer != 0);
 			}
 		}
 	}
 	else
 	{
 		gfNoMasterServer = 1;
-		CRehldsPlatformHolder::get()->SteamGameServer()->EnableHeartbeats(gfNoMasterServer != 0);
+		CRehldsPlatformHolder::get()->SteamGameServer()->EnableHeartbeats(
+		gfNoMasterServer != 0);
 	}
 }
 
 void Steam_HandleIncomingPacket(byte *data, int len, int fromip, uint16 port)
 {
-	CRehldsPlatformHolder::get()->SteamGameServer()->HandleIncomingPacket(data, len, fromip, port);
+	CRehldsPlatformHolder::get()->SteamGameServer()->HandleIncomingPacket(
+	data, len, fromip, port);
 }

@@ -13,7 +13,7 @@ static const int MAX_CVAR_TEXT = 64;
 CCvarTextEntry::CCvarTextEntry(Panel *parent, const char *panelName, char const *cvarname)
     : TextEntry(parent, panelName)
 {
-	m_pszCvarName      = cvarname ? strdup(cvarname) : NULL;
+	m_pszCvarName = cvarname ? strdup(cvarname) : NULL;
 	m_pszStartValue[0] = 0;
 
 	if(m_pszCvarName)

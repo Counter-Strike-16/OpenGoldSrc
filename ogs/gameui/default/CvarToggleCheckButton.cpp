@@ -87,7 +87,7 @@ void CCvarToggleCheckButton::ApplySettings(KeyValues *inResourceData)
 {
 	BaseClass::ApplySettings(inResourceData);
 
-	const char *cvarName  = inResourceData->GetString("cvar_name", "");
+	const char *cvarName = inResourceData->GetString("cvar_name", "");
 	const char *cvarValue = inResourceData->GetString("cvar_value", "");
 
 	if(Q_stricmp(cvarName, "") == 0)

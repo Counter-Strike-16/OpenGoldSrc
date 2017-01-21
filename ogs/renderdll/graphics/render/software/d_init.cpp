@@ -27,16 +27,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NUM_MIPS 4
 
-cvar_t d_subdiv16 = {"d_subdiv16", "1"};
-cvar_t d_mipcap   = {"d_mipcap", "0"};
-cvar_t d_mipscale = {"d_mipscale", "1"};
+cvar_t d_subdiv16 = { "d_subdiv16", "1" };
+cvar_t d_mipcap = { "d_mipcap", "0" };
+cvar_t d_mipscale = { "d_mipscale", "1" };
 
 surfcache_t *d_initial_rover;
-qboolean     d_roverwrapped;
-int          d_minmip;
-float        d_scalemip[NUM_MIPS - 1];
+qboolean d_roverwrapped;
+int d_minmip;
+float d_scalemip[NUM_MIPS - 1];
 
-static float basemip[NUM_MIPS - 1] = {1.0, 0.5 * 0.8, 0.25 * 0.8};
+static float basemip[NUM_MIPS - 1] = { 1.0, 0.5 * 0.8, 0.25 * 0.8 };
 
 extern int d_aflatcolor;
 
@@ -55,11 +55,11 @@ void D_Init()
 	Cvar_RegisterVariable(&d_mipcap);
 	Cvar_RegisterVariable(&d_mipscale);
 
-	r_drawpolys                = false;
-	r_worldpolysbacktofront    = false;
+	r_drawpolys = false;
+	r_worldpolysbacktofront = false;
 	r_recursiveaffinetriangles = true;
-	r_pixbytes                 = 1;
-	r_aliasuvscale             = 1.0;
+	r_pixbytes = 1;
+	r_aliasuvscale = 1.0;
 }
 
 /*
@@ -128,7 +128,7 @@ void D_SetupFrame()
 	else
 		screenwidth = vid.rowbytes;
 
-	d_roverwrapped  = false;
+	d_roverwrapped = false;
 	d_initial_rover = sc_rover;
 
 	d_minmip = d_mipcap.value;
@@ -137,7 +137,7 @@ void D_SetupFrame()
 	else if(d_minmip < 0)
 		d_minmip = 0;
 
-	for(i             = 0; i < (NUM_MIPS - 1); i++)
+	for(i = 0; i < (NUM_MIPS - 1); i++)
 		d_scalemip[i] = basemip[i] * d_mipscale.value;
 
 #if id386

@@ -28,11 +28,11 @@
 
 /// @file
 
-#include "quakedef.h"
-#include "winquake.h"
-#include "resource.h"
 #include "errno.h"
 #include "fcntl.h"
+#include "quakedef.h"
+#include "resource.h"
+#include "winquake.h"
 #include <limits.h>
 
 #define MINIMUM_WIN_MEMORY 0x0c00000
@@ -41,16 +41,16 @@
 #define PAUSE_SLEEP 50     // sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP 20 // sleep time when not focus
 
-int      starttime;
+int starttime;
 qboolean ActiveApp, Minimized;
 qboolean WinNT;
 
 HWND hwnd_dialog; // startup dialog box
 
 static double pfreq;
-static double curtime     = 0.0;
+static double curtime = 0.0;
 static double lastcurtime = 0.0;
-static int    lowshift;
+static int lowshift;
 static HANDLE hinput, houtput;
 
 HANDLE qwclsemaphore;
@@ -65,9 +65,9 @@ void Sys_PushFPCW_SetHigh(void);
 
 void Sys_DebugLog(char *file, char *fmt, ...)
 {
-	va_list     argptr;
+	va_list argptr;
 	static char data[1024];
-	int         fd;
+	int fd;
 
 	va_start(argptr, fmt);
 	vsprintf(data, fmt, argptr);
@@ -106,7 +106,7 @@ int filelength(FILE *f)
 int Sys_FileTime(char *path)
 {
 	FILE *f;
-	int   t, retval;
+	int t, retval;
 
 	t = VID_ForceUnlockedAndReturnState();
 
@@ -161,7 +161,7 @@ Sys_Init
 void Sys_Init(void)
 {
 	LARGE_INTEGER PerformanceFreq;
-	unsigned int  lowpart, highpart;
+	unsigned int lowpart, highpart;
 	OSVERSIONINFO vinfo;
 
 #ifndef SERVERONLY
@@ -169,19 +169,17 @@ void Sys_Init(void)
 	// front end can tell if it is alive
 
 	// mutex will fail if semephore allready exists
-	qwclsemaphore = CreateMutex(
-	    NULL,    /* Security attributes */
-	    0,       /* owner       */
-	    "qwcl"); /* Semaphore name      */
+	qwclsemaphore = CreateMutex(NULL,    /* Security attributes */
+	                            0,       /* owner       */
+	                            "qwcl"); /* Semaphore name      */
 	if(!qwclsemaphore)
 		Sys_Error("QWCL is already running on this system");
 	CloseHandle(qwclsemaphore);
 
-	qwclsemaphore = CreateSemaphore(
-	    NULL,    /* Security attributes */
-	    0,       /* Initial count       */
-	    1,       /* Maximum count       */
-	    "qwcl"); /* Semaphore name      */
+	qwclsemaphore = CreateSemaphore(NULL,    /* Security attributes */
+	                                0,       /* Initial count       */
+	                                1,       /* Maximum count       */
+	                                "qwcl"); /* Semaphore name      */
 #endif
 
 	MaskExceptions();
@@ -234,8 +232,8 @@ void Sys_Init(void)
 void Sys_Error(char *error, ...)
 {
 	va_list argptr;
-	char    text[1024], text2[1024];
-	DWORD   dummy;
+	char text[1024], text2[1024];
+	DWORD dummy;
 
 	Host_Shutdown();
 
@@ -255,8 +253,8 @@ void Sys_Error(char *error, ...)
 void Sys_Printf(char *fmt, ...)
 {
 	va_list argptr;
-	char    text[1024];
-	DWORD   dummy;
+	char text[1024];
+	DWORD dummy;
 
 	va_start(argptr, fmt);
 	vprintf(fmt, argptr);
@@ -375,16 +373,16 @@ void Sys_InitFloatTime (void)
 
 double Sys_DoubleTime(void)
 {
-	static DWORD    starttime;
+	static DWORD starttime;
 	static qboolean first = true;
-	DWORD           now;
-	double          t;
+	DWORD now;
+	double t;
 
 	now = timeGetTime();
 
 	if(first)
 	{
-		first     = false;
+		first = false;
 		starttime = now;
 		return 0.0;
 	}
@@ -400,14 +398,14 @@ double Sys_DoubleTime(void)
 
 char *Sys_ConsoleInput(void)
 {
-	static char  text[256];
-	static int   len;
+	static char text[256];
+	static int len;
 	INPUT_RECORD recs[1024];
-	int          count;
-	int          i, dummy;
-	int          ch, numread, numevents;
-	HANDLE       th;
-	char *       clipText, *textCopied;
+	int count;
+	int i, dummy;
+	int ch, numread, numevents;
+	HANDLE th;
+	char *clipText, *textCopied;
 
 	for(;;)
 	{
@@ -437,7 +435,7 @@ char *Sys_ConsoleInput(void)
 					if(len)
 					{
 						text[len] = 0;
-						len       = 0;
+						len = 0;
 						return text;
 					}
 					break;
@@ -453,9 +451,11 @@ char *Sys_ConsoleInput(void)
 
 				default:
 					Con_Printf("Stupid: %d\n", recs[0].Event.KeyEvent.dwControlKeyState);
-					if(((ch == 'V' || ch == 'v') && (recs[0].Event.KeyEvent.dwControlKeyState &
-					                                 (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))) ||
-					   ((recs[0].Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED) && (recs[0].Event.KeyEvent.wVirtualKeyCode == VK_INSERT)))
+					if(((ch == 'V' || ch == 'v') &&
+					    (recs[0].Event.KeyEvent.dwControlKeyState &
+					     (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))) ||
+					   ((recs[0].Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED) &&
+					    (recs[0].Event.KeyEvent.wVirtualKeyCode == VK_INSERT)))
 					{
 						if(OpenClipboard(NULL))
 						{
@@ -467,14 +467,15 @@ char *Sys_ConsoleInput(void)
 								{
 									textCopied = malloc(GlobalSize(th) + 1);
 									strcpy(textCopied, clipText);
-									/* Substitutes a NULL for every token */ strtok(textCopied, "\n\r\b");
+									/* Substitutes a NULL for every token */ strtok(textCopied,
+									                                                "\n\r\b");
 									i = strlen(textCopied);
 									if(i + len >= 256)
 										i = 256 - len;
 									if(i > 0)
 									{
 										textCopied[i] = 0;
-										text[len]     = 0;
+										text[len] = 0;
 										strcat(text, textCopied);
 										len += dummy;
 										WriteFile(houtput, textCopied, i, &dummy, NULL);
@@ -490,7 +491,7 @@ char *Sys_ConsoleInput(void)
 					{
 						WriteFile(houtput, &ch, 1, &dummy, NULL);
 						text[len] = ch;
-						len       = (len + 1) & 0xff;
+						len = (len + 1) & 0xff;
 					}
 
 					break;
@@ -540,28 +541,28 @@ void SleepUntilInput(int time)
 	MsgWaitForMultipleObjects(1, &tevent, FALSE, time, QS_ALLINPUT);
 }
 
-HINSTANCE    global_hInstance;
-int          global_nCmdShow;
-char *       argv[MAX_NUM_ARGVS];
+HINSTANCE global_hInstance;
+int global_nCmdShow;
+char *argv[MAX_NUM_ARGVS];
 static char *empty_string = "";
-HWND         hwnd_dialog;
+HWND hwnd_dialog;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	MSG          msg;
+	MSG msg;
 	quakeparms_t parms;
-	double       time, oldtime, newtime;
+	double time, oldtime, newtime;
 	MEMORYSTATUS lpBuffer;
-	static char  cwd[1024];
-	int          t;
-	RECT         rect;
+	static char cwd[1024];
+	int t;
+	RECT rect;
 
 	/* previous instances do not exist in Win32 */
 	if(hPrevInstance)
 		return 0;
 
 	global_hInstance = hInstance;
-	global_nCmdShow  = nCmdShow;
+	global_nCmdShow = nCmdShow;
 
 	lpBuffer.dwLength = sizeof(MEMORYSTATUS);
 	GlobalMemoryStatus(&lpBuffer);
@@ -572,11 +573,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if(cwd[Q_strlen(cwd) - 1] == '/')
 		cwd[Q_strlen(cwd) - 1] = 0;
 
-	parms.basedir  = cwd;
+	parms.basedir = cwd;
 	parms.cachedir = NULL;
 
 	parms.argc = 1;
-	argv[0]    = empty_string;
+	argv[0] = empty_string;
 
 	while(*lpCmdLine && (parms.argc < MAX_NUM_ARGVS))
 	{
@@ -606,7 +607,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	parms.argc = com_argc;
 	parms.argv = com_argv;
 
-	hwnd_dialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, NULL);
+	hwnd_dialog =
+	CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, NULL);
 
 	if(hwnd_dialog)
 	{
@@ -614,10 +616,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			if(rect.left > (rect.top * 2))
 			{
-				SetWindowPos(hwnd_dialog, 0,
-				             (rect.left / 2) - ((rect.right - rect.left) / 2),
-				             rect.top, 0, 0,
-				             SWP_NOZORDER | SWP_NOSIZE);
+				SetWindowPos(hwnd_dialog, 0, (rect.left / 2) - ((rect.right - rect.left) / 2), rect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 			}
 		}
 
@@ -672,7 +671,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	while(1)
 	{
 		// yield the CPU for a little while when paused, minimized, or not the focus
-		if((cl.paused && (!ActiveApp && !DDActive)) || Minimized || block_drawing)
+		if((cl.paused && (!ActiveApp && !DDActive)) || Minimized ||
+		   block_drawing)
 		{
 			SleepUntilInput(PAUSE_SLEEP);
 			scr_skipupdate = 1; // no point in bothering to draw
@@ -683,7 +683,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		newtime = Sys_DoubleTime();
-		time    = newtime - oldtime;
+		time = newtime - oldtime;
 		Host_Frame(time);
 		oldtime = newtime;
 	}

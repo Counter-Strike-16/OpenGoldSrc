@@ -39,7 +39,7 @@ bool ClientDLL_Load(const char *asPath)
 	if(clgame.hInstance)
 		ClientDLL_Unload();
 
-	CL_EXPORT_FUNCS  F; // export 'F'
+	CL_EXPORT_FUNCS F; // export 'F'
 	const dllfunc_t *func;
 
 	clgame.hInstance = Com_LoadLibrary(asPath, false);

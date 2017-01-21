@@ -49,127 +49,127 @@
 
 typedef struct ACMDRVOPENDESCA
 {
-	DWORD  cbStruct;
+	DWORD cbStruct;
 	FOURCC fccType;
 	FOURCC fccComp;
-	DWORD  dwVersion;
-	DWORD  dwFlags;
-	DWORD  dwError;
+	DWORD dwVersion;
+	DWORD dwFlags;
+	DWORD dwError;
 	LPCSTR pszSectionName;
 	LPCSTR pszAliasName;
-	DWORD  dnDevNode;
+	DWORD dnDevNode;
 } ACMDRVOPENDESCA, *PACMDRVOPENDESCA;
 
 typedef struct ACMDRVOPENDESCW
 {
-	DWORD   cbStruct;
-	FOURCC  fccType;
-	FOURCC  fccComp;
-	DWORD   dwVersion;
-	DWORD   dwFlags;
-	DWORD   dwError;
+	DWORD cbStruct;
+	FOURCC fccType;
+	FOURCC fccComp;
+	DWORD dwVersion;
+	DWORD dwFlags;
+	DWORD dwError;
 	LPCWSTR pszSectionName;
 	LPCWSTR pszAliasName;
-	DWORD   dnDevNode;
+	DWORD dnDevNode;
 } ACMDRVOPENDESCW, *PACMDRVOPENDESCW;
 
 typedef struct ACMDRVOPENDESC16
 {
-	DWORD  cbStruct;
+	DWORD cbStruct;
 	FOURCC fccType;
 	FOURCC fccComp;
-	DWORD  dwVersion;
-	DWORD  dwFlags;
-	DWORD  dwError;
+	DWORD dwVersion;
+	DWORD dwFlags;
+	DWORD dwError;
 	LPCSTR pszSectionName;
 	LPCSTR pszAliasName;
-	DWORD  dnDevNode;
+	DWORD dnDevNode;
 } ACMDRVOPENDESC16, *NPACMDRVOPENDESC16, *LPACMDRVOPENDESC16;
 
 typedef struct ACMDRVSTREAMINSTANCE16
 {
-	DWORD          cbStruct;
+	DWORD cbStruct;
 	LPWAVEFORMATEX pwfxSrc;
 	LPWAVEFORMATEX pwfxDst;
-	LPWAVEFILTER   pwfltr;
-	DWORD          dwCallback;
-	DWORD          dwInstance;
-	DWORD          fdwOpen;
-	DWORD          fdwDriver;
-	DWORD          dwDriver;
-	HACMSTREAM16   has;
+	LPWAVEFILTER pwfltr;
+	DWORD dwCallback;
+	DWORD dwInstance;
+	DWORD fdwOpen;
+	DWORD fdwDriver;
+	DWORD dwDriver;
+	HACMSTREAM16 has;
 } ACMDRVSTREAMINSTANCE16, *NPACMDRVSTREAMINSTANCE16, *LPACMDRVSTREAMINSTANCE16;
 
 typedef struct ACMDRVSTREAMINSTANCE
 {
-	DWORD         cbStruct;
+	DWORD cbStruct;
 	PWAVEFORMATEX pwfxSrc;
 	PWAVEFORMATEX pwfxDst;
-	PWAVEFILTER   pwfltr;
-	DWORD         dwCallback;
-	DWORD         dwInstance;
-	DWORD         fdwOpen;
-	DWORD         fdwDriver;
-	DWORD         dwDriver;
-	HACMSTREAM    has;
+	PWAVEFILTER pwfltr;
+	DWORD dwCallback;
+	DWORD dwInstance;
+	DWORD fdwOpen;
+	DWORD fdwDriver;
+	DWORD dwDriver;
+	HACMSTREAM has;
 } ACMDRVSTREAMINSTANCE, *PACMDRVSTREAMINSTANCE;
 
 typedef struct ACMDRVSTREAMHEADER16 *LPACMDRVSTREAMHEADER16;
 typedef struct ACMDRVSTREAMHEADER16
 {
-	DWORD  cbStruct;
-	DWORD  fdwStatus;
-	DWORD  dwUser;
+	DWORD cbStruct;
+	DWORD fdwStatus;
+	DWORD dwUser;
 	LPBYTE pbSrc;
-	DWORD  cbSrcLength;
-	DWORD  cbSrcLengthUsed;
-	DWORD  dwSrcUser;
+	DWORD cbSrcLength;
+	DWORD cbSrcLengthUsed;
+	DWORD dwSrcUser;
 	LPBYTE pbDst;
-	DWORD  cbDstLength;
-	DWORD  cbDstLengthUsed;
-	DWORD  dwDstUser;
+	DWORD cbDstLength;
+	DWORD cbDstLengthUsed;
+	DWORD dwDstUser;
 
-	DWORD                   fdwConvert;
+	DWORD fdwConvert;
 	LPACMDRVSTREAMHEADER16 *padshNext;
-	DWORD                   fdwDriver;
-	DWORD                   dwDriver;
+	DWORD fdwDriver;
+	DWORD dwDriver;
 
 	/* Internal fields for ACM */
-	DWORD  fdwPrepared;
-	DWORD  dwPrepared;
+	DWORD fdwPrepared;
+	DWORD dwPrepared;
 	LPBYTE pbPreparedSrc;
-	DWORD  cbPreparedSrcLength;
+	DWORD cbPreparedSrcLength;
 	LPBYTE pbPreparedDst;
-	DWORD  cbPreparedDstLength;
+	DWORD cbPreparedDstLength;
 } ACMDRVSTREAMHEADER16, *NPACMDRVSTREAMHEADER16;
 
 typedef struct ACMDRVSTREAMHEADER *PACMDRVSTREAMHEADER;
 typedef struct ACMDRVSTREAMHEADER
 {
-	DWORD  cbStruct;
-	DWORD  fdwStatus;
-	DWORD  dwUser;
+	DWORD cbStruct;
+	DWORD fdwStatus;
+	DWORD dwUser;
 	LPBYTE pbSrc;
-	DWORD  cbSrcLength;
-	DWORD  cbSrcLengthUsed;
-	DWORD  dwSrcUser;
+	DWORD cbSrcLength;
+	DWORD cbSrcLengthUsed;
+	DWORD dwSrcUser;
 	LPBYTE pbDst;
-	DWORD  cbDstLength;
-	DWORD  cbDstLengthUsed;
-	DWORD  dwDstUser;
+	DWORD cbDstLength;
+	DWORD cbDstLengthUsed;
+	DWORD dwDstUser;
 
-	DWORD                fdwConvert;
+	DWORD fdwConvert;
 	PACMDRVSTREAMHEADER *padshNext;
-	DWORD                fdwDriver;
-	DWORD                dwDriver;
+	DWORD fdwDriver;
+	DWORD dwDriver;
 
 	/* Internal fields for ACM */
-	DWORD  fdwPrepared;
-	DWORD  dwPrepared;
+	DWORD fdwPrepared;
+	DWORD dwPrepared;
 	LPBYTE pbPreparedSrc;
-	DWORD  cbPreparedSrcLength;
+	DWORD cbPreparedSrcLength;
 	LPBYTE pbPreparedDst;
-	DWORD  cbPreparedDstLength;
+	DWORD cbPreparedDstLength;
 } ACMDRVSTREAMHEADER;
 
 typedef struct ACMDRVSTREAMSIZE
@@ -179,26 +179,26 @@ typedef struct ACMDRVSTREAMSIZE
 	DWORD cbSrcLength;
 	DWORD cbDstLength;
 } ACMDRVSTREAMSIZE16, *NPACMDRVSTREAMSIZE16, *LPACMDRVSTREAMSIZE16,
-    ACMDRVSTREAMSIZE, *PACMDRVSTREAMSIZE;
+ACMDRVSTREAMSIZE, *PACMDRVSTREAMSIZE;
 
 typedef struct ACMDRVFORMATSUGGEST16
 {
-	DWORD          cbStruct;
-	DWORD          fdwSuggest;
+	DWORD cbStruct;
+	DWORD fdwSuggest;
 	LPWAVEFORMATEX pwfxSrc;
-	DWORD          cbwfxSrc;
+	DWORD cbwfxSrc;
 	LPWAVEFORMATEX pwfxDst;
-	DWORD          cbwfxDst;
+	DWORD cbwfxDst;
 } ACMDRVFORMATSUGGEST16, *NPACMDRVFORMATSUGGEST, *LPACMDRVFORMATSUGGEST;
 
 typedef struct ACMDRVFORMATSUGGEST
 {
-	DWORD         cbStruct;
-	DWORD         fdwSuggest;
+	DWORD cbStruct;
+	DWORD fdwSuggest;
 	PWAVEFORMATEX pwfxSrc;
-	DWORD         cbwfxSrc;
+	DWORD cbwfxSrc;
 	PWAVEFORMATEX pwfxDst;
-	DWORD         cbwfxDst;
+	DWORD cbwfxDst;
 } ACMDRVFORMATSUGGEST, *PACMDRVFORMATSUGGEST;
 
 #endif /* MPLAYER_MSACMDRV_H */

@@ -37,7 +37,7 @@ void dump_exports(HMODULE hModule);
 struct elfdll_image
 {
 	HMODULE pe_module_start;
-	DWORD   pe_module_size;
+	DWORD pe_module_size;
 };
 
 /****************************************************************************
@@ -49,8 +49,8 @@ struct elfdll_image
  */
 void *ELFDLL_dlopen(const char *libname, int flags)
 {
-	char  buffer[256];
-	int   namelen;
+	char buffer[256];
+	int namelen;
 	void *handle;
 	char *ldpath;
 
@@ -61,10 +61,10 @@ void *ELFDLL_dlopen(const char *libname, int flags)
 
 	/* Now try to construct searches through our extra search-path */
 	namelen = strlen(libname);
-	ldpath  = codec_path;
+	ldpath = codec_path;
 	while(ldpath && *ldpath)
 	{
-		int   len;
+		int len;
 		char *cptr;
 		char *from;
 
@@ -72,12 +72,12 @@ void *ELFDLL_dlopen(const char *libname, int flags)
 		cptr = strchr(ldpath, ':');
 		if(!cptr)
 		{
-			len    = strlen(ldpath);
+			len = strlen(ldpath);
 			ldpath = NULL;
 		}
 		else
 		{
-			len    = cptr - ldpath;
+			len = cptr - ldpath;
 			ldpath = cptr + 1;
 		}
 
@@ -173,7 +173,7 @@ static WINE_MODREF *ELFDLL_CreateModref(HMODULE hModule, LPCSTR path)
 		return NULL;
 
 	wm->module = hModule;
-	wm->type   = MODULE32_ELF; /* FIXME */
+	wm->type = MODULE32_ELF; /* FIXME */
 
 	//	dir = nt->OptionalHeader.DataDirectory+IMAGE_DIRECTORY_ENTRY_EXPORT;
 	//	if(dir->Size)
@@ -208,17 +208,17 @@ static WINE_MODREF *ELFDLL_CreateModref(HMODULE hModule, LPCSTR path)
 
 	if(local_wm)
 	{
-		local_wm->next       = malloc(sizeof(modref_list));
+		local_wm->next = malloc(sizeof(modref_list));
 		local_wm->next->prev = local_wm;
 		local_wm->next->next = NULL;
-		local_wm->next->wm   = wm;
-		local_wm             = local_wm->next;
+		local_wm->next->wm = wm;
+		local_wm = local_wm->next;
 	}
 	else
 	{
-		local_wm       = malloc(sizeof(modref_list));
+		local_wm = malloc(sizeof(modref_list));
 		local_wm->next = local_wm->prev = NULL;
-		local_wm->wm                    = wm;
+		local_wm->wm = wm;
 	}
 
 	//	LeaveCriticalSection( &PROCESS_Current()->crit_section );
@@ -234,8 +234,8 @@ WINE_MODREF *ELFDLL_LoadLibraryExA(LPCSTR path, DWORD flags)
 {
 	LPVOID dlhandle;
 	//	struct elfdll_image *image;
-	char         name[129];
-	char         soname[129];
+	char name[129];
+	char soname[129];
 	WINE_MODREF *wm;
 
 	get_sobasename(path, name);

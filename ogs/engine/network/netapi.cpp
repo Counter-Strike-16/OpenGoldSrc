@@ -46,24 +46,28 @@ void NET_Status(struct net_status_s *status)
 {
 	ASSERT(status != NULL);
 
-	status->connected       = NET_IsLocalAddress(cls.netchan.remote_address) ? false : true;
+	status->connected =
+	NET_IsLocalAddress(cls.netchan.remote_address) ? false : true;
 	status->connection_time = host.realtime - cls.netchan.connect_time;
-	status->remote_address  = cls.netchan.remote_address;
-	status->packet_loss     = cls.packet_loss / 100; // percent
-	status->latency         = cl.frame.latency;
-	status->local_address   = net_local;
-	status->rate            = cls.netchan.rate;
+	status->remote_address = cls.netchan.remote_address;
+	status->packet_loss = cls.packet_loss / 100; // percent
+	status->latency = cl.frame.latency;
+	status->local_address = net_local;
+	status->rate = cls.netchan.rate;
 };
 
 void NET_SendRequest(int context, int request, int flags, double timeout, struct netadr_s *remote_address, net_api_response_func_t response)
 {
 	net_request_t *nr = NULL;
-	string         req;
-	int            i;
+	string req;
+	int i;
 
 	if(!response)
 	{
-		MsgDev(D_ERROR, "Net_SendRequest: no callbcak specified for request with context %i!\n", context);
+		MsgDev(
+		D_ERROR,
+		"Net_SendRequest: no callbcak specified for request with context %i!\n",
+		context);
 		return;
 	}
 
@@ -85,7 +89,7 @@ void NET_SendRequest(int context, int request, int flags, double timeout, struct
 			if((host.realtime - clgame.net_requests[i].timesend) > max_timeout)
 			{
 				max_timeout = host.realtime - clgame.net_requests[i].timesend;
-				nr          = &clgame.net_requests[i];
+				nr = &clgame.net_requests[i];
 			}
 		}
 	}
@@ -96,13 +100,13 @@ void NET_SendRequest(int context, int request, int flags, double timeout, struct
 	Q_memset(nr, 0, sizeof(*nr));
 
 	// create a new request
-	nr->timesend            = host.realtime;
-	nr->timeout             = nr->timesend + timeout;
-	nr->pfnFunc             = response;
-	nr->resp.context        = context;
-	nr->resp.type           = request;
+	nr->timesend = host.realtime;
+	nr->timeout = nr->timesend + timeout;
+	nr->pfnFunc = response;
+	nr->resp.context = context;
+	nr->resp.type = request;
 	nr->resp.remote_address = *remote_address;
-	nr->flags               = flags;
+	nr->flags = flags;
 
 	if(request == NETAPI_REQUEST_SERVERLIST)
 	{

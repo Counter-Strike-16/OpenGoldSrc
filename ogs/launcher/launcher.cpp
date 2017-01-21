@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	void *hInstance = NULL;
 
 #ifdef _WIN32
-	hInstance       = GetModuleHandle(NULL); // Any better idea?
+	hInstance = GetModuleHandle(NULL); // Any better idea?
 #endif
 
 	return AppMain(hInstance);
@@ -74,12 +74,12 @@ CSysModule *LoadFilesystemModule() // put name in args?
 
 char *Sys_GetLongPathName()
 {
-	char        szShortPath[MAX_PATH];
+	char szShortPath[MAX_PATH];
 	static char szLongPath[MAX_PATH];
-	char *      pszPath;
+	char *pszPath;
 
 	szShortPath[0] = 0;
-	szLongPath[0]  = 0;
+	szLongPath[0] = 0;
 
 	if(GetModuleFileName(NULL, szShortPath, sizeof(szShortPath)))
 	{
@@ -145,9 +145,9 @@ int AppMain(void *hInstance) // Sys_Main
 		gpFileSystem->Mount();
 		gpFileSystem->AddSearchPath(Sys_GetLongPathName(), "ROOT");
 
-		IEngineAPI *pEngineAPI  = NULL;
-		CSysModule *hEngineLib  = NULL;
-		bool        bUseBlobDLL = false;
+		IEngineAPI *pEngineAPI = NULL;
+		CSysModule *hEngineLib = NULL;
+		bool bUseBlobDLL = false;
 
 		if(1 > 3) //if(FIsBlob(pszEngineDLL))
 		{

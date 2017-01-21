@@ -37,13 +37,16 @@ qboolean EXT_FUNC Voice_GetClientListening(int iReceiver, int iSender)
 	--iReceiver;
 	--iSender;
 
-	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
+	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients ||
+	   iSender >= g_psvs.maxclients)
 		return 0;
 
 #ifdef REHLDS_FIXES
-	return (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] & (1 << iReceiver)) != 0;
+	return (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] &
+	        (1 << iReceiver)) != 0;
 #else  // REHLDS_FIXES
-	return (1 << iReceiver) & (g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] != 0);
+	return (1 << iReceiver) &
+	(g_psvs.clients[iSender].m_VoiceStreams[iReceiver >> 5] != 0);
 #endif // REHLDS_FIXES
 }
 
@@ -52,7 +55,8 @@ qboolean EXT_FUNC Voice_SetClientListening(int iReceiver, int iSender, qboolean 
 	--iReceiver;
 	--iSender;
 
-	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients || iSender >= g_psvs.maxclients)
+	if(iReceiver < 0 || iSender < 0 || iReceiver >= g_psvs.maxclients ||
+	   iSender >= g_psvs.maxclients)
 		return 0;
 
 	uint32 *pDest = g_psvs.clients[iSender].m_VoiceStreams;

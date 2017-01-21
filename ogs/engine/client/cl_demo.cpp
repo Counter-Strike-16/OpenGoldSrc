@@ -31,11 +31,11 @@
 
 //#include "precompiled.hpp"
 #include "client/cl_demo.hpp"
-#include "system/common.hpp"
 #include "client/client.hpp"
-#include "console/console.hpp"
 #include "console/cmd.hpp"
+#include "console/console.hpp"
 #include "network/net_msg.hpp"
+#include "system/common.hpp"
 
 enum
 {
@@ -88,8 +88,8 @@ void CL_StopPlayback()
 
 	fclose(cls.demofile);
 
-	cls.demofile     = NULL;
-	cls.state        = ca_disconnected;
+	cls.demofile = NULL;
+	cls.state = ca_disconnected;
 	cls.demoplayback = 0;
 
 	if(cls.timedemo)
@@ -105,11 +105,11 @@ Writes the current user cmd
 */
 void CL_WriteDemoCmd(usercmd_t *pcmd)
 {
-	int       i;
-	byte      c;
+	int i;
+	byte c;
 	usercmd_t cmd;
 
-	//Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
+	// Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	float fl = LittleFloat((float)realtime);
 	fwrite(&fl, sizeof(fl), 1, cls.demofile);
@@ -120,12 +120,12 @@ void CL_WriteDemoCmd(usercmd_t *pcmd)
 	// correct for byte order, bytes don't matter
 	cmd = *pcmd;
 
-	//for (i = 0; i < 3; i++)
-	//cmd.angles[i] = LittleFloat(cmd.angles[i]);
+	// for (i = 0; i < 3; i++)
+	// cmd.angles[i] = LittleFloat(cmd.angles[i]);
 
 	cmd.forwardmove = LittleShort(cmd.forwardmove);
-	cmd.sidemove    = LittleShort(cmd.sidemove);
-	cmd.upmove      = LittleShort(cmd.upmove);
+	cmd.sidemove = LittleShort(cmd.sidemove);
+	cmd.upmove = LittleShort(cmd.upmove);
 
 	fwrite(&cmd, sizeof(cmd), 1, cls.demofile);
 
@@ -149,7 +149,7 @@ void CL_WriteDemoMessage(sizebuf_t *msg)
 {
 	int len;
 
-	//Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
+	// Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	if(!cls.demorecording)
 		return;
@@ -176,10 +176,10 @@ CL_GetDemoMessage
 */
 qboolean CL_GetDemoMessage()
 {
-	int        r, i, j;
-	float      f;
-	float      demotime;
-	byte       c;
+	int r, i, j;
+	float f;
+	float demotime;
+	byte c;
 	usercmd_t *pcmd;
 
 	// read the time from the packet
@@ -195,33 +195,31 @@ qboolean CL_GetDemoMessage()
 		{
 			cls.td_lastframe = demotime;
 			// rewind back to time
-			fseek(cls.demofile, ftell(cls.demofile) - sizeof(demotime),
-			      SEEK_SET);
+			fseek(cls.demofile, ftell(cls.demofile) - sizeof(demotime), SEEK_SET);
 			return 0; // allready read this frame's message
 		}
 		if(!cls.td_starttime && cls.state == ca_active)
 		{
-			cls.td_starttime  = Sys_DoubleTime();
+			cls.td_starttime = Sys_DoubleTime();
 			cls.td_startframe = host_framecount;
 		}
 		realtime = demotime; // warp
 	}
-	else if(!cl.paused && cls.state >= ca_onserver)
+	else if(!cl.paused &&
+	        cls.state >= ca_onserver)
 	{ // allways grab until fully connected
 		if(realtime + 1.0 < demotime)
 		{
 			// too far back
 			realtime = demotime - 1.0;
 			// rewind back to time
-			fseek(cls.demofile, ftell(cls.demofile) - sizeof(demotime),
-			      SEEK_SET);
+			fseek(cls.demofile, ftell(cls.demofile) - sizeof(demotime), SEEK_SET);
 			return 0;
 		}
 		else if(realtime < demotime)
 		{
 			// rewind back to time
-			fseek(cls.demofile, ftell(cls.demofile) - sizeof(demotime),
-			      SEEK_SET);
+			fseek(cls.demofile, ftell(cls.demofile) - sizeof(demotime), SEEK_SET);
 			return 0; // don't need another message yet
 		}
 	}
@@ -238,26 +236,26 @@ qboolean CL_GetDemoMessage()
 	{
 	case dem_cmd:
 		// user sent input
-		i    = cls.netchan.outgoing_sequence & UPDATE_MASK;
+		i = cls.netchan.outgoing_sequence & UPDATE_MASK;
 		pcmd = &cl.frames[i].cmd;
-		r    = fread(pcmd, sizeof(*pcmd), 1, cls.demofile);
+		r = fread(pcmd, sizeof(*pcmd), 1, cls.demofile);
 		if(r != 1)
 		{
 			CL_StopPlayback();
 			return 0;
 		}
 		// byte order stuff
-		for(j                     = 0; j < 3; j++)
-			pcmd->angles[j]       = LittleFloat(pcmd->angles[j]);
-		pcmd->forwardmove         = LittleShort(pcmd->forwardmove);
-		pcmd->sidemove            = LittleShort(pcmd->sidemove);
-		pcmd->upmove              = LittleShort(pcmd->upmove);
-		cl.frames[i].senttime     = demotime;
+		for(j = 0; j < 3; j++)
+			pcmd->angles[j] = LittleFloat(pcmd->angles[j]);
+		pcmd->forwardmove = LittleShort(pcmd->forwardmove);
+		pcmd->sidemove = LittleShort(pcmd->sidemove);
+		pcmd->upmove = LittleShort(pcmd->upmove);
+		cl.frames[i].senttime = demotime;
 		cl.frames[i].receivedtime = -1; // we haven't gotten a reply yet
 		cls.netchan.outgoing_sequence++;
 		for(i = 0; i < 3; i++)
 		{
-			r                = fread(&f, 4, 1, cls.demofile);
+			r = fread(&f, 4, 1, cls.demofile);
 			cl.viewangles[i] = LittleFloat(f);
 		}
 		break;
@@ -266,7 +264,7 @@ qboolean CL_GetDemoMessage()
 		// get the next message
 		fread(&net_message.cursize, 4, 1, cls.demofile);
 		net_message.cursize = LittleLong(net_message.cursize);
-		//Con_Printf("read: %ld bytes\n", net_message.cursize);
+		// Con_Printf("read: %ld bytes\n", net_message.cursize);
 		if(net_message.cursize > MAX_MSGLEN)
 			Sys_Error("Demo message > MAX_MSGLEN");
 		r = fread(net_message.data, net_message.cursize, 1, cls.demofile);
@@ -336,7 +334,7 @@ void CL_Stop_f()
 
 	// finish up
 	fclose(cls.demofile);
-	cls.demofile      = NULL;
+	cls.demofile = NULL;
 	cls.demorecording = false;
 	Con_Printf("Completed demo\n");
 }
@@ -350,7 +348,7 @@ Dumps the current net message, prefixed by the length and view angles
 */
 void CL_WriteRecordDemoMessage(sizebuf_t *msg, int seq)
 {
-	//Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
+	// Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	if(!cls.demorecording)
 		return;
@@ -375,11 +373,11 @@ void CL_WriteRecordDemoMessage(sizebuf_t *msg, int seq)
 
 void CL_WriteSetDemoMessage()
 {
-	int   len;
+	int len;
 	float fl;
-	byte  c;
+	byte c;
 
-	//Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
+	// Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	if(!cls.demorecording)
 		return;
@@ -407,17 +405,17 @@ record <demoname> <server>
 */
 void CL_Record_f()
 {
-	int             c;
-	char            name[MAX_OSPATH];
-	sizebuf_t       buf;
-	char            buf_data[MAX_MSGLEN];
-	int             n, i, j;
-	char *          s;
-	cl_entity_t *   ent;
+	int c;
+	char name[MAX_OSPATH];
+	sizebuf_t buf;
+	char buf_data[MAX_MSGLEN];
+	int n, i, j;
+	char *s;
+	cl_entity_t *ent;
 	entity_state_t *es, blankes;
-	player_info_t * player;
-	extern char     gamedirfile[];
-	int             seq = 1;
+	player_info_t *player;
+	extern char gamedirfile[];
+	int seq = 1;
 
 	c = Cmd_Argc();
 	if(c != 2)
@@ -457,7 +455,7 @@ void CL_Record_f()
 	// serverdata
 	// send the info about the new client to all connected clients
 	memset(&buf, 0, sizeof(buf));
-	buf.data    = buf_data;
+	buf.data = buf_data;
 	buf.maxsize = sizeof(buf_data);
 
 	// send the serverdata
@@ -719,7 +717,7 @@ record <demoname>
 */
 void CL_ReRecord_f()
 {
-	int  c;
+	int c;
 	char name[MAX_OSPATH];
 
 	c = Cmd_Argc();
@@ -797,7 +795,7 @@ void CL_PlayDemo_f()
 	}
 
 	cls.demoplayback = true;
-	cls.state        = ca_demostart;
+	cls.state = ca_demostart;
 	Netchan_Setup(&cls.netchan, net_from, 0);
 	realtime = 0;
 }
@@ -810,14 +808,14 @@ CL_FinishTimeDemo
 */
 void CL_FinishTimeDemo()
 {
-	int   frames;
+	int frames;
 	float time;
 
 	cls.timedemo = false;
 
 	// the first frame didn't count
 	frames = (host_framecount - cls.td_startframe) - 1;
-	time   = Sys_DoubleTime() - cls.td_starttime;
+	time = Sys_DoubleTime() - cls.td_starttime;
 	if(!time)
 		time = 1;
 	Con_Printf("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time);
@@ -846,8 +844,8 @@ void CL_TimeDemo_f()
 	// cls.td_starttime will be grabbed at the second frame of the demo, so
 	// all the loading time doesn't get counted
 
-	cls.timedemo      = true;
-	cls.td_starttime  = 0;
+	cls.timedemo = true;
+	cls.td_starttime = 0;
 	cls.td_startframe = host_framecount;
-	cls.td_lastframe  = -1; // get a new message this frame
+	cls.td_lastframe = -1; // get a new message this frame
 }

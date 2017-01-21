@@ -35,37 +35,37 @@
 
 #define CMD_MAXBACKUP 64
 
-typedef struct command_s         command_t;
-typedef struct edict_s           edict_t;
-typedef struct client_s          client_t;
-typedef struct usercmd_s         usercmd_t;
-typedef struct pmtrace_s         pmtrace_t;
-typedef struct entity_state_s    entity_state_t;
-typedef struct cvar_s            cvar_t;
-typedef struct consistency_s     consistency_t;
-typedef struct sizebuf_s         sizebuf_t;
-typedef struct areanode_s        areanode_t;
+typedef struct command_s command_t;
+typedef struct edict_s edict_t;
+typedef struct client_s client_t;
+typedef struct usercmd_s usercmd_t;
+typedef struct pmtrace_s pmtrace_t;
+typedef struct entity_state_s entity_state_t;
+typedef struct cvar_s cvar_t;
+typedef struct consistency_s consistency_t;
+typedef struct sizebuf_s sizebuf_t;
+typedef struct areanode_s areanode_t;
 typedef struct packet_entities_s packet_entities_t;
-typedef struct physent_s         physent_t;
+typedef struct physent_s physent_t;
 
 typedef struct sv_adjusted_positions_s
 {
-	int    active;
-	int    needrelink;
+	int active;
+	int needrelink;
 	vec3_t neworg;
 	vec3_t oldorg;
 	vec3_t initial_correction_org;
 	vec3_t oldabsmin;
 	vec3_t oldabsmax;
-	int    deadflag;
+	int deadflag;
 	vec3_t temp_org;
-	int    temp_org_setflag;
+	int temp_org_setflag;
 } sv_adjusted_positions_t;
 
 typedef struct clc_func_s
 {
 	unsigned char opcode;
-	char *        pszname;
+	char *pszname;
 	void (*pfnParse)(client_t *);
 } clc_func_t;
 
@@ -94,17 +94,17 @@ typedef struct clc_func_s
 
 #endif // HOOK_ENGINE
 
-extern edict_t *               sv_player;
-extern command_t               clcommands[23];
+extern edict_t *sv_player;
+extern command_t clcommands[23];
 extern sv_adjusted_positions_t truepositions[MAX_CLIENTS];
-extern qboolean                g_balreadymoved;
+extern qboolean g_balreadymoved;
 
 #ifdef HOOK_ENGINE
 extern clc_func_t sv_clcfuncs[12];
 #else
 #endif
 
-extern float  s_LastFullUpdate[33];
+extern float s_LastFullUpdate[33];
 extern cvar_t sv_edgefriction;
 extern cvar_t sv_maxspeed;
 extern cvar_t sv_accelerate;
@@ -121,9 +121,10 @@ extern cvar_t sv_voiceenable;
 extern qboolean nofind;
 
 void SV_ParseConsistencyResponse(client_t *pSenderClient);
-qboolean SV_FileInConsistencyList(const char *filename, consistency_t **ppconsist);
-int  SV_TransferConsistencyInfo();
-int  SV_TransferConsistencyInfo_internal();
+qboolean SV_FileInConsistencyList(const char *filename,
+                                  consistency_t **ppconsist);
+int SV_TransferConsistencyInfo();
+int SV_TransferConsistencyInfo_internal();
 void SV_SendConsistencyList(sizebuf_t *msg);
 void SV_PreRunCmd();
 void SV_CopyEdictToPhysent(physent_t *pe, int e, edict_t *check);

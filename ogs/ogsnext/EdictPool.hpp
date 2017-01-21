@@ -33,7 +33,7 @@
 #include "engine/progdefs.h"
 
 typedef std::vector<edict_t *> tEdictVec;
-typedef tEdictVec::iterator    tEdictVecIt;
+typedef tEdictVec::iterator tEdictVecIt;
 
 class CEdictPool
 {

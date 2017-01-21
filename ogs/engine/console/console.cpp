@@ -30,8 +30,8 @@
 
 //#include "precompiled.hpp"
 #include "console/console.hpp"
-#include "input/keys.hpp"
 #include "client/client.hpp"
+#include "input/keys.hpp"
 #include "system/system.hpp"
 
 int con_ormask;
@@ -46,7 +46,7 @@ int con_totallines; // total lines in console scrollback
 
 float con_cursorspeed = 4;
 
-cvar_t con_notifytime = {"con_notifytime", "3"}; //seconds
+cvar_t con_notifytime = { "con_notifytime", "3" }; // seconds
 
 #define NUM_CON_TIMES 4
 float con_times[NUM_CON_TIMES]; // realtime time the line was generated
@@ -59,15 +59,15 @@ qboolean con_debuglog;
 
 #define MAXCMDLINE 256
 extern char key_lines[32][MAXCMDLINE];
-extern int  edit_line;
-extern int  key_linepos;
+extern int edit_line;
+extern int key_linepos;
 
 qboolean con_initialized;
 
 void Key_ClearTyping()
 {
 	key_lines[edit_line][1] = 0; // clear any typing
-	key_linepos             = 1;
+	key_linepos = 1;
 }
 
 /*
@@ -128,7 +128,7 @@ Con_ClearNotify
 */
 void Con_ClearNotify()
 {
-	for(int i        = 0; i < NUM_CON_TIMES; ++i)
+	for(int i = 0; i < NUM_CON_TIMES; ++i)
 		con_times[i] = 0;
 };
 
@@ -140,7 +140,7 @@ Con_MessageMode_f
 void Con_MessageMode_f()
 {
 	chat_team = false;
-	key_dest  = key_message;
+	key_dest = key_message;
 };
 
 /*
@@ -151,7 +151,7 @@ Con_MessageMode2_f
 void Con_MessageMode2_f()
 {
 	chat_team = true;
-	key_dest  = key_message;
+	key_dest = key_message;
 };
 
 void Con_Debug_f()
@@ -176,7 +176,7 @@ Con_Resize
 */
 void Con_Resize(console_t *con)
 {
-	int  i, j, width, oldwidth, oldtotallines, numlines, numchars;
+	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
 	char tbuf[CON_TEXTSIZE];
 
 	width = (vid.width >> 3) - 2;
@@ -186,18 +186,18 @@ void Con_Resize(console_t *con)
 
 	if(width < 1) // video hasn't been initialized yet
 	{
-		width          = 38;
-		con_linewidth  = width;
+		width = 38;
+		con_linewidth = width;
 		con_totallines = CON_TEXTSIZE / con_linewidth;
 		Q_memset(con->text, ' ', CON_TEXTSIZE);
 	}
 	else
 	{
-		oldwidth       = con_linewidth;
-		con_linewidth  = width;
-		oldtotallines  = con_totallines;
+		oldwidth = con_linewidth;
+		con_linewidth = width;
+		oldtotallines = con_totallines;
 		con_totallines = CON_TEXTSIZE / con_linewidth;
-		numlines       = oldtotallines;
+		numlines = oldtotallines;
 
 		if(con_totallines < numlines)
 			numlines = con_totallines;
@@ -215,10 +215,9 @@ void Con_Resize(console_t *con)
 			for(j = 0; j < numchars; j++)
 			{
 				con->text[(con_totallines - 1 - i) * con_linewidth + j] =
-				    tbuf[((con->current - i + oldtotallines) %
-				          oldtotallines) *
-				             oldwidth +
-				         j];
+				tbuf[((con->current - i + oldtotallines) % oldtotallines) *
+				     oldwidth +
+				     j];
 			}
 		}
 
@@ -251,7 +250,7 @@ void Con_Init()
 {
 	con_debuglog = COM_CheckParm("-condebug");
 
-	con           = &con_main;
+	con = &con_main;
 	con_linewidth = -1;
 	Con_CheckResize();
 
@@ -302,10 +301,10 @@ If no console is visible, the notify window will pop up.
 */
 void Con_Print(char *txt)
 {
-	int        y;
-	int        c, l;
+	int y;
+	int c, l;
 	static int cr;
-	int        mask = 0;
+	int mask = 0;
 
 	if(txt[0] == 1 || txt[0] == 2)
 	{
@@ -348,11 +347,11 @@ void Con_Print(char *txt)
 
 		case '\r':
 			con->x = 0;
-			cr     = 1;
+			cr = 1;
 			break;
 
 		default: // display character and advance
-			y                                     = con->current % con_totallines;
+			y = con->current % con_totallines;
 			con->text[y * con_linewidth + con->x] = c | mask | con_ormask;
 			con->x++;
 			if(con->x >= con_linewidth)
@@ -373,8 +372,8 @@ Handles cursor positioning, line wrapping, etc
 // FIXME: make a buffer size safe vsprintf?
 void Con_Printf(char *fmt, ...)
 {
-	va_list         argptr;
-	char            msg[MAXPRINTMSG];
+	va_list argptr;
+	char msg[MAXPRINTMSG];
 	static qboolean inupdate;
 
 	va_start(argptr, fmt);
@@ -397,7 +396,8 @@ void Con_Printf(char *fmt, ...)
 	// update the screen immediately if the console is displayed
 	if(cls.state != ca_active)
 	{
-		// protect against infinite loop if something in SCR_UpdateScreen calls Con_Printf
+		// protect against infinite loop if something in SCR_UpdateScreen calls
+		// Con_Printf
 		if(!inupdate)
 		{
 			inupdate = true;
@@ -421,7 +421,7 @@ void EXT_FUNC Con_DPrintf(const char *fmt, ...)
 		return;
 
 	va_list argptr;
-	char    msg[MAXPRINTMSG];
+	char msg[MAXPRINTMSG];
 
 	va_start(argptr, fmt);
 	vsprintf(msg, fmt, argptr);
@@ -447,8 +447,8 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput()
 {
-	int   y;
-	int   i;
+	int y;
+	int i;
 	char *text;
 
 	if(key_dest != key_console && cls.state == ca_active)
@@ -460,7 +460,7 @@ void Con_DrawInput()
 	text[key_linepos] = 10 + ((int)(realtime * con_cursorspeed) & 1);
 
 	// fill out remainder with spaces
-	for(i       = key_linepos + 1; i < con_linewidth; i++)
+	for(i = key_linepos + 1; i < con_linewidth; i++)
 		text[i] = ' ';
 
 	//	prestep if horizontally scrolling
@@ -486,12 +486,12 @@ Draws the last few lines of output transparently over the game top
 */
 void Con_DrawNotify()
 {
-	int   x, v;
+	int x, v;
 	char *text;
-	int   i;
+	int i;
 	float time;
 	char *s;
-	int   skip;
+	int skip;
 
 	v = 0;
 	for(i = con->current - NUM_CON_TIMES + 1; i <= con->current; i++)
@@ -557,11 +557,11 @@ Draws the console with the solid background
 */
 void Con_DrawConsole(int lines)
 {
-	int   i, j, x, y, n;
-	int   rows;
+	int i, j, x, y, n;
+	int rows;
 	char *text;
-	int   row;
-	char  dlbar[1024];
+	int row;
+	char dlbar[1024];
 
 	if(lines <= 0)
 		return;
@@ -624,7 +624,7 @@ void Con_DrawConsole(int lines)
 		else
 			strcpy(dlbar, text);
 		strcat(dlbar, ": ");
-		i          = strlen(dlbar);
+		i = strlen(dlbar);
 		dlbar[i++] = '\x80';
 		// where's the dot go?
 		if(cls.downloadpercent == 0)
@@ -637,8 +637,8 @@ void Con_DrawConsole(int lines)
 				dlbar[i++] = '\x83';
 			else
 				dlbar[i++] = '\x81';
-		dlbar[i++]         = '\x82';
-		dlbar[i]           = 0;
+		dlbar[i++] = '\x82';
+		dlbar[i] = 0;
 
 		sprintf(dlbar + strlen(dlbar), " %02d%%", cls.downloadpercent);
 
@@ -662,15 +662,17 @@ void Con_NotifyBox(char *text)
 	double t1, t2;
 
 	// during startup for sound / cd warnings
-	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
+	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36"
+	           "\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 
 	Con_Printf(text);
 
 	Con_Printf("Press a key.\n");
-	Con_Printf("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
+	Con_Printf("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36"
+	           "\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 
 	key_count = -2; // wait for a key down and up
-	key_dest  = key_console;
+	key_dest = key_console;
 
 	do
 	{
@@ -696,14 +698,14 @@ Okay to call even when the screen can't be updated
 void Con_SafePrintf(char *fmt, ...)
 {
 	va_list argptr;
-	char    msg[1024];
-	int     temp;
+	char msg[1024];
+	int temp;
 
 	va_start(argptr, fmt);
 	vsprintf(msg, fmt, argptr);
 	va_end(argptr);
 
-	temp                     = scr_disabled_for_loading;
+	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
 	Con_Printf("%s", msg);
 	scr_disabled_for_loading = temp;
@@ -713,7 +715,7 @@ void Con_SafePrintf(char *fmt, ...)
 
 void Con_DebugLog(const char *file, const char *fmt, ...)
 {
-	va_list     argptr;
+	va_list argptr;
 	static char data[8192];
 
 	va_start(argptr, fmt);
@@ -724,7 +726,7 @@ void Con_DebugLog(const char *file, const char *fmt, ...)
 
 #ifdef _WIN32
 
-	int fd  = _open(file, _O_WRONLY | _O_APPEND | _O_CREAT, _S_IREAD | _S_IWRITE);
+	int fd = _open(file, _O_WRONLY | _O_APPEND | _O_CREAT, _S_IREAD | _S_IWRITE);
 	int len = Q_strlen(data);
 	_write(fd, data, len);
 	_close(fd);
@@ -740,7 +742,7 @@ void Con_DebugLog(const char *file, const char *fmt, ...)
 
 void EXT_FUNC Con_Printf(const char *fmt, ...)
 {
-	char    Dest[4096];
+	char Dest[4096];
 	va_list va;
 
 	va_start(va, fmt);
@@ -775,7 +777,7 @@ void EXT_FUNC Con_Printf(const char *fmt, ...)
 			{
 				Q_strncpy(g_szNotifyAreaString, msg, 255);
 				g_szNotifyAreaString[255] = 0;
-				*con_times                = realtime;
+				*con_times = realtime;
 			}
 			VGuiWrap2_ConPrintf(msg);
 		}
@@ -804,7 +806,7 @@ void Con_SafePrintf(const char *fmt, ...)
 // Always print debug logs to the flight recorder
 void EXT_FUNC Con_DPrintf(const char *fmt, ...)
 {
-	char    Dest[4096];
+	char Dest[4096];
 	va_list argptr;
 	va_start(argptr, fmt);
 	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);

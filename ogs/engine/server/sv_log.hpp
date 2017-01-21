@@ -34,7 +34,7 @@
 
 typedef struct loglist
 {
-	server_log_t    log;
+	server_log_t log;
 	struct loglist *next;
 } LOGLIST_T;
 

@@ -45,10 +45,10 @@
 
 extern unsigned char *gPAS;
 extern unsigned char *gPVS;
-extern int            gPVSRowBytes;
-extern unsigned char  mod_novis[MODEL_MAX_PVS];
+extern int gPVSRowBytes;
+extern unsigned char mod_novis[MODEL_MAX_PVS];
 
-void           Mod_Init();
+void Mod_Init();
 unsigned char *Mod_DecompressVis(unsigned char *in, model_t *model);
 unsigned char *Mod_LeafPVS(mleaf_t *leaf, model_t *model);
 void CM_DecompressPVS(unsigned char *in, unsigned char *decompressed, int byteCount);

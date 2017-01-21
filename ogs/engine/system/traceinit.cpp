@@ -28,8 +28,8 @@
 
 //#include "precompiled.hpp"
 #include "system/traceinit.h"
-#include "system/system.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
 
 CInitTracker g_InitTracker;
 
@@ -64,12 +64,12 @@ void CInitTracker::Init(const char *init, const char *shutdown, int listnum)
 {
 	InitFunc *f = new InitFunc;
 
-	f->initname       = init;
-	f->shutdownname   = shutdown;
-	f->inittime       = 0.0f;
+	f->initname = init;
+	f->shutdownname = shutdown;
+	f->inittime = 0.0f;
 	f->referencecount = 1;
-	f->shutdowntime   = 0.0f;
-	f->sequence       = m_nNumFuncs[listnum];
+	f->shutdowntime = 0.0f;
+	f->sequence = m_nNumFuncs[listnum];
 	f->warningprinted = false;
 
 	m_Funcs[listnum].AddToHead(f);
@@ -78,7 +78,7 @@ void CInitTracker::Init(const char *init, const char *shutdown, int listnum)
 
 void CInitTracker::Shutdown(const char *shutdown, int listnum)
 {
-	int       i = 0;
+	int i = 0;
 	InitFunc *f = NULL;
 
 	if(!m_nNumFuncs[listnum])

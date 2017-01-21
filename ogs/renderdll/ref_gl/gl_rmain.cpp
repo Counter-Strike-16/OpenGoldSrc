@@ -41,13 +41,13 @@ model_t *r_worldmodel;
 float gldepthmin, gldepthmax;
 
 glconfig_t gl_config;
-glstate_t  gl_state;
+glstate_t gl_state;
 
 image_t *r_notexture;       // use for bad textures
 image_t *r_particletexture; // little dot for particles
 
 cl_entity_t *currententity;
-model_t *    currentmodel;
+model_t *currentmodel;
 
 cplane_t frustum[4];
 
@@ -86,24 +86,24 @@ cvar_t *r_nocull;
 cvar_t *r_lerpmodels;
 cvar_t *r_lefthand;
 
-cvar_t *r_bmodelinterp   = NULL;
+cvar_t *r_bmodelinterp = NULL;
 cvar_t *r_bmodelhighfrac = NULL;
-cvar_t *r_norefresh      = NULL;
-cvar_t *r_drawentities   = NULL;
-cvar_t *r_drawviewmodel  = NULL;
-cvar_t *r_speeds         = NULL;
-cvar_t *r_fullbright     = NULL;
-cvar_t *r_decals         = NULL;
-cvar_t *r_lightmap       = NULL;
-cvar_t *r_shadows        = NULL;
-cvar_t *r_mirroralpha    = NULL;
-cvar_t *r_wateralpha     = NULL;
-cvar_t *r_dynamic        = NULL;
-cvar_t *r_novis          = NULL;
-cvar_t *r_mmx            = NULL;
-cvar_t *r_traceglow      = NULL;
-cvar_t *r_wadtextures    = NULL;
-cvar_t *r_glowshellfreq  = NULL;
+cvar_t *r_norefresh = NULL;
+cvar_t *r_drawentities = NULL;
+cvar_t *r_drawviewmodel = NULL;
+cvar_t *r_speeds = NULL;
+cvar_t *r_fullbright = NULL;
+cvar_t *r_decals = NULL;
+cvar_t *r_lightmap = NULL;
+cvar_t *r_shadows = NULL;
+cvar_t *r_mirroralpha = NULL;
+cvar_t *r_wateralpha = NULL;
+cvar_t *r_dynamic = NULL;
+cvar_t *r_novis = NULL;
+cvar_t *r_mmx = NULL;
+cvar_t *r_traceglow = NULL;
+cvar_t *r_wadtextures = NULL;
+cvar_t *r_glowshellfreq = NULL;
 
 cvar_t *r_lightlevel; // FIXME: This is a HACK to get the client's light level
 
@@ -148,37 +148,37 @@ cvar_t *gl_texturealphamode;
 cvar_t *gl_texturesolidmode;
 cvar_t *gl_lockpvs;
 
-cvar_t *gl_vsync            = NULL;
-cvar_t *gl_ztrick           = NULL;
-cvar_t *gl_finish           = NULL;
-cvar_t *gl_clear            = NULL;
-cvar_t *gl_cull             = NULL;
-cvar_t *gl_texsort          = NULL;
-cvar_t *gl_smoothmodels     = NULL;
-cvar_t *gl_affinemodels     = NULL;
-cvar_t *gl_flashblend       = NULL;
-cvar_t *gl_playermip        = NULL;
-cvar_t *gl_nocolors         = NULL;
-cvar_t *gl_keeptjunctions   = NULL;
+cvar_t *gl_vsync = NULL;
+cvar_t *gl_ztrick = NULL;
+cvar_t *gl_finish = NULL;
+cvar_t *gl_clear = NULL;
+cvar_t *gl_cull = NULL;
+cvar_t *gl_texsort = NULL;
+cvar_t *gl_smoothmodels = NULL;
+cvar_t *gl_affinemodels = NULL;
+cvar_t *gl_flashblend = NULL;
+cvar_t *gl_playermip = NULL;
+cvar_t *gl_nocolors = NULL;
+cvar_t *gl_keeptjunctions = NULL;
 cvar_t *gl_reporttjunctions = NULL;
-cvar_t *gl_wateramp         = NULL;
-cvar_t *gl_dither           = NULL;
-cvar_t *gl_spriteblend      = NULL;
-cvar_t *gl_polyoffset       = NULL;
-cvar_t *gl_lightholes       = NULL;
-cvar_t *gl_zmax             = NULL;
-cvar_t *gl_alphamin         = NULL;
-cvar_t *gl_overdraw         = NULL;
-cvar_t *gl_watersides       = NULL;
-cvar_t *gl_overbright       = NULL;
-cvar_t *gl_envmapsize       = NULL;
-cvar_t *gl_flipmatrix       = NULL;
-cvar_t *gl_monolights       = NULL;
-cvar_t *gl_fog              = NULL;
-cvar_t *gl_wireframe        = NULL;
-cvar_t *gl_reflectwater     = NULL;
-cvar_t *gl_shaderprogram    = NULL;
-cvar_t *gl_ansio            = NULL;
+cvar_t *gl_wateramp = NULL;
+cvar_t *gl_dither = NULL;
+cvar_t *gl_spriteblend = NULL;
+cvar_t *gl_polyoffset = NULL;
+cvar_t *gl_lightholes = NULL;
+cvar_t *gl_zmax = NULL;
+cvar_t *gl_alphamin = NULL;
+cvar_t *gl_overdraw = NULL;
+cvar_t *gl_watersides = NULL;
+cvar_t *gl_overbright = NULL;
+cvar_t *gl_envmapsize = NULL;
+cvar_t *gl_flipmatrix = NULL;
+cvar_t *gl_monolights = NULL;
+cvar_t *gl_fog = NULL;
+cvar_t *gl_wireframe = NULL;
+cvar_t *gl_reflectwater = NULL;
+cvar_t *gl_shaderprogram = NULL;
+cvar_t *gl_ansio = NULL;
 
 cvar_t *gl_3dlabs_broken;
 
@@ -188,7 +188,7 @@ cvar_t *vid_ref;
 
 cvar_t *v_lightgamma = NULL;
 cvar_t *v_brightness = NULL;
-cvar_t *v_gamma      = NULL;
+cvar_t *v_gamma = NULL;
 
 /*
 =================
@@ -234,11 +234,11 @@ R_DrawSpriteModel
 */
 void R_DrawSpriteModel(cl_entity_t *e)
 {
-	float        alpha = 1.0F;
-	vec3_t       point;
+	float alpha = 1.0F;
+	vec3_t point;
 	dsprframe_t *frame;
-	float *      up, *right;
-	dsprite_t *  psprite;
+	float *up, *right;
+	dsprite_t *psprite;
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
@@ -268,7 +268,7 @@ void R_DrawSpriteModel(cl_entity_t *e)
 	else
 #endif
 	{ // normal sprite
-		up    = vup;
+		up = vup;
 		right = vright;
 	}
 
@@ -332,7 +332,7 @@ R_DrawNullModel
 void R_DrawNullModel()
 {
 	vec3_t shadelight;
-	int    i;
+	int i;
 
 	if(currententity->flags & RF_FULLBRIGHT)
 		shadelight[0] = shadelight[1] = shadelight[2] = 1.0F;
@@ -460,10 +460,10 @@ void R_DrawEntitiesOnList()
 void GL_DrawParticles(int num_particles, const particle_t particles[], const unsigned colortable[768])
 {
 	const particle_t *p;
-	int               i;
-	vec3_t            up, right;
-	float             scale;
-	byte              color[4];
+	int i;
+	vec3_t up, right;
+	float scale;
+	byte color[4];
 
 	GL_Bind(r_particletexture->texnum);
 	qglDepthMask(GL_FALSE); // no z buffering
@@ -478,8 +478,8 @@ void GL_DrawParticles(int num_particles, const particle_t particles[], const uns
 	{
 		// hack a scale up to keep particles from disapearing
 		scale = (p->origin[0] - r_origin[0]) * vpn[0] +
-		    (p->origin[1] - r_origin[1]) * vpn[1] +
-		    (p->origin[2] - r_origin[2]) * vpn[2];
+		(p->origin[1] - r_origin[1]) * vpn[1] +
+		(p->origin[2] - r_origin[2]) * vpn[2];
 
 		if(scale < 20)
 			scale = 1;
@@ -487,7 +487,7 @@ void GL_DrawParticles(int num_particles, const particle_t particles[], const uns
 			scale = 1 + scale * 0.004;
 
 		*(int *)color = colortable[p->color];
-		color[3]      = p->alpha * 255;
+		color[3] = p->alpha * 255;
 
 		qglColor4ubv(color);
 
@@ -521,8 +521,8 @@ void R_DrawParticles()
 {
 	if(gl_ext_pointparameters->value && qglPointParameterfEXT)
 	{
-		int               i;
-		unsigned char     color[4];
+		int i;
+		unsigned char color[4];
 		const particle_t *p;
 
 		qglDepthMask(GL_FALSE);
@@ -535,7 +535,7 @@ void R_DrawParticles()
 		for(i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++)
 		{
 			*(int *)color = d_8to24table[p->color];
-			color[3]      = p->alpha * 255;
+			color[3] = p->alpha * 255;
 
 			qglColor4ubv(color);
 
@@ -645,8 +645,8 @@ void R_SetFrustum()
 
 	for(i = 0; i < 4; i++)
 	{
-		frustum[i].type     = PLANE_ANYZ;
-		frustum[i].dist     = DotProduct(r_origin, frustum[i].normal);
+		frustum[i].type = PLANE_ANYZ;
+		frustum[i].dist = DotProduct(r_origin, frustum[i].normal);
 		frustum[i].signbits = SignbitsForPlane(&frustum[i]);
 	}
 }
@@ -660,7 +660,7 @@ R_SetupFrame
 */
 void R_SetupFrame()
 {
-	int      i;
+	int i;
 	mleaf_t *leaf;
 
 	r_framecount++;
@@ -673,9 +673,9 @@ void R_SetupFrame()
 	// current viewcluster
 	if(!(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
 	{
-		r_oldviewcluster  = r_viewcluster;
+		r_oldviewcluster = r_viewcluster;
 		r_oldviewcluster2 = r_viewcluster2;
-		leaf              = Mod_PointInLeaf(r_origin, r_worldmodel);
+		leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
 		r_viewcluster = r_viewcluster2 = leaf->cluster;
 
 		// check above and below so crossing solid water doesn't draw wrong
@@ -703,7 +703,7 @@ void R_SetupFrame()
 		}
 	}
 
-	for(i          = 0; i < 4; i++)
+	for(i = 0; i < 4; i++)
 		v_blend[i] = r_newrefdef.blend[i];
 
 	c_brush_polys = 0;
@@ -752,9 +752,9 @@ void R_SetupGL()
 	//
 	// set up viewport
 	//
-	x  = floor(r_newrefdef.x * vid.width / vid.width);
+	x = floor(r_newrefdef.x * vid.width / vid.width);
 	x2 = ceil((r_newrefdef.x + r_newrefdef.width) * vid.width / vid.width);
-	y  = floor(vid.height - r_newrefdef.y * vid.height / vid.height);
+	y = floor(vid.height - r_newrefdef.y * vid.height / vid.height);
 	y2 = ceil(vid.height - (r_newrefdef.y + r_newrefdef.height) * vid.height / vid.height);
 
 	w = x2 - x;
@@ -1013,63 +1013,63 @@ void R_RenderFrame(refdef_t *fd)
 
 void R_Register()
 {
-	r_lefthand     = ri.Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
-	r_norefresh    = ri.Cvar_Get("r_norefresh", "0", 0);
-	r_fullbright   = ri.Cvar_Get("r_fullbright", "0", 0);
+	r_lefthand = ri.Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
+	r_norefresh = ri.Cvar_Get("r_norefresh", "0", 0);
+	r_fullbright = ri.Cvar_Get("r_fullbright", "0", 0);
 	r_drawentities = ri.Cvar_Get("r_drawentities", "1", 0);
-	r_drawworld    = ri.Cvar_Get("r_drawworld", "1", 0);
-	r_novis        = ri.Cvar_Get("r_novis", "0", 0);
-	r_nocull       = ri.Cvar_Get("r_nocull", "0", 0);
-	r_lerpmodels   = ri.Cvar_Get("r_lerpmodels", "1", 0);
-	r_speeds       = ri.Cvar_Get("r_speeds", "0", 0);
+	r_drawworld = ri.Cvar_Get("r_drawworld", "1", 0);
+	r_novis = ri.Cvar_Get("r_novis", "0", 0);
+	r_nocull = ri.Cvar_Get("r_nocull", "0", 0);
+	r_lerpmodels = ri.Cvar_Get("r_lerpmodels", "1", 0);
+	r_speeds = ri.Cvar_Get("r_speeds", "0", 0);
 
 	r_lightlevel = ri.Cvar_Get("r_lightlevel", "0", 0);
 
-	gl_nosubimage     = ri.Cvar_Get("gl_nosubimage", "0", 0);
+	gl_nosubimage = ri.Cvar_Get("gl_nosubimage", "0", 0);
 	gl_allow_software = ri.Cvar_Get("gl_allow_software", "0", 0);
 
 	gl_particle_min_size = ri.Cvar_Get("gl_particle_min_size", "2", CVAR_ARCHIVE);
 	gl_particle_max_size = ri.Cvar_Get("gl_particle_max_size", "40", CVAR_ARCHIVE);
-	gl_particle_size     = ri.Cvar_Get("gl_particle_size", "40", CVAR_ARCHIVE);
-	gl_particle_att_a    = ri.Cvar_Get("gl_particle_att_a", "0.01", CVAR_ARCHIVE);
-	gl_particle_att_b    = ri.Cvar_Get("gl_particle_att_b", "0.0", CVAR_ARCHIVE);
-	gl_particle_att_c    = ri.Cvar_Get("gl_particle_att_c", "0.01", CVAR_ARCHIVE);
+	gl_particle_size = ri.Cvar_Get("gl_particle_size", "40", CVAR_ARCHIVE);
+	gl_particle_att_a = ri.Cvar_Get("gl_particle_att_a", "0.01", CVAR_ARCHIVE);
+	gl_particle_att_b = ri.Cvar_Get("gl_particle_att_b", "0.0", CVAR_ARCHIVE);
+	gl_particle_att_c = ri.Cvar_Get("gl_particle_att_c", "0.01", CVAR_ARCHIVE);
 
-	gl_modulate         = ri.Cvar_Get("gl_modulate", "1", CVAR_ARCHIVE);
-	gl_log              = ri.Cvar_Get("gl_log", "0", 0);
-	gl_bitdepth         = ri.Cvar_Get("gl_bitdepth", "0", 0);
-	gl_mode             = ri.Cvar_Get("gl_mode", "3", CVAR_ARCHIVE);
-	gl_lightmap         = ri.Cvar_Get("gl_lightmap", "0", 0);
-	gl_shadows          = ri.Cvar_Get("gl_shadows", "0", CVAR_ARCHIVE);
-	gl_dynamic          = ri.Cvar_Get("gl_dynamic", "1", 0);
-	gl_nobind           = ri.Cvar_Get("gl_nobind", "0", 0);
-	gl_round_down       = ri.Cvar_Get("gl_round_down", "1", 0);
-	gl_picmip           = ri.Cvar_Get("gl_picmip", "0", 0);
-	gl_skymip           = ri.Cvar_Get("gl_skymip", "0", 0);
-	gl_showtris         = ri.Cvar_Get("gl_showtris", "0", 0);
-	gl_ztrick           = ri.Cvar_Get("gl_ztrick", "0", 0);
-	gl_finish           = ri.Cvar_Get("gl_finish", "0", CVAR_ARCHIVE);
-	gl_clear            = ri.Cvar_Get("gl_clear", "0", 0);
-	gl_cull             = ri.Cvar_Get("gl_cull", "1", 0);
-	gl_polyblend        = ri.Cvar_Get("gl_polyblend", "1", 0);
-	gl_flashblend       = ri.Cvar_Get("gl_flashblend", "0", 0);
-	gl_playermip        = ri.Cvar_Get("gl_playermip", "0", 0);
-	gl_monolightmap     = ri.Cvar_Get("gl_monolightmap", "0", 0);
-	gl_driver           = ri.Cvar_Get("gl_driver", "opengl32", CVAR_ARCHIVE);
-	gl_texturemode      = ri.Cvar_Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
+	gl_modulate = ri.Cvar_Get("gl_modulate", "1", CVAR_ARCHIVE);
+	gl_log = ri.Cvar_Get("gl_log", "0", 0);
+	gl_bitdepth = ri.Cvar_Get("gl_bitdepth", "0", 0);
+	gl_mode = ri.Cvar_Get("gl_mode", "3", CVAR_ARCHIVE);
+	gl_lightmap = ri.Cvar_Get("gl_lightmap", "0", 0);
+	gl_shadows = ri.Cvar_Get("gl_shadows", "0", CVAR_ARCHIVE);
+	gl_dynamic = ri.Cvar_Get("gl_dynamic", "1", 0);
+	gl_nobind = ri.Cvar_Get("gl_nobind", "0", 0);
+	gl_round_down = ri.Cvar_Get("gl_round_down", "1", 0);
+	gl_picmip = ri.Cvar_Get("gl_picmip", "0", 0);
+	gl_skymip = ri.Cvar_Get("gl_skymip", "0", 0);
+	gl_showtris = ri.Cvar_Get("gl_showtris", "0", 0);
+	gl_ztrick = ri.Cvar_Get("gl_ztrick", "0", 0);
+	gl_finish = ri.Cvar_Get("gl_finish", "0", CVAR_ARCHIVE);
+	gl_clear = ri.Cvar_Get("gl_clear", "0", 0);
+	gl_cull = ri.Cvar_Get("gl_cull", "1", 0);
+	gl_polyblend = ri.Cvar_Get("gl_polyblend", "1", 0);
+	gl_flashblend = ri.Cvar_Get("gl_flashblend", "0", 0);
+	gl_playermip = ri.Cvar_Get("gl_playermip", "0", 0);
+	gl_monolightmap = ri.Cvar_Get("gl_monolightmap", "0", 0);
+	gl_driver = ri.Cvar_Get("gl_driver", "opengl32", CVAR_ARCHIVE);
+	gl_texturemode = ri.Cvar_Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
 	gl_texturealphamode = ri.Cvar_Get("gl_texturealphamode", "default", CVAR_ARCHIVE);
 	gl_texturesolidmode = ri.Cvar_Get("gl_texturesolidmode", "default", CVAR_ARCHIVE);
-	gl_lockpvs          = ri.Cvar_Get("gl_lockpvs", "0", 0);
+	gl_lockpvs = ri.Cvar_Get("gl_lockpvs", "0", 0);
 
 	gl_vertex_arrays = ri.Cvar_Get("gl_vertex_arrays", "0", CVAR_ARCHIVE);
 
-	gl_ext_swapinterval          = ri.Cvar_Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
-	gl_ext_palettedtexture       = ri.Cvar_Get("gl_ext_palettedtexture", "1", CVAR_ARCHIVE);
-	gl_ext_multitexture          = ri.Cvar_Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
-	gl_ext_pointparameters       = ri.Cvar_Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
+	gl_ext_swapinterval = ri.Cvar_Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
+	gl_ext_palettedtexture = ri.Cvar_Get("gl_ext_palettedtexture", "1", CVAR_ARCHIVE);
+	gl_ext_multitexture = ri.Cvar_Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
+	gl_ext_pointparameters = ri.Cvar_Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
 	gl_ext_compiled_vertex_array = ri.Cvar_Get("gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE);
 
-	gl_drawbuffer   = ri.Cvar_Get("gl_drawbuffer", "GL_BACK", 0);
+	gl_drawbuffer = ri.Cvar_Get("gl_drawbuffer", "GL_BACK", 0);
 	gl_swapinterval = ri.Cvar_Get("gl_swapinterval", "1", CVAR_ARCHIVE);
 
 	gl_saturatelighting = ri.Cvar_Get("gl_saturatelighting", "0", 0);
@@ -1077,8 +1077,8 @@ void R_Register()
 	gl_3dlabs_broken = ri.Cvar_Get("gl_3dlabs_broken", "1", CVAR_ARCHIVE);
 
 	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-	vid_gamma      = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
-	vid_ref        = ri.Cvar_Get("vid_ref", "soft", CVAR_ARCHIVE);
+	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
+	vid_ref = ri.Cvar_Get("vid_ref", "soft", CVAR_ARCHIVE);
 
 	ri.Cmd_AddCommand("imagelist", GL_ImageList_f);
 	ri.Cmd_AddCommand("screenshot", GL_ScreenShot_f);
@@ -1093,7 +1093,7 @@ R_SetMode
 */
 qboolean R_SetMode()
 {
-	rserr_t  err;
+	rserr_t err;
 	qboolean fullscreen;
 
 	if(vid_fullscreen->modified && !gl_config.allow_cds)
@@ -1106,7 +1106,7 @@ qboolean R_SetMode()
 	fullscreen = vid_fullscreen->value;
 
 	vid_fullscreen->modified = false;
-	gl_mode->modified        = false;
+	gl_mode->modified = false;
 
 	if((err = GLimp_SetMode(&vid.width, &vid.height, gl_mode->value, fullscreen)) == rserr_ok)
 		gl_state.prev_mode = gl_mode->value;
@@ -1144,10 +1144,10 @@ R_Init
 */
 int R_Init(void *hinstance, void *hWnd)
 {
-	char         renderer_buffer[1000];
-	char         vendor_buffer[1000];
-	int          err;
-	int          j;
+	char renderer_buffer[1000];
+	char vendor_buffer[1000];
+	int err;
+	int j;
 	extern float r_turbsin[256];
 
 	for(j = 0; j < 256; j++)
@@ -1290,7 +1290,7 @@ int R_Init(void *hinstance, void *hWnd)
 	   strstr(gl_config.extensions_string, "GL_SGI_compiled_vertex_array"))
 	{
 		ri.Con_Printf(PRINT_ALL, "...enabling GL_EXT_compiled_vertex_array\n");
-		qglLockArraysEXT   = (void *)qwglGetProcAddress("glLockArraysEXT");
+		qglLockArraysEXT = (void *)qwglGetProcAddress("glLockArraysEXT");
 		qglUnlockArraysEXT = (void *)qwglGetProcAddress("glUnlockArraysEXT");
 	}
 	else
@@ -1312,7 +1312,7 @@ int R_Init(void *hinstance, void *hWnd)
 	{
 		if(gl_ext_pointparameters->value)
 		{
-			qglPointParameterfEXT  = (void(APIENTRY *)(GLenum, GLfloat))qwglGetProcAddress("glPointParameterfEXT");
+			qglPointParameterfEXT = (void(APIENTRY *)(GLenum, GLfloat))qwglGetProcAddress("glPointParameterfEXT");
 			qglPointParameterfvEXT = (void(APIENTRY *)(GLenum, const GLfloat *))qwglGetProcAddress("glPointParameterfvEXT");
 			ri.Con_Printf(PRINT_ALL, "...using GL_EXT_point_parameters\n");
 		}
@@ -1349,7 +1349,7 @@ int R_Init(void *hinstance, void *hWnd)
 		if(gl_ext_multitexture->value)
 		{
 			ri.Con_Printf(PRINT_ALL, "...using GL_SGIS_multitexture\n");
-			qglMTexCoord2fSGIS   = (void *)qwglGetProcAddress("glMTexCoord2fSGIS");
+			qglMTexCoord2fSGIS = (void *)qwglGetProcAddress("glMTexCoord2fSGIS");
 			qglSelectTextureSGIS = (void *)qwglGetProcAddress("glSelectTextureSGIS");
 		}
 		else
@@ -1425,7 +1425,7 @@ void R_BeginFrame(float camera_separation)
 	{ // FIXME: only restart if CDS is required
 		cvar_t *ref;
 
-		ref           = ri.Cvar_Get("vid_ref", "gl", 0);
+		ref = ri.Cvar_Get("vid_ref", "gl", 0);
 		ref->modified = true;
 	}
 
@@ -1450,7 +1450,7 @@ void R_BeginFrame(float camera_separation)
 
 		if(gl_config.renderer & (GL_RENDERER_VOODOO))
 		{
-			char  envbuffer[1024];
+			char envbuffer[1024];
 			float g;
 
 			g = 2.00 * (0.8 - (vid_gamma->value - 0.5)) + 1.0F;
@@ -1573,7 +1573,7 @@ void R_DrawBeam(cl_entity_t *e)
 {
 #define NUM_BEAM_SEGS 6
 
-	int   i;
+	int i;
 	float r, g, b;
 
 	vec3_t perpvec;
@@ -1668,30 +1668,30 @@ refexport_t GetRefAPI(refimport_t rimp)
 	re.api_version = API_VERSION;
 
 	re.BeginRegistration = R_BeginRegistration;
-	re.RegisterModel     = R_RegisterModel;
-	re.RegisterSkin      = R_RegisterSkin;
-	re.RegisterPic       = Draw_FindPic;
-	re.SetSky            = R_SetSky;
-	re.EndRegistration   = R_EndRegistration;
+	re.RegisterModel = R_RegisterModel;
+	re.RegisterSkin = R_RegisterSkin;
+	re.RegisterPic = Draw_FindPic;
+	re.SetSky = R_SetSky;
+	re.EndRegistration = R_EndRegistration;
 
 	re.RenderFrame = R_RenderFrame;
 
 	re.DrawGetPicSize = Draw_GetPicSize;
-	re.DrawPic        = Draw_Pic;
+	re.DrawPic = Draw_Pic;
 	re.DrawStretchPic = Draw_StretchPic;
-	re.DrawChar       = Draw_Char;
-	re.DrawTileClear  = Draw_TileClear;
-	re.DrawFill       = Draw_Fill;
+	re.DrawChar = Draw_Char;
+	re.DrawTileClear = Draw_TileClear;
+	re.DrawFill = Draw_Fill;
 	re.DrawFadeScreen = Draw_FadeScreen;
 
 	re.DrawStretchRaw = Draw_StretchRaw;
 
-	re.Init     = R_Init;
+	re.Init = R_Init;
 	re.Shutdown = R_Shutdown;
 
 	re.CinematicSetPalette = R_SetPalette;
-	re.BeginFrame          = R_BeginFrame;
-	re.EndFrame            = GLimp_EndFrame;
+	re.BeginFrame = R_BeginFrame;
+	re.EndFrame = GLimp_EndFrame;
 
 	re.AppActivate = GLimp_AppActivate;
 
@@ -1705,7 +1705,7 @@ refexport_t GetRefAPI(refimport_t rimp)
 void Sys_Error(char *error, ...)
 {
 	va_list argptr;
-	char    text[1024];
+	char text[1024];
 
 	va_start(argptr, error);
 	vsprintf(text, error, argptr);
@@ -1717,7 +1717,7 @@ void Sys_Error(char *error, ...)
 void Com_Printf(char *fmt, ...)
 {
 	va_list argptr;
-	char    text[1024];
+	char text[1024];
 
 	va_start(argptr, fmt);
 	vsprintf(text, fmt, argptr);

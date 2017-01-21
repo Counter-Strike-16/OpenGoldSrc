@@ -43,57 +43,57 @@ when crossing a water boudnary.
 
 */
 
-cvar_t lcd_x = {"lcd_x", "0"}; // FIXME: make this work sometime...
+cvar_t lcd_x = { "lcd_x", "0" }; // FIXME: make this work sometime...
 
-cvar_t cl_rollspeed = {"cl_rollspeed", "200"};
-cvar_t cl_rollangle = {"cl_rollangle", "2.0"};
+cvar_t cl_rollspeed = { "cl_rollspeed", "200" };
+cvar_t cl_rollangle = { "cl_rollangle", "2.0" };
 
-cvar_t v_kicktime  = {"v_kicktime", "0.5", false};
-cvar_t v_kickroll  = {"v_kickroll", "0.6", false};
-cvar_t v_kickpitch = {"v_kickpitch", "0.6", false};
+cvar_t v_kicktime = { "v_kicktime", "0.5", false };
+cvar_t v_kickroll = { "v_kickroll", "0.6", false };
+cvar_t v_kickpitch = { "v_kickpitch", "0.6", false };
 
-cvar_t v_idlescale = {"v_idlescale", "0", false};
+cvar_t v_idlescale = { "v_idlescale", "0", false };
 
-cvar_t crosshair      = {"crosshair", "0", true};
-cvar_t crosshaircolor = {"crosshaircolor", "79", true};
+cvar_t crosshair = { "crosshair", "0", true };
+cvar_t crosshaircolor = { "crosshaircolor", "79", true };
 
-cvar_t cl_crossx = {"cl_crossx", "0", true};
-cvar_t cl_crossy = {"cl_crossy", "0", true};
+cvar_t cl_crossx = { "cl_crossx", "0", true };
+cvar_t cl_crossy = { "cl_crossy", "0", true };
 
 #ifdef GLQUAKE
-cvar_t gl_cshiftpercent = {"gl_cshiftpercent", "100", false};
+cvar_t gl_cshiftpercent = { "gl_cshiftpercent", "100", false };
 #endif
 
-cvar_t v_contentblend = {"v_contentblend", "1", false};
+cvar_t v_contentblend = { "v_contentblend", "1", false };
 
 float v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
 extern int in_forward, in_forward2, in_back;
 
-frame_t *       view_frame;
+frame_t *view_frame;
 player_state_t *view_message;
 
 //=============================================================================
 
 /*
-============================================================================== 
- 
-						PALETTE FLASHES 
- 
-============================================================================== 
+==============================================================================
+
+                                                PALETTE FLASHES
+
+==============================================================================
 */
 
-cshift_t cshift_empty = {{130, 80, 50}, 0};
-cshift_t cshift_water = {{130, 80, 50}, 128};
-cshift_t cshift_slime = {{0, 25, 5}, 150};
-cshift_t cshift_lava  = {{255, 80, 0}, 150};
+cshift_t cshift_empty = { { 130, 80, 50 }, 0 };
+cshift_t cshift_water = { { 130, 80, 50 }, 128 };
+cshift_t cshift_slime = { { 0, 25, 5 }, 150 };
+cshift_t cshift_lava = { { 255, 80, 0 }, 150 };
 
-cvar_t v_gamma = {"gamma", "1", true};
+cvar_t v_gamma = { "gamma", "1", true };
 
 byte gammatable[256]; // palette is sent through this
 
 #ifdef GLQUAKE
-byte  ramps[3][256];
+byte ramps[3][256];
 float v_blend[4]; // rgba 0.0 - 1.0
 #endif            // GLQUAKE
 
@@ -103,7 +103,7 @@ void BuildGammaTable(float g)
 
 	if(g == 1.0)
 	{
-		for(i             = 0; i < 256; i++)
+		for(i = 0; i < 256; i++)
 			gammatable[i] = i;
 		return;
 	}
@@ -114,7 +114,7 @@ void BuildGammaTable(float g)
 		if(inf < 0)
 			inf = 0;
 		if(inf > 255)
-			inf       = 255;
+			inf = 255;
 		gammatable[i] = inf;
 	}
 }
@@ -148,16 +148,16 @@ void V_ParseDamage()
 {
 	// Deprecated
 
-	int    armor, blood;
+	int armor, blood;
 	vec3_t from;
-	int    i;
+	int i;
 	vec3_t forward, right, up;
-	float  side;
-	float  count;
+	float side;
+	float count;
 
 	armor = 0;
 	blood = 0;
-	for(i       = 0; i < 3; i++)
+	for(i = 0; i < 3; i++)
 		from[i] = 0;
 
 	count = blood * 0.5 + armor * 0.5;
@@ -199,10 +199,10 @@ void V_ParseDamage()
 
 	AngleVectors(cl.simangles, forward, right, up);
 
-	side       = DotProduct(from, right);
+	side = DotProduct(from, right);
 	v_dmg_roll = count * side * v_kickroll.value;
 
-	side        = DotProduct(from, forward);
+	side = DotProduct(from, forward);
 	v_dmg_pitch = count * side * v_kickpitch.value;
 
 	v_dmg_time = v_kicktime.value;
@@ -218,7 +218,7 @@ void V_cshift_f()
 	cshift_empty.destcolor[0] = atoi(Cmd_Argv(1));
 	cshift_empty.destcolor[1] = atoi(Cmd_Argv(2));
 	cshift_empty.destcolor[2] = atoi(Cmd_Argv(3));
-	cshift_empty.percent      = atoi(Cmd_Argv(4));
+	cshift_empty.percent = atoi(Cmd_Argv(4));
 }
 
 /*
@@ -265,28 +265,28 @@ void V_CalcPowerupCshift()
 		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
-		cl.cshifts[CSHIFT_POWERUP].percent      = 30;
+		cl.cshifts[CSHIFT_POWERUP].percent = 30;
 	}
 	else if(cl.stats[STAT_ITEMS] & IT_SUIT)
 	{
 		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
-		cl.cshifts[CSHIFT_POWERUP].percent      = 20;
+		cl.cshifts[CSHIFT_POWERUP].percent = 20;
 	}
 	else if(cl.stats[STAT_ITEMS] & IT_INVISIBILITY)
 	{
 		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
-		cl.cshifts[CSHIFT_POWERUP].percent      = 100;
+		cl.cshifts[CSHIFT_POWERUP].percent = 100;
 	}
 	else if(cl.stats[STAT_ITEMS] & IT_INVULNERABILITY)
 	{
 		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
-		cl.cshifts[CSHIFT_POWERUP].percent      = 30;
+		cl.cshifts[CSHIFT_POWERUP].percent = 30;
 	}
 	else
 		cl.cshifts[CSHIFT_POWERUP].percent = 0;
@@ -301,7 +301,7 @@ V_CalcBlend
 void V_CalcBlend()
 {
 	float r, g, b, a, a2;
-	int   j;
+	int j;
 
 	r = 0;
 	g = 0;
@@ -319,11 +319,11 @@ void V_CalcBlend()
 		if(!a2)
 			continue;
 		a = a + a2 * (1 - a);
-		//Con_Printf ("j:%i a:%f\n", j, a);
+		// Con_Printf ("j:%i a:%f\n", j, a);
 		a2 = a2 / a;
-		r  = r * (1 - a2) + cl.cshifts[j].destcolor[0] * a2;
-		g  = g * (1 - a2) + cl.cshifts[j].destcolor[1] * a2;
-		b  = b * (1 - a2) + cl.cshifts[j].destcolor[2] * a2;
+		r = r * (1 - a2) + cl.cshifts[j].destcolor[0] * a2;
+		g = g * (1 - a2) + cl.cshifts[j].destcolor[1] * a2;
+		b = b * (1 - a2) + cl.cshifts[j].destcolor[2] * a2;
 	}
 
 	v_blend[0] = r / 255.0;
@@ -347,10 +347,10 @@ void V_UpdatePalette()
 {
 	int i, j;
 	qboolean bnew;
-	byte *   basepal, *newpal;
-	byte     pal[768];
-	float    r, g, b, a;
-	int      ir, ig, ib;
+	byte *basepal, *newpal;
+	byte pal[768];
+	float r, g, b, a;
+	int ir, ig, ib;
 	qboolean force;
 
 	V_CalcPowerupCshift();
@@ -361,13 +361,13 @@ void V_UpdatePalette()
 	{
 		if(cl.cshifts[i].percent != cl.prev_cshifts[i].percent)
 		{
-			bnew                        = true;
+			bnew = true;
 			cl.prev_cshifts[i].percent = cl.cshifts[i].percent;
 		}
 		for(j = 0; j < 3; j++)
 			if(cl.cshifts[i].destcolor[j] != cl.prev_cshifts[i].destcolor[j])
 			{
-				bnew                             = true;
+				bnew = true;
 				cl.prev_cshifts[i].destcolor[j] = cl.cshifts[i].destcolor[j];
 			}
 	}
@@ -388,7 +388,8 @@ void V_UpdatePalette()
 
 	V_CalcBlend();
 
-	//Con_Printf("b: %4.2f %4.2f %4.2f %4.6f\n", v_blend[0],	v_blend[1],	v_blend[2],	v_blend[3]);
+	// Con_Printf("b: %4.2f %4.2f %4.2f %4.6f\n", v_blend[0],	v_blend[1],
+	// v_blend[2],	v_blend[3]);
 
 	a = v_blend[3];
 	r = 255 * v_blend[0] * a;
@@ -414,7 +415,7 @@ void V_UpdatePalette()
 	}
 
 	basepal = host_basepal;
-	newpal  = pal;
+	newpal = pal;
 
 	for(i = 0; i < 256; i++)
 	{
@@ -439,11 +440,11 @@ V_UpdatePalette
 */
 void V_UpdatePalette()
 {
-	int      i, j;
+	int i, j;
 	qboolean bnew;
-	byte *   basepal, *newpal;
-	byte     pal[768];
-	int      r, g, b;
+	byte *basepal, *newpal;
+	byte pal[768];
+	int r, g, b;
 	qboolean force;
 
 	V_CalcPowerupCshift();
@@ -454,13 +455,13 @@ void V_UpdatePalette()
 	{
 		if(cl.cshifts[i].percent != cl.prev_cshifts[i].percent)
 		{
-			bnew                       = true;
+			bnew = true;
 			cl.prev_cshifts[i].percent = cl.cshifts[i].percent;
 		}
 		for(j = 0; j < 3; j++)
 			if(cl.cshifts[i].destcolor[j] != cl.prev_cshifts[i].destcolor[j])
 			{
-				bnew                            = true;
+				bnew = true;
 				cl.prev_cshifts[i].destcolor[j] = cl.cshifts[i].destcolor[j];
 			}
 	}
@@ -480,7 +481,7 @@ void V_UpdatePalette()
 		return;
 
 	basepal = host_basepal;
-	newpal  = pal;
+	newpal = pal;
 
 	for(i = 0; i < 256; i++)
 	{
@@ -507,12 +508,12 @@ void V_UpdatePalette()
 
 #endif // !GLQUAKE
 
-/* 
-============================================================================== 
- 
-						VIEW RENDERING 
- 
-============================================================================== 
+/*
+==============================================================================
+
+                                                VIEW RENDERING
+
+==============================================================================
 */
 
 float angledelta(float a)
@@ -566,7 +567,7 @@ void V_RenderView()
 	if(cls.state != ca_active)
 		return;
 
-	view_frame   = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK];
+	view_frame = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK];
 	view_message = &view_frame->playerstate[cl.playernum];
 
 	DropPunchAngle();
@@ -610,7 +611,7 @@ void V_Init()
 
 	Cvar_RegisterVariable(&cl_rollspeed);
 	Cvar_RegisterVariable(&cl_rollangle);
-	
+
 	Cvar_RegisterVariable(&v_kicktime);
 	Cvar_RegisterVariable(&v_kickroll);
 	Cvar_RegisterVariable(&v_kickpitch);
@@ -627,14 +628,15 @@ pfnCalcShake
 */
 void V_CalcShake(void)
 {
-	int   i;
+	int i;
 	float fraction, freq;
 	float localAmp;
 
 	if(clgame.shake.time == 0)
 		return;
 
-	if((cl.time > clgame.shake.time) || clgame.shake.amplitude <= 0 || clgame.shake.frequency <= 0)
+	if((cl.time > clgame.shake.time) || clgame.shake.amplitude <= 0 ||
+	   clgame.shake.frequency <= 0)
 	{
 		Q_memset(&clgame.shake, 0, sizeof(clgame.shake));
 		return;
@@ -642,16 +644,20 @@ void V_CalcShake(void)
 
 	if(cl.time > clgame.shake.next_shake)
 	{
-		// higher frequency means we recalc the extents more often and perturb the display again
+		// higher frequency means we recalc the extents more often and perturb the
+		// display again
 		clgame.shake.next_shake = cl.time + (1.0f / clgame.shake.frequency);
 
 		// compute random shake extents (the shake will settle down from this)
-		for(i                      = 0; i < 3; i++)
-			clgame.shake.offset[i] = Com_RandomFloat(-clgame.shake.amplitude, clgame.shake.amplitude);
-		clgame.shake.angle         = Com_RandomFloat(-clgame.shake.amplitude * 0.25f, clgame.shake.amplitude * 0.25f);
+		for(i = 0; i < 3; i++)
+			clgame.shake.offset[i] =
+			Com_RandomFloat(-clgame.shake.amplitude, clgame.shake.amplitude);
+		clgame.shake.angle = Com_RandomFloat(-clgame.shake.amplitude * 0.25f,
+		                                     clgame.shake.amplitude * 0.25f);
 	}
 
-	// ramp down amplitude over duration (fraction goes from 1 to 0 linearly with slope 1/duration)
+	// ramp down amplitude over duration (fraction goes from 1 to 0 linearly with
+	// slope 1/duration)
 	fraction = (clgame.shake.time - cl.time) / clgame.shake.duration;
 
 	// ramp up frequency over duration
@@ -677,7 +683,9 @@ void V_CalcShake(void)
 	clgame.shake.applied_angle = clgame.shake.angle * fraction;
 
 	// drop amplitude a bit, less for higher frequency shakes
-	localAmp = clgame.shake.amplitude * (host.frametime / (clgame.shake.duration * clgame.shake.frequency));
+	localAmp =
+	clgame.shake.amplitude *
+	(host.frametime / (clgame.shake.duration * clgame.shake.frequency));
 	clgame.shake.amplitude -= localAmp;
 }
 
@@ -691,7 +699,7 @@ void V_ApplyShake(float *origin, float *angles, float factor)
 {
 	if(origin)
 		VectorMA(origin, factor, clgame.shake.applied_offset, origin);
-	
+
 	if(angles)
 		angles[ROLL] += clgame.shake.applied_angle * factor;
 };

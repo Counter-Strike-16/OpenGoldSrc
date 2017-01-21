@@ -30,7 +30,7 @@
 
 #include <windows.h>
 
-typedef LONG      NTSTATUS;
+typedef LONG NTSTATUS;
 typedef NTSTATUS *PNTSTATUS;
 
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000)

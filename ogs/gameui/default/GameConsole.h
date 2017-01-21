@@ -32,9 +32,9 @@ public:
 	static void OnCmdCondump(void);
 
 private:
-	bool                m_bInitialized;
+	bool m_bInitialized;
 	CGameConsoleDialog *m_pConsole;
-	bool                m_bActivatePending;
+	bool m_bActivatePending;
 };
 
 extern CGameConsole &GameConsole(void);

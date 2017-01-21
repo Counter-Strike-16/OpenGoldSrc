@@ -78,8 +78,8 @@ static inline LPCSTR debugstr_w(LPCWSTR s)
 
 #define DECLARE_DEBUG_CHANNEL(ch) \
 	extern char dbch_##ch[];
-#define DEFAULT_DEBUG_CHANNEL(ch)   \
-	extern char        dbch_##ch[]; \
+#define DEFAULT_DEBUG_CHANNEL(ch) \
+	extern char dbch_##ch[];      \
 	static char *const __dbch_default = dbch_##ch;
 
 #endif /* MPLAYER_DEBUGTOOLS_H */

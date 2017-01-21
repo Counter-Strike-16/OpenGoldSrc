@@ -36,7 +36,7 @@ typedef struct __attribute__((__packed__)) WAVEFILTER
 typedef struct __attribute__((__packed__)) WAVEFILTER_VOLUME
 {
 	WAVEFILTER wfltr;
-	DWORD      dwVolume;
+	DWORD dwVolume;
 } VOLUMEWAVEFILTER, *PVOLUMEWAVEFILTER, *NPVOLUMEWAVEFILTER, *LPVOLUMEWAVEFILTER;
 #endif /* WAVE_FILTER_VOLUME */
 
@@ -46,8 +46,8 @@ typedef struct __attribute__((__packed__)) WAVEFILTER_VOLUME
 typedef struct __attribute__((__packed__)) WAVEFILTER_ECHO
 {
 	WAVEFILTER wfltr;
-	DWORD      dwVolume;
-	DWORD      dwDelay;
+	DWORD dwVolume;
+	DWORD dwDelay;
 } ECHOWAVEFILTER, *PECHOWAVEFILTER, *NPECHOWAVEFILTER, *LPECHOWAVEFILTER;
 #endif /* WAVEFILTER_ECHO */
 
@@ -55,13 +55,13 @@ typedef struct __attribute__((__packed__)) WAVEFILTER_ECHO
 #define _WAVEFORMATEX_
 typedef struct __attribute__((__packed__)) WAVEFORMATEX
 {
-	WORD  wFormatTag;
-	WORD  nChannels;
+	WORD wFormatTag;
+	WORD nChannels;
 	DWORD nSamplesPerSec;
 	DWORD nAvgBytesPerSec;
-	WORD  nBlockAlign;
-	WORD  wBitsPerSample;
-	WORD  cbSize;
+	WORD nBlockAlign;
+	WORD wBitsPerSample;
+	WORD cbSize;
 } WAVEFORMATEX, *PWAVEFORMATEX, *NPWAVEFORMATEX, *LPWAVEFORMATEX;
 #endif /* _WAVEFORMATEX_ */
 
@@ -69,10 +69,10 @@ typedef struct __attribute__((__packed__)) WAVEFORMATEX
 #define GUID_TYPE
 typedef struct
 {
-	unsigned long  f1;
+	unsigned long f1;
 	unsigned short f2;
 	unsigned short f3;
-	unsigned char  f4[8];
+	unsigned char f4[8];
 } GUID;
 #endif
 
@@ -97,18 +97,18 @@ typedef struct
 #define _MPEGLAYER3WAVEFORMAT_
 typedef struct WINE_PACKED mpeglayer3waveformat_tag
 {
-	WORD  wFormatTag;
-	WORD  nChannels;
+	WORD wFormatTag;
+	WORD nChannels;
 	DWORD nSamplesPerSec;
 	DWORD nAvgBytesPerSec;
-	WORD  nBlockAlign;
-	WORD  wBitsPerSample;
-	WORD  cbSize;
-	WORD  wID;
+	WORD nBlockAlign;
+	WORD wBitsPerSample;
+	WORD cbSize;
+	WORD wID;
 	DWORD fdwFlags;
-	WORD  nBlockSize;
-	WORD  nFramesPerBlock;
-	WORD  nCodecDelay;
+	WORD nBlockSize;
+	WORD nFramesPerBlock;
+	WORD nCodecDelay;
 } MPEGLAYER3WAVEFORMAT;
 #endif /* !_MPEGLAYER3WAVEFORMAT_ */
 

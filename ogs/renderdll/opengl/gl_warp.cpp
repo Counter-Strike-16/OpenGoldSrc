@@ -27,8 +27,8 @@ extern model_t *loadmodel;
 
 int skytexturenum;
 
-int   solidskytexture;
-int   alphaskytexture;
+int solidskytexture;
+int alphaskytexture;
 float speedscale; // for top sky and bottom sky
 
 msurface_t *warpface;
@@ -37,12 +37,12 @@ extern cvar_t gl_subdivide_size;
 
 void BoundPoly(int numverts, float *verts, vec3_t mins, vec3_t maxs)
 {
-	int    i, j;
+	int i, j;
 	float *v;
 
 	mins[0] = mins[1] = mins[2] = 9999;
 	maxs[0] = maxs[1] = maxs[2] = -9999;
-	v                           = verts;
+	v = verts;
 	for(i = 0; i < numverts; i++)
 		for(j = 0; j < 3; j++, v++)
 		{
@@ -55,16 +55,16 @@ void BoundPoly(int numverts, float *verts, vec3_t mins, vec3_t maxs)
 
 void SubdividePolygon(int numverts, float *verts)
 {
-	int       i, j, k;
-	vec3_t    mins, maxs;
-	float     m;
-	float *   v;
-	vec3_t    front[64], back[64];
-	int       f, b;
-	float     dist[64];
-	float     frac;
+	int i, j, k;
+	vec3_t mins, maxs;
+	float m;
+	float *v;
+	vec3_t front[64], back[64];
+	int f, b;
+	float dist[64];
+	float frac;
 	glpoly_t *poly;
-	float     s, t;
+	float s, t;
 
 	if(numverts > 60)
 		Sys_Error("numverts = %i", numverts);
@@ -82,7 +82,7 @@ void SubdividePolygon(int numverts, float *verts)
 
 		// cut it
 		v = verts + i;
-		for(j       = 0; j < numverts; j++, v += 3)
+		for(j = 0; j < numverts; j++, v += 3)
 			dist[j] = *v - m;
 
 		// wrap cases
@@ -91,7 +91,7 @@ void SubdividePolygon(int numverts, float *verts)
 		VectorCopy(verts, v);
 
 		f = b = 0;
-		v     = verts;
+		v = verts;
 		for(j = 0; j < numverts; j++, v += 3)
 		{
 			if(dist[j] >= 0)
@@ -110,7 +110,7 @@ void SubdividePolygon(int numverts, float *verts)
 			{
 				// clip point
 				frac = dist[j] / (dist[j] - dist[j + 1]);
-				for(k           = 0; k < 3; k++)
+				for(k = 0; k < 3; k++)
 					front[f][k] = back[b][k] = v[k] + frac * (v[3 + k] - v[k]);
 				f++;
 				b++;
@@ -122,15 +122,15 @@ void SubdividePolygon(int numverts, float *verts)
 		return;
 	}
 
-	poly            = Hunk_Alloc(sizeof(glpoly_t) + (numverts - 4) * VERTEXSIZE * sizeof(float));
-	poly->next      = warpface->polys;
+	poly = Hunk_Alloc(sizeof(glpoly_t) + (numverts - 4) * VERTEXSIZE * sizeof(float));
+	poly->next = warpface->polys;
 	warpface->polys = poly;
-	poly->numverts  = numverts;
+	poly->numverts = numverts;
 	for(i = 0; i < numverts; i++, verts += 3)
 	{
 		VectorCopy(verts, poly->verts[i]);
-		s                 = DotProduct(verts, warpface->texinfo->vecs[0]);
-		t                 = DotProduct(verts, warpface->texinfo->vecs[1]);
+		s = DotProduct(verts, warpface->texinfo->vecs[0]);
+		t = DotProduct(verts, warpface->texinfo->vecs[1]);
 		poly->verts[i][3] = s;
 		poly->verts[i][4] = t;
 	}
@@ -147,11 +147,11 @@ can be done reasonably.
 */
 void GL_SubdivideSurface(msurface_t *fa)
 {
-	vec3_t     verts[64];
-	int        numverts;
-	int        i;
-	int        lindex;
-	float *    vec;
+	vec3_t verts[64];
+	int numverts;
+	int i;
+	int lindex;
+	float *vec;
 	texture_t *t;
 
 	warpface = fa;
@@ -179,7 +179,7 @@ void GL_SubdivideSurface(msurface_t *fa)
 
 // speed up sin calculations - Ed
 float turbsin[] =
-    {
+{
 #include "gl_warp_sin.h"
 };
 #define TURBSCALE (256.0 / (2 * M_PI))
@@ -194,9 +194,9 @@ Does a water warp on the pre-fragmented glpoly_t chain
 void EmitWaterPolys(msurface_t *fa)
 {
 	glpoly_t *p;
-	float *   v;
-	int       i;
-	float     s, t, os, ot;
+	float *v;
+	int i;
+	float s, t, os, ot;
 
 	for(p = fa->polys; p; p = p->next)
 	{
@@ -227,11 +227,11 @@ EmitSkyPolys
 void EmitSkyPolys(msurface_t *fa)
 {
 	glpoly_t *p;
-	float *   v;
-	int       i;
-	float     s, t;
-	vec3_t    dir;
-	float     length;
+	float *v;
+	int i;
+	float s, t;
+	vec3_t dir;
+	float length;
 
 	for(p = fa->polys; p; p = p->next)
 	{
@@ -269,8 +269,8 @@ will have them chained together.
 */
 void EmitBothSkyLayers(msurface_t *fa)
 {
-	int    i;
-	int    lindex;
+	int i;
+	int lindex;
 	float *vec;
 
 	GL_DisableMultitexture();
@@ -346,19 +346,19 @@ void R_DrawSkyChain(msurface_t *s)
 
 typedef struct
 {
-	char           manufacturer;
-	char           version;
-	char           encoding;
-	char           bits_per_pixel;
+	char manufacturer;
+	char version;
+	char encoding;
+	char bits_per_pixel;
 	unsigned short xmin, ymin, xmax, ymax;
 	unsigned short hres, vres;
-	unsigned char  palette[48];
-	char           reserved;
-	char           color_planes;
+	unsigned char palette[48];
+	char reserved;
+	char color_planes;
 	unsigned short bytes_per_line;
 	unsigned short palette_type;
-	char           filler[58];
-	unsigned       data; // unbounded
+	char filler[58];
+	unsigned data; // unbounded
 } pcx_t;
 
 byte *pcx_rgb;
@@ -371,11 +371,11 @@ LoadPCX
 void LoadPCX(FILE *f)
 {
 	pcx_t *pcx, pcxbuf;
-	byte   palette[768];
-	byte * pix;
-	int    x, y;
-	int    dataByte, runLength;
-	int    count;
+	byte palette[768];
+	byte *pix;
+	int x, y;
+	int dataByte, runLength;
+	int count;
 
 	//
 	// parse the PCX file
@@ -396,7 +396,7 @@ void LoadPCX(FILE *f)
 
 	fseek(f, sizeof(pcxbuf) - 4, SEEK_SET);
 
-	count   = (pcx->xmax + 1) * (pcx->ymax + 1);
+	count = (pcx->xmax + 1) * (pcx->ymax + 1);
 	pcx_rgb = malloc(count * 4);
 
 	for(y = 0; y <= pcx->ymax; y++)
@@ -409,7 +409,7 @@ void LoadPCX(FILE *f)
 			if((dataByte & 0xC0) == 0xC0)
 			{
 				runLength = dataByte & 0x3F;
-				dataByte  = fgetc(f);
+				dataByte = fgetc(f);
 			}
 			else
 				runLength = 1;
@@ -437,15 +437,15 @@ TARGA LOADING
 
 typedef struct _TargaHeader
 {
-	unsigned char  id_length, colormap_type, image_type;
+	unsigned char id_length, colormap_type, image_type;
 	unsigned short colormap_index, colormap_length;
-	unsigned char  colormap_size;
+	unsigned char colormap_size;
 	unsigned short x_origin, y_origin, width, height;
-	unsigned char  pixel_size, attributes;
+	unsigned char pixel_size, attributes;
 } TargaHeader;
 
 TargaHeader targa_header;
-byte *      targa_rgba;
+byte *targa_rgba;
 
 int fgetLittleShort(FILE *f)
 {
@@ -476,23 +476,23 @@ LoadTGA
 */
 void LoadTGA(FILE *fin)
 {
-	int   columns, rows, numPixels;
+	int columns, rows, numPixels;
 	byte *pixbuf;
-	int   row, column;
+	int row, column;
 
-	targa_header.id_length     = fgetc(fin);
+	targa_header.id_length = fgetc(fin);
 	targa_header.colormap_type = fgetc(fin);
-	targa_header.image_type    = fgetc(fin);
+	targa_header.image_type = fgetc(fin);
 
-	targa_header.colormap_index  = fgetLittleShort(fin);
+	targa_header.colormap_index = fgetLittleShort(fin);
 	targa_header.colormap_length = fgetLittleShort(fin);
-	targa_header.colormap_size   = fgetc(fin);
-	targa_header.x_origin        = fgetLittleShort(fin);
-	targa_header.y_origin        = fgetLittleShort(fin);
-	targa_header.width           = fgetLittleShort(fin);
-	targa_header.height          = fgetLittleShort(fin);
-	targa_header.pixel_size      = fgetc(fin);
-	targa_header.attributes      = fgetc(fin);
+	targa_header.colormap_size = fgetc(fin);
+	targa_header.x_origin = fgetLittleShort(fin);
+	targa_header.y_origin = fgetLittleShort(fin);
+	targa_header.width = fgetLittleShort(fin);
+	targa_header.height = fgetLittleShort(fin);
+	targa_header.pixel_size = fgetc(fin);
+	targa_header.attributes = fgetc(fin);
 
 	if(targa_header.image_type != 2 && targa_header.image_type != 10)
 		Sys_Error("LoadTGA: Only type 2 and 10 targa RGB images supported\n");
@@ -500,8 +500,8 @@ void LoadTGA(FILE *fin)
 	if(targa_header.colormap_type != 0 || (targa_header.pixel_size != 32 && targa_header.pixel_size != 24))
 		Sys_Error("Texture_LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
 
-	columns   = targa_header.width;
-	rows      = targa_header.height;
+	columns = targa_header.width;
+	rows = targa_header.height;
 	numPixels = columns * rows;
 
 	targa_rgba = malloc(numPixels * 4);
@@ -521,18 +521,18 @@ void LoadTGA(FILE *fin)
 				{
 				case 24:
 
-					blue      = getc(fin);
-					green     = getc(fin);
-					red       = getc(fin);
+					blue = getc(fin);
+					green = getc(fin);
+					red = getc(fin);
 					*pixbuf++ = red;
 					*pixbuf++ = green;
 					*pixbuf++ = blue;
 					*pixbuf++ = 255;
 					break;
 				case 32:
-					blue      = getc(fin);
-					green     = getc(fin);
-					red       = getc(fin);
+					blue = getc(fin);
+					green = getc(fin);
+					red = getc(fin);
 					alphabyte = getc(fin);
 					*pixbuf++ = red;
 					*pixbuf++ = green;
@@ -552,21 +552,21 @@ void LoadTGA(FILE *fin)
 			for(column = 0; column < columns;)
 			{
 				packetHeader = getc(fin);
-				packetSize   = 1 + (packetHeader & 0x7f);
+				packetSize = 1 + (packetHeader & 0x7f);
 				if(packetHeader & 0x80)
 				{ // run-length packet
 					switch(targa_header.pixel_size)
 					{
 					case 24:
-						blue      = getc(fin);
-						green     = getc(fin);
-						red       = getc(fin);
+						blue = getc(fin);
+						green = getc(fin);
+						red = getc(fin);
 						alphabyte = 255;
 						break;
 					case 32:
-						blue      = getc(fin);
-						green     = getc(fin);
-						red       = getc(fin);
+						blue = getc(fin);
+						green = getc(fin);
+						red = getc(fin);
 						alphabyte = getc(fin);
 						break;
 					}
@@ -596,18 +596,18 @@ void LoadTGA(FILE *fin)
 						switch(targa_header.pixel_size)
 						{
 						case 24:
-							blue      = getc(fin);
-							green     = getc(fin);
-							red       = getc(fin);
+							blue = getc(fin);
+							green = getc(fin);
+							red = getc(fin);
 							*pixbuf++ = red;
 							*pixbuf++ = green;
 							*pixbuf++ = blue;
 							*pixbuf++ = 255;
 							break;
 						case 32:
-							blue      = getc(fin);
-							green     = getc(fin);
-							red       = getc(fin);
+							blue = getc(fin);
+							green = getc(fin);
+							red = getc(fin);
 							alphabyte = getc(fin);
 							*pixbuf++ = red;
 							*pixbuf++ = green;
@@ -640,12 +640,12 @@ void LoadTGA(FILE *fin)
 R_LoadSkys
 ==================
 */
-char *suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
-void  R_LoadSkys(void)
+char *suf[6] = { "rt", "bk", "lf", "ft", "up", "dn" };
+void R_LoadSkys(void)
 {
-	int   i;
+	int i;
 	FILE *f;
-	char  name[64];
+	char name[64];
 
 	for(i = 0; i < 6; i++)
 	{
@@ -672,54 +672,55 @@ void  R_LoadSkys(void)
 }
 
 vec3_t skyclip[6] = {
-    {1, 1, 0},
-    {1, -1, 0},
-    {0, -1, 1},
-    {0, 1, 1},
-    {1, 0, 1},
-    {-1, 0, 1}};
+	{ 1, 1, 0 },
+	{ 1, -1, 0 },
+	{ 0, -1, 1 },
+	{ 0, 1, 1 },
+	{ 1, 0, 1 },
+	{ -1, 0, 1 }
+};
 int c_sky;
 
 // 1 = s, 2 = t, 3 = 2048
 int st_to_vec[6][3] =
-    {
-        {3, -1, 2},
-        {-3, 1, 2},
+{
+  { 3, -1, 2 },
+  { -3, 1, 2 },
 
-        {1, 3, 2},
-        {-1, -3, 2},
+  { 1, 3, 2 },
+  { -1, -3, 2 },
 
-        {-2, -1, 3}, // 0 degrees yaw, look straight up
-        {2, -1, -3}  // look straight down
+  { -2, -1, 3 }, // 0 degrees yaw, look straight up
+  { 2, -1, -3 }  // look straight down
 
-        //	{-1,2,3},
-        //	{1,2,-3}
+  //	{-1,2,3},
+  //	{1,2,-3}
 };
 
 // s = [0]/[2], t = [1]/[2]
 int vec_to_st[6][3] =
-    {
-        {-2, 3, 1},
-        {2, 3, -1},
+{
+  { -2, 3, 1 },
+  { 2, 3, -1 },
 
-        {1, 3, 2},
-        {-1, 3, -2},
+  { 1, 3, 2 },
+  { -1, 3, -2 },
 
-        {-2, -1, 3},
-        {-2, 1, -3}
+  { -2, -1, 3 },
+  { -2, 1, -3 }
 
-        //	{-1,2,3},
-        //	{1,2,-3}
+  //	{-1,2,3},
+  //	{1,2,-3}
 };
 
 float skymins[2][6], skymaxs[2][6];
 
 void DrawSkyPolygon(int nump, vec3_t vecs)
 {
-	int    i, j;
+	int i, j;
 	vec3_t v, av;
-	float  s, t, dv;
-	int    axis;
+	float s, t, dv;
+	int axis;
 	float *vp;
 
 	c_sky++;
@@ -778,7 +779,7 @@ return;
 			s = -vecs[-j - 1] / dv;
 		else
 			s = vecs[j - 1] / dv;
-		j     = vec_to_st[axis][1];
+		j = vec_to_st[axis][1];
 		if(j < 0)
 			t = -vecs[-j - 1] / dv;
 		else
@@ -798,15 +799,15 @@ return;
 #define MAX_CLIP_VERTS 64
 void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 {
-	float *  norm;
-	float *  v;
+	float *norm;
+	float *v;
 	qboolean front, back;
-	float    d, e;
-	float    dists[MAX_CLIP_VERTS];
-	int      sides[MAX_CLIP_VERTS];
-	vec3_t   newv[2][MAX_CLIP_VERTS];
-	int      newc[2];
-	int      i, j;
+	float d, e;
+	float dists[MAX_CLIP_VERTS];
+	int sides[MAX_CLIP_VERTS];
+	vec3_t newv[2][MAX_CLIP_VERTS];
+	int newc[2];
+	int i, j;
 
 	if(nump > MAX_CLIP_VERTS - 2)
 		Sys_Error("ClipSkyPolygon: MAX_CLIP_VERTS");
@@ -817,23 +818,23 @@ void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 	}
 
 	front = back = false;
-	norm         = skyclip[stage];
+	norm = skyclip[stage];
 	for(i = 0, v = vecs; i < nump; i++, v += 3)
 	{
 		d = DotProduct(v, norm);
 		if(d > ON_EPSILON)
 		{
-			front    = true;
+			front = true;
 			sides[i] = SIDE_FRONT;
 		}
 		else if(d < ON_EPSILON)
 		{
-			back     = true;
+			back = true;
 			sides[i] = SIDE_BACK;
 		}
 		else
 			sides[i] = SIDE_ON;
-		dists[i]     = d;
+		dists[i] = d;
 	}
 
 	if(!front || !back)
@@ -874,7 +875,7 @@ void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 		d = dists[i] / (dists[i] - dists[i + 1]);
 		for(j = 0; j < 3; j++)
 		{
-			e                   = v[j] + d * (v[j + 3] - v[j]);
+			e = v[j] + d * (v[j + 3] - v[j]);
 			newv[0][newc[0]][j] = e;
 			newv[1][newc[1]][j] = e;
 		}
@@ -896,8 +897,8 @@ void R_DrawSkyChain(msurface_t *s)
 {
 	msurface_t *fa;
 
-	int       i;
-	vec3_t    verts[MAX_CLIP_VERTS];
+	int i;
+	vec3_t verts[MAX_CLIP_VERTS];
 	glpoly_t *p;
 
 	c_sky = 0;
@@ -937,7 +938,7 @@ void R_ClearSkyBox(void)
 void MakeSkyVec(float s, float t, int axis)
 {
 	vec3_t v, b;
-	int    j, k;
+	int j, k;
 
 	b[0] = s * 2048;
 	b[1] = t * 2048;
@@ -976,12 +977,12 @@ void MakeSkyVec(float s, float t, int axis)
 R_DrawSkyBox
 ==============
 */
-int  skytexorder[6] = {0, 2, 1, 3, 4, 5};
+int skytexorder[6] = { 0, 2, 1, 3, 4, 5 };
 void R_DrawSkyBox(void)
 {
-	int    i, j, k;
+	int i, j, k;
 	vec3_t v;
-	float  s, t;
+	float s, t;
 
 #if 0
 glEnable (GL_BLEND);
@@ -1029,12 +1030,12 @@ A sky texture is 256*128, with the right side being a masked overlay
 */
 void R_InitSky(texture_t *mt)
 {
-	int        i, j, p;
-	byte *     src;
-	unsigned   trans[128 * 128];
-	unsigned   transpix;
-	int        r, g, b;
-	unsigned * rgba;
+	int i, j, p;
+	byte *src;
+	unsigned trans[128 * 128];
+	unsigned transpix;
+	int r, g, b;
+	unsigned *rgba;
 	extern int skytexturenum;
 
 	src = (byte *)mt + mt->offsets[0];
@@ -1046,8 +1047,8 @@ void R_InitSky(texture_t *mt)
 	for(i = 0; i < 128; i++)
 		for(j = 0; j < 128; j++)
 		{
-			p                    = src[i * 256 + j + 128];
-			rgba                 = &d_8to24table[p];
+			p = src[i * 256 + j + 128];
+			rgba = &d_8to24table[p];
 			trans[(i * 128) + j] = *rgba;
 			r += ((byte *)rgba)[0];
 			g += ((byte *)rgba)[1];

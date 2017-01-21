@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "d_local.h"
 
 static finalvert_t fv[2][8];
-static auxvert_t   av[8];
+static auxvert_t av[8];
 
 void R_AliasProjectFinalVert(finalvert_t *fv, auxvert_t *av);
 void R_Alias_clip_top(finalvert_t *pfv0, finalvert_t *pfv1,
@@ -48,7 +48,7 @@ pfv0 is the unclipped vertex, pfv1 is the z-clipped vertex
 */
 void R_Alias_clip_z(finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
 {
-	float      scale;
+	float scale;
 	auxvert_t *pav0, *pav1, avout;
 
 	pav0 = &av[pfv0 - &fv[0][0]];
@@ -57,7 +57,7 @@ void R_Alias_clip_z(finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
 	if(pfv0->v[1] >= pfv1->v[1])
 	{
 		scale = (ALIAS_Z_CLIP_PLANE - pav0->fv[2]) /
-		    (pav1->fv[2] - pav0->fv[2]);
+		(pav1->fv[2] - pav0->fv[2]);
 
 		avout.fv[0] = pav0->fv[0] + (pav1->fv[0] - pav0->fv[0]) * scale;
 		avout.fv[1] = pav0->fv[1] + (pav1->fv[1] - pav0->fv[1]) * scale;
@@ -70,7 +70,7 @@ void R_Alias_clip_z(finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
 	else
 	{
 		scale = (ALIAS_Z_CLIP_PLANE - pav1->fv[2]) /
-		    (pav0->fv[2] - pav1->fv[2]);
+		(pav0->fv[2] - pav1->fv[2]);
 
 		avout.fv[0] = pav1->fv[0] + (pav0->fv[0] - pav1->fv[0]) * scale;
 		avout.fv[1] = pav1->fv[1] + (pav0->fv[1] - pav1->fv[1]) * scale;
@@ -98,20 +98,20 @@ void R_Alias_clip_z(finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
 void R_Alias_clip_left(finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
 {
 	float scale;
-	int   i;
+	int i;
 
 	if(pfv0->v[1] >= pfv1->v[1])
 	{
 		scale = (float)(r_refdef.aliasvrect.x - pfv0->v[0]) /
-		    (pfv1->v[0] - pfv0->v[0]);
-		for(i         = 0; i < 6; i++)
+		(pfv1->v[0] - pfv0->v[0]);
+		for(i = 0; i < 6; i++)
 			out->v[i] = pfv0->v[i] + (pfv1->v[i] - pfv0->v[i]) * scale + 0.5;
 	}
 	else
 	{
 		scale = (float)(r_refdef.aliasvrect.x - pfv1->v[0]) /
-		    (pfv0->v[0] - pfv1->v[0]);
-		for(i         = 0; i < 6; i++)
+		(pfv0->v[0] - pfv1->v[0]);
+		for(i = 0; i < 6; i++)
 			out->v[i] = pfv1->v[i] + (pfv0->v[i] - pfv1->v[i]) * scale + 0.5;
 	}
 }
@@ -120,20 +120,20 @@ void R_Alias_clip_right(finalvert_t *pfv0, finalvert_t *pfv1,
                         finalvert_t *out)
 {
 	float scale;
-	int   i;
+	int i;
 
 	if(pfv0->v[1] >= pfv1->v[1])
 	{
 		scale = (float)(r_refdef.aliasvrectright - pfv0->v[0]) /
-		    (pfv1->v[0] - pfv0->v[0]);
-		for(i         = 0; i < 6; i++)
+		(pfv1->v[0] - pfv0->v[0]);
+		for(i = 0; i < 6; i++)
 			out->v[i] = pfv0->v[i] + (pfv1->v[i] - pfv0->v[i]) * scale + 0.5;
 	}
 	else
 	{
 		scale = (float)(r_refdef.aliasvrectright - pfv1->v[0]) /
-		    (pfv0->v[0] - pfv1->v[0]);
-		for(i         = 0; i < 6; i++)
+		(pfv0->v[0] - pfv1->v[0]);
+		for(i = 0; i < 6; i++)
 			out->v[i] = pfv1->v[i] + (pfv0->v[i] - pfv1->v[i]) * scale + 0.5;
 	}
 }
@@ -141,20 +141,20 @@ void R_Alias_clip_right(finalvert_t *pfv0, finalvert_t *pfv1,
 void R_Alias_clip_top(finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
 {
 	float scale;
-	int   i;
+	int i;
 
 	if(pfv0->v[1] >= pfv1->v[1])
 	{
 		scale = (float)(r_refdef.aliasvrect.y - pfv0->v[1]) /
-		    (pfv1->v[1] - pfv0->v[1]);
-		for(i         = 0; i < 6; i++)
+		(pfv1->v[1] - pfv0->v[1]);
+		for(i = 0; i < 6; i++)
 			out->v[i] = pfv0->v[i] + (pfv1->v[i] - pfv0->v[i]) * scale + 0.5;
 	}
 	else
 	{
 		scale = (float)(r_refdef.aliasvrect.y - pfv1->v[1]) /
-		    (pfv0->v[1] - pfv1->v[1]);
-		for(i         = 0; i < 6; i++)
+		(pfv0->v[1] - pfv1->v[1]);
+		for(i = 0; i < 6; i++)
 			out->v[i] = pfv1->v[i] + (pfv0->v[i] - pfv1->v[i]) * scale + 0.5;
 	}
 }
@@ -163,22 +163,22 @@ void R_Alias_clip_bottom(finalvert_t *pfv0, finalvert_t *pfv1,
                          finalvert_t *out)
 {
 	float scale;
-	int   i;
+	int i;
 
 	if(pfv0->v[1] >= pfv1->v[1])
 	{
 		scale = (float)(r_refdef.aliasvrectbottom - pfv0->v[1]) /
-		    (pfv1->v[1] - pfv0->v[1]);
+		(pfv1->v[1] - pfv0->v[1]);
 
-		for(i         = 0; i < 6; i++)
+		for(i = 0; i < 6; i++)
 			out->v[i] = pfv0->v[i] + (pfv1->v[i] - pfv0->v[i]) * scale + 0.5;
 	}
 	else
 	{
 		scale = (float)(r_refdef.aliasvrectbottom - pfv1->v[1]) /
-		    (pfv0->v[1] - pfv1->v[1]);
+		(pfv0->v[1] - pfv1->v[1]);
 
-		for(i         = 0; i < 6; i++)
+		for(i = 0; i < 6; i++)
 			out->v[i] = pfv1->v[i] + (pfv0->v[i] - pfv1->v[i]) * scale + 0.5;
 	}
 }
@@ -196,7 +196,7 @@ int R_AliasClip(finalvert_t *in, finalvert_t *out, int flag, int count,
 	for(i = 0; i < count; j = i, i++)
 	{
 		oldflags = in[j].flags & flag;
-		flags    = in[i].flags & flag;
+		flags = in[i].flags & flag;
 
 		if(flags && oldflags)
 			continue;
@@ -231,9 +231,9 @@ R_AliasClipTriangle
 */
 void R_AliasClipTriangle(mtriangle_t *ptri)
 {
-	int         i, k, pingpong;
+	int i, k, pingpong;
 	mtriangle_t mtri;
-	unsigned    clipflags;
+	unsigned clipflags;
 
 	// copy vertexes and fix seam texture coordinates
 	if(ptri->facesfront)
@@ -258,20 +258,20 @@ void R_AliasClipTriangle(mtriangle_t *ptri)
 
 	if(clipflags & ALIAS_Z_CLIP)
 	{
-		for(i     = 0; i < 3; i++)
+		for(i = 0; i < 3; i++)
 			av[i] = pauxverts[ptri->vertindex[i]];
 
 		k = R_AliasClip(fv[0], fv[1], ALIAS_Z_CLIP, 3, R_Alias_clip_z);
 		if(k == 0)
 			return;
 
-		pingpong  = 1;
+		pingpong = 1;
 		clipflags = fv[1][0].flags | fv[1][1].flags | fv[1][2].flags;
 	}
 	else
 	{
 		pingpong = 0;
-		k        = 3;
+		k = 3;
 	}
 
 	if(clipflags & ALIAS_LEFT_CLIP)
@@ -330,8 +330,8 @@ void R_AliasClipTriangle(mtriangle_t *ptri)
 	}
 
 	// draw triangles
-	mtri.facesfront             = ptri->facesfront;
-	r_affinetridesc.ptriangles  = &mtri;
+	mtri.facesfront = ptri->facesfront;
+	r_affinetridesc.ptriangles = &mtri;
 	r_affinetridesc.pfinalverts = fv[pingpong];
 
 	// FIXME: do all at once as trifan?

@@ -57,7 +57,7 @@ int Sys_Main()
 
 	if(!IsDebuggerPresent())
 	{
-		hObject        = CreateMutex(NULL, FALSE, "ValveHalfLifeLauncherMutex");
+		hObject = CreateMutex(NULL, FALSE, "ValveHalfLifeLauncherMutex");
 		DWORD dwStatus = WaitForSingleObject(hObject, 0);
 
 		if(dwStatus && dwStatus != WAIT_ABANDONED)

@@ -31,8 +31,8 @@
 #pragma once
 
 #include "maintypes.h"
-#include "system/igame.hpp"
 #include "system/iengine.hpp"
+#include "system/igame.hpp"
 
 // sleep time when not focus
 #define NOT_FOCUS_SLEEP 50
@@ -43,7 +43,7 @@
 #define eng (*peng)
 #endif // HOOK_ENGINE
 
-extern IGame *  game;
+extern IGame *game;
 extern IEngine *eng;
 
 class CEngine : public IEngine
@@ -55,10 +55,10 @@ public:
 	virtual bool Load(bool dedicated, char *rootDir, char *cmdLine);
 	virtual void Unload();
 	virtual void SetState(int iState);
-	virtual int  GetState();
+	virtual int GetState();
 	virtual void SetSubState(int iSubstate);
-	virtual int    GetSubState();
-	virtual int    Frame();
+	virtual int GetSubState();
+	virtual int Frame();
 	virtual double GetFrameTime();
 	virtual double GetCurTime();
 	virtual void TrapKey_Event(int key, bool down);
@@ -66,7 +66,7 @@ public:
 	virtual void StartTrapMode();
 	virtual bool IsTrapping();
 	virtual bool CheckDoneTrapping(int &buttons, int &keys);
-	virtual int  GetQuitting();
+	virtual int GetQuitting();
 	virtual void SetQuitting(int quittype);
 
 	// non-virtual function's of wrap for hooks a virtual
@@ -74,10 +74,10 @@ public:
 	bool Load_noVirt(bool dedicated, char *rootDir, char *cmdLine);
 	void Unload_noVirt();
 	void SetState_noVirt(int iState);
-	int  GetState_noVirt();
+	int GetState_noVirt();
 	void SetSubState_noVirt(int iSubstate);
-	int    GetSubState_noVirt();
-	int    Frame_noVirt();
+	int GetSubState_noVirt();
+	int Frame_noVirt();
 	double GetFrameTime_noVirt();
 	double GetCurTime_noVirt();
 	void TrapKey_Event_noVirt(int key, bool down);
@@ -85,18 +85,18 @@ public:
 	void StartTrapMode_noVirt();
 	bool IsTrapping_noVirt();
 	bool CheckDoneTrapping_noVirt(int &buttons, int &keys);
-	int  GetQuitting_noVirt();
+	int GetQuitting_noVirt();
 	void SetQuitting_noVirt(int quittype);
 
 private:
-	int    m_nQuitting;
-	int    m_nDLLState;
-	int    m_nSubState;
+	int m_nQuitting;
+	int m_nDLLState;
+	int m_nSubState;
 	double m_fCurTime;
 	double m_fFrameTime;
 	double m_fOldTime;
-	bool   m_bTrapMode;
-	bool   m_bDoneTrapping;
-	int    m_nTrapKey;
-	int    m_nTrapButtons;
+	bool m_bTrapMode;
+	bool m_bDoneTrapping;
+	int m_nTrapKey;
+	int m_nTrapButtons;
 };

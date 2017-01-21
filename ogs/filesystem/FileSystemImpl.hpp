@@ -108,7 +108,9 @@ public:
 	bool IsFileImmediatelyAvailable(const char *pFileName);
 
 	WaitForResourcesHandle_t WaitForResources(const char *resourcelist);
-	bool GetWaitForResourcesProgress(WaitForResourcesHandle_t handle, float *progress /* out */, bool *complete /* out */);
+	bool GetWaitForResourcesProgress(WaitForResourcesHandle_t handle,
+	                                 float *progress /* out */,
+	                                 bool *complete /* out */);
 	void CancelWaitForResources(WaitForResourcesHandle_t handle);
 
 	bool IsAppReadyForOfflinePlay(int appID);

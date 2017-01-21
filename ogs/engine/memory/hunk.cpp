@@ -29,9 +29,9 @@
 /// @file
 
 //#include "precompiled.hpp"
+#include "console/console.hpp"
 #include "memory/zone.hpp"
 #include "system/common.hpp"
-#include "console/console.hpp"
 #include "system/system.hpp"
 
 const int HUNK_NAME_LEN = 64;
@@ -104,7 +104,7 @@ void *Hunk_AllocName(int size, const char *name)
 
 	Q_memset(h, 0, totalsize);
 
-	h->size     = totalsize;
+	h->size = totalsize;
 	h->sentinel = HUNK_SENTINEL;
 
 	Q_strncpy(h->name, name, HUNK_NAME_LEN - 1);
@@ -143,7 +143,7 @@ void *Hunk_HighAllocName(int size, const char *name)
 	hunk_t *h = (hunk_t *)(hunk_base + hunk_size - hunk_high_used);
 	Q_memset(h, 0, size);
 
-	h->size     = size;
+	h->size = size;
 	h->sentinel = HUNK_SENTINEL;
 
 	Q_strncpy(h->name, name, HUNK_NAME_LEN - 1);
@@ -199,7 +199,9 @@ Run consistency and sentinel trashing checks
 */
 void Hunk_Check()
 {
-	for(hunk_t *h = (hunk_t *)hunk_base; (byte *)h != (hunk_base + hunk_low_used); h = (hunk_t *)((byte *)h + h->size))
+	for(hunk_t *h = (hunk_t *)hunk_base;
+	    (byte *)h != (hunk_base + hunk_low_used);
+	    h = (hunk_t *)((byte *)h + h->size))
 	{
 		if(h->sentinel != HUNK_SENTINEL)
 			Sys_Error("%s: trahsed sentinel", __FUNCTION__);
@@ -222,20 +224,20 @@ NOXREF void Hunk_Print(qboolean all)
 	NOXREFCHECK;
 
 	hunk_t *h, *next, *endlow, *starthigh, *endhigh;
-	int     count, sum;
-	int     totalblocks;
-	char    name[HUNK_NAME_LEN];
+	int count, sum;
+	int totalblocks;
+	char name[HUNK_NAME_LEN];
 
 	name[HUNK_NAME_LEN - 1] = 0;
 
-	count       = 0;
-	sum         = 0;
+	count = 0;
+	sum = 0;
 	totalblocks = 0;
 
-	h         = (hunk_t *)hunk_base;
-	endlow    = (hunk_t *)(hunk_base + hunk_low_used);
+	h = (hunk_t *)hunk_base;
+	endlow = (hunk_t *)(hunk_base + hunk_low_used);
 	starthigh = (hunk_t *)(hunk_base + hunk_size - hunk_high_used);
-	endhigh   = (hunk_t *)(hunk_base + hunk_size);
+	endhigh = (hunk_t *)(hunk_base + hunk_size);
 
 	Con_Printf("          :%8i total hunk size\n", hunk_size);
 	Con_Printf("-------------------------\n");
@@ -248,7 +250,8 @@ NOXREF void Hunk_Print(qboolean all)
 		if(h == endlow)
 		{
 			Con_Printf("-------------------------\n");
-			Con_Printf("          :%8i REMAINING\n", hunk_size - hunk_low_used - hunk_high_used);
+			Con_Printf("          :%8i REMAINING\n",
+			           hunk_size - hunk_low_used - hunk_high_used);
 			Con_Printf("-------------------------\n");
 			h = starthigh;
 		};
@@ -283,12 +286,13 @@ NOXREF void Hunk_Print(qboolean all)
 		//
 		// print the total
 		//
-		if(next == endlow || next == endhigh || Q_strncmp(h->name, next->name, HUNK_NAME_LEN))
+		if(next == endlow || next == endhigh ||
+		   Q_strncmp(h->name, next->name, HUNK_NAME_LEN))
 		{
 			if(!all)
 				Con_Printf("          :%8i %8s (TOTAL)\n", sum, name);
 			count = 0;
-			sum   = 0;
+			sum = 0;
 		};
 
 		h = next;

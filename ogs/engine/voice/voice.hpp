@@ -32,7 +32,9 @@
 
 #include "common/commontypes.h"
 
-qboolean Voice_RecordStart(const char *pUncompressedFile, const char *pDecompressedFile, const char *pMicInputFile);
+qboolean Voice_RecordStart(const char *pUncompressedFile,
+                           const char *pDecompressedFile,
+                           const char *pMicInputFile);
 qboolean Voice_IsRecording();
 
 void Voice_RegisterCvars();

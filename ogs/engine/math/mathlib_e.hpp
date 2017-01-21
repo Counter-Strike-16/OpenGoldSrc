@@ -64,7 +64,7 @@ inline float M_sqrt(float value)
 inline double M_sqrt(double value)
 {
 	double ret;
-	auto   v = _mm_load_sd(&value);
+	auto v = _mm_load_sd(&value);
 	_mm_store_sd(&ret, _mm_sqrt_sd(v, v));
 	return ret;
 }

@@ -54,13 +54,13 @@
 // clang-format on
 
 extern CUtlVector<char *> g_fallbackLocalizationFiles;
-extern char               s_pBaseDir[512];
-extern bool               bLowViolenceBuild;
+extern char s_pBaseDir[512];
+extern bool bLowViolenceBuild;
 
-extern CSysModule *      g_pFileSystemModule;
+extern CSysModule *g_pFileSystemModule;
 extern CreateInterfaceFn g_FileSystemFactory;
 
-const char * GetBaseDirectory();
+const char *GetBaseDirectory();
 NOXREF void *GetFileSystemFactory();
 
 bool FileSystem_LoadDLL(CreateInterfaceFn filesystemFactory);

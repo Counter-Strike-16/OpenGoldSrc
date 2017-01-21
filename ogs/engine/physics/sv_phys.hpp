@@ -30,9 +30,9 @@
 
 #pragma once
 
+#include "console/cvar.hpp"
 #include "maintypes.h"
 #include "rehlds/model.h"
-#include "console/cvar.hpp"
 
 #ifdef HOOK_ENGINE
 #define sv_maxvelocity (*psv_maxvelocity)
@@ -52,7 +52,7 @@ extern cvar_t sv_stepsize;
 extern cvar_t sv_friction;
 extern cvar_t sv_stopspeed;
 
-extern vec3_t *  g_moved_from;
+extern vec3_t *g_moved_from;
 extern edict_t **g_moved_edict;
 
 NOXREF void SV_CheckAllEnts();
@@ -78,5 +78,5 @@ void SV_CheckWaterTransition(edict_t *ent);
 void SV_Physics_Toss(edict_t *ent);
 void PF_WaterMove(edict_t *pSelf);
 void SV_Physics_Step(edict_t *ent);
-void    SV_Physics();
+void SV_Physics();
 trace_t SV_Trace_Toss(edict_t *ent, edict_t *ignore);

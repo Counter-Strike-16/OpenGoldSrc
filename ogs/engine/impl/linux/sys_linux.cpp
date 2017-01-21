@@ -28,34 +28,34 @@
 
 /// @file
 
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <ctype.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/ipc.h>
+#include <sys/mman.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
-#include <string.h>
-#include <ctype.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/mman.h>
-#include <errno.h>
+#include <unistd.h>
+#include <unistd.h>
 
 #include "quakedef.h"
 
 int noconinput = 0;
-int nostdout   = 0;
+int nostdout = 0;
 
-char *basedir  = ".";
+char *basedir = ".";
 char *cachedir = "/tmp";
 
-cvar_t sys_linerefresh = {"sys_linerefresh", "0"}; // set for entity display
+cvar_t sys_linerefresh = { "sys_linerefresh", "0" }; // set for entity display
 
 // =======================================================================
 // General routines
@@ -68,15 +68,15 @@ void Sys_DebugNumber(int y, int val)
 /*
 void Sys_Printf (char *fmt, ...)
 {
-	va_list		argptr;
-	char		text[1024];
-	
-	va_start (argptr,fmt);
-	vsprintf (text,fmt,argptr);
-	va_end (argptr);
-	fprintf(stderr, "%s", text);
-	
-	Con_Print (text);
+        va_list		argptr;
+        char		text[1024];
+
+        va_start (argptr,fmt);
+        vsprintf (text,fmt,argptr);
+        va_end (argptr);
+        fprintf(stderr, "%s", text);
+
+        Con_Print (text);
 }
 
 void Sys_Printf (char *fmt, ...)
@@ -114,8 +114,8 @@ void Sys_Printf (char *fmt, ...)
 
 void Sys_Printf(char *fmt, ...)
 {
-	va_list        argptr;
-	char           text[2048];
+	va_list argptr;
+	char text[2048];
 	unsigned char *p;
 
 	va_start(argptr, fmt);
@@ -152,7 +152,7 @@ void Sys_Init(void)
 void Sys_Error(char *error, ...)
 {
 	va_list argptr;
-	char    string[1024];
+	char string[1024];
 
 	// change stdin to non blocking
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
@@ -169,7 +169,7 @@ void Sys_Error(char *error, ...)
 void Sys_Warn(char *warning, ...)
 {
 	va_list argptr;
-	char    string[1024];
+	char string[1024];
 
 	va_start(argptr, warning);
 	vsprintf(string, warning, argptr);
@@ -184,10 +184,10 @@ void Sys_mkdir(char *path)
 
 int Sys_FileOpenRead(char *path, int *handle)
 {
-	int         h;
+	int h;
 	struct stat fileinfo;
 
-	h       = open(path, O_RDONLY, 0666);
+	h = open(path, O_RDONLY, 0666);
 	*handle = h;
 	if(h == -1)
 		return -1;
@@ -214,9 +214,9 @@ int Sys_FileOpenWrite(char *path)
 
 void Sys_DebugLog(char *file, char *fmt, ...)
 {
-	va_list     argptr;
+	va_list argptr;
 	static char data[1024];
-	int         fd;
+	int fd;
 
 	va_start(argptr, fmt);
 	vsprintf(data, fmt, argptr);
@@ -229,7 +229,7 @@ void Sys_DebugLog(char *file, char *fmt, ...)
 
 void Sys_EditFile(char *filename)
 {
-	char  cmd[256];
+	char cmd[256];
 	char *term;
 	char *editor;
 
@@ -250,9 +250,9 @@ void Sys_EditFile(char *filename)
 
 double Sys_DoubleTime(void)
 {
-	struct timeval  tp;
+	struct timeval tp;
 	struct timezone tzp;
-	static int      secbase;
+	static int secbase;
 
 	gettimeofday(&tp, &tzp);
 
@@ -318,9 +318,9 @@ int skipframes;
 
 int main(int c, char **v)
 {
-	double       time, oldtime, newtime;
+	double time, oldtime, newtime;
 	quakeparms_t parms;
-	int          j;
+	int j;
 
 	//	static char cwd[1024];
 
@@ -338,7 +338,7 @@ int main(int c, char **v)
 	j = COM_CheckParm("-mem");
 	if(j)
 		parms.memsize = (int)(Q_atof(com_argv[j + 1]) * 1024 * 1024);
-	parms.membase     = malloc(parms.memsize);
+	parms.membase = malloc(parms.memsize);
 
 	parms.basedir = basedir;
 	// caching is disabled by default, use -cachedir to enable
@@ -360,7 +360,7 @@ int main(int c, char **v)
 	{
 		// find time spent rendering last frame
 		newtime = Sys_DoubleTime();
-		time    = newtime - oldtime;
+		time = newtime - oldtime;
 
 		Host_Frame(time);
 		oldtime = newtime;
@@ -374,9 +374,9 @@ Sys_MakeCodeWriteable
 */
 void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length)
 {
-	int           r;
+	int r;
 	unsigned long addr;
-	int           psize = getpagesize();
+	int psize = getpagesize();
 
 	addr = (startaddr & ~(psize - 1)) - psize;
 

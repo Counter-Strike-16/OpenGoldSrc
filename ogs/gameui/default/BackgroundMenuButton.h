@@ -26,7 +26,7 @@ protected:
 	vgui::Menu *m_pMenu;
 
 private:
-	vgui::IImage *       m_pImage, *m_pMouseOverImage;
+	vgui::IImage *m_pImage, *m_pMouseOverImage;
 	typedef vgui::Button BaseClass;
 };
 

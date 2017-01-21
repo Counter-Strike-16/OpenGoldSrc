@@ -13,31 +13,32 @@
 #define snprintf _snprintf
 #else
 #include <memory.h>
-#include <string.h>
 #include <stdlib.h> // exit()
+#include <string.h>
 #endif
 
-#include "dedicated.hpp"
 #include "common/dll_state.h"
+#include "dedicated.hpp"
 #include "enginecallback.hpp"
 #include "sys_ded.hpp"
 
-int iWait         = 0;
+int iWait = 0;
 int fDeferedPause = 0;
 
-int  gDLLState;
-int  gDLLStateInfo;
+int gDLLState;
+int gDLLStateInfo;
 long ghMod = 0;
 
 static engine_api_t nullapi;
-engine_api_t        engineapi = nullapi;
+engine_api_t engineapi = nullapi;
 
 extern SleepType Sys_Sleep; // setup by sys_ded.cpp
 
 typedef int (*engine_api_func)(int version, int size, struct engine_api_s *api);
 
 #ifdef _WIN32
-// This is a big chunk of uninitialized memory that we reserve for loading blobs into.
+// This is a big chunk of uninitialized memory that we reserve for loading blobs
+// into.
 char g_rgchBlob[0x03800000];
 #endif // _WIN32
 
@@ -75,9 +76,9 @@ void Eng_LoadStubs(void)
 	// No callbacks in dedicated server since engine should always be loaded.
 	memset(&engineapi, 0, sizeof(engineapi));
 
-	engineapi.version    = ENGINE_LAUNCHER_API_VERSION;
+	engineapi.version = ENGINE_LAUNCHER_API_VERSION;
 	engineapi.rendertype = RENDERTYPE_UNDEFINED;
-	engineapi.size       = sizeof(engine_api_t);
+	engineapi.size = sizeof(engine_api_t);
 }
 
 /*
@@ -97,7 +98,7 @@ void Eng_Unload(void)
 
 	Eng_LoadStubs();
 
-	gDLLState     = 0;
+	gDLLState = 0;
 	gDLLStateInfo = 0;
 }
 
@@ -120,7 +121,8 @@ void Eng_KillEngine(long *phMod)
 ==============
 Eng_Load
 
-Try to load the engine with specified command line, etc. etc. and the specified .dll
+Try to load the engine with specified command line, etc. etc. and the specified
+.dll
 ==============
 */
 int Eng_Load(const char *cmdline, struct exefuncs_s *pef, int memory, void *pmembase, const char *psz, int iSubMode)
@@ -274,9 +276,9 @@ int Eng_Frame(int fForce, double time)
 			// Are we done waiting, if so, did someone request a pause?
 			if(!iWait && fDeferedPause)
 			{
-				//force a pause
-				iState        = DLL_PAUSED;
-				gDLLState     = DLL_ACTIVE;
+				// force a pause
+				iState = DLL_PAUSED;
+				gDLLState = DLL_ACTIVE;
 				fDeferedPause = 0;
 			}
 		}
@@ -285,7 +287,7 @@ int Eng_Frame(int fForce, double time)
 		if(iState == DLL_TRANS)
 		{
 			iState = DLL_ACTIVE;
-			iWait  = 5; // Let's wait N frames before we'll allow a pause
+			iWait = 5; // Let's wait N frames before we'll allow a pause
 			Eng_SetState(DLL_ACTIVE);
 		}
 

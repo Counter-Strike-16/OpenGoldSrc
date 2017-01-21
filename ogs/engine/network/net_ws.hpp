@@ -30,10 +30,10 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
 #include "common/enums.h"
 #include "common/netadr.h"
+#include "maintypes.h"
 #include "network/net.hpp"
 
 #ifndef _WIN32
@@ -41,11 +41,12 @@
 #define WSAEWOULDBLOCK EWOULDBLOCK     // Operation would block EAGAIN (11)
 #define WSAEMSGSIZE EMSGSIZE           // Message too long (90)
 #define WSAEADDRNOTAVAIL EADDRNOTAVAIL // Cannot assign requested address (99)
-#define WSAEAFNOSUPPORT EAFNOSUPPORT   // Address family not supported by protocol (97)
-#define WSAECONNRESET ECONNRESET       // Connection reset by peer (104)
-#define WSAECONNREFUSED ECONNREFUSED   // Connection refused (111)
-#define WSAEADDRINUSE EADDRINUSE       // Address already in use (98)
-#define WSAENOBUFS ENOBUFS             // No buffer space available (105)
+#define WSAEAFNOSUPPORT \
+	EAFNOSUPPORT                     // Address family not supported by protocol (97)
+#define WSAECONNRESET ECONNRESET     // Connection reset by peer (104)
+#define WSAECONNREFUSED ECONNREFUSED // Connection refused (111)
+#define WSAEADDRINUSE EADDRINUSE     // Address already in use (98)
+#define WSAENOBUFS ENOBUFS           // No buffer space available (105)
 
 #endif // _WIN32
 
@@ -58,12 +59,12 @@
 #define MSG_QUEUE_SIZE 1536
 
 typedef struct sizebuf_s sizebuf_t;
-typedef struct cvar_s    cvar_t;
+typedef struct cvar_s cvar_t;
 
 typedef struct loopmsg_s
 {
 	unsigned char data[NET_MAX_MESSAGE];
-	int           datalen;
+	int datalen;
 } loopmsg_t;
 
 #define MAX_LOOPBACK 4
@@ -71,16 +72,16 @@ typedef struct loopmsg_s
 typedef struct loopback_s
 {
 	loopmsg_t msgs[MAX_LOOPBACK];
-	int       get;
-	int       send;
+	int get;
+	int send;
 } loopback_t;
 
 typedef struct packetlag_s
 {
-	unsigned char *     pPacketData; // Raw stream data is stored.
-	int                 nSize;
-	netadr_t            net_from_;
-	float               receivedTime;
+	unsigned char *pPacketData; // Raw stream data is stored.
+	int nSize;
+	netadr_t net_from_;
+	float receivedTime;
 	struct packetlag_s *pNext;
 	struct packetlag_s *pPrev;
 } packetlag_t;
@@ -88,10 +89,10 @@ typedef struct packetlag_s
 typedef struct net_messages_s
 {
 	struct net_messages_s *next;
-	qboolean               preallocated;
-	unsigned char *        buffer;
-	netadr_t               from;
-	int                    buffersize;
+	qboolean preallocated;
+	unsigned char *buffer;
+	netadr_t from;
+	int buffersize;
 } net_messages_t;
 
 // Split long packets. Anything over 1460 is failing on some routers.
@@ -101,15 +102,16 @@ typedef struct LONGPACKET_t
 	int splitCount;
 	int totalSize;
 	// TODO: It should be NET_MAX_MESSAGE, but value differs
-	char buffer[MAX_UDP_PACKET]; // This has to be big enough to hold the largest message
+	char buffer[MAX_UDP_PACKET]; // This has to be big enough to hold the largest
+	                             // message
 } LONGPACKET;
 
 // Use this to pick apart the network stream, must be packed
 #pragma pack(push, 1)
 typedef struct SPLITPACKET_t
 {
-	int           netID;
-	int           sequenceNumber;
+	int netID;
+	int sequenceNumber;
 	unsigned char packetID;
 } SPLITPACKET;
 #pragma pack(pop)
@@ -168,17 +170,17 @@ typedef struct SPLITPACKET_t
 #define normalqueue (*pnormalqueue)
 #endif // HOOK_ENGINE
 
-extern qboolean    net_thread_initialized;
-extern cvar_t      net_address;
-extern cvar_t      ipname;
-extern cvar_t      defport;
-extern cvar_t      ip_clientport;
-extern cvar_t      clientport;
-extern int         net_sleepforever;
-extern loopback_t  loopbacks[2];
+extern qboolean net_thread_initialized;
+extern cvar_t net_address;
+extern cvar_t ipname;
+extern cvar_t defport;
+extern cvar_t ip_clientport;
+extern cvar_t clientport;
+extern int net_sleepforever;
+extern loopback_t loopbacks[2];
 extern packetlag_t g_pLagData[3];
-extern float       gFakeLag;
-extern int         net_configured;
+extern float gFakeLag;
+extern int net_configured;
 #ifdef _WIN32
 extern netadr_t net_local_ipx_adr;
 #endif // _WIN32
@@ -189,35 +191,35 @@ extern qboolean noip;
 extern qboolean noipx;
 #endif // _WIN32
 extern sizebuf_t net_message;
-extern cvar_t    clockwindow;
-extern int       use_thread;
-extern cvar_t    iphostport;
-extern cvar_t    hostport;
+extern cvar_t clockwindow;
+extern int use_thread;
+extern cvar_t iphostport;
+extern cvar_t hostport;
 #ifdef _WIN32
 extern cvar_t ipx_hostport;
 extern cvar_t ipx_clientport;
 #endif // _WIN32
-extern cvar_t        multicastport;
-extern cvar_t        fakelag;
-extern cvar_t        fakeloss;
-extern cvar_t        net_graph;
-extern cvar_t        net_graphwidth;
-extern cvar_t        net_scale;
-extern cvar_t        net_graphpos;
+extern cvar_t multicastport;
+extern cvar_t fakelag;
+extern cvar_t fakeloss;
+extern cvar_t net_graph;
+extern cvar_t net_graphwidth;
+extern cvar_t net_scale;
+extern cvar_t net_graphpos;
 extern unsigned char net_message_buffer[NET_MAX_PAYLOAD];
 extern unsigned char in_message_buf[NET_MAX_PAYLOAD];
-extern sizebuf_t     in_message;
-extern netadr_t      in_from;
-extern int           ip_sockets[3];
+extern sizebuf_t in_message;
+extern netadr_t in_from;
+extern int ip_sockets[3];
 #ifdef _WIN32
 extern int ipx_sockets[3];
 #endif // _WIN32
-extern LONGPACKET      gNetSplit;
+extern LONGPACKET gNetSplit;
 extern net_messages_t *messages[3];
 extern net_messages_t *normalqueue;
 
-void           NET_ThreadLock();
-void           NET_ThreadUnlock();
+void NET_ThreadLock();
+void NET_ThreadUnlock();
 unsigned short Q_ntohs(unsigned short netshort);
 void NetadrToSockadr(const netadr_t *a, struct sockaddr *s);
 void SockadrToNetadr(const struct sockaddr *s, netadr_t *a);
@@ -239,14 +241,14 @@ void NET_RemoveFromPacketList(packetlag_t *pPacket);
 NOXREF int NET_CountLaggedList(packetlag_t *pList);
 void NET_ClearLaggedList(packetlag_t *pList);
 void NET_AddToLagged(netsrc_t sock, packetlag_t *pList, packetlag_t *pPacket, netadr_t *net_from_, sizebuf_t messagedata, float timestamp);
-void     NET_AdjustLag();
+void NET_AdjustLag();
 qboolean NET_LagPacket(qboolean newdata, netsrc_t sock, netadr_t *from, sizebuf_t *data);
 void NET_FlushSocket(netsrc_t sock);
 qboolean NET_GetLong(unsigned char *pData, int size, int *outSize);
 qboolean NET_QueuePacket(netsrc_t sock);
-int   NET_Sleep();
-void  NET_StartThread();
-void  NET_StopThread();
+int NET_Sleep();
+void NET_StartThread();
+void NET_StopThread();
 void *net_malloc(size_t size);
 net_messages_t *NET_AllocMsg(int size);
 void NET_FreeMsg(net_messages_t *pmsg);
@@ -261,11 +263,11 @@ void NET_OpenIP();
 int NET_IPXSocket(int hostshort);
 void NET_OpenIPX();
 void NET_GetLocalAddress();
-int  NET_IsConfigured();
+int NET_IsConfigured();
 void NET_Config(qboolean multiplayer);
 void MaxPlayers_f();
 void NET_Init();
 void NET_ClearLagData(qboolean bClient, qboolean bServer);
-void     NET_Shutdown();
+void NET_Shutdown();
 qboolean NET_JoinGroup(netsrc_t sock, netadr_t &addr);
 qboolean NET_LeaveGroup(netsrc_t sock, netadr_t &addr);

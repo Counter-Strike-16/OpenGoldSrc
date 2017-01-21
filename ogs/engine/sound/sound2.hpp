@@ -7,25 +7,25 @@ typedef struct
 
 typedef struct
 {
-	int  length;
-	int  loopstart;
-	int  speed;
-	int  width;
-	int  stereo;
+	int length;
+	int loopstart;
+	int speed;
+	int width;
+	int stereo;
 	byte data[1]; // variable sized
 } sfxcache_t;
 
 typedef struct
 {
-	qboolean       gamealive;
-	qboolean       soundalive;
-	qboolean       splitbuffer;
-	int            channels;
-	int            samples;          // mono samples in buffer
-	int            submission_chunk; // don't mix less than this #
-	int            samplepos;        // in mono samples
-	int            samplebits;
-	int            speed;
+	qboolean gamealive;
+	qboolean soundalive;
+	qboolean splitbuffer;
+	int channels;
+	int samples;          // mono samples in buffer
+	int submission_chunk; // don't mix less than this #
+	int samplepos;        // in mono samples
+	int samplebits;
+	int speed;
 	unsigned char *buffer;
 } dma_t;
 
@@ -74,16 +74,16 @@ extern int total_channels;
 // number of times S_Update() is called per second.
 //
 
-extern qboolean        fakedma;
-extern int             fakedma_updates;
-extern int             paintedtime;
-extern vec3_t          listener_origin;
-extern vec3_t          listener_forward;
-extern vec3_t          listener_right;
-extern vec3_t          listener_up;
+extern qboolean fakedma;
+extern int fakedma_updates;
+extern int paintedtime;
+extern vec3_t listener_origin;
+extern vec3_t listener_forward;
+extern vec3_t listener_right;
+extern vec3_t listener_up;
 extern volatile dma_t *shm;
-extern volatile dma_t  sn;
-extern vec_t           sound_nominal_clip_dist;
+extern volatile dma_t sn;
+extern vec_t sound_nominal_clip_dist;
 
 extern cvar_t loadas8bit;
 extern cvar_t bgmvolume;

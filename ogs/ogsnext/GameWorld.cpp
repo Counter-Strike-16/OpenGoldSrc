@@ -69,11 +69,11 @@ Larger attenuations will drop off.  (max 4 attenuation)
 */
 void CGameWorld::StartSound(edict_t *entity, int channel, char *sample, int volume, float attenuation)
 {
-	int      sound_num;
-	int      field_mask;
-	int      i;
-	int      ent;
-	vec3_t   origin;
+	int sound_num;
+	int field_mask;
+	int i;
+	int ent;
+	vec3_t origin;
 	qboolean use_phs;
 	qboolean reliable = false;
 
@@ -103,7 +103,7 @@ void CGameWorld::StartSound(edict_t *entity, int channel, char *sample, int volu
 	{
 		if(channel & 8)
 			reliable = true; // sounds that break the phs are reliable
-		use_phs      = false;
+		use_phs = false;
 		channel &= 7;
 	}
 	else
@@ -123,7 +123,7 @@ void CGameWorld::StartSound(edict_t *entity, int channel, char *sample, int volu
 	// use the entity origin unless it is a bmodel
 	if(entity->v.solid == SOLID_BSP)
 	{
-		for(i         = 0; i < 3; i++)
+		for(i = 0; i < 3; i++)
 			origin[i] = entity->v.origin[i] + 0.5 * (entity->v.mins[i] + entity->v.maxs[i]);
 	}
 	else

@@ -79,15 +79,15 @@ int sysi86(int, void *);
 #pragma pack(4)
 struct modify_ldt_ldt_s
 {
-	unsigned int  entry_number;
+	unsigned int entry_number;
 	unsigned long base_addr;
-	unsigned int  limit;
-	unsigned int  seg_32bit : 1;
-	unsigned int  contents : 2;
-	unsigned int  read_exec_only : 1;
-	unsigned int  limit_in_pages : 1;
-	unsigned int  seg_not_present : 1;
-	unsigned int  useable : 1;
+	unsigned int limit;
+	unsigned int seg_32bit : 1;
+	unsigned int contents : 2;
+	unsigned int read_exec_only : 1;
+	unsigned int limit_in_pages : 1;
+	unsigned int seg_not_present : 1;
+	unsigned int useable : 1;
 };
 
 #define MODIFY_LDT_CONTENTS_DATA 0
@@ -120,10 +120,10 @@ void Setup_FS_Segment(void)
 	unsigned int ldt_desc = LDT_SEL(fs_ldt);
 
 	__asm__ volatile(
-	    "movl %0,%%eax; movw %%ax, %%fs"
-	    :
-	    : "r"(ldt_desc)
-	    : "eax");
+	"movl %0,%%eax; movw %%ax, %%fs"
+	:
+	: "r"(ldt_desc)
+	: "eax");
 }
 
 /* we don't need this - use modify_ldt instead */
@@ -166,15 +166,15 @@ static int LDT_Modify( int func, struct modify_ldt_ldt_s *ptr,
 static void LDT_EntryToBytes(unsigned long *buffer, const struct modify_ldt_ldt_s *content)
 {
 	*buffer++ = ((content->base_addr & 0x0000ffff) << 16) |
-	    (content->limit & 0x0ffff);
+	(content->limit & 0x0ffff);
 	*buffer = (content->base_addr & 0xff000000) |
-	    ((content->base_addr & 0x00ff0000) >> 16) |
-	    (content->limit & 0xf0000) |
-	    (content->contents << 10) |
-	    ((content->read_exec_only == 0) << 9) |
-	    ((content->seg_32bit != 0) << 22) |
-	    ((content->limit_in_pages != 0) << 23) |
-	    0xf000;
+	((content->base_addr & 0x00ff0000) >> 16) |
+	(content->limit & 0xf0000) |
+	(content->contents << 10) |
+	((content->read_exec_only == 0) << 9) |
+	((content->seg_32bit != 0) << 22) |
+	((content->limit_in_pages != 0) << 23) |
+	0xf000;
 }
 #endif
 
@@ -183,8 +183,8 @@ void *fs_seg = 0;
 ldt_fs_t *Setup_LDT_Keeper(void)
 {
 	struct modify_ldt_ldt_s array;
-	int                     ret;
-	ldt_fs_t *              ldt_fs = malloc(sizeof(ldt_fs_t));
+	int ret;
+	ldt_fs_t *ldt_fs = malloc(sizeof(ldt_fs_t));
 
 	if(!ldt_fs)
 		return NULL;
@@ -195,7 +195,7 @@ ldt_fs_t *Setup_LDT_Keeper(void)
 #endif /* __APPLE__ */
 
 	fs_seg =
-	    ldt_fs->fs_seg = mmap_anon(NULL, getpagesize(), PROT_READ | PROT_WRITE, MAP_PRIVATE, 0);
+	ldt_fs->fs_seg = mmap_anon(NULL, getpagesize(), PROT_READ | PROT_WRITE, MAP_PRIVATE, 0);
 	if(ldt_fs->fs_seg == (void *)-1)
 	{
 		perror("ERROR: Couldn't allocate memory for fs segment");
@@ -204,14 +204,14 @@ ldt_fs_t *Setup_LDT_Keeper(void)
 	}
 	*(void **)((char *)ldt_fs->fs_seg + 0x18) = ldt_fs->fs_seg;
 	memset(&array, 0, sizeof(array));
-	array.base_addr       = (int)ldt_fs->fs_seg;
-	array.entry_number    = TEB_SEL_IDX;
-	array.limit           = array.base_addr + getpagesize() - 1;
-	array.seg_32bit       = 1;
-	array.read_exec_only  = 0;
+	array.base_addr = (int)ldt_fs->fs_seg;
+	array.entry_number = TEB_SEL_IDX;
+	array.limit = array.base_addr + getpagesize() - 1;
+	array.seg_32bit = 1;
+	array.read_exec_only = 0;
 	array.seg_not_present = 0;
-	array.contents        = MODIFY_LDT_CONTENTS_DATA;
-	array.limit_in_pages  = 0;
+	array.contents = MODIFY_LDT_CONTENTS_DATA;
+	array.limit_in_pages = 0;
 #ifdef __linux__
 	//ret=LDT_Modify(0x1, &array, sizeof(struct modify_ldt_ldt_s));
 	ret = modify_ldt(0x1, &array, sizeof(struct modify_ldt_ldt_s));
@@ -226,9 +226,9 @@ ldt_fs_t *Setup_LDT_Keeper(void)
 
 		LDT_EntryToBytes(d, &array);
 #ifdef USE_LDT_AA
-		ret                = i386_set_ldt(LDT_AUTO_ALLOC, (union descriptor *)d, 1);
+		ret = i386_set_ldt(LDT_AUTO_ALLOC, (union descriptor *)d, 1);
 		array.entry_number = ret;
-		fs_ldt             = ret;
+		fs_ldt = ret;
 #else
 		ret = i386_set_ldt(array.entry_number, (union descriptor *)d, 1);
 #endif
@@ -245,12 +245,12 @@ ldt_fs_t *Setup_LDT_Keeper(void)
 #elif defined(__svr4__)
 	{
 		struct ssd ssd;
-		ssd.sel  = LDT_SEL(TEB_SEL_IDX);
-		ssd.bo   = array.base_addr;
-		ssd.ls   = array.limit - array.base_addr;
+		ssd.sel = LDT_SEL(TEB_SEL_IDX);
+		ssd.bo = array.base_addr;
+		ssd.ls = array.limit - array.base_addr;
 		ssd.acc1 = ((array.read_exec_only == 0) << 1) |
-		    (array.contents << 2) |
-		    0xf0;       /* P(resent) | DPL3 | S */
+		(array.contents << 2) |
+		0xf0;           /* P(resent) | DPL3 | S */
 		ssd.acc2 = 0x4; /* byte limit, 32-bit segment */
 		if(sysi86(SI86DSCR, &ssd) < 0)
 		{
@@ -265,7 +265,7 @@ ldt_fs_t *Setup_LDT_Keeper(void)
 
 	Setup_FS_Segment();
 
-	ldt_fs->prev_struct       = malloc(8);
+	ldt_fs->prev_struct = malloc(8);
 	*(void **)array.base_addr = ldt_fs->prev_struct;
 
 	return ldt_fs;

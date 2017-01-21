@@ -7,7 +7,7 @@ public:
 
 private:
 	std::vector<IKeyDestState *> mvKeyDestStates;
-	IKeyDestState                meKeyDestState;
+	IKeyDestState meKeyDestState;
 };
 
 void CInputHandler::Update(){};
@@ -31,7 +31,9 @@ IKeyDestState CInputHandler::GetKeyDestState()
 class IKeyDestState
 {
 public:
-	virtual ~IKeyDestState() {}
+	virtual ~IKeyDestState()
+	{
+	}
 	virtual void HandleKey(int anKey) = 0;
 };
 

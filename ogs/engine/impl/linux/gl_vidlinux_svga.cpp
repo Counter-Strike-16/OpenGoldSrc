@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,13 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /// @file
 
 #include "precompiled.h"
-#include <termios.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/vt.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <signal.h>
+#include <termios.h>
 
 #include <asm/io.h>
 
@@ -35,8 +35,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "vgakeyboard.h"
 #include "vgamouse.h"
 
-#include "quakedef.h"
 #include "GL/fxmesa.h"
+#include "quakedef.h"
 
 #define WARP_WIDTH 320
 #define WARP_HEIGHT 200
@@ -48,23 +48,17 @@ static fxMesaContext fc = NULL;
 	}
 
 unsigned short d_8to16table[256];
-unsigned       d_8to24table[256];
-unsigned char  d_15to8table[65536];
+unsigned d_8to24table[256];
+unsigned char d_15to8table[65536];
 
 int num_shades = 32;
 
 struct
 {
 	char *name;
-	int   num;
-} mice[] =
-    {
-        stringify(MOUSE_MICROSOFT),
-        stringify(MOUSE_MOUSESYSTEMS),
-        stringify(MOUSE_MMSERIES),
-        stringify(MOUSE_LOGITECH),
-        stringify(MOUSE_BUSMOUSE),
-        stringify(MOUSE_PS2),
+	int num;
+} mice[] = {
+	stringify(MOUSE_MICROSOFT), stringify(MOUSE_MOUSESYSTEMS), stringify(MOUSE_MMSERIES), stringify(MOUSE_LOGITECH), stringify(MOUSE_BUSMOUSE), stringify(MOUSE_PS2),
 };
 
 static unsigned char scantokey[128];
@@ -74,58 +68,55 @@ int num_mice = sizeof(mice) / sizeof(mice[0]);
 int d_con_indirect = 0;
 
 int svgalib_inited = 0;
-int UseMouse       = 1;
-int UseKeyboard    = 1;
+int UseMouse = 1;
+int UseKeyboard = 1;
 
 int mouserate = MOUSE_DEFAULTSAMPLERATE;
 
-cvar_t vid_mode           = {"vid_mode", "5", false};
-cvar_t vid_redrawfull     = {"vid_redrawfull", "0", false};
-cvar_t vid_waitforrefresh = {"vid_waitforrefresh", "0", true};
+cvar_t vid_mode = { "vid_mode", "5", false };
+cvar_t vid_redrawfull = { "vid_redrawfull", "0", false };
+cvar_t vid_waitforrefresh = { "vid_waitforrefresh", "0", true };
 
 char *framebuffer_ptr;
 
-cvar_t mouse_button_commands[3] =
-    {
-        {"mouse1", "+attack"},
-        {"mouse2", "+strafe"},
-        {"mouse3", "+forward"},
+cvar_t mouse_button_commands[3] = {
+	{ "mouse1", "+attack" }, { "mouse2", "+strafe" }, { "mouse3", "+forward" },
 };
 
-int   mouse_buttons;
-int   mouse_buttonstate;
-int   mouse_oldbuttonstate;
+int mouse_buttons;
+int mouse_buttonstate;
+int mouse_oldbuttonstate;
 float mouse_x, mouse_y;
 float old_mouse_x, old_mouse_y;
-int   mx, my;
+int mx, my;
 
-cvar_t _windowed_mouse = {"_windowed_mouse", "1", true};
-cvar_t m_filter        = {"m_filter", "0"};
+cvar_t _windowed_mouse = { "_windowed_mouse", "1", true };
+cvar_t m_filter = { "m_filter", "0" };
 
 int scr_width, scr_height;
 
 /*-----------------------------------------------------------------------*/
 
-//int		texture_mode = GL_NEAREST;
-//int		texture_mode = GL_NEAREST_MIPMAP_NEAREST;
-//int		texture_mode = GL_NEAREST_MIPMAP_LINEAR;
+// int		texture_mode = GL_NEAREST;
+// int		texture_mode = GL_NEAREST_MIPMAP_NEAREST;
+// int		texture_mode = GL_NEAREST_MIPMAP_LINEAR;
 int texture_mode = GL_LINEAR;
-//int		texture_mode = GL_LINEAR_MIPMAP_NEAREST;
-//int		texture_mode = GL_LINEAR_MIPMAP_LINEAR;
+// int		texture_mode = GL_LINEAR_MIPMAP_NEAREST;
+// int		texture_mode = GL_LINEAR_MIPMAP_LINEAR;
 
 int texture_extension_number = 1;
 
 float gldepthmin, gldepthmax;
 
-cvar_t gl_ztrick = {"gl_ztrick", "1"};
+cvar_t gl_ztrick = { "gl_ztrick", "1" };
 
 const char *gl_vendor;
 const char *gl_renderer;
 const char *gl_version;
 const char *gl_extensions;
 
-qboolean is8bit      = false;
-qboolean isPermedia  = false;
+qboolean is8bit = false;
+qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 /*-----------------------------------------------------------------------*/
@@ -146,9 +137,9 @@ Keybinding command
 */
 void VID_Gamma_f(void)
 {
-	float         gamma, f, inf;
+	float gamma, f, inf;
 	unsigned char palette[768];
-	int           i;
+	int i;
 
 	if(Cmd_Argc() == 2)
 	{
@@ -156,12 +147,12 @@ void VID_Gamma_f(void)
 
 		for(i = 0; i < 768; i++)
 		{
-			f   = pow((host_basepal[i] + 1) / 256.0, gamma);
+			f = pow((host_basepal[i] + 1) / 256.0, gamma);
 			inf = f * 255 + 0.5;
 			if(inf < 0)
 				inf = 0;
 			if(inf > 255)
-				inf    = 255;
+				inf = 255;
 			palette[i] = inf;
 		}
 
@@ -204,7 +195,8 @@ void keyhandler(int scancode, int state)
 	int sc;
 
 	sc = scancode & 0x7f;
-	//	Con_Printf("scancode=%x (%d%s)\n", scancode, sc, scancode&0x80?"+128":"");
+	//	Con_Printf("scancode=%x (%d%s)\n", scancode, sc,
+	//scancode&0x80?"+128":"");
 	Key_Event(scantokey[sc], state == KEY_EVENTPRESS);
 }
 
@@ -246,22 +238,22 @@ void VID_ShiftPalette(unsigned char *p)
 
 void VID_SetPalette(unsigned char *palette)
 {
-	byte *          pal;
-	unsigned short  r, g, b;
-	int             v;
-	int             r1, g1, b1;
-	int             k;
-	unsigned short  i;
-	unsigned *      table;
-	FILE *          f;
-	char            s[255];
-	float           dist, bestdist;
+	byte *pal;
+	unsigned short r, g, b;
+	int v;
+	int r1, g1, b1;
+	int k;
+	unsigned short i;
+	unsigned *table;
+	FILE *f;
+	char s[255];
+	float dist, bestdist;
 	static qboolean palflag = false;
 
 	//
 	// 8 8 8 encoding
 	//
-	pal   = palette;
+	pal = palette;
 	table = d_8to24table;
 	for(i = 0; i < 256; i++)
 	{
@@ -272,7 +264,7 @@ void VID_SetPalette(unsigned char *palette)
 
 		//		v = (255<<24) + (r<<16) + (g<<8) + (b<<0);
 		//		v = (255<<0) + (r<<8) + (g<<16) + (b<<24);
-		v        = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
+		v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
 		*table++ = v;
 	}
 	d_8to24table[255] &= 0xffffff; // 255 is transparent
@@ -294,24 +286,24 @@ void VID_SetPalette(unsigned char *palette)
 		for(i = 0; i < (1 << 15); i++)
 		{
 			/* Maps
- 			000000000000000
- 			000000000011111 = Red  = 0x1F
- 			000001111100000 = Blue = 0x03E0
- 			111110000000000 = Grn  = 0x7C00
- 			*/
-			r   = ((i & 0x1F) << 3) + 4;
-			g   = ((i & 0x03E0) >> 2) + 4;
-			b   = ((i & 0x7C00) >> 7) + 4;
+      000000000000000
+      000000000011111 = Red  = 0x1F
+      000001111100000 = Blue = 0x03E0
+      111110000000000 = Grn  = 0x7C00
+      */
+			r = ((i & 0x1F) << 3) + 4;
+			g = ((i & 0x03E0) >> 2) + 4;
+			b = ((i & 0x7C00) >> 7) + 4;
 			pal = (unsigned char *)d_8to24table;
 			for(v = 0, k = 0, bestdist = 10000.0; v < 256; v++, pal += 4)
 			{
-				r1   = (int)r - (int)pal[0];
-				g1   = (int)g - (int)pal[1];
-				b1   = (int)b - (int)pal[2];
+				r1 = (int)r - (int)pal[0];
+				g1 = (int)g - (int)pal[1];
+				b1 = (int)b - (int)pal[2];
 				dist = sqrt(((r1 * r1) + (g1 * g1) + (b1 * b1)));
 				if(dist < bestdist)
 				{
-					k        = v;
+					k = v;
 					bestdist = dist;
 				}
 			}
@@ -379,7 +371,7 @@ void GL_BeginRendering(int *x, int *y, int *width, int *height)
 	extern cvar_t gl_clear;
 
 	*x = *y = 0;
-	*width  = scr_width;
+	*width = scr_width;
 	*height = scr_height;
 
 	//    if (!wglMakeCurrent( maindc, baseRC ))
@@ -403,18 +395,18 @@ void Init_KBD(void)
 
 	if(UseKeyboard)
 	{
-		for(i            = 0; i < 128; i++)
+		for(i = 0; i < 128; i++)
 			scantokey[i] = ' ';
 
-		scantokey[1]  = K_ESCAPE;
-		scantokey[2]  = '1';
-		scantokey[3]  = '2';
-		scantokey[4]  = '3';
-		scantokey[5]  = '4';
-		scantokey[6]  = '5';
-		scantokey[7]  = '6';
-		scantokey[8]  = '7';
-		scantokey[9]  = '8';
+		scantokey[1] = K_ESCAPE;
+		scantokey[2] = '1';
+		scantokey[3] = '2';
+		scantokey[4] = '3';
+		scantokey[5] = '4';
+		scantokey[6] = '5';
+		scantokey[7] = '6';
+		scantokey[8] = '7';
+		scantokey[9] = '8';
 		scantokey[10] = '9';
 		scantokey[11] = '0';
 		scantokey[12] = '-';
@@ -434,7 +426,7 @@ void Init_KBD(void)
 		scantokey[26] = '[';
 		scantokey[27] = ']';
 		scantokey[28] = K_ENTER;
-		scantokey[29] = K_CTRL; //left
+		scantokey[29] = K_CTRL; // left
 		scantokey[30] = 'a';
 		scantokey[31] = 's';
 		scantokey[32] = 'd';
@@ -447,7 +439,7 @@ void Init_KBD(void)
 		scantokey[39] = ';';
 		scantokey[40] = '\'';
 		scantokey[41] = '`';
-		scantokey[42] = K_SHIFT; //left
+		scantokey[42] = K_SHIFT; // left
 		scantokey[43] = '\\';
 		scantokey[44] = 'z';
 		scantokey[45] = 'x';
@@ -459,9 +451,9 @@ void Init_KBD(void)
 		scantokey[51] = ',';
 		scantokey[52] = '.';
 		scantokey[53] = '/';
-		scantokey[54] = K_SHIFT; //right
-		scantokey[55] = '*';     //keypad
-		scantokey[56] = K_ALT;   //left
+		scantokey[54] = K_SHIFT; // right
+		scantokey[55] = '*';     // keypad
+		scantokey[56] = K_ALT;   // left
 		scantokey[57] = ' ';
 		// 58 caps lock
 		scantokey[59] = K_F1;
@@ -493,10 +485,10 @@ void Init_KBD(void)
 		scantokey[87] = K_F11;
 		scantokey[88] = K_F12;
 		// 89 to 95 not used
-		scantokey[96]  = K_ENTER; //keypad enter
-		scantokey[97]  = K_CTRL;  //right
-		scantokey[98]  = '/';
-		scantokey[99]  = K_F12; // print screen, bind to screenshot by default
+		scantokey[96] = K_ENTER; // keypad enter
+		scantokey[97] = K_CTRL;  // right
+		scantokey[98] = '/';
+		scantokey[99] = K_F12;  // print screen, bind to screenshot by default
 		scantokey[100] = K_ALT; // right
 
 		scantokey[101] = K_PAUSE; // break
@@ -521,10 +513,9 @@ void Init_KBD(void)
 
 #define NUM_RESOLUTIONS 3
 
-static resolutions[NUM_RESOLUTIONS][3] = {
-    {512, 384, GR_RESOLUTION_512x384},
-    {640, 400, GR_RESOLUTION_640x400},
-    {640, 480, GR_RESOLUTION_640x480}};
+static resolutions[NUM_RESOLUTIONS][3] = { { 512, 384, GR_RESOLUTION_512x384 },
+	                                       { 640, 400, GR_RESOLUTION_640x400 },
+	                                       { 640, 480, GR_RESOLUTION_640x480 } };
 
 int findres(int *width, int *height)
 {
@@ -533,12 +524,12 @@ int findres(int *width, int *height)
 	for(i = 0; i < NUM_RESOLUTIONS; i++)
 		if((*width <= resolutions[i][0]) && (*height <= resolutions[i][1]))
 		{
-			*width  = resolutions[i][0];
+			*width = resolutions[i][0];
 			*height = resolutions[i][1];
 			return resolutions[i][2];
 		}
 
-	*width  = 640;
+	*width = 640;
 	*height = 480;
 	return GR_RESOLUTION_640x480;
 }
@@ -552,8 +543,8 @@ qboolean VID_Is8bit(void)
 void VID_Init8bitPalette()
 {
 	// Check for 8bit Extensions and initialize them.
-	int   i;
-	char  thePalette[256 * 3];
+	int i;
+	char thePalette[256 * 3];
 	char *oldPalette, *newPalette;
 
 	if(strstr(gl_extensions, "GL_EXT_shared_texture_palette") == NULL)
@@ -561,7 +552,7 @@ void VID_Init8bitPalette()
 
 	Con_SafePrintf("8-bit GL extensions enabled.\n");
 	glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
-	oldPalette = (char *)d_8to24table; //d_8to24table3dfx;
+	oldPalette = (char *)d_8to24table; // d_8to24table3dfx;
 	newPalette = thePalette;
 	for(i = 0; i < 256; i++)
 	{
@@ -580,16 +571,16 @@ extern void gl3DfxSetPaletteEXT(GLuint *pal);
 void VID_Init8bitPalette(void)
 {
 	// Check for 8bit Extensions and initialize them.
-	int     i;
+	int i;
 	GLubyte table[256][4];
-	char *  oldpal;
+	char *oldpal;
 
 	if(strstr(gl_extensions, "3DFX_set_global_palette") == NULL)
 		return;
 
 	Con_SafePrintf("8-bit GL extensions enabled.\n");
 	glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
-	oldpal = (char *)d_8to24table; //d_8to24table3dfx;
+	oldpal = (char *)d_8to24table; // d_8to24table3dfx;
 	for(i = 0; i < 256; i++)
 	{
 		table[i][2] = *oldpal++;
@@ -605,10 +596,10 @@ void VID_Init8bitPalette(void)
 
 void VID_Init(unsigned char *palette)
 {
-	int   i;
+	int i;
 	GLint attribs[32];
-	char  gldir[MAX_OSPATH];
-	int   width = 640, height = 480;
+	char gldir[MAX_OSPATH];
+	int width = 640, height = 480;
 
 	S_Init();
 
@@ -619,10 +610,10 @@ void VID_Init(unsigned char *palette)
 	Cvar_RegisterVariable(&vid_waitforrefresh);
 	Cvar_RegisterVariable(&gl_ztrick);
 
-	vid.maxwarpwidth  = WARP_WIDTH;
+	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
-	vid.colormap      = host_colormap;
-	vid.fullbright    = 256 - LittleLong(*((int *)vid.colormap + 2048));
+	vid.colormap = host_colormap;
+	vid.fullbright = 256 - LittleLong(*((int *)vid.colormap + 2048));
 
 	// interpret command-line params
 
@@ -657,12 +648,11 @@ void VID_Init(unsigned char *palette)
 	if(vid.conheight < 200)
 		vid.conheight = 200;
 
-	fc = fxMesaCreateContext(0, findres(&width, &height), GR_REFRESH_75Hz,
-	                         attribs);
+	fc = fxMesaCreateContext(0, findres(&width, &height), GR_REFRESH_75Hz, attribs);
 	if(!fc)
 		Sys_Error("Unable to create 3DFX context.\n");
 
-	scr_width  = width;
+	scr_width = width;
 	scr_height = height;
 
 	fxMesaMakeCurrent(fc);
@@ -671,11 +661,10 @@ void VID_Init(unsigned char *palette)
 		vid.conheight = height;
 	if(vid.conwidth > width)
 		vid.conwidth = width;
-	vid.width        = vid.conwidth;
-	vid.height       = vid.conheight;
+	vid.width = vid.conwidth;
+	vid.height = vid.conheight;
 
-	vid.aspect = ((float)vid.height / (float)vid.width) *
-	    (320.0 / 240.0);
+	vid.aspect = ((float)vid.height / (float)vid.width) * (320.0 / 240.0);
 	vid.numpages = 2;
 
 	InitSig(); // trap evil signals
@@ -716,9 +705,9 @@ void mousehandler(int buttonstate, int dx, int dy)
 
 void IN_Init(void)
 {
-	int   mtype;
+	int mtype;
 	char *mousedev;
-	int   mouserate;
+	int mouserate;
 
 	if(UseMouse)
 	{

@@ -30,42 +30,42 @@
 
 //#include "precompiled.hpp"
 #include "filesystem/hashpak.hpp"
-#include "filesystem/filesystem_internal.hpp"
-#include "system/common.hpp"
-#include "memory/mem.hpp"
-#include "console/console.hpp"
 #include "console/cmd.hpp"
+#include "console/console.hpp"
 #include "console/cvar.hpp"
-#include "system/system.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "memory/mem.hpp"
 #include "server/server.hpp"
 #include "server/sv_log.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
 
 /*
 * Globals initialization
 */
 #ifndef HOOK_ENGINE
 
-hash_pack_queue_t *   gp_hpak_queue    = NULL;
-hash_pack_directory_t hash_pack_dir    = {0, NULL};
-hash_pack_header_t    hash_pack_header = {{0, 0, 0, 0}, 0, 0};
+hash_pack_queue_t *gp_hpak_queue = NULL;
+hash_pack_directory_t hash_pack_dir = { 0, NULL };
+hash_pack_header_t hash_pack_header = { { 0, 0, 0, 0 }, 0, 0 };
 
-#else //HOOK_ENGINE
+#else // HOOK_ENGINE
 
-hash_pack_queue_t *   gp_hpak_queue;
+hash_pack_queue_t *gp_hpak_queue;
 hash_pack_directory_t hash_pack_dir;
-hash_pack_header_t    hash_pack_header;
+hash_pack_header_t hash_pack_header;
 
-#endif //HOOK_ENGINE
+#endif // HOOK_ENGINE
 
 qboolean HPAK_GetDataPointer(char *pakname, struct resource_s *pResource, unsigned char **pbuffer, int *bufsize)
 {
-	qboolean              retval = FALSE;
-	FileHandle_t          fp;
-	hash_pack_header_t    header;
+	qboolean retval = FALSE;
+	FileHandle_t fp;
+	hash_pack_header_t header;
 	hash_pack_directory_t directory;
-	hash_pack_entry_t *   entry;
-	char                  name[MAX_PATH];
-	byte *                pbuf;
+	hash_pack_entry_t *entry;
+	char name[MAX_PATH];
+	byte *pbuf;
 
 	if(pbuffer)
 		*pbuffer = NULL;
@@ -77,7 +77,8 @@ qboolean HPAK_GetDataPointer(char *pakname, struct resource_s *pResource, unsign
 	{
 		for(hash_pack_queue_t *p = gp_hpak_queue; p != NULL; p = p->next)
 		{
-			if(Q_stricmp(p->pakname, pakname) != 0 || Q_memcmp(p->resource.rgucMD5_hash, pResource->rgucMD5_hash, 16) != 0)
+			if(Q_stricmp(p->pakname, pakname) != 0 ||
+			   Q_memcmp(p->resource.rgucMD5_hash, pResource->rgucMD5_hash, 16) != 0)
 				continue;
 
 			if(pbuffer)
@@ -120,20 +121,24 @@ qboolean HPAK_GetDataPointer(char *pakname, struct resource_s *pResource, unsign
 	}
 	FS_Seek(fp, header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
 	FS_Read(&directory.nEntries, 4, 1, fp);
-	if(directory.nEntries < 1 || (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
+	if(directory.nEntries < 1 ||
+	   (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
 	{
-		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n", directory.nEntries);
+		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n",
+		           directory.nEntries);
 		FS_Close(fp);
 		return FALSE;
 	}
-	directory.p_rgEntries = (hash_pack_entry_t *)Mem_ZeroMalloc(sizeof(hash_pack_entry_t) * directory.nEntries);
+	directory.p_rgEntries = (hash_pack_entry_t *)Mem_ZeroMalloc(
+	sizeof(hash_pack_entry_t) * directory.nEntries);
 	FS_Read(directory.p_rgEntries, sizeof(hash_pack_entry_t) * directory.nEntries, 1, fp);
 
 	for(int i = 0; i < directory.nEntries; i++)
 	{
 		entry = &directory.p_rgEntries[i];
 
-		if(Q_memcmp(entry->resource.rgucMD5_hash, pResource->rgucMD5_hash, 16) != 0)
+		if(Q_memcmp(entry->resource.rgucMD5_hash, pResource->rgucMD5_hash, 16) !=
+		   0)
 			continue;
 
 		retval = TRUE;
@@ -143,15 +148,16 @@ qboolean HPAK_GetDataPointer(char *pakname, struct resource_s *pResource, unsign
 		{
 			if(bufsize)
 				*bufsize = entry->nFileLength;
-			pbuf         = (byte *)Mem_Malloc(entry->nFileLength);
+			pbuf = (byte *)Mem_Malloc(entry->nFileLength);
 
 			if(!pbuf)
 			{
-				Con_Printf("Couln't allocate %i bytes for HPAK entry\n", entry->nFileLength);
+				Con_Printf("Couln't allocate %i bytes for HPAK entry\n",
+				           entry->nFileLength);
 
 				if(bufsize)
 					*bufsize = 0;
-				retval       = FALSE;
+				retval = FALSE;
 			}
 
 			FS_Read(pbuf, entry->nFileLength, 1, fp);
@@ -183,22 +189,24 @@ qboolean HPAK_FindResource(hash_pack_directory_t *pDir, unsigned char *hash, str
 
 void HPAK_AddToQueue(char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource)
 {
-	hash_pack_queue_t *n = (hash_pack_queue_t *)Mem_Malloc(sizeof(hash_pack_queue_t));
+	hash_pack_queue_t *n =
+	(hash_pack_queue_t *)Mem_Malloc(sizeof(hash_pack_queue_t));
 	if(!n)
-		Sys_Error("Unable to allocate %i bytes for hpak queue!", sizeof(hash_pack_queue_t));
+		Sys_Error("Unable to allocate %i bytes for hpak queue!",
+		          sizeof(hash_pack_queue_t));
 
 	Q_memset(n, 0, sizeof(hash_pack_queue_t));
 	n->pakname = Mem_Strdup(pakname);
 	Q_memcpy(&n->resource, pResource, sizeof(resource_t));
 	n->datasize = pResource->nDownloadSize;
-	n->data     = Mem_Malloc(pResource->nDownloadSize);
+	n->data = Mem_Malloc(pResource->nDownloadSize);
 	if(!n->data)
 		Sys_Error("Unable to allocate %i bytes for hpak queue!", n->datasize);
 
 	if(pData)
 	{
 		Q_memcpy(n->data, pData, n->datasize);
-		n->next       = gp_hpak_queue;
+		n->next = gp_hpak_queue;
 		gp_hpak_queue = n;
 	}
 	else
@@ -206,14 +214,15 @@ void HPAK_AddToQueue(char *pakname, struct resource_s *pResource, void *pData, F
 		if(!fpSource)
 			Sys_Error("Add to Queue called without data or file pointer!");
 		FS_Read(n->data, n->datasize, 1, fpSource);
-		n->next       = gp_hpak_queue;
+		n->next = gp_hpak_queue;
 		gp_hpak_queue = n;
 	}
 }
 
 void HPAK_FlushHostQueue()
 {
-	for(hash_pack_queue_t *p = gp_hpak_queue; gp_hpak_queue != NULL; p = gp_hpak_queue)
+	for(hash_pack_queue_t *p = gp_hpak_queue; gp_hpak_queue != NULL;
+	    p = gp_hpak_queue)
 	{
 		gp_hpak_queue = p->next;
 		HPAK_AddLump(0, p->pakname, &p->resource, p->data, 0);
@@ -225,22 +234,23 @@ void HPAK_FlushHostQueue()
 
 void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource)
 {
-	FileHandle_t          iRead;
-	FileHandle_t          iWrite;
-	char                  name[MAX_PATH];
-	char                  szTempName[MAX_PATH];
-	char                  szOriginalName[MAX_PATH];
+	FileHandle_t iRead;
+	FileHandle_t iWrite;
+	char name[MAX_PATH];
+	char szTempName[MAX_PATH];
+	char szOriginalName[MAX_PATH];
 	hash_pack_directory_t olddirectory;
 	hash_pack_directory_t newdirectory;
-	hash_pack_entry_t *   pNewEntry;
+	hash_pack_entry_t *pNewEntry;
 
-	byte         md5[16];
+	byte md5[16];
 	MD5Context_t ctx;
-	byte *       pDiskData;
+	byte *pDiskData;
 
 	if(pakname == NULL)
 	{
-		Con_Printf("HPAK_AddLump called with invalid arguments:  no .pak filename\n");
+		Con_Printf(
+		"HPAK_AddLump called with invalid arguments:  no .pak filename\n");
 		return;
 	}
 	if(!pResource)
@@ -253,9 +263,11 @@ void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResourc
 		Con_Printf("HPAK_AddLump called with invalid arguments:  no file handle\n");
 		return;
 	}
-	if(pResource->nDownloadSize < 1024 || (unsigned int)pResource->nDownloadSize > MAX_FILE_SIZE)
+	if(pResource->nDownloadSize < 1024 ||
+	   (unsigned int)pResource->nDownloadSize > MAX_FILE_SIZE)
 	{
-		Con_Printf("HPAK_AddLump called with bogus lump, size:  %i\n", pResource->nDownloadSize);
+		Con_Printf("HPAK_AddLump called with bogus lump, size:  %i\n",
+		           pResource->nDownloadSize);
 		return;
 	}
 	Q_memset(&ctx, 0, sizeof(MD5Context_t));
@@ -332,21 +344,28 @@ void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResourc
 	FS_Seek(iRead, hash_pack_header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
 	FS_Read(&olddirectory.nEntries, 4, 1, iRead);
 
-	if(olddirectory.nEntries < 1 || (unsigned int)olddirectory.nEntries > MAX_FILE_ENTRIES)
+	if(olddirectory.nEntries < 1 ||
+	   (unsigned int)olddirectory.nEntries > MAX_FILE_ENTRIES)
 	{
 		FS_Close(iRead);
 		FS_Close(iWrite);
 		FS_Unlink(szTempName);
-		Con_Printf("ERROR: .hpk had bogus # of directory entries:  %i\n", olddirectory.nEntries);
+		Con_Printf("ERROR: .hpk had bogus # of directory entries:  %i\n",
+		           olddirectory.nEntries);
 		return;
 	}
 
-	olddirectory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * olddirectory.nEntries);
+	olddirectory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * olddirectory.nEntries);
 
-	FS_Read(olddirectory.p_rgEntries, sizeof(hash_pack_entry_t) * olddirectory.nEntries, 1, iRead);
+	FS_Read(olddirectory.p_rgEntries,
+	        sizeof(hash_pack_entry_t) * olddirectory.nEntries,
+	        1,
+	        iRead);
 	FS_Close(iRead);
 
-	if(HPAK_FindResource(&olddirectory, pResource->rgucMD5_hash, NULL) != FALSE)
+	if(HPAK_FindResource(&olddirectory, pResource->rgucMD5_hash, NULL) !=
+	   FALSE)
 	{
 		FS_Close(iWrite);
 		FS_Unlink(szTempName);
@@ -354,8 +373,9 @@ void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResourc
 		return;
 	}
 
-	newdirectory.nEntries    = olddirectory.nEntries + 1;
-	newdirectory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * newdirectory.nEntries);
+	newdirectory.nEntries = olddirectory.nEntries + 1;
+	newdirectory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * newdirectory.nEntries);
 
 	Q_memset(newdirectory.p_rgEntries, 0, sizeof(hash_pack_entry_t) * newdirectory.nEntries);
 	Q_memcpy(newdirectory.p_rgEntries, olddirectory.p_rgEntries, sizeof(hash_pack_entry_t) * olddirectory.nEntries);
@@ -364,7 +384,9 @@ void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResourc
 
 	for(int i = 0; i < olddirectory.nEntries; i++)
 	{
-		if(Q_memcmp(pResource->rgucMD5_hash, olddirectory.p_rgEntries[i].resource.rgucMD5_hash, 16) >= 0)
+		if(Q_memcmp(pResource->rgucMD5_hash,
+		            olddirectory.p_rgEntries[i].resource.rgucMD5_hash,
+		            16) >= 0)
 		{
 			pNewEntry = &newdirectory.p_rgEntries[i];
 #ifndef REHLDS_FIXES
@@ -390,7 +412,7 @@ void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResourc
 
 	Q_memcpy(&pNewEntry->resource, pResource, sizeof(resource_t));
 
-	pNewEntry->nOffset     = FS_Tell(iWrite);
+	pNewEntry->nOffset = FS_Tell(iWrite);
 	pNewEntry->nFileLength = pResource->nDownloadSize;
 
 	if(pData)
@@ -421,16 +443,16 @@ void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResourc
 
 void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 {
-	FileHandle_t          fp;
-	FileHandle_t          tmp;
-	char                  szTempName[MAX_PATH];
-	char                  szOriginalName[MAX_PATH];
+	FileHandle_t fp;
+	FileHandle_t tmp;
+	char szTempName[MAX_PATH];
+	char szOriginalName[MAX_PATH];
 	hash_pack_directory_t olddir;
 	hash_pack_directory_t newdir;
-	hash_pack_entry_t *   oldentry;
-	hash_pack_entry_t *   newentry;
-	int                   n;
-	int                   i;
+	hash_pack_entry_t *oldentry;
+	hash_pack_entry_t *newentry;
+	int n;
+	int i;
 
 	if(pakname == NULL || *pakname == '\0' || pResource == NULL)
 	{
@@ -445,7 +467,8 @@ void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 	COM_DefaultExtension(szOriginalName, HASHPAK_EXTENSION);
 #else
 
-	//TODO: Not sure why Cmd_Argv(1) is used since function receives pakname parameter
+	// TODO: Not sure why Cmd_Argv(1) is used since function receives pakname
+	// parameter
 	char name[MAX_PATH];
 	Q_snprintf(name, ARRAYSIZE(name), "%s", Cmd_Argv(1));
 	COM_DefaultExtension(name, HASHPAK_EXTENSION);
@@ -457,7 +480,8 @@ void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 	fp = FS_Open(szOriginalName, "rb");
 	if(!fp)
 	{
-		Con_Printf("Error:  couldn't open HPAK file %s for removal.\n", szOriginalName);
+		Con_Printf("Error:  couldn't open HPAK file %s for removal.\n",
+		           szOriginalName);
 		return;
 	}
 	COM_StripExtension(szOriginalName, szTempName);
@@ -497,7 +521,8 @@ void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 		FS_Close(fp);
 		FS_Close(tmp);
 		FS_Unlink(szTempName);
-		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n", olddir.nEntries);
+		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n",
+		           olddir.nEntries);
 		return;
 	}
 	if(olddir.nEntries == 1)
@@ -506,14 +531,17 @@ void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 		FS_Close(tmp);
 		FS_Unlink(szOriginalName);
 		FS_Unlink(szTempName);
-		Con_Printf("Removing final lump from HPAK, deleting HPAK:\n  %s\n", szOriginalName);
+		Con_Printf("Removing final lump from HPAK, deleting HPAK:\n  %s\n",
+		           szOriginalName);
 		return;
 	}
-	olddir.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * olddir.nEntries);
+	olddir.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * olddir.nEntries);
 	FS_Read(olddir.p_rgEntries, sizeof(hash_pack_entry_t) * olddir.nEntries, 1, fp);
 
-	newdir.nEntries    = olddir.nEntries - 1;
-	newdir.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * newdir.nEntries);
+	newdir.nEntries = olddir.nEntries - 1;
+	newdir.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * newdir.nEntries);
 	if(!HPAK_FindResource(&olddir, pResource->rgucMD5_hash, NULL))
 	{
 		FS_Close(fp);
@@ -522,7 +550,8 @@ void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 		Mem_Free(olddir.p_rgEntries);
 		Mem_Free(newdir.p_rgEntries);
 
-		Con_Printf("ERROR: HPAK doesn't contain specified lump:  %s\n", pResource->szFileName);
+		Con_Printf("ERROR: HPAK doesn't contain specified lump:  %s\n",
+		           pResource->szFileName);
 		return;
 	}
 	Con_Printf("Removing %s from HPAK %s.\n", pResource->szFileName, szOriginalName);
@@ -530,7 +559,9 @@ void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 	{
 		oldentry = &olddir.p_rgEntries[i];
 
-		if(Q_memcmp(olddir.p_rgEntries[i].resource.rgucMD5_hash, pResource->rgucMD5_hash, 16))
+		if(Q_memcmp(olddir.p_rgEntries[i].resource.rgucMD5_hash,
+		            pResource->rgucMD5_hash,
+		            16))
 		{
 			newentry = &newdir.p_rgEntries[n++];
 			Q_memcpy(newentry, oldentry, sizeof(hash_pack_entry_t));
@@ -557,11 +588,11 @@ void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 
 qboolean HPAK_ResourceForIndex(char *pakname, int nIndex, struct resource_s *pResource)
 {
-	hash_pack_header_t    header;
+	hash_pack_header_t header;
 	hash_pack_directory_t directory;
-	hash_pack_entry_t *   entry;
-	char                  name[MAX_PATH];
-	FileHandle_t          fp;
+	hash_pack_entry_t *entry;
+	char name[MAX_PATH];
+	FileHandle_t fp;
 
 	if(cmd_source != src_command)
 		return FALSE;
@@ -593,9 +624,11 @@ qboolean HPAK_ResourceForIndex(char *pakname, int nIndex, struct resource_s *pRe
 	}
 	FS_Seek(fp, header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
 	FS_Read(&directory.nEntries, 4, 1, fp);
-	if(directory.nEntries < 1 || (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
+	if(directory.nEntries < 1 ||
+	   (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
 	{
-		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n", directory.nEntries);
+		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n",
+		           directory.nEntries);
 		FS_Close(fp);
 		return FALSE;
 	}
@@ -605,7 +638,8 @@ qboolean HPAK_ResourceForIndex(char *pakname, int nIndex, struct resource_s *pRe
 		FS_Close(fp);
 		return FALSE;
 	}
-	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * directory.nEntries);
+	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * directory.nEntries);
 	FS_Read(directory.p_rgEntries, sizeof(hash_pack_entry_t) * directory.nEntries, 1, fp);
 	entry = &directory.p_rgEntries[nIndex - 1];
 	Q_memcpy(pResource, &entry->resource, sizeof(resource_t));
@@ -616,17 +650,18 @@ qboolean HPAK_ResourceForIndex(char *pakname, int nIndex, struct resource_s *pRe
 
 qboolean HPAK_ResourceForHash(char *pakname, unsigned char *hash, struct resource_s *pResourceEntry)
 {
-	qboolean              bFound;
-	hash_pack_header_t    header;
+	qboolean bFound;
+	hash_pack_header_t header;
 	hash_pack_directory_t directory;
-	char                  name[MAX_PATH];
-	FileHandle_t          fp;
+	char name[MAX_PATH];
+	FileHandle_t fp;
 
 	if(gp_hpak_queue)
 	{
 		for(hash_pack_queue_t *p = gp_hpak_queue; p != NULL; p = p->next)
 		{
-			if(Q_stricmp(p->pakname, pakname) != 0 || Q_memcmp(p->resource.rgucMD5_hash, hash, 16) != 0)
+			if(Q_stricmp(p->pakname, pakname) != 0 ||
+			   Q_memcmp(p->resource.rgucMD5_hash, hash, 16) != 0)
 				continue;
 
 			if(pResourceEntry)
@@ -663,13 +698,16 @@ qboolean HPAK_ResourceForHash(char *pakname, unsigned char *hash, struct resourc
 	}
 	FS_Seek(fp, header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
 	FS_Read(&directory.nEntries, 4, 1, fp);
-	if(directory.nEntries < 1 || (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
+	if(directory.nEntries < 1 ||
+	   (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
 	{
-		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n", directory.nEntries);
+		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n",
+		           directory.nEntries);
 		FS_Close(fp);
 		return FALSE;
 	}
-	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * directory.nEntries);
+	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * directory.nEntries);
 	FS_Read(directory.p_rgEntries, sizeof(hash_pack_entry_t) * directory.nEntries, 1, fp);
 
 	bFound = HPAK_FindResource(&directory, hash, pResourceEntry);
@@ -681,13 +719,13 @@ qboolean HPAK_ResourceForHash(char *pakname, unsigned char *hash, struct resourc
 
 void HPAK_List_f()
 {
-	hash_pack_header_t    header;
+	hash_pack_header_t header;
 	hash_pack_directory_t directory;
-	hash_pack_entry_t *   entry;
-	char                  name[MAX_PATH];
-	char                  szFileName[MAX_PATH];
-	char                  type[32];
-	FileHandle_t          fp;
+	hash_pack_entry_t *entry;
+	char name[MAX_PATH];
+	char szFileName[MAX_PATH];
+	char type[32];
+	FileHandle_t fp;
 
 	if(cmd_source != src_command)
 		return;
@@ -723,16 +761,19 @@ void HPAK_List_f()
 	}
 	FS_Seek(fp, header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
 	FS_Read(&directory.nEntries, 4, 1, fp);
-	if(directory.nEntries < 1 || (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
+	if(directory.nEntries < 1 ||
+	   (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
 	{
-		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n", directory.nEntries);
+		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n",
+		           directory.nEntries);
 		FS_Close(fp);
 		return;
 	}
 	Con_Printf("# of Entries:  %i\n", directory.nEntries);
 	Con_Printf("# Type Size FileName : MD5 Hash\n");
 
-	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * directory.nEntries);
+	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * directory.nEntries);
 	FS_Read(directory.p_rgEntries, sizeof(hash_pack_entry_t) * directory.nEntries, 1, fp);
 	for(int nCurrent = 0; nCurrent < directory.nEntries; nCurrent++)
 	{
@@ -770,14 +811,14 @@ void HPAK_List_f()
 
 void HPAK_CreatePak(char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource)
 {
-	char               name[MAX_PATH];
-	int32              curpos;
-	FileHandle_t       fp;
+	char name[MAX_PATH];
+	int32 curpos;
+	FileHandle_t fp;
 	hash_pack_entry_t *pCurrentEntry;
 
-	byte         md5[16];
+	byte md5[16];
 	MD5Context_t ctx;
-	byte *       pDiskData;
+	byte *pDiskData;
 
 	if((!fpSource && !pData) || (fpSource && pData))
 	{
@@ -796,7 +837,8 @@ void HPAK_CreatePak(char *pakname, struct resource_s *pResource, void *pData, Fi
 	fp = FS_Open(name, "wb");
 	if(!fp)
 	{
-		Con_Printf("ERROR: couldn't open new .hpk, check access rights to %s.\n", name);
+		Con_Printf("ERROR: couldn't open new .hpk, check access rights to %s.\n",
+		           name);
 		return;
 	}
 
@@ -807,7 +849,7 @@ void HPAK_CreatePak(char *pakname, struct resource_s *pResource, void *pData, Fi
 		MD5Update(&ctx, (byte *)pData, pResource->nDownloadSize);
 	else
 	{
-		curpos    = FS_Tell(fpSource);
+		curpos = FS_Tell(fpSource);
 		pDiskData = (byte *)Mem_Malloc(pResource->nDownloadSize + 1);
 		Q_memset(pDiskData, 0, pResource->nDownloadSize);
 		FS_Read(pDiskData, pResource->nDownloadSize, 1, fp);
@@ -829,20 +871,21 @@ void HPAK_CreatePak(char *pakname, struct resource_s *pResource, void *pData, Fi
 	Q_memset(&hash_pack_header, 0, sizeof(hash_pack_header_t));
 	Q_memcpy(hash_pack_header.szFileStamp, "HPAK", sizeof(hash_pack_header.szFileStamp));
 
-	hash_pack_header.version          = HASHPAK_VERSION;
+	hash_pack_header.version = HASHPAK_VERSION;
 	hash_pack_header.nDirectoryOffset = 0;
 
 	FS_Write(&hash_pack_header, sizeof(hash_pack_header_t), 1, fp);
 	Q_memset(&hash_pack_dir, 0, sizeof(hash_pack_directory_t));
 
-	hash_pack_dir.nEntries    = 1;
-	hash_pack_dir.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t));
+	hash_pack_dir.nEntries = 1;
+	hash_pack_dir.p_rgEntries =
+	(hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t));
 	Q_memset(hash_pack_dir.p_rgEntries, 0, sizeof(hash_pack_entry_t) * hash_pack_dir.nEntries);
 
 	pCurrentEntry = &hash_pack_dir.p_rgEntries[0];
 	Q_memcpy(&pCurrentEntry->resource, pResource, sizeof(resource_t));
 
-	pCurrentEntry->nOffset     = FS_Tell(fp);
+	pCurrentEntry->nOffset = FS_Tell(fp);
 	pCurrentEntry->nFileLength = pResource->nDownloadSize;
 
 	if(pData)
@@ -861,7 +904,7 @@ void HPAK_CreatePak(char *pakname, struct resource_s *pResource, void *pData, Fi
 		hash_pack_dir.p_rgEntries = NULL;
 	}
 
-	hash_pack_dir.nEntries            = 0;
+	hash_pack_dir.nEntries = 0;
 	hash_pack_header.nDirectoryOffset = curpos;
 
 	FS_Seek(fp, 0, FILESYSTEM_SEEK_HEAD);
@@ -871,7 +914,7 @@ void HPAK_CreatePak(char *pakname, struct resource_s *pResource, void *pData, Fi
 
 void HPAK_Remove_f()
 {
-	int   nIndex;
+	int nIndex;
 	char *pakname;
 
 	resource_t resource;
@@ -897,17 +940,17 @@ void HPAK_Remove_f()
 
 void HPAK_Validate_f()
 {
-	hash_pack_header_t    header;
+	hash_pack_header_t header;
 	hash_pack_directory_t directory;
-	hash_pack_entry_t *   entry;
-	char                  name[MAX_PATH];
-	char                  szFileName[MAX_PATH];
-	char                  type[32];
-	FileHandle_t          fp;
+	hash_pack_entry_t *entry;
+	char name[MAX_PATH];
+	char szFileName[MAX_PATH];
+	char type[32];
+	FileHandle_t fp;
 
-	byte *       pData;
-	int          nDataSize;
-	byte         md5[16];
+	byte *pData;
+	int nDataSize;
+	byte md5[16];
 	MD5Context_t ctx;
 
 	if(cmd_source != src_command)
@@ -950,9 +993,11 @@ void HPAK_Validate_f()
 	}
 	FS_Seek(fp, header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
 	FS_Read(&directory.nEntries, 4, 1, fp);
-	if(directory.nEntries < 1 || (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
+	if(directory.nEntries < 1 ||
+	   (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
 	{
-		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n", directory.nEntries);
+		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n",
+		           directory.nEntries);
 		FS_Close(fp);
 		return;
 	}
@@ -960,7 +1005,8 @@ void HPAK_Validate_f()
 	Con_Printf("# of Entries:  %i\n", directory.nEntries);
 	Con_Printf("# Type Size FileName : MD5 Hash\n");
 
-	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * directory.nEntries);
+	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * directory.nEntries);
 	FS_Read(directory.p_rgEntries, sizeof(hash_pack_entry_t) * directory.nEntries, 1, fp);
 	for(int nCurrent = 0; nCurrent < directory.nEntries; nCurrent++)
 	{
@@ -1028,18 +1074,18 @@ void HPAK_Validate_f()
 
 void HPAK_Extract_f()
 {
-	hash_pack_header_t    header;
+	hash_pack_header_t header;
 	hash_pack_directory_t directory;
-	hash_pack_entry_t *   entry;
-	char                  name[MAX_PATH];
-	char                  type[32];
-	FileHandle_t          fp;
-	int                   nIndex;
+	hash_pack_entry_t *entry;
+	char name[MAX_PATH];
+	char type[32];
+	FileHandle_t fp;
+	int nIndex;
 
-	byte *       pData;
-	int          nDataSize;
+	byte *pData;
+	int nDataSize;
 	FileHandle_t fpOutput;
-	char         szFileOut[MAX_PATH];
+	char szFileOut[MAX_PATH];
 
 	if(cmd_source != src_command)
 		return;
@@ -1097,9 +1143,11 @@ void HPAK_Extract_f()
 	}
 	FS_Seek(fp, header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
 	FS_Read(&directory.nEntries, 4, 1, fp);
-	if(directory.nEntries < 1 || (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
+	if(directory.nEntries < 1 ||
+	   (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
 	{
-		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n", directory.nEntries);
+		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n",
+		           directory.nEntries);
 		FS_Close(fp);
 		return;
 	}
@@ -1107,7 +1155,8 @@ void HPAK_Extract_f()
 	Con_Printf("# of Entries:  %i\n", directory.nEntries);
 	Con_Printf("# Type Size FileName : MD5 Hash\n");
 
-	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * directory.nEntries);
+	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * directory.nEntries);
 	FS_Read(directory.p_rgEntries, sizeof(hash_pack_entry_t) * directory.nEntries, 1, fp);
 	for(int nCurrent = 0; nCurrent < directory.nEntries; nCurrent++)
 	{
@@ -1192,13 +1241,13 @@ NOXREF char *HPAK_GetItem(int item)
 {
 	NOXREFCHECK;
 
-	int                   nCurrent;
-	hash_pack_header_t    header;
+	int nCurrent;
+	hash_pack_header_t header;
 	hash_pack_directory_t directory;
-	hash_pack_entry_t *   entry;
-	static char           name[MAX_PATH];
-	char                  szFileName[MAX_PATH];
-	FileHandle_t          fp;
+	hash_pack_entry_t *entry;
+	static char name[MAX_PATH];
+	char szFileName[MAX_PATH];
+	FileHandle_t fp;
 
 	HPAK_FlushHostQueue();
 
@@ -1225,18 +1274,21 @@ NOXREF char *HPAK_GetItem(int item)
 	}
 	FS_Seek(fp, header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
 	FS_Read(&directory.nEntries, 4, 1, fp);
-	if(directory.nEntries < 1 || (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
+	if(directory.nEntries < 1 ||
+	   (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
 	{
-		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n", directory.nEntries);
+		Con_Printf("ERROR: HPAK had bogus # of directory entries:  %i\n",
+		           directory.nEntries);
 		FS_Close(fp);
 		return "";
 	}
-	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * directory.nEntries);
+	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * directory.nEntries);
 	FS_Read(directory.p_rgEntries, sizeof(hash_pack_entry_t) * directory.nEntries, 1, fp);
 	nCurrent = directory.nEntries - 1;
 	if(nCurrent > item)
 		nCurrent = item;
-	entry        = &directory.p_rgEntries[nCurrent];
+	entry = &directory.p_rgEntries[nCurrent];
 	COM_FileBase(entry->resource.szFileName, szFileName);
 	Q_snprintf(name, sizeof(name), "!MD5%s", MD5_Print(entry->resource.rgucMD5_hash));
 	FS_Close(fp);
@@ -1246,9 +1298,9 @@ NOXREF char *HPAK_GetItem(int item)
 
 void HPAK_CheckSize(char *pakname)
 {
-	char         fullname[MAX_PATH];
-	float        maxSize;
-	float        actualSize;
+	char fullname[MAX_PATH];
+	float maxSize;
+	float actualSize;
 	FileHandle_t hfile;
 
 	maxSize = hpk_maxsize.value;
@@ -1289,14 +1341,14 @@ void HPAK_CheckSize(char *pakname)
 
 void HPAK_ValidatePak(char *fullpakname)
 {
-	hash_pack_header_t    header;
+	hash_pack_header_t header;
 	hash_pack_directory_t directory;
-	hash_pack_entry_t *   entry;
-	char                  szFileName[MAX_PATH];
-	FileHandle_t          fp;
+	hash_pack_entry_t *entry;
+	char szFileName[MAX_PATH];
+	FileHandle_t fp;
 
 	byte *pData;
-	byte  md5[16];
+	byte md5[16];
 
 	MD5Context_t ctx;
 
@@ -1308,7 +1360,8 @@ void HPAK_ValidatePak(char *fullpakname)
 
 	FS_Read(&header, sizeof(hash_pack_header_t), 1, fp);
 
-	if(header.version != HASHPAK_VERSION || Q_strncmp(header.szFileStamp, "HPAK", sizeof(header.szFileStamp)) != 0)
+	if(header.version != HASHPAK_VERSION ||
+	   Q_strncmp(header.szFileStamp, "HPAK", sizeof(header.szFileStamp)) != 0)
 	{
 		Con_Printf("%s is not a PAK file, deleting\n", fullpakname);
 		FS_Close(fp);
@@ -1319,15 +1372,20 @@ void HPAK_ValidatePak(char *fullpakname)
 	FS_Seek(fp, header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
 	FS_Read(&directory, 4, 1, fp);
 
-	if(directory.nEntries < 1 || (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
+	if(directory.nEntries < 1 ||
+	   (unsigned int)directory.nEntries > MAX_FILE_ENTRIES)
 	{
-		Con_Printf("ERROR: HPAK %s had bogus # of directory entries:  %i, deleting\n", fullpakname, directory.nEntries);
+		Con_Printf(
+		"ERROR: HPAK %s had bogus # of directory entries:  %i, deleting\n",
+		fullpakname,
+		directory.nEntries);
 		FS_Close(fp);
 		FS_RemoveFile(fullpakname, 0);
 		return;
 	}
 
-	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(sizeof(hash_pack_entry_t) * directory.nEntries);
+	directory.p_rgEntries = (hash_pack_entry_t *)Mem_Malloc(
+	sizeof(hash_pack_entry_t) * directory.nEntries);
 	FS_Read(directory.p_rgEntries, sizeof(hash_pack_entry_t) * directory.nEntries, 1, fp);
 	for(int nCurrent = 0; nCurrent < directory.nEntries; nCurrent++)
 	{
@@ -1337,7 +1395,9 @@ void HPAK_ValidatePak(char *fullpakname)
 		if((unsigned int)entry->nFileLength >= MAX_FILE_SIZE)
 		{
 			Con_Printf("Mismatched data in HPAK file %s, deleting\n", fullpakname);
-			Con_Printf("Unable to MD5 hash data lump %i, size invalid:  %i\n", nCurrent + 1, entry->nFileLength);
+			Con_Printf("Unable to MD5 hash data lump %i, size invalid:  %i\n",
+			           nCurrent + 1,
+			           entry->nFileLength);
 
 			FS_Close(fp);
 			FS_RemoveFile(fullpakname, 0);

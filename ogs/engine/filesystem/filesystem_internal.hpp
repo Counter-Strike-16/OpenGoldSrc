@@ -31,8 +31,8 @@
 #pragma once
 
 #include "maintypes.h"
-#include "public/archtypes.h"
 #include "public/FileSystem.h"
+#include "public/archtypes.h"
 
 #ifdef HOOK_ENGINE
 #define g_pFileSystem (*pg_pFileSystem)

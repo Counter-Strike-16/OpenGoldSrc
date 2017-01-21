@@ -25,7 +25,7 @@ public:
 
 private:
 	char *m_pszCvarName;
-	char  m_pszStartValue[64];
+	char m_pszStartValue[64];
 };
 
 #endif

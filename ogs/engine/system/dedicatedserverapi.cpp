@@ -30,15 +30,15 @@
 
 //#include "precompiled.hpp"
 #include "system/dedicatedserverapi.hpp"
-#include "system/common.hpp"
-#include "system/system.hpp"
-#include "system/iengine.hpp"
-#include "system/traceinit.h"
-#include "system/host.hpp"
 #include "console/cmd.hpp"
+#include "system/common.hpp"
+#include "system/host.hpp"
+#include "system/iengine.hpp"
+#include "system/system.hpp"
+#include "system/traceinit.h"
 
 IDedicatedExports *dedicated_;
-qboolean           g_bIsDedicatedServer;
+qboolean g_bIsDedicatedServer;
 
 #ifndef HOOK_ENGINE
 EXPOSE_SINGLE_INTERFACE(CDedicatedServerAPI, IDedicatedServerAPI, VENGINE_HLDS_API_VERSION);
@@ -46,14 +46,16 @@ EXPOSE_SINGLE_INTERFACE(CDedicatedServerAPI, IDedicatedServerAPI, VENGINE_HLDS_A
 
 bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
 {
-	dedicated_ = (IDedicatedExports *)launcherFactory(VENGINE_DEDICATEDEXPORTS_API_VERSION, NULL);
+	dedicated_ = (IDedicatedExports *)launcherFactory(
+	VENGINE_DEDICATEDEXPORTS_API_VERSION, NULL);
 	if(!dedicated_)
 		return false;
 
 	Q_strncpy(m_OrigCmd, cmdline, charsmax(m_OrigCmd));
 
 	if(!Q_strstr(cmdline, "-nobreakpad"))
-		CRehldsPlatformHolder::get()->SteamAPI_UseBreakpadCrashHandler(va("%d", build_number()), __BUILD_DATE__, __BUILD_TIME__, 0, 0, 0);
+		CRehldsPlatformHolder::get()->SteamAPI_UseBreakpadCrashHandler(
+		va("%d", build_number()), __BUILD_DATE__, __BUILD_TIME__, 0, 0, 0);
 
 	TraceInit("Sys_InitArgv( m_OrigCmd )", "Sys_ShutdownArgv()", 0);
 	Sys_InitArgv(m_OrigCmd);
@@ -61,9 +63,12 @@ bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn l
 	registry->Init();
 
 	g_bIsDedicatedServer = TRUE;
-	TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
+	TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)",
+	          "FileSystem_Shutdown()",
+	          0);
 
-	if(FileSystem_Init(basedir, filesystemFactory) && game->Init(0) && eng->Load(true, basedir, cmdline))
+	if(FileSystem_Init(basedir, filesystemFactory) && game->Init(0) &&
+	   eng->Load(true, basedir, cmdline))
 	{
 		char text[256];
 		Q_snprintf(text, ARRAYSIZE(text), "exec %s\n", servercfgfile.string);

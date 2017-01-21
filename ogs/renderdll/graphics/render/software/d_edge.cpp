@@ -27,9 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static int miplevel;
 
 float scale_for_mip;
-int   screenwidth;
-int   ubasestep, errorterm, erroradjustup, erroradjustdown;
-int   vstartscan;
+int screenwidth;
+int ubasestep, errorterm, erroradjustup, erroradjustdown;
+int vstartscan;
 
 // FIXME: should go away
 extern void R_RotateBmodel();
@@ -83,15 +83,15 @@ D_DrawSolidSurface
 void D_DrawSolidSurface(surf_t *surf, int color)
 {
 	espan_t *span;
-	byte *   pdest;
-	int      u, u2, pix;
+	byte *pdest;
+	int u, u2, pix;
 
 	pix = (color << 24) | (color << 16) | (color << 8) | color;
 	for(span = surf->spans; span; span = span->pnext)
 	{
-		pdest              = (byte *)d_viewbuffer + screenwidth * span->v;
-		u                  = span->u;
-		u2                 = span->u + span->count - 1;
+		pdest = (byte *)d_viewbuffer + screenwidth * span->v;
+		u = span->u;
+		u2 = span->u + span->count - 1;
 		((byte *)pdest)[u] = pix;
 
 		if(u2 - u < 8)
@@ -122,10 +122,10 @@ D_CalcGradients
 void D_CalcGradients(msurface_t *pface)
 {
 	mplane_t *pplane;
-	float     mipscale;
-	vec3_t    p_temp1;
-	vec3_t    p_saxis, p_taxis;
-	float     t;
+	float mipscale;
+	vec3_t p_temp1;
+	vec3_t p_saxis, p_taxis;
+	float t;
 
 	pplane = pface->plane;
 
@@ -134,26 +134,26 @@ void D_CalcGradients(msurface_t *pface)
 	TransformVector(pface->texinfo->vecs[0], p_saxis);
 	TransformVector(pface->texinfo->vecs[1], p_taxis);
 
-	t            = xscaleinv * mipscale;
+	t = xscaleinv * mipscale;
 	d_sdivzstepu = p_saxis[0] * t;
 	d_tdivzstepu = p_taxis[0] * t;
 
-	t            = yscaleinv * mipscale;
+	t = yscaleinv * mipscale;
 	d_sdivzstepv = -p_saxis[1] * t;
 	d_tdivzstepv = -p_taxis[1] * t;
 
 	d_sdivzorigin = p_saxis[2] * mipscale - xcenter * d_sdivzstepu -
-	    ycenter * d_sdivzstepv;
+	ycenter * d_sdivzstepv;
 	d_tdivzorigin = p_taxis[2] * mipscale - xcenter * d_tdivzstepu -
-	    ycenter * d_tdivzstepv;
+	ycenter * d_tdivzstepv;
 
 	VectorScale(transformed_modelorg, mipscale, p_temp1);
 
-	t       = 0x10000 * mipscale;
+	t = 0x10000 * mipscale;
 	sadjust = ((fixed16_t)(DotProduct(p_temp1, p_saxis) * 0x10000 + 0.5)) -
-	    ((pface->texturemins[0] << 16) >> miplevel) + pface->texinfo->vecs[0][3] * t;
+	((pface->texturemins[0] << 16) >> miplevel) + pface->texinfo->vecs[0][3] * t;
 	tadjust = ((fixed16_t)(DotProduct(p_temp1, p_taxis) * 0x10000 + 0.5)) -
-	    ((pface->texturemins[1] << 16) >> miplevel) + pface->texinfo->vecs[1][3] * t;
+	((pface->texturemins[1] << 16) >> miplevel) + pface->texinfo->vecs[1][3] * t;
 
 	//
 	// -1 (-epsilon) so we never wander off the edge of the texture
@@ -169,11 +169,11 @@ D_DrawSurfaces
 */
 void D_DrawSurfaces()
 {
-	surf_t *     s;
-	msurface_t * pface;
+	surf_t *s;
+	msurface_t *pface;
 	surfcache_t *pcurrentcache;
-	vec3_t       world_transformed_modelorg;
-	vec3_t       local_modelorg;
+	vec3_t world_transformed_modelorg;
+	vec3_t local_modelorg;
 
 	currententity = &r_worldentity;
 	TransformVector(modelorg, transformed_modelorg);
@@ -187,8 +187,8 @@ void D_DrawSurfaces()
 			if(!s->spans)
 				continue;
 
-			d_zistepu  = s->d_zistepu;
-			d_zistepv  = s->d_zistepv;
+			d_zistepu = s->d_zistepu;
+			d_zistepv = s->d_zistepv;
 			d_ziorigin = s->d_ziorigin;
 
 #ifdef __alpha__
@@ -208,8 +208,8 @@ void D_DrawSurfaces()
 
 			r_drawnpolycount++;
 
-			d_zistepu  = s->d_zistepu;
-			d_zistepv  = s->d_zistepv;
+			d_zistepu = s->d_zistepu;
+			d_zistepv = s->d_zistepv;
 			d_ziorigin = s->d_ziorigin;
 
 			if(s->flags & SURF_DRAWSKY)
@@ -226,8 +226,8 @@ void D_DrawSurfaces()
 			{
 				// set up a gradient for the background surface that places it
 				// effectively at infinity distance from the viewpoint
-				d_zistepu  = 0;
-				d_zistepv  = 0;
+				d_zistepu = 0;
+				d_zistepv = 0;
 				d_ziorigin = -0.9;
 
 				D_DrawSolidSurface(s, (int)r_clearcolor.value & 0xFF);
@@ -235,8 +235,8 @@ void D_DrawSurfaces()
 			}
 			else if(s->flags & SURF_DRAWTURB)
 			{
-				pface      = s->data;
-				miplevel   = 0;
+				pface = s->data;
+				miplevel = 0;
 				cacheblock = (pixel_t *)((byte *)pface->texinfo->texture +
 				                         pface->texinfo->texture->offsets[0]);
 				cachewidth = 64;
@@ -292,7 +292,7 @@ void D_DrawSurfaces()
 					                  // make entity passed in
 				}
 
-				pface    = s->data;
+				pface = s->data;
 				miplevel = D_MipLevelForScale(s->nearzi * scale_for_mip * pface->texinfo->mipadjust);
 
 				// FIXME: make this passed in to D_CacheSurface

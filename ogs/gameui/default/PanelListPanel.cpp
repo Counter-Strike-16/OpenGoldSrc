@@ -58,9 +58,9 @@ CPanelListPanel::~CPanelListPanel(void)
 
 int CPanelListPanel::computeVPixelsNeeded(void)
 {
-	int       pixels = 0;
+	int pixels = 0;
 	DATAITEM *item;
-	Panel *   panel;
+	Panel *panel;
 
 	for(int i = 0; i < _dataItems.GetCount(); i++)
 	{
@@ -102,7 +102,7 @@ int CPanelListPanel::AddItem(Panel *panel)
 	InvalidateLayout();
 
 	DATAITEM *newitem = new DATAITEM;
-	newitem->panel    = panel;
+	newitem->panel = panel;
 	panel->SetParent(_embedded);
 	return _dataItems.PutElement(newitem);
 }

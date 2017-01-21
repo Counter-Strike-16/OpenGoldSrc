@@ -38,7 +38,9 @@ class CServerRemoteAccess : public IGameServerData
 {
 public:
 	CServerRemoteAccess();
-	virtual ~CServerRemoteAccess() {}
+	virtual ~CServerRemoteAccess()
+	{
+	}
 	virtual void WriteDataRequest(const void *buffer, int bufferSize);
 	virtual int ReadDataResponse(void *data, int len);
 

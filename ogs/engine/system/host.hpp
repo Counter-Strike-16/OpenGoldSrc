@@ -39,24 +39,24 @@
 
 //=============================================================================
 
-#include <csetjmp>
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 #include "public/FileSystem.h"
+#include <csetjmp>
 
 const int MAX_COMMAND_LINE_PARAMS = 50;
 
-typedef struct cvar_s   cvar_t;
+typedef struct cvar_s cvar_t;
 typedef struct client_s client_t;
 
 typedef struct quakeparms_s
 {
-	char * basedir;
-	char * cachedir;
-	int    argc;
+	char *basedir;
+	char *cachedir;
+	int argc;
 	char **argv;
-	void * membase;
-	int    memsize;
+	void *membase;
+	int memsize;
 } quakeparms_t;
 
 #ifdef HOOK_ENGINE
@@ -111,19 +111,20 @@ extern cvar_t host_framerate;
 extern cvar_t pausable;
 extern cvar_t suitvolume;
 
-extern double realtime; // not bounded in any way, changed at start of every frame, never reset
+extern double realtime; // not bounded in any way, changed at start of every
+                        // frame, never reset
 extern double rolling_fps;
 
 extern quakeparms_t host_parms;
 
 extern qboolean host_initialized; // true if into command execution
-extern double   host_frametime;
+extern double host_frametime;
 
-extern int       host_framecount;
+extern int host_framecount;
 extern client_t *host_client;
-extern qboolean  gfNoMasterServer;
-extern double    oldrealtime;
-extern int       host_hunklevel;
+extern qboolean gfNoMasterServer;
+extern double oldrealtime;
+extern int host_hunklevel;
 
 extern jmp_buf host_abortserver;
 extern jmp_buf host_enddemo;

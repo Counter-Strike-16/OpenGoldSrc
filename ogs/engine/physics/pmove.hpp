@@ -46,10 +46,10 @@
 #define movevars (*pmovevars)
 #endif // HOOK_ENGINE
 
-typedef struct cvar_s       cvar_t;
-typedef struct pmtrace_s    pmtrace_t;
+typedef struct cvar_s cvar_t;
+typedef struct pmtrace_s pmtrace_t;
 typedef struct playermove_s playermove_t;
-typedef struct movevars_s   movevars_t;
+typedef struct movevars_s movevars_t;
 
 extern cvar_t pm_showclip;
 
@@ -57,7 +57,7 @@ extern vec_t player_mins[4][3];
 extern vec_t player_maxs[4][3];
 
 extern playermove_t *pmove;
-extern movevars_t    movevars;
+extern movevars_t movevars;
 
 qboolean PM_AddToTouched(pmtrace_t tr, vec_t *impactvelocity);
 void PM_StuckTouch(int hitent, pmtrace_t *ptraceresult);

@@ -6,9 +6,9 @@
 
 #include <assert.h>
 #include <dlfcn.h> // ELF dl loader
+#include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <errno.h>
 
 #include "../client/client.h"
 
@@ -25,8 +25,8 @@ cvar_t *vid_ypos; // Y coordinate of window position
 cvar_t *vid_fullscreen;
 
 // Global variables used internally by this module
-viddef_t viddef;         // global video state; used by other modules
-void *   reflib_library; // Handle to refresh DLL
+viddef_t viddef;      // global video state; used by other modules
+void *reflib_library; // Handle to refresh DLL
 qboolean reflib_active = 0;
 
 #define VID_NUM_MODES (sizeof(vid_modes) / sizeof(vid_modes[0]))
@@ -63,8 +63,8 @@ DLL GLUE
 #define MAXPRINTMSG 4096
 void VID_Printf(int print_level, char *fmt, ...)
 {
-	va_list         argptr;
-	char            msg[MAXPRINTMSG];
+	va_list argptr;
+	char msg[MAXPRINTMSG];
 	static qboolean inupdate;
 
 	va_start(argptr, fmt);
@@ -79,8 +79,8 @@ void VID_Printf(int print_level, char *fmt, ...)
 
 void VID_Error(int err_level, char *fmt, ...)
 {
-	va_list         argptr;
-	char            msg[MAXPRINTMSG];
+	va_list argptr;
+	char msg[MAXPRINTMSG];
 	static qboolean inupdate;
 
 	va_start(argptr, fmt);
@@ -112,29 +112,20 @@ void VID_Restart_f(void)
 typedef struct vidmode_s
 {
 	const char *description;
-	int         width, height;
-	int         mode;
+	int width, height;
+	int mode;
 } vidmode_t;
 
-vidmode_t vid_modes[] =
-    {
-        {"Mode 0: 320x240", 320, 240, 0},
-        {"Mode 1: 400x300", 400, 300, 1},
-        {"Mode 2: 512x384", 512, 384, 2},
-        {"Mode 3: 640x480", 640, 480, 3},
-        {"Mode 4: 800x600", 800, 600, 4},
-        {"Mode 5: 960x720", 960, 720, 5},
-        {"Mode 6: 1024x768", 1024, 768, 6},
-        {"Mode 7: 1152x864", 1152, 864, 7},
-        {"Mode 8: 1280x1024", 1280, 1024, 8},
-        {"Mode 9: 1600x1200", 1600, 1200, 9}};
+vidmode_t vid_modes[] = {
+	{ "Mode 0: 320x240", 320, 240, 0 }, { "Mode 1: 400x300", 400, 300, 1 }, { "Mode 2: 512x384", 512, 384, 2 }, { "Mode 3: 640x480", 640, 480, 3 }, { "Mode 4: 800x600", 800, 600, 4 }, { "Mode 5: 960x720", 960, 720, 5 }, { "Mode 6: 1024x768", 1024, 768, 6 }, { "Mode 7: 1152x864", 1152, 864, 7 }, { "Mode 8: 1280x1024", 1280, 1024, 8 }, { "Mode 9: 1600x1200", 1600, 1200, 9 }
+};
 
 qboolean VID_GetModeInfo(int *width, int *height, int mode)
 {
 	if(mode < 0 || mode >= VID_NUM_MODES)
 		return false;
 
-	*width  = vid_modes[mode].width;
+	*width = vid_modes[mode].width;
 	*height = vid_modes[mode].height;
 
 	return true;
@@ -145,7 +136,7 @@ qboolean VID_GetModeInfo(int *width, int *height, int mode)
 */
 void VID_NewWindow(int width, int height)
 {
-	viddef.width  = width;
+	viddef.width = width;
 	viddef.height = height;
 }
 
@@ -160,19 +151,19 @@ void VID_FreeReflib(void)
 		dlclose(reflib_library);
 	}
 
-	KBD_Init_fp       = NULL;
-	KBD_Update_fp     = NULL;
-	KBD_Close_fp      = NULL;
-	RW_IN_Init_fp     = NULL;
+	KBD_Init_fp = NULL;
+	KBD_Update_fp = NULL;
+	KBD_Close_fp = NULL;
+	RW_IN_Init_fp = NULL;
 	RW_IN_Shutdown_fp = NULL;
 	RW_IN_Activate_fp = NULL;
 	RW_IN_Commands_fp = NULL;
-	RW_IN_Move_fp     = NULL;
-	RW_IN_Frame_fp    = NULL;
+	RW_IN_Move_fp = NULL;
+	RW_IN_Frame_fp = NULL;
 
 	memset(&re, 0, sizeof(re));
 	reflib_library = NULL;
-	reflib_active  = false;
+	reflib_active = false;
 }
 
 /*
@@ -182,12 +173,12 @@ VID_LoadRefresh
 */
 qboolean VID_LoadRefresh(char *name)
 {
-	refimport_t  ri;
-	GetRefAPI_t  GetRefAPI;
-	char         fn[MAX_OSPATH];
-	struct stat  st;
+	refimport_t ri;
+	GetRefAPI_t GetRefAPI;
+	char fn[MAX_OSPATH];
+	struct stat st;
 	extern uid_t saved_euid;
-	FILE *       fp;
+	FILE *fp;
 
 	if(reflib_active)
 	{
@@ -195,7 +186,7 @@ qboolean VID_LoadRefresh(char *name)
 			KBD_Close_fp();
 		if(RW_IN_Shutdown_fp)
 			RW_IN_Shutdown_fp();
-		KBD_Close_fp      = NULL;
+		KBD_Close_fp = NULL;
 		RW_IN_Shutdown_fp = NULL;
 		re.Shutdown();
 		VID_FreeReflib();
@@ -203,12 +194,14 @@ qboolean VID_LoadRefresh(char *name)
 
 	Com_Printf("------- Loading %s -------\n", name);
 
-	//regain root
+	// regain root
 	seteuid(saved_euid);
 
 	if((fp = fopen(SO_FILE, "r")) == NULL)
 	{
-		Com_Printf("LoadLibrary(\"%s\") failed: can't open " SO_FILE " (required for location of ref libraries)\n", name);
+		Com_Printf("LoadLibrary(\"%s\") failed: can't open " SO_FILE
+		           " (required for location of ref libraries)\n",
+		           name);
 		return false;
 	}
 	fgets(fn, sizeof(fn), fp);
@@ -229,7 +222,8 @@ qboolean VID_LoadRefresh(char *name)
 		}
 		if(st.st_uid != 0)
 		{
-			Com_Printf("LoadLibrary(\"%s\") failed: ref is not owned by root\n", name);
+			Com_Printf("LoadLibrary(\"%s\") failed: ref is not owned by root\n",
+			           name);
 			return false;
 		}
 #if 0
@@ -252,22 +246,22 @@ qboolean VID_LoadRefresh(char *name)
 		return false;
 	}
 
-	ri.Cmd_AddCommand    = Cmd_AddCommand;
+	ri.Cmd_AddCommand = Cmd_AddCommand;
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
-	ri.Cmd_Argc          = Cmd_Argc;
-	ri.Cmd_Argv          = Cmd_Argv;
-	ri.Cmd_ExecuteText   = Cbuf_ExecuteText;
-	ri.Con_Printf        = VID_Printf;
-	ri.Sys_Error         = VID_Error;
-	ri.FS_LoadFile       = FS_LoadFile;
-	ri.FS_FreeFile       = FS_FreeFile;
-	ri.FS_Gamedir        = FS_Gamedir;
-	ri.Cvar_Get          = Cvar_Get;
-	ri.Cvar_Set          = Cvar_Set;
-	ri.Cvar_SetValue     = Cvar_SetValue;
-	ri.Vid_GetModeInfo   = VID_GetModeInfo;
-	ri.Vid_MenuInit      = VID_MenuInit;
-	ri.Vid_NewWindow     = VID_NewWindow;
+	ri.Cmd_Argc = Cmd_Argc;
+	ri.Cmd_Argv = Cmd_Argv;
+	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
+	ri.Con_Printf = VID_Printf;
+	ri.Sys_Error = VID_Error;
+	ri.FS_LoadFile = FS_LoadFile;
+	ri.FS_FreeFile = FS_FreeFile;
+	ri.FS_Gamedir = FS_Gamedir;
+	ri.Cvar_Get = Cvar_Get;
+	ri.Cvar_Set = Cvar_Set;
+	ri.Cvar_SetValue = Cvar_SetValue;
+	ri.Vid_GetModeInfo = VID_GetModeInfo;
+	ri.Vid_MenuInit = VID_MenuInit;
+	ri.Vid_NewWindow = VID_NewWindow;
 
 	if((GetRefAPI = (void *)dlsym(reflib_library, "GetRefAPI")) == 0)
 		Com_Error(ERR_FATAL, "dlsym failed on %s", name);
@@ -282,9 +276,9 @@ qboolean VID_LoadRefresh(char *name)
 
 	/* Init IN (Mouse) */
 	in_state.IN_CenterView_fp = IN_CenterView;
-	in_state.Key_Event_fp     = Do_Key_Event;
-	in_state.viewangles       = cl.viewangles;
-	in_state.in_strafe_state  = &in_strafe.state;
+	in_state.Key_Event_fp = Do_Key_Event;
+	in_state.viewangles = cl.viewangles;
+	in_state.in_strafe_state = &in_strafe.state;
 
 	if((RW_IN_Init_fp = dlsym(reflib_library, "RW_IN_Init")) == NULL ||
 	   (RW_IN_Shutdown_fp = dlsym(reflib_library, "RW_IN_Shutdown")) == NULL ||
@@ -315,9 +309,9 @@ qboolean VID_LoadRefresh(char *name)
 		void KBD_Update(void);
 		void KBD_Close(void);
 
-		KBD_Init_fp   = KBD_Init;
+		KBD_Init_fp = KBD_Init;
 		KBD_Update_fp = KBD_Update;
-		KBD_Close_fp  = KBD_Close;
+		KBD_Close_fp = KBD_Close;
 	}
 #endif
 	KBD_Init_fp(Do_Key_Event);
@@ -335,14 +329,16 @@ qboolean VID_LoadRefresh(char *name)
 ============
 VID_CheckChanges
 
-This function gets called once just before drawing each frame, and it's sole purpose in life
-is to check to see if any of the video mode parameters have changed, and if they have to 
+This function gets called once just before drawing each frame, and it's sole
+purpose in life
+is to check to see if any of the video mode parameters have changed, and if they
+have to
 update the rendering DLL and/or video mode to match.
 ============
 */
 void VID_CheckChanges(void)
 {
-	char    name[100];
+	char name[100];
 	cvar_t *sw_mode;
 
 	if(vid_ref->modified)
@@ -353,12 +349,12 @@ void VID_CheckChanges(void)
 	while(vid_ref->modified)
 	{
 		/*
-		** refresh has changed
-		*/
-		vid_ref->modified        = false;
+    ** refresh has changed
+    */
+		vid_ref->modified = false;
 		vid_fullscreen->modified = true;
-		cl.refresh_prepped       = false;
-		cls.disable_screen       = true;
+		cl.refresh_prepped = false;
+		cls.disable_screen = true;
 
 		sprintf(name, "ref_%s.so", vid_ref->string);
 		if(!VID_LoadRefresh(name))
@@ -382,8 +378,8 @@ void VID_CheckChanges(void)
 			Cvar_Set("vid_ref", "soft");
 
 			/*
-			** drop the console if we fail to load a refresh
-			*/
+      ** drop the console if we fail to load a refresh
+      */
 			if(cls.key_dest != key_console)
 			{
 				Con_ToggleConsole_f();
@@ -405,11 +401,11 @@ void VID_Init(void)
 	if(getenv("DISPLAY"))
 		vid_ref = Cvar_Get("vid_ref", "softx", CVAR_ARCHIVE);
 	else
-		vid_ref    = Cvar_Get("vid_ref", "soft", CVAR_ARCHIVE);
-	vid_xpos       = Cvar_Get("vid_xpos", "3", CVAR_ARCHIVE);
-	vid_ypos       = Cvar_Get("vid_ypos", "22", CVAR_ARCHIVE);
+		vid_ref = Cvar_Get("vid_ref", "soft", CVAR_ARCHIVE);
+	vid_xpos = Cvar_Get("vid_xpos", "3", CVAR_ARCHIVE);
+	vid_ypos = Cvar_Get("vid_ypos", "22", CVAR_ARCHIVE);
 	vid_fullscreen = Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-	vid_gamma      = Cvar_Get("vid_gamma", "1", CVAR_ARCHIVE);
+	vid_gamma = Cvar_Get("vid_gamma", "1", CVAR_ARCHIVE);
 
 	/* Add some console commands that we want to handle */
 	Cmd_AddCommand("vid_restart", VID_Restart_f);
@@ -434,7 +430,7 @@ void VID_Shutdown(void)
 			KBD_Close_fp();
 		if(RW_IN_Shutdown_fp)
 			RW_IN_Shutdown_fp();
-		KBD_Close_fp      = NULL;
+		KBD_Close_fp = NULL;
 		RW_IN_Shutdown_fp = NULL;
 		re.Shutdown();
 		VID_FreeReflib();

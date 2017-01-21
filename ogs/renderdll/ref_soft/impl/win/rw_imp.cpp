@@ -45,13 +45,13 @@ swwstate_t sww_state;
 void VID_CreateWindow(int width, int height, int stylebits)
 {
 	WNDCLASS wc;
-	RECT     r;
-	cvar_t * vid_xpos, *vid_ypos, *vid_fullscreen;
-	int      x, y, w, h;
-	int      exstyle;
+	RECT r;
+	cvar_t *vid_xpos, *vid_ypos, *vid_fullscreen;
+	int x, y, w, h;
+	int exstyle;
 
-	vid_xpos       = ri.Cvar_Get("vid_xpos", "0", 0);
-	vid_ypos       = ri.Cvar_Get("vid_ypos", "0", 0);
+	vid_xpos = ri.Cvar_Get("vid_xpos", "0", 0);
+	vid_ypos = ri.Cvar_Get("vid_ypos", "0", 0);
 	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 
 	if(vid_fullscreen->value)
@@ -60,23 +60,23 @@ void VID_CreateWindow(int width, int height, int stylebits)
 		exstyle = 0;
 
 	/* Register the frame class */
-	wc.style         = 0;
-	wc.lpfnWndProc   = (WNDPROC)sww_state.wndproc;
-	wc.cbClsExtra    = 0;
-	wc.cbWndExtra    = 0;
-	wc.hInstance     = sww_state.hInstance;
-	wc.hIcon         = 0;
-	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wc.style = 0;
+	wc.lpfnWndProc = (WNDPROC)sww_state.wndproc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = sww_state.hInstance;
+	wc.hIcon = 0;
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (void *)COLOR_GRAYTEXT;
-	wc.lpszMenuName  = 0;
+	wc.lpszMenuName = 0;
 	wc.lpszClassName = WINDOW_CLASS_NAME;
 
 	if(!RegisterClass(&wc))
 		ri.Sys_Error(ERR_FATAL, "Couldn't register window class");
 
-	r.left   = 0;
-	r.top    = 0;
-	r.right  = width;
+	r.left = 0;
+	r.top = 0;
+	r.right = width;
 	r.bottom = height;
 
 	AdjustWindowRect(&r, stylebits, FALSE);
@@ -87,15 +87,15 @@ void VID_CreateWindow(int width, int height, int stylebits)
 	y = vid_ypos->value;
 
 	sww_state.hWnd = CreateWindowEx(
-	    exstyle,
-	    WINDOW_CLASS_NAME,
-	    "Quake 2",
-	    stylebits,
-	    x, y, w, h,
-	    NULL,
-	    NULL,
-	    sww_state.hInstance,
-	    NULL);
+	exstyle,
+	WINDOW_CLASS_NAME,
+	"Quake 2",
+	stylebits,
+	x, y, w, h,
+	NULL,
+	NULL,
+	sww_state.hInstance,
+	NULL);
 
 	if(!sww_state.hWnd)
 		ri.Sys_Error(ERR_FATAL, "Couldn't create window");
@@ -118,7 +118,7 @@ void VID_CreateWindow(int width, int height, int stylebits)
 int SWimp_Init(void *hInstance, void *wndProc)
 {
 	sww_state.hInstance = (HINSTANCE)hInstance;
-	sww_state.wndproc   = wndProc;
+	sww_state.wndproc = wndProc;
 
 	return true;
 }
@@ -146,7 +146,7 @@ static qboolean SWimp_InitGraphics(qboolean fullscreen)
 	{
 		if(!DIB_Init(&vid.buffer, &vid.rowbytes))
 		{
-			vid.buffer   = 0;
+			vid.buffer = 0;
 			vid.rowbytes = 0;
 
 			return false;
@@ -156,7 +156,7 @@ static qboolean SWimp_InitGraphics(qboolean fullscreen)
 	{
 		if(!DDRAW_Init(&vid.buffer, &vid.rowbytes))
 		{
-			vid.buffer   = 0;
+			vid.buffer = 0;
 			vid.rowbytes = 0;
 
 			return false;
@@ -198,13 +198,13 @@ void SWimp_EndFrame(void)
 	}
 	else
 	{
-		RECT          r;
-		HRESULT       rval;
+		RECT r;
+		HRESULT rval;
 		DDSURFACEDESC ddsd;
 
-		r.left   = 0;
-		r.top    = 0;
-		r.right  = vid.width;
+		r.left = 0;
+		r.top = 0;
+		r.right = vid.width;
 		r.bottom = vid.height;
 
 		sww_state.lpddsOffScreenBuffer->lpVtbl->Unlock(sww_state.lpddsOffScreenBuffer, vid.buffer);
@@ -254,7 +254,7 @@ void SWimp_EndFrame(void)
 
 		sww_state.lpddsOffScreenBuffer->lpVtbl->Lock(sww_state.lpddsOffScreenBuffer, NULL, &ddsd, DDLOCK_WAIT, NULL);
 
-		vid.buffer   = ddsd.lpSurface;
+		vid.buffer = ddsd.lpSurface;
 		vid.rowbytes = ddsd.lPitch;
 	}
 }
@@ -264,8 +264,8 @@ void SWimp_EndFrame(void)
 */
 rserr_t SWimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 {
-	const char *win_fs[] = {"W", "FS"};
-	rserr_t     retval   = rserr_ok;
+	const char *win_fs[] = { "W", "FS" };
+	rserr_t retval = rserr_ok;
 
 	ri.Con_Printf(PRINT_ALL, "setting mode %d:", mode);
 
@@ -286,7 +286,7 @@ rserr_t SWimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 			{
 				// mode is legal but not as fullscreen
 				fullscreen = 0;
-				retval     = rserr_invalid_fullscreen;
+				retval = rserr_invalid_fullscreen;
 			}
 			else
 			{
@@ -443,27 +443,27 @@ void Sys_SetFPCW(void)
 {
 	__asm xor eax, eax
 
-	    __asm fnstcw word ptr fpu_cw __asm mov ax,
-	    word ptr fpu_cw
+	__asm fnstcw word ptr fpu_cw __asm mov ax,
+	word ptr fpu_cw
 
-	    __asm and ah,
-	    0f0h __asm or ah, 003h;
+	__asm and ah,
+	0f0h __asm or ah, 003h;
 	round to nearest mode, extended precision __asm mov fpu_full_cw, eax
 
-	    __asm and ah,
-	    0f0h __asm or ah, 00fh;
+	__asm and ah,
+	0f0h __asm or ah, 00fh;
 	RTZ / truncate / chop mode, extended precision __asm mov fpu_chop_cw, eax
 
-	    __asm and ah,
-	    0f0h __asm or ah, 00bh;
+	__asm and ah,
+	0f0h __asm or ah, 00bh;
 	ceil mode, extended precision __asm mov fpu_ceil_cw, eax
 
-	    __asm and ah,
-	    0f0h;
+	__asm and ah,
+	0f0h;
 	round to nearest, 24 - bit single precision __asm mov fpu_sp24_cw, eax
 
-	    __asm and ah,
-	    0f0h;
+	__asm and ah,
+	0f0h;
 	ceil mode, 24 - bit single precision __asm or ah, 008h;
 	__asm mov fpu_sp24_ceil_cw, eax
 }

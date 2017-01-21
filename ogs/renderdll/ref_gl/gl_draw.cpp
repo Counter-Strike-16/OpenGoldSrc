@@ -33,7 +33,7 @@
 image_t *draw_chars;
 
 extern qboolean scrap_dirty;
-void            Scrap_Upload();
+void Scrap_Upload();
 
 /*
 ===============
@@ -60,7 +60,7 @@ smoothly scrolled off.
 */
 void Draw_Char(int x, int y, int num)
 {
-	int   row, col;
+	int row, col;
 	float frow, fcol, size;
 
 	num &= 255;
@@ -100,7 +100,7 @@ Draw_FindPic
 image_t *Draw_FindPic(char *name)
 {
 	image_t *gl;
-	char     fullname[MAX_QPATH];
+	char fullname[MAX_QPATH];
 
 	if(name[0] != '/' && name[0] != '\\')
 	{
@@ -257,7 +257,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 	union
 	{
 		unsigned c;
-		byte     v[4];
+		byte v[4];
 	} color;
 
 	if((unsigned)c > 255)
@@ -319,26 +319,26 @@ extern unsigned r_rawpalette[256];
 
 void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data)
 {
-	unsigned      image32[256 * 256];
+	unsigned image32[256 * 256];
 	unsigned char image8[256 * 256];
-	int           i, j, trows;
-	byte *        source;
-	int           frac, fracstep;
-	float         hscale;
-	int           row;
-	float         t;
+	int i, j, trows;
+	byte *source;
+	int frac, fracstep;
+	float hscale;
+	int row;
+	float t;
 
 	GL_Bind(0);
 
 	if(rows <= 256)
 	{
 		hscale = 1;
-		trows  = rows;
+		trows = rows;
 	}
 	else
 	{
 		hscale = rows / 256.0;
-		trows  = 256;
+		trows = 256;
 	}
 	t = rows * hscale / 256;
 
@@ -351,10 +351,10 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data)
 			row = (int)(i * hscale);
 			if(row > rows)
 				break;
-			source   = data + cols * row;
-			dest     = &image32[i * 256];
+			source = data + cols * row;
+			dest = &image32[i * 256];
 			fracstep = cols * 0x10000 / 256;
-			frac     = fracstep >> 1;
+			frac = fracstep >> 1;
 			for(j = 0; j < 256; j++)
 			{
 				dest[j] = r_rawpalette[source[frac >> 16]];
@@ -373,10 +373,10 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data)
 			row = (int)(i * hscale);
 			if(row > rows)
 				break;
-			source   = data + cols * row;
-			dest     = &image8[i * 256];
+			source = data + cols * row;
+			dest = &image8[i * 256];
 			fracstep = cols * 0x10000 / 256;
-			frac     = fracstep >> 1;
+			frac = fracstep >> 1;
 			for(j = 0; j < 256; j++)
 			{
 				dest[j] = source[frac >> 16];

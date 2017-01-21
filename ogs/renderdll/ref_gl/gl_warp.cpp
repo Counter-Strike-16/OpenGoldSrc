@@ -33,9 +33,9 @@
 
 extern model_t *loadmodel;
 
-char     skyname[MAX_QPATH];
-float    skyrotate;
-vec3_t   skyaxis;
+char skyname[MAX_QPATH];
+float skyrotate;
+vec3_t skyaxis;
 image_t *sky_images[6];
 
 msurface_t *warpface;
@@ -45,12 +45,12 @@ msurface_t *warpface;
 
 void BoundPoly(int numverts, float *verts, vec3_t mins, vec3_t maxs)
 {
-	int    i, j;
+	int i, j;
 	float *v;
 
 	mins[0] = mins[1] = mins[2] = 9999;
 	maxs[0] = maxs[1] = maxs[2] = -9999;
-	v                           = verts;
+	v = verts;
 	for(i = 0; i < numverts; i++)
 		for(j = 0; j < 3; j++, v++)
 		{
@@ -63,18 +63,18 @@ void BoundPoly(int numverts, float *verts, vec3_t mins, vec3_t maxs)
 
 void SubdividePolygon(int numverts, float *verts)
 {
-	int       i, j, k;
-	vec3_t    mins, maxs;
-	float     m;
-	float *   v;
-	vec3_t    front[64], back[64];
-	int       f, b;
-	float     dist[64];
-	float     frac;
+	int i, j, k;
+	vec3_t mins, maxs;
+	float m;
+	float *v;
+	vec3_t front[64], back[64];
+	int f, b;
+	float dist[64];
+	float frac;
 	glpoly_t *poly;
-	float     s, t;
-	vec3_t    total;
-	float     total_s, total_t;
+	float s, t;
+	vec3_t total;
+	float total_s, total_t;
 
 	if(numverts > 60)
 		ri.Sys_Error(ERR_DROP, "numverts = %i", numverts);
@@ -92,7 +92,7 @@ void SubdividePolygon(int numverts, float *verts)
 
 		// cut it
 		v = verts + i;
-		for(j       = 0; j < numverts; j++, v += 3)
+		for(j = 0; j < numverts; j++, v += 3)
 			dist[j] = *v - m;
 
 		// wrap cases
@@ -101,7 +101,7 @@ void SubdividePolygon(int numverts, float *verts)
 		VectorCopy(verts, v);
 
 		f = b = 0;
-		v     = verts;
+		v = verts;
 		for(j = 0; j < numverts; j++, v += 3)
 		{
 			if(dist[j] >= 0)
@@ -120,7 +120,7 @@ void SubdividePolygon(int numverts, float *verts)
 			{
 				// clip point
 				frac = dist[j] / (dist[j] - dist[j + 1]);
-				for(k           = 0; k < 3; k++)
+				for(k = 0; k < 3; k++)
 					front[f][k] = back[b][k] = v[k] + frac * (v[3 + k] - v[k]);
 				f++;
 				b++;
@@ -133,10 +133,10 @@ void SubdividePolygon(int numverts, float *verts)
 	}
 
 	// add a point in the center to help keep warp valid
-	poly            = Hunk_Alloc(sizeof(glpoly_t) + ((numverts - 4) + 2) * VERTEXSIZE * sizeof(float));
-	poly->next      = warpface->polys;
+	poly = Hunk_Alloc(sizeof(glpoly_t) + ((numverts - 4) + 2) * VERTEXSIZE * sizeof(float));
+	poly->next = warpface->polys;
 	warpface->polys = poly;
-	poly->numverts  = numverts + 2;
+	poly->numverts = numverts + 2;
 	VectorClear(total);
 	total_s = 0;
 	total_t = 0;
@@ -174,9 +174,9 @@ can be done reasonably.
 void GL_SubdivideSurface(msurface_t *fa)
 {
 	vec3_t verts[64];
-	int    numverts;
-	int    i;
-	int    lindex;
+	int numverts;
+	int i;
+	int lindex;
 	float *vec;
 
 	warpface = fa;
@@ -204,7 +204,7 @@ void GL_SubdivideSurface(msurface_t *fa)
 
 // speed up sin calculations - Ed
 float r_turbsin[] =
-    {
+{
 #include "warpsin.h"
 };
 #define TURBSCALE (256.0 / (2 * M_PI))
@@ -219,11 +219,11 @@ Does a water warp on the pre-fragmented glpoly_t chain
 void EmitWaterPolys(msurface_t *fa)
 {
 	glpoly_t *p, *bp;
-	float *   v;
-	int       i;
-	float     s, t, os, ot;
-	float     scroll;
-	float     rdt = r_newrefdef.time;
+	float *v;
+	int i;
+	float s, t, os, ot;
+	float scroll;
+	float rdt = r_newrefdef.time;
 
 	if(fa->texinfo->flags & SURF_FLOWING)
 		scroll = -64 * ((r_newrefdef.time * 0.5) - (int)(r_newrefdef.time * 0.5));
@@ -264,44 +264,45 @@ void EmitWaterPolys(msurface_t *fa)
 //===================================================================
 
 vec3_t skyclip[6] = {
-    {1, 1, 0},
-    {1, -1, 0},
-    {0, -1, 1},
-    {0, 1, 1},
-    {1, 0, 1},
-    {-1, 0, 1}};
+	{ 1, 1, 0 },
+	{ 1, -1, 0 },
+	{ 0, -1, 1 },
+	{ 0, 1, 1 },
+	{ 1, 0, 1 },
+	{ -1, 0, 1 }
+};
 int c_sky;
 
 // 1 = s, 2 = t, 3 = 2048
 int st_to_vec[6][3] =
-    {
-        {3, -1, 2},
-        {-3, 1, 2},
+{
+  { 3, -1, 2 },
+  { -3, 1, 2 },
 
-        {1, 3, 2},
-        {-1, -3, 2},
+  { 1, 3, 2 },
+  { -1, -3, 2 },
 
-        {-2, -1, 3}, // 0 degrees yaw, look straight up
-        {2, -1, -3}  // look straight down
+  { -2, -1, 3 }, // 0 degrees yaw, look straight up
+  { 2, -1, -3 }  // look straight down
 
-        //	{-1,2,3},
-        //	{1,2,-3}
+  //	{-1,2,3},
+  //	{1,2,-3}
 };
 
 // s = [0]/[2], t = [1]/[2]
 int vec_to_st[6][3] =
-    {
-        {-2, 3, 1},
-        {2, 3, -1},
+{
+  { -2, 3, 1 },
+  { 2, 3, -1 },
 
-        {1, 3, 2},
-        {-1, 3, -2},
+  { 1, 3, 2 },
+  { -1, 3, -2 },
 
-        {-2, -1, 3},
-        {-2, 1, -3}
+  { -2, -1, 3 },
+  { -2, 1, -3 }
 
-        //	{-1,2,3},
-        //	{1,2,-3}
+  //	{-1,2,3},
+  //	{1,2,-3}
 };
 
 float skymins[2][6], skymaxs[2][6];
@@ -309,10 +310,10 @@ float sky_min, sky_max;
 
 void DrawSkyPolygon(int nump, vec3_t vecs)
 {
-	int    i, j;
+	int i, j;
 	vec3_t v, av;
-	float  s, t, dv;
-	int    axis;
+	float s, t, dv;
+	int axis;
 	float *vp;
 
 	c_sky++;
@@ -372,7 +373,7 @@ return;
 			s = -vecs[-j - 1] / dv;
 		else
 			s = vecs[j - 1] / dv;
-		j     = vec_to_st[axis][1];
+		j = vec_to_st[axis][1];
 		if(j < 0)
 			t = -vecs[-j - 1] / dv;
 		else
@@ -393,15 +394,15 @@ return;
 #define MAX_CLIP_VERTS 64
 void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 {
-	float *  norm;
-	float *  v;
+	float *norm;
+	float *v;
 	qboolean front, back;
-	float    d, e;
-	float    dists[MAX_CLIP_VERTS];
-	int      sides[MAX_CLIP_VERTS];
-	vec3_t   newv[2][MAX_CLIP_VERTS];
-	int      newc[2];
-	int      i, j;
+	float d, e;
+	float dists[MAX_CLIP_VERTS];
+	int sides[MAX_CLIP_VERTS];
+	vec3_t newv[2][MAX_CLIP_VERTS];
+	int newc[2];
+	int i, j;
 
 	if(nump > MAX_CLIP_VERTS - 2)
 		ri.Sys_Error(ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
@@ -412,23 +413,23 @@ void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 	}
 
 	front = back = false;
-	norm         = skyclip[stage];
+	norm = skyclip[stage];
 	for(i = 0, v = vecs; i < nump; i++, v += 3)
 	{
 		d = DotProduct(v, norm);
 		if(d > ON_EPSILON)
 		{
-			front    = true;
+			front = true;
 			sides[i] = SIDE_FRONT;
 		}
 		else if(d < -ON_EPSILON)
 		{
-			back     = true;
+			back = true;
 			sides[i] = SIDE_BACK;
 		}
 		else
 			sides[i] = SIDE_ON;
-		dists[i]     = d;
+		dists[i] = d;
 	}
 
 	if(!front || !back)
@@ -469,7 +470,7 @@ void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 		d = dists[i] / (dists[i] - dists[i + 1]);
 		for(j = 0; j < 3; j++)
 		{
-			e                   = v[j] + d * (v[j + 3] - v[j]);
+			e = v[j] + d * (v[j + 3] - v[j]);
 			newv[0][newc[0]][j] = e;
 			newv[1][newc[1]][j] = e;
 		}
@@ -489,8 +490,8 @@ R_AddSkySurface
 */
 void R_AddSkySurface(msurface_t *fa)
 {
-	int       i;
-	vec3_t    verts[MAX_CLIP_VERTS];
+	int i;
+	vec3_t verts[MAX_CLIP_VERTS];
 	glpoly_t *p;
 
 	// calculate vertex values for sky box
@@ -523,7 +524,7 @@ void R_ClearSkyBox()
 void MakeSkyVec(float s, float t, int axis)
 {
 	vec3_t v, b;
-	int    j, k;
+	int j, k;
 
 	b[0] = s * 2300;
 	b[1] = t * 2300;
@@ -561,7 +562,7 @@ void MakeSkyVec(float s, float t, int axis)
 R_DrawSkyBox
 ==============
 */
-int  skytexorder[6] = {0, 2, 1, 3, 4, 5};
+int skytexorder[6] = { 0, 2, 1, 3, 4, 5 };
 void R_DrawSkyBox()
 {
 	int i;
@@ -622,10 +623,10 @@ R_SetSky
 ============
 */
 // 3dstudio environment map names
-char *suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
+char *suf[6] = { "rt", "bk", "lf", "ft", "up", "dn" };
 void R_SetSky(char *name, float rotate, vec3_t axis)
 {
-	int  i;
+	int i;
 	char pathname[MAX_QPATH];
 
 	strncpy(skyname, name, sizeof(skyname) - 1);

@@ -48,7 +48,9 @@
 #define SND_FL_STOP BIT(5)         // stop the sound
 #define SND_FL_CHANGE_VOL BIT(6)   // change sound vol
 #define SND_FL_CHANGE_PITCH BIT(7) // change sound pitch
-#define SND_FL_SPAWNING BIT(8)     // we're spawning, used in some cases for ambients (not sent across network)
+#define SND_FL_SPAWNING \
+	BIT(8) // we're spawning, used in some cases for ambients (not sent across
+           // network)
 
 // Message send destination flags
 #define MSG_FL_NONE 0           // No flags
@@ -72,15 +74,15 @@
 #define MAX_RESOURCE_LIST 1280
 
 typedef enum redirect_e {
-	RD_NONE   = 0,
+	RD_NONE = 0,
 	RD_CLIENT = 1,
 	RD_PACKET = 2,
 } redirect_t;
 
 typedef enum server_state_e {
-	ss_dead    = 0,
+	ss_dead = 0,
 	ss_loading = 1,
-	ss_active  = 2,
+	ss_active = 2,
 } server_state_t;
 
 typedef enum sv_delta_s {

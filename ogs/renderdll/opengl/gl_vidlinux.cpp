@@ -48,23 +48,23 @@ static fxMesaContext fc = NULL;
 	}
 
 unsigned short d_8to16table[256];
-unsigned       d_8to24table[256];
-unsigned char  d_15to8table[65536];
+unsigned d_8to24table[256];
+unsigned char d_15to8table[65536];
 
 int num_shades = 32;
 
 struct
 {
 	char *name;
-	int   num;
+	int num;
 } mice[] =
-    {
-        stringify(MOUSE_MICROSOFT),
-        stringify(MOUSE_MOUSESYSTEMS),
-        stringify(MOUSE_MMSERIES),
-        stringify(MOUSE_LOGITECH),
-        stringify(MOUSE_BUSMOUSE),
-        stringify(MOUSE_PS2),
+{
+  stringify(MOUSE_MICROSOFT),
+  stringify(MOUSE_MOUSESYSTEMS),
+  stringify(MOUSE_MMSERIES),
+  stringify(MOUSE_LOGITECH),
+  stringify(MOUSE_BUSMOUSE),
+  stringify(MOUSE_PS2),
 };
 
 static unsigned char scantokey[128];
@@ -74,32 +74,32 @@ int num_mice = sizeof(mice) / sizeof(mice[0]);
 int d_con_indirect = 0;
 
 int svgalib_inited = 0;
-int UseMouse       = 1;
-int UseKeyboard    = 1;
+int UseMouse = 1;
+int UseKeyboard = 1;
 
 int mouserate = MOUSE_DEFAULTSAMPLERATE;
 
-cvar_t vid_mode           = {"vid_mode", "5", false};
-cvar_t vid_redrawfull     = {"vid_redrawfull", "0", false};
-cvar_t vid_waitforrefresh = {"vid_waitforrefresh", "0", true};
+cvar_t vid_mode = { "vid_mode", "5", false };
+cvar_t vid_redrawfull = { "vid_redrawfull", "0", false };
+cvar_t vid_waitforrefresh = { "vid_waitforrefresh", "0", true };
 
 char *framebuffer_ptr;
 
 cvar_t mouse_button_commands[3] =
-    {
-        {"mouse1", "+attack"},
-        {"mouse2", "+strafe"},
-        {"mouse3", "+forward"},
+{
+  { "mouse1", "+attack" },
+  { "mouse2", "+strafe" },
+  { "mouse3", "+forward" },
 };
 
-int   mouse_buttons;
-int   mouse_buttonstate;
-int   mouse_oldbuttonstate;
+int mouse_buttons;
+int mouse_buttonstate;
+int mouse_oldbuttonstate;
 float mouse_x, mouse_y;
 float old_mouse_x, old_mouse_y;
-int   mx, my;
+int mx, my;
 
-cvar_t m_filter = {"m_filter", "1"};
+cvar_t m_filter = { "m_filter", "1" };
 
 int scr_width, scr_height;
 
@@ -116,7 +116,7 @@ int texture_extension_number = 1;
 
 float gldepthmin, gldepthmax;
 
-cvar_t gl_ztrick = {"gl_ztrick", "1"};
+cvar_t gl_ztrick = { "gl_ztrick", "1" };
 
 const char *gl_vendor;
 const char *gl_renderer;
@@ -128,8 +128,8 @@ void (*qglColorTableEXT)(int, int, int, int, int, const void *);
 
 static float vid_gamma = 1.0;
 
-qboolean is8bit      = false;
-qboolean isPermedia  = false;
+qboolean is8bit = false;
+qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 /*-----------------------------------------------------------------------*/
@@ -217,22 +217,22 @@ void VID_ShiftPalette(unsigned char *p)
 
 void VID_SetPalette(unsigned char *palette)
 {
-	byte *          pal;
-	unsigned        r, g, b;
-	unsigned        v;
-	int             r1, g1, b1;
-	int             j, k, l, m;
-	unsigned short  i;
-	unsigned *      table;
-	FILE *          f;
-	char            s[255];
-	int             dist, bestdist;
+	byte *pal;
+	unsigned r, g, b;
+	unsigned v;
+	int r1, g1, b1;
+	int j, k, l, m;
+	unsigned short i;
+	unsigned *table;
+	FILE *f;
+	char s[255];
+	int dist, bestdist;
 	static qboolean palflag = false;
 
 	//
 	// 8 8 8 encoding
 	//
-	pal   = palette;
+	pal = palette;
 	table = d_8to24table;
 	for(i = 0; i < 256; i++)
 	{
@@ -241,7 +241,7 @@ void VID_SetPalette(unsigned char *palette)
 		b = pal[2];
 		pal += 3;
 
-		v        = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
+		v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
 		*table++ = v;
 	}
 	d_8to24table[255] &= 0xffffff; // 255 is transparent
@@ -255,19 +255,19 @@ void VID_SetPalette(unsigned char *palette)
 		000001111100000 = Blue = 0x03E0
 		111110000000000 = Grn  = 0x7C00
 		*/
-		r   = ((i & 0x1F) << 3) + 4;
-		g   = ((i & 0x03E0) >> 2) + 4;
-		b   = ((i & 0x7C00) >> 7) + 4;
+		r = ((i & 0x1F) << 3) + 4;
+		g = ((i & 0x03E0) >> 2) + 4;
+		b = ((i & 0x7C00) >> 7) + 4;
 		pal = (unsigned char *)d_8to24table;
 		for(v = 0, k = 0, bestdist = 10000 * 10000; v < 256; v++, pal += 4)
 		{
-			r1   = (int)r - (int)pal[0];
-			g1   = (int)g - (int)pal[1];
-			b1   = (int)b - (int)pal[2];
+			r1 = (int)r - (int)pal[0];
+			g1 = (int)g - (int)pal[1];
+			b1 = (int)b - (int)pal[2];
 			dist = (r1 * r1) + (g1 * g1) + (b1 * b1);
 			if(dist < bestdist)
 			{
-				k        = v;
+				k = v;
 				bestdist = dist;
 			}
 		}
@@ -289,7 +289,7 @@ void CheckMultiTextureExtensions(void)
 			return;
 		}
 
-		qglMTexCoord2fSGIS   = (void *)dlsym(prjobj, "glMTexCoord2fSGIS");
+		qglMTexCoord2fSGIS = (void *)dlsym(prjobj, "glMTexCoord2fSGIS");
 		qglSelectTextureSGIS = (void *)dlsym(prjobj, "glSelectTextureSGIS");
 
 		if(qglMTexCoord2fSGIS && qglSelectTextureSGIS)
@@ -357,7 +357,7 @@ void GL_BeginRendering(int *x, int *y, int *width, int *height)
 	extern cvar_t gl_clear;
 
 	*x = *y = 0;
-	*width  = scr_width;
+	*width = scr_width;
 	*height = scr_height;
 
 	//    if (!wglMakeCurrent( maindc, baseRC ))
@@ -381,37 +381,37 @@ void Init_KBD(void)
 
 	if(UseKeyboard)
 	{
-		for(i            = 0; i < 128; i++)
+		for(i = 0; i < 128; i++)
 			scantokey[i] = ' ';
 
-		scantokey[42]  = K_SHIFT;
-		scantokey[54]  = K_SHIFT;
-		scantokey[72]  = K_UPARROW;
+		scantokey[42] = K_SHIFT;
+		scantokey[54] = K_SHIFT;
+		scantokey[72] = K_UPARROW;
 		scantokey[103] = K_UPARROW;
-		scantokey[80]  = K_DOWNARROW;
+		scantokey[80] = K_DOWNARROW;
 		scantokey[108] = K_DOWNARROW;
-		scantokey[75]  = K_LEFTARROW;
+		scantokey[75] = K_LEFTARROW;
 		scantokey[105] = K_LEFTARROW;
-		scantokey[77]  = K_RIGHTARROW;
+		scantokey[77] = K_RIGHTARROW;
 		scantokey[106] = K_RIGHTARROW;
-		scantokey[29]  = K_CTRL;
-		scantokey[97]  = K_CTRL;
-		scantokey[56]  = K_ALT;
+		scantokey[29] = K_CTRL;
+		scantokey[97] = K_CTRL;
+		scantokey[56] = K_ALT;
 		scantokey[100] = K_ALT;
 		//		scantokey[58] = JK_CAPS;
 		//		scantokey[69] = JK_NUM_LOCK;
-		scantokey[71]  = K_HOME;
-		scantokey[73]  = K_PGUP;
-		scantokey[79]  = K_END;
-		scantokey[81]  = K_PGDN;
-		scantokey[82]  = K_INS;
-		scantokey[83]  = K_DEL;
-		scantokey[1]   = K_ESCAPE;
-		scantokey[28]  = K_ENTER;
-		scantokey[15]  = K_TAB;
-		scantokey[14]  = K_BACKSPACE;
+		scantokey[71] = K_HOME;
+		scantokey[73] = K_PGUP;
+		scantokey[79] = K_END;
+		scantokey[81] = K_PGDN;
+		scantokey[82] = K_INS;
+		scantokey[83] = K_DEL;
+		scantokey[1] = K_ESCAPE;
+		scantokey[28] = K_ENTER;
+		scantokey[15] = K_TAB;
+		scantokey[14] = K_BACKSPACE;
 		scantokey[119] = K_PAUSE;
-		scantokey[57]  = ' ';
+		scantokey[57] = ' ';
 
 		scantokey[102] = K_HOME;
 		scantokey[104] = K_PGUP;
@@ -420,14 +420,14 @@ void Init_KBD(void)
 		scantokey[110] = K_INS;
 		scantokey[111] = K_DEL;
 
-		scantokey[2]  = '1';
-		scantokey[3]  = '2';
-		scantokey[4]  = '3';
-		scantokey[5]  = '4';
-		scantokey[6]  = '5';
-		scantokey[7]  = '6';
-		scantokey[8]  = '7';
-		scantokey[9]  = '8';
+		scantokey[2] = '1';
+		scantokey[3] = '2';
+		scantokey[4] = '3';
+		scantokey[5] = '4';
+		scantokey[6] = '5';
+		scantokey[7] = '6';
+		scantokey[8] = '7';
+		scantokey[9] = '8';
 		scantokey[10] = '9';
 		scantokey[11] = '0';
 		scantokey[12] = '-';
@@ -493,22 +493,23 @@ void Init_KBD(void)
 #define NUM_RESOLUTIONS 16
 
 static int resolutions[NUM_RESOLUTIONS][3] = {
-    320, 200, GR_RESOLUTION_320x200,
-    320, 240, GR_RESOLUTION_320x240,
-    400, 256, GR_RESOLUTION_400x256,
-    400, 300, GR_RESOLUTION_400x300,
-    512, 384, GR_RESOLUTION_512x384,
-    640, 200, GR_RESOLUTION_640x200,
-    640, 350, GR_RESOLUTION_640x350,
-    640, 400, GR_RESOLUTION_640x400,
-    640, 480, GR_RESOLUTION_640x480,
-    800, 600, GR_RESOLUTION_800x600,
-    960, 720, GR_RESOLUTION_960x720,
-    856, 480, GR_RESOLUTION_856x480,
-    512, 256, GR_RESOLUTION_512x256,
-    1024, 768, GR_RESOLUTION_1024x768,
-    1280, 1024, GR_RESOLUTION_1280x1024,
-    1600, 1200, GR_RESOLUTION_1600x1200};
+	320, 200, GR_RESOLUTION_320x200,
+	320, 240, GR_RESOLUTION_320x240,
+	400, 256, GR_RESOLUTION_400x256,
+	400, 300, GR_RESOLUTION_400x300,
+	512, 384, GR_RESOLUTION_512x384,
+	640, 200, GR_RESOLUTION_640x200,
+	640, 350, GR_RESOLUTION_640x350,
+	640, 400, GR_RESOLUTION_640x400,
+	640, 480, GR_RESOLUTION_640x480,
+	800, 600, GR_RESOLUTION_800x600,
+	960, 720, GR_RESOLUTION_960x720,
+	856, 480, GR_RESOLUTION_856x480,
+	512, 256, GR_RESOLUTION_512x256,
+	1024, 768, GR_RESOLUTION_1024x768,
+	1280, 1024, GR_RESOLUTION_1280x1024,
+	1600, 1200, GR_RESOLUTION_1600x1200
+};
 
 int findres(int *width, int *height)
 {
@@ -517,12 +518,12 @@ int findres(int *width, int *height)
 	for(i = 0; i < NUM_RESOLUTIONS; i++)
 		if((*width <= resolutions[i][0]) && (*height <= resolutions[i][1]))
 		{
-			*width  = resolutions[i][0];
+			*width = resolutions[i][0];
 			*height = resolutions[i][1];
 			return resolutions[i][2];
 		}
 
-	*width  = 640;
+	*width = 640;
 	*height = 480;
 	return GR_RESOLUTION_640x480;
 }
@@ -535,7 +536,7 @@ qboolean VID_Is8bit(void)
 void VID_Init8bitPalette(void)
 {
 	// Check for 8bit Extensions and initialize them.
-	int   i;
+	int i;
 	void *prjobj;
 
 	if(COM_CheckParm("-no8bit"))
@@ -551,7 +552,7 @@ void VID_Init8bitPalette(void)
 	   (qgl3DfxSetPaletteEXT = dlsym(prjobj, "gl3DfxSetPaletteEXT")) != NULL)
 	{
 		GLubyte table[256][4];
-		char *  oldpal;
+		char *oldpal;
 
 		Con_SafePrintf("... Using 3DFX_set_global_palette\n");
 		glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
@@ -570,7 +571,7 @@ void VID_Init8bitPalette(void)
 	else if(strstr(gl_extensions, "GL_EXT_shared_texture_palette") &&
 	        (qglColorTableEXT = dlsym(prjobj, "glColorTableEXT")) != NULL)
 	{
-		char  thePalette[256 * 3];
+		char thePalette[256 * 3];
 		char *oldPalette, *newPalette;
 
 		Con_SafePrintf("... Using GL_EXT_shared_texture_palette\n");
@@ -593,9 +594,9 @@ void VID_Init8bitPalette(void)
 
 static void Check_Gamma(unsigned char *pal)
 {
-	float         f, inf;
+	float f, inf;
 	unsigned char palette[768];
-	int           i;
+	int i;
 
 	if((i = COM_CheckParm("-gamma")) == 0)
 	{
@@ -610,12 +611,12 @@ static void Check_Gamma(unsigned char *pal)
 
 	for(i = 0; i < 768; i++)
 	{
-		f   = pow((pal[i] + 1) / 256.0, vid_gamma);
+		f = pow((pal[i] + 1) / 256.0, vid_gamma);
 		inf = f * 255 + 0.5;
 		if(inf < 0)
 			inf = 0;
 		if(inf > 255)
-			inf    = 255;
+			inf = 255;
 		palette[i] = inf;
 	}
 
@@ -624,10 +625,10 @@ static void Check_Gamma(unsigned char *pal)
 
 void VID_Init(unsigned char *palette)
 {
-	int   i;
+	int i;
 	GLint attribs[32];
-	char  gldir[MAX_OSPATH];
-	int   width = 640, height = 480;
+	char gldir[MAX_OSPATH];
+	int width = 640, height = 480;
 
 	Init_KBD();
 
@@ -636,10 +637,10 @@ void VID_Init(unsigned char *palette)
 	Cvar_RegisterVariable(&vid_waitforrefresh);
 	Cvar_RegisterVariable(&gl_ztrick);
 
-	vid.maxwarpwidth  = WARP_WIDTH;
+	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
-	vid.colormap      = host_colormap;
-	vid.fullbright    = 256 - LittleLong(*((int *)vid.colormap + 2048));
+	vid.colormap = host_colormap;
+	vid.fullbright = 256 - LittleLong(*((int *)vid.colormap + 2048));
 
 	// interpret command-line params
 
@@ -681,7 +682,7 @@ void VID_Init(unsigned char *palette)
 
 	InitSig(); // trap evil signals
 
-	scr_width  = width;
+	scr_width = width;
 	scr_height = height;
 
 	fxMesaMakeCurrent(fc);
@@ -690,11 +691,11 @@ void VID_Init(unsigned char *palette)
 		vid.conheight = height;
 	if(vid.conwidth > width)
 		vid.conwidth = width;
-	vid.width        = vid.conwidth;
-	vid.height       = vid.conheight;
+	vid.width = vid.conwidth;
+	vid.height = vid.conheight;
 
 	vid.aspect = ((float)vid.height / (float)vid.width) *
-	    (320.0 / 240.0);
+	(320.0 / 240.0);
 	vid.numpages = 2;
 
 	GL_Init();
@@ -734,9 +735,9 @@ void mousehandler(int buttonstate, int dx, int dy)
 
 void IN_Init(void)
 {
-	int   mtype;
+	int mtype;
 	char *mousedev;
-	int   mouserate;
+	int mouserate;
 
 	if(UseMouse)
 	{

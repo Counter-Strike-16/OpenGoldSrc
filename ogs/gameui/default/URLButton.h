@@ -66,9 +66,9 @@ public:
 	virtual Color GetButtonBgColor(void);
 	virtual void SetCommand(const char *command);
 	virtual void SetCommand(KeyValues *message);
-	virtual void       OnCursorEntered(void);
-	virtual void       OnCursorExited(void);
-	virtual void       SizeToContents(void);
+	virtual void OnCursorEntered(void);
+	virtual void OnCursorExited(void);
+	virtual void SizeToContents(void);
 	virtual KeyValues *GetCommand(void);
 
 public:
@@ -98,26 +98,26 @@ protected:
 private:
 	enum ButtonFlags_t
 	{
-		ARMED                 = 0x0001,
-		DEPRESSED             = 0x0002,
-		FORCE_DEPRESSED       = 0x0004,
+		ARMED = 0x0001,
+		DEPRESSED = 0x0002,
+		FORCE_DEPRESSED = 0x0004,
 		BUTTON_BORDER_ENABLED = 0x0008,
-		USE_CAPTURE_MOUSE     = 0x0010,
-		BUTTON_KEY_DOWN       = 0x0020,
-		DEFAULT_BUTTON        = 0x0040,
-		SELECTED              = 0x0080,
-		DRAW_FOCUS_BOX        = 0x0100,
-		BLINK                 = 0x0200,
-		ALL_FLAGS             = 0xFFFF,
+		USE_CAPTURE_MOUSE = 0x0010,
+		BUTTON_KEY_DOWN = 0x0020,
+		DEFAULT_BUTTON = 0x0040,
+		SELECTED = 0x0080,
+		DRAW_FOCUS_BOX = 0x0100,
+		BLINK = 0x0200,
+		ALL_FLAGS = 0xFFFF,
 	};
 
 private:
 	CUtlFlags<unsigned short> _buttonFlags;
-	int                       _mouseClickMask;
-	KeyValues *               _actionMessage;
-	ActivationType_t          _activationType;
-	Color                     _defaultFgColor, _defaultBgColor;
-	bool                      m_bSelectionStateSaved;
+	int _mouseClickMask;
+	KeyValues *_actionMessage;
+	ActivationType_t _activationType;
+	Color _defaultFgColor, _defaultBgColor;
+	bool m_bSelectionStateSaved;
 };
 }
 

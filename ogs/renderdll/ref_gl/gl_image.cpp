@@ -31,10 +31,10 @@
 #include "gl_local.hpp"
 
 image_t gltextures[MAX_GLTEXTURES];
-int     numgltextures;
-int     base_textureid; // gltextures[i] = base_textureid+i
+int numgltextures;
+int base_textureid; // gltextures[i] = base_textureid+i
 
-static byte          intensitytable[256];
+static byte intensitytable[256];
 static unsigned char gammatable[256];
 
 cvar_t *intensity;
@@ -55,7 +55,7 @@ int gl_filter_max = GL_LINEAR;
 
 void GL_SetTexturePalette(unsigned palette[256])
 {
-	int           i;
+	int i;
 	unsigned char temptable[768];
 
 	for(i = 0; i < 256; i++)
@@ -122,7 +122,7 @@ void GL_SelectTexture(GLenum texture)
 
 void GL_TexEnv(GLenum mode)
 {
-	static int lastmodes[2] = {-1, -1};
+	static int lastmodes[2] = { -1, -1 };
 
 	if(mode != lastmodes[gl_state.currenttmu])
 	{
@@ -162,45 +162,46 @@ void GL_MBind(GLenum target, int texnum)
 typedef struct
 {
 	char *name;
-	int   minimize, maximize;
+	int minimize, maximize;
 } glmode_t;
 
 glmode_t modes[] = {
-    {"GL_NEAREST", GL_NEAREST, GL_NEAREST},
-    {"GL_LINEAR", GL_LINEAR, GL_LINEAR},
-    {"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
-    {"GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR},
-    {"GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST},
-    {"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}};
+	{ "GL_NEAREST", GL_NEAREST, GL_NEAREST },
+	{ "GL_LINEAR", GL_LINEAR, GL_LINEAR },
+	{ "GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST },
+	{ "GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR },
+	{ "GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST },
+	{ "GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR }
+};
 
 #define NUM_GL_MODES (sizeof(modes) / sizeof(glmode_t))
 
 typedef struct
 {
 	char *name;
-	int   mode;
+	int mode;
 } gltmode_t;
 
 gltmode_t gl_alpha_modes[] = {
-    {"default", 4},
-    {"GL_RGBA", GL_RGBA},
-    {"GL_RGBA8", GL_RGBA8},
-    {"GL_RGB5_A1", GL_RGB5_A1},
-    {"GL_RGBA4", GL_RGBA4},
-    {"GL_RGBA2", GL_RGBA2},
+	{ "default", 4 },
+	{ "GL_RGBA", GL_RGBA },
+	{ "GL_RGBA8", GL_RGBA8 },
+	{ "GL_RGB5_A1", GL_RGB5_A1 },
+	{ "GL_RGBA4", GL_RGBA4 },
+	{ "GL_RGBA2", GL_RGBA2 },
 };
 
 #define NUM_GL_ALPHA_MODES (sizeof(gl_alpha_modes) / sizeof(gltmode_t))
 
 gltmode_t gl_solid_modes[] = {
-    {"default", 3},
-    {"GL_RGB", GL_RGB},
-    {"GL_RGB8", GL_RGB8},
-    {"GL_RGB5", GL_RGB5},
-    {"GL_RGB4", GL_RGB4},
-    {"GL_R3_G3_B2", GL_R3_G3_B2},
+	{ "default", 3 },
+	{ "GL_RGB", GL_RGB },
+	{ "GL_RGB8", GL_RGB8 },
+	{ "GL_RGB5", GL_RGB5 },
+	{ "GL_RGB4", GL_RGB4 },
+	{ "GL_R3_G3_B2", GL_R3_G3_B2 },
 #ifdef GL_RGB2_EXT
-    {"GL_RGB2", GL_RGB2_EXT},
+	{ "GL_RGB2", GL_RGB2_EXT },
 #endif
 };
 
@@ -213,7 +214,7 @@ GL_TextureMode
 */
 void GL_TextureMode(char *string)
 {
-	int      i;
+	int i;
 	image_t *glt;
 
 	for(i = 0; i < NUM_GL_MODES; i++)
@@ -298,13 +299,14 @@ GL_ImageList_f
 */
 void GL_ImageList_f()
 {
-	int         i;
-	image_t *   image;
-	int         texels;
+	int i;
+	image_t *image;
+	int texels;
 	const char *palstrings[2] =
-	    {
-	        "RGB",
-	        "PAL"};
+	{
+	  "RGB",
+	  "PAL"
+	};
 
 	ri.Con_Printf(PRINT_ALL, "------------------\n");
 	texels = 0;
@@ -354,8 +356,8 @@ void GL_ImageList_f()
 #define BLOCK_WIDTH 256
 #define BLOCK_HEIGHT 256
 
-int      scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
-byte     scrap_texels[MAX_SCRAPS][BLOCK_WIDTH * BLOCK_HEIGHT];
+int scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
+byte scrap_texels[MAX_SCRAPS][BLOCK_WIDTH * BLOCK_HEIGHT];
 qboolean scrap_dirty;
 
 // returns a texture number and the position inside it
@@ -390,7 +392,7 @@ int Scrap_AllocBlock(int w, int h, int *x, int *y)
 		if(best + h > BLOCK_HEIGHT)
 			continue;
 
-		for(i                               = 0; i < w; i++)
+		for(i = 0; i < w; i++)
 			scrap_allocated[texnum][*x + i] = best + h;
 
 		return texnum;
@@ -425,14 +427,14 @@ LoadPCX
 */
 void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height)
 {
-	byte * raw;
+	byte *raw;
 	pcx_t *pcx;
-	int    x, y;
-	int    len;
-	int    dataByte, runLength;
-	byte * out, *pix;
+	int x, y;
+	int len;
+	int dataByte, runLength;
+	byte *out, *pix;
 
-	*pic     = NULL;
+	*pic = NULL;
 	*palette = NULL;
 
 	//
@@ -450,14 +452,14 @@ void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height
 	//
 	pcx = (pcx_t *)raw;
 
-	pcx->xmin           = LittleShort(pcx->xmin);
-	pcx->ymin           = LittleShort(pcx->ymin);
-	pcx->xmax           = LittleShort(pcx->xmax);
-	pcx->ymax           = LittleShort(pcx->ymax);
-	pcx->hres           = LittleShort(pcx->hres);
-	pcx->vres           = LittleShort(pcx->vres);
+	pcx->xmin = LittleShort(pcx->xmin);
+	pcx->ymin = LittleShort(pcx->ymin);
+	pcx->xmax = LittleShort(pcx->xmax);
+	pcx->ymax = LittleShort(pcx->ymax);
+	pcx->hres = LittleShort(pcx->hres);
+	pcx->vres = LittleShort(pcx->vres);
 	pcx->bytes_per_line = LittleShort(pcx->bytes_per_line);
-	pcx->palette_type   = LittleShort(pcx->palette_type);
+	pcx->palette_type = LittleShort(pcx->palette_type);
 
 	raw = &pcx->data;
 
@@ -493,7 +495,7 @@ void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height
 			if((dataByte & 0xC0) == 0xC0)
 			{
 				runLength = dataByte & 0x3F;
-				dataByte  = *raw++;
+				dataByte = *raw++;
 			}
 			else
 				runLength = 1;
@@ -523,11 +525,11 @@ TARGA LOADING
 
 typedef struct _TargaHeader
 {
-	unsigned char  id_length, colormap_type, image_type;
+	unsigned char id_length, colormap_type, image_type;
 	unsigned short colormap_index, colormap_length;
-	unsigned char  colormap_size;
+	unsigned char colormap_size;
 	unsigned short x_origin, y_origin, width, height;
-	unsigned char  pixel_size, attributes;
+	unsigned char pixel_size, attributes;
 } TargaHeader;
 
 /*
@@ -537,15 +539,15 @@ LoadTGA
 */
 void LoadTGA(char *name, byte **pic, int *width, int *height)
 {
-	int         columns, rows, numPixels;
-	byte *      pixbuf;
-	int         row, column;
-	byte *      buf_p;
-	byte *      buffer;
-	int         length;
+	int columns, rows, numPixels;
+	byte *pixbuf;
+	int row, column;
+	byte *buf_p;
+	byte *buffer;
+	int length;
 	TargaHeader targa_header;
-	byte *      targa_rgba;
-	byte        tmp[2];
+	byte *targa_rgba;
+	byte tmp[2];
 
 	*pic = NULL;
 
@@ -561,20 +563,20 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 
 	buf_p = buffer;
 
-	targa_header.id_length     = *buf_p++;
+	targa_header.id_length = *buf_p++;
 	targa_header.colormap_type = *buf_p++;
-	targa_header.image_type    = *buf_p++;
+	targa_header.image_type = *buf_p++;
 
-	tmp[0]                      = buf_p[0];
-	tmp[1]                      = buf_p[1];
+	tmp[0] = buf_p[0];
+	tmp[1] = buf_p[1];
 	targa_header.colormap_index = LittleShort(*((short *)tmp));
 	buf_p += 2;
-	tmp[0]                       = buf_p[0];
-	tmp[1]                       = buf_p[1];
+	tmp[0] = buf_p[0];
+	tmp[1] = buf_p[1];
 	targa_header.colormap_length = LittleShort(*((short *)tmp));
 	buf_p += 2;
 	targa_header.colormap_size = *buf_p++;
-	targa_header.x_origin      = LittleShort(*((short *)buf_p));
+	targa_header.x_origin = LittleShort(*((short *)buf_p));
 	buf_p += 2;
 	targa_header.y_origin = LittleShort(*((short *)buf_p));
 	buf_p += 2;
@@ -591,8 +593,8 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 	if(targa_header.colormap_type != 0 || (targa_header.pixel_size != 32 && targa_header.pixel_size != 24))
 		ri.Sys_Error(ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
 
-	columns   = targa_header.width;
-	rows      = targa_header.height;
+	columns = targa_header.width;
+	rows = targa_header.height;
 	numPixels = columns * rows;
 
 	if(width)
@@ -601,7 +603,7 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 		*height = rows;
 
 	targa_rgba = malloc(numPixels * 4);
-	*pic       = targa_rgba;
+	*pic = targa_rgba;
 
 	if(targa_header.id_length != 0)
 		buf_p += targa_header.id_length; // skip TARGA image comment
@@ -618,18 +620,18 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 				{
 				case 24:
 
-					blue      = *buf_p++;
-					green     = *buf_p++;
-					red       = *buf_p++;
+					blue = *buf_p++;
+					green = *buf_p++;
+					red = *buf_p++;
 					*pixbuf++ = red;
 					*pixbuf++ = green;
 					*pixbuf++ = blue;
 					*pixbuf++ = 255;
 					break;
 				case 32:
-					blue      = *buf_p++;
-					green     = *buf_p++;
-					red       = *buf_p++;
+					blue = *buf_p++;
+					green = *buf_p++;
+					red = *buf_p++;
 					alphabyte = *buf_p++;
 					*pixbuf++ = red;
 					*pixbuf++ = green;
@@ -649,21 +651,21 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 			for(column = 0; column < columns;)
 			{
 				packetHeader = *buf_p++;
-				packetSize   = 1 + (packetHeader & 0x7f);
+				packetSize = 1 + (packetHeader & 0x7f);
 				if(packetHeader & 0x80)
 				{ // run-length packet
 					switch(targa_header.pixel_size)
 					{
 					case 24:
-						blue      = *buf_p++;
-						green     = *buf_p++;
-						red       = *buf_p++;
+						blue = *buf_p++;
+						green = *buf_p++;
+						red = *buf_p++;
 						alphabyte = 255;
 						break;
 					case 32:
-						blue      = *buf_p++;
-						green     = *buf_p++;
-						red       = *buf_p++;
+						blue = *buf_p++;
+						green = *buf_p++;
+						red = *buf_p++;
 						alphabyte = *buf_p++;
 						break;
 					}
@@ -693,18 +695,18 @@ void LoadTGA(char *name, byte **pic, int *width, int *height)
 						switch(targa_header.pixel_size)
 						{
 						case 24:
-							blue      = *buf_p++;
-							green     = *buf_p++;
-							red       = *buf_p++;
+							blue = *buf_p++;
+							green = *buf_p++;
+							red = *buf_p++;
 							*pixbuf++ = red;
 							*pixbuf++ = green;
 							*pixbuf++ = blue;
 							*pixbuf++ = 255;
 							break;
 						case 32:
-							blue      = *buf_p++;
-							green     = *buf_p++;
-							red       = *buf_p++;
+							blue = *buf_p++;
+							green = *buf_p++;
+							red = *buf_p++;
 							alphabyte = *buf_p++;
 							*pixbuf++ = red;
 							*pixbuf++ = green;
@@ -762,7 +764,7 @@ typedef struct
 {                                                      \
 		if(pos[off] == fillcolor)                             \
 		{                                                     \
-			pos[off]     = 255;                               \
+			pos[off] = 255;                                   \
 			fifo[inpt].x = x + (dx), fifo[inpt].y = y + (dy); \
 			inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;          \
 		}                                                     \
@@ -773,11 +775,11 @@ typedef struct
 
 void R_FloodFillSkin(byte *skin, int skinwidth, int skinheight)
 {
-	byte        fillcolor = *skin; // assume this is the pixel to fill
+	byte fillcolor = *skin; // assume this is the pixel to fill
 	floodfill_t fifo[FLOODFILL_FIFO_SIZE];
-	int         inpt = 0, outpt = 0;
-	int         filledcolor = -1;
-	int         i;
+	int inpt = 0, outpt = 0;
+	int filledcolor = -1;
+	int i;
 
 	if(filledcolor == -1)
 	{
@@ -803,8 +805,8 @@ void R_FloodFillSkin(byte *skin, int skinwidth, int skinheight)
 
 	while(outpt != inpt)
 	{
-		int   x = fifo[outpt].x, y = fifo[outpt].y;
-		int   fdc = filledcolor;
+		int x = fifo[outpt].x, y = fifo[outpt].y;
+		int fdc = filledcolor;
 		byte *pos = &skin[x + skinwidth * y];
 
 		outpt = (outpt + 1) & FLOODFILL_FIFO_MASK;
@@ -830,11 +832,11 @@ GL_ResampleTexture
 */
 void GL_ResampleTexture(unsigned *in, int inwidth, int inheight, unsigned *out, int outwidth, int outheight)
 {
-	int       i, j;
+	int i, j;
 	unsigned *inrow, *inrow2;
-	unsigned  frac, fracstep;
-	unsigned  p1[1024], p2[1024];
-	byte *    pix1, *pix2, *pix3, *pix4;
+	unsigned frac, fracstep;
+	unsigned p1[1024], p2[1024];
+	byte *pix1, *pix2, *pix3, *pix4;
 
 	fracstep = inwidth * 0x10000 / outwidth;
 
@@ -853,15 +855,15 @@ void GL_ResampleTexture(unsigned *in, int inwidth, int inheight, unsigned *out, 
 
 	for(i = 0; i < outheight; i++, out += outwidth)
 	{
-		inrow  = in + inwidth * (int)((i + 0.25) * inheight / outheight);
+		inrow = in + inwidth * (int)((i + 0.25) * inheight / outheight);
 		inrow2 = in + inwidth * (int)((i + 0.75) * inheight / outheight);
-		frac   = fracstep >> 1;
+		frac = fracstep >> 1;
 		for(j = 0; j < outwidth; j++)
 		{
-			pix1                   = (byte *)inrow + p1[j];
-			pix2                   = (byte *)inrow + p2[j];
-			pix3                   = (byte *)inrow2 + p1[j];
-			pix4                   = (byte *)inrow2 + p2[j];
+			pix1 = (byte *)inrow + p1[j];
+			pix2 = (byte *)inrow + p2[j];
+			pix3 = (byte *)inrow2 + p1[j];
+			pix4 = (byte *)inrow2 + p2[j];
 			((byte *)(out + j))[0] = (pix1[0] + pix2[0] + pix3[0] + pix4[0]) >> 2;
 			((byte *)(out + j))[1] = (pix1[1] + pix2[1] + pix3[1] + pix4[1]) >> 2;
 			((byte *)(out + j))[2] = (pix1[2] + pix2[2] + pix3[2] + pix4[2]) >> 2;
@@ -882,7 +884,7 @@ void GL_LightScaleTexture(unsigned *in, int inwidth, int inheight, qboolean only
 {
 	if(only_gamma)
 	{
-		int   i, c;
+		int i, c;
 		byte *p;
 
 		p = (byte *)in;
@@ -897,7 +899,7 @@ void GL_LightScaleTexture(unsigned *in, int inwidth, int inheight, qboolean only
 	}
 	else
 	{
-		int   i, c;
+		int i, c;
 		byte *p;
 
 		p = (byte *)in;
@@ -921,7 +923,7 @@ Operates in place, quartering the size of the texture
 */
 void GL_MipMap(byte *in, int width, int height)
 {
-	int   i, j;
+	int i, j;
 	byte *out;
 
 	width <<= 2;
@@ -966,18 +968,18 @@ void GL_BuildPalettedTexture(unsigned char *paletted_texture, unsigned char *sca
 	}
 }
 
-int      upload_width, upload_height;
+int upload_width, upload_height;
 qboolean uploaded_paletted;
 
 qboolean GL_Upload32(unsigned *data, int width, int height, qboolean mipmap)
 {
-	int           samples;
-	unsigned      scaled[256 * 256];
+	int samples;
+	unsigned scaled[256 * 256];
 	unsigned char paletted_texture[256 * 256];
-	int           scaled_width, scaled_height;
-	int           i, c;
-	byte *        scan;
-	int           comp;
+	int scaled_width, scaled_height;
+	int i, c;
+	byte *scan;
+	int comp;
 
 	uploaded_paletted = false;
 
@@ -1008,15 +1010,15 @@ qboolean GL_Upload32(unsigned *data, int width, int height, qboolean mipmap)
 	if(scaled_height < 1)
 		scaled_height = 1;
 
-	upload_width  = scaled_width;
+	upload_width = scaled_width;
 	upload_height = scaled_height;
 
 	if(scaled_width * scaled_height > sizeof(scaled) / 4)
 		ri.Sys_Error(ERR_DROP, "GL_Upload32: too big");
 
 	// scan the texture for any non-255 alpha
-	c       = width * height;
-	scan    = ((byte *)data) + 3;
+	c = width * height;
+	scan = ((byte *)data) + 3;
 	samples = gl_solid_format;
 	for(i = 0; i < c; i++, scan += 4)
 	{
@@ -1181,8 +1183,8 @@ static qboolean IsPowerOf2( int value )
 qboolean GL_Upload8(byte *data, int width, int height, qboolean mipmap, qboolean is_sky)
 {
 	unsigned trans[512 * 256];
-	int      i, s;
-	int      p;
+	int i, s;
+	int p;
 
 	s = width * height;
 
@@ -1210,7 +1212,7 @@ qboolean GL_Upload8(byte *data, int width, int height, qboolean mipmap, qboolean
 	{
 		for(i = 0; i < s; i++)
 		{
-			p        = data[i];
+			p = data[i];
 			trans[i] = d_8to24table[p];
 
 			if(p == 255)
@@ -1248,7 +1250,7 @@ This is also used as an entry point for the generated r_notexture
 image_t *GL_LoadPic(char *name, byte *pic, int width, int height, imagetype_t type, int bits)
 {
 	image_t *image;
-	int      i;
+	int i;
 
 	// find a free image_t
 	for(i = 0, image = gltextures; i < numgltextures; i++, image++)
@@ -1269,9 +1271,9 @@ image_t *GL_LoadPic(char *name, byte *pic, int width, int height, imagetype_t ty
 	strcpy(image->name, name);
 	image->registration_sequence = registration_sequence;
 
-	image->width  = width;
+	image->width = width;
 	image->height = height;
-	image->type   = type;
+	image->type = type;
 
 	if(type == it_skin && bits == 8)
 		R_FloodFillSkin(pic, width, height);
@@ -1291,33 +1293,33 @@ image_t *GL_LoadPic(char *name, byte *pic, int width, int height, imagetype_t ty
 		// copy the texels into the scrap block
 		k = 0;
 		for(i = 0; i < image->height; i++)
-			for(j                                                   = 0; j < image->width; j++, k++)
+			for(j = 0; j < image->width; j++, k++)
 				scrap_texels[texnum][(y + i) * BLOCK_WIDTH + x + j] = pic[k];
-		image->texnum                                               = TEXNUM_SCRAPS + texnum;
-		image->scrap                                                = true;
-		image->has_alpha                                            = true;
-		image->sl                                                   = (x + 0.01) / (float)BLOCK_WIDTH;
-		image->sh                                                   = (x + image->width - 0.01) / (float)BLOCK_WIDTH;
-		image->tl                                                   = (y + 0.01) / (float)BLOCK_WIDTH;
-		image->th                                                   = (y + image->height - 0.01) / (float)BLOCK_WIDTH;
+		image->texnum = TEXNUM_SCRAPS + texnum;
+		image->scrap = true;
+		image->has_alpha = true;
+		image->sl = (x + 0.01) / (float)BLOCK_WIDTH;
+		image->sh = (x + image->width - 0.01) / (float)BLOCK_WIDTH;
+		image->tl = (y + 0.01) / (float)BLOCK_WIDTH;
+		image->th = (y + image->height - 0.01) / (float)BLOCK_WIDTH;
 	}
 	else
 	{
 	nonscrap:
-		image->scrap  = false;
+		image->scrap = false;
 		image->texnum = TEXNUM_IMAGES + (image - gltextures);
 		GL_Bind(image->texnum);
 		if(bits == 8)
 			image->has_alpha = GL_Upload8(pic, width, height, (image->type != it_pic && image->type != it_sky), image->type == it_sky);
 		else
 			image->has_alpha = GL_Upload32((unsigned *)pic, width, height, (image->type != it_pic && image->type != it_sky));
-		image->upload_width  = upload_width; // after power of 2 and scales
+		image->upload_width = upload_width; // after power of 2 and scales
 		image->upload_height = upload_height;
-		image->paletted      = uploaded_paletted;
-		image->sl            = 0;
-		image->sh            = 1;
-		image->tl            = 0;
-		image->th            = 1;
+		image->paletted = uploaded_paletted;
+		image->sl = 0;
+		image->sh = 1;
+		image->tl = 0;
+		image->th = 1;
 	}
 
 	return image;
@@ -1331,8 +1333,8 @@ GL_LoadWal
 image_t *GL_LoadWal(char *name)
 {
 	miptex_t *mt;
-	int       width, height, ofs;
-	image_t * image;
+	int width, height, ofs;
+	image_t *image;
 
 	gpFileSystem->LoadFile(name, (void **)&mt);
 	if(!mt)
@@ -1341,9 +1343,9 @@ image_t *GL_LoadWal(char *name)
 		return r_notexture;
 	}
 
-	width  = LittleLong(mt->width);
+	width = LittleLong(mt->width);
 	height = LittleLong(mt->height);
-	ofs    = LittleLong(mt->offsets[0]);
+	ofs = LittleLong(mt->offsets[0]);
 
 	image = GL_LoadPic(name, (byte *)mt + ofs, width, height, it_wall, 8);
 
@@ -1362,9 +1364,9 @@ Finds or loads the given image
 image_t *GL_FindImage(char *name, imagetype_t type)
 {
 	image_t *image;
-	int      i, len;
-	byte *   pic, *palette;
-	int      width, height;
+	int i, len;
+	byte *pic, *palette;
+	int width, height;
 
 	if(!name)
 		return NULL; //	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
@@ -1385,7 +1387,7 @@ image_t *GL_FindImage(char *name, imagetype_t type)
 	//
 	// load the pic from disk
 	//
-	pic     = NULL;
+	pic = NULL;
 	palette = NULL;
 	if(!strcmp(name + len - 4, ".pcx"))
 	{
@@ -1436,11 +1438,11 @@ will be freed.
 */
 void GL_FreeUnusedImages()
 {
-	int      i;
+	int i;
 	image_t *image;
 
 	// never free r_notexture or particle texture
-	r_notexture->registration_sequence       = registration_sequence;
+	r_notexture->registration_sequence = registration_sequence;
 	r_particletexture->registration_sequence = registration_sequence;
 
 	for(i = 0, image = gltextures; i < numgltextures; i++, image++)
@@ -1464,11 +1466,11 @@ Draw_GetPalette
 */
 int Draw_GetPalette()
 {
-	int      i;
-	int      r, g, b;
+	int i;
+	int r, g, b;
 	unsigned v;
-	byte *   pic, *pal;
-	int      width, height;
+	byte *pic, *pal;
+	int width, height;
 
 	// get the palette
 
@@ -1482,7 +1484,7 @@ int Draw_GetPalette()
 		g = pal[i * 3 + 1];
 		b = pal[i * 3 + 2];
 
-		v               = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
+		v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
 		d_8to24table[i] = LittleLong(v);
 	}
 
@@ -1501,7 +1503,7 @@ GL_InitImages
 */
 void GL_InitImages()
 {
-	int   i, j;
+	int i, j;
 	float g = vid_gamma->value;
 
 	registration_sequence = 1;
@@ -1542,7 +1544,7 @@ void GL_InitImages()
 			if(inf < 0)
 				inf = 0;
 			if(inf > 255)
-				inf       = 255;
+				inf = 255;
 			gammatable[i] = inf;
 		}
 	}
@@ -1551,7 +1553,7 @@ void GL_InitImages()
 	{
 		j = i * intensity->value;
 		if(j > 255)
-			j             = 255;
+			j = 255;
 		intensitytable[i] = j;
 	}
 }
@@ -1563,7 +1565,7 @@ GL_ShutdownImages
 */
 void GL_ShutdownImages()
 {
-	int      i;
+	int i;
 	image_t *image;
 
 	for(i = 0, image = gltextures; i < numgltextures; i++, image++)

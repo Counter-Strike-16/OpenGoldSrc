@@ -86,36 +86,36 @@ static unsigned int c_localcount_tsc(void)
 {
 	int a;
 	__asm__ volatile(
-	    "rdtsc\n\t"
-	    : "=a"(a)
-	    :
-	    : "edx");
+	"rdtsc\n\t"
+	: "=a"(a)
+	:
+	: "edx");
 	return a;
 }
 static void c_longcount_tsc(long long *z)
 {
 	__asm__ volatile(
-	    "pushl %%ebx\n\t"
-	    "movl %%eax, %%ebx\n\t"
-	    "rdtsc\n\t"
-	    "movl %%eax, 0(%%ebx)\n\t"
-	    "movl %%edx, 4(%%ebx)\n\t"
-	    "popl %%ebx\n\t" ::"a"(z)
-	    : "edx");
+	"pushl %%ebx\n\t"
+	"movl %%eax, %%ebx\n\t"
+	"rdtsc\n\t"
+	"movl %%eax, 0(%%ebx)\n\t"
+	"movl %%edx, 4(%%ebx)\n\t"
+	"popl %%ebx\n\t" ::"a"(z)
+	: "edx");
 }
 static unsigned int c_localcount_notsc(void)
 {
 	struct timeval tv;
-	unsigned       limit = ~0;
+	unsigned limit = ~0;
 	limit /= 1000000;
 	gettimeofday(&tv, 0);
 	return limit * tv.tv_usec;
 }
 static void c_longcount_notsc(long long *z)
 {
-	struct timeval     tv;
+	struct timeval tv;
 	unsigned long long result;
-	unsigned           limit = ~0;
+	unsigned limit = ~0;
 	if(!z)
 		return;
 	limit /= 1000000;
@@ -175,7 +175,7 @@ static inline void dbgprintf(char *fmt, ...)
 #ifdef DETAILED_OUT
 	if(LOADER_DEBUG)
 	{
-		FILE *  f;
+		FILE *f;
 		va_list va;
 		va_start(va, fmt);
 		f = fopen("./log", "a");
@@ -213,9 +213,9 @@ static inline void dbgprintf(char *fmt, ...)
 #endif
 
 char export_names[300][32] = {
-    "name1",
-    //"name2",
-    //"name3"
+	"name1",
+	//"name2",
+	//"name3"
 };
 //#define min(x,y) ((x)<(y)?(x):(y))
 
@@ -224,8 +224,8 @@ void destroy_event(void *event);
 struct th_list_t;
 typedef struct th_list_t
 {
-	int               id;
-	void *            thread;
+	int id;
+	void *thread;
 	struct th_list_t *next;
 	struct th_list_t *prev;
 } th_list;
@@ -233,8 +233,8 @@ typedef struct th_list_t
 // have to be cleared by GARBAGE COLLECTOR
 //static unsigned char* heap=NULL;
 //static int heap_counter=0;
-static tls_t *         g_tls     = NULL;
-static th_list *       list      = NULL;
+static tls_t *g_tls = NULL;
+static th_list *list = NULL;
 static pthread_mutex_t list_lock = PTHREAD_MUTEX_INITIALIZER;
 
 #if 0
@@ -323,17 +323,17 @@ struct alloc_header_t
 	// let's keep allocated data 16 byte aligned
 	alloc_header *prev;
 	alloc_header *next;
-	long          deadbeef;
-	long          size;
-	long          type;
-	long          reserved1;
-	long          reserved2;
-	long          reserved3;
+	long deadbeef;
+	long size;
+	long type;
+	long reserved1;
+	long reserved2;
+	long reserved3;
 };
 
 #ifdef GARBAGE
 static alloc_header *last_alloc = NULL;
-static int           alccnt     = 0;
+static int alccnt = 0;
 #endif
 
 #define AREATYPE_CLIENT 0
@@ -345,17 +345,17 @@ static int           alccnt     = 0;
 /* -- critical sections -- */
 struct CRITSECT
 {
-	pthread_t       id;
+	pthread_t id;
 	pthread_mutex_t mutex;
-	pthread_cond_t  unlocked;
-	int             lock_count;
-	long            deadbeef;
+	pthread_cond_t unlocked;
+	int lock_count;
+	long deadbeef;
 };
 
 void *mreq_private(int size, int to_zero, int type);
 void *mreq_private(int size, int to_zero, int type)
 {
-	int           nsize  = size + sizeof(alloc_header);
+	int nsize = size + sizeof(alloc_header);
 #ifdef HAVE_MEMALIGN
 	alloc_header *header = memalign(16, nsize);
 #else
@@ -375,13 +375,13 @@ void *mreq_private(int size, int to_zero, int type)
 
 	header->prev = last_alloc;
 	header->next = 0;
-	last_alloc   = header;
+	last_alloc = header;
 	alccnt++;
 	pthread_mutex_unlock(&memmut);
 #endif
 	header->deadbeef = 0xdeadbeef;
-	header->size     = size;
-	header->type     = type;
+	header->size = size;
+	header->type = type;
 
 	//if (alccnt < 40000) printf("MY_REQ: %p\t%d   t:%d  (cnt:%d)\n",  header, size, type, alccnt);
 	return header + 1;
@@ -420,13 +420,13 @@ static int my_release(void *memory)
 		pthread_mutex_destroy(&((struct CRITSECT *)memory)->mutex);
 		break;
 	default:
-	    //memset(memory, 0xcc, header->size);
-	    ;
+	//memset(memory, 0xcc, header->size);
+	;
 	}
 
 	header->deadbeef = 0;
-	prevmem          = header->prev;
-	nextmem          = header->next;
+	prevmem = header->prev;
+	nextmem = header->next;
 
 	if(prevmem)
 		prevmem->next = nextmem;
@@ -466,7 +466,7 @@ static int my_size(void *memory)
 static void *my_realloc(void *memory, int size)
 {
 	void *ans = memory;
-	int   osize;
+	int osize;
 	if(memory == NULL)
 		return my_mreq(size, 0);
 	osize = my_size(memory);
@@ -491,13 +491,17 @@ static int WINAPI ext_unknown(void)
 	return 0;
 }
 
-static int WINAPI expGetVolumeInformationA(const char *root, char *label,
-                                           unsigned int label_len, unsigned int *serial,
-                                           unsigned int *filename_len, unsigned int *flags,
-                                           char *fsname, unsigned int fsname_len)
+static int WINAPI expGetVolumeInformationA(const char *root, char *label, unsigned int label_len, unsigned int *serial, unsigned int *filename_len, unsigned int *flags, char *fsname, unsigned int fsname_len)
 {
 	dbgprintf("GetVolumeInformationA( %s, 0x%x, %ld, 0x%x, 0x%x, 0x%x, 0x%x, %ld) => 1\n",
-	          root, label, label_len, serial, filename_len, flags, fsname, fsname_len);
+	          root,
+	          label,
+	          label_len,
+	          serial,
+	          filename_len,
+	          flags,
+	          fsname,
+	          fsname_len);
 	//hack Do not return any real data - do nothing
 	return 1;
 }
@@ -517,7 +521,7 @@ static unsigned int WINAPI expGetLogicalDriveStringsA(unsigned int len, char *bu
 	*buffer++ = ':';
 	*buffer++ = '\\';
 	*buffer++ = '\0';
-	*buffer   = '\0';
+	*buffer = '\0';
 	return 4; // 1 drive * 4 bytes (includes null)
 }
 
@@ -572,20 +576,21 @@ static HMODULE WINAPI expGetDriverModuleHandle(DRVR *pdrv)
 // it's running in a POSIX binary, and stop using EncodePointer/DecodePointer.
 static const struct
 {
-	IMAGE_DOS_HEADER     doshdr;
-	IMAGE_NT_HEADERS     nthdr;
+	IMAGE_DOS_HEADER doshdr;
+	IMAGE_NT_HEADERS nthdr;
 	IMAGE_SECTION_HEADER opthdr;
 } __attribute__((__packed__)) mp_exe = {
-    .doshdr.e_lfanew                   = sizeof(IMAGE_DOS_HEADER),
-    .nthdr.FileHeader.NumberOfSections = 1,
-    .nthdr.FileHeader.SizeOfOptionalHeader =
-        sizeof(IMAGE_NT_HEADERS) - FIELD_OFFSET(IMAGE_NT_HEADERS, OptionalHeader), /* 0xe0 */
-    .opthdr.Name = ".text"};
+	.doshdr.e_lfanew = sizeof(IMAGE_DOS_HEADER),
+	.nthdr.FileHeader.NumberOfSections = 1,
+	.nthdr.FileHeader.SizeOfOptionalHeader =
+	sizeof(IMAGE_NT_HEADERS) - FIELD_OFFSET(IMAGE_NT_HEADERS, OptionalHeader), /* 0xe0 */
+	.opthdr.Name = ".text"
+};
 
 static HMODULE WINAPI expGetModuleHandleA(const char *name)
 {
 	WINE_MODREF *wm;
-	HMODULE      result;
+	HMODULE result;
 	if(!name)
 		result = (HMODULE)&mp_exe.doshdr;
 	else
@@ -612,7 +617,7 @@ static HMODULE WINAPI expGetModuleHandleA(const char *name)
 static HMODULE WINAPI expGetModuleHandleW(const uint16_t *name)
 {
 	char aname[256];
-	int  pos = 0;
+	int pos = 0;
 	while(*name)
 	{
 		if(*name > 256 || pos >= sizeof(aname) - 1)
@@ -623,9 +628,7 @@ static HMODULE WINAPI expGetModuleHandleW(const uint16_t *name)
 	return expGetModuleHandleA(aname);
 }
 
-static void *WINAPI expCreateThread(void *pSecAttr, long dwStackSize,
-                                    void *lpStartAddress, void *lpParameter,
-                                    long dwFlags, long *dwThreadId)
+static void *WINAPI expCreateThread(void *pSecAttr, long dwStackSize, void *lpStartAddress, void *lpParameter, long dwFlags, long *dwThreadId)
 {
 	pthread_t *pth;
 	//    printf("CreateThread:");
@@ -638,20 +641,26 @@ static void *WINAPI expCreateThread(void *pSecAttr, long dwStackSize,
 	pthread_mutex_lock(&list_lock);
 	if(list == NULL)
 	{
-		list       = my_mreq(sizeof(th_list), 1);
+		list = my_mreq(sizeof(th_list), 1);
 		list->next = list->prev = NULL;
 	}
 	else
 	{
-		list->next       = my_mreq(sizeof(th_list), 0);
+		list->next = my_mreq(sizeof(th_list), 0);
 		list->next->prev = list;
 		list->next->next = NULL;
-		list             = list->next;
+		list = list->next;
 	}
 	list->thread = pth;
 	pthread_mutex_unlock(&list_lock);
 	dbgprintf("CreateThread(0x%x, 0x%x, 0x%x, 0x%x, 0x%x, 0x%x) => 0x%x\n",
-	          pSecAttr, dwStackSize, lpStartAddress, lpParameter, dwFlags, dwThreadId, pth);
+	          pSecAttr,
+	          dwStackSize,
+	          lpStartAddress,
+	          lpParameter,
+	          dwFlags,
+	          dwThreadId,
+	          pth);
 	return pth;
 }
 
@@ -666,21 +675,21 @@ struct mutex_list_t;
 
 struct mutex_list_t
 {
-	char                 type;
-	pthread_mutex_t *    pm;
-	pthread_cond_t *     pc;
-	char                 state;
-	char                 reset;
-	char                 name[128];
-	int                  semaphore;
-	int                  lock_count;
-	pthread_t            owner;
+	char type;
+	pthread_mutex_t *pm;
+	pthread_cond_t *pc;
+	char state;
+	char reset;
+	char name[128];
+	int semaphore;
+	int lock_count;
+	pthread_t owner;
 	struct mutex_list_t *next;
 	struct mutex_list_t *prev;
 };
 typedef struct mutex_list_t mutex_list;
-static mutex_list *         mlist      = NULL;
-static pthread_mutex_t      mlist_lock = PTHREAD_MUTEX_INITIALIZER;
+static mutex_list *mlist = NULL;
+static pthread_mutex_t mlist_lock = PTHREAD_MUTEX_INITIALIZER;
 
 void destroy_event(void *event)
 {
@@ -715,12 +724,11 @@ void destroy_event(void *event)
 	pthread_mutex_unlock(&mlist_lock);
 }
 
-static void *WINAPI expCreateEventA(void *pSecAttr, char bManualReset,
-                                    char bInitialState, const char *name)
+static void *WINAPI expCreateEventA(void *pSecAttr, char bManualReset, char bInitialState, const char *name)
 {
 	pthread_mutex_t *pm;
-	pthread_cond_t * pc;
-	void *           ret;
+	pthread_cond_t *pc;
+	void *ret;
 	/*
      mutex_list* pp;
      pp=mlist;
@@ -741,7 +749,12 @@ static void *WINAPI expCreateEventA(void *pSecAttr, char bManualReset,
 				if((strcmp(pp->name, name) == 0) && (pp->type == 0))
 				{
 					dbgprintf("CreateEventA(0x%x, 0x%x, 0x%x, 0x%x='%s') => 0x%x\n",
-					          pSecAttr, bManualReset, bInitialState, name, name, pp->pm);
+					          pSecAttr,
+					          bManualReset,
+					          bInitialState,
+					          name,
+					          name,
+					          pp->pm);
 					pthread_mutex_unlock(&mlist_lock);
 					return pp->pm;
 				}
@@ -753,19 +766,19 @@ static void *WINAPI expCreateEventA(void *pSecAttr, char bManualReset,
 	pthread_cond_init(pc, NULL);
 	if(mlist == NULL)
 	{
-		mlist       = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
+		mlist = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
 		mlist->next = mlist->prev = NULL;
 	}
 	else
 	{
-		mlist->next       = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
+		mlist->next = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
 		mlist->next->prev = mlist;
 		mlist->next->next = NULL;
-		mlist             = mlist->next;
+		mlist = mlist->next;
 	}
-	mlist->type  = 0; /* Type Event */
-	mlist->pm    = pm;
-	mlist->pc    = pc;
+	mlist->type = 0; /* Type Event */
+	mlist->pm = pm;
+	mlist->pc = pc;
 	mlist->state = bInitialState;
 	mlist->reset = !bManualReset;
 	if(name)
@@ -780,19 +793,26 @@ static void *WINAPI expCreateEventA(void *pSecAttr, char bManualReset,
      */
 	if(name)
 		dbgprintf("CreateEventA(0x%x, 0x%x, 0x%x, 0x%x='%s') => 0x%x\n",
-		          pSecAttr, bManualReset, bInitialState, name, name, mlist);
+		          pSecAttr,
+		          bManualReset,
+		          bInitialState,
+		          name,
+		          name,
+		          mlist);
 	else
 		dbgprintf("CreateEventA(0x%x, 0x%x, 0x%x, NULL) => 0x%x\n",
-		          pSecAttr, bManualReset, bInitialState, mlist);
+		          pSecAttr,
+		          bManualReset,
+		          bInitialState,
+		          mlist);
 	ret = mlist;
 	pthread_mutex_unlock(&mlist_lock);
 	return ret;
 }
 
-static void *WINAPI expCreateEventW(void *pSecAttr, char bManualReset,
-                                    char bInitialState, const WCHAR *name)
+static void *WINAPI expCreateEventW(void *pSecAttr, char bManualReset, char bInitialState, const WCHAR *name)
 {
-	char  ascii_name[256];
+	char ascii_name[256];
 	char *aname = NULL;
 	if(name)
 	{
@@ -831,9 +851,9 @@ static void *WINAPI expWaitForSingleObject(void *object, int duration)
 {
 	mutex_list *ml = (mutex_list *)object;
 	// FIXME FIXME FIXME - this value is sometime unititialize !!!
-	int         ret = WAIT_FAILED;
+	int ret = WAIT_FAILED;
 	mutex_list *pp;
-	th_list *   tp;
+	th_list *tp;
 	if(object == (void *)0xcfcf9898)
 	{
 		/**
@@ -900,14 +920,14 @@ static void *WINAPI expWaitForSingleObject(void *object, int duration)
 				pthread_cond_wait(ml->pc, ml->pm);
 			if(ml->reset)
 				ml->state = 0;
-			ret           = WAIT_OBJECT_0;
+			ret = WAIT_OBJECT_0;
 		}
 		if(duration > 0)
 		{ /* Timed Wait */
 			struct timespec abstime;
-			struct timeval  now;
+			struct timeval now;
 			gettimeofday(&now, 0);
-			abstime.tv_sec  = now.tv_sec + (now.tv_usec + duration) / 1000000;
+			abstime.tv_sec = now.tv_sec + (now.tv_usec + duration) / 1000000;
 			abstime.tv_nsec = ((now.tv_usec + duration) % 1000000) * 1000;
 			if(ml->state == 0)
 				ret = pthread_cond_timedwait(ml->pc, ml->pm, &abstime);
@@ -947,7 +967,7 @@ static void *WINAPI expWaitForSingleObject(void *object, int duration)
 			{
 				ml->lock_count++;
 				ml->owner = pthread_self();
-				ret       = WAIT_OBJECT_0;
+				ret = WAIT_OBJECT_0;
 			}
 		}
 		if(duration == -1)
@@ -958,7 +978,7 @@ static void *WINAPI expWaitForSingleObject(void *object, int duration)
 			}
 			ml->lock_count++;
 			ml->owner = pthread_self();
-			ret       = WAIT_OBJECT_0;
+			ret = WAIT_OBJECT_0;
 		}
 		break;
 	}
@@ -969,20 +989,22 @@ static void *WINAPI expWaitForSingleObject(void *object, int duration)
 }
 
 #ifdef CONFIG_QTX_CODECS
-static void *WINAPI expWaitForMultipleObjects(int count, const void **objects,
-                                              int WaitAll, int duration)
+static void *WINAPI expWaitForMultipleObjects(int count, const void **objects, int WaitAll, int duration)
 {
-	int   i;
+	int i;
 	void *object;
 	void *ret;
 
 	dbgprintf("WaitForMultipleObjects(%d, 0x%x, %d, duration %d) =>\n",
-	          count, objects, WaitAll, duration);
+	          count,
+	          objects,
+	          WaitAll,
+	          duration);
 
 	for(i = 0; i < count; i++)
 	{
 		object = (void *)objects[i];
-		ret    = expWaitForSingleObject(object, duration);
+		ret = expWaitForSingleObject(object, duration);
 		if(WaitAll)
 			dbgprintf("WaitAll flag not yet supported...\n");
 		else
@@ -998,9 +1020,9 @@ static void WINAPI expExitThread(int retcode)
 }
 #endif
 
-static int  pf_set = 0;
+static int pf_set = 0;
 static BYTE PF[64] = {
-    0,
+	0,
 };
 
 static void DumpSystemInfo(const SYSTEM_INFO *si)
@@ -1020,7 +1042,7 @@ static void DumpSystemInfo(const SYSTEM_INFO *si)
 static void WINAPI expGetSystemInfo(SYSTEM_INFO *si)
 {
 	/* FIXME: better values for the two entries below... */
-	static int         cache = 0;
+	static int cache = 0;
 	static SYSTEM_INFO cachedsi;
 	dbgprintf("GetSystemInfo(%p) =>\n", si);
 
@@ -1032,17 +1054,17 @@ static void WINAPI expGetSystemInfo(SYSTEM_INFO *si)
 	pf_set = 1;
 
 	cachedsi.u.s.wProcessorArchitecture = PROCESSOR_ARCHITECTURE_INTEL;
-	cachedsi.dwPageSize                 = getpagesize();
+	cachedsi.dwPageSize = getpagesize();
 
 	/* FIXME: better values for the two entries below... */
 	cachedsi.lpMinimumApplicationAddress = (void *)0x00000000;
 	cachedsi.lpMaximumApplicationAddress = (void *)0x7FFFFFFF;
-	cachedsi.dwActiveProcessorMask       = 1;
-	cachedsi.dwNumberOfProcessors        = 1;
-	cachedsi.dwProcessorType             = PROCESSOR_INTEL_386;
-	cachedsi.dwAllocationGranularity     = 0x10000;
-	cachedsi.wProcessorLevel             = 5; /* pentium */
-	cachedsi.wProcessorRevision          = 0x0101;
+	cachedsi.dwActiveProcessorMask = 1;
+	cachedsi.dwNumberOfProcessors = 1;
+	cachedsi.dwProcessorType = PROCESSOR_INTEL_386;
+	cachedsi.dwAllocationGranularity = 0x10000;
+	cachedsi.wProcessorLevel = 5; /* pentium */
+	cachedsi.wProcessorRevision = 0x0101;
 
 	/* mplayer's way to detect PF's */
 	{
@@ -1080,8 +1102,8 @@ static void WINAPI expGetSystemInfo(SYSTEM_INFO *si)
    fdiv_bug and fpu emulation flags -- alex/MPlayer */
 #ifdef __linux__
 	{
-		char  buf[20];
-		char  line[200];
+		char buf[20];
+		char line[200];
 		FILE *f = fopen("/proc/cpuinfo", "r");
 
 		if(!f)
@@ -1274,8 +1296,8 @@ static HANDLE WINAPI expHeapCreate(long flags, long init_size, long max_size)
 // this is another dirty hack
 // VP31 is releasing one allocated Heap chunk twice
 // we will silently ignore this second call...
-static void *heapfreehack      = 0;
-static int   heapfreehackshown = 0;
+static void *heapfreehack = 0;
+static int heapfreehackshown = 0;
 //void trapbug(void);
 static void *WINAPI expHeapAlloc(HANDLE heap, int flags, int size)
 {
@@ -1355,7 +1377,7 @@ static int WINAPI expVirtualFree(void *v1, int v2, int v3)
 struct critsecs_list_t
 {
 	CRITICAL_SECTION *cs_win;
-	struct CRITSECT * cs_unix;
+	struct CRITSECT *cs_unix;
 };
 
 /* 'NEWTYPE' is working with VIVO, 3ivX and QTX dll (no more segfaults) -- alex */
@@ -1412,7 +1434,7 @@ static void WINAPI expInitializeCriticalSection(CRITICAL_SECTION *c)
 #ifdef CRITSECS_NEWTYPE
 	{
 		struct CRITSECT *cs;
-		int              i = critsecs_get_unused();
+		int i = critsecs_get_unused();
 
 		if(i < 0)
 		{
@@ -1428,21 +1450,24 @@ static void WINAPI expInitializeCriticalSection(CRITICAL_SECTION *c)
 		}
 		pthread_mutex_init(&cs->mutex, NULL);
 		pthread_cond_init(&cs->unlocked, NULL);
-		cs->lock_count           = 0;
-		critsecs_list[i].cs_win  = c;
+		cs->lock_count = 0;
+		critsecs_list[i].cs_win = c;
 		critsecs_list[i].cs_unix = cs;
 		dbgprintf("InitializeCriticalSection -> itemno=%d, cs_win=%p, cs_unix=%p\n",
-		          i, c, cs);
+		          i,
+		          c,
+		          cs);
 	}
 #else
 	{
 		struct CRITSECT *cs = mreq_private(sizeof(struct CRITSECT) + sizeof(CRITICAL_SECTION),
-		                                   0, AREATYPE_CRITSECT);
+		                                   0,
+		                                   AREATYPE_CRITSECT);
 		pthread_mutex_init(&cs->mutex, NULL);
 		pthread_cond_init(&cs->unlocked, NULL);
 		cs->lock_count = 0;
-		cs->deadbeef   = 0xdeadbeef;
-		*(void **)c    = cs;
+		cs->deadbeef = 0xdeadbeef;
+		*(void **)c = cs;
 	}
 #endif
 	return;
@@ -1469,7 +1494,7 @@ static void WINAPI expEnterCriticalSection(CRITICAL_SECTION *c)
 #ifdef CRITSECS_NEWTYPE
 		cs = critsecs_get_unix(c);
 #else
-		cs              = (*(struct CRITSECT **)c);
+		cs = (*(struct CRITSECT **)c);
 #endif
 		dbgprintf("Win32 Warning: Accessed uninitialized Critical Section (%p)!\n", c);
 	}
@@ -1485,7 +1510,7 @@ static void WINAPI expEnterCriticalSection(CRITICAL_SECTION *c)
 			pthread_cond_wait(&(cs->unlocked), &(cs->mutex));
 		}
 		cs->lock_count = 1;
-		cs->id         = pthread_self();
+		cs->id = pthread_self();
 	}
 	pthread_mutex_unlock(&(cs->mutex));
 	return;
@@ -1634,8 +1659,8 @@ static int WINAPI expTlsFree(int idx)
 #else
 struct tls_s
 {
-	void *        value;
-	int           used;
+	void *value;
+	int used;
 	struct tls_s *prev;
 	struct tls_s *next;
 };
@@ -1644,15 +1669,15 @@ static void *WINAPI expTlsAlloc(void)
 {
 	if(g_tls == NULL)
 	{
-		g_tls       = my_mreq(sizeof(tls_t), 0);
+		g_tls = my_mreq(sizeof(tls_t), 0);
 		g_tls->next = g_tls->prev = NULL;
 	}
 	else
 	{
-		g_tls->next       = my_mreq(sizeof(tls_t), 0);
+		g_tls->next = my_mreq(sizeof(tls_t), 0);
 		g_tls->next->prev = g_tls;
 		g_tls->next->next = NULL;
-		g_tls             = g_tls->next;
+		g_tls = g_tls->next;
 	}
 	dbgprintf("TlsAlloc() => 0x%x\n", g_tls);
 	if(g_tls)
@@ -1663,13 +1688,13 @@ static void *WINAPI expTlsAlloc(void)
 static int WINAPI expTlsSetValue(void *idx, void *value)
 {
 	tls_t *index = (tls_t *)idx;
-	int    result;
+	int result;
 	if(index == 0)
 		result = 0;
 	else
 	{
 		index->value = value;
-		result       = 1;
+		result = 1;
 	}
 	dbgprintf("TlsSetValue(index 0x%x, value 0x%x) => %d \n", index, value, result);
 	return result;
@@ -1677,7 +1702,7 @@ static int WINAPI expTlsSetValue(void *idx, void *value)
 static void *WINAPI expTlsGetValue(void *idx)
 {
 	tls_t *index = (tls_t *)idx;
-	void * result;
+	void *result;
 	if(index == 0)
 		result = 0;
 	else
@@ -1688,7 +1713,7 @@ static void *WINAPI expTlsGetValue(void *idx)
 static int WINAPI expTlsFree(void *idx)
 {
 	tls_t *index = (tls_t *)idx;
-	int    result;
+	int result;
 	if(index == 0)
 		result = 0;
 	else
@@ -1719,7 +1744,7 @@ static void *WINAPI expLocalAlloc(int flags, int size)
 static void *WINAPI expLocalReAlloc(int handle, int size, int flags)
 {
 	void *newpointer;
-	int   oldsize;
+	int oldsize;
 
 	newpointer = NULL;
 	if(flags & LMEM_MODIFY)
@@ -1727,7 +1752,7 @@ static void *WINAPI expLocalReAlloc(int handle, int size, int flags)
 		dbgprintf("LocalReAlloc MODIFY\n");
 		return (void *)handle;
 	}
-	oldsize    = my_size((void *)handle);
+	oldsize = my_size((void *)handle);
 	newpointer = my_realloc((void *)handle, size);
 	dbgprintf("LocalReAlloc(%x %d(old %d), flags 0x%x) => 0x%x\n", handle, size, oldsize, flags, newpointer);
 
@@ -1764,7 +1789,7 @@ static int WINAPI expGlobalSize(void *amem)
 	int size = 100000;
 #ifdef GARBAGE
 	alloc_header *header = last_alloc;
-	alloc_header *mem    = (alloc_header *)amem - 1;
+	alloc_header *mem = (alloc_header *)amem - 1;
 	if(amem == 0)
 		return 0;
 	pthread_mutex_lock(&memmut);
@@ -1802,7 +1827,12 @@ static int WINAPI expLoadStringA(long instance, long id, void *buf, long size)
 	int result = LoadStringA(instance, id, buf, size);
 	//    if(buf)
 	dbgprintf("LoadStringA(instance 0x%x, id 0x%x, buffer 0x%x, size %d) => %d ( %s )\n",
-	          instance, id, buf, size, result, buf);
+	          instance,
+	          id,
+	          buf,
+	          size,
+	          result,
+	          buf);
 	//    else
 	//    dbgprintf("LoadStringA(instance 0x%x, id 0x%x, buffer 0x%x, size %d) => %d\n",
 	//	instance, id, buf, size, result);
@@ -1833,11 +1863,23 @@ static long WINAPI expMultiByteToWideChar(long v1, long v2, char *s1, long siz1,
 	if(s1)
 		dbgprintf("MultiByteToWideChar(codepage %d, flags 0x%x, string 0x%x='%s',"
 		          "size %d, dest buffer 0x%x, dest size %d) => %d\n",
-		          v1, v2, s1, s1, siz1, s2, siz2, result);
+		          v1,
+		          v2,
+		          s1,
+		          s1,
+		          siz1,
+		          s2,
+		          siz2,
+		          result);
 	else
 		dbgprintf("MultiByteToWideChar(codepage %d, flags 0x%x, string NULL,"
 		          "size %d, dest buffer 0x%x, dest size %d) =>\n",
-		          v1, v2, siz1, s2, siz2, result);
+		          v1,
+		          v2,
+		          siz1,
+		          s2,
+		          siz2,
+		          result);
 	return result;
 }
 static void wch_print(const short *str)
@@ -1847,13 +1889,19 @@ static void wch_print(const short *str)
 		dbgprintf("%c", *str++);
 	dbgprintf("\n");
 }
-static long WINAPI expWideCharToMultiByte(long v1, long v2, short *s1, long siz1,
-                                          char *s2, int siz2, char *c3, int *siz3)
+static long WINAPI expWideCharToMultiByte(long v1, long v2, short *s1, long siz1, char *s2, int siz2, char *c3, int *siz3)
 {
 	int result;
 	dbgprintf("WideCharToMultiByte(codepage %d, flags 0x%x, src 0x%x, src size %d, "
 	          "dest 0x%x, dest size %d, defch 0x%x, used_defch 0x%x)",
-	          v1, v2, s1, siz1, s2, siz2, c3, siz3);
+	          v1,
+	          v2,
+	          s1,
+	          siz1,
+	          s2,
+	          siz2,
+	          c3,
+	          siz3);
 	result = WideCharToMultiByte(v1, v2, s1, siz1, s2, siz2, c3, siz3);
 	dbgprintf("=> %d\n", result);
 	//if(s1)wch_print(s1);
@@ -1866,10 +1914,10 @@ static long WINAPI expGetVersionExA(OSVERSIONINFOA *c)
 {
 	dbgprintf("GetVersionExA(0x%x) => 1\n", c);
 	c->dwOSVersionInfoSize = sizeof(*c);
-	c->dwMajorVersion      = 5;
-	c->dwMinorVersion      = 1;
-	c->dwBuildNumber       = 0x5010a28;
-	c->dwPlatformId        = VER_PLATFORM_WIN32_NT;
+	c->dwMajorVersion = 5;
+	c->dwMinorVersion = 1;
+	c->dwBuildNumber = 0x5010a28;
+	c->dwPlatformId = VER_PLATFORM_WIN32_NT;
 	strcpy(c->szCSDVersion, "Service Pack 2");
 	dbgprintf("  Major version: 5\n  Minor version: 1\n  Build number: 0x5010a28\n"
 	          "  Platform Id: VER_PLATFORM_WIN32_NT\n Version string: 'Service Pack 2'\n");
@@ -1881,10 +1929,10 @@ static long WINAPI expGetVersionExW(OSVERSIONINFOW *c)
 	char CSDVersion[128];
 	dbgprintf("GetVersionExW(0x%x) => 1\n", c);
 	c->dwOSVersionInfoSize = sizeof(*c);
-	c->dwMajorVersion      = 5;
-	c->dwMinorVersion      = 1;
-	c->dwBuildNumber       = 0x5010a28;
-	c->dwPlatformId        = VER_PLATFORM_WIN32_NT;
+	c->dwMajorVersion = 5;
+	c->dwMinorVersion = 1;
+	c->dwBuildNumber = 0x5010a28;
+	c->dwPlatformId = VER_PLATFORM_WIN32_NT;
 	strcpy(CSDVersion, "Service Pack 2");
 	MultiByteToWideChar(65001, 0x0, CSDVersion, -1, c->szCSDVersion, 128);
 	dbgprintf("  Major version: 5\n  Minor version: 1\n  Build number: 0x5010a28\n"
@@ -1892,12 +1940,11 @@ static long WINAPI expGetVersionExW(OSVERSIONINFOW *c)
 	return 1;
 }
 
-static HANDLE WINAPI expCreateSemaphoreA(char *v1, long init_count,
-                                         long max_count, char *name)
+static HANDLE WINAPI expCreateSemaphoreA(char *v1, long init_count, long max_count, char *name)
 {
 	pthread_mutex_t *pm;
-	pthread_cond_t * pc;
-	HANDLE           ret;
+	pthread_cond_t *pc;
+	HANDLE ret;
 	/*
     mutex_list* pp;
      printf("CreateSemaphoreA(%p = %s)\n", name, (name ? name : "<null>"));
@@ -1919,7 +1966,12 @@ static HANDLE WINAPI expCreateSemaphoreA(char *v1, long init_count,
 				if((strcmp(pp->name, name) == 0) && (pp->type == 1))
 				{
 					dbgprintf("CreateSemaphoreA(0x%x, init_count %d, max_count %d, name 0x%x='%s') => 0x%x\n",
-					          v1, init_count, max_count, name, name, mlist);
+					          v1,
+					          init_count,
+					          max_count,
+					          name,
+					          name,
+					          mlist);
 					ret = (HANDLE)mlist;
 					pthread_mutex_unlock(&mlist_lock);
 					return ret;
@@ -1932,22 +1984,22 @@ static HANDLE WINAPI expCreateSemaphoreA(char *v1, long init_count,
 	pthread_cond_init(pc, NULL);
 	if(mlist == NULL)
 	{
-		mlist       = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
+		mlist = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
 		mlist->next = mlist->prev = NULL;
 	}
 	else
 	{
-		mlist->next       = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
+		mlist->next = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
 		mlist->next->prev = mlist;
 		mlist->next->next = NULL;
-		mlist             = mlist->next;
+		mlist = mlist->next;
 		//	printf("new semaphore %p\n", mlist);
 	}
-	mlist->type      = 1; /* Type Semaphore */
-	mlist->pm        = pm;
-	mlist->pc        = pc;
-	mlist->state     = 0;
-	mlist->reset     = 0;
+	mlist->type = 1; /* Type Semaphore */
+	mlist->pm = pm;
+	mlist->pc = pc;
+	mlist->state = 0;
+	mlist->reset = 0;
 	mlist->semaphore = init_count;
 	if(name != NULL)
 		strncpy(mlist->name, name, 64);
@@ -1957,19 +2009,26 @@ static HANDLE WINAPI expCreateSemaphoreA(char *v1, long init_count,
 		dbgprintf("ERROR::: CreateSemaphoreA failure\n");
 	if(name)
 		dbgprintf("CreateSemaphoreA(0x%x, init_count %d, max_count %d, name 0x%x='%s') => 0x%x\n",
-		          v1, init_count, max_count, name, name, mlist);
+		          v1,
+		          init_count,
+		          max_count,
+		          name,
+		          name,
+		          mlist);
 	else
 		dbgprintf("CreateSemaphoreA(0x%x, init_count %d, max_count %d, name 0) => 0x%x\n",
-		          v1, init_count, max_count, mlist);
+		          v1,
+		          init_count,
+		          max_count,
+		          mlist);
 	ret = (HANDLE)mlist;
 	pthread_mutex_unlock(&mlist_lock);
 	return ret;
 }
 
-static HANDLE WINAPI expCreateSemaphoreW(char *v1, long init_count,
-                                         long max_count, const WCHAR *name)
+static HANDLE WINAPI expCreateSemaphoreW(char *v1, long init_count, long max_count, const WCHAR *name)
 {
-	char  ascii_name[256];
+	char ascii_name[256];
 	char *aname = NULL;
 	if(name)
 	{
@@ -1995,16 +2054,19 @@ static long WINAPI expReleaseSemaphore(long hsem, long increment, long *prev_cou
 	ml->semaphore += increment;
 	pthread_mutex_unlock(ml->pm);
 	dbgprintf("ReleaseSemaphore(semaphore 0x%x, increment %d, prev_count 0x%x) => 1\n",
-	          hsem, increment, prev_count);
+	          hsem,
+	          increment,
+	          prev_count);
 	return 1;
 }
 
 static HANDLE WINAPI expCreateMutexA(void *pSecAttr,
-                                     char bInitialOwner, const char *name)
+                                     char bInitialOwner,
+                                     const char *name)
 {
 	pthread_mutex_t *pm;
-	pthread_cond_t * pc;
-	HANDLE           ret;
+	pthread_cond_t *pc;
+	HANDLE ret;
 	pthread_mutex_lock(&mlist_lock);
 	if(mlist != NULL)
 	{
@@ -2027,30 +2089,30 @@ static HANDLE WINAPI expCreateMutexA(void *pSecAttr,
 	pthread_cond_init(pc, NULL);
 	if(mlist == NULL)
 	{
-		mlist       = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
+		mlist = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
 		mlist->next = mlist->prev = NULL;
 	}
 	else
 	{
-		mlist->next       = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
+		mlist->next = mreq_private(sizeof(mutex_list), 00, AREATYPE_EVENT);
 		mlist->next->prev = mlist;
 		mlist->next->next = NULL;
-		mlist             = mlist->next;
+		mlist = mlist->next;
 	}
-	mlist->type      = 2; /* Type Mutex */
-	mlist->pm        = pm;
-	mlist->pc        = pc;
-	mlist->state     = 0;
-	mlist->reset     = 0;
+	mlist->type = 2; /* Type Mutex */
+	mlist->pm = pm;
+	mlist->pc = pc;
+	mlist->state = 0;
+	mlist->reset = 0;
 	mlist->semaphore = 0;
 	if(bInitialOwner)
 	{
-		mlist->owner      = pthread_self();
+		mlist->owner = pthread_self();
 		mlist->lock_count = 1;
 	}
 	else
 	{
-		mlist->owner      = (pthread_t)0;
+		mlist->owner = (pthread_t)0;
 		mlist->lock_count = 0;
 	}
 	if(name != NULL)
@@ -2061,10 +2123,15 @@ static HANDLE WINAPI expCreateMutexA(void *pSecAttr,
 		dbgprintf("ERROR::: CreateMutexA failure\n");
 	if(name)
 		dbgprintf("CreateMutexA(0x%x, %d, '%s') => 0x%x\n",
-		          pSecAttr, bInitialOwner, name, mlist);
+		          pSecAttr,
+		          bInitialOwner,
+		          name,
+		          mlist);
 	else
 		dbgprintf("CreateMutexA(0x%x, %d, NULL) => 0x%x\n",
-		          pSecAttr, bInitialOwner, mlist);
+		          pSecAttr,
+		          bInitialOwner,
+		          mlist);
 	ret = (HANDLE)mlist;
 	pthread_mutex_unlock(&mlist_lock);
 	return ret;
@@ -2072,7 +2139,7 @@ static HANDLE WINAPI expCreateMutexA(void *pSecAttr,
 
 static HANDLE WINAPI expCreateMutexW(void *pSecAttr, char bInitialOwner, const WCHAR *name)
 {
-	char  ascii_name[256];
+	char ascii_name[256];
 	char *aname = NULL;
 	if(name)
 	{
@@ -2093,9 +2160,9 @@ static int WINAPI expReleaseMutex(HANDLE hMutex)
 	return 1;
 }
 
-static DWORD WINAPI expSignalObjectAndWait(HANDLE   hObjectToSignal,
-                                           HANDLE   hObjectToWaitOn,
-                                           DWORD    dwMilliseconds,
+static DWORD WINAPI expSignalObjectAndWait(HANDLE hObjectToSignal,
+                                           HANDLE hObjectToWaitOn,
+                                           DWORD dwMilliseconds,
                                            WIN_BOOL bAlertable)
 {
 	mutex_list *mlist = (mutex_list *)hObjectToSignal;
@@ -2121,7 +2188,12 @@ static long WINAPI expRegOpenKeyExA(long key, const char *subkey, long reserved,
 {
 	long result = RegOpenKeyExA(key, subkey, reserved, access, newkey);
 	dbgprintf("RegOpenKeyExA(key 0x%x, subkey %s, reserved %d, access 0x%x, pnewkey 0x%x) => %d\n",
-	          key, subkey, reserved, access, newkey, result);
+	          key,
+	          subkey,
+	          reserved,
+	          access,
+	          newkey,
+	          result);
 	if(newkey)
 		dbgprintf("  New key: 0x%x\n", *newkey);
 	return result;
@@ -2137,7 +2209,12 @@ static long WINAPI expRegQueryValueExA(long key, const char *value, int *reserve
 	long result = RegQueryValueExA(key, value, reserved, type, data, count);
 	dbgprintf("RegQueryValueExA(key 0x%x, value %s, reserved 0x%x, data 0x%x, count 0x%x)"
 	          " => 0x%x\n",
-	          key, value, reserved, data, count, result);
+	          key,
+	          value,
+	          reserved,
+	          data,
+	          count,
+	          result);
 	if(data && count)
 		dbgprintf("  read %d bytes: '%s'\n", *count, data);
 	return result;
@@ -2147,18 +2224,25 @@ static long WINAPI expRegQueryValueExA(long key, const char *value, int *reserve
 static long WINAPI expRegCreateKeyA(long hkey, const char *name, int *retkey)
 {
 	dbgprintf("RegCreateKeyA(key 0x%x, name 0x%x='%s',newkey=0x%x)\n", hkey, name, retkey);
-	return RegCreateKeyExA(hkey, name, 0, NULL, REG_OPTION_NON_VOLATILE,
-	                       KEY_ALL_ACCESS, NULL, retkey, NULL);
+	return RegCreateKeyExA(hkey, name, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, retkey, NULL);
 }
 
-static long WINAPI expRegCreateKeyExA(long key, const char *name, long reserved,
-                                      void *classs, long options, long security,
-                                      void *sec_attr, int *newkey, int *status)
+static long WINAPI expRegCreateKeyExA(long key, const char *name, long reserved, void *classs, long options, long security, void *sec_attr, int *newkey, int *status)
 {
 	long result = RegCreateKeyExA(key, name, reserved, classs, options, security, sec_attr, newkey, status);
 	dbgprintf("RegCreateKeyExA(key 0x%x, name 0x%x='%s', reserved=0x%x,"
 	          " 0x%x, 0x%x, 0x%x, newkey=0x%x, status=0x%x) => %d\n",
-	          key, name, name, reserved, classs, options, security, sec_attr, newkey, status, result);
+	          key,
+	          name,
+	          name,
+	          reserved,
+	          classs,
+	          options,
+	          security,
+	          sec_attr,
+	          newkey,
+	          status,
+	          result);
 	if(!result && newkey)
 		dbgprintf("  New key: 0x%x\n", *newkey);
 	if(!result && status)
@@ -2169,7 +2253,15 @@ static long WINAPI expRegSetValueExA(long key, const char *name, long v1, long v
 {
 	long result = RegSetValueExA(key, name, v1, v2, data, size);
 	dbgprintf("RegSetValueExA(key 0x%x, name '%s', 0x%x, 0x%x, data 0x%x -> 0x%x '%s', size=%d) => %d",
-	          key, name, v1, v2, data, *(int *)data, data, size, result);
+	          key,
+	          name,
+	          v1,
+	          v2,
+	          data,
+	          *(int *)data,
+	          data,
+	          size,
+	          result);
 	return result;
 }
 
@@ -2177,25 +2269,23 @@ static long WINAPI expRegOpenKeyA(long hKey, LPCSTR lpSubKey, int *phkResult)
 {
 	long result = RegOpenKeyExA(hKey, lpSubKey, 0, 0, phkResult);
 	dbgprintf("RegOpenKeyExA(key 0x%x, subkey '%s', 0x%x) => %d\n",
-	          hKey, lpSubKey, phkResult, result);
+	          hKey,
+	          lpSubKey,
+	          phkResult,
+	          result);
 	if(!result && phkResult)
 		dbgprintf("  New key: 0x%x\n", *phkResult);
 	return result;
 }
 
-static DWORD WINAPI expRegEnumValueA(HKEY hkey, DWORD index, LPSTR value, LPDWORD val_count,
-                                     LPDWORD reserved, LPDWORD type, LPBYTE data, LPDWORD count)
+static DWORD WINAPI expRegEnumValueA(HKEY hkey, DWORD index, LPSTR value, LPDWORD val_count, LPDWORD reserved, LPDWORD type, LPBYTE data, LPDWORD count)
 {
-	return RegEnumValueA(hkey, index, value, val_count,
-	                     reserved, type, data, count);
+	return RegEnumValueA(hkey, index, value, val_count, reserved, type, data, count);
 }
 
-static DWORD WINAPI expRegEnumKeyExA(HKEY hKey, DWORD dwIndex, LPSTR lpName, LPDWORD lpcbName,
-                                     LPDWORD lpReserved, LPSTR lpClass, LPDWORD lpcbClass,
-                                     LPFILETIME lpftLastWriteTime)
+static DWORD WINAPI expRegEnumKeyExA(HKEY hKey, DWORD dwIndex, LPSTR lpName, LPDWORD lpcbName, LPDWORD lpReserved, LPSTR lpClass, LPDWORD lpcbClass, LPFILETIME lpftLastWriteTime)
 {
-	return RegEnumKeyExA(hKey, dwIndex, lpName, lpcbName, lpReserved, lpClass,
-	                     lpcbClass, lpftLastWriteTime);
+	return RegEnumKeyExA(hKey, dwIndex, lpName, lpcbName, lpReserved, lpClass, lpcbClass, lpftLastWriteTime);
 }
 
 static long WINAPI expQueryPerformanceCounter(long long *z)
@@ -2208,10 +2298,7 @@ static long WINAPI expQueryPerformanceCounter(long long *z)
 /*
  * dummy function RegQueryInfoKeyA(), required by vss codecs
  */
-static DWORD WINAPI expRegQueryInfoKeyA(HKEY hkey, LPSTR class, LPDWORD class_len, LPDWORD reserved,
-                                        LPDWORD subkeys, LPDWORD max_subkey, LPDWORD max_class,
-                                        LPDWORD values, LPDWORD max_value, LPDWORD max_data,
-                                        LPDWORD security, FILETIME *modif)
+static DWORD WINAPI expRegQueryInfoKeyA(HKEY hkey, LPSTR class, LPDWORD class_len, LPDWORD reserved, LPDWORD subkeys, LPDWORD max_subkey, LPDWORD max_class, LPDWORD values, LPDWORD max_value, LPDWORD max_data, LPDWORD security, FILETIME *modif)
 {
 	return ERROR_SUCCESS;
 }
@@ -2222,9 +2309,9 @@ static DWORD WINAPI expRegQueryInfoKeyA(HKEY hkey, LPSTR class, LPDWORD class_le
 static double linux_cpuinfo_freq(void)
 {
 	double freq = -1;
-	FILE * f;
-	char   line[200];
-	char * s, *value;
+	FILE *f;
+	char line[200];
+	char *s, *value;
 
 	f = fopen("/proc/cpuinfo", "r");
 	if(f != NULL)
@@ -2259,10 +2346,10 @@ static double solaris_kstat_freq(void)
 	/*
      * try to extract the CPU speed from the solaris kernel's kstat data
      */
-	kstat_ctl_t *  kc;
-	kstat_t *      ksp;
+	kstat_ctl_t *kc;
+	kstat_t *ksp;
 	kstat_named_t *kdata;
-	int            mhz = 0;
+	int mhz = 0;
 
 	kc = kstat_open();
 	if(kc != NULL)
@@ -2335,7 +2422,7 @@ static long WINAPI expQueryPerformanceFrequency(long long *z)
 static long WINAPI exptimeGetTime(void)
 {
 	struct timeval t;
-	long           result;
+	long result;
 	gettimeofday(&t, 0);
 	result = 1000 * t.tv_sec + t.tv_usec / 1000;
 	dbgprintf("timeGetTime() => %d\n", result);
@@ -2391,7 +2478,12 @@ static HRSRC WINAPI expFindResourceA(HMODULE module, char *name, char *type)
 
 	result = FindResourceA(module, name, type);
 	dbgprintf("FindResourceA(module 0x%x, name 0x%x(%s), type 0x%x(%s)) => 0x%x\n",
-	          module, name, HIWORD(name) ? name : "UNICODE", type, HIWORD(type) ? type : "UNICODE", result);
+	          module,
+	          name,
+	          HIWORD(name) ? name : "UNICODE",
+	          type,
+	          HIWORD(type) ? type : "UNICODE",
+	          result);
 	return result;
 }
 
@@ -2430,7 +2522,7 @@ static const char *WINAPI expGetCommandLineA(void)
 	dbgprintf("GetCommandLineA() => \"c:\\aviplay.exe\"\n");
 	return "c:\\aviplay.exe";
 }
-static short  envs[] = {'p', 'a', 't', 'h', ' ', 'c', ':', '\\', 0, 0};
+static short envs[] = { 'p', 'a', 't', 'h', ' ', 'c', ':', '\\', 0, 0 };
 static LPWSTR WINAPI expGetEnvironmentStringsW(void)
 {
 	dbgprintf("GetEnvironmentStringsW() => 0\n", envs);
@@ -2467,8 +2559,8 @@ static int WINAPI expFreeEnvironmentStringsA(char *strings)
 }
 
 static const char ch_envs[] =
-    "__MSVCRT_HEAP_SELECT=__GLOBAL_HEAP_SELECTED,1\r\n"
-    "PATH=C:\\;C:\\windows\\;C:\\windows\\system\r\n";
+"__MSVCRT_HEAP_SELECT=__GLOBAL_HEAP_SELECTED,1\r\n"
+"PATH=C:\\;C:\\windows\\;C:\\windows\\system\r\n";
 static LPCSTR WINAPI expGetEnvironmentStrings(void)
 {
 	dbgprintf("GetEnvironmentStrings() => 0x%x\n", ch_envs);
@@ -2494,13 +2586,23 @@ static int WINAPI expGetStartupInfoA(STARTUPINFOA *s)
 	dbgprintf("  lpDesktop='%s'\n", s->lpDesktop);
 	dbgprintf("  lpTitle='%s'\n", s->lpTitle);
 	dbgprintf("  dwX=%d dwY=%d dwXSize=%d dwYSize=%d\n",
-	          s->dwX, s->dwY, s->dwXSize, s->dwYSize);
+	          s->dwX,
+	          s->dwY,
+	          s->dwXSize,
+	          s->dwYSize);
 	dbgprintf("  dwXCountChars=%d dwYCountChars=%d dwFillAttribute=%d\n",
-	          s->dwXCountChars, s->dwYCountChars, s->dwFillAttribute);
+	          s->dwXCountChars,
+	          s->dwYCountChars,
+	          s->dwFillAttribute);
 	dbgprintf("  dwFlags=0x%x wShowWindow=0x%x cbReserved2=0x%x\n",
-	          s->dwFlags, s->wShowWindow, s->cbReserved2);
+	          s->dwFlags,
+	          s->wShowWindow,
+	          s->cbReserved2);
 	dbgprintf("  lpReserved2=0x%x hStdInput=0x%x hStdOutput=0x%x hStdError=0x%x\n",
-	          s->lpReserved2, s->hStdInput, s->hStdOutput, s->hStdError);
+	          s->lpReserved2,
+	          s->hStdInput,
+	          s->hStdOutput,
+	          s->hStdError);
 	return 1;
 }
 
@@ -2542,7 +2644,7 @@ static int WINAPI expGetACP(void)
 static int WINAPI expGetModuleFileNameA(int module, char *s, int len)
 {
 	WINE_MODREF *mr;
-	int          result;
+	int result;
 	//printf("File name of module %X (%s) requested\n", module, s);
 
 	if(module == 0 && len >= 12)
@@ -2569,10 +2671,17 @@ static int WINAPI expGetModuleFileNameA(int module, char *s, int len)
 	}
 	if(!s)
 		dbgprintf("GetModuleFileNameA(0x%x, 0x%x, %d) => %d\n",
-		          module, s, len, result);
+		          module,
+		          s,
+		          len,
+		          result);
 	else
 		dbgprintf("GetModuleFileNameA(0x%x, 0x%x, %d) => %d ( '%s' )\n",
-		          module, s, len, result, s);
+		          module,
+		          s,
+		          len,
+		          result,
+		          s);
 	return result;
 }
 
@@ -2600,7 +2709,7 @@ static int WINAPI expSetUnhandledExceptionFilter(void *filter)
 
 static int WINAPI expLoadLibraryA(char *name)
 {
-	int   result = 0;
+	int result = 0;
 	char *lastbc;
 	if(!name)
 		return -1;
@@ -2661,7 +2770,9 @@ static int WINAPI expLoadLibraryA(char *name)
 
 	result = LoadLibraryA(name);
 	dbgprintf("Returned LoadLibraryA(0x%x='%s') => 0x%x\n",
-	          name, name, result);
+	          name,
+	          name,
+	          result);
 
 	return result;
 }
@@ -2730,19 +2841,29 @@ static void *WINAPI expGetProcAddress(HMODULE mod, char *name)
 	return result;
 }
 
-static long WINAPI expCreateFileMappingA(int hFile, void *lpAttr,
-                                         long flProtect, long dwMaxHigh,
-                                         long dwMaxLow, const char *name)
+static long WINAPI expCreateFileMappingA(int hFile, void *lpAttr, long flProtect, long dwMaxHigh, long dwMaxLow, const char *name)
 {
 	long result = CreateFileMappingA(hFile, lpAttr, flProtect, dwMaxHigh, dwMaxLow, name);
 	if(!name)
 		dbgprintf("CreateFileMappingA(file 0x%x, lpAttr 0x%x,"
 		          "flProtect 0x%x, dwMaxHigh 0x%x, dwMaxLow 0x%x, name 0) => %d\n",
-		          hFile, lpAttr, flProtect, dwMaxHigh, dwMaxLow, result);
+		          hFile,
+		          lpAttr,
+		          flProtect,
+		          dwMaxHigh,
+		          dwMaxLow,
+		          result);
 	else
 		dbgprintf("CreateFileMappingA(file 0x%x, lpAttr 0x%x,"
 		          "flProtect 0x%x, dwMaxHigh 0x%x, dwMaxLow 0x%x, name 0x%x='%s') => %d\n",
-		          hFile, lpAttr, flProtect, dwMaxHigh, dwMaxLow, name, name, result);
+		          hFile,
+		          lpAttr,
+		          flProtect,
+		          dwMaxHigh,
+		          dwMaxLow,
+		          name,
+		          name,
+		          result);
 	return result;
 }
 
@@ -2751,18 +2872,28 @@ static long WINAPI expOpenFileMappingA(long hFile, long hz, const char *name)
 	long result = OpenFileMappingA(hFile, hz, name);
 	if(!name)
 		dbgprintf("OpenFileMappingA(0x%x, 0x%x, 0) => %d\n",
-		          hFile, hz, result);
+		          hFile,
+		          hz,
+		          result);
 	else
 		dbgprintf("OpenFileMappingA(0x%x, 0x%x, 0x%x='%s') => %d\n",
-		          hFile, hz, name, name, result);
+		          hFile,
+		          hz,
+		          name,
+		          name,
+		          result);
 	return result;
 }
 
-static void *WINAPI expMapViewOfFile(HANDLE file, DWORD mode, DWORD offHigh,
-                                     DWORD offLow, DWORD size)
+static void *WINAPI expMapViewOfFile(HANDLE file, DWORD mode, DWORD offHigh, DWORD offLow, DWORD size)
 {
 	dbgprintf("MapViewOfFile(0x%x, 0x%x, 0x%x, 0x%x, size %d) => 0x%x\n",
-	          file, mode, offHigh, offLow, size, (char *)file + offLow);
+	          file,
+	          mode,
+	          offHigh,
+	          offLow,
+	          size,
+	          (char *)file + offLow);
 	return (char *)file + offLow;
 }
 
@@ -2777,7 +2908,7 @@ static void *WINAPI expSleep(int time)
 #if HAVE_NANOSLEEP
 	/* solaris doesn't have thread safe usleep */
 	struct timespec tsp;
-	tsp.tv_sec  = time / 1000000;
+	tsp.tv_sec = time / 1000000;
 	tsp.tv_nsec = (time % 1000000) * 1000;
 	nanosleep(&tsp, NULL);
 #else
@@ -2836,10 +2967,10 @@ static int WINAPI expGetWindowRect(HWND win, RECT *r)
 {
 	//dbgprintf("GetWindowRect(0x%x, 0x%x) => 1\n", win, r);
 	/* (win == 0) => desktop */
-	r->right  = PSEUDO_SCREEN_WIDTH;
-	r->left   = 0;
+	r->right = PSEUDO_SCREEN_WIDTH;
+	r->left = 0;
 	r->bottom = PSEUDO_SCREEN_HEIGHT;
-	r->top    = 0;
+	r->top = 0;
 	return 1;
 }
 
@@ -2861,11 +2992,13 @@ static int WINAPI expMonitorFromPoint(void *p, int flags)
 	return 0;
 }
 
-static int WINAPI expEnumDisplayMonitors(void *dc, RECT *r,
-                                         int WINAPI (*callback_proc)(HMONITOR, HDC, LPRECT, LPARAM), void *callback_param)
+static int WINAPI expEnumDisplayMonitors(void *dc, RECT *r, int WINAPI (*callback_proc)(HMONITOR, HDC, LPRECT, LPARAM), void *callback_param)
 {
 	dbgprintf("EnumDisplayMonitors(0x%x, 0x%x, 0x%x, 0x%x) => ?\n",
-	          dc, r, callback_proc, callback_param);
+	          dc,
+	          r,
+	          callback_proc,
+	          callback_param);
 	return callback_proc(0, dc, r, callback_param);
 }
 
@@ -2882,8 +3015,8 @@ typedef struct tagMONITORINFO {
 typedef struct tagMONITORINFOEX
 {
 	DWORD cbSize;
-	RECT  rcMonitor;
-	RECT  rcWork;
+	RECT rcMonitor;
+	RECT rcWork;
 	DWORD dwFlags;
 	TCHAR szDevice[CCHDEVICENAME];
 } MONITORINFOEX, *LPMONITORINFOEX;
@@ -2909,11 +3042,14 @@ static int WINAPI expGetMonitorInfoA(void *mon, LPMONITORINFO lpmi)
 	return 1;
 }
 
-static int WINAPI expEnumDisplayDevicesA(const char *device, int devnum,
-                                         void *dispdev, int flags)
+static int WINAPI expEnumDisplayDevicesA(const char *device, int devnum, void *dispdev, int flags)
 {
 	dbgprintf("EnumDisplayDevicesA(0x%x = %s, %d, 0x%x, %x) => 1\n",
-	          device, device, devnum, dispdev, flags);
+	          device,
+	          device,
+	          devnum,
+	          dispdev,
+	          flags);
 	return 1;
 }
 
@@ -2933,15 +3069,17 @@ static int WINAPI expGetClassNameA(HWND win, LPTSTR classname, int maxcount)
 {
 	strncat(classname, "QuickTime", maxcount);
 	dbgprintf("GetClassNameA(0x%x, 0x%x, %d) => %d\n",
-	          win, classname, maxcount, strlen(classname));
+	          win,
+	          classname,
+	          maxcount,
+	          strlen(classname));
 	return strlen(classname);
 }
 
 #define LPWNDCLASS void *
 static int WINAPI expGetClassInfoA(HINSTANCE inst, LPCSTR classname, LPWNDCLASS wndclass)
 {
-	dbgprintf("GetClassInfoA(0x%x, 0x%x = %s, 0x%x) => 1\n", inst,
-	          classname, classname, wndclass);
+	dbgprintf("GetClassInfoA(0x%x, 0x%x = %s, 0x%x) => 1\n", inst, classname, classname, wndclass);
 	return 1;
 }
 
@@ -2967,7 +3105,7 @@ static int WINAPI expEnumWindows(int (*callback_func)(HWND, LPARAM), void *callb
 {
 	int i, i2;
 	dbgprintf("EnumWindows(0x%x, 0x%x) => 1\n", callback_func, callback_param);
-	i  = callback_func(0, callback_param);
+	i = callback_func(0, callback_param);
 	i2 = callback_func(1, callback_param);
 	return i && i2;
 }
@@ -2976,7 +3114,9 @@ static int WINAPI expGetWindowThreadProcessId(HWND win, int *pid_data)
 {
 	int tid = pthread_self();
 	dbgprintf("GetWindowThreadProcessId(0x%x, 0x%x) => %d\n",
-	          win, pid_data, tid);
+	          win,
+	          pid_data,
+	          tid);
 	if(pid_data)
 		*(int *)pid_data = tid;
 	return tid;
@@ -2985,14 +3125,24 @@ static int WINAPI expGetWindowThreadProcessId(HWND win, int *pid_data)
 //HWND      WINAPI CreateWindowExA(DWORD,LPCSTR,LPCSTR,DWORD,INT,INT,
 //                                INT,INT,HWND,HMENU,HINSTANCE,LPVOID);
 
-static HWND WINAPI expCreateWindowExA(int exstyle, const char *classname,
-                                      const char *winname, int style, int x, int y, int w, int h,
-                                      HWND parent, HMENU menu, HINSTANCE inst, LPVOID param)
+static HWND WINAPI expCreateWindowExA(int exstyle, const char *classname, const char *winname, int style, int x, int y, int w, int h, HWND parent, HMENU menu, HINSTANCE inst, LPVOID param)
 {
 	printf("CreateWindowEx() called\n");
 	dbgprintf("CreateWindowEx(%d, 0x%x = %s, 0x%x = %s, %d, %d, %d, %d, %d, 0x%x, 0x%x, 0x%x, 0x%x) => 1\n",
-	          exstyle, classname, classname, winname, winname, style, x, y, w, h,
-	          parent, menu, inst, param);
+	          exstyle,
+	          classname,
+	          classname,
+	          winname,
+	          winname,
+	          style,
+	          x,
+	          y,
+	          w,
+	          h,
+	          parent,
+	          menu,
+	          inst,
+	          param);
 	printf("CreateWindowEx() called okey\n");
 	return 1;
 }
@@ -3009,15 +3159,15 @@ static int WINAPI expwaveOutGetNumDevs(void)
  */
 static int WINAPI expGetTickCount(void)
 {
-	static int     tcstart = 0;
+	static int tcstart = 0;
 	struct timeval t;
-	int            tc;
+	int tc;
 	gettimeofday(&t, NULL);
 	tc = ((t.tv_sec * 1000) + (t.tv_usec / 1000)) - tcstart;
 	if(tcstart == 0)
 	{
 		tcstart = 0;
-		tc      = 0;
+		tc = 0;
 	}
 	//dbgprintf("GetTickCount() => %d\n", tc);
 	return tc;
@@ -3029,27 +3179,26 @@ static int WINAPI expCreateFontA(void)
     return 1;
 }*/
 
-static HFONT WINAPI expCreateFontA(int     nHeight,
-                                   int     nWidth,
-                                   int     nEscapement,
-                                   int     nOrientation,
-                                   int     fnWeight,
-                                   DWORD   fdwItalic,
-                                   DWORD   fdwUnderline,
-                                   DWORD   fdwStrikeOut,
-                                   DWORD   fdwCharSet,
-                                   DWORD   fdwOutputPrecision,
-                                   DWORD   fdwClipPrecision,
-                                   DWORD   fdwQuality,
-                                   DWORD   fdwPitchAndFamily,
+static HFONT WINAPI expCreateFontA(int nHeight,
+                                   int nWidth,
+                                   int nEscapement,
+                                   int nOrientation,
+                                   int fnWeight,
+                                   DWORD fdwItalic,
+                                   DWORD fdwUnderline,
+                                   DWORD fdwStrikeOut,
+                                   DWORD fdwCharSet,
+                                   DWORD fdwOutputPrecision,
+                                   DWORD fdwClipPrecision,
+                                   DWORD fdwQuality,
+                                   DWORD fdwPitchAndFamily,
                                    LPCTSTR lpszFace)
 {
 	return NULL;
 }
 
 /* tried to get pvmjpg work in a different way - no success */
-static int WINAPI expDrawTextA(int hDC, char *lpString, int nCount,
-                               LPRECT lpRect, unsigned int uFormat)
+static int WINAPI expDrawTextA(int hDC, char *lpString, int nCount, LPRECT lpRect, unsigned int uFormat)
 {
 	dbgprintf("expDrawTextA(%p,...) => 8\n", hDC);
 	return 8;
@@ -3057,13 +3206,13 @@ static int WINAPI expDrawTextA(int hDC, char *lpString, int nCount,
 
 static int WINAPI expGetPrivateProfileIntA(const char *appname,
                                            const char *keyname,
-                                           int         default_value,
+                                           int default_value,
                                            const char *filename)
 {
-	int   size = 255;
-	char  buffer[256];
+	int size = 255;
+	char buffer[256];
 	char *fullname;
-	int   result;
+	int result;
 
 	buffer[255] = 0;
 	if(!(appname && keyname && filename))
@@ -3092,7 +3241,7 @@ static int WINAPI expGetPrivateProfileIntA(const char *appname,
 }
 static int WINAPI expGetProfileIntA(const char *appname,
                                     const char *keyname,
-                                    int         default_value)
+                                    int default_value)
 {
 	dbgprintf("GetProfileIntA -> ");
 	return expGetPrivateProfileIntA(appname, keyname, default_value, "default");
@@ -3101,11 +3250,12 @@ static int WINAPI expGetProfileIntA(const char *appname,
 static int WINAPI expGetPrivateProfileStringA(const char *appname,
                                               const char *keyname,
                                               const char *def_val,
-                                              char *dest, unsigned int len,
+                                              char *dest,
+                                              unsigned int len,
                                               const char *filename)
 {
-	int   result;
-	int   size;
+	int result;
+	int size;
 	char *fullname;
 	dbgprintf("GetPrivateProfileStringA('%s', '%s', def_val '%s', 0x%x, 0x%x, '%s')", appname, keyname, def_val, dest, len, filename);
 	if(!(appname && keyname && filename))
@@ -3117,7 +3267,7 @@ static int WINAPI expGetPrivateProfileStringA(const char *appname,
 	strcat(fullname, keyname);
 	strcat(fullname, "\\");
 	strcat(fullname, filename);
-	size   = len;
+	size = len;
 	result = RegQueryValueExA(HKEY_LOCAL_MACHINE, fullname, NULL, NULL, (int *)dest, &size);
 	free(fullname);
 	if(result)
@@ -3160,13 +3310,11 @@ unsigned int GetPrivateProfileIntA_(const char *appname, const char *keyname, IN
 {
 	return expGetPrivateProfileIntA(appname, keyname, default_value, filename);
 }
-int GetPrivateProfileStringA_(const char *appname, const char *keyname,
-                              const char *def_val, char *dest, unsigned int len, const char *filename)
+int GetPrivateProfileStringA_(const char *appname, const char *keyname, const char *def_val, char *dest, unsigned int len, const char *filename)
 {
 	return expGetPrivateProfileStringA(appname, keyname, def_val, dest, len, filename);
 }
-int WritePrivateProfileStringA_(const char *appname, const char *keyname,
-                                const char *string, const char *filename)
+int WritePrivateProfileStringA_(const char *appname, const char *keyname, const char *string, const char *filename)
 {
 	return expWritePrivateProfileStringA(appname, keyname, string, filename);
 }
@@ -3199,12 +3347,7 @@ static void WINAPI expSetLastError(int error)
 
 static int WINAPI expStringFromGUID2(GUID *guid, char *str, int cbMax)
 {
-	int result = snprintf(str, cbMax, "%.8x-%.4x-%.4x-%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x",
-	                      guid->f1, guid->f2, guid->f3,
-	                      (unsigned char)guid->f4[0], (unsigned char)guid->f4[1],
-	                      (unsigned char)guid->f4[2], (unsigned char)guid->f4[3],
-	                      (unsigned char)guid->f4[4], (unsigned char)guid->f4[5],
-	                      (unsigned char)guid->f4[6], (unsigned char)guid->f4[7]);
+	int result = snprintf(str, cbMax, "%.8x-%.4x-%.4x-%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x", guid->f1, guid->f2, guid->f3, (unsigned char)guid->f4[0], (unsigned char)guid->f4[1], (unsigned char)guid->f4[2], (unsigned char)guid->f4[3], (unsigned char)guid->f4[4], (unsigned char)guid->f4[5], (unsigned char)guid->f4[6], (unsigned char)guid->f4[7]);
 	dbgprintf("StringFromGUID2(0x%x, 0x%x='%s', %d) => %d\n", guid, str, str, cbMax, result);
 	return result;
 }
@@ -3235,10 +3378,10 @@ static long WINAPI expInterlockedExchangeAdd(long *dest, long incr)
 {
 	long ret;
 	__asm__ volatile(
-	    "lock; xaddl %0,(%1)"
-	    : "=r"(ret)
-	    : "r"(dest), "0"(incr)
-	    : "memory");
+	"lock; xaddl %0,(%1)"
+	: "=r"(ret)
+	: "r"(dest), "0"(incr)
+	: "memory");
 	return ret;
 }
 
@@ -3300,7 +3443,7 @@ static int WINAPI expSetCursor(void *cursor)
 	return (int)cursor;
 }
 
-POINT      mousepos;
+POINT mousepos;
 static int WINAPI expGetCursorPos(LPPOINT cp)
 {
 //dbgprintf("GetCursorPos(0x%x) => 0x%x\n", cursor, cursor);
@@ -3404,7 +3547,10 @@ static int WINAPI expGetSysColorBrush(int index)
 static int WINAPI expGetSystemPaletteEntries(int hdc, int iStartIndex, int nEntries, void *lppe)
 {
 	dbgprintf("GetSystemPaletteEntries(0x%x, 0x%x, 0x%x, 0x%x) => 0\n",
-	          hdc, iStartIndex, nEntries, lppe);
+	          hdc,
+	          iStartIndex,
+	          nEntries,
+	          lppe);
 	return 0;
 }
 
@@ -3421,110 +3567,120 @@ static int WINAPI expGetSystemPaletteEntries(int hdc, int iStartIndex, int nEntr
  */
 
 static WIN_BOOL WINAPI expSystemParametersInfoA(
-    UINT  uiAction,
-    UINT  uiParam,
-    PVOID pvParam,
-    UINT  fWinIni)
+UINT uiAction,
+UINT uiParam,
+PVOID pvParam,
+UINT fWinIni)
 {
 	return FALSE;
 }
 
 static int WINAPI expPeekMessageA(
-    void *lpMsg,
-    HWND  hWnd,
-    UINT  wMsgFilterMin,
-    UINT  wMsgFilterMax,
-    UINT  wRemoveMsg)
+void *lpMsg,
+HWND hWnd,
+UINT wMsgFilterMin,
+UINT wMsgFilterMax,
+UINT wRemoveMsg)
 {
 	return 0;
 }
 
 static int WINAPI expGetTimeZoneInformation(LPTIME_ZONE_INFORMATION lpTimeZoneInformation)
 {
-	const short name[] = {'C', 'e', 'n', 't', 'r', 'a', 'l', ' ', 'S', 't', 'a',
-	                      'n', 'd', 'a', 'r', 'd', ' ', 'T', 'i', 'm', 'e', 0};
-	const short pname[] = {'C', 'e', 'n', 't', 'r', 'a', 'l', ' ', 'D', 'a', 'y',
-	                       'l', 'i', 'g', 'h', 't', ' ', 'T', 'i', 'm', 'e', 0};
+	const short name[] = { 'C', 'e', 'n', 't', 'r', 'a', 'l', ' ', 'S', 't', 'a', 'n', 'd', 'a', 'r', 'd', ' ', 'T', 'i', 'm', 'e', 0 };
+	const short pname[] = { 'C', 'e', 'n', 't', 'r', 'a', 'l', ' ', 'D', 'a', 'y', 'l', 'i', 'g', 'h', 't', ' ', 'T', 'i', 'm', 'e', 0 };
 	dbgprintf("GetTimeZoneInformation(0x%x) => TIME_ZONE_ID_STANDARD\n");
 	memset(lpTimeZoneInformation, 0, sizeof(TIME_ZONE_INFORMATION));
 	lpTimeZoneInformation->Bias = 360; //GMT-6
 	memcpy(lpTimeZoneInformation->StandardName, name, sizeof(name));
 	lpTimeZoneInformation->StandardDate.wMonth = 10;
-	lpTimeZoneInformation->StandardDate.wDay   = 5;
-	lpTimeZoneInformation->StandardDate.wHour  = 2;
-	lpTimeZoneInformation->StandardBias        = 0;
+	lpTimeZoneInformation->StandardDate.wDay = 5;
+	lpTimeZoneInformation->StandardDate.wHour = 2;
+	lpTimeZoneInformation->StandardBias = 0;
 	memcpy(lpTimeZoneInformation->DaylightName, pname, sizeof(pname));
 	lpTimeZoneInformation->DaylightDate.wMonth = 4;
-	lpTimeZoneInformation->DaylightDate.wDay   = 1;
-	lpTimeZoneInformation->DaylightDate.wHour  = 2;
-	lpTimeZoneInformation->DaylightBias        = -60;
+	lpTimeZoneInformation->DaylightDate.wDay = 1;
+	lpTimeZoneInformation->DaylightDate.wHour = 2;
+	lpTimeZoneInformation->DaylightBias = -60;
 	return TIME_ZONE_ID_STANDARD;
 }
 
 static void WINAPI expGetLocalTime(SYSTEMTIME *systime)
 {
-	time_t         local_time;
-	struct tm *    local_tm;
+	time_t local_time;
+	struct tm *local_tm;
 	struct timeval tv;
 
 	dbgprintf("GetLocalTime(0x%x)\n");
 	gettimeofday(&tv, NULL);
 	local_time = tv.tv_sec;
-	local_tm   = localtime(&local_time);
+	local_tm = localtime(&local_time);
 
-	systime->wYear         = local_tm->tm_year + 1900;
-	systime->wMonth        = local_tm->tm_mon + 1;
-	systime->wDayOfWeek    = local_tm->tm_wday;
-	systime->wDay          = local_tm->tm_mday;
-	systime->wHour         = local_tm->tm_hour;
-	systime->wMinute       = local_tm->tm_min;
-	systime->wSecond       = local_tm->tm_sec;
+	systime->wYear = local_tm->tm_year + 1900;
+	systime->wMonth = local_tm->tm_mon + 1;
+	systime->wDayOfWeek = local_tm->tm_wday;
+	systime->wDay = local_tm->tm_mday;
+	systime->wHour = local_tm->tm_hour;
+	systime->wMinute = local_tm->tm_min;
+	systime->wSecond = local_tm->tm_sec;
 	systime->wMilliseconds = (tv.tv_usec / 1000) % 1000;
 	dbgprintf("  Year: %d\n  Month: %d\n  Day of week: %d\n"
 	          "  Day: %d\n  Hour: %d\n  Minute: %d\n  Second:  %d\n"
 	          "  Milliseconds: %d\n",
-	          systime->wYear, systime->wMonth, systime->wDayOfWeek, systime->wDay,
-	          systime->wHour, systime->wMinute, systime->wSecond, systime->wMilliseconds);
+	          systime->wYear,
+	          systime->wMonth,
+	          systime->wDayOfWeek,
+	          systime->wDay,
+	          systime->wHour,
+	          systime->wMinute,
+	          systime->wSecond,
+	          systime->wMilliseconds);
 }
 
 static int WINAPI expGetSystemTime(SYSTEMTIME *systime)
 {
-	time_t         local_time;
-	struct tm *    local_tm;
+	time_t local_time;
+	struct tm *local_tm;
 	struct timeval tv;
 
 	dbgprintf("GetSystemTime(0x%x)\n", systime);
 	gettimeofday(&tv, NULL);
 	local_time = tv.tv_sec;
-	local_tm   = gmtime(&local_time);
+	local_tm = gmtime(&local_time);
 
-	systime->wYear         = local_tm->tm_year + 1900;
-	systime->wMonth        = local_tm->tm_mon + 1;
-	systime->wDayOfWeek    = local_tm->tm_wday;
-	systime->wDay          = local_tm->tm_mday;
-	systime->wHour         = local_tm->tm_hour;
-	systime->wMinute       = local_tm->tm_min;
-	systime->wSecond       = local_tm->tm_sec;
+	systime->wYear = local_tm->tm_year + 1900;
+	systime->wMonth = local_tm->tm_mon + 1;
+	systime->wDayOfWeek = local_tm->tm_wday;
+	systime->wDay = local_tm->tm_mday;
+	systime->wHour = local_tm->tm_hour;
+	systime->wMinute = local_tm->tm_min;
+	systime->wSecond = local_tm->tm_sec;
 	systime->wMilliseconds = (tv.tv_usec / 1000) % 1000;
 	dbgprintf("  Year: %d\n  Month: %d\n  Day of week: %d\n"
 	          "  Day: %d\n  Hour: %d\n  Minute: %d\n  Second:  %d\n"
 	          "  Milliseconds: %d\n",
-	          systime->wYear, systime->wMonth, systime->wDayOfWeek, systime->wDay,
-	          systime->wHour, systime->wMinute, systime->wSecond, systime->wMilliseconds);
+	          systime->wYear,
+	          systime->wMonth,
+	          systime->wDayOfWeek,
+	          systime->wDay,
+	          systime->wHour,
+	          systime->wMinute,
+	          systime->wSecond,
+	          systime->wMilliseconds);
 	return 0;
 }
 
 #define SECS_1601_TO_1970 ((369 * 365 + 89) * 86400ULL)
 static void WINAPI expGetSystemTimeAsFileTime(FILETIME *systime)
 {
-	struct timeval     tv;
+	struct timeval tv;
 	unsigned long long secs;
 
 	dbgprintf("GetSystemTime(0x%x)\n", systime);
 	gettimeofday(&tv, NULL);
 	secs = (tv.tv_sec + SECS_1601_TO_1970) * 10000000;
 	secs += tv.tv_usec * 10;
-	systime->dwLowDateTime  = secs & 0xffffffff;
+	systime->dwLowDateTime = secs & 0xffffffff;
 	systime->dwHighDateTime = (secs >> 32);
 }
 
@@ -3575,13 +3731,13 @@ struct COM_OBJECT_INFO
 };
 
 static struct COM_OBJECT_INFO *com_object_table = 0;
-static int                     com_object_size  = 0;
+static int com_object_size = 0;
 int RegisterComClass(const GUID *clsid, GETCLASSOBJECT gcs)
 {
 	if(!clsid || !gcs)
 		return -1;
-	com_object_table                                     = realloc(com_object_table, sizeof(struct COM_OBJECT_INFO) * (++com_object_size));
-	com_object_table[com_object_size - 1].clsid          = *clsid;
+	com_object_table = realloc(com_object_table, sizeof(struct COM_OBJECT_INFO) * (++com_object_size));
+	com_object_table[com_object_size - 1].clsid = *clsid;
 	com_object_table[com_object_size - 1].GetClassObject = gcs;
 	return 0;
 }
@@ -3589,7 +3745,7 @@ int RegisterComClass(const GUID *clsid, GETCLASSOBJECT gcs)
 int UnregisterComClass(const GUID *clsid, GETCLASSOBJECT gcs)
 {
 	int found = 0;
-	int i     = 0;
+	int i = 0;
 	if(!clsid || !gcs)
 		return -1;
 
@@ -3600,9 +3756,10 @@ int UnregisterComClass(const GUID *clsid, GETCLASSOBJECT gcs)
 		if(found && i > 0)
 		{
 			memcpy(&com_object_table[i - 1].clsid,
-			       &com_object_table[i].clsid, sizeof(GUID));
+			       &com_object_table[i].clsid,
+			       sizeof(GUID));
 			com_object_table[i - 1].GetClassObject =
-			    com_object_table[i].GetClassObject;
+			com_object_table[i].GetClassObject;
 		}
 		else if(memcmp(&com_object_table[i].clsid, clsid, sizeof(GUID)) == 0 && com_object_table[i].GetClassObject == gcs)
 		{
@@ -3622,16 +3779,17 @@ int UnregisterComClass(const GUID *clsid, GETCLASSOBJECT gcs)
 }
 
 const GUID IID_IUnknown =
-    {
-        0x00000000, 0x0000, 0x0000, {0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46}};
-const GUID IID_IClassFactory =
-    {
-        0x00000001, 0x0000, 0x0000, {0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46}};
-
-static long WINAPI expCoCreateInstance(GUID *rclsid, struct IUnknown *pUnkOuter,
-                                       long dwClsContext, const GUID *riid, void **ppv)
 {
-	int                     i;
+  0x00000000, 0x0000, 0x0000, { 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 }
+};
+const GUID IID_IClassFactory =
+{
+  0x00000001, 0x0000, 0x0000, { 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 }
+};
+
+static long WINAPI expCoCreateInstance(GUID *rclsid, struct IUnknown *pUnkOuter, long dwClsContext, const GUID *riid, void **ppv)
+{
+	int i;
 	struct COM_OBJECT_INFO *ci = 0;
 	for(i = 0; i < com_object_size; i++)
 		if(!memcmp(rclsid, &com_object_table[i].clsid, sizeof(GUID)))
@@ -3643,8 +3801,7 @@ static long WINAPI expCoCreateInstance(GUID *rclsid, struct IUnknown *pUnkOuter,
 	return i;
 }
 
-long CoCreateInstance(GUID *rclsid, struct IUnknown *pUnkOuter,
-                      long dwClsContext, const GUID *riid, void **ppv)
+long CoCreateInstance(GUID *rclsid, struct IUnknown *pUnkOuter, long dwClsContext, const GUID *riid, void **ppv)
 {
 	return expCoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
 }
@@ -3670,8 +3827,8 @@ static int WINAPI expIsRectEmpty(CONST RECT *lprc)
 	return r; // TM20
 }
 
-static int _adjust_fdiv = 0;     //what's this? - used to adjust division
-static int _winver      = 0x510; // windows version
+static int _adjust_fdiv = 0; //what's this? - used to adjust division
+static int _winver = 0x510;  // windows version
 
 static unsigned int WINAPI expGetTempPathA(unsigned int len, char *path)
 {
@@ -3795,7 +3952,7 @@ static UINT WINAPI expSetErrorMode(UINT i)
 static UINT WINAPI expGetWindowsDirectoryA(LPSTR s, UINT c)
 {
 	char windir[] = "c:\\windows";
-	int  result;
+	int result;
 	strncpy(s, windir, c);
 	result = 1 + ((c < strlen(windir)) ? c : strlen(windir));
 	dbgprintf("GetWindowsDirectoryA(0x%x, %d) => %d\n", s, c, result);
@@ -3804,7 +3961,7 @@ static UINT WINAPI expGetWindowsDirectoryA(LPSTR s, UINT c)
 static UINT WINAPI expGetCurrentDirectoryA(UINT c, LPSTR s)
 {
 	char curdir[] = "c:\\";
-	int  result;
+	int result;
 	strncpy(s, curdir, c);
 	result = 1 + ((c < strlen(curdir)) ? c : strlen(curdir));
 	dbgprintf("GetCurrentDirectoryA(0x%x, %d) => %d\n", s, c, result);
@@ -3826,7 +3983,9 @@ static int WINAPI expSetCurrentDirectoryA(const char *pathname)
 static int WINAPI expCreateDirectoryA(const char *pathname, void *sa)
 {
 	dbgprintf("CreateDirectory(0x%x = %s, 0x%x) => 1\n",
-	          pathname, pathname, sa); // HLSDK seems to generate correct pathnames
+	          pathname,
+	          pathname,
+	          sa); // HLSDK seems to generate correct pathnames
 	mkdir(pathname, 0777);
 	return 1;
 }
@@ -3844,7 +4003,7 @@ static WIN_BOOL WINAPI expFileTimeToLocalFileTime(const FILETIME *cpf, LPFILETIM
 static UINT WINAPI expGetTempFileNameA(LPCSTR cs1, LPCSTR cs2, UINT i, LPSTR ps)
 {
 	char mask[16] = "/tmp/AP_XXXXXX";
-	int  result;
+	int result;
 	dbgprintf("GetTempFileNameA(0x%x='%s', 0x%x='%s', %d, 0x%x)", cs1, cs1, cs2, cs2, i, ps);
 	if(i && i < 10)
 	{
@@ -3857,11 +4016,9 @@ static UINT WINAPI expGetTempFileNameA(LPCSTR cs1, LPCSTR cs2, UINT i, LPSTR ps)
 	return strlen(ps);
 }
 
-static HANDLE WINAPI expCreateFileA(LPCSTR cs1, DWORD i1, DWORD i2,
-                                    LPSECURITY_ATTRIBUTES p1, DWORD i3, DWORD i4, HANDLE i5)
+static HANDLE WINAPI expCreateFileA(LPCSTR cs1, DWORD i1, DWORD i2, LPSECURITY_ATTRIBUTES p1, DWORD i3, DWORD i4, HANDLE i5)
 {
-	dbgprintf("CreateFileA(0x%x='%s', %d, %d, 0x%x, %d, %d, 0x%x)\n", cs1, cs1, i1,
-	          i2, p1, i3, i4, i5);
+	dbgprintf("CreateFileA(0x%x='%s', %d, %d, 0x%x, %d, %d, 0x%x)\n", cs1, cs1, i1, i2, p1, i3, i4, i5);
 	int flg = O_CREAT;
 	if(GENERIC_READ & i1)
 		flg |= O_RDONLY;
@@ -3870,7 +4027,7 @@ static HANDLE WINAPI expCreateFileA(LPCSTR cs1, DWORD i1, DWORD i2,
 		flg |= O_WRONLY;
 		printf("Warning: openning filename %s (flags; 0x%x) for write\n", cs1, flg);
 	}
-	char *s    = strdup(cs1);
+	char *s = strdup(cs1);
 	char *path = s;
 	while(s = strchr(s, '\\'))
 		*s++ = '/';
@@ -3880,9 +4037,9 @@ static HANDLE WINAPI expCreateFileA(LPCSTR cs1, DWORD i1, DWORD i2,
 	return res;
 }
 static UINT WINAPI expGetSystemDirectoryA(
-    char *lpBuffer, // address of buffer for system directory
-    UINT  uSize     // size of directory buffer
-    )
+char *lpBuffer, // address of buffer for system directory
+UINT uSize      // size of directory buffer
+)
 {
 	dbgprintf("GetSystemDirectoryA(%p,%d)\n", lpBuffer, uSize);
 	if(!lpBuffer)
@@ -3898,15 +4055,14 @@ static LPCSTR WINAPI expGetSystemDirectoryA(void)
 }
 */
 static DWORD WINAPI expGetFullPathNameA(
-    LPCTSTR lpFileName,
-    DWORD   nBufferLength,
-    LPTSTR  lpBuffer,
-    LPTSTR  lpFilePart)
+LPCTSTR lpFileName,
+DWORD nBufferLength,
+LPTSTR lpBuffer,
+LPTSTR lpFilePart)
 {
 	if(!lpFileName)
 		return 0;
-	dbgprintf("GetFullPathNameA('%s',%d,%p,%p)\n", lpFileName, nBufferLength,
-	          lpBuffer, lpFilePart);
+	dbgprintf("GetFullPathNameA('%s',%d,%p,%p)\n", lpFileName, nBufferLength, lpBuffer, lpFilePart);
 #if 0
 #ifdef CONFIG_QTX_CODECS
     strcpy(lpFilePart, "Quick123.qts");
@@ -3925,9 +4081,9 @@ static DWORD WINAPI expGetFullPathNameA(
 }
 
 static DWORD WINAPI expGetShortPathNameA(
-    LPCSTR longpath,
-    LPSTR  shortpath,
-    DWORD  shortlen)
+LPCSTR longpath,
+LPSTR shortpath,
+DWORD shortlen)
 {
 	if(!longpath)
 		return 0;
@@ -3955,7 +4111,7 @@ static WIN_BOOL WINAPI expWriteFile(HANDLE h, LPCVOID pv, DWORD size, LPDWORD wr
 	if(h == 1234)
 		h = 1;
 	if(h == 4649)
-		h  = 1;
+		h = 1;
 	result = write(h, pv, size);
 	if(wr)
 		*wr = result;
@@ -3989,25 +4145,25 @@ static DWORD WINAPI expSetFilePointer(HANDLE h, LONG val, LPLONG ext, DWORD when
 	return lseek(h, val, wh);
 }
 
-static HDRVR WINAPI expOpenDriverA(LPCSTR szDriverName, LPCSTR szSectionName,
-                                   LPARAM lParam2)
+static HDRVR WINAPI expOpenDriverA(LPCSTR szDriverName, LPCSTR szSectionName, LPARAM lParam2)
 {
 	dbgprintf("OpenDriverA(0x%x='%s', 0x%x='%s', 0x%x) => -1\n", szDriverName, szDriverName, szSectionName, szSectionName, lParam2);
 	return -1;
 }
-static HDRVR WINAPI expOpenDriver(LPCSTR szDriverName, LPCSTR szSectionName,
-                                  LPARAM lParam2)
+static HDRVR WINAPI expOpenDriver(LPCSTR szDriverName, LPCSTR szSectionName, LPARAM lParam2)
 {
 	dbgprintf("OpenDriver(0x%x='%s', 0x%x='%s', 0x%x) => -1\n", szDriverName, szDriverName, szSectionName, szSectionName, lParam2);
 	return -1;
 }
 
-static WIN_BOOL WINAPI expGetProcessAffinityMask(HANDLE  hProcess,
+static WIN_BOOL WINAPI expGetProcessAffinityMask(HANDLE hProcess,
                                                  LPDWORD lpProcessAffinityMask,
                                                  LPDWORD lpSystemAffinityMask)
 {
 	dbgprintf("GetProcessAffinityMask(0x%x, 0x%x, 0x%x) => 1\n",
-	          hProcess, lpProcessAffinityMask, lpSystemAffinityMask);
+	          hProcess,
+	          lpProcessAffinityMask,
+	          lpSystemAffinityMask);
 	if(lpProcessAffinityMask)
 		*lpProcessAffinityMask = 1;
 	if(lpSystemAffinityMask)
@@ -4016,11 +4172,12 @@ static WIN_BOOL WINAPI expGetProcessAffinityMask(HANDLE  hProcess,
 }
 
 // Fake implementation: does nothing, but does it right :)
-static WIN_BOOL WINAPI expSetProcessAffinityMask(HANDLE  hProcess,
+static WIN_BOOL WINAPI expSetProcessAffinityMask(HANDLE hProcess,
                                                  LPDWORD dwProcessAffinityMask)
 {
 	dbgprintf("SetProcessAffinityMask(0x%x, 0x%x) => 1\n",
-	          hProcess, dwProcessAffinityMask);
+	          hProcess,
+	          dwProcessAffinityMask);
 
 	return 1;
 };
@@ -4029,7 +4186,7 @@ static int WINAPI expMulDiv(int nNumber, int nNumerator, int nDenominator)
 {
 	static const long long max_int = 0x7FFFFFFFLL;
 	static const long long min_int = -0x80000000LL;
-	long long              tmp     = (long long)nNumber * (long long)nNumerator;
+	long long tmp = (long long)nNumber * (long long)nNumerator;
 	dbgprintf("expMulDiv %d * %d / %d\n", nNumber, nNumerator, nDenominator);
 	if(!nDenominator)
 		return 1;
@@ -4089,7 +4246,7 @@ static LONG WINAPI explstrcatA(char *str1, const char *str2)
 static LONG WINAPI expInterlockedExchange(long *dest, long l)
 {
 	long retval = *dest;
-	*dest       = l;
+	*dest = l;
 	return retval;
 }
 
@@ -4101,9 +4258,7 @@ static void WINAPI expInitCommonControls(void)
 
 #ifdef CONFIG_QTX_CODECS
 /* needed by QuickTime.qts */
-static HWND WINAPI expCreateUpDownControl(DWORD style, INT x, INT y, INT cx, INT cy,
-                                          HWND parent, INT id, HINSTANCE inst,
-                                          HWND buddy, INT maxVal, INT minVal, INT curVal)
+static HWND WINAPI expCreateUpDownControl(DWORD style, INT x, INT y, INT cx, INT cy, HWND parent, INT id, HINSTANCE inst, HWND buddy, INT maxVal, INT minVal, INT curVal)
 {
 	dbgprintf("CreateUpDownControl(...)\n");
 	return 0;
@@ -4114,23 +4269,29 @@ static HWND WINAPI expCreateUpDownControl(DWORD style, INT x, INT y, INT cx, INT
 static HRESULT WINAPI expCoCreateFreeThreadedMarshaler(void *pUnkOuter, void **ppUnkInner)
 {
 	dbgprintf("CoCreateFreeThreadedMarshaler(%p, %p) called!\n",
-	          pUnkOuter, ppUnkInner);
+	          pUnkOuter,
+	          ppUnkInner);
 	//    return 0;
 	return ERROR_CALL_NOT_IMPLEMENTED;
 }
 
-static int WINAPI expDuplicateHandle(HANDLE  hSourceProcessHandle, // handle to source process
-                                     HANDLE  hSourceHandle,        // handle to duplicate
-                                     HANDLE  hTargetProcessHandle, // handle to target process
-                                     HANDLE *lpTargetHandle,       // duplicate handle
-                                     DWORD   dwDesiredAccess,      // requested access
-                                     int     bInheritHandle,       // handle inheritance option
-                                     DWORD   dwOptions             // optional actions
+static int WINAPI expDuplicateHandle(HANDLE hSourceProcessHandle, // handle to source process
+                                     HANDLE hSourceHandle,        // handle to duplicate
+                                     HANDLE hTargetProcessHandle, // handle to target process
+                                     HANDLE *lpTargetHandle,      // duplicate handle
+                                     DWORD dwDesiredAccess,       // requested access
+                                     int bInheritHandle,          // handle inheritance option
+                                     DWORD dwOptions              // optional actions
                                      )
 {
 	dbgprintf("DuplicateHandle(%p, %p, %p, %p, 0x%x, %d, %d) called\n",
-	          hSourceProcessHandle, hSourceHandle, hTargetProcessHandle,
-	          lpTargetHandle, dwDesiredAccess, bInheritHandle, dwOptions);
+	          hSourceProcessHandle,
+	          hSourceHandle,
+	          hTargetProcessHandle,
+	          lpTargetHandle,
+	          dwDesiredAccess,
+	          bInheritHandle,
+	          dwOptions);
 	*lpTargetHandle = hSourceHandle;
 	return 1;
 }
@@ -4143,9 +4304,9 @@ static HRESULT WINAPI expCoInitializeEx(LPVOID lpReserved, DWORD dwCoInit)
 
 // required by PIM1 codec (used by win98 PCTV Studio capture sw)
 static HRESULT WINAPI expCoInitialize(
-    LPVOID lpReserved /* [in] pointer to win32 malloc interface
+LPVOID lpReserved /* [in] pointer to win32 malloc interface
 				      (obsolete, should be NULL) */
-    )
+)
 {
 	/*
      * Just delegate to the newer method.
@@ -4173,8 +4334,8 @@ void WINAPI CoUninitialize(void)
 }
 
 static DWORD WINAPI expSetThreadAffinityMask(
-    HANDLE hThread,
-    DWORD  dwThreadAffinityMask)
+HANDLE hThread,
+DWORD dwThreadAffinityMask)
 {
 	return 0;
 };
@@ -4235,9 +4396,9 @@ static int expdelete(void *memory)
  */
 typedef struct __attribute__((__packed__))
 {
-	char          hay[0x40];
+	char hay[0x40];
 	unsigned long cbFormat; //0x40
-	char *        pbFormat; //0x44
+	char *pbFormat;         //0x44
 } MY_MEDIA_TYPE;
 static HRESULT WINAPI expMoCopyMediaType(MY_MEDIA_TYPE *dest, const MY_MEDIA_TYPE *src)
 {
@@ -4303,7 +4464,7 @@ static HRESULT WINAPI expMoDeleteMediaType(MY_MEDIA_TYPE *dest)
 
 static int exp_snprintf(char *str, int size, const char *format, ...)
 {
-	int     x;
+	int x;
 	va_list va;
 	va_start(va, format);
 	x = snprintf(str, size, format, va);
@@ -4333,20 +4494,20 @@ static int exp_initterm(INITTERMFUNC *start, INITTERMFUNC *end)
 			// edi/esi registers are being trashed
 			void *p = *start;
 			__asm__ volatile(
-			    "pushl %%ebx		\n\t"
-			    "pushl %%ecx		\n\t"
-			    "pushl %%edx		\n\t"
-			    "pushl %%edi		\n\t"
-			    "pushl %%esi		\n\t"
-			    "call  *%%eax		\n\t"
-			    "popl  %%esi		\n\t"
-			    "popl  %%edi		\n\t"
-			    "popl  %%edx		\n\t"
-			    "popl  %%ecx		\n\t"
-			    "popl  %%ebx		\n\t"
-			    :
-			    : "a"(p)
-			    : "memory");
+			"pushl %%ebx		\n\t"
+			"pushl %%ecx		\n\t"
+			"pushl %%edx		\n\t"
+			"pushl %%edi		\n\t"
+			"pushl %%esi		\n\t"
+			"call  *%%eax		\n\t"
+			"popl  %%esi		\n\t"
+			"popl  %%edi		\n\t"
+			"popl  %%edx		\n\t"
+			"popl  %%ecx		\n\t"
+			"popl  %%ebx		\n\t"
+			:
+			: "a"(p)
+			: "memory");
 			//printf("done  %p  %d:%d\n", end);
 		}
 		start++;
@@ -4374,7 +4535,7 @@ static void *exp__dllonexit(void)
 static int expwsprintfA(char *string, const char *format, ...)
 {
 	va_list va;
-	int     result;
+	int result;
 	va_start(va, format);
 	result = vsprintf(string, format, va);
 	dbgprintf("wsprintfA(0x%x, '%s', ...) => %d\n", string, format, result);
@@ -4385,7 +4546,7 @@ static int expwsprintfA(char *string, const char *format, ...)
 static int expsprintf(char *str, const char *format, ...)
 {
 	va_list args;
-	int     r;
+	int r;
 	dbgprintf("sprintf(0x%x, %s)\n", str, format);
 	va_start(args, format);
 	r = vsprintf(str, format, args);
@@ -4395,7 +4556,7 @@ static int expsprintf(char *str, const char *format, ...)
 static int expsscanf(const char *str, const char *format, ...)
 {
 	va_list args;
-	int     r;
+	int r;
 	dbgprintf("sscanf(%s, %s)\n", str, format);
 	va_start(args, format);
 	r = vsscanf(str, format, args);
@@ -4425,7 +4586,7 @@ static int exp_mkdir(char *path, int mode)
 static int expfprintf(void *stream, const char *format, ...)
 {
 	va_list args;
-	int     r = 0;
+	int r = 0;
 	dbgprintf("fprintf(%p, %s, ...)\n", stream, format);
 	va_start(args, format);
 	r = vfprintf((FILE *)stream, format, args);
@@ -4436,7 +4597,7 @@ static int expfprintf(void *stream, const char *format, ...)
 static int expprintf(const char *format, ...)
 {
 	va_list args;
-	int     r;
+	int r;
 	dbgprintf("printf(%s, ...)\n", format);
 	va_start(args, format);
 	r = vprintf(format, args);
@@ -4521,7 +4682,7 @@ static char *expstrcat(char *str1, const char *str2)
 }
 static char *exp_strdup(const char *str1)
 {
-	int   l      = strlen(str1);
+	int l = strlen(str1);
 	char *result = (char *)my_mreq(l + 1, 0);
 	if(result)
 		strcpy(result, str1);
@@ -4675,17 +4836,17 @@ static char exptolower(char c)
 static void explog10(void)
 {
 	__asm__ volatile(
-	    "fldl 8(%esp)	\n\t"
-	    "fldln2	\n\t"
-	    "fxch %st(1)	\n\t"
-	    "fyl2x		\n\t");
+	"fldl 8(%esp)	\n\t"
+	"fldln2	\n\t"
+	"fxch %st(1)	\n\t"
+	"fyl2x		\n\t");
 }
 
 static void expcos(void)
 {
 	__asm__ volatile(
-	    "fldl 8(%esp)	\n\t"
-	    "fcos		\n\t");
+	"fldl 8(%esp)	\n\t"
+	"fcos		\n\t");
 }
 
 #endif
@@ -4754,7 +4915,7 @@ static double expfrexp(double x, int *expo)
 static void exp_splitpath(const char *path, char *drive, char *dir, char *name, char *ext)
 {
 	const char *ext_start = strrchr(path, '.');
-	int         name_len  = ext_start ? ext_start - path : strlen(path);
+	int name_len = ext_start ? ext_start - path : strlen(path);
 	if(drive)
 		strcpy(drive, "");
 	if(dir)
@@ -4771,7 +4932,7 @@ static void exp_splitpath(const char *path, char *drive, char *dir, char *name, 
 static char *exp_mbsupr(char *str)
 {
 	int i;
-	for(i      = 0; str[i]; i++)
+	for(i = 0; str[i]; i++)
 		str[i] = toupper(str[i]);
 	return str;
 }
@@ -4798,34 +4959,34 @@ static int exp_setjmp3(void *jmpbuf, int x)
 	//dbgprintf("!!!!UNIMPLEMENTED: setjmp3(%p, %d) => 0\n", jmpbuf, x);
 	//return 0;
 	__asm__ volatile(
-	    //"mov 4(%%esp), %%edx	\n\t"
-	    "mov (%%esp), %%eax   \n\t"
-	    "mov %%eax, (%%edx)	\n\t" // store ebp
+	//"mov 4(%%esp), %%edx	\n\t"
+	"mov (%%esp), %%eax   \n\t"
+	"mov %%eax, (%%edx)	\n\t" // store ebp
 
-	    //"mov %%ebp, (%%edx)	\n\t"
-	    "mov %%ebx, 4(%%edx)	\n\t"
-	    "mov %%edi, 8(%%edx)	\n\t"
-	    "mov %%esi, 12(%%edx)	\n\t"
-	    "mov %%esp, 16(%%edx)	\n\t"
+	//"mov %%ebp, (%%edx)	\n\t"
+	"mov %%ebx, 4(%%edx)	\n\t"
+	"mov %%edi, 8(%%edx)	\n\t"
+	"mov %%esi, 12(%%edx)	\n\t"
+	"mov %%esp, 16(%%edx)	\n\t"
 
-	    "mov 4(%%esp), %%eax	\n\t"
-	    "mov %%eax, 20(%%edx)	\n\t"
+	"mov 4(%%esp), %%eax	\n\t"
+	"mov %%eax, 20(%%edx)	\n\t"
 
-	    "movl $0x56433230, 32(%%edx)	\n\t" // VC20 ??
-	    "movl $0, 36(%%edx)	\n\t"
-	    :             // output
-	    : "d"(jmpbuf) // input
-	    : "eax");
+	"movl $0x56433230, 32(%%edx)	\n\t" // VC20 ??
+	"movl $0, 36(%%edx)	\n\t"
+	:             // output
+	: "d"(jmpbuf) // input
+	: "eax");
 	__asm__ volatile(
-	    "mov %%fs:0, %%eax	\n\t" // unsure
-	    "mov %%eax, 24(%%edx)	\n\t"
-	    "cmp $0xffffffff, %%eax \n\t"
-	    "jnz l1                \n\t"
-	    "mov %%eax, 28(%%edx)	\n\t"
-	    "l1:                   \n\t"
-	    :
-	    :
-	    : "eax");
+	"mov %%fs:0, %%eax	\n\t" // unsure
+	"mov %%eax, 24(%%edx)	\n\t"
+	"cmp $0xffffffff, %%eax \n\t"
+	"jnz l1                \n\t"
+	"mov %%eax, 28(%%edx)	\n\t"
+	"l1:                   \n\t"
+	:
+	:
+	: "eax");
 
 	return 0;
 }
@@ -4877,12 +5038,12 @@ static MMRESULT WINAPI exptimeEndPeriod(UINT wPeriod)
 #endif
 
 static void WINAPI expGlobalMemoryStatus(
-    LPMEMORYSTATUS lpmem)
+LPMEMORYSTATUS lpmem)
 {
 	static MEMORYSTATUS cached_memstatus;
-	static int          cache_lastchecked = 0;
-	SYSTEM_INFO         si;
-	FILE *              f;
+	static int cache_lastchecked = 0;
+	SYSTEM_INFO si;
+	FILE *f;
 
 	if(time(NULL) == cache_lastchecked)
 	{
@@ -4894,9 +5055,9 @@ static void WINAPI expGlobalMemoryStatus(
 	if(f)
 	{
 		char buffer[256];
-		int  total, used, free, shared, buffers, cached;
+		int total, used, free, shared, buffers, cached;
 
-		lpmem->dwLength    = sizeof(MEMORYSTATUS);
+		lpmem->dwLength = sizeof(MEMORYSTATUS);
 		lpmem->dwTotalPhys = lpmem->dwAvailPhys = 0;
 		lpmem->dwTotalPageFile = lpmem->dwAvailPageFile = 0;
 		while(fgets(buffer, sizeof(buffer), f))
@@ -4939,9 +5100,9 @@ static void WINAPI expGlobalMemoryStatus(
 	else
 	{
 		/* FIXME: should do something for other systems */
-		lpmem->dwMemoryLoad    = 0;
-		lpmem->dwTotalPhys     = 16 * 1024 * 1024;
-		lpmem->dwAvailPhys     = 16 * 1024 * 1024;
+		lpmem->dwMemoryLoad = 0;
+		lpmem->dwTotalPhys = 16 * 1024 * 1024;
+		lpmem->dwAvailPhys = 16 * 1024 * 1024;
 		lpmem->dwTotalPageFile = 16 * 1024 * 1024;
 		lpmem->dwAvailPageFile = 16 * 1024 * 1024;
 	}
@@ -4974,8 +5135,8 @@ static INT WINAPI expGetThreadPriority(HANDLE hthread)
  *    Failure: FALSE
  */
 static WIN_BOOL WINAPI expSetThreadPriority(
-    HANDLE hthread,  /* [in] Handle to thread */
-    INT    priority) /* [in] Thread priority level */
+HANDLE hthread, /* [in] Handle to thread */
+INT priority)   /* [in] Thread priority level */
 {
 	dbgprintf("SetThreadPriority(%p,%d)\n", hthread, priority);
 	return TRUE;
@@ -5015,15 +5176,15 @@ void exp_EH_prolog_dummy(void);
 void exp_EH_prolog_dummy(void)
 {
 	__asm__ volatile(
-	    // take care, this "function" may not change flags or
-	    // registers besides eax (which is also why we can't use
-	    // exp_EH_prolog_dummy directly)
-	    MANGLE(exp_EH_prolog) ":    \n\t"
-	                          "pop   %eax            \n\t"
-	                          "push  %ebp            \n\t"
-	                          "mov   %esp, %ebp      \n\t"
-	                          "lea   -12(%esp), %esp \n\t"
-	                          "jmp   *%eax           \n\t");
+	// take care, this "function" may not change flags or
+	// registers besides eax (which is also why we can't use
+	// exp_EH_prolog_dummy directly)
+	MANGLE(exp_EH_prolog) ":    \n\t"
+	                      "pop   %eax            \n\t"
+	                      "push  %ebp            \n\t"
+	                      "mov   %esp, %ebp      \n\t"
+	                      "lea   -12(%esp), %esp \n\t"
+	                      "jmp   *%eax           \n\t");
 }
 
 #include <netinet/in.h>
@@ -5043,12 +5204,12 @@ static char *WINAPI expSysAllocStringLen(char *pch, unsigned cch)
 {
 	char *str;
 	dbgprintf("SysAllocStringLen('%s', %d)\n", pch, cch);
-	str              = malloc(cch * 2 + sizeof(unsigned) + 2);
+	str = malloc(cch * 2 + sizeof(unsigned) + 2);
 	*(unsigned *)str = cch;
 	str += sizeof(unsigned);
 	if(pch)
 		memcpy(str, pch, cch * 2);
-	str[cch * 2]     = 0;
+	str[cch * 2] = 0;
 	str[cch * 2 + 1] = 0;
 	return str;
 }
@@ -5103,19 +5264,19 @@ typedef struct tagPALETTEENTRY
 
 typedef struct tagLOGPALETTE
 {
-	WORD         palVersion;
-	WORD         palNumEntries;
+	WORD palVersion;
+	WORD palNumEntries;
 	PALETTEENTRY palPalEntry[1];
 } LOGPALETTE;
 
 static HPALETTE WINAPI expCreatePalette(CONST LOGPALETTE *lpgpl)
 {
 	HPALETTE test;
-	int      i;
+	int i;
 
 	dbgprintf("CreatePalette(%x) => NULL\n", lpgpl);
 
-	i    = sizeof(LOGPALETTE) + ((lpgpl->palNumEntries - 1) * sizeof(PALETTEENTRY));
+	i = sizeof(LOGPALETTE) + ((lpgpl->palNumEntries - 1) * sizeof(PALETTEENTRY));
 	test = malloc(i);
 	memcpy((void *)test, lpgpl, i);
 
@@ -5130,8 +5291,8 @@ static int expCreatePalette(void)
 #endif
 
 static HGDIOBJ WINAPI expSelectObject(
-    HDC     hdc,
-    HGDIOBJ hgdiobj)
+HDC hdc,
+HGDIOBJ hgdiobj)
 {
 	dbgprintf("SelectObject(%p, %p) => 0\n", hdc, hgdiobj);
 	return 0;
@@ -5143,9 +5304,7 @@ static int WINAPI expSetTextAlign(HDC hdc, int fMode)
 }
 static char DIBbitmap[4096];
 
-static void *WINAPI expCreateDIBSection(HDC hdc, const BITMAPINFO *pbmi,
-                                        UINT iUsage, VOID **ppvBits, HANDLE hSection,
-                                        DWORD dwOffset)
+static void *WINAPI expCreateDIBSection(HDC hdc, const BITMAPINFO *pbmi, UINT iUsage, VOID **ppvBits, HANDLE hSection, DWORD dwOffset)
 {
 	return (void *)DIBbitmap;
 }
@@ -5155,8 +5314,7 @@ static WIN_BOOL WINAPI expGetTextMetricsA(HDC hdc, void *lptm)
 	return FALSE;
 }
 
-static WIN_BOOL WINAPI expGetCharABCWidthsA(HDC hdc, int uFirstChar,
-                                            int uLastChar, WIN_BOOL a)
+static WIN_BOOL WINAPI expGetCharABCWidthsA(HDC hdc, int uFirstChar, int uLastChar, WIN_BOOL a)
 {
 	return FALSE;
 }
@@ -5164,10 +5322,10 @@ static WIN_BOOL WINAPI expGetCharABCWidthsA(HDC hdc, int uFirstChar,
 static int WINAPI expGetClientRect(HWND win, RECT *r)
 {
 	dbgprintf("GetClientRect(0x%x, 0x%x) => 1\n", win, r);
-	r->right  = PSEUDO_SCREEN_WIDTH;
-	r->left   = 0;
+	r->right = PSEUDO_SCREEN_WIDTH;
+	r->left = 0;
 	r->bottom = PSEUDO_SCREEN_HEIGHT;
-	r->top    = 0;
+	r->top = 0;
 	return 1;
 }
 
@@ -5199,11 +5357,15 @@ static int WINAPI expMessageBeep(int type)
 	return 1;
 }
 
-static int WINAPI expDialogBoxParamA(void *inst, const char *name,
-                                     HWND parent, void *dialog_func, void *init_param)
+static int WINAPI expDialogBoxParamA(void *inst, const char *name, HWND parent, void *dialog_func, void *init_param)
 {
 	dbgprintf("DialogBoxParamA(0x%x, 0x%x = %s, 0x%x, 0x%x, 0x%x) => 0x42424242\n",
-	          inst, name, name, parent, dialog_func, init_param);
+	          inst,
+	          name,
+	          name,
+	          parent,
+	          dialog_func,
+	          init_param);
 	return 0x42424242;
 }
 
@@ -5336,8 +5498,7 @@ static int WINAPI expPropVariantClear(void *pvar)
 #define LPDEVMODEA void *
 // Dummy implementation, always return 1
 // Required for frapsvid.dll 2.8.1, return value does not matter
-static WIN_BOOL WINAPI expEnumDisplaySettingsA(LPCSTR name, DWORD n,
-                                               LPDEVMODEA devmode)
+static WIN_BOOL WINAPI expEnumDisplaySettingsA(LPCSTR name, DWORD n, LPDEVMODEA devmode)
 {
 	dbgprintf("EnumDisplaySettingsA (dummy) => 1\n");
 	return 1;
@@ -5419,445 +5580,456 @@ static short expSDL_GameControllerGetAxis(void *gc, int a)
 
 struct exports
 {
-	char  name[64];
-	int   id;
+	char name[64];
+	int id;
 	void *func;
 };
 struct libs
 {
-	char                  name[64];
-	int                   length;
+	char name[64];
+	int length;
 	const struct exports *exps;
 };
 
 struct glfuncs
 {
-	char   name[64];
-	void * winfunc; // stdcall function
-	void **glfunc;  // pointer to real function
+	char name[64];
+	void *winfunc; // stdcall function
+	void **glfunc; // pointer to real function
 };
 
 #define FF(X, Y) \
-	{#X, Y, (void *)exp##X},
+	{ #X, Y, (void *)exp##X },
 
 #define GLFF(X) \
-	{#X, (void *)exp##X, (void **)&ldrp##X},
+	{ #X, (void *)exp##X, (void **)&ldrp##X },
 
 #define UNDEFF(X, Y) \
-	{#X, Y, (void *)-1},
+	{ #X, Y, (void *)-1 },
 #define WRFF(X) \
-	{#X, -1, (void *)&X},
+	{ #X, -1, (void *)&X },
 static const struct exports exp_kernel32[] =
-    {
-        FF(GetVolumeInformationA, -1)
-            FF(GetDriveTypeA, -1)
-                FF(GetLogicalDriveStringsA, -1)
-                    FF(IsBadWritePtr, 357)
-                        FF(IsBadReadPtr, 354)
-                            FF(IsBadStringPtrW, -1)
-                                FF(IsBadStringPtrA, -1)
-                                    FF(DisableThreadLibraryCalls, -1)
-                                        FF(CreateThread, -1)
-                                            FF(ResumeThread, -1)
-                                                FF(CreateEventA, -1)
-                                                    FF(CreateEventW, -1)
-                                                        FF(SetEvent, -1)
-                                                            FF(ResetEvent, -1)
-                                                                FF(WaitForSingleObject, -1)
+{
+  FF(GetVolumeInformationA, -1)
+  FF(GetDriveTypeA, -1)
+  FF(GetLogicalDriveStringsA, -1)
+  FF(IsBadWritePtr, 357)
+  FF(IsBadReadPtr, 354)
+  FF(IsBadStringPtrW, -1)
+  FF(IsBadStringPtrA, -1)
+  FF(DisableThreadLibraryCalls, -1)
+  FF(CreateThread, -1)
+  FF(ResumeThread, -1)
+  FF(CreateEventA, -1)
+  FF(CreateEventW, -1)
+  FF(SetEvent, -1)
+  FF(ResetEvent, -1)
+  FF(WaitForSingleObject, -1)
 #ifdef CONFIG_QTX_CODECS
-                                                                    FF(WaitForMultipleObjects, -1)
-                                                                        FF(ExitThread, -1)
+  FF(WaitForMultipleObjects, -1)
+  FF(ExitThread, -1)
 #endif
-                                                                            FF(GetSystemInfo, -1)
-                                                                                FF(GetVersion, 332)
-                                                                                    FF(HeapCreate, 461)
-                                                                                        FF(HeapAlloc, -1)
-                                                                                            FF(HeapDestroy, -1)
-                                                                                                FF(HeapFree, -1)
-                                                                                                    FF(HeapSize, -1)
-                                                                                                        FF(HeapReAlloc, -1)
-                                                                                                            FF(GetProcessHeap, -1)
-                                                                                                                FF(VirtualAlloc, -1)
-                                                                                                                    FF(VirtualFree, -1)
-                                                                                                                        FF(InitializeCriticalSection, -1)
-                                                                                                                            FF(InitializeCriticalSectionAndSpinCount, -1)
-                                                                                                                                FF(EnterCriticalSection, -1)
-                                                                                                                                    FF(LeaveCriticalSection, -1)
-                                                                                                                                        FF(DeleteCriticalSection, -1)
-                                                                                                                                            FF(TlsAlloc, -1)
-                                                                                                                                                FF(TlsFree, -1)
-                                                                                                                                                    FF(TlsGetValue, -1)
-                                                                                                                                                        FF(TlsSetValue, -1)
-                                                                                                                                                            FF(GetCurrentThreadId, -1)
-                                                                                                                                                                FF(GetCurrentProcess, -1)
-                                                                                                                                                                    FF(LocalAlloc, -1)
-                                                                                                                                                                        FF(LocalReAlloc, -1)
-                                                                                                                                                                            FF(LocalLock, -1)
-                                                                                                                                                                                FF(GlobalAlloc, -1)
-                                                                                                                                                                                    FF(GlobalReAlloc, -1)
-                                                                                                                                                                                        FF(GlobalLock, -1)
-                                                                                                                                                                                            FF(GlobalSize, -1)
-                                                                                                                                                                                                FF(MultiByteToWideChar, 427)
-                                                                                                                                                                                                    FF(WideCharToMultiByte, -1)
-                                                                                                                                                                                                        FF(GetVersionExA, -1)
-                                                                                                                                                                                                            FF(GetVersionExW, -1)
-                                                                                                                                                                                                                FF(CreateSemaphoreA, -1)
-                                                                                                                                                                                                                    FF(CreateSemaphoreW, -1)
-                                                                                                                                                                                                                        FF(QueryPerformanceCounter, -1)
-                                                                                                                                                                                                                            FF(QueryPerformanceFrequency, -1)
-                                                                                                                                                                                                                                FF(LocalHandle, -1)
-                                                                                                                                                                                                                                    FF(LocalUnlock, -1)
-                                                                                                                                                                                                                                        FF(LocalFree, -1)
-                                                                                                                                                                                                                                            FF(GlobalHandle, -1)
-                                                                                                                                                                                                                                                FF(GlobalUnlock, -1)
-                                                                                                                                                                                                                                                    FF(GlobalFree, -1)
-                                                                                                                                                                                                                                                        FF(LoadResource, -1)
-                                                                                                                                                                                                                                                            FF(ReleaseSemaphore, -1)
-                                                                                                                                                                                                                                                                FF(CreateMutexA, -1)
-                                                                                                                                                                                                                                                                    FF(CreateMutexW, -1)
-                                                                                                                                                                                                                                                                        FF(ReleaseMutex, -1)
-                                                                                                                                                                                                                                                                            FF(SignalObjectAndWait, -1)
-                                                                                                                                                                                                                                                                                FF(FindResourceA, -1)
-                                                                                                                                                                                                                                                                                    FF(LockResource, -1)
-                                                                                                                                                                                                                                                                                        FF(FreeResource, -1)
-                                                                                                                                                                                                                                                                                            FF(SizeofResource, -1)
-                                                                                                                                                                                                                                                                                                FF(CloseHandle, -1)
-                                                                                                                                                                                                                                                                                                    FF(GetCommandLineA, -1)
-                                                                                                                                                                                                                                                                                                        FF(GetEnvironmentStringsW, -1)
-                                                                                                                                                                                                                                                                                                            FF(FreeEnvironmentStringsW, -1)
-                                                                                                                                                                                                                                                                                                                FF(FreeEnvironmentStringsA, -1)
-                                                                                                                                                                                                                                                                                                                    FF(GetEnvironmentStrings, -1)
-                                                                                                                                                                                                                                                                                                                        FF(GetStartupInfoA, -1)
-                                                                                                                                                                                                                                                                                                                            FF(GetStdHandle, -1)
-                                                                                                                                                                                                                                                                                                                                FF(GetFileType, -1)
+  FF(GetSystemInfo, -1)
+  FF(GetVersion, 332)
+  FF(HeapCreate, 461)
+  FF(HeapAlloc, -1)
+  FF(HeapDestroy, -1)
+  FF(HeapFree, -1)
+  FF(HeapSize, -1)
+  FF(HeapReAlloc, -1)
+  FF(GetProcessHeap, -1)
+  FF(VirtualAlloc, -1)
+  FF(VirtualFree, -1)
+  FF(InitializeCriticalSection, -1)
+  FF(InitializeCriticalSectionAndSpinCount, -1)
+  FF(EnterCriticalSection, -1)
+  FF(LeaveCriticalSection, -1)
+  FF(DeleteCriticalSection, -1)
+  FF(TlsAlloc, -1)
+  FF(TlsFree, -1)
+  FF(TlsGetValue, -1)
+  FF(TlsSetValue, -1)
+  FF(GetCurrentThreadId, -1)
+  FF(GetCurrentProcess, -1)
+  FF(LocalAlloc, -1)
+  FF(LocalReAlloc, -1)
+  FF(LocalLock, -1)
+  FF(GlobalAlloc, -1)
+  FF(GlobalReAlloc, -1)
+  FF(GlobalLock, -1)
+  FF(GlobalSize, -1)
+  FF(MultiByteToWideChar, 427)
+  FF(WideCharToMultiByte, -1)
+  FF(GetVersionExA, -1)
+  FF(GetVersionExW, -1)
+  FF(CreateSemaphoreA, -1)
+  FF(CreateSemaphoreW, -1)
+  FF(QueryPerformanceCounter, -1)
+  FF(QueryPerformanceFrequency, -1)
+  FF(LocalHandle, -1)
+  FF(LocalUnlock, -1)
+  FF(LocalFree, -1)
+  FF(GlobalHandle, -1)
+  FF(GlobalUnlock, -1)
+  FF(GlobalFree, -1)
+  FF(LoadResource, -1)
+  FF(ReleaseSemaphore, -1)
+  FF(CreateMutexA, -1)
+  FF(CreateMutexW, -1)
+  FF(ReleaseMutex, -1)
+  FF(SignalObjectAndWait, -1)
+  FF(FindResourceA, -1)
+  FF(LockResource, -1)
+  FF(FreeResource, -1)
+  FF(SizeofResource, -1)
+  FF(CloseHandle, -1)
+  FF(GetCommandLineA, -1)
+  FF(GetEnvironmentStringsW, -1)
+  FF(FreeEnvironmentStringsW, -1)
+  FF(FreeEnvironmentStringsA, -1)
+  FF(GetEnvironmentStrings, -1)
+  FF(GetStartupInfoA, -1)
+  FF(GetStdHandle, -1)
+  FF(GetFileType, -1)
 #ifdef CONFIG_QTX_CODECS
-                                                                                                                                                                                                                                                                                                                                    FF(GetFileAttributesA, -1)
+  FF(GetFileAttributesA, -1)
 #endif
-                                                                                                                                                                                                                                                                                                                                        FF(SetHandleCount, -1)
-                                                                                                                                                                                                                                                                                                                                            FF(GetACP, -1)
-                                                                                                                                                                                                                                                                                                                                                FF(GetModuleFileNameA, -1)
-                                                                                                                                                                                                                                                                                                                                                    FF(SetUnhandledExceptionFilter, -1)
-                                                                                                                                                                                                                                                                                                                                                        FF(LoadLibraryA, -1)
-                                                                                                                                                                                                                                                                                                                                                            FF(GetProcAddress, -1)
-                                                                                                                                                                                                                                                                                                                                                                FF(FreeLibrary, -1)
-                                                                                                                                                                                                                                                                                                                                                                    FF(CreateFileMappingA, -1)
-                                                                                                                                                                                                                                                                                                                                                                        FF(OpenFileMappingA, -1)
-                                                                                                                                                                                                                                                                                                                                                                            FF(MapViewOfFile, -1)
-                                                                                                                                                                                                                                                                                                                                                                                FF(UnmapViewOfFile, -1)
-                                                                                                                                                                                                                                                                                                                                                                                    FF(Sleep, -1)
-                                                                                                                                                                                                                                                                                                                                                                                        FF(GetModuleHandleA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                            FF(GetModuleHandleW, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                FF(GetProfileIntA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                    FF(GetPrivateProfileIntA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                        FF(GetPrivateProfileStringA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                            FF(WritePrivateProfileStringA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                FF(GetLastError, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                    FF(SetLastError, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                        FF(InterlockedIncrement, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                            FF(InterlockedDecrement, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                FF(GetTimeZoneInformation, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(OutputDebugStringA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(GetLocalTime, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(GetSystemTime, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(GetSystemTimeAsFileTime, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(GetEnvironmentVariableA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(SetEnvironmentVariableA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(RtlZeroMemory, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(RtlMoveMemory, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(RtlFillMemory, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(GetTempPathA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(FindFirstFileA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(FindNextFileA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(FindClose, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(FileTimeToLocalFileTime, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(DeleteFileA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(ReadFile, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(WriteFile, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(SetFilePointer, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(GetTempFileNameA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(CreateFileA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(GetSystemDirectoryA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(GetWindowsDirectoryA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(GetCurrentDirectoryA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(SetCurrentDirectoryA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(CreateDirectoryA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(GetShortPathNameA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(GetFullPathNameA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(SetErrorMode, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(IsProcessorFeaturePresent, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(IsDebuggerPresent, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(GetProcessAffinityMask, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(InterlockedExchange, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(InterlockedCompareExchange, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(MulDiv, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(lstrcmpiA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(lstrlenA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(lstrlenW, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(lstrcpyA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(lstrcatA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(lstrcpynA, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(GetProcessVersion, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(GetCurrentThread, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(GetOEMCP, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(GetCPInfo, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(DuplicateHandle, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(GetTickCount, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(SetThreadAffinityMask, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(GetCurrentProcessId, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(GlobalMemoryStatus, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FF(GetThreadPriority, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            FF(SetThreadPriority, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                FF(TerminateProcess, -1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    FF(ExitProcess, -1){"LoadLibraryExA", -1, (void *)&LoadLibraryExA},
-        FF(SetThreadIdealProcessor, -1)
-            FF(SetProcessAffinityMask, -1)
-                FF(EncodePointer, -1)
-                    FF(DecodePointer, -1)
-                        FF(GetThreadLocale, -1)
-                            FF(GetLocaleInfoA, -1)
-                                UNDEFF(FlsAlloc, -1)
-                                    UNDEFF(FlsGetValue, -1)
-                                        UNDEFF(FlsSetValue, -1)
-                                            UNDEFF(FlsFree, -1)};
+  FF(SetHandleCount, -1)
+  FF(GetACP, -1)
+  FF(GetModuleFileNameA, -1)
+  FF(SetUnhandledExceptionFilter, -1)
+  FF(LoadLibraryA, -1)
+  FF(GetProcAddress, -1)
+  FF(FreeLibrary, -1)
+  FF(CreateFileMappingA, -1)
+  FF(OpenFileMappingA, -1)
+  FF(MapViewOfFile, -1)
+  FF(UnmapViewOfFile, -1)
+  FF(Sleep, -1)
+  FF(GetModuleHandleA, -1)
+  FF(GetModuleHandleW, -1)
+  FF(GetProfileIntA, -1)
+  FF(GetPrivateProfileIntA, -1)
+  FF(GetPrivateProfileStringA, -1)
+  FF(WritePrivateProfileStringA, -1)
+  FF(GetLastError, -1)
+  FF(SetLastError, -1)
+  FF(InterlockedIncrement, -1)
+  FF(InterlockedDecrement, -1)
+  FF(GetTimeZoneInformation, -1)
+  FF(OutputDebugStringA, -1)
+  FF(GetLocalTime, -1)
+  FF(GetSystemTime, -1)
+  FF(GetSystemTimeAsFileTime, -1)
+  FF(GetEnvironmentVariableA, -1)
+  FF(SetEnvironmentVariableA, -1)
+  FF(RtlZeroMemory, -1)
+  FF(RtlMoveMemory, -1)
+  FF(RtlFillMemory, -1)
+  FF(GetTempPathA, -1)
+  FF(FindFirstFileA, -1)
+  FF(FindNextFileA, -1)
+  FF(FindClose, -1)
+  FF(FileTimeToLocalFileTime, -1)
+  FF(DeleteFileA, -1)
+  FF(ReadFile, -1)
+  FF(WriteFile, -1)
+  FF(SetFilePointer, -1)
+  FF(GetTempFileNameA, -1)
+  FF(CreateFileA, -1)
+  FF(GetSystemDirectoryA, -1)
+  FF(GetWindowsDirectoryA, -1)
+  FF(GetCurrentDirectoryA, -1)
+  FF(SetCurrentDirectoryA, -1)
+  FF(CreateDirectoryA, -1)
+  FF(GetShortPathNameA, -1)
+  FF(GetFullPathNameA, -1)
+  FF(SetErrorMode, -1)
+  FF(IsProcessorFeaturePresent, -1)
+  FF(IsDebuggerPresent, -1)
+  FF(GetProcessAffinityMask, -1)
+  FF(InterlockedExchange, -1)
+  FF(InterlockedCompareExchange, -1)
+  FF(MulDiv, -1)
+  FF(lstrcmpiA, -1)
+  FF(lstrlenA, -1)
+  FF(lstrlenW, -1)
+  FF(lstrcpyA, -1)
+  FF(lstrcatA, -1)
+  FF(lstrcpynA, -1)
+  FF(GetProcessVersion, -1)
+  FF(GetCurrentThread, -1)
+  FF(GetOEMCP, -1)
+  FF(GetCPInfo, -1)
+  FF(DuplicateHandle, -1)
+  FF(GetTickCount, -1)
+  FF(SetThreadAffinityMask, -1)
+  FF(GetCurrentProcessId, -1)
+  FF(GlobalMemoryStatus, -1)
+  FF(GetThreadPriority, -1)
+  FF(SetThreadPriority, -1)
+  FF(TerminateProcess, -1)
+  FF(ExitProcess, -1){ "LoadLibraryExA", -1, (void *)&LoadLibraryExA },
+  FF(SetThreadIdealProcessor, -1)
+  FF(SetProcessAffinityMask, -1)
+  FF(EncodePointer, -1)
+  FF(DecodePointer, -1)
+  FF(GetThreadLocale, -1)
+  FF(GetLocaleInfoA, -1)
+  UNDEFF(FlsAlloc, -1)
+  UNDEFF(FlsGetValue, -1)
+  UNDEFF(FlsSetValue, -1)
+  UNDEFF(FlsFree, -1)
+};
 
 static const struct exports exp_msvcrt[] = {
-    FF(malloc, -1)
-        FF(_initterm, -1)
-            FF(__dllonexit, -1)
-                FF(_snprintf, -1)
-                    FF(free, -1){"??3@YAXPAX@Z", -1, expdelete},
-    {"??2@YAPAXI@Z", -1, expnew},
-    {"_adjust_fdiv", -1, (void *)&_adjust_fdiv},
-    {"_winver", -1, (void *)&_winver},
-    {"_write", -1, (void *)&write},
-    {"_open", -1, (void *)&open},
-    {"_close", -1, (void *)&close},
-    {"_getcwd", -1, (void *)&getcwd},
-    {"_wgetcwd", -1, (void *)&getcwd},
-    {"_stat", -1, (void *)&stat},
-    {"_unlink", -1, (void *)&unlink},
-    FF(_errno, -1)
-        FF(strrchr, -1)
-            FF(strchr, -1)
-                FF(strlen, -1)
-                    FF(strcpy, -1)
-                        FF(strncpy, -1)
-    //FF(strncat, -1)
-    FF(wcscpy, -1)
-        FF(strcmp, -1)
-            FF(strncmp, -1)
-                FF(strcat, -1)
-    //FF(strtol, -1)
-    //FF(strspn, -1)
-    //FF(strpbrk, -1)
-    //FF(strerror, -1)
-    WRFF(strncat)
-        WRFF(strtol)
-            WRFF(strspn)
-                WRFF(strpbrk)
-                    WRFF(strerror)
-                        WRFF(exit)
-                            WRFF(ctime)
-                                WRFF(abort)
+	FF(malloc, -1)
+	FF(_initterm, -1)
+	FF(__dllonexit, -1)
+	FF(_snprintf, -1)
+	FF(free, -1){ "??3@YAXPAX@Z", -1, expdelete },
+	{ "??2@YAPAXI@Z", -1, expnew },
+	{ "_adjust_fdiv", -1, (void *)&_adjust_fdiv },
+	{ "_winver", -1, (void *)&_winver },
+	{ "_write", -1, (void *)&write },
+	{ "_open", -1, (void *)&open },
+	{ "_close", -1, (void *)&close },
+	{ "_getcwd", -1, (void *)&getcwd },
+	{ "_wgetcwd", -1, (void *)&getcwd },
+	{ "_stat", -1, (void *)&stat },
+	{ "_unlink", -1, (void *)&unlink },
+	FF(_errno, -1)
+	FF(strrchr, -1)
+	FF(strchr, -1)
+	FF(strlen, -1)
+	FF(strcpy, -1)
+	FF(strncpy, -1)
+	//FF(strncat, -1)
+	FF(wcscpy, -1)
+	FF(strcmp, -1)
+	FF(strncmp, -1)
+	FF(strcat, -1)
+	//FF(strtol, -1)
+	//FF(strspn, -1)
+	//FF(strpbrk, -1)
+	//FF(strerror, -1)
+	WRFF(strncat)
+	WRFF(strtol)
+	WRFF(strspn)
+	WRFF(strpbrk)
+	WRFF(strerror)
+	WRFF(exit)
+	WRFF(ctime)
+	WRFF(abort)
 
-                                    FF(_stricmp, -1)
-                                        FF(_strnicmp, -1)
-                                            FF(_strdup, -1)
-                                                FF(_setjmp3, -1)
-                                                    FF(isalnum, -1)
-                                                        FF(isspace, -1)
-                                                            FF(isalpha, -1)
-                                                                FF(isdigit, -1)
-                                                                    WRFF(isupper)
-                                                                        FF(memmove, -1)
-                                                                            FF(memcmp, -1)
-                                                                                FF(memset, -1)
-                                                                                    FF(memcpy, -1)
-                                                                                        FF(time, -1)
-                                                                                            FF(rand, -1)
-                                                                                                FF(srand, -1)
-                                                                                                    FF(log10, -1)
-                                                                                                        FF(pow, -1)
-                                                                                                            FF(cos, -1)
-                                                                                                                FF(fabs, -1)
-                                                                                                                    FF(sqrt, -1)
-                                                                                                                        FF(sin, -1)
-                                                                                                                            FF(atan2, -1)
-                                                                                                                                FF(acos, -1)
-                                                                                                                                    FF(toupper, -1)
-                                                                                                                                        FF(tolower, -1)
-                                                                                                                                            FF(atoi, -1)
-                                                                                                                                                FF(atof, -1)
-                                                                                                                                                    FF(tan, -1)
-                                                                                                                                                        FF(exp, -1)
-                                                                                                                                                            FF(atan, -1)
-                                                                                                                                                                FF(fmod, -1)
-                                                                                                                                                                    FF(_ftol, -1)
-                                                                                                                                                                        FF(_CIpow, -1)
-                                                                                                                                                                            FF(_CIcos, -1)
-                                                                                                                                                                                FF(_CIsin, -1)
-                                                                                                                                                                                    FF(_CIsqrt, -1)
-                                                                                                                                                                                        FF(_CImod, -1)
-                                                                                                                                                                                            FF(_CIfmod, -1)
-                                                                                                                                                                                                FF(ldexp, -1)
-                                                                                                                                                                                                    FF(frexp, -1)
-                                                                                                                                                                                                        FF(sprintf, -1)
-                                                                                                                                                                                                            FF(sscanf, -1)
-                                                                                                                                                                                                                FF(fopen, -1)
-                                                                                                                                                                                                                    FF(fclose, -1)
-                                                                                                                                                                                                                        FF(fwrite, -1)
-                                                                                                                                                                                                                            WRFF(fgets)
-    //FF(feof,-1)
-    WRFF(feof)
-        FF(_mkdir, -1)
-            FF(fprintf, -1)
-                FF(printf, -1)
-                    FF(getenv, -1)
-                        FF(floor, -1)
-    /* needed by frapsvid.dll */
-    {"strstr", -1, (char *)&strstr},
-    {"qsort", -1, (void *)&qsort},
-    FF(_EH_prolog, -1)
-        FF(calloc, -1){"ceil", -1, (void *)&ceil},
-    /* needed by imagepower mjpeg2k */
-    {"clock", -1, (void *)&clock},
-    {"memchr", -1, (void *)&memchr},
-    {"vfprintf", -1, (void *)&vfprintf},
-    {"_vsnprintf", -1, (void *)&vsnprintf},
-    {"_vsprintf", -1, (void *)&vsprintf},
-    {"vsprintf", -1, (void *)&vsprintf},
-    {"strtok", -1, (void *)&strtok},
-    //    {"realloc",-1,(void*)&realloc},
-    FF(realloc, -1){"puts", -1, (void *)&puts}};
+	FF(_stricmp, -1)
+	FF(_strnicmp, -1)
+	FF(_strdup, -1)
+	FF(_setjmp3, -1)
+	FF(isalnum, -1)
+	FF(isspace, -1)
+	FF(isalpha, -1)
+	FF(isdigit, -1)
+	WRFF(isupper)
+	FF(memmove, -1)
+	FF(memcmp, -1)
+	FF(memset, -1)
+	FF(memcpy, -1)
+	FF(time, -1)
+	FF(rand, -1)
+	FF(srand, -1)
+	FF(log10, -1)
+	FF(pow, -1)
+	FF(cos, -1)
+	FF(fabs, -1)
+	FF(sqrt, -1)
+	FF(sin, -1)
+	FF(atan2, -1)
+	FF(acos, -1)
+	FF(toupper, -1)
+	FF(tolower, -1)
+	FF(atoi, -1)
+	FF(atof, -1)
+	FF(tan, -1)
+	FF(exp, -1)
+	FF(atan, -1)
+	FF(fmod, -1)
+	FF(_ftol, -1)
+	FF(_CIpow, -1)
+	FF(_CIcos, -1)
+	FF(_CIsin, -1)
+	FF(_CIsqrt, -1)
+	FF(_CImod, -1)
+	FF(_CIfmod, -1)
+	FF(ldexp, -1)
+	FF(frexp, -1)
+	FF(sprintf, -1)
+	FF(sscanf, -1)
+	FF(fopen, -1)
+	FF(fclose, -1)
+	FF(fwrite, -1)
+	WRFF(fgets)
+	//FF(feof,-1)
+	WRFF(feof)
+	FF(_mkdir, -1)
+	FF(fprintf, -1)
+	FF(printf, -1)
+	FF(getenv, -1)
+	FF(floor, -1)
+	/* needed by frapsvid.dll */
+	{ "strstr", -1, (char *)&strstr },
+	{ "qsort", -1, (void *)&qsort },
+	FF(_EH_prolog, -1)
+	FF(calloc, -1){ "ceil", -1, (void *)&ceil },
+	/* needed by imagepower mjpeg2k */
+	{ "clock", -1, (void *)&clock },
+	{ "memchr", -1, (void *)&memchr },
+	{ "vfprintf", -1, (void *)&vfprintf },
+	{ "_vsnprintf", -1, (void *)&vsnprintf },
+	{ "_vsprintf", -1, (void *)&vsprintf },
+	{ "vsprintf", -1, (void *)&vsprintf },
+	{ "strtok", -1, (void *)&strtok },
+	//    {"realloc",-1,(void*)&realloc},
+	FF(realloc, -1){ "puts", -1, (void *)&puts }
+};
 static const struct exports exp_winmm[] = {
-    FF(GetDriverModuleHandle, -1)
-        FF(timeGetTime, -1)
-            FF(DefDriverProc, -1)
-                FF(OpenDriverA, -1)
-                    FF(OpenDriver, -1)
-                        FF(timeGetDevCaps, -1)
-                            FF(timeBeginPeriod, -1)
-                                FF(joyGetNumDevs, -1)
+	FF(GetDriverModuleHandle, -1)
+	FF(timeGetTime, -1)
+	FF(DefDriverProc, -1)
+	FF(OpenDriverA, -1)
+	FF(OpenDriver, -1)
+	FF(timeGetDevCaps, -1)
+	FF(timeBeginPeriod, -1)
+	FF(joyGetNumDevs, -1)
 #ifdef CONFIG_QTX_CODECS
-                                    FF(timeEndPeriod, -1)
-                                        FF(waveOutGetNumDevs, -1)
+	FF(timeEndPeriod, -1)
+	FF(waveOutGetNumDevs, -1)
 #endif
 };
 static const struct exports exp_psapi[] = {
-    FF(GetModuleBaseNameA, -1)};
+	FF(GetModuleBaseNameA, -1)
+};
 static const struct exports exp_user32[] = {
-    FF(LoadIconA, -1)
-        FF(LoadStringA, -1)
-            FF(wsprintfA, -1)
-                FF(GetDC, -1)
-                    FF(GetDesktopWindow, -1)
-                        FF(ReleaseDC, -1)
-                            FF(IsRectEmpty, -1)
-                                FF(LoadCursorA, -1)
-                                    FF(SetCursor, -1)
-                                        FF(GetCursorPos, -1)
-                                            FF(SetCursorPos, -1)
-                                                FF(ShowCursor, -1)
-                                                    FF(RegisterWindowMessageA, -1)
-                                                        FF(GetSystemMetrics, -1)
-                                                            FF(GetSysColor, -1)
-                                                                FF(GetSysColorBrush, -1)
-                                                                    FF(GetWindowDC, -1)
-                                                                        FF(DrawTextA, -1)
-                                                                            FF(MessageBoxA, -1)
-                                                                                FF(RegisterClassA, -1)
-                                                                                    FF(UnregisterClassA, -1)
-                                                                                        FF(GetWindowRect, -1)
-                                                                                            FF(MonitorFromWindow, -1)
-                                                                                                FF(MonitorFromRect, -1)
-                                                                                                    FF(MonitorFromPoint, -1)
-                                                                                                        FF(EnumDisplayMonitors, -1)
-                                                                                                            FF(GetMonitorInfoA, -1)
-                                                                                                                FF(EnumDisplayDevicesA, -1)
-    //    FF(GetClientRect, -1)
-    //    FF(ClientToScreen, -1)
-    FF(IsWindowVisible, -1)
-        FF(GetActiveWindow, -1)
-            FF(GetClassNameA, -1)
-                FF(GetClassInfoA, -1)
-                    FF(GetWindowLongA, -1)
-                        FF(EnumWindows, -1)
-                            FF(GetWindowThreadProcessId, -1)
-                                FF(CreateWindowExA, -1)
-                                    FF(MessageBeep, -1)
-                                        FF(DialogBoxParamA, -1)
-                                            FF(RegisterClipboardFormatA, -1)
-                                                FF(CharNextA, -1)
-                                                    FF(EnumDisplaySettingsA, -1)
-                                                        FF(SystemParametersInfoA, -1)
-                                                            FF(PeekMessageA, -1)};
+	FF(LoadIconA, -1)
+	FF(LoadStringA, -1)
+	FF(wsprintfA, -1)
+	FF(GetDC, -1)
+	FF(GetDesktopWindow, -1)
+	FF(ReleaseDC, -1)
+	FF(IsRectEmpty, -1)
+	FF(LoadCursorA, -1)
+	FF(SetCursor, -1)
+	FF(GetCursorPos, -1)
+	FF(SetCursorPos, -1)
+	FF(ShowCursor, -1)
+	FF(RegisterWindowMessageA, -1)
+	FF(GetSystemMetrics, -1)
+	FF(GetSysColor, -1)
+	FF(GetSysColorBrush, -1)
+	FF(GetWindowDC, -1)
+	FF(DrawTextA, -1)
+	FF(MessageBoxA, -1)
+	FF(RegisterClassA, -1)
+	FF(UnregisterClassA, -1)
+	FF(GetWindowRect, -1)
+	FF(MonitorFromWindow, -1)
+	FF(MonitorFromRect, -1)
+	FF(MonitorFromPoint, -1)
+	FF(EnumDisplayMonitors, -1)
+	FF(GetMonitorInfoA, -1)
+	FF(EnumDisplayDevicesA, -1)
+	//    FF(GetClientRect, -1)
+	//    FF(ClientToScreen, -1)
+	FF(IsWindowVisible, -1)
+	FF(GetActiveWindow, -1)
+	FF(GetClassNameA, -1)
+	FF(GetClassInfoA, -1)
+	FF(GetWindowLongA, -1)
+	FF(EnumWindows, -1)
+	FF(GetWindowThreadProcessId, -1)
+	FF(CreateWindowExA, -1)
+	FF(MessageBeep, -1)
+	FF(DialogBoxParamA, -1)
+	FF(RegisterClipboardFormatA, -1)
+	FF(CharNextA, -1)
+	FF(EnumDisplaySettingsA, -1)
+	FF(SystemParametersInfoA, -1)
+	FF(PeekMessageA, -1)
+};
 static const struct exports exp_advapi32[] = {
-    FF(RegCloseKey, -1)
-        FF(RegCreateKeyA, -1)
-            FF(RegCreateKeyExA, -1)
-                FF(RegEnumKeyExA, -1)
-                    FF(RegEnumValueA, -1)
-                        FF(RegOpenKeyA, -1)
-                            FF(RegOpenKeyExA, -1)
-                                FF(RegQueryValueExA, -1)
-                                    FF(RegSetValueExA, -1)
-                                        FF(RegQueryInfoKeyA, -1)};
+	FF(RegCloseKey, -1)
+	FF(RegCreateKeyA, -1)
+	FF(RegCreateKeyExA, -1)
+	FF(RegEnumKeyExA, -1)
+	FF(RegEnumValueA, -1)
+	FF(RegOpenKeyA, -1)
+	FF(RegOpenKeyExA, -1)
+	FF(RegQueryValueExA, -1)
+	FF(RegSetValueExA, -1)
+	FF(RegQueryInfoKeyA, -1)
+};
 static const struct exports exp_gdi32[] = {
-    FF(CreateCompatibleDC, -1)
-        FF(CreateFontA, -1)
-            FF(DeleteDC, -1)
-                FF(DeleteObject, -1)
-                    FF(GetDeviceCaps, -1)
-                        FF(GetSystemPaletteEntries, -1)
-                            FF(CreatePalette, -1)
-                                FF(GetObjectA, -1)
-                                    FF(GetCharABCWidthsA, -1)
-                                        FF(SetTextAlign, -1)
-                                            FF(GetTextMetricsA, -1)
-                                                FF(CreateDIBSection, -1)
-                                                    FF(SelectObject, -1)
-                                                        FF(CreateRectRgn, -1)};
+	FF(CreateCompatibleDC, -1)
+	FF(CreateFontA, -1)
+	FF(DeleteDC, -1)
+	FF(DeleteObject, -1)
+	FF(GetDeviceCaps, -1)
+	FF(GetSystemPaletteEntries, -1)
+	FF(CreatePalette, -1)
+	FF(GetObjectA, -1)
+	FF(GetCharABCWidthsA, -1)
+	FF(SetTextAlign, -1)
+	FF(GetTextMetricsA, -1)
+	FF(CreateDIBSection, -1)
+	FF(SelectObject, -1)
+	FF(CreateRectRgn, -1)
+};
 static const struct exports exp_version[] = {
-    FF(GetFileVersionInfoSizeA, -1)};
+	FF(GetFileVersionInfoSizeA, -1)
+};
 static const struct exports exp_ole32[] = {
-    FF(CoCreateFreeThreadedMarshaler, -1)
-        FF(CoCreateInstance, -1)
-            FF(CoInitialize, -1)
-                FF(CoInitializeEx, -1)
-                    FF(CoUninitialize, -1)
-                        FF(CoTaskMemAlloc, -1)
-                            FF(CoTaskMemFree, -1)
-                                FF(StringFromGUID2, -1)
-                                    FF(PropVariantClear, -1)};
+	FF(CoCreateFreeThreadedMarshaler, -1)
+	FF(CoCreateInstance, -1)
+	FF(CoInitialize, -1)
+	FF(CoInitializeEx, -1)
+	FF(CoUninitialize, -1)
+	FF(CoTaskMemAlloc, -1)
+	FF(CoTaskMemFree, -1)
+	FF(StringFromGUID2, -1)
+	FF(PropVariantClear, -1)
+};
 // do we really need crtdll ???
 // msvcrt is the correct place probably...
 static const struct exports exp_crtdll[] = {
-    FF(memcpy, -1)
-        FF(wcscpy, -1)};
+	FF(memcpy, -1)
+	FF(wcscpy, -1)
+};
 static const struct exports exp_comctl32[] = {
-    FF(StringFromGUID2, -1)
-        FF(InitCommonControls, 17)
+	FF(StringFromGUID2, -1)
+	FF(InitCommonControls, 17)
 #ifdef CONFIG_QTX_CODECS
-            FF(CreateUpDownControl, 16)
+	FF(CreateUpDownControl, 16)
 #endif
 };
 static const struct exports exp_wsock32[] = {
-    FF(htonl, 8)
-        FF(ntohl, 14)};
+	FF(htonl, 8)
+	FF(ntohl, 14)
+};
 static const struct exports exp_msdmo[] = {
-    FF(memcpy, -1) // just test
-    FF(MoCopyMediaType, -1)
-        FF(MoCreateMediaType, -1)
-            FF(MoDeleteMediaType, -1)
-                FF(MoDuplicateMediaType, -1)
-                    FF(MoFreeMediaType, -1)
-                        FF(MoInitMediaType, -1)};
+	FF(memcpy, -1) // just test
+	FF(MoCopyMediaType, -1)
+	FF(MoCreateMediaType, -1)
+	FF(MoDeleteMediaType, -1)
+	FF(MoDuplicateMediaType, -1)
+	FF(MoFreeMediaType, -1)
+	FF(MoInitMediaType, -1)
+};
 static const struct exports exp_oleaut32[] = {
-    FF(SysAllocStringLen, 4)
-        FF(SysFreeString, 6)
-            FF(VariantInit, 8)
+	FF(SysAllocStringLen, 4)
+	FF(SysFreeString, 6)
+	FF(VariantInit, 8)
 #ifdef CONFIG_QTX_CODECS
-                FF(SysStringByteLen, 149)
+	FF(SysStringByteLen, 149)
 #endif
 };
 
@@ -5878,577 +6050,587 @@ static const struct exports exp_oleaut32[] = {
 */
 #ifdef REALPLAYER
 static const struct exports exp_pncrt[] = {
-    FF(malloc, -1)  // just test
-    FF(free, -1)    // just test
-    FF(fprintf, -1) // just test
-    {"_adjust_fdiv", -1, (void *)&_adjust_fdiv},
-    FF(_ftol, -1)
-        FF(_initterm, -1){"??3@YAXPAX@Z", -1, expdelete},
-    {"??2@YAPAXI@Z", -1, expnew},
-    FF(__dllonexit, -1)
-        FF(strncpy, -1)
-            FF(_CIpow, -1)
-                FF(calloc, -1)
-                    FF(memmove, -1)
-                        FF(ldexp, -1)
-                            FF(frexp, -1)};
+	FF(malloc, -1)  // just test
+	FF(free, -1)    // just test
+	FF(fprintf, -1) // just test
+	{ "_adjust_fdiv", -1, (void *)&_adjust_fdiv },
+	FF(_ftol, -1)
+	FF(_initterm, -1){ "??3@YAXPAX@Z", -1, expdelete },
+	{ "??2@YAPAXI@Z", -1, expnew },
+	FF(__dllonexit, -1)
+	FF(strncpy, -1)
+	FF(_CIpow, -1)
+	FF(calloc, -1)
+	FF(memmove, -1)
+	FF(ldexp, -1)
+	FF(frexp, -1)
+};
 #endif
 
 #ifdef CONFIG_QTX_CODECS
 static const struct exports exp_ddraw[] = {
-    FF(DirectDrawCreate, -1)};
+	FF(DirectDrawCreate, -1)
+};
 #endif
 
 static const struct exports exp_comdlg32[] = {
-    FF(GetOpenFileNameA, -1)};
+	FF(GetOpenFileNameA, -1)
+};
 
 static const struct exports exp_shlwapi[] = {
-    FF(PathFindExtensionA, -1)
-        FF(PathFindFileNameA, -1)};
+	FF(PathFindExtensionA, -1)
+	FF(PathFindFileNameA, -1)
+};
 
 static const struct exports exp_msvcr80[] = {
-    FF(_CIpow, -1)
-        FF(_CIsin, -1)
-            FF(_CIcos, -1)
-                FF(_CIsqrt, -1)
-                    FF(memcpy, -1)
-                        FF(memset, -1)
-                            FF(sprintf, -1)
-                                FF(strncpy, -1)
-                                    FF(fopen, -1)
-                                        FF(malloc, -1)
-                                            FF(free, -1)
-                                                FF(_initterm_e, -1)
-                                                    FF(_initterm, -1)
-                                                        FF(_decode_pointer, -1)
+	FF(_CIpow, -1)
+	FF(_CIsin, -1)
+	FF(_CIcos, -1)
+	FF(_CIsqrt, -1)
+	FF(memcpy, -1)
+	FF(memset, -1)
+	FF(sprintf, -1)
+	FF(strncpy, -1)
+	FF(fopen, -1)
+	FF(malloc, -1)
+	FF(free, -1)
+	FF(_initterm_e, -1)
+	FF(_initterm, -1)
+	FF(_decode_pointer, -1)
 
-    // For CFDecode2.ax
-    {"_aligned_free", -1, (void *)expfree},
-    {"_aligned_malloc", -1, (void *)expmalloc},
-    FF(_splitpath, -1)
-        FF(_mbsupr, -1){"_mbscmp", -1, (void *)strcmp},
-    {"clock", -1, (void *)&clock},
-    FF(_time64, -1)
-    /* needed by KGV1-VFW.dll */
-    {"??2@YAPAXI@Z", -1, expnew},
-    {"??3@YAXPAX@Z", -1, expdelete}};
+	// For CFDecode2.ax
+	{ "_aligned_free", -1, (void *)expfree },
+	{ "_aligned_malloc", -1, (void *)expmalloc },
+	FF(_splitpath, -1)
+	FF(_mbsupr, -1){ "_mbscmp", -1, (void *)strcmp },
+	{ "clock", -1, (void *)&clock },
+	FF(_time64, -1)
+	/* needed by KGV1-VFW.dll */
+	{ "??2@YAPAXI@Z", -1, expnew },
+	{ "??3@YAXPAX@Z", -1, expdelete }
+};
 
 static const struct exports exp_msvcp60[] = {
-    {"??0_Lockit@std@@QAE@XZ", -1, exp_0Lockit_dummy},
-    {"??1_Lockit@std@@QAE@XZ", -1, exp_1Lockit_dummy}};
+	{ "??0_Lockit@std@@QAE@XZ", -1, exp_0Lockit_dummy },
+	{ "??1_Lockit@std@@QAE@XZ", -1, exp_1Lockit_dummy }
+};
 
 static const struct exports exp_msvcr100[] = {
-    FF(memcpy, -1)
-        FF(memset, -1)
-            FF(_initterm_e, -1)
-                FF(_initterm, -1){"??2@YAPAXI@Z", -1, expnew},
-    {"??3@YAXPAX@Z", -1, expdelete}};
+	FF(memcpy, -1)
+	FF(memset, -1)
+	FF(_initterm_e, -1)
+	FF(_initterm, -1){ "??2@YAPAXI@Z", -1, expnew },
+	{ "??3@YAXPAX@Z", -1, expdelete }
+};
 
 static const struct exports exp_sdl2[] = {
-    FF(SDL_GetRelativeMouseState, -1)
-        FF(SDL_NumJoysticks, -1)
-            FF(SDL_GameControllerGetAxis, -1)};
+	FF(SDL_GetRelativeMouseState, -1)
+	FF(SDL_NumJoysticks, -1)
+	FF(SDL_GameControllerGetAxis, -1)
+};
 
 static const struct exports exp_opengl32[] = {
-    FF(wglGetProcAddress, -1)};
+	FF(wglGetProcAddress, -1)
+};
 
 #define LL(X) \
-	{#X ".dll", sizeof(exp_##X) / sizeof(struct exports), exp_##X},
+	{ #X ".dll", sizeof(exp_##X) / sizeof(struct exports), exp_##X },
 
 static const struct libs libraries[] = {
-    LL(kernel32)
-        LL(msvcrt)
-            LL(winmm)
-                LL(psapi)
-                    LL(user32)
-                        LL(advapi32)
-                            LL(gdi32)
-                                LL(version)
-                                    LL(ole32)
-                                        LL(oleaut32)
-                                            LL(crtdll)
-                                                LL(comctl32)
-                                                    LL(wsock32)
-                                                        LL(msdmo)
-                                                            LL(comdlg32)
-                                                                LL(shlwapi)
-                                                                    LL(msvcr80)
-                                                                        LL(msvcp60)
-                                                                            LL(msvcr100)
-                                                                                LL(sdl2)
-                                                                                    LL(opengl32)};
+	LL(kernel32)
+	LL(msvcrt)
+	LL(winmm)
+	LL(psapi)
+	LL(user32)
+	LL(advapi32)
+	LL(gdi32)
+	LL(version)
+	LL(ole32)
+	LL(oleaut32)
+	LL(crtdll)
+	LL(comctl32)
+	LL(wsock32)
+	LL(msdmo)
+	LL(comdlg32)
+	LL(shlwapi)
+	LL(msvcr80)
+	LL(msvcp60)
+	LL(msvcr100)
+	LL(sdl2)
+	LL(opengl32)
+};
 
 static const struct glfuncs glfunctions[] = {
-    GLFF(glGetError)
-        GLFF(glGetString)
-            GLFF(glAccum)
-                GLFF(glAlphaFunc)
-                    GLFF(glBegin)
-                        GLFF(glBindTexture)
-                            GLFF(glBitmap)
-                                GLFF(glBlendFunc)
-                                    GLFF(glCallList)
-                                        GLFF(glCallLists)
-                                            GLFF(glClear)
-                                                GLFF(glClearAccum)
-                                                    GLFF(glClearColor)
-                                                        GLFF(glClearDepth)
-                                                            GLFF(glClearIndex)
-                                                                GLFF(glClearStencil)
-                                                                    GLFF(glIsEnabled)
-                                                                        GLFF(glIsList)
-                                                                            GLFF(glIsTexture)
-                                                                                GLFF(glClipPlane)
-                                                                                    GLFF(glColor3b)
-                                                                                        GLFF(glColor3bv)
-                                                                                            GLFF(glColor3d)
-                                                                                                GLFF(glColor3dv)
-                                                                                                    GLFF(glColor3f)
-                                                                                                        GLFF(glColor3fv)
-                                                                                                            GLFF(glColor3i)
-                                                                                                                GLFF(glColor3iv)
-                                                                                                                    GLFF(glColor3s)
-                                                                                                                        GLFF(glColor3sv)
-                                                                                                                            GLFF(glColor3ub)
-                                                                                                                                GLFF(glColor3ubv)
-                                                                                                                                    GLFF(glColor3ui)
-                                                                                                                                        GLFF(glColor3uiv)
-                                                                                                                                            GLFF(glColor3us)
-                                                                                                                                                GLFF(glColor3usv)
-                                                                                                                                                    GLFF(glColor4b)
-                                                                                                                                                        GLFF(glColor4bv)
-                                                                                                                                                            GLFF(glColor4d)
-                                                                                                                                                                GLFF(glColor4dv)
-                                                                                                                                                                    GLFF(glColor4f)
-                                                                                                                                                                        GLFF(glColor4fv)
-                                                                                                                                                                            GLFF(glColor4i)
-                                                                                                                                                                                GLFF(glColor4iv)
-                                                                                                                                                                                    GLFF(glColor4s)
-                                                                                                                                                                                        GLFF(glColor4sv)
-                                                                                                                                                                                            GLFF(glColor4ub)
-                                                                                                                                                                                                GLFF(glColor4ubv)
-                                                                                                                                                                                                    GLFF(glColor4ui)
-                                                                                                                                                                                                        GLFF(glColor4uiv)
-                                                                                                                                                                                                            GLFF(glColor4us)
-                                                                                                                                                                                                                GLFF(glColor4usv)
-                                                                                                                                                                                                                    GLFF(glColorMask)
-                                                                                                                                                                                                                        GLFF(glColorMaterial)
-                                                                                                                                                                                                                            GLFF(glCopyPixels)
-                                                                                                                                                                                                                                GLFF(glCopyTexImage1D)
-                                                                                                                                                                                                                                    GLFF(glCopyTexImage2D)
-                                                                                                                                                                                                                                        GLFF(glCopyTexSubImage1D)
-                                                                                                                                                                                                                                            GLFF(glCopyTexSubImage2D)
-                                                                                                                                                                                                                                                GLFF(glCullFace)
-                                                                                                                                                                                                                                                    GLFF(glDeleteLists)
-                                                                                                                                                                                                                                                        GLFF(glDeleteTextures)
-                                                                                                                                                                                                                                                            GLFF(glDepthFunc)
-                                                                                                                                                                                                                                                                GLFF(glDepthMask)
-                                                                                                                                                                                                                                                                    GLFF(glDepthRange)
-                                                                                                                                                                                                                                                                        GLFF(glDisable)
-                                                                                                                                                                                                                                                                            GLFF(glDisableClientState)
-                                                                                                                                                                                                                                                                                GLFF(glDrawArrays)
-                                                                                                                                                                                                                                                                                    GLFF(glDrawBuffer)
-                                                                                                                                                                                                                                                                                        GLFF(glDrawPixels)
-                                                                                                                                                                                                                                                                                            GLFF(glEdgeFlag)
-                                                                                                                                                                                                                                                                                                GLFF(glEdgeFlagPointer)
-                                                                                                                                                                                                                                                                                                    GLFF(glEdgeFlagv)
-                                                                                                                                                                                                                                                                                                        GLFF(glEnable)
-                                                                                                                                                                                                                                                                                                            GLFF(glEnableClientState)
-                                                                                                                                                                                                                                                                                                                GLFF(glEnd)
-                                                                                                                                                                                                                                                                                                                    GLFF(glEndList)
-                                                                                                                                                                                                                                                                                                                        GLFF(glEvalCoord1d)
-                                                                                                                                                                                                                                                                                                                            GLFF(glEvalCoord1dv)
-                                                                                                                                                                                                                                                                                                                                GLFF(glEvalCoord1f)
-                                                                                                                                                                                                                                                                                                                                    GLFF(glEvalCoord1fv)
-                                                                                                                                                                                                                                                                                                                                        GLFF(glEvalCoord2d)
-                                                                                                                                                                                                                                                                                                                                            GLFF(glEvalCoord2dv)
-                                                                                                                                                                                                                                                                                                                                                GLFF(glEvalCoord2f)
-                                                                                                                                                                                                                                                                                                                                                    GLFF(glEvalCoord2fv)
-                                                                                                                                                                                                                                                                                                                                                        GLFF(glEvalMesh1)
-                                                                                                                                                                                                                                                                                                                                                            GLFF(glEvalMesh2)
-                                                                                                                                                                                                                                                                                                                                                                GLFF(glEvalPoint1)
-                                                                                                                                                                                                                                                                                                                                                                    GLFF(glEvalPoint2)
-                                                                                                                                                                                                                                                                                                                                                                        GLFF(glFeedbackBuffer)
-                                                                                                                                                                                                                                                                                                                                                                            GLFF(glFinish)
-                                                                                                                                                                                                                                                                                                                                                                                GLFF(glFlush)
-                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glFogf)
-                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glFogfv)
-                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glFogi)
-                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glFogiv)
-                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glFrontFace)
-                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glFrustum)
-                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGenTextures)
-                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetBooleanv)
-                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetClipPlane)
-                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetDoublev)
-                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetFloatv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetIntegerv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetLightfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetLightiv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetMapdv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetMapfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetMapiv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetMaterialfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetMaterialiv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetPixelMapfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetPixelMapuiv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetPixelMapusv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetPointerv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetPolygonStipple)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetTexEnvfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetTexEnviv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetTexGendv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetTexGenfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetTexGeniv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetTexImage)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetTexLevelParameterfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetTexLevelParameteriv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetTexParameterfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetTexParameteriv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glHint)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glIndexMask)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glIndexPointer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glIndexd)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glIndexdv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glIndexf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glIndexfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glIndexi)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glIndexiv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glIndexs)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glIndexsv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glIndexub)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glIndexubv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glInitNames)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glInterleavedArrays)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glLightModelf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glLightModelfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glLightModeli)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glLightModeliv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glLightf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glLightfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glLighti)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glLightiv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glLineStipple)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glLineWidth)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glListBase)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glLoadIdentity)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glLoadMatrixd)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glLoadMatrixf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glLoadName)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glLogicOp)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glMap1d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glMap1f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glMap2d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glMap2f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glMapGrid1d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glMapGrid1f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glMapGrid2d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glMapGrid2f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glMaterialf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glMaterialfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glMateriali)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glMaterialiv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glMatrixMode)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glMultMatrixd)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glMultMatrixf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glNewList)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glNormal3b)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glNormal3bv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glNormal3d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glNormal3dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glNormal3f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glNormal3fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glNormal3i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glNormal3iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glNormal3s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glNormal3sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glOrtho)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glPassThrough)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glPixelMapfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glPixelMapuiv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glPixelMapusv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glPixelStoref)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glPixelStorei)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glPixelTransferf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glPixelTransferi)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glPixelZoom)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glPointSize)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glPolygonMode)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glPolygonOffset)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glPolygonStipple)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glPopAttrib)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glPopClientAttrib)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glPopMatrix)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glPopName)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glPushAttrib)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glPushClientAttrib)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glPushMatrix)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glPushName)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glRasterPos2d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glRasterPos2dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRasterPos2f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRasterPos2fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glRasterPos2i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glRasterPos2iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRasterPos2s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRasterPos2sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glRasterPos3d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glRasterPos3dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRasterPos3f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRasterPos3fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glRasterPos3i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glRasterPos3iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRasterPos3s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRasterPos3sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glRasterPos4d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glRasterPos4dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRasterPos4f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRasterPos4fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glRasterPos4i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glRasterPos4iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRasterPos4s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRasterPos4sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glReadBuffer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glReadPixels)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRectd)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRectdv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glRectf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glRectfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRecti)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRectiv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glRects)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glRectsv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRotated)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRotatef)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glScaled)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glScalef)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glScissor)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glSelectBuffer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glShadeModel)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glStencilFunc)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glStencilMask)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glStencilOp)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexCoord1d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexCoord1dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexCoord1f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexCoord1fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexCoord1i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexCoord1iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexCoord1s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexCoord1sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexCoord2d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexCoord2dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexCoord2f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexCoord2fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexCoord2i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexCoord2iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexCoord2s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexCoord2sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexCoord3d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexCoord3dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexCoord3f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexCoord3fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexCoord3i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexCoord3iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexCoord3s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexCoord3sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexCoord4d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexCoord4dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexCoord4f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexCoord4fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexCoord4i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexCoord4iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexCoord4s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexCoord4sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexEnvf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexEnvfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexEnvi)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexEnviv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexGend)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexGendv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexGenf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexGenfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexGeni)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexGeniv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexImage1D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexImage2D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexParameterf)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexParameterfv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexParameteri)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexParameteriv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexSubImage1D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexSubImage2D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTranslated)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTranslatef)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glVertex2d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glVertex2dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glVertex2f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glVertex2fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glVertex2i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glVertex2iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glVertex2s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glVertex2sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glVertex3d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glVertex3dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glVertex3f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glVertex3fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glVertex3i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glVertex3iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glVertex3s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glVertex3sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glVertex4d)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glVertex4dv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glVertex4f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glVertex4fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glVertex4i)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glVertex4iv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glVertex4s)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glVertex4sv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glViewport)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glPointParameterfEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glPointParameterfvEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glLockArraysEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glUnlockArraysEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glActiveTextureARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glClientActiveTextureARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetCompressedTexImage)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glDrawRangeElements)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glDrawRangeElementsEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glDrawElements)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glVertexPointer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glNormalPointer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glColorPointer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexCoordPointer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glArrayElement)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glMultiTexCoord1f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glMultiTexCoord2f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glMultiTexCoord3f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glMultiTexCoord4f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glActiveTexture)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glClientActiveTexture)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glCompressedTexImage3DARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glCompressedTexImage2DARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glCompressedTexImage1DARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glCompressedTexSubImage3DARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glCompressedTexSubImage2DARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glCompressedTexSubImage1DARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glDeleteObjectARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetHandleARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glDetachObjectARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glCreateShaderObjectARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glShaderSourceARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glCompileShaderARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glCreateProgramObjectARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glAttachObjectARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glLinkProgramARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glUseProgramObjectARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glValidateProgramARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glBindProgramARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glDeleteProgramsARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGenProgramsARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glProgramStringARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glProgramEnvParameter4fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glProgramLocalParameter4fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetProgramivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glUniform1fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glUniform2fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glUniform3fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glUniform4fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glUniform1iARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glUniform2iARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glUniform3iARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glUniform4iARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glUniform1fvARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glUniform2fvARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glUniform3fvARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glUniform4fvARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glUniform1ivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glUniform2ivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glUniform3ivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glUniform4ivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glUniformMatrix2fvARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glUniformMatrix3fvARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glUniformMatrix4fvARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetObjectParameterfvARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetObjectParameterivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetInfoLogARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetAttachedObjectsARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetUniformLocationARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetActiveUniformARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetUniformfvARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetUniformivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetShaderSourceARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glTexImage3D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glTexSubImage3D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glCopyTexSubImage3D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glBlendEquationEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glStencilOpSeparate)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glStencilFuncSeparate)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glActiveStencilFaceEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glVertexAttribPointerARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glEnableVertexAttribArrayARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glDisableVertexAttribArrayARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glBindAttribLocationARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetActiveAttribARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetAttribLocationARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glBindBufferARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glDeleteBuffersARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGenBuffersARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glIsBufferARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glMapBufferARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glUnmapBufferARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glBufferDataARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glBufferSubDataARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGenQueriesARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glDeleteQueriesARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glIsQueryARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glBeginQueryARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glEndQueryARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetQueryivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetQueryObjectivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetQueryObjectuivARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glSelectTextureSGIS)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glMTexCoord2fSGIS)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glSwapInterval)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glIsRenderbuffer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glBindRenderbuffer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glDeleteRenderbuffers)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGenRenderbuffers)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glRenderbufferStorage)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glRenderbufferStorageMultisample)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGetRenderbufferParameteriv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glIsFramebuffer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glBindFramebuffer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glDeleteFramebuffers)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGenFramebuffers)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glCheckFramebufferStatus)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glFramebufferTexture1D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glFramebufferTexture2D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glFramebufferTexture3D)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glFramebufferTextureLayer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glFramebufferRenderbuffer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glGetFramebufferAttachmentParameteriv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glBlitFramebuffer)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGenerateMipmap)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glGetCompressedTexImageARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glCopyTexSubImage3DEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glTexSubImage3DEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glTexImage3DEXT)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glMultiTexCoord1fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glMultiTexCoord2fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glMultiTexCoord3fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glMultiTexCoord4fARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glBindVertexArray)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glDeleteVertexArrays)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glGenVertexArrays)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glIsVertexArray)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glDebugMessageControlARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glDebugMessageInsertARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glDebugMessageCallbackARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            GLFF(glGetDebugMessageLogARB)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                GLFF(glVertexAttrib2f)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    GLFF(glVertexAttrib2fv)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        GLFF(glVertexAttrib3fv)
+	GLFF(glGetError)
+	GLFF(glGetString)
+	GLFF(glAccum)
+	GLFF(glAlphaFunc)
+	GLFF(glBegin)
+	GLFF(glBindTexture)
+	GLFF(glBitmap)
+	GLFF(glBlendFunc)
+	GLFF(glCallList)
+	GLFF(glCallLists)
+	GLFF(glClear)
+	GLFF(glClearAccum)
+	GLFF(glClearColor)
+	GLFF(glClearDepth)
+	GLFF(glClearIndex)
+	GLFF(glClearStencil)
+	GLFF(glIsEnabled)
+	GLFF(glIsList)
+	GLFF(glIsTexture)
+	GLFF(glClipPlane)
+	GLFF(glColor3b)
+	GLFF(glColor3bv)
+	GLFF(glColor3d)
+	GLFF(glColor3dv)
+	GLFF(glColor3f)
+	GLFF(glColor3fv)
+	GLFF(glColor3i)
+	GLFF(glColor3iv)
+	GLFF(glColor3s)
+	GLFF(glColor3sv)
+	GLFF(glColor3ub)
+	GLFF(glColor3ubv)
+	GLFF(glColor3ui)
+	GLFF(glColor3uiv)
+	GLFF(glColor3us)
+	GLFF(glColor3usv)
+	GLFF(glColor4b)
+	GLFF(glColor4bv)
+	GLFF(glColor4d)
+	GLFF(glColor4dv)
+	GLFF(glColor4f)
+	GLFF(glColor4fv)
+	GLFF(glColor4i)
+	GLFF(glColor4iv)
+	GLFF(glColor4s)
+	GLFF(glColor4sv)
+	GLFF(glColor4ub)
+	GLFF(glColor4ubv)
+	GLFF(glColor4ui)
+	GLFF(glColor4uiv)
+	GLFF(glColor4us)
+	GLFF(glColor4usv)
+	GLFF(glColorMask)
+	GLFF(glColorMaterial)
+	GLFF(glCopyPixels)
+	GLFF(glCopyTexImage1D)
+	GLFF(glCopyTexImage2D)
+	GLFF(glCopyTexSubImage1D)
+	GLFF(glCopyTexSubImage2D)
+	GLFF(glCullFace)
+	GLFF(glDeleteLists)
+	GLFF(glDeleteTextures)
+	GLFF(glDepthFunc)
+	GLFF(glDepthMask)
+	GLFF(glDepthRange)
+	GLFF(glDisable)
+	GLFF(glDisableClientState)
+	GLFF(glDrawArrays)
+	GLFF(glDrawBuffer)
+	GLFF(glDrawPixels)
+	GLFF(glEdgeFlag)
+	GLFF(glEdgeFlagPointer)
+	GLFF(glEdgeFlagv)
+	GLFF(glEnable)
+	GLFF(glEnableClientState)
+	GLFF(glEnd)
+	GLFF(glEndList)
+	GLFF(glEvalCoord1d)
+	GLFF(glEvalCoord1dv)
+	GLFF(glEvalCoord1f)
+	GLFF(glEvalCoord1fv)
+	GLFF(glEvalCoord2d)
+	GLFF(glEvalCoord2dv)
+	GLFF(glEvalCoord2f)
+	GLFF(glEvalCoord2fv)
+	GLFF(glEvalMesh1)
+	GLFF(glEvalMesh2)
+	GLFF(glEvalPoint1)
+	GLFF(glEvalPoint2)
+	GLFF(glFeedbackBuffer)
+	GLFF(glFinish)
+	GLFF(glFlush)
+	GLFF(glFogf)
+	GLFF(glFogfv)
+	GLFF(glFogi)
+	GLFF(glFogiv)
+	GLFF(glFrontFace)
+	GLFF(glFrustum)
+	GLFF(glGenTextures)
+	GLFF(glGetBooleanv)
+	GLFF(glGetClipPlane)
+	GLFF(glGetDoublev)
+	GLFF(glGetFloatv)
+	GLFF(glGetIntegerv)
+	GLFF(glGetLightfv)
+	GLFF(glGetLightiv)
+	GLFF(glGetMapdv)
+	GLFF(glGetMapfv)
+	GLFF(glGetMapiv)
+	GLFF(glGetMaterialfv)
+	GLFF(glGetMaterialiv)
+	GLFF(glGetPixelMapfv)
+	GLFF(glGetPixelMapuiv)
+	GLFF(glGetPixelMapusv)
+	GLFF(glGetPointerv)
+	GLFF(glGetPolygonStipple)
+	GLFF(glGetTexEnvfv)
+	GLFF(glGetTexEnviv)
+	GLFF(glGetTexGendv)
+	GLFF(glGetTexGenfv)
+	GLFF(glGetTexGeniv)
+	GLFF(glGetTexImage)
+	GLFF(glGetTexLevelParameterfv)
+	GLFF(glGetTexLevelParameteriv)
+	GLFF(glGetTexParameterfv)
+	GLFF(glGetTexParameteriv)
+	GLFF(glHint)
+	GLFF(glIndexMask)
+	GLFF(glIndexPointer)
+	GLFF(glIndexd)
+	GLFF(glIndexdv)
+	GLFF(glIndexf)
+	GLFF(glIndexfv)
+	GLFF(glIndexi)
+	GLFF(glIndexiv)
+	GLFF(glIndexs)
+	GLFF(glIndexsv)
+	GLFF(glIndexub)
+	GLFF(glIndexubv)
+	GLFF(glInitNames)
+	GLFF(glInterleavedArrays)
+	GLFF(glLightModelf)
+	GLFF(glLightModelfv)
+	GLFF(glLightModeli)
+	GLFF(glLightModeliv)
+	GLFF(glLightf)
+	GLFF(glLightfv)
+	GLFF(glLighti)
+	GLFF(glLightiv)
+	GLFF(glLineStipple)
+	GLFF(glLineWidth)
+	GLFF(glListBase)
+	GLFF(glLoadIdentity)
+	GLFF(glLoadMatrixd)
+	GLFF(glLoadMatrixf)
+	GLFF(glLoadName)
+	GLFF(glLogicOp)
+	GLFF(glMap1d)
+	GLFF(glMap1f)
+	GLFF(glMap2d)
+	GLFF(glMap2f)
+	GLFF(glMapGrid1d)
+	GLFF(glMapGrid1f)
+	GLFF(glMapGrid2d)
+	GLFF(glMapGrid2f)
+	GLFF(glMaterialf)
+	GLFF(glMaterialfv)
+	GLFF(glMateriali)
+	GLFF(glMaterialiv)
+	GLFF(glMatrixMode)
+	GLFF(glMultMatrixd)
+	GLFF(glMultMatrixf)
+	GLFF(glNewList)
+	GLFF(glNormal3b)
+	GLFF(glNormal3bv)
+	GLFF(glNormal3d)
+	GLFF(glNormal3dv)
+	GLFF(glNormal3f)
+	GLFF(glNormal3fv)
+	GLFF(glNormal3i)
+	GLFF(glNormal3iv)
+	GLFF(glNormal3s)
+	GLFF(glNormal3sv)
+	GLFF(glOrtho)
+	GLFF(glPassThrough)
+	GLFF(glPixelMapfv)
+	GLFF(glPixelMapuiv)
+	GLFF(glPixelMapusv)
+	GLFF(glPixelStoref)
+	GLFF(glPixelStorei)
+	GLFF(glPixelTransferf)
+	GLFF(glPixelTransferi)
+	GLFF(glPixelZoom)
+	GLFF(glPointSize)
+	GLFF(glPolygonMode)
+	GLFF(glPolygonOffset)
+	GLFF(glPolygonStipple)
+	GLFF(glPopAttrib)
+	GLFF(glPopClientAttrib)
+	GLFF(glPopMatrix)
+	GLFF(glPopName)
+	GLFF(glPushAttrib)
+	GLFF(glPushClientAttrib)
+	GLFF(glPushMatrix)
+	GLFF(glPushName)
+	GLFF(glRasterPos2d)
+	GLFF(glRasterPos2dv)
+	GLFF(glRasterPos2f)
+	GLFF(glRasterPos2fv)
+	GLFF(glRasterPos2i)
+	GLFF(glRasterPos2iv)
+	GLFF(glRasterPos2s)
+	GLFF(glRasterPos2sv)
+	GLFF(glRasterPos3d)
+	GLFF(glRasterPos3dv)
+	GLFF(glRasterPos3f)
+	GLFF(glRasterPos3fv)
+	GLFF(glRasterPos3i)
+	GLFF(glRasterPos3iv)
+	GLFF(glRasterPos3s)
+	GLFF(glRasterPos3sv)
+	GLFF(glRasterPos4d)
+	GLFF(glRasterPos4dv)
+	GLFF(glRasterPos4f)
+	GLFF(glRasterPos4fv)
+	GLFF(glRasterPos4i)
+	GLFF(glRasterPos4iv)
+	GLFF(glRasterPos4s)
+	GLFF(glRasterPos4sv)
+	GLFF(glReadBuffer)
+	GLFF(glReadPixels)
+	GLFF(glRectd)
+	GLFF(glRectdv)
+	GLFF(glRectf)
+	GLFF(glRectfv)
+	GLFF(glRecti)
+	GLFF(glRectiv)
+	GLFF(glRects)
+	GLFF(glRectsv)
+	GLFF(glRotated)
+	GLFF(glRotatef)
+	GLFF(glScaled)
+	GLFF(glScalef)
+	GLFF(glScissor)
+	GLFF(glSelectBuffer)
+	GLFF(glShadeModel)
+	GLFF(glStencilFunc)
+	GLFF(glStencilMask)
+	GLFF(glStencilOp)
+	GLFF(glTexCoord1d)
+	GLFF(glTexCoord1dv)
+	GLFF(glTexCoord1f)
+	GLFF(glTexCoord1fv)
+	GLFF(glTexCoord1i)
+	GLFF(glTexCoord1iv)
+	GLFF(glTexCoord1s)
+	GLFF(glTexCoord1sv)
+	GLFF(glTexCoord2d)
+	GLFF(glTexCoord2dv)
+	GLFF(glTexCoord2f)
+	GLFF(glTexCoord2fv)
+	GLFF(glTexCoord2i)
+	GLFF(glTexCoord2iv)
+	GLFF(glTexCoord2s)
+	GLFF(glTexCoord2sv)
+	GLFF(glTexCoord3d)
+	GLFF(glTexCoord3dv)
+	GLFF(glTexCoord3f)
+	GLFF(glTexCoord3fv)
+	GLFF(glTexCoord3i)
+	GLFF(glTexCoord3iv)
+	GLFF(glTexCoord3s)
+	GLFF(glTexCoord3sv)
+	GLFF(glTexCoord4d)
+	GLFF(glTexCoord4dv)
+	GLFF(glTexCoord4f)
+	GLFF(glTexCoord4fv)
+	GLFF(glTexCoord4i)
+	GLFF(glTexCoord4iv)
+	GLFF(glTexCoord4s)
+	GLFF(glTexCoord4sv)
+	GLFF(glTexEnvf)
+	GLFF(glTexEnvfv)
+	GLFF(glTexEnvi)
+	GLFF(glTexEnviv)
+	GLFF(glTexGend)
+	GLFF(glTexGendv)
+	GLFF(glTexGenf)
+	GLFF(glTexGenfv)
+	GLFF(glTexGeni)
+	GLFF(glTexGeniv)
+	GLFF(glTexImage1D)
+	GLFF(glTexImage2D)
+	GLFF(glTexParameterf)
+	GLFF(glTexParameterfv)
+	GLFF(glTexParameteri)
+	GLFF(glTexParameteriv)
+	GLFF(glTexSubImage1D)
+	GLFF(glTexSubImage2D)
+	GLFF(glTranslated)
+	GLFF(glTranslatef)
+	GLFF(glVertex2d)
+	GLFF(glVertex2dv)
+	GLFF(glVertex2f)
+	GLFF(glVertex2fv)
+	GLFF(glVertex2i)
+	GLFF(glVertex2iv)
+	GLFF(glVertex2s)
+	GLFF(glVertex2sv)
+	GLFF(glVertex3d)
+	GLFF(glVertex3dv)
+	GLFF(glVertex3f)
+	GLFF(glVertex3fv)
+	GLFF(glVertex3i)
+	GLFF(glVertex3iv)
+	GLFF(glVertex3s)
+	GLFF(glVertex3sv)
+	GLFF(glVertex4d)
+	GLFF(glVertex4dv)
+	GLFF(glVertex4f)
+	GLFF(glVertex4fv)
+	GLFF(glVertex4i)
+	GLFF(glVertex4iv)
+	GLFF(glVertex4s)
+	GLFF(glVertex4sv)
+	GLFF(glViewport)
+	GLFF(glPointParameterfEXT)
+	GLFF(glPointParameterfvEXT)
+	GLFF(glLockArraysEXT)
+	GLFF(glUnlockArraysEXT)
+	GLFF(glActiveTextureARB)
+	GLFF(glClientActiveTextureARB)
+	GLFF(glGetCompressedTexImage)
+	GLFF(glDrawRangeElements)
+	GLFF(glDrawRangeElementsEXT)
+	GLFF(glDrawElements)
+	GLFF(glVertexPointer)
+	GLFF(glNormalPointer)
+	GLFF(glColorPointer)
+	GLFF(glTexCoordPointer)
+	GLFF(glArrayElement)
+	GLFF(glMultiTexCoord1f)
+	GLFF(glMultiTexCoord2f)
+	GLFF(glMultiTexCoord3f)
+	GLFF(glMultiTexCoord4f)
+	GLFF(glActiveTexture)
+	GLFF(glClientActiveTexture)
+	GLFF(glCompressedTexImage3DARB)
+	GLFF(glCompressedTexImage2DARB)
+	GLFF(glCompressedTexImage1DARB)
+	GLFF(glCompressedTexSubImage3DARB)
+	GLFF(glCompressedTexSubImage2DARB)
+	GLFF(glCompressedTexSubImage1DARB)
+	GLFF(glDeleteObjectARB)
+	GLFF(glGetHandleARB)
+	GLFF(glDetachObjectARB)
+	GLFF(glCreateShaderObjectARB)
+	GLFF(glShaderSourceARB)
+	GLFF(glCompileShaderARB)
+	GLFF(glCreateProgramObjectARB)
+	GLFF(glAttachObjectARB)
+	GLFF(glLinkProgramARB)
+	GLFF(glUseProgramObjectARB)
+	GLFF(glValidateProgramARB)
+	GLFF(glBindProgramARB)
+	GLFF(glDeleteProgramsARB)
+	GLFF(glGenProgramsARB)
+	GLFF(glProgramStringARB)
+	GLFF(glProgramEnvParameter4fARB)
+	GLFF(glProgramLocalParameter4fARB)
+	GLFF(glGetProgramivARB)
+	GLFF(glUniform1fARB)
+	GLFF(glUniform2fARB)
+	GLFF(glUniform3fARB)
+	GLFF(glUniform4fARB)
+	GLFF(glUniform1iARB)
+	GLFF(glUniform2iARB)
+	GLFF(glUniform3iARB)
+	GLFF(glUniform4iARB)
+	GLFF(glUniform1fvARB)
+	GLFF(glUniform2fvARB)
+	GLFF(glUniform3fvARB)
+	GLFF(glUniform4fvARB)
+	GLFF(glUniform1ivARB)
+	GLFF(glUniform2ivARB)
+	GLFF(glUniform3ivARB)
+	GLFF(glUniform4ivARB)
+	GLFF(glUniformMatrix2fvARB)
+	GLFF(glUniformMatrix3fvARB)
+	GLFF(glUniformMatrix4fvARB)
+	GLFF(glGetObjectParameterfvARB)
+	GLFF(glGetObjectParameterivARB)
+	GLFF(glGetInfoLogARB)
+	GLFF(glGetAttachedObjectsARB)
+	GLFF(glGetUniformLocationARB)
+	GLFF(glGetActiveUniformARB)
+	GLFF(glGetUniformfvARB)
+	GLFF(glGetUniformivARB)
+	GLFF(glGetShaderSourceARB)
+	GLFF(glTexImage3D)
+	GLFF(glTexSubImage3D)
+	GLFF(glCopyTexSubImage3D)
+	GLFF(glBlendEquationEXT)
+	GLFF(glStencilOpSeparate)
+	GLFF(glStencilFuncSeparate)
+	GLFF(glActiveStencilFaceEXT)
+	GLFF(glVertexAttribPointerARB)
+	GLFF(glEnableVertexAttribArrayARB)
+	GLFF(glDisableVertexAttribArrayARB)
+	GLFF(glBindAttribLocationARB)
+	GLFF(glGetActiveAttribARB)
+	GLFF(glGetAttribLocationARB)
+	GLFF(glBindBufferARB)
+	GLFF(glDeleteBuffersARB)
+	GLFF(glGenBuffersARB)
+	GLFF(glIsBufferARB)
+	GLFF(glMapBufferARB)
+	GLFF(glUnmapBufferARB)
+	GLFF(glBufferDataARB)
+	GLFF(glBufferSubDataARB)
+	GLFF(glGenQueriesARB)
+	GLFF(glDeleteQueriesARB)
+	GLFF(glIsQueryARB)
+	GLFF(glBeginQueryARB)
+	GLFF(glEndQueryARB)
+	GLFF(glGetQueryivARB)
+	GLFF(glGetQueryObjectivARB)
+	GLFF(glGetQueryObjectuivARB)
+	GLFF(glSelectTextureSGIS)
+	GLFF(glMTexCoord2fSGIS)
+	GLFF(glSwapInterval)
+	GLFF(glIsRenderbuffer)
+	GLFF(glBindRenderbuffer)
+	GLFF(glDeleteRenderbuffers)
+	GLFF(glGenRenderbuffers)
+	GLFF(glRenderbufferStorage)
+	GLFF(glRenderbufferStorageMultisample)
+	GLFF(glGetRenderbufferParameteriv)
+	GLFF(glIsFramebuffer)
+	GLFF(glBindFramebuffer)
+	GLFF(glDeleteFramebuffers)
+	GLFF(glGenFramebuffers)
+	GLFF(glCheckFramebufferStatus)
+	GLFF(glFramebufferTexture1D)
+	GLFF(glFramebufferTexture2D)
+	GLFF(glFramebufferTexture3D)
+	GLFF(glFramebufferTextureLayer)
+	GLFF(glFramebufferRenderbuffer)
+	GLFF(glGetFramebufferAttachmentParameteriv)
+	GLFF(glBlitFramebuffer)
+	GLFF(glGenerateMipmap)
+	GLFF(glGetCompressedTexImageARB)
+	GLFF(glCopyTexSubImage3DEXT)
+	GLFF(glTexSubImage3DEXT)
+	GLFF(glTexImage3DEXT)
+	GLFF(glMultiTexCoord1fARB)
+	GLFF(glMultiTexCoord2fARB)
+	GLFF(glMultiTexCoord3fARB)
+	GLFF(glMultiTexCoord4fARB)
+	GLFF(glBindVertexArray)
+	GLFF(glDeleteVertexArrays)
+	GLFF(glGenVertexArrays)
+	GLFF(glIsVertexArray)
+	GLFF(glDebugMessageControlARB)
+	GLFF(glDebugMessageInsertARB)
+	GLFF(glDebugMessageCallbackARB)
+	GLFF(glGetDebugMessageLogARB)
+	GLFF(glVertexAttrib2f)
+	GLFF(glVertexAttrib2fv)
+	GLFF(glVertexAttrib3fv)
 
 };
 
@@ -6465,7 +6647,7 @@ static WIN_BOOL WINAPI ext_stubs(void)
 
 #define MAX_STUB_SIZE 0x60
 #define MAX_NUM_STUBS 200
-static int   pos     = 0;
+static int pos = 0;
 static char *extcode = NULL;
 
 static void mystub()
@@ -6543,9 +6725,9 @@ void *LookupExternal(const char *library, int ordinal)
 #endif
 	/* ok, this is a hack, and a big memory leak. should be fixed. - alex */
 	{
-		int          hand;
+		int hand;
 		WINE_MODREF *wm;
-		void *       func;
+		void *func;
 
 		hand = LoadLibraryA(library);
 		if(!hand)
@@ -6565,7 +6747,8 @@ void *LookupExternal(const char *library, int ordinal)
 		}
 
 		dbgprintf("External dll loaded (offset: 0x%x, func: %p)\n",
-		          hand, func);
+		          hand,
+		          func);
 		return func;
 	}
 
@@ -6611,9 +6794,9 @@ void *LookupExternalByName(const char *library, const char *name)
 #endif
 	/* ok, this is a hack, and a big memory leak. should be fixed. - alex */
 	{
-		int          hand;
+		int hand;
 		WINE_MODREF *wm;
-		void *       func;
+		void *func;
 
 		hand = LoadLibraryA(library);
 		if(!hand)
@@ -6633,7 +6816,8 @@ void *LookupExternalByName(const char *library, const char *name)
 		}
 
 		dbgprintf("External dll loaded (offset: 0x%x, func: %p)\n",
-		          hand, func);
+		          hand,
+		          func);
 		return func;
 	}
 

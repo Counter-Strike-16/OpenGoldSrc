@@ -41,11 +41,11 @@ static const char *DDrawError(int code);
 */
 qboolean DDRAW_Init(unsigned char **ppbuffer, int *ppitch)
 {
-	HRESULT        ddrval;
-	DDSURFACEDESC  ddsd;
-	DDSCAPS        ddscaps;
-	PALETTEENTRY   palentries[256];
-	int            i;
+	HRESULT ddrval;
+	DDSURFACEDESC ddsd;
+	DDSCAPS ddscaps;
+	PALETTEENTRY palentries[256];
+	int i;
 	extern cvar_t *sw_allow_modex;
 
 	HRESULT(WINAPI * QDirectDrawCreate)
@@ -55,9 +55,9 @@ qboolean DDRAW_Init(unsigned char **ppbuffer, int *ppitch)
 
 	for(i = 0; i < 256; i++)
 	{
-		palentries[i].peRed   = (d_8to24table[i] >> 0) & 0xff;
+		palentries[i].peRed = (d_8to24table[i] >> 0) & 0xff;
 		palentries[i].peGreen = (d_8to24table[i] >> 8) & 0xff;
-		palentries[i].peBlue  = (d_8to24table[i] >> 16) & 0xff;
+		palentries[i].peBlue = (d_8to24table[i] >> 16) & 0xff;
 	}
 
 	/*
@@ -163,9 +163,9 @@ qboolean DDRAW_Init(unsigned char **ppbuffer, int *ppitch)
 	** create our front buffer
 	*/
 	memset(&ddsd, 0, sizeof(ddsd));
-	ddsd.dwSize            = sizeof(ddsd);
-	ddsd.dwFlags           = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
-	ddsd.ddsCaps.dwCaps    = DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX;
+	ddsd.dwSize = sizeof(ddsd);
+	ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
+	ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX;
 	ddsd.dwBackBufferCount = 1;
 
 	ri.Con_Printf(PRINT_ALL, "...creating front buffer: ");
@@ -200,10 +200,10 @@ qboolean DDRAW_Init(unsigned char **ppbuffer, int *ppitch)
 	** create our rendering buffer
 	*/
 	memset(&ddsd, 0, sizeof(ddsd));
-	ddsd.dwSize         = sizeof(ddsd);
-	ddsd.dwFlags        = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
-	ddsd.dwHeight       = vid.height;
-	ddsd.dwWidth        = vid.width;
+	ddsd.dwSize = sizeof(ddsd);
+	ddsd.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
+	ddsd.dwHeight = vid.height;
+	ddsd.dwWidth = vid.width;
 	ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
 
 	ri.Con_Printf(PRINT_ALL, "...creating offscreen buffer: ");
@@ -255,7 +255,7 @@ qboolean DDRAW_Init(unsigned char **ppbuffer, int *ppitch)
 	ri.Con_Printf(PRINT_ALL, "ok\n");
 
 	*ppbuffer = ddsd.lpSurface;
-	*ppitch   = ddsd.lPitch;
+	*ppitch = ddsd.lPitch;
 
 	for(i = 0; i < vid.height; i++)
 	{
@@ -288,16 +288,16 @@ fail:
 void DDRAW_SetPalette(const unsigned char *pal)
 {
 	PALETTEENTRY palentries[256];
-	int          i;
+	int i;
 
 	if(!sww_state.lpddpPalette)
 		return;
 
 	for(i = 0; i < 256; i++, pal += 4)
 	{
-		palentries[i].peRed   = pal[0];
+		palentries[i].peRed = pal[0];
 		palentries[i].peGreen = pal[1];
-		palentries[i].peBlue  = pal[2];
+		palentries[i].peBlue = pal[2];
 		palentries[i].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
 

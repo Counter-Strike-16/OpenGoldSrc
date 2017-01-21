@@ -37,7 +37,7 @@ IFileSystem *gpFileSystem = nullptr;
 
 NOXREF void FS_RemoveAllSearchPaths()
 {
-	//NOXREFCHECK;	// We call it
+	// NOXREFCHECK;	// We call it
 
 	gpFileSystem->RemoveAllSearchPaths();
 }
@@ -163,7 +163,7 @@ char *FS_ReadLine(char *pOutput, int maxChars, FileHandle_t file)
 
 int FS_FPrintf(FileHandle_t file, char *pFormat, ...)
 {
-	char    data[8192];
+	char data[8192];
 	va_list va;
 
 	va_start(va, pFormat);
@@ -209,7 +209,7 @@ NOXREF char *FS_ParseFile(char *pFileBytes, char *pToken, int *pWasQuoted)
 {
 	NOXREFCHECK;
 
-	bool  wasquoted;
+	bool wasquoted;
 	char *result = gpFileSystem->ParseFile(pFileBytes, pToken, &wasquoted);
 
 	if(pWasQuoted)
@@ -302,8 +302,8 @@ void FS_Unlink(const char *filename)
 void FS_Rename(const char *originalName, const char *newName)
 {
 	char *cut;
-	char  localPath[512];
-	char  newPath[512];
+	char localPath[512];
+	char newPath[512];
 
 	if(FS_GetLocalPath(originalName, localPath, ARRAYSIZE(localPath)))
 	{

@@ -39,9 +39,9 @@
 /// Keyboard input destination/state
 typedef enum {
 	key_game = 0, ///< player is in game
-	//key_console was here
+	// key_console was here
 	key_message = 1, ///< player is writing a chat message
-	key_menu    = 2, ///< player is in menu
+	key_menu = 2,    ///< player is in menu
 } keydest_t;
 
 extern keydest_t key_dest;
@@ -50,7 +50,7 @@ void Key_Init();
 
 void Key_Event(int key, int down);
 
-int  Key_CountBindings();
+int Key_CountBindings();
 void Key_WriteBindings(FileHandle_t f);
 
 const char *Key_LookupBinding(const char *pBinding);

@@ -30,9 +30,9 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
 #include "common/enums.h"
+#include "maintypes.h"
 #include "network/net.hpp"
 
 #ifdef HOOK_ENGINE
@@ -50,12 +50,12 @@
 
 #endif // HOOK_ENGINE
 
-typedef struct cvar_s           cvar_t;
-typedef struct fragbuf_s        fragbuf_t;
-typedef struct sizebuf_s        sizebuf_t;
-typedef struct fragbuf_s        fragbuf_t;
+typedef struct cvar_s cvar_t;
+typedef struct fragbuf_s fragbuf_t;
+typedef struct sizebuf_s sizebuf_t;
+typedef struct fragbuf_s fragbuf_t;
 typedef struct fragbufwaiting_s fragbufwaiting_t;
-typedef struct netadr_s         netadr_t;
+typedef struct netadr_s netadr_t;
 
 extern char gDownloadFile[256];
 
@@ -112,13 +112,15 @@ typedef struct netchan_s
 
 	// Staging and holding areas
 	sizebuf_t message;
-	byte      message_buf[MAX_MSGLEN];
+	byte message_buf[MAX_MSGLEN];
 
-	// Reliable message buffer. We keep adding to it until reliable is acknowledged. Then we clear it.
-	int  reliable_length;
+	// Reliable message buffer. We keep adding to it until reliable is
+	// acknowledged. Then we clear it.
+	int reliable_length;
 	byte reliable_buf[MAX_MSGLEN];
 
-	// Waiting list of buffered fragments to go onto queue. Multiple outgoing buffers can be queued in succession.
+	// Waiting list of buffered fragments to go onto queue. Multiple outgoing
+	// buffers can be queued in succession.
 	fragbufwaiting_t *waitlist[MAX_STREAMS];
 
 	// Is reliable waiting buf a fragment?
@@ -146,7 +148,7 @@ typedef struct netchan_s
 	char incomingfilename[MAX_PATH];
 
 	void *tempbuffer;
-	int   tempbuffersize;
+	int tempbuffersize;
 
 	// Incoming and outgoing flow metrics
 	flow_t flow[MAX_FLOWS];
@@ -184,6 +186,6 @@ NOXREF qboolean Netchan_IsSending(netchan_t *chan);
 NOXREF qboolean Netchan_IsReceiving(netchan_t *chan);
 qboolean Netchan_IncomingReady(netchan_t *chan);
 NOXREF void Netchan_UpdateProgress(netchan_t *chan);
-void   Netchan_Init(void);
+void Netchan_Init(void);
 NOXREF qboolean Netchan_CompressPacket(sizebuf_t *chan);
 NOXREF qboolean Netchan_DecompressPacket(sizebuf_t *chan);

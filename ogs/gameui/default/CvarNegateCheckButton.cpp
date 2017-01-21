@@ -78,13 +78,13 @@ void CCvarNegateCheckButton::ApplyChanges(void)
 		return;
 
 	float value = engine->pfnGetCvarFloat(m_pszCvarName);
-	value       = (float)fabs(value);
+	value = (float)fabs(value);
 
 	if(value < 0.00001)
 		value = 0.022f;
 
 	m_bStartState = IsSelected();
-	value         = -value;
+	value = -value;
 
 	engine->Cvar_SetValue(m_pszCvarName, m_bStartState ? value : -value);
 }

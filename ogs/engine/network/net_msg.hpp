@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 #include "public/archtypes.h"
 
 typedef struct sizebuf_s sizebuf_t;
@@ -81,19 +81,19 @@ NOXREF void MSG_WriteVec3Coord(sizebuf_t *sb, const vec3_t fa);
 
 void MSG_BeginReading();
 
-int          MSG_ReadChar();
-int          MSG_ReadByte();
-int          MSG_ReadShort();
-NOXREF int   MSG_ReadWord();
-int          MSG_ReadLong();
+int MSG_ReadChar();
+int MSG_ReadByte();
+int MSG_ReadShort();
+NOXREF int MSG_ReadWord();
+int MSG_ReadLong();
 NOXREF float MSG_ReadFloat();
 int MSG_ReadBuf(int iSize, void *pbuf);
-char *       MSG_ReadString();
-char *       MSG_ReadStringLine();
+char *MSG_ReadString();
+char *MSG_ReadStringLine();
 NOXREF float MSG_ReadAngle();
 NOXREF float MSG_ReadHiresAngle();
 void MSG_ReadUsercmd(usercmd_t *to, usercmd_t *from);
-int    MSG_ReadOneBit();
+int MSG_ReadOneBit();
 uint32 MSG_ReadBits(int numbits);
 int MSG_ReadSBits(int numbits);
 NOXREF char *MSG_ReadBitString();

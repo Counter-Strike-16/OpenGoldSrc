@@ -30,10 +30,10 @@
 
 //#include "precompiled.hpp"
 #include "client/tmessage.hpp"
-#include "system/common.hpp"
 #include "console/console.hpp"
+#include "system/common.hpp"
 
-char                 gNetworkTextMessageBuffer[MAX_NETMESSAGE][512];
+char gNetworkTextMessageBuffer[MAX_NETMESSAGE][512];
 client_textmessage_t gMessageParms;
 
 /*
@@ -41,37 +41,39 @@ client_textmessage_t gMessageParms;
 */
 #ifndef HOOK_ENGINE
 
-client_textmessage_t *gMessageTable      = NULL;
-int                   gMessageTableCount = 0;
+client_textmessage_t *gMessageTable = NULL;
+int gMessageTableCount = 0;
 
-const char *gNetworkMessageNames[MAX_NETMESSAGE] =
-    {
-        NETWORK_MESSAGE1,
-        NETWORK_MESSAGE2,
-        NETWORK_MESSAGE3,
-        NETWORK_MESSAGE4};
+const char *gNetworkMessageNames[MAX_NETMESSAGE] = {
+	NETWORK_MESSAGE1, NETWORK_MESSAGE2, NETWORK_MESSAGE3, NETWORK_MESSAGE4
+};
 
-client_textmessage_t gNetworkTextMessage[MAX_NETMESSAGE] =
-    {
-        0, // effect
-        255, 255, 255, 255,
-        255, 255, 255, 255,
-        -1.0f,                       // x
-        -1.0f,                       // y
-        0.0f,                        // fadein
-        0.0f,                        // fadeout
-        0.0f,                        // holdtime
-        0.0f,                        // fxTime,
-        NETWORK_MESSAGE1,            // pName message name.
-        gNetworkTextMessageBuffer[0] // pMessage
+client_textmessage_t gNetworkTextMessage[MAX_NETMESSAGE] = {
+	0, // effect
+	255,
+	255,
+	255,
+	255,
+	255,
+	255,
+	255,
+	255,
+	-1.0f,                       // x
+	-1.0f,                       // y
+	0.0f,                        // fadein
+	0.0f,                        // fadeout
+	0.0f,                        // holdtime
+	0.0f,                        // fxTime,
+	NETWORK_MESSAGE1,            // pName message name.
+	gNetworkTextMessageBuffer[0] // pMessage
 };
 
 #else // HOOK_ENGINE
 
 client_textmessage_t *gMessageTable;
-int                   gMessageTableCount;
+int gMessageTableCount;
 
-const char *         gNetworkMessageNames[MAX_NETMESSAGE];
+const char *gNetworkMessageNames[MAX_NETMESSAGE];
 client_textmessage_t gNetworkTextMessage[MAX_NETMESSAGE];
 
 #endif // HOOK_ENGINE
@@ -89,10 +91,10 @@ char *EXT_FUNC memfgets(unsigned char *pMemFile, int fileSize, int *pFilePos, ch
 		return NULL;
 
 	last = fileSize;
-	i    = *pFilePos;
+	i = *pFilePos;
 	if(fileSize - filePos > bufferSize - 1)
 		last = filePos + bufferSize - 1;
-	stop     = 0;
+	stop = 0;
 
 	if(filePos >= last)
 		return NULL;
@@ -113,7 +115,7 @@ char *EXT_FUNC memfgets(unsigned char *pMemFile, int fileSize, int *pFilePos, ch
 	Q_memcpy(pBuffer, &pMemFile[filePos], i - filePos);
 	if(size < bufferSize)
 		pBuffer[size] = 0;
-	*pFilePos         = i;
+	*pFilePos = i;
 	return pBuffer;
 }
 
@@ -177,7 +179,7 @@ NOXREF const char *SkipText(const char *pText)
 NOXREF int ParseFloats(const char *pText, float *pFloat, int count)
 {
 	const char *pTemp = pText;
-	int         index = 0;
+	int index = 0;
 
 	while(pTemp && count > 0)
 	{
@@ -316,31 +318,31 @@ NOXREF int ParseDirective(const char *pText)
 
 NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize)
 {
-	char                 buf[512];
-	char                 trim[512];
-	char *               pCurrentText;
-	char *               pNameHeap;
-	char                 currentName[512];
-	char                 nameHeap[NAME_HEAP_SIZE];
-	int                  lastNamePos;
-	int                  mode;
-	int                  lineNumber;
-	int                  filePos;
-	int                  lastLinePos;
-	int                  messageCount;
+	char buf[512];
+	char trim[512];
+	char *pCurrentText;
+	char *pNameHeap;
+	char currentName[512];
+	char nameHeap[NAME_HEAP_SIZE];
+	int lastNamePos;
+	int mode;
+	int lineNumber;
+	int filePos;
+	int lastLinePos;
+	int messageCount;
 	client_textmessage_t textMessages[MAX_MESSAGES];
-	int                  i;
-	int                  nameHeapSize;
-	int                  textHeapSize;
-	int                  messageSize;
-	int                  nameOffset;
+	int i;
+	int nameHeapSize;
+	int textHeapSize;
+	int messageSize;
+	int nameOffset;
 
-	lastNamePos  = 0;
-	lineNumber   = 0;
-	filePos      = 0;
-	lastLinePos  = 0;
+	lastNamePos = 0;
+	lineNumber = 0;
+	filePos = 0;
+	lastLinePos = 0;
 	messageCount = 0;
-	mode         = MSGFILE_NAME;
+	mode = MSGFILE_NAME;
 
 	while(memfgets(pMemFile, fileSize, &filePos, buf, 512) != NULL)
 	{
@@ -360,7 +362,7 @@ NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize)
 
 			if(IsStartOfText(trim))
 			{
-				mode         = MSGFILE_TEXT;
+				mode = MSGFILE_TEXT;
 				pCurrentText = (char *)(pMemFile + filePos);
 				break;
 			}
@@ -381,7 +383,8 @@ NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize)
 				int length = Q_strlen(currentName);
 				if(lastNamePos + length > sizeof(nameHeap))
 				{
-					Con_DPrintf("Error parsing file!  length > %i bytes\n", sizeof(nameHeap));
+					Con_DPrintf("Error parsing file!  length > %i bytes\n",
+					            sizeof(nameHeap));
 					return;
 				}
 
@@ -389,7 +392,7 @@ NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize)
 
 				pMemFile[lastLinePos - 1] = 0;
 
-				textMessages[messageCount]       = gMessageParms;
+				textMessages[messageCount] = gMessageParms;
 				textMessages[messageCount].pName = nameHeap + lastNamePos;
 				lastNamePos += Q_strlen(currentName) + 1;
 				textMessages[messageCount].pMessage = pCurrentText;
@@ -420,7 +423,8 @@ NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize)
 
 	messageSize = (messageCount * sizeof(client_textmessage_t));
 
-	gMessageTable = (client_textmessage_t *)Mem_Malloc(textHeapSize + nameHeapSize + messageSize);
+	gMessageTable = (client_textmessage_t *)Mem_Malloc(
+	textHeapSize + nameHeapSize + messageSize);
 
 	Q_memcpy(gMessageTable, textMessages, messageSize);
 
@@ -451,7 +455,7 @@ NOXREF void TextMessageShutdown()
 
 NOXREF void TextMessageInit()
 {
-	int            fileSize;
+	int fileSize;
 	unsigned char *pMemFile;
 
 	if(gMessageTable)

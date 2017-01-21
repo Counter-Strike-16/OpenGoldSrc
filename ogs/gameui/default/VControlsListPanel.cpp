@@ -50,10 +50,10 @@ public:
 VControlsListPanel::VControlsListPanel(vgui::Panel *parent, const char *listName)
     : vgui::SectionedListPanel(parent, listName)
 {
-	m_bCaptureMode     = false;
-	m_nClickRow        = 0;
+	m_bCaptureMode = false;
+	m_nClickRow = 0;
 	m_pInlineEditPanel = new CInlineEditPanel();
-	m_hFont            = INVALID_FONT;
+	m_hFont = INVALID_FONT;
 }
 
 VControlsListPanel::~VControlsListPanel(void)

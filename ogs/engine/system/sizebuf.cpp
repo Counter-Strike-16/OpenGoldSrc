@@ -29,13 +29,13 @@
 /// @file
 
 //#include "precompiled.hpp"
-#include "maintypes.h"
 #include "system/sizebuf.hpp"
-#include "system/common.hpp"
-#include "rehlds/common_rehlds.h"
 #include "console/console.hpp"
-#include "system/system.hpp"
+#include "maintypes.h"
 #include "memory/hunk.hpp"
+#include "rehlds/common_rehlds.h"
+#include "system/common.hpp"
+#include "system/system.hpp"
 
 void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize)
 {
@@ -44,10 +44,10 @@ void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize)
 	if(startsize < 256)
 		startsize = 256;
 
-	buf->data    = (byte *)Hunk_AllocName(startsize, name);
+	buf->data = (byte *)Hunk_AllocName(startsize, name);
 	buf->maxsize = startsize;
 	buf->cursize = 0;
-	buf->flags   = SIZEBUF_CHECK_OVERFLOW;
+	buf->flags = SIZEBUF_CHECK_OVERFLOW;
 }
 
 void SZ_Clear(sizebuf_t *buf)
@@ -58,7 +58,7 @@ void SZ_Clear(sizebuf_t *buf)
 
 void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 {
-	void *      data;
+	void *data;
 	const char *buffername = buf->buffername ? buf->buffername : "???";
 
 	if(length < 0)
@@ -70,11 +70,15 @@ void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 		if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
 		{
 			if(!buf->maxsize)
-				Sys_Error("%s: tried to write to an uninitialized sizebuf_t: %s", __FUNCTION__, buffername);
+				Sys_Error("%s: tried to write to an uninitialized sizebuf_t: %s",
+				          __FUNCTION__,
+				          buffername);
 			else if(length > buf->maxsize)
 				Sys_Error("%s: %i is > full buffer size on %s", __FUNCTION__, length, buffername);
 			else
-				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s", __FUNCTION__, buffername);
+				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s",
+				          __FUNCTION__,
+				          buffername);
 		};
 
 		if(length > buf->maxsize)
@@ -84,9 +88,13 @@ void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 		if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
 		{
 			if(!buf->maxsize)
-				Sys_Error("%s: Tried to write to an uninitialized sizebuf_t: %s", __FUNCTION__, buffername);
+				Sys_Error("%s: Tried to write to an uninitialized sizebuf_t: %s",
+				          __FUNCTION__,
+				          buffername);
 			else
-				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s", __FUNCTION__, buffername);
+				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s",
+				          __FUNCTION__,
+				          buffername);
 		};
 
 		if(length > buf->maxsize)
@@ -104,7 +112,7 @@ void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
 		buf->flags |= SIZEBUF_OVERFLOWED;
 	};
 
-	data         = &buf->data[buf->cursize];
+	data = &buf->data[buf->cursize];
 	buf->cursize = length + buf->cursize;
 
 	return data;
@@ -120,7 +128,7 @@ void SZ_Write(sizebuf_t *buf, const void *data, int length)
 
 void SZ_Print(sizebuf_t *buf, const char *data)
 {
-	int   len   = Q_strlen(data) + 1;
+	int len = Q_strlen(data) + 1;
 	byte *pData = (byte *)SZ_GetSpace(buf, len - 1) - 1;
 
 	if(buf->data[buf->cursize - 1])

@@ -28,8 +28,10 @@
 
 /// @file
 
-// Same interface as in Source, used to start the engine as local host (server + client)
-// Older versions of GoldSrc are using C interfaces for these purposes (?) (look at dedicated
+// Same interface as in Source, used to start the engine as local host (server +
+// client)
+// Older versions of GoldSrc are using C interfaces for these purposes (?) (look
+// at dedicated
 // server launcher in 2.3 SDK)
 
 #pragma once
@@ -42,9 +44,9 @@ class CEngineAPI : public IEngineAPI
 public:
 	int Run(void *instance,
 
-	        char *      basedir,
+	        char *basedir,
 	        const char *cmdline,
-	        char *      postRestartCmdLineArgs,
+	        char *postRestartCmdLineArgs,
 
 	        CreateInterfaceFn launcherFactory,
 	        CreateInterfaceFn filesystemFactory);

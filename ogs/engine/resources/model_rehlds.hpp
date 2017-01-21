@@ -36,15 +36,15 @@
 #include "d_local.h"
 #include "modelgen.h"
 
+#include "crc.h"
 #include "quakedef.h"
 #include "spritegn.h"
-#include "crc.h"
 */
 
-#include "maintypes.h"
-#include "rehlds/model.h"
-#include "rehlds/bspfile.h"
 #include "common/crc.h"
+#include "maintypes.h"
+#include "rehlds/bspfile.h"
+#include "rehlds/model.h"
 
 #ifdef HOOK_ENGINE
 #define loadmodel (*ploadmodel)
@@ -59,18 +59,18 @@
 #define mod_known_info (*pmod_known_info)
 #endif
 
-extern model_t *        loadmodel;
-extern char             loadname[32];
-extern model_t          mod_known[MAX_KNOWN_MODELS];
-extern int              mod_numknown;
-extern unsigned char *  mod_base;
-extern char *           wadpath;
-extern int              tested;
-extern int              ad_enabled;
-extern cachewad_t       ad_wad;
+extern model_t *loadmodel;
+extern char loadname[32];
+extern model_t mod_known[MAX_KNOWN_MODELS];
+extern int mod_numknown;
+extern unsigned char *mod_base;
+extern char *wadpath;
+extern int tested;
+extern int ad_enabled;
+extern cachewad_t ad_wad;
 extern mod_known_info_t mod_known_info[MAX_KNOWN_MODELS];
 
-void  SW_Mod_Init(void);
+void SW_Mod_Init(void);
 void *Mod_Extradata(model_t *mod);
 mleaf_t *Mod_PointInLeaf(vec_t *p, model_t *model);
 void Mod_ClearAll(void);
@@ -113,5 +113,5 @@ void *Mod_LoadSpriteFrame(void *pin, mspriteframe_t **ppframe);
 void *Mod_LoadSpriteGroup(void *pin, mspriteframe_t **ppframe);
 void Mod_LoadSpriteModel(model_t *mod, void *buffer);
 NOXREF void Mod_UnloadSpriteTextures(model_t *pModel);
-void        Mod_Print(void);
+void Mod_Print(void);
 NOXREF void Mod_ChangeGame(void);

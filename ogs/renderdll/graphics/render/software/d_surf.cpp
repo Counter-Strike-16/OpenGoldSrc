@@ -26,10 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "d_local.h"
 #include "r_local.h"
 
-float    surfscale;
+float surfscale;
 qboolean r_cache_thrash; // set if surface cache is thrashing
 
-int          sc_size;
+int sc_size;
 surfcache_t *sc_rover, *sc_base;
 
 #define GUARDSIZE 4
@@ -56,7 +56,7 @@ int D_SurfaceCacheForRes(int width, int height)
 void D_CheckCacheGuard(void)
 {
 	byte *s;
-	int   i;
+	int i;
 
 	s = (byte *)sc_base + sc_size;
 	for(i = 0; i < GUARDSIZE; i++)
@@ -67,10 +67,10 @@ void D_CheckCacheGuard(void)
 void D_ClearCacheGuard(void)
 {
 	byte *s;
-	int   i;
+	int i;
 
 	s = (byte *)sc_base + sc_size;
-	for(i    = 0; i < GUARDSIZE; i++)
+	for(i = 0; i < GUARDSIZE; i++)
 		s[i] = (byte)i;
 }
 
@@ -85,13 +85,13 @@ void D_InitCaches(void *buffer, int size)
 	//	if (!msg_suppress_1)
 	//		Con_Printf ("%ik surface cache\n", size/1024);
 
-	sc_size  = size - GUARDSIZE;
-	sc_base  = (surfcache_t *)buffer;
+	sc_size = size - GUARDSIZE;
+	sc_base = (surfcache_t *)buffer;
 	sc_rover = sc_base;
 
-	sc_base->next  = NULL;
+	sc_base->next = NULL;
 	sc_base->owner = NULL;
-	sc_base->size  = sc_size;
+	sc_base->size = sc_size;
 
 	D_ClearCacheGuard();
 }
@@ -114,10 +114,10 @@ void D_FlushCaches(void)
 			*c->owner = NULL;
 	}
 
-	sc_rover       = sc_base;
-	sc_base->next  = NULL;
+	sc_rover = sc_base;
+	sc_base->next = NULL;
 	sc_base->owner = NULL;
-	sc_base->size  = sc_size;
+	sc_base->size = sc_size;
 }
 
 /*
@@ -128,7 +128,7 @@ D_SCAlloc
 surfcache_t *D_SCAlloc(int width, int size)
 {
 	surfcache_t *pnew;
-	qboolean     wrapped_this_time;
+	qboolean wrapped_this_time;
 
 	if((width < 0) || (width > 256))
 		Sys_Error("D_SCAlloc: bad cache width %d\n", width);
@@ -178,13 +178,13 @@ surfcache_t *D_SCAlloc(int width, int size)
 	// create a fragment out of any leftovers
 	if(pnew->size - size > 256)
 	{
-		sc_rover        = (surfcache_t *)((byte *)pnew + size);
-		sc_rover->size  = pnew->size - size;
-		sc_rover->next  = pnew->next;
+		sc_rover = (surfcache_t *)((byte *)pnew + size);
+		sc_rover->size = pnew->size - size;
+		sc_rover->next = pnew->next;
 		sc_rover->width = 0;
 		sc_rover->owner = NULL;
-		pnew->next      = sc_rover;
-		pnew->size      = size;
+		pnew->next = sc_rover;
+		pnew->size = size;
 	}
 	else
 		sc_rover = pnew->next;
@@ -269,7 +269,7 @@ surfcache_t *D_CacheSurface(msurface_t *surface, int miplevel)
 	//
 	// if the surface is animating or flashing, flush the cache
 	//
-	r_drawsurf.texture     = R_TextureAnimation(surface->texinfo->texture);
+	r_drawsurf.texture = R_TextureAnimation(surface->texinfo->texture);
 	r_drawsurf.lightadj[0] = d_lightstylevalue[surface->styles[0]];
 	r_drawsurf.lightadj[1] = d_lightstylevalue[surface->styles[1]];
 	r_drawsurf.lightadj[2] = d_lightstylevalue[surface->styles[2]];
@@ -286,10 +286,10 @@ surfcache_t *D_CacheSurface(msurface_t *surface, int miplevel)
 	//
 	// determine shape of surface
 	//
-	surfscale             = 1.0 / (1 << miplevel);
-	r_drawsurf.surfmip    = miplevel;
-	r_drawsurf.surfwidth  = surface->extents[0] >> miplevel;
-	r_drawsurf.rowbytes   = r_drawsurf.surfwidth;
+	surfscale = 1.0 / (1 << miplevel);
+	r_drawsurf.surfmip = miplevel;
+	r_drawsurf.surfwidth = surface->extents[0] >> miplevel;
+	r_drawsurf.rowbytes = r_drawsurf.surfwidth;
 	r_drawsurf.surfheight = surface->extents[1] >> miplevel;
 
 	//
@@ -300,8 +300,8 @@ surfcache_t *D_CacheSurface(msurface_t *surface, int miplevel)
 		cache = D_SCAlloc(r_drawsurf.surfwidth,
 		                  r_drawsurf.surfwidth * r_drawsurf.surfheight);
 		surface->cachespots[miplevel] = cache;
-		cache->owner                  = &surface->cachespots[miplevel];
-		cache->mipscale               = surfscale;
+		cache->owner = &surface->cachespots[miplevel];
+		cache->mipscale = surfscale;
 	}
 
 	if(surface->dlightframe == r_framecount)
@@ -311,7 +311,7 @@ surfcache_t *D_CacheSurface(msurface_t *surface, int miplevel)
 
 	r_drawsurf.surfdat = (pixel_t *)cache->data;
 
-	cache->texture     = r_drawsurf.texture;
+	cache->texture = r_drawsurf.texture;
 	cache->lightadj[0] = r_drawsurf.lightadj[0];
 	cache->lightadj[1] = r_drawsurf.lightadj[1];
 	cache->lightadj[2] = r_drawsurf.lightadj[2];

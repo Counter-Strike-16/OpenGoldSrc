@@ -26,10 +26,10 @@ public:
 public:
 	virtual int computeVPixelsNeeded(void);
 	virtual int AddItem(vgui::Panel *panel);
-	virtual int          GetItemCount(void);
+	virtual int GetItemCount(void);
 	virtual vgui::Panel *GetItem(int itemIndex);
 	virtual void RemoveItem(int itemIndex);
-	virtual void         DeleteAllItems(void);
+	virtual void DeleteAllItems(void);
 	virtual vgui::Panel *GetCellRenderer(int row);
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
 
@@ -54,8 +54,8 @@ protected:
 
 private:
 	vgui::Dar<DATAITEM *> _dataItems;
-	vgui::ScrollBar *     _vbar;
-	vgui::Panel *         _embedded;
+	vgui::ScrollBar *_vbar;
+	vgui::Panel *_embedded;
 
 	int _tableStartX;
 	int _tableStartY;

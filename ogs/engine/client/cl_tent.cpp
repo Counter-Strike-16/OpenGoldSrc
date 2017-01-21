@@ -35,10 +35,10 @@
 #define MAX_BEAMS 8
 typedef struct
 {
-	int             entity;
+	int entity;
 	struct model_s *model;
-	float           endtime;
-	vec3_t          start, end;
+	float endtime;
+	vec3_t start, end;
 } beam_t;
 
 beam_t cl_beams[MAX_BEAMS];
@@ -46,8 +46,8 @@ beam_t cl_beams[MAX_BEAMS];
 #define MAX_EXPLOSIONS 8
 typedef struct
 {
-	vec3_t   origin;
-	float    start;
+	vec3_t origin;
+	float start;
 	model_t *model;
 } explosion_t;
 
@@ -96,14 +96,14 @@ explosion_t *CL_AllocExplosion()
 			return &cl_explosions[i];
 
 	// find the oldest explosion
-	float time  = cl.time;
-	int   index = 0;
+	float time = cl.time;
+	int index = 0;
 
 	for(i = 0; i < MAX_EXPLOSIONS; i++)
 	{
 		if(cl_explosions[i].start < time)
 		{
-			time  = cl_explosions[i].start;
+			time = cl_explosions[i].start;
 			index = i;
 		};
 	};
@@ -118,10 +118,10 @@ CL_ParseBeam
 */
 void CL_ParseBeam(model_t *m)
 {
-	int     ent;
-	vec3_t  start, end;
+	int ent;
+	vec3_t start, end;
 	beam_t *b;
-	int     i;
+	int i;
 
 	ent = MSG_ReadShort();
 
@@ -137,8 +137,8 @@ void CL_ParseBeam(model_t *m)
 	for(i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
 		if(b->entity == ent)
 		{
-			b->entity  = ent;
-			b->model   = m;
+			b->entity = ent;
+			b->model = m;
 			b->endtime = cl.time + 0.2;
 			VectorCopy(start, b->start);
 			VectorCopy(end, b->end);
@@ -150,8 +150,8 @@ void CL_ParseBeam(model_t *m)
 	{
 		if(!b->model || b->endtime < cl.time)
 		{
-			b->entity  = ent;
-			b->model   = m;
+			b->entity = ent;
+			b->model = m;
 			b->endtime = cl.time + 0.2;
 			VectorCopy(start, b->start);
 			VectorCopy(end, b->end);
@@ -162,73 +162,70 @@ void CL_ParseBeam(model_t *m)
 }
 
 /*
-=================
-CL_ParseTEnt
-=================
+==============
+CL_ParseTempEntity
+
+handle temp entity messages
+==============
 */
-
-// clang-format off
-
 void CL_ParseTempEntity()
 {
-	byte nEntType = MSG_ReadByte();
+	int nEntType = MSG_ReadByte();
 
 	vec3_t vStartPos = vec3_origin;
-	vec3_t vEndPos   = vec3_origin;
+	vec3_t vEndPos = vec3_origin;
 
 	switch(nEntType)
 	{
 	case TE_BEAMPOINTS:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		for(int i      = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
 
 		short nSprIndex = MSG_ReadShort();
 
-		byte nStartFrame = MSG_ReadByte();
-		byte nFrameRate  = MSG_ReadByte();
-		byte nLifeTime   = MSG_ReadByte();
-		byte nLineWidth  = MSG_ReadByte();
-		byte nNoise      = MSG_ReadByte();
+		int nStartFrame = MSG_ReadByte();
+		int nFrameRate = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
+		int nLineWidth = MSG_ReadByte();
+		int nNoise = MSG_ReadByte();
 
-		byte nColor[3] = {0};
-		for(int i     = 0; i < 3; ++i)
+		int nColor[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			nColor[i] = MSG_ReadByte();
 
-		byte nBrightness  = MSG_ReadByte();
-		byte nScrollSpeed = MSG_ReadByte();
+		int nBrightness = MSG_ReadByte();
+		int nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_BEAMENTPOINT:
 		short nStartEnt = MSG_ReadShort();
 
-		for(int i      = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
 
 		short nSprIndex = MSG_ReadShort();
 
-		byte nStartFrame = MSG_ReadByte();
-		byte nFrameRate  = MSG_ReadByte();
-		byte nLifeTime   = MSG_ReadByte();
-		byte nLineWidth  = MSG_ReadByte();
-		byte nNoise      = MSG_ReadByte();
+		int nStartFrame = MSG_ReadByte();
+		int nFrameRate = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
+		int nLineWidth = MSG_ReadByte();
+		int nNoise = MSG_ReadByte();
 
-		byte nColor[3] = {0};
-		for(int i     = 0; i < 3; ++i)
+		int nColor[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			nColor[i] = MSG_ReadByte();
 
-		byte nBrightness  = MSG_ReadByte();
-		byte nScrollSpeed = MSG_ReadByte();
+		int nBrightness = MSG_ReadByte();
+		int nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_GUNSHOT: // bullet hitting wall
-		//cnt = MSG_ReadByte();
-		
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
-		
+
 		CL_RicochetSound(vStartPos);
-		R_RunParticleEffect(vStartPos, vec3_origin, 0, 20 /* * cnt */);
+		R_RunParticleEffect(vStartPos, vec3_origin, 0, 20);
 		break;
 	case TE_EXPLOSION: // rocket explosion particles
 		for(int i = 0; i < 3; ++i)
@@ -236,300 +233,286 @@ void CL_ParseTempEntity()
 
 		short nSprIndex = MSG_ReadShort();
 
-		byte nScale     = MSG_ReadByte();
-		byte nFrameRate = MSG_ReadByte();
-		byte nFlags     = MSG_ReadByte();
-		
+		int nScale = MSG_ReadByte(); // (float)(BF_ReadByte( &buf ) * 0.1f);
+		int nFrameRate = MSG_ReadByte();
+		int nFlags = MSG_ReadByte();
+
 		CL_Explosion(vStartPos, nSprIndex, nScale, nFrameRate, nFlags);
 		break;
 	case TE_TAREXPLOSION: // tarbaby explosion
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
-		
-		R_BlobExplosion(vStartPos);
+
+		R_BlobExplosion(vStartPos); // CL_
 
 		S_StartSound(-1, 0, cl_sfx_r_exp3, vStartPos, 1, 1);
 		break;
 	case TE_SMOKE:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
 		short nSprIndex = MSG_ReadShort();
 
-		byte nScale     = MSG_ReadByte();
-		byte nFrameRate = MSG_ReadByte();
+		int nScale = MSG_ReadByte();
+		int nFrameRate = MSG_ReadByte();
 		break;
 	case TE_TRACER:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		for(int i      = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
-		
+
 		CL_TracerEffect(vStartPos, vEndPos);
 		break;
 	case TE_LIGHTNING:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		for(int i      = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
 
-		byte nLifeTime  = MSG_ReadByte();
-		byte nWidth     = MSG_ReadByte();
-		byte nAmplitude = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
+		int nWidth = MSG_ReadByte();
+		int nAmplitude = MSG_ReadByte();
 
 		short nModelIndex = MSG_ReadShort();
 		break;
 	case TE_BEAMENTS:
 		short nStartEnt = MSG_ReadShort();
-		short nEndEnt   = MSG_ReadShort();
+		short nEndEnt = MSG_ReadShort();
 		short nSprIndex = MSG_ReadShort();
 
-		byte nStartFrame = MSG_ReadByte();
-		byte nFrameRate  = MSG_ReadByte();
-		byte nLifeTime   = MSG_ReadByte();
-		byte nLineWidth  = MSG_ReadByte();
-		byte nNoiseAmpl  = MSG_ReadByte();
+		int nStartFrame = MSG_ReadByte();
+		int nFrameRate = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
+		int nLineWidth = MSG_ReadByte();
+		int nNoiseAmpl = MSG_ReadByte();
 
-		byte nColor[3] = {0};
-		for(int i     = 0; i < 3; ++i)
+		int nColor[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			nColor[i] = MSG_ReadByte();
 
-		byte nBrightness  = MSG_ReadByte();
-		byte nScrollSpeed = MSG_ReadByte();
+		int nBrightness = MSG_ReadByte();
+		int nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_SPARKS:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
-		
+
 		CL_SparkShower(vStartPos);
 		break;
 	case TE_LAVASPLASH:
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
-		
+
 		R_LavaSplash(vStartPos); // CL_
 		break;
 	case TE_TELEPORT:
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
-		
+
 		R_TeleportSplash(vStartPos); // CL_
 		break;
 	case TE_EXPLOSION2:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		byte nStartColor = MSG_ReadByte();
-		byte nColorCount = MSG_ReadByte();
-		
-		CL_ParticleExplosion2( pos, color, count );
+		int nStartColor = MSG_ReadByte();
+		int nColorCount = MSG_ReadByte();
+
+		CL_ParticleExplosion2(pos, color, count);
 		break;
 	case TE_BSPDECAL:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		short nTextureIndex  = MSG_ReadShort();
-		short nEntIndex      = MSG_ReadShort();
+		short nTextureIndex = MSG_ReadShort();
+		short nEntIndex = MSG_ReadShort();
 		short nEntModelIndex = 0;
 
 		if(nEntIndex)
 			nEntModelIndex = MSG_ReadShort();
-		
-		CL_DecalShoot( CL_DecalIndex( decalIndex ), entityIndex, modelIndex, pos, FDECAL_PERMANENT );
+
+		CL_DecalShoot(CL_DecalIndex(decalIndex), entityIndex, modelIndex, pos, FDECAL_PERMANENT);
 		break;
 	case TE_IMPLOSION:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		byte nRadius   = MSG_ReadByte();
-		byte nCount    = MSG_ReadByte();
-		byte nLifeTime = MSG_ReadByte();
+		int nRadius = MSG_ReadByte();
+		int nCount = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
 		break;
 	case TE_SPRITETRAIL:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		for(int i      = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
 
 		short nSprIndex = MSG_ReadShort();
 
-		byte nCount      = MSG_ReadByte();
-		byte nLifeTime   = MSG_ReadByte();
-		byte nScale      = MSG_ReadByte();
-		byte nVelocity   = MSG_ReadByte();
-		byte nRandomness = MSG_ReadByte();
-		
-		CL_Sprite_Trail( type, pos, pos2, modelIndex, count, life, scale, random, 255, vel );
+		int nCount = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
+		int nScale = MSG_ReadByte();
+		int nVelocity = MSG_ReadByte();
+		int nRandomness = MSG_ReadByte();
+
+		CL_Sprite_Trail(type, pos, pos2, modelIndex, count, life, scale, random, 255, vel);
 		break;
 	case TE_BEAM:
 		// obsolete, unused
 		break;
 	case TE_SPRITE:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
 		short nSprIndex = MSG_ReadShort();
 
-		byte nScale      = MSG_ReadByte();
-		byte nBrightness = MSG_ReadByte();
+		int nScale = MSG_ReadByte();
+		int nBrightness = MSG_ReadByte();
 		break;
 	case TE_BEAMSPRITE:
-		for(int i        = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		for(int i      = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
 
 		short nStartSprIndex = MSG_ReadShort();
-		short nEndSprIndex   = MSG_ReadShort();
+		short nEndSprIndex = MSG_ReadShort();
 		break;
 	case TE_BEAMTORUS:
-		coord coord coord(center position)
-		    coord coord coord(axis and radius)
-
-		        short nSprIndex = MSG_ReadShort();
-
-		byte nStartFrame = MSG_ReadByte();
-		byte nFrameRate  = MSG_ReadByte();
-		byte nLifeTime   = MSG_ReadByte();
-		byte nLineWidth  = MSG_ReadByte();
-		byte nNoiseAmpl  = MSG_ReadByte();
-
-		byte nColor[3] = {0};
-		for(int i     = 0; i < 3; ++i)
-			nColor[i] = MSG_ReadByte();
-
-		byte nBrightness  = MSG_ReadByte();
-		byte nScrollSpeed = MSG_ReadByte();
-		break;
 	case TE_BEAMDISK:
-		coord coord coord(center position)
-		    coord coord coord(axis and radius)
-
-		        short nSprIndex = MSG_ReadShort();
-
-		byte nStartingFrame = MSG_ReadByte();
-		byte nFrameRate     = MSG_ReadByte();
-		byte nLifeTime      = MSG_ReadByte();
-		byte nLineWidth     = MSG_ReadByte();
-		byte nNoiseAmpl     = MSG_ReadByte();
-
-		byte nColor[3] = {0};
-		for(int i     = 0; i < 3; ++i)
-			nColor[i] = MSG_ReadByte();
-
-		byte nBrightness  = MSG_ReadByte();
-		byte nScrollSpeed = MSG_ReadByte();
-		break;
 	case TE_BEAMCYLINDER:
-		coord coord coord(center position)
-		    coord coord coord(axis and radius)
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		
+		coord coord coord(axis and radius)
 
-		        short nSprIndex = MSG_ReadShort();
+		short nSprIndex = MSG_ReadShort();
 
-		byte nStartFrame = MSG_ReadByte();
-		byte nFrameTate  = MSG_ReadByte();
-		byte nLifeTime   = MSG_ReadByte();
-		byte nLineWidth  = MSG_ReadByte();
-		byte nNoiseAmpl  = MSG_ReadByte();
+		int nStartFrame = MSG_ReadByte();
+		int nFrameRate = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
+		int nLineWidth = MSG_ReadByte();
+		int nNoiseAmpl = MSG_ReadByte();
 
-		byte, byte, byte(color)
-
-		                byte nBrightness  = MSG_ReadByte();
-		byte                 nScrollSpeed = MSG_ReadByte();
+		int nColor[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
+		
+		int nBrightness = MSG_ReadByte();
+		int nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_BEAMFOLLOW:
-		short(entity
-		      : attachment to follow) short nSprIndex = MSG_ReadShort();
+		short nEntAttachment = MSG_ReadShort();
+		short nSprIndex = MSG_ReadShort();
 
-		byte nLifeTime  = MSG_ReadByte();
-		byte nLineWidth = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
+		int nLineWidth = MSG_ReadByte();
 
-		byte, byte, byte(color)
-
-		                byte nBrightness = MSG_ReadByte();
+		int nColor[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
+		
+		int nBrightness = MSG_ReadByte();
 		break;
 	case TE_GLOWSPRITE:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
 		short nModelIndex = MSG_ReadShort();
 
-		byte(scale / 10) = MSG_ReadByte();
+		int nLifeTime = (float)(MSG_ReadByte() * 0.1f);
+		int nScale = (float)(MSG_ReadByte() * 0.1f);
+		int nAlpha = (float)MSG_ReadByte();
+		
+		if(( pTemp = CL_DefaultSprite( pos, modelIndex, 0 )) != NULL )
+		{
+			pTemp->entity.curstate.scale = scale;
+			pTemp->entity.curstate.rendermode = kRenderGlow;
+			pTemp->entity.curstate.renderfx = kRenderFxNoDissipation;
+			pTemp->entity.baseline.renderamt = brightness;
+			pTemp->entity.curstate.renderamt = brightness;
+			pTemp->flags = FTENT_FADEOUT;
+			pTemp->die = cl.time + life;
+		};
 		break;
 	case TE_BEAMRING:
 		short nStartEnt = MSG_ReadShort();
-		short nEndEnt   = MSG_ReadShort();
+		short nEndEnt = MSG_ReadShort();
 		short nSprIndex = MSG_ReadShort();
 
-		byte nStartFrame = MSG_ReadByte();
-		byte nFrameRate  = MSG_ReadByte();
-		byte nLifeTime   = MSG_ReadByte();
-		byte nLineWidth  = MSG_ReadByte();
-		byte nNoiseAmpl  = MSG_ReadByte();
-		
-		byte nColor[3] = {0};
+		int nStartFrame = MSG_ReadByte();
+		int nFrameRate = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
+		int nLineWidth = MSG_ReadByte();
+		int nNoiseAmpl = MSG_ReadByte();
+
+		int nColor[3] = { 0 };
 		for(int i = 0; i < 3; ++i)
 			nColor[i] = MSG_ReadByte();
-		
-		byte nBrightness  = MSG_ReadByte();
-		byte nScrollSpeed = MSG_ReadByte();
+
+		int nBrightness = MSG_ReadByte();
+		int nScrollSpeed = MSG_ReadByte();
 		break;
 	case TE_STREAK_SPLASH:
-		coord coord coord(start position)
-		    coord coord
-		    coord(direction vector)
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
+		
+		coord coord coord(direction vector)
 
-		        byte nColor = MSG_ReadByte();
+		int nColor = MSG_ReadByte();
 
-		short nCount     = MSG_ReadShort();
+		short nCount = MSG_ReadShort();
 		short nBaseSpeed = MSG_ReadShort();
-		short nVelocity  = MSG_ReadShort();
+		short nVelocity = MSG_ReadShort();
+		
+		CL_StreakSplash( pos, pos2, color, count, vel, -random, random );
 		break;
 	case TE_BEAMHOSE:
 		// obsolete, unused
 		break;
 	case TE_DLIGHT:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		byte nRadius = MSG_ReadByte();
-		
-		byte nColor[3] = {0};
+		int nRadius = MSG_ReadByte();
+
+		int nColor[3] = { 0 };
 		for(int i = 0; i < 3; ++i)
 			nColor[i] = MSG_ReadByte();
 
-		byte nBrightness = MSG_ReadByte();
-		byte nLifeTime   = MSG_ReadByte();
-		byte nDecayRate  = MSG_ReadByte();
+		int nBrightness = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
+		int nDecayRate = MSG_ReadByte();
 		break;
 	case TE_ELIGHT:
 		short(entity
 		      : attachment to follow)
 
-		    float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
 		float fRadius = MSG_ReadCoord();
 
-		byte nColor[3] = {0};
+		int nColor[3] = { 0 };
 		for(int i = 0; i < 3; ++i)
 			nColor[i] = MSG_ReadByte();
-		
-		byte nLifeTime = MSG_ReadByte();
+
+		int nLifeTime = MSG_ReadByte();
 
 		coord(decay rate) = MSG_ReadCoord();
 		break;
 	case TE_TEXTMESSAGE:
 		short 1.2.13 x(-1 = center) short 1.2.13 y(-1 = center)
 
-		    byte nEffect = MSG_ReadByte();
+		int nEffect = MSG_ReadByte();
 		// 0 = fade in/fade out
 		// 1 is flickery credits
 		// 2 is write out (training room)
@@ -537,49 +520,66 @@ void CL_ParseTempEntity()
 		// 4 bytes r,g,b,a color2	(effect color)
 
 		ushort nFadeInTime
-		    ushort nFadeOutTime
-		        ushort nHoldTime
+		ushort nFadeOutTime
+		ushort nHoldTime
 
-		            optional ushort
-		            nFXTime(time the highlight lags behing the leading text in effect 2)
+		optional ushort
+		nFXTime(time the highlight lags behing the leading text in effect 2)
 
-		                string text message(512 chars max sz string) break;
+		string text message(512 chars max sz string) break;
 	case TE_LINE:
-		coord, coord, coord startpos
-		                  coord,
-		    coord, coord endpos
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
 
-		    short nLifeTime = MSG_ReadShort();
+		for(int i = 0; i < 3; ++i)
+			vEndPos[i] = MSG_ReadCoord();
 
-		3 bytes r, g, b break;
+		short nLifeTime = MSG_ReadShort();
+
+		int nColor[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
+		
+		break;
 	case TE_BOX:
-		coord, coord, coord boxmins
-		                  coord,
-		    coord, coord boxmaxs
+		float fBoxMins[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			fBoxMins[i] = MSG_ReadCoord();
 
-		    short nLifeTime = MSG_ReadShort();
+		float fBoxMaxs[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			fBoxMaxs[i] = MSG_ReadCoord();
 
-		3 bytes r, g, b break;
+		short nLifeTime = MSG_ReadShort();
+
+		int nColor[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			nColor[i] = MSG_ReadByte();
+		
+		break;
 	case TE_KILLBEAM:
 		short nEnt = MSG_ReadShort();
 		break;
 	case TE_LARGEFUNNEL:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
 		short nSprIndex = MSG_ReadShort();
-		short nFlags    = MSG_ReadShort();
-		
+		short nFlags = MSG_ReadShort();
+
 		CL_FunnelSprite(pos, modelIndex, flags);
 		break;
 	case TE_BLOODSTREAM:
-		coord coord coord(start position)
-		    coord coord
-		    coord(spray vector)
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
 
-		        byte nColor = MSG_ReadByte();
-		byte         nSpeed = MSG_ReadByte();
+		vec3_t vSpray[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			vSpray[i] = MSG_ReadCoord();
+
+		int nColor = MSG_ReadByte();
+		int nSpeed = MSG_ReadByte();
 		break;
 	case TE_SHOWLINE:
 		for(int i = 0; i < 3; ++i)
@@ -587,287 +587,295 @@ void CL_ParseTempEntity()
 
 		for(int i = 0; i < 3; ++i)
 			vEndPos[i] = MSG_ReadCoord();
-		
-		CL_ShowLine( pos, pos2 );
+
+		CL_ShowLine(pos, pos2);
 		break;
 	case TE_BLOOD: // // bullets hitting body
-		coord coord coord(start position)
-		    coord coord
-		    coord(spray vector)
+		for(int i = 0; i < 3; ++i)
+			vStartPos[i] = MSG_ReadCoord();
 
-		        byte nColor = MSG_ReadByte();
-		byte         nSpeed = MSG_ReadByte();
-		
+		vec3_t vSpray[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			vSpray[i] = MSG_ReadCoord();
+
+		int nColor = MSG_ReadByte();
+		int nSpeed = MSG_ReadByte();
+
 		//
-		
-		cnt    = MSG_ReadByte();
+
+		cnt = MSG_ReadByte();
 		pos[0] = MSG_ReadCoord();
 		pos[1] = MSG_ReadCoord();
 		pos[2] = MSG_ReadCoord();
-		
+
 		R_RunParticleEffect(vStartPos, vec3_origin, 73, 20 * cnt);
 		break;
 	case TE_DECAL:
 		coord, coord, coord(x, y, z), decal position(center of texture in world)
 
-		                                  byte(texture index of precached decal texture name)
+		                              byte(texture index of precached decal texture name)
 
-		                                      short nEntIndex = MSG_ReadShort();
+		                              short nEntIndex = MSG_ReadShort();
 		break;
 	case TE_FIZZ:
 		short nEntityIndex = MSG_ReadShort();
 		short nSprIndex = MSG_ReadShort();
 
-		byte nDensity = MSG_ReadByte();
-		
-		pEnt = CL_GetEntityByIndex( entityIndex );
-		CL_FizzEffect( pEnt, modelIndex, scale );
+		int nDensity = MSG_ReadByte();
+
+		pEnt = CL_GetEntityByIndex(entityIndex);
+		CL_FizzEffect(pEnt, modelIndex, scale);
 		break;
 	case TE_MODEL:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		float fVelocity[3] = {0};
-		for(int i        = 0; i < 3; ++i)
+		float fVelocity[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fVelocity[i] = MSG_ReadCoord();
 
 		angle(initial yaw)
 
-		    short nModelIndex = MSG_ReadShort();
+		short nModelIndex = MSG_ReadShort();
 
-		byte(bounce sound type)     = MSG_ReadByte();
-		byte              nLifeTime = MSG_ReadByte();
+		int (bounce sound type) = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte();
 		break;
 	case TE_EXPLODEMODEL:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
 		float fVelocity = MSG_ReadCoord();
 
 		short nModelIndex = MSG_ReadShort();
-		short nCount      = MSG_ReadShort();
+		short nCount = MSG_ReadShort();
 
-		byte nLifeTime = MSG_ReadByte();
-		
-		CL_TempSphereModel( pos, vel, life, count, modelIndex );
+		int nLifeTime = MSG_ReadByte(); // (float)(BF_ReadByte( &buf ) * 0.1f);
+
+		CL_TempSphereModel(pos, vel, life, count, modelIndex);
 		break;
 	case TE_BREAKMODEL:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		float fSize[3] = {0};
-		for(int i    = 0; i < 3; ++i)
+		float fSize[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fSize[i] = MSG_ReadCoord();
 
-		float fVelocity[3] = {0};
-		for(int i        = 0; i < 3; ++i)
+		float fVelocity[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fVelocity[i] = MSG_ReadCoord();
 
-		byte nVelocity = MSG_ReadByte();
+		int nVelocity = MSG_ReadByte(); // (float)BF_ReadByte( &buf );
 
 		short nModelIndex = MSG_ReadShort();
 
-		byte nCount    = MSG_ReadByte();
-		byte nLifeTime = MSG_ReadByte();
-		byte nFlags    = MSG_ReadByte();
-		
-		CL_BreakModel( pos, pos2, ang, random, life, count, modelIndex, (char)flags );
+		int nCount = MSG_ReadByte();
+		int nLifeTime = MSG_ReadByte(); // (float)(BF_ReadByte( &buf ) * 0.1f);
+		int nFlags = MSG_ReadByte();
+
+		CL_BreakModel(pos, pos2, ang, random, life, count, modelIndex, (char)flags);
 		break;
 	case TE_GUNSHOTDECAL:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
 		short nEntIndex = MSG_ReadShort();
 
-		byte (decal???) = MSG_ReadByte();
+		int (decal???) = MSG_ReadByte();
 		break;
 	case TE_SPRITE_SPRAY:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		float fVelocity[3] = {0};
-		for(int i        = 0; i < 3; ++i)
+		float fVelocity[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fVelocity[i] = MSG_ReadCoord();
 
 		short nSprIndex = MSG_ReadShort();
 
-		byte nCount = MSG_ReadByte();
-		byte nSpeed = MSG_ReadByte();
-		byte nNoise = MSG_ReadByte();
+		int nCount = MSG_ReadByte();
+		int nSpeed = MSG_ReadByte();
+		int nNoise = MSG_ReadByte();
 		break;
 	case TE_ARMOR_RICOCHET:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		byte nScale = MSG_ReadByte();
+		int nScale = MSG_ReadByte(); // (float)(BF_ReadByte( &buf ) * 0.1f);
+
+		modelIndex = CL_FindModelIndex("sprites/richo1.spr");
 		
-		modelIndex = CL_FindModelIndex( "sprites/richo1.spr" );
-		CL_RicochetSprite( pos, Mod_Handle( modelIndex ), 0.0f, scale );
-		CL_RicochetSound( pos );
+		CL_RicochetSprite(pos, Mod_Handle(modelIndex), 0.0f, scale);
+		CL_RicochetSound(pos);
 		break;
 	case TE_PLAYERDECAL:
-		byte nPlayerIndex = MSG_ReadByte();
+		int nPlayerIndex = MSG_ReadByte();
 
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		short (entity???) = MSG_ReadShort();
+		short nEntIndex = MSG_ReadShort();
 
-		byte nDecalNum = MSG_ReadByte();
+		int nDecalNum = MSG_ReadByte();
 
 		[optional] short (model index???)
+		
+		CL_PlayerDecal( CL_DecalIndex( decalIndex ), entityIndex, pos );
 		break;
 	case TE_BUBBLES:
-		float fMinPos[3] = {0};
-		for(int i      = 0; i < 3; ++i)
+		float fMinPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fMinPos[i] = MSG_ReadCoord();
 
-		float fMaxPos[3] = {0};
-		for(int i      = 0; i < 3; ++i)
+		float fMaxPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fMaxPos[i] = MSG_ReadCoord();
 
 		float fHeight = MSG_ReadCoord();
 
 		short nModelIndex = MSG_ReadShort();
 
-		byte nCount = MSG_ReadByte();
+		int nCount = MSG_ReadByte();
 
 		float fSpeed = MSG_ReadCoord();
 		break;
 	case TE_BUBBLETRAIL:
-		float fMinPos[3] = {0};
-		for(int i      = 0; i < 3; ++i)
+		float fMinPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fMinPos[i] = MSG_ReadCoord();
 
-		float fMaxPos[3] = {0};
-		for(int i      = 0; i < 3; ++i)
+		float fMaxPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fMaxPos[i] = MSG_ReadCoord();
 
 		float fHeight = MSG_ReadCoord();
 
 		short nModelIndex = MSG_ReadShort();
 
-		byte nCount = MSG_ReadByte();
+		int nCount = MSG_ReadByte();
 
 		float fSpeed = MSG_ReadCoord();
 		break;
 	case TE_BLOODSPRITE:
-		float fPosition[3] = {0};
-		for(int i        = 0; i < 3; ++i)
+		float fPosition[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPosition[i] = MSG_ReadCoord();
 
 		short nSpr1Index = MSG_ReadShort();
 		short nSpr2Index = MSG_ReadShort();
 
-		byte nColor = MSG_ReadByte();
-		byte nScale = MSG_ReadByte();
-		
+		int nColor = MSG_ReadByte();
+		int nScale = MSG_ReadByte(); // (float)BF_ReadByte( &buf );
+
 		CL_BloodSprite(pos, color, nSpr1Index, nSpr2Index, scale);
 		break;
 	case TE_WORLDDECAL:
-		coord, coord, coord(x, y, z), decal position(center of texture in world)
-
-		                                  byte nTextureIndex = MSG_ReadByte();
+		coord, coord, coord(x, y, z),
+		decal position(center of texture in world)
+		
+		int nTextureIndex = MSG_ReadByte();
 		break;
 	case TE_WORLDDECALHIGH:
 		coord, coord, coord(x, y, z), decal position(center of texture in world)
 
-		                                  byte(texture index of precached decal texture name - 256) break;
+		                              byte(texture index of precached decal texture name - 256) break;
 	case TE_DECALHIGH:
 		coord, coord, coord(x, y, z), decal position(center of texture in world)
 
-		                                  byte nTextureIndex = MSG_ReadByte();
+		                              byte nTextureIndex = MSG_ReadByte();
 
 		short nEntIndex = MSG_ReadShort();
 		break;
 	case TE_PROJECTILE:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		float fVelocity[3] = {0};
-		for(int i        = 0; i < 3; ++i)
+		float fVelocity[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fVelocity[i] = MSG_ReadCoord();
 
 		short nModelIndex = MSG_ReadShort();
 
-		byte nLife  = MSG_ReadByte();
-		byte nOwner = MSG_ReadByte();
-		
+		int nLifeTime = MSG_ReadByte(); // (float)(BF_ReadByte( &buf ) * 0.1f);
+		int nOwner = MSG_ReadByte();
+
 		CL_Projectile(fPos, fVelocity, modelIndex, life, nOwner, NULL);
 		break;
 	case TE_SPRAY:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		float fDir[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		float fDir[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fDir[i] = MSG_ReadCoord();
 
 		short nModelIndex = MSG_ReadShort();
 
-		byte nCount      = MSG_ReadByte();
-		byte nSpeed      = MSG_ReadByte();
-		byte nNoise      = MSG_ReadByte();
-		byte nRenderMode = MSG_ReadByte();
+		int nCount = MSG_ReadByte();
+		int nSpeed = MSG_ReadByte();
+		int nNoise = MSG_ReadByte();
+		int nRenderMode = MSG_ReadByte();
 		break;
 	case TE_PLAYERSPRITES:
-		byte nPlayerNum = MSG_ReadByte();
+		int nPlayerNum = MSG_ReadByte();
 
 		short nSprModelIndex = MSG_ReadShort();
 
-		byte nCount = MSG_ReadByte();
-		byte nVariance = MSG_ReadByte();
-		
+		int nCount = MSG_ReadByte();
+		int nVariance = MSG_ReadByte(); // (float)BF_ReadByte( &buf );
+
 		CL_PlayerSprites(nPlayerNum, nSprModelIndex, nCount, nVariance);
 		break;
 	case TE_PARTICLEBURST:
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		short nRadius = MSG_ReadShort();
+		short nRadius = MSG_ReadShort(); // (float)BF_ReadShort( &buf );
 
-		byte nParticleColor = MSG_ReadByte();
-		byte nDuration      = MSG_ReadByte();
-		
-		CL_ParticleBurst( pos, scale, color, life );
+		int nParticleColor = MSG_ReadByte();
+		int nDuration = MSG_ReadByte(); // (float)(BF_ReadByte( &buf ) * 0.1f);
+
+		CL_ParticleBurst(pos, scale, color, life);
 		break;
 	case TE_FIREFIELD:
 		for(int i = 0; i < 3; ++i)
 			vStartPos[i] = MSG_ReadCoord();
 
-		short nRadius     = MSG_ReadShort();
+		short nRadius = MSG_ReadShort(); // (float)BF_ReadShort( &buf );
 		short nModelIndex = MSG_ReadShort();
 
-		byte nCount    = MSG_ReadByte();
-		byte nFlags    = MSG_ReadByte();
-		byte nDuration = MSG_ReadByte();
-		
-		CL_FireField( pos, scale, modelIndex, count, flags, life );
+		int nCount = MSG_ReadByte();
+		int nFlags = MSG_ReadByte();
+		int nDuration = MSG_ReadByte(); // (float)(BF_ReadByte( &buf ) * 0.1f);
+
+		CL_FireField(pos, scale, modelIndex, count, flags, life);
 		break;
 	case TE_PLAYERATTACHMENT:
-		byte nPlayerEntIndex = MSG_ReadByte();
+		int nPlayerEntIndex = MSG_ReadByte();
 
 		float fVerticalOffset = MSG_ReadCoord();
 
 		short nModelIndex = MSG_ReadShort();
-		short nLifeTime   = MSG_ReadShort();
-		
-		CL_AttachTentToPlayer( color, modelIndex, fVerticalOffset, life );
+		short nLifeTime = MSG_ReadShort(); // (float)(BF_ReadShort( &buf ) * 0.1f);
+
+		CL_AttachTentToPlayer(color, modelIndex, fVerticalOffset, life);
 		break;
 	case TE_KILLPLAYERATTACHMENTS:
-		byte nPlayerEntIndex = MSG_ReadByte();
+		int nPlayerEntIndex = MSG_ReadByte();
 		CL_KillAttachedTents(nPlayerEntIndex);
 		break;
 	case TE_MULTIGUNSHOT:
+		//
 		// This message is used to make a client approximate a 'spray' of gunfire.
 		// Any weapon that fires more than one bullet per frame and fires in a bit of a spread is
 		// a good candidate for MULTIGUNSHOT use. (shotguns)
@@ -875,30 +883,36 @@ void CL_ParseTempEntity()
 		// NOTE: This effect makes the client do traces for each bullet, these client traces ignore
 		//		 entities that have studio models.Traces are 4096 long.
 		//
-		// coord (origin)
-		// coord (origin)
-		// coord (origin)
-		// coord (direction)
-		// coord (direction)
-		// coord (direction)
-		// coord (x noise * 100)
-		// coord (y noise * 100)
-		// byte (count)
-		// byte (bullethole decal texture index)
-		break;
-	case TE_USERTRACER:
-		float fPos[3] = {0};
-		for(int i   = 0; i < 3; ++i)
+		
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fPos[i] = MSG_ReadCoord();
 
-		float fVelocity[3] = {0};
-		for(int i        = 0; i < 3; ++i)
+		float fDir[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			fDir[i] = MSG_ReadCoord();
+		
+		// coord (x noise * 100)
+		// coord (y noise * 100)
+		
+		int nCount = MSG_ReadByte();
+		int nDecalIndex = MSG_ReadByte();
+		
+		CL_MultiGunshot( pos, pos2, ang, count, 1, decalIndices );
+		break;
+	case TE_USERTRACER:
+		float fPos[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
+			fPos[i] = MSG_ReadCoord();
+
+		float fVelocity[3] = { 0 };
+		for(int i = 0; i < 3; ++i)
 			fVelocity[i] = MSG_ReadCoord();
 
-		byte nLifeTime   = MSG_ReadByte();
-		byte nColorIndex = MSG_ReadByte();
-		byte nLength     = MSG_ReadByte();
-		
+		int nLifeTime = MSG_ReadByte(); // (float)(BF_ReadByte( &buf ) * 0.1f);
+		int nColorIndex = MSG_ReadByte();
+		int nLength = MSG_ReadByte(); // (float)(BF_ReadByte( &buf ) * 0.1f);
+
 		CL_UserTracerParticle(pos, pos2, life, color, scale, 0, NULL);
 		break;
 	default:
@@ -907,123 +921,85 @@ void CL_ParseTempEntity()
 	};
 };
 
-// clang-format on
-
 /*
 void CL_ParseTEnt()
 {
-	int          type;
-	vec3_t       pos;
-	dlight_t *   dl;
-	int          rnd;
-	explosion_t *ex;
-	int          cnt;
+        vec3_t       pos;
+        dlight_t *   dl;
+        int          rnd;
+        explosion_t *ex;
+        int          cnt;
 
-	type = MSG_ReadByte();
-	switch(type)
-	{
-	case TE_WIZSPIKE: // spike hitting wall
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_RunParticleEffect(pos, vec3_origin, 20, 30);
-		S_StartSound(-1, 0, cl_sfx_wizhit, pos, 1, 1);
-		break;
+        switch(type)
+        {
 
-	case TE_KNIGHTSPIKE: // spike hitting wall
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_RunParticleEffect(pos, vec3_origin, 226, 20);
-		S_StartSound(-1, 0, cl_sfx_knighthit, pos, 1, 1);
-		break;
+        case TE_SPIKE: // spike hitting wall
+                pos[0] = MSG_ReadCoord();
+                pos[1] = MSG_ReadCoord();
+                pos[2] = MSG_ReadCoord();
+                R_RunParticleEffect(pos, vec3_origin, 0, 10);
 
-	case TE_SPIKE: // spike hitting wall
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_RunParticleEffect(pos, vec3_origin, 0, 10);
+                if(rand() % 5)
+                        S_StartSound(-1, 0, cl_sfx_tink1, pos, 1, 1);
+                else
+                {
+                        rnd = rand() & 3;
+                        if(rnd == 1)
+                                S_StartSound(-1, 0, cl_sfx_ric1, pos, 1, 1);
+                        else if(rnd == 2)
+                                S_StartSound(-1, 0, cl_sfx_ric2, pos, 1, 1);
+                        else
+                                S_StartSound(-1, 0, cl_sfx_ric3, pos, 1, 1);
+                }
+                break;
 
-		if(rand() % 5)
-			S_StartSound(-1, 0, cl_sfx_tink1, pos, 1, 1);
-		else
-		{
-			rnd = rand() & 3;
-			if(rnd == 1)
-				S_StartSound(-1, 0, cl_sfx_ric1, pos, 1, 1);
-			else if(rnd == 2)
-				S_StartSound(-1, 0, cl_sfx_ric2, pos, 1, 1);
-			else
-				S_StartSound(-1, 0, cl_sfx_ric3, pos, 1, 1);
-		}
-		break;
-	case TE_SUPERSPIKE: // super spike hitting wall
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_RunParticleEffect(pos, vec3_origin, 0, 20);
+        case TE_EXPLOSION:
+                               //
+                pos[0] = MSG_ReadCoord();
+                pos[1] = MSG_ReadCoord();
+                pos[2] = MSG_ReadCoord();
+                R_ParticleExplosion(pos);
 
-		if(rand() % 5)
-			S_StartSound(-1, 0, cl_sfx_tink1, pos, 1, 1);
-		else
-		{
-			rnd = rand() & 3;
-			if(rnd == 1)
-				S_StartSound(-1, 0, cl_sfx_ric1, pos, 1, 1);
-			else if(rnd == 2)
-				S_StartSound(-1, 0, cl_sfx_ric2, pos, 1, 1);
-			else
-				S_StartSound(-1, 0, cl_sfx_ric3, pos, 1, 1);
-		}
-		break;
+                // light
+                dl = CL_AllocDlight(0);
+                VectorCopy(pos, dl->origin);
+                dl->radius   = 350;
+                dl->die      = cl.time + 0.5;
+                dl->decay    = 300;
+                dl->color[0] = 0.2;
+                dl->color[1] = 0.1;
+                dl->color[2] = 0.05;
+                dl->color[3] = 0.7;
 
-	case TE_EXPLOSION: 
-		               // 
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_ParticleExplosion(pos);
+                // sound
+                S_StartSound(-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 
-		// light
-		dl = CL_AllocDlight(0);
-		VectorCopy(pos, dl->origin);
-		dl->radius   = 350;
-		dl->die      = cl.time + 0.5;
-		dl->decay    = 300;
-		dl->color[0] = 0.2;
-		dl->color[1] = 0.1;
-		dl->color[2] = 0.05;
-		dl->color[3] = 0.7;
+                // sprite
+                ex = CL_AllocExplosion();
+                VectorCopy(pos, ex->origin);
+                ex->start = cl.time;
+                ex->model = Mod_ForName("progs/s_explod.spr", true);
+                break;
 
-		// sound
-		S_StartSound(-1, 0, cl_sfx_r_exp3, pos, 1, 1);
+        case TE_LIGHTNING1: // lightning bolts
+                CL_ParseBeam(Mod_ForName("progs/bolt.mdl", true));
+                break;
 
-		// sprite
-		ex = CL_AllocExplosion();
-		VectorCopy(pos, ex->origin);
-		ex->start = cl.time;
-		ex->model = Mod_ForName("progs/s_explod.spr", true);
-		break;
+        case TE_LIGHTNING2: // lightning bolts
+                CL_ParseBeam(Mod_ForName("progs/bolt2.mdl", true));
+                break;
 
-	case TE_LIGHTNING1: // lightning bolts
-		CL_ParseBeam(Mod_ForName("progs/bolt.mdl", true));
-		break;
+        case TE_LIGHTNING3: // lightning bolts
+                CL_ParseBeam(Mod_ForName("progs/bolt3.mdl", true));
+                break;
 
-	case TE_LIGHTNING2: // lightning bolts
-		CL_ParseBeam(Mod_ForName("progs/bolt2.mdl", true));
-		break;
-
-	case TE_LIGHTNING3: // lightning bolts
-		CL_ParseBeam(Mod_ForName("progs/bolt3.mdl", true));
-		break;
-
-	case TE_LIGHTNINGBLOOD: // lightning hitting body
-		pos[0] = MSG_ReadCoord();
-		pos[1] = MSG_ReadCoord();
-		pos[2] = MSG_ReadCoord();
-		R_RunParticleEffect(pos, vec3_origin, 225, 50);
-		break;
-	}
+        case TE_LIGHTNINGBLOOD: // lightning hitting body
+                pos[0] = MSG_ReadCoord();
+                pos[1] = MSG_ReadCoord();
+                pos[2] = MSG_ReadCoord();
+                R_RunParticleEffect(pos, vec3_origin, 225, 50);
+                break;
+        }
 }
 */
 
@@ -1055,13 +1031,13 @@ CL_UpdateBeams
 */
 void CL_UpdateBeams()
 {
-	int          i;
-	beam_t *     b;
-	vec3_t       dist, org;
-	float        d;
+	int i;
+	beam_t *b;
+	vec3_t dist, org;
+	float d;
 	cl_entity_t *ent;
-	float        yaw, pitch;
-	float        forward;
+	float yaw, pitch;
+	float forward;
 
 	// update lightning
 	for(i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
@@ -1073,7 +1049,8 @@ void CL_UpdateBeams()
 		if(b->entity == cl.playernum + 1) // entity 0 is the world
 		{
 			VectorCopy(cl.simorg, b->start);
-			//			b->start[2] -= 22;	// adjust for view height
+			//			b->start[2] -= 22;	// adjust for view
+			//height
 		}
 
 		// calculate pitch and yaw
@@ -1094,7 +1071,7 @@ void CL_UpdateBeams()
 				yaw += 360;
 
 			forward = sqrt(dist[0] * dist[0] + dist[1] * dist[1]);
-			pitch   = (int)(atan2(dist[2], forward) * 180 / M_PI);
+			pitch = (int)(atan2(dist[2], forward) * 180 / M_PI);
 			if(pitch < 0)
 				pitch += 360;
 		}
@@ -1108,7 +1085,7 @@ void CL_UpdateBeams()
 			if(!ent)
 				return;
 			VectorCopy(org, ent->origin);
-			ent->model     = b->model;
+			ent->model = b->model;
 			ent->angles[0] = pitch;
 			ent->angles[1] = yaw;
 			ent->angles[2] = rand() % 360;
@@ -1127,8 +1104,8 @@ CL_UpdateExplosions
 */
 void CL_UpdateExplosions()
 {
-	int          i;
-	int          f;
+	int i;
+	int f;
 	explosion_t *ex;
 	cl_entity_t *ent;
 

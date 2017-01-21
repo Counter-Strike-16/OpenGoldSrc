@@ -29,14 +29,14 @@
 /// @file
 
 //#include "precompiled.hpp"
-#include "memory/zone.hpp"
-#include "system/common.hpp"
-#include "filesystem/filesystem_internal.hpp"
-#include "system/system.hpp"
-#include "console/console.hpp"
+#include "client/client.hpp"
 #include "common/com_model.h"
 #include "console/cmd.hpp"
-#include "client/client.hpp"
+#include "console/console.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "memory/zone.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
 
 /*
 ===============================================================================
@@ -101,8 +101,8 @@ void *Cache_Alloc(cache_user_t *c, int size, char *name)
 		{
 			Q_strncpy(cs->name, name, CACHE_NAME_LEN - 1);
 			cs->name[CACHE_NAME_LEN - 1] = 0;
-			c->data                      = cs + 1;
-			cs->user                     = c;
+			c->data = cs + 1;
+			cs->user = c;
 
 			break;
 		};
@@ -136,7 +136,7 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 
 		newmem = (cache_system_t *)(hunk_base + hunk_low_used);
 		Q_memset(newmem, 0, sizeof(cache_system_t));
-		newmem->size    = size;
+		newmem->size = size;
 		cache_head.next = cache_head.prev = newmem;
 		newmem->next = newmem->prev = &cache_head;
 
@@ -144,12 +144,13 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 		return newmem;
 	};
 
-	cs     = cache_head.next;
+	cs = cache_head.next;
 	newmem = (cache_system_t *)(hunk_base + hunk_low_used);
 
 	do
 	{
-		if((!nobottom || cs != cache_head.next) && (signed int)((char *)cs - (char *)newmem) >= size)
+		if((!nobottom || cs != cache_head.next) &&
+		   (signed int)((char *)cs - (char *)newmem) >= size)
 		{
 			Q_memset(newmem, 0, sizeof(cache_system_t));
 
@@ -158,14 +159,14 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 			newmem->prev = cs->prev;
 
 			cs->prev->next = newmem;
-			cs->prev       = newmem;
+			cs->prev = newmem;
 
 			Cache_MakeLRU(newmem);
 			return newmem;
 		};
 
 		newmem = (cache_system_t *)((char *)cs + cs->size);
-		cs     = cs->next;
+		cs = cs->next;
 	} while(cs != &cache_head);
 
 	if((int)(hunk_size + hunk_base - hunk_high_used - (byte *)newmem) < size)
@@ -178,7 +179,7 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 	newmem->prev = cache_head.prev;
 
 	cache_head.prev->next = newmem;
-	cache_head.prev       = newmem;
+	cache_head.prev = newmem;
 
 	Cache_MakeLRU(newmem);
 	return newmem;
@@ -311,12 +312,14 @@ void Cache_Flush()
 	if(cl.maxclients <= 1 || allow_cheats)
 		Cache_Force_Flush();
 	else
-		Con_Printf("Server must enable sv_cheats to activate the flush command in multiplayer games.\n");
+		Con_Printf("Server must enable sv_cheats to activate the flush command in "
+		           "multiplayer games.\n");
 };
 
 void Cache_Force_Flush()
 {
-	for(cache_system_t *i = cache_head.next; cache_head.next != &cache_head; i = cache_head.next)
+	for(cache_system_t *i = cache_head.next; cache_head.next != &cache_head;
+	    i = cache_head.next)
 		Cache_Free(i->user);
 };
 
@@ -375,9 +378,9 @@ NOXREF char *CommatizeNumber(int num, char *pout)
 {
 	NOXREFCHECK;
 
-	//this is probably more complex than it needs to be
-	int  len = 0;
-	int  i;
+	// this is probably more complex than it needs to be
+	int len = 0;
+	int i;
 	char outbuf[50];
 
 	Q_memset(outbuf, 0, sizeof(outbuf));
@@ -385,8 +388,8 @@ NOXREF char *CommatizeNumber(int num, char *pout)
 	while(num)
 	{
 		char tempbuf[50];
-		int  temp = num % 1000;
-		num       = num / 1000;
+		int temp = num % 1000;
+		num = num / 1000;
 		Q_strcpy(tempbuf, outbuf);
 
 		Q_snprintf(outbuf, sizeof(outbuf), ",%03i%s", temp, tempbuf);
@@ -394,14 +397,15 @@ NOXREF char *CommatizeNumber(int num, char *pout)
 
 	len = Q_strlen(outbuf);
 
-	for(i = 0; i < len; i++) //find first significant digit
+	for(i = 0; i < len; i++) // find first significant digit
 		if(outbuf[i] != '0' && outbuf[i] != ',')
 			break;
 
 	if(i == len)
 		Q_strcpy(pout, "0");
 	else
-		Q_strcpy(pout, &outbuf[i]); //copy from i to get rid of the first comma and leading zeros
+		Q_strcpy(pout, &outbuf[i]); // copy from i to get rid of the first comma and
+	                                // leading zeros
 
 	return pout;
 };
@@ -415,7 +419,8 @@ void *EXT_FUNC Cache_Check(cache_user_t *c)
 {
 	if(c->data)
 	{
-		cache_system_t *cs = (cache_system_t *)((char *)c->data - sizeof(cache_system_t));
+		cache_system_t *cs =
+		(cache_system_t *)((char *)c->data - sizeof(cache_system_t));
 
 		Cache_UnlinkLRU((cache_system_t *)c->data - 1);
 		Cache_MakeLRU(cs);
@@ -445,7 +450,9 @@ Cache_Report
 NOXREF void Cache_Report()
 {
 	NOXREFCHECK;
-	Con_DPrintf("%4.1f megabyte data cache\n", (hunk_size - hunk_low_used - hunk_high_used) / (float)(1024 * 1024));
+	Con_DPrintf("%4.1f megabyte data cache\n",
+	            (hunk_size - hunk_low_used - hunk_high_used) /
+	            (float)(1024 * 1024));
 };
 
 /*
@@ -463,7 +470,7 @@ NOXREF int Cache_TotalUsed()
 	NOXREFCHECK;
 
 	cache_system_t *cd;
-	int             Total = 0;
+	int Total = 0;
 
 	for(cd = cache_head.next; cd != &cache_head; cd = cd->next)
 		Total += cd->size;
@@ -473,13 +480,13 @@ NOXREF int Cache_TotalUsed()
 
 NOXREF void Cache_Print_Models_And_Totals()
 {
-	char            buf[50];
+	char buf[50];
 	cache_system_t *cd;
 	cache_system_t *sortarray[512];
-	int32           i          = 0;
-	int32           j          = 0;
-	int32           totalbytes = 0;
-	FileHandle_t    file;
+	int32 i = 0;
+	int32 j = 0;
+	int32 totalbytes = 0;
+	FileHandle_t file;
 
 	file = FS_Open(mem_dbgfile.string, "a");
 	if(!file)
@@ -512,14 +519,14 @@ NOXREF void Cache_Print_Models_And_Totals()
 
 NOXREF void Cache_Print_Sounds_And_Totals()
 {
-	char            buf[50];
+	char buf[50];
 	cache_system_t *cd;
 	cache_system_t *sortarray[1024];
-	int32           i             = 0;
-	int32           j             = 0;
-	int32           totalsndbytes = 0;
-	FileHandle_t    file;
-	int             subtot = 0;
+	int32 i = 0;
+	int32 j = 0;
+	int32 totalsndbytes = 0;
+	FileHandle_t file;
+	int subtot = 0;
 
 	file = FS_Open(mem_dbgfile.string, "a");
 	if(!file)
@@ -543,7 +550,8 @@ NOXREF void Cache_Print_Sounds_And_Totals()
 		FS_FPrintf(file, "\t%16.16s : %s\n", CommatizeNumber(sortarray[j]->size, buf), sortarray[j]->name);
 		totalsndbytes += sortarray[j]->size;
 
-		if((j + 1) == i || ComparePath1(sortarray[j]->name, sortarray[j + 1]->name) == 0)
+		if((j + 1) == i ||
+		   ComparePath1(sortarray[j]->name, sortarray[j + 1]->name) == 0)
 		{
 			char pathbuf[512];
 			Sys_SplitPath(sortarray[j]->name, NULL, pathbuf, NULL, NULL);

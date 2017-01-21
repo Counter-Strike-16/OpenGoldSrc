@@ -51,11 +51,11 @@ typedef __m128i v4si; // vector of 4 int (sse2)
 
 /* declare some SSE constants -- why can't I figure a better way to do that? */
 #define _PS_CONST(Name, Val) \
-	static const ALIGN16_BEG float _ps_##Name[4] ALIGN16_END = {Val, Val, Val, Val}
+	static const ALIGN16_BEG float _ps_##Name[4] ALIGN16_END = { Val, Val, Val, Val }
 #define _PI32_CONST(Name, Val) \
-	static const ALIGN16_BEG int _pi32_##Name[4] ALIGN16_END = {Val, Val, Val, Val}
+	static const ALIGN16_BEG int _pi32_##Name[4] ALIGN16_END = { Val, Val, Val, Val }
 #define _PS_CONST_TYPE(Name, Type, Val) \
-	static const ALIGN16_BEG Type _ps_##Name[4] ALIGN16_END = {Val, Val, Val, Val}
+	static const ALIGN16_BEG Type _ps_##Name[4] ALIGN16_END = { Val, Val, Val, Val }
 
 _PS_CONST(1, 1.0f);
 _PS_CONST(0p5, 0.5f);

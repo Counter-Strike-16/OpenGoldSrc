@@ -30,12 +30,14 @@
 
 //#include "precompiled.hpp"
 #include "system/info.hpp"
-#include "system/systemtypes.hpp"
-#include "system/common.hpp"
 #include "console/console.hpp"
+#include "system/common.hpp"
+#include "system/systemtypes.hpp"
 
-// NOTE: This file contains a lot of fixes that are not covered by REHLDS_FIXES define.
-// TODO: Most of the Info_ functions can be speedup via removing unneded copy of key and values.
+// NOTE: This file contains a lot of fixes that are not covered by REHLDS_FIXES
+// define.
+// TODO: Most of the Info_ functions can be speedup via removing unneded copy of
+// key and values.
 
 // Searches the string for the given
 // key and returns the associated value, or an empty string.
@@ -43,10 +45,10 @@ const char *EXT_FUNC Info_ValueForKey(const char *s, const char *key)
 {
 	// use few (two?) buffers so compares work without stomping on each other
 	static char value[INFO_MAX_BUFFER_VALUES][MAX_KV_LEN];
-	static int  valueindex;
-	char        pkey[MAX_KV_LEN];
-	char *      c;
-	int         nCount;
+	static int valueindex;
+	char pkey[MAX_KV_LEN];
+	char *c;
+	int nCount;
 
 	while(*s)
 	{
@@ -57,12 +59,13 @@ const char *EXT_FUNC Info_ValueForKey(const char *s, const char *key)
 
 		// Copy a key
 		nCount = 0;
-		c      = pkey;
+		c = pkey;
 		while(*s != '\\')
 		{
 			if(!*s)
 			{
-				return ""; // key should end with a \, not a NULL, but suppose its value as absent
+				return ""; // key should end with a \, not a NULL, but suppose its value
+				           // as absent
 			}
 			if(nCount >= MAX_KV_LEN)
 			{
@@ -77,7 +80,7 @@ const char *EXT_FUNC Info_ValueForKey(const char *s, const char *key)
 
 		// Copy a value
 		nCount = 0;
-		c      = value[valueindex];
+		c = value[valueindex];
 		while(*s != '\\')
 		{
 			if(!*s)
@@ -96,7 +99,7 @@ const char *EXT_FUNC Info_ValueForKey(const char *s, const char *key)
 
 		if(!Q_strcmp(key, pkey))
 		{
-			c          = value[valueindex];
+			c = value[valueindex];
 			valueindex = (valueindex + 1) % INFO_MAX_BUFFER_VALUES;
 			return c;
 		}
@@ -107,12 +110,12 @@ const char *EXT_FUNC Info_ValueForKey(const char *s, const char *key)
 
 void Info_RemoveKey(char *s, const char *key)
 {
-	char  pkey[MAX_KV_LEN];
-	char  value[MAX_KV_LEN];
+	char pkey[MAX_KV_LEN];
+	char value[MAX_KV_LEN];
 	char *start;
 	char *c;
-	int   cmpsize;
-	int   nCount;
+	int cmpsize;
+	int nCount;
 
 	if(Q_strstr(key, "\\"))
 	{
@@ -135,7 +138,7 @@ void Info_RemoveKey(char *s, const char *key)
 
 		// Copy a key
 		nCount = 0;
-		c      = pkey;
+		c = pkey;
 		while(*s != '\\')
 		{
 			if(!*s)
@@ -156,7 +159,7 @@ void Info_RemoveKey(char *s, const char *key)
 
 		// Copy a value
 		nCount = 0;
-		c      = value;
+		c = value;
 		while(*s != '\\')
 		{
 			if(!*s)
@@ -184,11 +187,11 @@ void Info_RemoveKey(char *s, const char *key)
 
 void Info_RemovePrefixedKeys(char *s, const char prefix)
 {
-	char  pkey[MAX_KV_LEN];
-	char  value[MAX_KV_LEN];
+	char pkey[MAX_KV_LEN];
+	char value[MAX_KV_LEN];
 	char *start;
 	char *c;
-	int   nCount;
+	int nCount;
 
 	while(*s)
 	{
@@ -201,7 +204,7 @@ void Info_RemovePrefixedKeys(char *s, const char prefix)
 
 		// Copy a key
 		nCount = 0;
-		c      = pkey;
+		c = pkey;
 		while(*s != '\\')
 		{
 			if(!*s)
@@ -222,7 +225,7 @@ void Info_RemovePrefixedKeys(char *s, const char prefix)
 
 		// Copy a value
 		nCount = 0;
-		c      = value;
+		c = value;
 		while(*s != '\\')
 		{
 			if(!*s)
@@ -281,11 +284,11 @@ qboolean Info_IsKeyImportant(const char *key)
 char *Info_FindLargestKey(char *s, int maxsize)
 {
 	static char largest_key[MAX_KV_LEN];
-	char        key[MAX_KV_LEN];
-	char        value[MAX_KV_LEN];
-	char *      c;
-	int         nCount;
-	int         largest_size = 0;
+	char key[MAX_KV_LEN];
+	char value[MAX_KV_LEN];
+	char *c;
+	int nCount;
+	int largest_size = 0;
 
 	largest_key[0] = 0;
 
@@ -298,16 +301,18 @@ char *Info_FindLargestKey(char *s, int maxsize)
 
 		// Copy a key
 		nCount = 0;
-		c      = key;
+		c = key;
 		while(*s != '\\')
 		{
-			if(!*s) // key should end with a \, not a NULL, return this key, so it will be deleted as wrong
+			if(!*s) // key should end with a \, not a NULL, return this key, so it
+			        // will be deleted as wrong
 			{
 				*c = 0;
 				Q_strcpy(largest_key, key);
 				return largest_key;
 			}
-			if(nCount >= MAX_KV_LEN) // oversized key, return this key, so it will be deleted as wrong
+			if(nCount >= MAX_KV_LEN) // oversized key, return this key, so it will be
+			                         // deleted as wrong
 			{
 				*c = 0;
 				Q_strcpy(largest_key, key);
@@ -324,14 +329,15 @@ char *Info_FindLargestKey(char *s, int maxsize)
 
 		// Copy a value
 		nCount = 0;
-		c      = value;
+		c = value;
 		while(*s != '\\')
 		{
 			if(!*s)
 			{
 				break; // allow value to be ended with NULL
 			}
-			if(nCount >= MAX_KV_LEN) // oversized value, return this key, so it will be deleted as wrong
+			if(nCount >= MAX_KV_LEN) // oversized value, return this key, so it will
+			                         // be deleted as wrong
 			{
 				*c = 0;
 				Q_strcpy(largest_key, key);
@@ -357,9 +363,9 @@ char *Info_FindLargestKey(char *s, int maxsize)
 
 void Info_SetValueForStarKey(char *s, const char *key, const char *value, int maxsize)
 {
-	char  newArray[MAX_INFO_STRING];
+	char newArray[MAX_INFO_STRING];
 	char *v;
-	int   c;
+	int c;
 
 	if(!key || !value)
 	{
@@ -382,7 +388,7 @@ void Info_SetValueForStarKey(char *s, const char *key, const char *value, int ma
 	if(Q_strstr(key, "..") || Q_strstr(value, ".."))
 	{
 		// TODO: Why silently return?
-		//Con_Printf("Can't use keys or values with a ..\n");
+		// Con_Printf("Can't use keys or values with a ..\n");
 		return;
 	}
 
@@ -392,7 +398,7 @@ void Info_SetValueForStarKey(char *s, const char *key, const char *value, int ma
 		return;
 	}
 
-	int keyLen   = Q_strlen(key);
+	int keyLen = Q_strlen(key);
 	int valueLan = Q_strlen(value);
 
 	if(keyLen >= MAX_KV_LEN || valueLan >= MAX_KV_LEN)
@@ -473,11 +479,11 @@ void Info_SetValueForKey(char *s, const char *key, const char *value, int maxsiz
 
 void Info_Print(const char *s)
 {
-	char  key[MAX_KV_LEN];
-	char  value[MAX_KV_LEN];
+	char key[MAX_KV_LEN];
+	char value[MAX_KV_LEN];
 	char *c;
-	int   l;
-	int   nCount;
+	int l;
+	int nCount;
 
 	while(*s)
 	{
@@ -488,7 +494,7 @@ void Info_Print(const char *s)
 
 		// Copy a key
 		nCount = 0;
-		c      = key;
+		c = key;
 		while(*s != '\\')
 		{
 			if(!*s)
@@ -524,7 +530,7 @@ void Info_Print(const char *s)
 
 		// Copy a value
 		nCount = 0;
-		c      = value;
+		c = value;
 		while(*s != '\\')
 		{
 			if(!*s)
@@ -547,10 +553,10 @@ void Info_Print(const char *s)
 
 qboolean Info_IsValid(const char *s)
 {
-	char  key[MAX_KV_LEN];
-	char  value[MAX_KV_LEN];
+	char key[MAX_KV_LEN];
+	char value[MAX_KV_LEN];
 	char *c;
-	int   nCount;
+	int nCount;
 
 	while(*s)
 	{
@@ -561,7 +567,7 @@ qboolean Info_IsValid(const char *s)
 
 		// Copy a key
 		nCount = 0;
-		c      = key;
+		c = key;
 		while(*s != '\\')
 		{
 			if(!*s)
@@ -580,7 +586,7 @@ qboolean Info_IsValid(const char *s)
 
 		// Copy a value
 		nCount = 0;
-		c      = value;
+		c = value;
 		while(*s != '\\')
 		{
 			if(!*s)
@@ -625,7 +631,8 @@ void Info_CollectFields(char *destInfo, const char *srcInfo, const char *collect
 			continue;
 
 		// Integer fields
-		if(!Q_strcmp(key, "*hltv") || !Q_strcmp(key, "bottomcolor") || !Q_strcmp(key, "topcolor"))
+		if(!Q_strcmp(key, "*hltv") || !Q_strcmp(key, "bottomcolor") ||
+		   !Q_strcmp(key, "topcolor"))
 		{
 			int intValue = Q_atoi(value);
 

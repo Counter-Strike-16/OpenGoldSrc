@@ -33,11 +33,11 @@
 #include "LoadingDialog.h"
 #include "Configs.h"
 
-IServerBrowser *   serverbrowser = NULL;
-static CBasePanel *staticPanel   = NULL;
+IServerBrowser *serverbrowser = NULL;
+static CBasePanel *staticPanel = NULL;
 
 static CGameUI g_GameUI;
-CGameUI *      g_pGameUI = NULL;
+CGameUI *g_pGameUI = NULL;
 
 vgui::DHANDLE<CLoadingDialog> g_hLoadingDialog;
 
@@ -55,9 +55,9 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CGameUI, IGameUI, GAMEUI_INTERFACE_VERSION, g_
 
 CGameUI::CGameUI(void)
 {
-	g_pGameUI                 = this;
+	g_pGameUI = this;
 	m_szPreviousStatusText[0] = 0;
-	m_bLoadlingLevel          = false;
+	m_bLoadlingLevel = false;
 }
 
 CGameUI::~CGameUI(void)
@@ -76,10 +76,10 @@ void CGameUI::Initialize(CreateInterfaceFn *factories, int count)
 
 	ModInfo().LoadCurrentGameInfo();
 
-	enginevguifuncs    = (IEngineVGui *)factories[0](VENGINE_VGUI_VERSION, NULL);
+	enginevguifuncs = (IEngineVGui *)factories[0](VENGINE_VGUI_VERSION, NULL);
 	enginesurfacefuncs = (vgui::ISurface *)factories[0](VGUI_SURFACE_INTERFACE_VERSION, NULL);
-	gameuifuncs        = (IGameUIFuncs *)factories[0](VENGINE_GAMEUIFUNCS_VERSION, NULL);
-	baseuifuncs        = (IBaseUI *)factories[0](BASEUI_INTERFACE_VERSION, NULL);
+	gameuifuncs = (IGameUIFuncs *)factories[0](VENGINE_GAMEUIFUNCS_VERSION, NULL);
+	baseuifuncs = (IBaseUI *)factories[0](BASEUI_INTERFACE_VERSION, NULL);
 
 	if(!enginesurfacefuncs || !gameuifuncs || !enginevguifuncs || !baseuifuncs)
 		Error("CGameUI::Initialize() failed to get necessary interfaces\n");

@@ -33,34 +33,33 @@
 
 // 02/21/97 JCB Added extended DirectInput code to support external controllers.
 
-#include <dinput.h>
 #include "quakedef.h"
 #include "winquake.h"
+#include <dinput.h>
 //#include "dosisms.h"
 
 #define DINPUT_BUFFERSIZE 16
 #define iDirectInputCreate(a, b, c, d) pDirectInputCreate(a, b, c, d)
 
 HRESULT(WINAPI *pDirectInputCreate)
-(HINSTANCE hinst, DWORD dwVersion,
- LPDIRECTINPUT *lplpDirectInput, LPUNKNOWN punkOuter);
+(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUT *lplpDirectInput, LPUNKNOWN punkOuter);
 
 // mouse variables
-cvar_t m_filter = {"m_filter", "0"};
+cvar_t m_filter = { "m_filter", "0" };
 
-int   mouse_buttons;
-int   mouse_oldbuttonstate;
+int mouse_buttons;
+int mouse_oldbuttonstate;
 POINT current_pos;
-int   mouse_x, mouse_y, old_mouse_x, old_mouse_y, mx_accum, my_accum;
+int mouse_x, mouse_y, old_mouse_x, old_mouse_y, mx_accum, my_accum;
 
-static qboolean     restore_spi;
-static int          originalmouseparms[3], newmouseparms[3] = {0, 0, 1};
-qboolean            mouseinitialized;
-static qboolean     mouseparmsvalid, mouseactivatetoggle;
-static qboolean     mouseshowtoggle = 1;
-static qboolean     dinput_acquired;
+static qboolean restore_spi;
+static int originalmouseparms[3], newmouseparms[3] = { 0, 0, 1 };
+qboolean mouseinitialized;
+static qboolean mouseparmsvalid, mouseactivatetoggle;
+static qboolean mouseshowtoggle = 1;
+static qboolean dinput_acquired;
 static unsigned int mstate_di;
-unsigned int        uiWheelMessage;
+unsigned int uiWheelMessage;
 
 qboolean mouseactive;
 
@@ -85,12 +84,10 @@ enum _ControlList
 	AxisTurn
 };
 
-DWORD dwAxisFlags[JOY_MAX_AXES] =
-    {
-        JOY_RETURNX, JOY_RETURNY, JOY_RETURNZ, JOY_RETURNR, JOY_RETURNU, JOY_RETURNV};
+DWORD dwAxisFlags[JOY_MAX_AXES] = { JOY_RETURNX, JOY_RETURNY, JOY_RETURNZ, JOY_RETURNR, JOY_RETURNU, JOY_RETURNV };
 
-DWORD  dwAxisMap[JOY_MAX_AXES];
-DWORD  dwControlMap[JOY_MAX_AXES];
+DWORD dwAxisMap[JOY_MAX_AXES];
+DWORD dwControlMap[JOY_MAX_AXES];
 PDWORD pdwRawValue[JOY_MAX_AXES];
 
 // none of these cvars are saved over a session
@@ -98,34 +95,34 @@ PDWORD pdwRawValue[JOY_MAX_AXES];
 // each time.  this avoids any problems with getting back to a default usage
 // or when changing from one controller to another.  this way at least something
 // works.
-cvar_t in_joystick            = {"joystick", "0", true};
-cvar_t joy_name               = {"joyname", "joystick"};
-cvar_t joy_advanced           = {"joyadvanced", "0"};
-cvar_t joy_advaxisx           = {"joyadvaxisx", "0"};
-cvar_t joy_advaxisy           = {"joyadvaxisy", "0"};
-cvar_t joy_advaxisz           = {"joyadvaxisz", "0"};
-cvar_t joy_advaxisr           = {"joyadvaxisr", "0"};
-cvar_t joy_advaxisu           = {"joyadvaxisu", "0"};
-cvar_t joy_advaxisv           = {"joyadvaxisv", "0"};
-cvar_t joy_forwardthreshold   = {"joyforwardthreshold", "0.15"};
-cvar_t joy_sidethreshold      = {"joysidethreshold", "0.15"};
-cvar_t joy_pitchthreshold     = {"joypitchthreshold", "0.15"};
-cvar_t joy_yawthreshold       = {"joyyawthreshold", "0.15"};
-cvar_t joy_forwardsensitivity = {"joyforwardsensitivity", "-1.0"};
-cvar_t joy_sidesensitivity    = {"joysidesensitivity", "-1.0"};
-cvar_t joy_pitchsensitivity   = {"joypitchsensitivity", "1.0"};
-cvar_t joy_yawsensitivity     = {"joyyawsensitivity", "-1.0"};
-cvar_t joy_wwhack1            = {"joywwhack1", "0.0"};
-cvar_t joy_wwhack2            = {"joywwhack2", "0.0"};
+cvar_t in_joystick = { "joystick", "0", true };
+cvar_t joy_name = { "joyname", "joystick" };
+cvar_t joy_advanced = { "joyadvanced", "0" };
+cvar_t joy_advaxisx = { "joyadvaxisx", "0" };
+cvar_t joy_advaxisy = { "joyadvaxisy", "0" };
+cvar_t joy_advaxisz = { "joyadvaxisz", "0" };
+cvar_t joy_advaxisr = { "joyadvaxisr", "0" };
+cvar_t joy_advaxisu = { "joyadvaxisu", "0" };
+cvar_t joy_advaxisv = { "joyadvaxisv", "0" };
+cvar_t joy_forwardthreshold = { "joyforwardthreshold", "0.15" };
+cvar_t joy_sidethreshold = { "joysidethreshold", "0.15" };
+cvar_t joy_pitchthreshold = { "joypitchthreshold", "0.15" };
+cvar_t joy_yawthreshold = { "joyyawthreshold", "0.15" };
+cvar_t joy_forwardsensitivity = { "joyforwardsensitivity", "-1.0" };
+cvar_t joy_sidesensitivity = { "joysidesensitivity", "-1.0" };
+cvar_t joy_pitchsensitivity = { "joypitchsensitivity", "1.0" };
+cvar_t joy_yawsensitivity = { "joyyawsensitivity", "-1.0" };
+cvar_t joy_wwhack1 = { "joywwhack1", "0.0" };
+cvar_t joy_wwhack2 = { "joywwhack2", "0.0" };
 
 qboolean joy_avail, joy_advancedinit, joy_haspov;
-DWORD    joy_oldbuttonstate, joy_oldpovstate;
+DWORD joy_oldbuttonstate, joy_oldpovstate;
 
-int   joy_id;
+int joy_id;
 DWORD joy_flags;
 DWORD joy_numbuttons;
 
-static LPDIRECTINPUT       g_pdi;
+static LPDIRECTINPUT g_pdi;
 static LPDIRECTINPUTDEVICE g_pMouse;
 
 static JOYINFOEX ji;
@@ -146,38 +143,38 @@ typedef struct MYDATA
 } MYDATA;
 
 static DIOBJECTDATAFORMAT rgodf[] = {
-    {
-        &GUID_XAxis, FIELD_OFFSET(MYDATA, lX), DIDFT_AXIS | DIDFT_ANYINSTANCE, 0,
-    },
-    {
-        &GUID_YAxis, FIELD_OFFSET(MYDATA, lY), DIDFT_AXIS | DIDFT_ANYINSTANCE, 0,
-    },
-    {
-        &GUID_ZAxis, FIELD_OFFSET(MYDATA, lZ), 0x80000000 | DIDFT_AXIS | DIDFT_ANYINSTANCE, 0,
-    },
-    {
-        0, FIELD_OFFSET(MYDATA, bButtonA), DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,
-    },
-    {
-        0, FIELD_OFFSET(MYDATA, bButtonB), DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,
-    },
-    {
-        0, FIELD_OFFSET(MYDATA, bButtonC), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,
-    },
-    {
-        0, FIELD_OFFSET(MYDATA, bButtonD), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,
-    },
+	{
+	&GUID_XAxis, FIELD_OFFSET(MYDATA, lX), DIDFT_AXIS | DIDFT_ANYINSTANCE, 0,
+	},
+	{
+	&GUID_YAxis, FIELD_OFFSET(MYDATA, lY), DIDFT_AXIS | DIDFT_ANYINSTANCE, 0,
+	},
+	{
+	&GUID_ZAxis, FIELD_OFFSET(MYDATA, lZ), 0x80000000 | DIDFT_AXIS | DIDFT_ANYINSTANCE, 0,
+	},
+	{
+	0, FIELD_OFFSET(MYDATA, bButtonA), DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,
+	},
+	{
+	0, FIELD_OFFSET(MYDATA, bButtonB), DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,
+	},
+	{
+	0, FIELD_OFFSET(MYDATA, bButtonC), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,
+	},
+	{
+	0, FIELD_OFFSET(MYDATA, bButtonD), 0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE, 0,
+	},
 };
 
 #define NUM_OBJECTS (sizeof(rgodf) / sizeof(rgodf[0]))
 
 static DIDATAFORMAT df = {
-    sizeof(DIDATAFORMAT),       // this structure
-    sizeof(DIOBJECTDATAFORMAT), // size of object data format
-    DIDF_RELAXIS,               // absolute axis coordinates
-    sizeof(MYDATA),             // device data size
-    NUM_OBJECTS,                // number of objects
-    rgodf,                      // and here they are
+	sizeof(DIDATAFORMAT),       // this structure
+	sizeof(DIOBJECTDATAFORMAT), // size of object data format
+	DIDF_RELAXIS,               // absolute axis coordinates
+	sizeof(MYDATA),             // device data size
+	NUM_OBJECTS,                // number of objects
+	rgodf,                      // and here they are
 };
 
 // forward-referenced functions
@@ -348,15 +345,15 @@ IN_InitDInput
 */
 qboolean IN_InitDInput()
 {
-	HRESULT     hr;
+	HRESULT hr;
 	DIPROPDWORD dipdw = {
-	    {
-	        sizeof(DIPROPDWORD),  // diph.dwSize
-	        sizeof(DIPROPHEADER), // diph.dwHeaderSize
-	        0,                    // diph.dwObj
-	        DIPH_DEVICE,          // diph.dwHow
-	    },
-	    DINPUT_BUFFERSIZE, // dwData
+		{
+		sizeof(DIPROPDWORD),  // diph.dwSize
+		sizeof(DIPROPHEADER), // diph.dwHeaderSize
+		0,                    // diph.dwObj
+		DIPH_DEVICE,          // diph.dwHow
+		},
+		DINPUT_BUFFERSIZE, // dwData
 	};
 
 	if(!hInstDI)
@@ -408,8 +405,8 @@ qboolean IN_InitDInput()
 	}
 
 	// set the cooperativity level.
-	hr = IDirectInputDevice_SetCooperativeLevel(g_pMouse, mainwindow,
-	                                            DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+	hr = IDirectInputDevice_SetCooperativeLevel(
+	g_pMouse, mainwindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
 
 	if(FAILED(hr))
 	{
@@ -460,7 +457,8 @@ void IN_StartupMouse()
 
 	if(!dinput)
 	{
-		mouseparmsvalid = SystemParametersInfo(SPI_GETMOUSE, 0, originalmouseparms, 0);
+		mouseparmsvalid =
+		SystemParametersInfo(SPI_GETMOUSE, 0, originalmouseparms, 0);
 
 		if(mouseparmsvalid)
 		{
@@ -567,14 +565,12 @@ void IN_MouseEvent(int mstate)
 		// perform button actions
 		for(i = 0; i < mouse_buttons; i++)
 		{
-			if((mstate & (1 << i)) &&
-			   !(mouse_oldbuttonstate & (1 << i)))
+			if((mstate & (1 << i)) && !(mouse_oldbuttonstate & (1 << i)))
 			{
 				Key_Event(K_MOUSE1 + i, true);
 			}
 
-			if(!(mstate & (1 << i)) &&
-			   (mouse_oldbuttonstate & (1 << i)))
+			if(!(mstate & (1 << i)) && (mouse_oldbuttonstate & (1 << i)))
 			{
 				Key_Event(K_MOUSE1 + i, false);
 			}
@@ -591,12 +587,12 @@ IN_MouseMove
 */
 void IN_MouseMove(usercmd_t *cmd)
 {
-	int                mx, my;
-	HDC                hdc;
-	int                i;
+	int mx, my;
+	HDC hdc;
+	int i;
 	DIDEVICEOBJECTDATA od;
-	DWORD              dwElements;
-	HRESULT            hr;
+	DWORD dwElements;
+	HRESULT hr;
 
 	if(!mouseactive)
 		return;
@@ -610,8 +606,8 @@ void IN_MouseMove(usercmd_t *cmd)
 		{
 			dwElements = 1;
 
-			hr = IDirectInputDevice_GetDeviceData(g_pMouse,
-			                                      sizeof(DIDEVICEOBJECTDATA), &od, &dwElements, 0);
+			hr = IDirectInputDevice_GetDeviceData(
+			g_pMouse, sizeof(DIDEVICEOBJECTDATA), &od, &dwElements, 0);
 
 			if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 			{
@@ -664,14 +660,12 @@ void IN_MouseMove(usercmd_t *cmd)
 		// perform button actions
 		for(i = 0; i < mouse_buttons; i++)
 		{
-			if((mstate_di & (1 << i)) &&
-			   !(mouse_oldbuttonstate & (1 << i)))
+			if((mstate_di & (1 << i)) && !(mouse_oldbuttonstate & (1 << i)))
 			{
 				Key_Event(K_MOUSE1 + i, true);
 			}
 
-			if(!(mstate_di & (1 << i)) &&
-			   (mouse_oldbuttonstate & (1 << i)))
+			if(!(mstate_di & (1 << i)) && (mouse_oldbuttonstate & (1 << i)))
 			{
 				Key_Event(K_MOUSE1 + i, false);
 			}
@@ -682,8 +676,8 @@ void IN_MouseMove(usercmd_t *cmd)
 	else
 	{
 		GetCursorPos(&current_pos);
-		mx       = current_pos.x - window_center_x + mx_accum;
-		my       = current_pos.y - window_center_y + my_accum;
+		mx = current_pos.x - window_center_x + mx_accum;
+		my = current_pos.y - window_center_y + my_accum;
 		mx_accum = 0;
 		my_accum = 0;
 	}
@@ -782,21 +776,21 @@ void IN_ClearStates()
 {
 	if(mouseactive)
 	{
-		mx_accum             = 0;
-		my_accum             = 0;
+		mx_accum = 0;
+		my_accum = 0;
 		mouse_oldbuttonstate = 0;
 	}
 }
 
-/* 
-=============== 
-IN_StartupJoystick 
-=============== 
+/*
+===============
+IN_StartupJoystick
+===============
 */
 void IN_StartupJoystick()
 {
-	int      i, numdevs;
-	JOYCAPS  jc;
+	int i, numdevs;
+	JOYCAPS jc;
 	MMRESULT mmr;
 
 	// assume no joystick
@@ -817,7 +811,7 @@ void IN_StartupJoystick()
 	for(joy_id = 0; joy_id < numdevs; joy_id++)
 	{
 		memset(&ji, 0, sizeof(ji));
-		ji.dwSize  = sizeof(ji);
+		ji.dwSize = sizeof(ji);
 		ji.dwFlags = JOY_RETURNCENTERED;
 
 		if((mmr = joyGetPosEx(joy_id, &ji)) == JOYERR_NOERROR)
@@ -836,13 +830,14 @@ void IN_StartupJoystick()
 	memset(&jc, 0, sizeof(jc));
 	if((mmr = joyGetDevCaps(joy_id, &jc, sizeof(jc))) != JOYERR_NOERROR)
 	{
-		Con_Printf("\njoystick not found -- invalid joystick capabilities (%x)\n\n", mmr);
+		Con_Printf("\njoystick not found -- invalid joystick capabilities (%x)\n\n",
+		           mmr);
 		return;
 	}
 
 	// save the joystick's number of buttons and POV status
 	joy_numbuttons = jc.wNumButtons;
-	joy_haspov     = jc.wCaps & JOYCAPS_HASPOV;
+	joy_haspov = jc.wCaps & JOYCAPS_HASPOV;
 
 	// old button and POV states default to no buttons pressed
 	joy_oldbuttonstate = joy_oldpovstate = 0;
@@ -850,7 +845,7 @@ void IN_StartupJoystick()
 	// mark the joystick as available and advanced initialization not completed
 	// this is needed as cvars are not available during initialization
 
-	joy_avail        = true;
+	joy_avail = true;
 	joy_advancedinit = false;
 
 	Con_Printf("\njoystick detected\n\n");
@@ -889,15 +884,15 @@ void Joy_AdvancedUpdate_f()
 {
 	// called once by IN_ReadJoystick and by user whenever an update is needed
 	// cvars are now available
-	int   i;
+	int i;
 	DWORD dwTemp;
 
 	// initialize all the maps
 	for(i = 0; i < JOY_MAX_AXES; i++)
 	{
-		dwAxisMap[i]    = AxisNada;
+		dwAxisMap[i] = AxisNada;
 		dwControlMap[i] = JOY_ABSOLUTE_AXIS;
-		pdwRawValue[i]  = RawValuePointer(i);
+		pdwRawValue[i] = RawValuePointer(i);
 	}
 
 	if(joy_advanced.value == 0.0)
@@ -919,23 +914,23 @@ void Joy_AdvancedUpdate_f()
 
 		// advanced initialization here
 		// data supplied by user via joy_axisn cvars
-		dwTemp                   = (DWORD)joy_advaxisx.value;
-		dwAxisMap[JOY_AXIS_X]    = dwTemp & 0x0000000f;
+		dwTemp = (DWORD)joy_advaxisx.value;
+		dwAxisMap[JOY_AXIS_X] = dwTemp & 0x0000000f;
 		dwControlMap[JOY_AXIS_X] = dwTemp & JOY_RELATIVE_AXIS;
-		dwTemp                   = (DWORD)joy_advaxisy.value;
-		dwAxisMap[JOY_AXIS_Y]    = dwTemp & 0x0000000f;
+		dwTemp = (DWORD)joy_advaxisy.value;
+		dwAxisMap[JOY_AXIS_Y] = dwTemp & 0x0000000f;
 		dwControlMap[JOY_AXIS_Y] = dwTemp & JOY_RELATIVE_AXIS;
-		dwTemp                   = (DWORD)joy_advaxisz.value;
-		dwAxisMap[JOY_AXIS_Z]    = dwTemp & 0x0000000f;
+		dwTemp = (DWORD)joy_advaxisz.value;
+		dwAxisMap[JOY_AXIS_Z] = dwTemp & 0x0000000f;
 		dwControlMap[JOY_AXIS_Z] = dwTemp & JOY_RELATIVE_AXIS;
-		dwTemp                   = (DWORD)joy_advaxisr.value;
-		dwAxisMap[JOY_AXIS_R]    = dwTemp & 0x0000000f;
+		dwTemp = (DWORD)joy_advaxisr.value;
+		dwAxisMap[JOY_AXIS_R] = dwTemp & 0x0000000f;
 		dwControlMap[JOY_AXIS_R] = dwTemp & JOY_RELATIVE_AXIS;
-		dwTemp                   = (DWORD)joy_advaxisu.value;
-		dwAxisMap[JOY_AXIS_U]    = dwTemp & 0x0000000f;
+		dwTemp = (DWORD)joy_advaxisu.value;
+		dwAxisMap[JOY_AXIS_U] = dwTemp & 0x0000000f;
 		dwControlMap[JOY_AXIS_U] = dwTemp & JOY_RELATIVE_AXIS;
-		dwTemp                   = (DWORD)joy_advaxisv.value;
-		dwAxisMap[JOY_AXIS_V]    = dwTemp & 0x0000000f;
+		dwTemp = (DWORD)joy_advaxisv.value;
+		dwAxisMap[JOY_AXIS_V] = dwTemp & 0x0000000f;
 		dwControlMap[JOY_AXIS_V] = dwTemp & JOY_RELATIVE_AXIS;
 	}
 
@@ -957,7 +952,7 @@ IN_Commands
 */
 void IN_Commands()
 {
-	int   i, key_index;
+	int i, key_index;
 	DWORD buttonstate, povstate;
 
 	if(!joy_avail)
@@ -966,7 +961,8 @@ void IN_Commands()
 	}
 
 	// loop through the joystick buttons
-	// key a joystick event or auxillary event for higher number buttons for each state change
+	// key a joystick event or auxillary event for higher number buttons for each
+	// state change
 	buttonstate = ji.dwButtons;
 	for(i = 0; i < joy_numbuttons; i++)
 	{
@@ -1001,7 +997,8 @@ void IN_Commands()
 			if(ji.dwPOV == JOY_POVLEFT)
 				povstate |= 0x08;
 		}
-		// determine which bits have changed and key an auxillary event for each change
+		// determine which bits have changed and key an auxillary event for each
+		// change
 		for(i = 0; i < 4; i++)
 		{
 			if((povstate & (1 << i)) && !(joy_oldpovstate & (1 << i)))
@@ -1018,21 +1015,23 @@ void IN_Commands()
 	}
 }
 
-/* 
-=============== 
+/*
+===============
 IN_ReadJoystick
-=============== 
+===============
 */
 qboolean IN_ReadJoystick()
 {
 	memset(&ji, 0, sizeof(ji));
-	ji.dwSize  = sizeof(ji);
+	ji.dwSize = sizeof(ji);
 	ji.dwFlags = joy_flags;
 
 	if(joyGetPosEx(joy_id, &ji) == JOYERR_NOERROR)
 	{
-		// this is a hack -- there is a bug in the Logitech WingMan Warrior DirectInput Driver
-		// rather than having 32768 be the zero point, they have the zero point at 32668
+		// this is a hack -- there is a bug in the Logitech WingMan Warrior
+		// DirectInput Driver
+		// rather than having 32768 be the zero point, they have the zero point at
+		// 32668
 		// go figure -- anyway, now we get the full resolution out of the device
 		if(joy_wwhack1.value != 0.0)
 		{
@@ -1060,7 +1059,7 @@ void IN_JoyMove(usercmd_t *cmd)
 {
 	float speed, aspeed;
 	float fAxisValue, fTemp;
-	int   i;
+	int i;
 
 	// complete initialization if first time in
 	// this is needed as cvars are not available at initialization time
@@ -1086,12 +1085,13 @@ void IN_JoyMove(usercmd_t *cmd)
 		speed = cl_movespeedkey.value;
 	else
 		speed = 1;
-	aspeed    = speed * host_frametime;
+	aspeed = speed * host_frametime;
 
 	// loop through the axes
 	for(i = 0; i < JOY_MAX_AXES; i++)
 	{
-		// get the floating point zero-centered, potentially-inverted data for the current axis
+		// get the floating point zero-centered, potentially-inverted data for the
+		// current axis
 		fAxisValue = (float)*pdwRawValue[i];
 		// move centerpoint to zero
 		fAxisValue -= 32768.0;
@@ -1127,11 +1127,13 @@ void IN_JoyMove(usercmd_t *cmd)
 					// only absolute control support here (joy_advanced is false)
 					if(m_pitch.value < 0.0)
 					{
-						cl.viewangles[PITCH] -= (fAxisValue * joy_pitchsensitivity.value) * aspeed * cl_pitchspeed.value;
+						cl.viewangles[PITCH] -= (fAxisValue * joy_pitchsensitivity.value) *
+						aspeed * cl_pitchspeed.value;
 					}
 					else
 					{
-						cl.viewangles[PITCH] += (fAxisValue * joy_pitchsensitivity.value) * aspeed * cl_pitchspeed.value;
+						cl.viewangles[PITCH] += (fAxisValue * joy_pitchsensitivity.value) *
+						aspeed * cl_pitchspeed.value;
 					}
 					V_StopPitchDrift();
 				}
@@ -1150,7 +1152,8 @@ void IN_JoyMove(usercmd_t *cmd)
 				// user wants forward control to be forward control
 				if(fabs(fAxisValue) > joy_forwardthreshold.value)
 				{
-					cmd->forwardmove += (fAxisValue * joy_forwardsensitivity.value) * speed * cl_forwardspeed.value;
+					cmd->forwardmove += (fAxisValue * joy_forwardsensitivity.value) *
+					speed * cl_forwardspeed.value;
 				}
 			}
 			break;
@@ -1158,7 +1161,8 @@ void IN_JoyMove(usercmd_t *cmd)
 		case AxisSide:
 			if(fabs(fAxisValue) > joy_sidethreshold.value)
 			{
-				cmd->sidemove += (fAxisValue * joy_sidesensitivity.value) * speed * cl_sidespeed.value;
+				cmd->sidemove += (fAxisValue * joy_sidesensitivity.value) * speed *
+				cl_sidespeed.value;
 			}
 			break;
 
@@ -1168,7 +1172,8 @@ void IN_JoyMove(usercmd_t *cmd)
 				// user wants turn control to become side control
 				if(fabs(fAxisValue) > joy_sidethreshold.value)
 				{
-					cmd->sidemove -= (fAxisValue * joy_sidesensitivity.value) * speed * cl_sidespeed.value;
+					cmd->sidemove -= (fAxisValue * joy_sidesensitivity.value) * speed *
+					cl_sidespeed.value;
 				}
 			}
 			else
@@ -1178,11 +1183,13 @@ void IN_JoyMove(usercmd_t *cmd)
 				{
 					if(dwControlMap[i] == JOY_ABSOLUTE_AXIS)
 					{
-						cl.viewangles[YAW] += (fAxisValue * joy_yawsensitivity.value) * aspeed * cl_yawspeed.value;
+						cl.viewangles[YAW] += (fAxisValue * joy_yawsensitivity.value) *
+						aspeed * cl_yawspeed.value;
 					}
 					else
 					{
-						cl.viewangles[YAW] += (fAxisValue * joy_yawsensitivity.value) * speed * 180.0;
+						cl.viewangles[YAW] +=
+						(fAxisValue * joy_yawsensitivity.value) * speed * 180.0;
 					}
 				}
 			}
@@ -1196,11 +1203,13 @@ void IN_JoyMove(usercmd_t *cmd)
 					// pitch movement detected and pitch movement desired by user
 					if(dwControlMap[i] == JOY_ABSOLUTE_AXIS)
 					{
-						cl.viewangles[PITCH] += (fAxisValue * joy_pitchsensitivity.value) * aspeed * cl_pitchspeed.value;
+						cl.viewangles[PITCH] += (fAxisValue * joy_pitchsensitivity.value) *
+						aspeed * cl_pitchspeed.value;
 					}
 					else
 					{
-						cl.viewangles[PITCH] += (fAxisValue * joy_pitchsensitivity.value) * speed * 180.0;
+						cl.viewangles[PITCH] +=
+						(fAxisValue * joy_pitchsensitivity.value) * speed * 180.0;
 					}
 					V_StopPitchDrift();
 				}

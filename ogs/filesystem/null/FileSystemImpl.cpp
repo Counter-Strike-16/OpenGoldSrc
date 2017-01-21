@@ -28,10 +28,10 @@
 
 /// @file
 
-#include <stdio.h>
-#include <cstdarg>
-#include <string.h>
 #include "FileSystemImpl.hpp"
+#include <cstdarg>
+#include <stdio.h>
+#include <string.h>
 
 #ifdef _DEBUG
 static FILE *ghLogFile = NULL;
@@ -42,7 +42,7 @@ void TRACE(const char *asMsg, ...)
 		return;
 
 	va_list ArgList;
-	char    sMsg[512];
+	char sMsg[512];
 
 	va_start(ArgList, asMsg);
 	vsnprintf(sMsg, sizeof(sMsg), asMsg, ArgList);
@@ -98,7 +98,8 @@ bool CFileSystemNull::RemoveSearchPath(const char *pPath)
 	return false;
 };
 
-void CFileSystemNull::RemoveFile(const char *pRelativePath, const char *pathID)
+void CFileSystemNull::RemoveFile(const char *pRelativePath,
+                                 const char *pathID)
 {
 	TRACE("CFileSystem::RemoveFile");
 };
@@ -160,7 +161,9 @@ long CFileSystemNull::GetFileTime(const char *pFileName)
 	return 0;
 };
 
-void CFileSystemNull::FileTimeToString(char *pStrip, int maxCharsIncludingTerminator, long fileTime)
+void CFileSystemNull::FileTimeToString(char *pStrip,
+                                       int maxCharsIncludingTerminator,
+                                       long fileTime)
 {
 	TRACE("CFileSystem::FileTimeToString");
 };
@@ -217,7 +220,9 @@ void CFileSystemNull::ReleaseReadBuffer(FileHandle_t file, void *readBuffer)
 	TRACE("CFileSystem::ReleaseReadBuffer");
 };
 
-const char *CFileSystemNull::FindFirst(const char *pWildCard, FileFindHandle_t *pHandle, const char *pathID)
+const char *CFileSystemNull::FindFirst(const char *pWildCard,
+                                       FileFindHandle_t *pHandle,
+                                       const char *pathID)
 {
 	TRACE("CFileSystem::FindFirst");
 	return "";
@@ -245,7 +250,9 @@ void CFileSystemNull::GetLocalCopy(const char *pFileName)
 	TRACE("CFileSystem::GetLocalCopy");
 };
 
-const char *CFileSystemNull::GetLocalPath(const char *pFileName, char *pLocalPath, int localPathBufferSize)
+const char *CFileSystemNull::GetLocalPath(const char *pFileName,
+                                          char *pLocalPath,
+                                          int localPathBufferSize)
 {
 	TRACE("CFileSystem::GetLocalPath");
 	return "";
@@ -257,7 +264,8 @@ char *CFileSystemNull::ParseFile(char *pFileBytes, char *pToken, bool *pWasQuote
 	return NULL;
 };
 
-bool CFileSystemNull::FullPathToRelativePath(const char *pFullpath, char *pRelative)
+bool CFileSystemNull::FullPathToRelativePath(const char *pFullpath,
+                                             char *pRelative)
 {
 	TRACE("CFileSystem::FullPathToRelativePath");
 	return false;
@@ -294,7 +302,8 @@ void CFileSystemNull::LogLevelLoadFinished(const char *name)
 	TRACE("CFileSystem::LogLevelLoadFinished");
 };
 
-int CFileSystemNull::HintResourceNeed(const char *hintlist, int forgetEverything)
+int CFileSystemNull::HintResourceNeed(const char *hintlist,
+                                      int forgetEverything)
 {
 	TRACE("CFileSystem::HintResourceNeed");
 	return 0;
@@ -329,13 +338,15 @@ bool CFileSystemNull::IsFileImmediatelyAvailable(const char *pFileName)
 	return false;
 };
 
-WaitForResourcesHandle_t CFileSystemNull::WaitForResources(const char *resourcelist)
+WaitForResourcesHandle_t
+CFileSystemNull::WaitForResources(const char *resourcelist)
 {
 	TRACE("CFileSystem::WaitForResources");
 	return 0;
 };
 
-bool CFileSystemNull::GetWaitForResourcesProgress(WaitForResourcesHandle_t handle, float *progress /* out */, bool *complete /* out */)
+bool CFileSystemNull::GetWaitForResourcesProgress(
+WaitForResourcesHandle_t handle, float *progress /* out */, bool *complete /* out */)
 {
 	TRACE("CFileSystem::GetWaitForResourcesProgress");
 	return false;
@@ -358,13 +369,16 @@ bool CFileSystemNull::AddPackFile(const char *fullpath, const char *pathID)
 	return false;
 };
 
-FileHandle_t CFileSystemNull::OpenFromCacheForRead(const char *pFileName, const char *pOptions, const char *pathID)
+FileHandle_t CFileSystemNull::OpenFromCacheForRead(const char *pFileName,
+                                                   const char *pOptions,
+                                                   const char *pathID)
 {
 	TRACE("CFileSystem::OpenFromCacheForRead");
 	return NULL;
 };
 
-void CFileSystemNull::AddSearchPathNoWrite(const char *pPath, const char *pathID)
+void CFileSystemNull::AddSearchPathNoWrite(const char *pPath,
+                                           const char *pathID)
 {
 	TRACE("CFileSystem::AddSearchPathNoWrite");
 };

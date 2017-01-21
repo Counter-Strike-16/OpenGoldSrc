@@ -29,21 +29,21 @@
 /// @file
 
 //#include "precompiled.hpp"
+#include "IRegistry.h"
+#include "client/client.hpp"
+#include "console/cmd.hpp"
 #include "filesystem/filesystem_.hpp"
 #include "filesystem/filesystem_internal.hpp"
-#include "system/common.hpp"
-#include "system/system.hpp"
-#include "system/host.hpp"
-#include "console/cmd.hpp"
-#include "client/client.hpp"
-#include "IRegistry.h"
 #include "platform.h"
+#include "system/common.hpp"
+#include "system/host.hpp"
+#include "system/system.hpp"
 
 CUtlVector<char *> g_fallbackLocalizationFiles;
-char               s_pBaseDir[512];
-bool               bLowViolenceBuild;
+char s_pBaseDir[512];
+bool bLowViolenceBuild;
 
-CSysModule *      gpFileSystemModule;
+CSysModule *gpFileSystemModule;
 CreateInterfaceFn g_FileSystemFactory;
 
 const char *GetBaseDirectory()
@@ -72,7 +72,8 @@ bool FileSystem_LoadDLL(CreateInterfaceFn filesystemFactory)
 	{
 		g_FileSystemFactory = filesystemFactory;
 
-		gpFileSystem = (IFileSystem *)filesystemFactory(FILESYSTEM_INTERFACE_VERSION, 0);
+		gpFileSystem =
+		(IFileSystem *)filesystemFactory(FILESYSTEM_INTERFACE_VERSION, 0);
 		return gpFileSystem != NULL;
 	}
 
@@ -84,9 +85,9 @@ void FileSystem_UnloadDLL()
 	if(gpFileSystemModule)
 	{
 		Sys_UnloadModule((CSysModule *)gpFileSystemModule);
-		gpFileSystemModule  = NULL;
+		gpFileSystemModule = NULL;
 		g_FileSystemFactory = NULL;
-		gpFileSystem        = NULL;
+		gpFileSystem = NULL;
 	}
 }
 
@@ -145,7 +146,7 @@ int Host_GetVideoLevel()
 
 void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_)
 {
-	char         szTemp[512];
+	char szTemp[512];
 	FileHandle_t hFile;
 
 	Q_snprintf(szTemp, sizeof(szTemp) - 1, "%s/liblist.gam", pGameDir);
@@ -175,7 +176,7 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 
 	char *end;
 	char *start;
-	int   bytesToCopy;
+	int bytesToCopy;
 
 	while(1)
 	{
@@ -240,7 +241,7 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 
 	if(bLanguage && pLanguage)
 	{
-		char  baseDir[4096];
+		char baseDir[4096];
 		char *tempPtr;
 
 		Q_snprintf(szTemp, 511, "%s/%s_%s", GetBaseDirectory(), szFallback, pLanguage);
@@ -282,8 +283,8 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 
 	if(Q_stricmp(szFallback, "valve"))
 	{
-		const int BufLen     = 128;
-		char *    szFileName = new char[BufLen];
+		const int BufLen = 128;
+		char *szFileName = new char[BufLen];
 
 		Q_snprintf(szFileName, BufLen - 1, "Resource/%s_%%language%%.txt", szFallback);
 		szFileName[BufLen - 1] = 0;
@@ -296,8 +297,8 @@ void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char
 
 int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 {
-	char        temp[512];
-	char        language[256];
+	char temp[512];
+	char language[256];
 	const char *pchLang;
 
 	gpFileSystem->RemoveAllSearchPaths();
@@ -306,10 +307,14 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 	if(!bLowViolenceBuild)
 	{
 		if(CRehldsPlatformHolder::get()->SteamApps() && GetGameAppID() == 70)
-			bLowViolenceBuild = CRehldsPlatformHolder::get()->SteamApps()->BIsLowViolence();
+			bLowViolenceBuild =
+			CRehldsPlatformHolder::get()->SteamApps()->BIsLowViolence();
 	}
 
-	pchLang = CRehldsPlatformHolder::get()->SteamApps() ? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage() : NULL;
+	pchLang =
+	CRehldsPlatformHolder::get()->SteamApps()
+	? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage()
+	: NULL;
 	Q_strncpy(language, pchLang ? pchLang : "english", ARRAYSIZE(language));
 #ifdef REHLDS_CHECKS
 	language[ARRAYSIZE(language) - 1] = 0;
@@ -321,7 +326,9 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 	CRehldsPlatformHolder::get()->SteamAPI_SetBreakpadAppID(GetGameAppID());
 
 	bool bEnableHDPack = BEnabledHDAddon();
-	bool bLanguage     = (Q_strlen(language) != 0 && Q_stricmp(language, "english")) ? true : false;
+	bool bLanguage = (Q_strlen(language) != 0 && Q_stricmp(language, "english"))
+	? true
+	: false;
 
 	if(!pGameDir)
 		pGameDir = pDefaultDir;
@@ -354,7 +361,7 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 				char baseDir[MAX_PATH];
 				Q_strncpy(baseDir, GetBaseDirectory(), sizeof(baseDir) - 1);
 				baseDir[sizeof(baseDir) - 1] = 0;
-				char *tempPtr                = Q_strstr(baseDir, "\\game");
+				char *tempPtr = Q_strstr(baseDir, "\\game");
 				if(tempPtr)
 				{
 					*tempPtr = 0;
@@ -414,7 +421,7 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 
 			Q_strncpy(baseDir, GetBaseDirectory(), sizeof(baseDir) - 1);
 			baseDir[sizeof(baseDir) - 1] = 0;
-			char *tempPtr                = Q_strstr(baseDir, "\\game");
+			char *tempPtr = Q_strstr(baseDir, "\\game");
 			if(tempPtr)
 			{
 				*tempPtr = 0;
@@ -455,7 +462,10 @@ int FileSystem_AddFallbackGameDir(const char *pGameDir)
 {
 	char language[128];
 
-	const char *pchLang = CRehldsPlatformHolder::get()->SteamApps() ? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage() : NULL;
+	const char *pchLang =
+	CRehldsPlatformHolder::get()->SteamApps()
+	? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage()
+	: NULL;
 	Q_strncpy(language, pchLang ? pchLang : "english", ARRAYSIZE(language));
 #ifdef REHLDS_CHECKS
 	language[ARRAYSIZE(language) - 1] = 0;

@@ -32,17 +32,17 @@ R_InitTextures
 */
 void R_InitTextures(void)
 {
-	int   x, y, m;
+	int x, y, m;
 	byte *dest;
 
 	// create a simple checkerboard texture for the default
 	r_notexture_mip = Hunk_AllocName(sizeof(texture_t) + 16 * 16 + 8 * 8 + 4 * 4 + 2 * 2, "notexture");
 
 	r_notexture_mip->width = r_notexture_mip->height = 16;
-	r_notexture_mip->offsets[0]                      = sizeof(texture_t);
-	r_notexture_mip->offsets[1]                      = r_notexture_mip->offsets[0] + 16 * 16;
-	r_notexture_mip->offsets[2]                      = r_notexture_mip->offsets[1] + 8 * 8;
-	r_notexture_mip->offsets[3]                      = r_notexture_mip->offsets[2] + 4 * 4;
+	r_notexture_mip->offsets[0] = sizeof(texture_t);
+	r_notexture_mip->offsets[1] = r_notexture_mip->offsets[0] + 16 * 16;
+	r_notexture_mip->offsets[2] = r_notexture_mip->offsets[1] + 8 * 8;
+	r_notexture_mip->offsets[3] = r_notexture_mip->offsets[2] + 4 * 4;
 
 	for(m = 0; m < 4; m++)
 	{
@@ -59,19 +59,19 @@ void R_InitTextures(void)
 }
 
 byte dottexture[8][8] =
-    {
-        {0, 1, 1, 0, 0, 0, 0, 0},
-        {1, 1, 1, 1, 0, 0, 0, 0},
-        {1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 1, 1, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
+{
+  { 0, 1, 1, 0, 0, 0, 0, 0 },
+  { 1, 1, 1, 1, 0, 0, 0, 0 },
+  { 1, 1, 1, 1, 0, 0, 0, 0 },
+  { 0, 1, 1, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 void R_InitParticleTexture(void)
 {
-	int  x, y;
+	int x, y;
 	byte data[8][8][4];
 
 	//
@@ -113,9 +113,9 @@ void R_Envmap_f(void)
 	glReadBuffer(GL_FRONT);
 	envmap = true;
 
-	r_refdef.vrect.x      = 0;
-	r_refdef.vrect.y      = 0;
-	r_refdef.vrect.width  = 256;
+	r_refdef.vrect.x = 0;
+	r_refdef.vrect.y = 0;
+	r_refdef.vrect.width = 256;
 	r_refdef.vrect.height = 256;
 
 	r_refdef.viewangles[0] = 0;
@@ -231,20 +231,20 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin(int playernum)
 {
-	int            top, bottom;
-	byte           translate[256];
-	unsigned       translate32[256];
-	int            i, j;
-	byte *         original;
-	unsigned       pixels[512 * 256], *out;
-	unsigned       scaled_width, scaled_height;
-	int            inwidth, inheight;
-	int            tinwidth, tinheight;
-	byte *         inrow;
-	unsigned       frac, fracstep;
+	int top, bottom;
+	byte translate[256];
+	unsigned translate32[256];
+	int i, j;
+	byte *original;
+	unsigned pixels[512 * 256], *out;
+	unsigned scaled_width, scaled_height;
+	int inwidth, inheight;
+	int tinwidth, tinheight;
+	byte *inrow;
+	unsigned frac, fracstep;
 	player_info_t *player;
-	extern byte    player_8bit_texels[320 * 200];
-	char           s[512];
+	extern byte player_8bit_texels[320 * 200];
+	char s[512];
 
 	GL_DisableMultitexture();
 
@@ -260,17 +260,17 @@ void R_TranslatePlayerSkin(int playernum)
 	if(player->_topcolor != player->topcolor ||
 	   player->_bottomcolor != player->bottomcolor || !player->skin)
 	{
-		player->_topcolor    = player->topcolor;
+		player->_topcolor = player->topcolor;
 		player->_bottomcolor = player->bottomcolor;
 
-		top    = player->topcolor;
+		top = player->topcolor;
 		bottom = player->bottomcolor;
-		top    = (top < 0) ? 0 : ((top > 13) ? 13 : top);
+		top = (top < 0) ? 0 : ((top > 13) ? 13 : top);
 		bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
 		top *= 16;
 		bottom *= 16;
 
-		for(i            = 0; i < 256; i++)
+		for(i = 0; i < 256; i++)
 			translate[i] = i;
 
 		for(i = 0; i < 16; i++)
@@ -290,7 +290,7 @@ void R_TranslatePlayerSkin(int playernum)
 		// locate the original skin pixels
 		//
 		// real model width
-		tinwidth  = 296;
+		tinwidth = 296;
 		tinheight = 194;
 
 		if(!player->skin)
@@ -298,13 +298,13 @@ void R_TranslatePlayerSkin(int playernum)
 		if((original = Skin_Cache(player->skin)) != NULL)
 		{
 			//skin data width
-			inwidth  = 320;
+			inwidth = 320;
 			inheight = 200;
 		}
 		else
 		{
 			original = player_8bit_texels;
-			inwidth  = 296;
+			inwidth = 296;
 			inheight = 194;
 		}
 
@@ -330,7 +330,7 @@ void R_TranslatePlayerSkin(int playernum)
 			false, false, true);
 #endif
 
-		scaled_width  = gl_max_size.value < 512 ? gl_max_size.value : 512;
+		scaled_width = gl_max_size.value < 512 ? gl_max_size.value : 512;
 		scaled_height = gl_max_size.value < 256 ? gl_max_size.value : 256;
 		// allow users to crunch sizes down even more if they want
 		scaled_width >>= (int)gl_playermip.value;
@@ -346,7 +346,7 @@ void R_TranslatePlayerSkin(int playernum)
 			for(i = 0; i < scaled_height; i++, out2 += scaled_width)
 			{
 				inrow = original + inwidth * (i * tinheight / scaled_height);
-				frac  = fracstep >> 1;
+				frac = fracstep >> 1;
 				for(j = 0; j < scaled_width; j += 4)
 				{
 					out2[j] = translate[inrow[frac >> 16]];
@@ -364,7 +364,7 @@ void R_TranslatePlayerSkin(int playernum)
 			return;
 		}
 
-		for(i              = 0; i < 256; i++)
+		for(i = 0; i < 256; i++)
 			translate32[i] = d_8to24table[translate[i]];
 
 		out = pixels;
@@ -373,7 +373,7 @@ void R_TranslatePlayerSkin(int playernum)
 		for(i = 0; i < scaled_height; i++, out += scaled_width)
 		{
 			inrow = original + inwidth * (i * tinheight / scaled_height);
-			frac  = fracstep >> 1;
+			frac = fracstep >> 1;
 			for(j = 0; j < scaled_width; j += 4)
 			{
 				out[j] = translate32[inrow[frac >> 16]];
@@ -406,7 +406,7 @@ void R_NewMap(void)
 {
 	int i;
 
-	for(i                    = 0; i < 256; i++)
+	for(i = 0; i < 256; i++)
 		d_lightstylevalue[i] = 264; // normal light value
 
 	memset(&r_worldentity, 0, sizeof(r_worldentity));
@@ -414,7 +414,7 @@ void R_NewMap(void)
 
 	// clear out efrags in case the level hasn't been reloaded
 	// FIXME: is this one short?
-	for(i                              = 0; i < cl.worldmodel->numleafs; i++)
+	for(i = 0; i < cl.worldmodel->numleafs; i++)
 		cl.worldmodel->leafs[i].efrags = NULL;
 
 	r_viewleaf = NULL;
@@ -423,7 +423,7 @@ void R_NewMap(void)
 	GL_BuildLightmaps();
 
 	// identify sky texture
-	skytexturenum    = -1;
+	skytexturenum = -1;
 	mirrortexturenum = -1;
 	for(i = 0; i < cl.worldmodel->numtextures; i++)
 	{
@@ -432,7 +432,7 @@ void R_NewMap(void)
 		if(!Q_strncmp(cl.worldmodel->textures[i]->name, "sky", 3))
 			skytexturenum = i;
 		if(!Q_strncmp(cl.worldmodel->textures[i]->name, "window02_1", 10))
-			mirrortexturenum                     = i;
+			mirrortexturenum = i;
 		cl.worldmodel->textures[i]->texturechain = NULL;
 	}
 #ifdef QUAKE2
@@ -449,7 +449,7 @@ For program optimization
 */
 void R_TimeRefresh_f(void)
 {
-	int   i;
+	int i;
 	float start, stop, time;
 
 	glDrawBuffer(GL_FRONT);

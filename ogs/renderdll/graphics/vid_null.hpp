@@ -1,8 +1,8 @@
 /// @file
 
-extern int    r_pixbytes;
+extern int r_pixbytes;
 extern cvar_t gl_vsync;
-extern float  scr_con_current;
+extern float scr_con_current;
 
 void VID_WriteBuffer(const char *pFilename);
 NOBODY int VID_Init(unsigned short *palette);

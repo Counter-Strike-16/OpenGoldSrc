@@ -24,10 +24,10 @@
 #define VOID void
 #endif
 
-typedef LONG      NTSTATUS;
+typedef LONG NTSTATUS;
 typedef NTSTATUS *PNTSTATUS;
 
-typedef short   CSHORT;
+typedef short CSHORT;
 typedef CSHORT *PCSHORT;
 
 typedef WCHAR *PWCHAR;
@@ -40,21 +40,21 @@ typedef struct STRING
 {
 	USHORT Length;
 	USHORT MaximumLength;
-	PSTR   Buffer;
+	PSTR Buffer;
 } STRING, *PSTRING, ANSI_STRING, *PANSI_STRING;
 
 typedef struct CSTRING
 {
 	USHORT Length;
 	USHORT MaximumLength;
-	PCSTR  Buffer;
+	PCSTR Buffer;
 } CSTRING, *PCSTRING;
 
 typedef struct UNICODE_STRING
 {
 	USHORT Length;        /* bytes */
 	USHORT MaximumLength; /* bytes */
-	PWSTR  Buffer;
+	PWSTR Buffer;
 } UNICODE_STRING, *PUNICODE_STRING;
 
 /*
@@ -72,24 +72,24 @@ typedef struct UNICODE_STRING
 
 typedef struct OBJECT_ATTRIBUTES
 {
-	ULONG           Length;
-	HANDLE          RootDirectory;
+	ULONG Length;
+	HANDLE RootDirectory;
 	PUNICODE_STRING ObjectName;
-	ULONG           Attributes;
-	PVOID           SecurityDescriptor;       /* type SECURITY_DESCRIPTOR */
-	PVOID           SecurityQualityOfService; /* type SECURITY_QUALITY_OF_SERVICE */
+	ULONG Attributes;
+	PVOID SecurityDescriptor;       /* type SECURITY_DESCRIPTOR */
+	PVOID SecurityQualityOfService; /* type SECURITY_QUALITY_OF_SERVICE */
 } OBJECT_ATTRIBUTES;
 
 typedef OBJECT_ATTRIBUTES *POBJECT_ATTRIBUTES;
 
-#define InitializeObjectAttributes(p, n, a, r, s)                  \
-	{                                                              \
-		(p)->Length                   = sizeof(OBJECT_ATTRIBUTES); \
-		(p)->RootDirectory            = r;                         \
-		(p)->Attributes               = a;                         \
-		(p)->ObjectName               = n;                         \
-		(p)->SecurityDescriptor       = s;                         \
-		(p)->SecurityQualityOfService = NULL;                      \
+#define InitializeObjectAttributes(p, n, a, r, s) \
+	{                                             \
+		(p)->Length = sizeof(OBJECT_ATTRIBUTES);  \
+		(p)->RootDirectory = r;                   \
+		(p)->Attributes = a;                      \
+		(p)->ObjectName = n;                      \
+		(p)->SecurityDescriptor = s;              \
+		(p)->SecurityQualityOfService = NULL;     \
 	}
 
 #include "poppack.h"

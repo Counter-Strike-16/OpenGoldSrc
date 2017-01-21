@@ -48,7 +48,7 @@ typedef struct ipfilter_s
 	union
 	{
 		uint32 u32;
-		uint8  octets[4];
+		uint8 octets[4];
 	} compare;
 
 	float banEndTime;
@@ -61,6 +61,6 @@ typedef struct ipfilter_s
 typedef struct userfilter_s
 {
 	USERID_t userid;
-	float    banEndTime;
-	float    banTime;
+	float banEndTime;
+	float banTime;
 } userfilter_t;

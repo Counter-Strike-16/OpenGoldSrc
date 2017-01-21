@@ -30,9 +30,9 @@
 
 //#include "precompiled.hpp"
 #include "memory/zone.hpp"
-#include "system/system.hpp"
 #include "console/console.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
 
 /*
 ==============================================================================
@@ -49,7 +49,7 @@ all big things are allocated on the hunk.
 ==============================================================================
 */
 
-const int ZONEID      = 0x001d4a11;
+const int ZONEID = 0x001d4a11;
 const int MINFRAGMENT = 64;
 
 typedef struct memblock_s
@@ -66,8 +66,8 @@ typedef struct memblock_s
 
 typedef struct memzone_s
 {
-	int         size;
-	memblock_t  blocklist;
+	int size;
+	memblock_t blocklist;
 	memblock_t *rover;
 } memzone_t;
 
@@ -76,7 +76,7 @@ typedef struct memzone_s
 */
 #ifndef HOOK_ENGINE
 
-cvar_t mem_dbgfile = {"mem_dbgfile", ".\\mem.txt", 0, 0.0f, NULL};
+cvar_t mem_dbgfile = { "mem_dbgfile", ".\\mem.txt", 0, 0.0f, NULL };
 
 #else // HOOK_ENGINE
 
@@ -95,9 +95,9 @@ void Memory_Init(void *buf, int size)
 {
 	int zonesize = ZONE_DYNAMIC_SIZE;
 
-	hunk_base      = (byte *)buf;
-	hunk_size      = size;
-	hunk_low_used  = 0;
+	hunk_base = (byte *)buf;
+	hunk_size = size;
+	hunk_low_used = 0;
 	hunk_high_used = 0;
 
 	Cache_Init();
@@ -131,7 +131,7 @@ void *Z_Malloc(int size)
 
 void *Z_TagMalloc(int size, int tag)
 {
-	int         extra;
+	int extra;
 	memblock_t *start, *rover, *newz, *base;
 
 	if(tag == 0)
@@ -160,20 +160,20 @@ void *Z_TagMalloc(int size, int tag)
 
 	if(extra > MINFRAGMENT)
 	{
-		newz             = (memblock_t *)((byte *)base + size);
-		newz->size       = extra;
-		newz->tag        = 0;
-		newz->prev       = base;
-		newz->id         = ZONEID;
-		newz->next       = base->next;
+		newz = (memblock_t *)((byte *)base + size);
+		newz->size = extra;
+		newz->tag = 0;
+		newz->prev = base;
+		newz->id = ZONEID;
+		newz->next = base->next;
 		newz->next->prev = newz;
-		base->next       = newz;
-		base->size       = size;
+		base->next = newz;
+		base->size = size;
 	};
 
-	base->tag       = tag;
+	base->tag = tag;
 	mainzone->rover = base->next;
-	base->id        = ZONEID;
+	base->id = ZONEID;
 
 	// marker for memory trash testing
 	*(int *)((byte *)base + base->size - 4) = ZONEID;
@@ -201,7 +201,7 @@ void Z_Free(void *ptr)
 	if(!otherblock->tag)
 	{
 		otherblock->size += block->size;
-		otherblock->next  = block->next;
+		otherblock->next = block->next;
 		block->next->prev = otherblock;
 
 		if(block == mainzone->rover)
@@ -215,7 +215,7 @@ void Z_Free(void *ptr)
 	if(!otherblock->tag)
 	{
 		block->size += otherblock->size;
-		block->next            = otherblock->next;
+		block->next = otherblock->next;
 		otherblock->next->prev = block;
 
 		if(otherblock == mainzone->rover)
@@ -229,12 +229,12 @@ void Z_ClearZone(memzone_t *zone, int size)
 
 	zone->blocklist.prev = zone->blocklist.next = zone->rover = block;
 	zone->blocklist.size = zone->blocklist.id = 0;
-	zone->blocklist.tag                       = 1;
+	zone->blocklist.tag = 1;
 
 	block->prev = block->next = &zone->blocklist;
 
-	block->tag  = 0;
-	block->id   = ZONEID;
+	block->tag = 0;
+	block->id = ZONEID;
 	block->size = size - sizeof(memzone_t);
 };
 

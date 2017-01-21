@@ -36,13 +36,13 @@
 
 typedef struct
 {
-	byte *    pbase, *pdest;
-	short *   pz;
+	byte *pbase, *pdest;
+	short *pz;
 	fixed16_t s, t;
 	fixed16_t sstep, tstep;
-	int       izi, izistep, izistep_times_2;
-	int       spancount;
-	unsigned  u, v;
+	int izi, izistep, izistep_times_2;
+	int spancount;
+	unsigned u, v;
 } spanletvars_t;
 
 spanletvars_t s_spanletvars;
@@ -58,7 +58,7 @@ msurface_t *r_alpha_surfaces;
 extern int *r_turb_turb;
 
 static int clip_current;
-vec5_t     r_clip_verts[2][MAXWORKINGVERTS + 2];
+vec5_t r_clip_verts[2][MAXWORKINGVERTS + 2];
 
 static int s_minindex, s_maxindex;
 
@@ -83,7 +83,7 @@ void R_DrawSpanletOpaque()
 		{
 			if(*s_spanletvars.pz <= (s_spanletvars.izi >> 16))
 			{
-				*s_spanletvars.pz    = s_spanletvars.izi >> 16;
+				*s_spanletvars.pz = s_spanletvars.izi >> 16;
 				*s_spanletvars.pdest = btemp;
 			}
 		}
@@ -102,10 +102,10 @@ void R_DrawSpanletOpaque()
 void R_DrawSpanletTurbulentStipple33()
 {
 	unsigned btemp;
-	int      sturb, tturb;
-	byte *   pdest = s_spanletvars.pdest;
-	short *  pz    = s_spanletvars.pz;
-	int      izi   = s_spanletvars.izi;
+	int sturb, tturb;
+	byte *pdest = s_spanletvars.pdest;
+	short *pz = s_spanletvars.pz;
+	int izi = s_spanletvars.izi;
 
 	if(s_spanletvars.v & 1)
 	{
@@ -159,10 +159,10 @@ void R_DrawSpanletTurbulentStipple33()
 void R_DrawSpanletTurbulentStipple66()
 {
 	unsigned btemp;
-	int      sturb, tturb;
-	byte *   pdest = s_spanletvars.pdest;
-	short *  pz    = s_spanletvars.pz;
-	int      izi   = s_spanletvars.izi;
+	int sturb, tturb;
+	byte *pdest = s_spanletvars.pdest;
+	short *pz = s_spanletvars.pz;
+	int izi = s_spanletvars.izi;
 
 	if(!(s_spanletvars.v & 1))
 	{
@@ -246,7 +246,7 @@ void R_DrawSpanletTurbulentStipple66()
 void R_DrawSpanletTurbulentBlended66()
 {
 	unsigned btemp;
-	int      sturb, tturb;
+	int sturb, tturb;
 
 	do
 	{
@@ -263,14 +263,13 @@ void R_DrawSpanletTurbulentBlended66()
 		s_spanletvars.pz++;
 		s_spanletvars.s += s_spanletvars.sstep;
 		s_spanletvars.t += s_spanletvars.tstep;
-
 	} while(--s_spanletvars.spancount > 0);
 }
 
 void R_DrawSpanletTurbulentBlended33()
 {
 	unsigned btemp;
-	int      sturb, tturb;
+	int sturb, tturb;
 
 	do
 	{
@@ -287,7 +286,6 @@ void R_DrawSpanletTurbulentBlended33()
 		s_spanletvars.pz++;
 		s_spanletvars.s += s_spanletvars.sstep;
 		s_spanletvars.t += s_spanletvars.tstep;
-
 	} while(--s_spanletvars.spancount > 0);
 }
 
@@ -376,9 +374,9 @@ void R_DrawSpanlet66()
 void R_DrawSpanlet33Stipple()
 {
 	unsigned btemp;
-	byte *   pdest = s_spanletvars.pdest;
-	short *  pz    = s_spanletvars.pz;
-	int      izi   = s_spanletvars.izi;
+	byte *pdest = s_spanletvars.pdest;
+	short *pz = s_spanletvars.pz;
+	int izi = s_spanletvars.izi;
 
 	if(r_polydesc.stipple_parity ^ (s_spanletvars.v & 1))
 	{
@@ -435,9 +433,9 @@ void R_DrawSpanlet33Stipple()
 void R_DrawSpanlet66Stipple()
 {
 	unsigned btemp;
-	byte *   pdest = s_spanletvars.pdest;
-	short *  pz    = s_spanletvars.pz;
-	int      izi   = s_spanletvars.izi;
+	byte *pdest = s_spanletvars.pdest;
+	short *pz = s_spanletvars.pz;
+	int izi = s_spanletvars.izi;
 
 	s_spanletvars.pdest += s_spanletvars.spancount;
 	s_spanletvars.pz += s_spanletvars.spancount;
@@ -521,25 +519,25 @@ void R_DrawSpanlet66Stipple()
 */
 int R_ClipPolyFace(int nump, clipplane_t *pclipplane)
 {
-	int    i, outcount;
-	float  dists[MAXWORKINGVERTS + 3];
-	float  frac, clipdist, *pclipnormal;
+	int i, outcount;
+	float dists[MAXWORKINGVERTS + 3];
+	float frac, clipdist, *pclipnormal;
 	float *in, *instep, *outstep, *vert2;
 
-	clipdist    = pclipplane->dist;
+	clipdist = pclipplane->dist;
 	pclipnormal = pclipplane->normal;
 
 	// calc dists
 	if(clip_current)
 	{
-		in           = r_clip_verts[1][0];
-		outstep      = r_clip_verts[0][0];
+		in = r_clip_verts[1][0];
+		outstep = r_clip_verts[0][0];
 		clip_current = 0;
 	}
 	else
 	{
-		in           = r_clip_verts[0][0];
-		outstep      = r_clip_verts[1][0];
+		in = r_clip_verts[0][0];
+		outstep = r_clip_verts[1][0];
 		clip_current = 1;
 	}
 
@@ -554,7 +552,7 @@ int R_ClipPolyFace(int nump, clipplane_t *pclipplane)
 	memcpy(instep, in, sizeof(vec5_t));
 
 	// clip the winding
-	instep   = in;
+	instep = in;
 	outcount = 0;
 
 	for(i = 0; i < nump; i++, instep += sizeof(vec5_t) / sizeof(float))
@@ -595,10 +593,10 @@ int R_ClipPolyFace(int nump, clipplane_t *pclipplane)
 */
 void R_PolygonDrawSpans(espan_t *pspan, qboolean iswater)
 {
-	int       count;
+	int count;
 	fixed16_t snext, tnext;
-	float     sdivz, tdivz, zi, z, du, dv, spancountminus1;
-	float     sdivzspanletstepu, tdivzspanletstepu, zispanletstepu;
+	float sdivz, tdivz, zi, z, du, dv, spancountminus1;
+	float sdivzspanletstepu, tdivzspanletstepu, zispanletstepu;
 
 	s_spanletvars.pbase = cacheblock;
 
@@ -607,10 +605,10 @@ void R_PolygonDrawSpans(espan_t *pspan, qboolean iswater)
 
 	sdivzspanletstepu = d_sdivzstepu * AFFINE_SPANLET_SIZE;
 	tdivzspanletstepu = d_tdivzstepu * AFFINE_SPANLET_SIZE;
-	zispanletstepu    = d_zistepu * AFFINE_SPANLET_SIZE;
+	zispanletstepu = d_zistepu * AFFINE_SPANLET_SIZE;
 
 	// we count on FP exceptions being turned off to avoid range problems
-	s_spanletvars.izistep         = (int)(d_zistepu * 0x8000 * 0x10000);
+	s_spanletvars.izistep = (int)(d_zistepu * 0x8000 * 0x10000);
 	s_spanletvars.izistep_times_2 = s_spanletvars.izistep * 2;
 
 	s_spanletvars.pz = 0;
@@ -618,9 +616,9 @@ void R_PolygonDrawSpans(espan_t *pspan, qboolean iswater)
 	do
 	{
 		s_spanletvars.pdest = (byte *)d_viewbuffer + (d_scantable[pspan->v] /*r_screenwidth * pspan->v*/) + pspan->u;
-		s_spanletvars.pz    = d_pzbuffer + (d_zwidth * pspan->v) + pspan->u;
-		s_spanletvars.u     = pspan->u;
-		s_spanletvars.v     = pspan->v;
+		s_spanletvars.pz = d_pzbuffer + (d_zwidth * pspan->v) + pspan->u;
+		s_spanletvars.u = pspan->u;
+		s_spanletvars.v = pspan->v;
 
 		count = pspan->count;
 
@@ -635,8 +633,8 @@ void R_PolygonDrawSpans(espan_t *pspan, qboolean iswater)
 		tdivz = d_tdivzorigin + dv * d_tdivzstepv + du * d_tdivzstepu;
 
 		zi = d_ziorigin + dv * d_zistepv + du * d_zistepu;
-		z  = (float)0x10000 / zi; // prescale to 16.16 fixed-point
-		                          // we count on FP exceptions being turned off to avoid range problems
+		z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
+		                         // we count on FP exceptions being turned off to avoid range problems
 		s_spanletvars.izi = (int)(zi * 0x8000 * 0x10000);
 
 		s_spanletvars.s = (int)(sdivz * z) + sadjust;
@@ -705,7 +703,7 @@ void R_PolygonDrawSpans(espan_t *pspan, qboolean iswater)
 				sdivz += d_sdivzstepu * spancountminus1;
 				tdivz += d_tdivzstepu * spancountminus1;
 				zi += d_zistepu * spancountminus1;
-				z     = (float)0x10000 / zi; // prescale to 16.16 fixed-point
+				z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 				snext = (int)(sdivz * z) + sadjust;
 				tnext = (int)(tdivz * z) + tadjust;
 
@@ -741,12 +739,10 @@ void R_PolygonDrawSpans(espan_t *pspan, qboolean iswater)
 
 			s_spanletvars.s = snext;
 			s_spanletvars.t = tnext;
-
 		} while(count > 0);
 
 	NextSpan:
 		pspan++;
-
 	} while(pspan->count != DS_SPAN_LIST_END);
 }
 
@@ -759,14 +755,14 @@ void R_PolygonDrawSpans(espan_t *pspan, qboolean iswater)
 */
 void R_PolygonScanLeftEdge()
 {
-	int          i, v, itop, ibottom, lmaxindex;
+	int i, v, itop, ibottom, lmaxindex;
 	emitpoint_t *pvert, *pnext;
-	espan_t *    pspan;
-	float        du, dv, vtop, vbottom, slope;
-	fixed16_t    u, u_step;
+	espan_t *pspan;
+	float du, dv, vtop, vbottom, slope;
+	fixed16_t u, u_step;
 
 	pspan = s_polygon_spans;
-	i     = s_minindex;
+	i = s_minindex;
 	if(i == 0)
 		i = r_polydesc.nump;
 
@@ -788,12 +784,12 @@ void R_PolygonScanLeftEdge()
 			du = pnext->u - pvert->u;
 			dv = pnext->v - pvert->v;
 
-			slope  = du / dv;
+			slope = du / dv;
 			u_step = (int)(slope * 0x10000);
 			// adjust u to ceil the integer portion
 			u = (int)((pvert->u + (slope * (vtop - pvert->v))) * 0x10000) +
-			    (0x10000 - 1);
-			itop    = (int)vtop;
+			(0x10000 - 1);
+			itop = (int)vtop;
 			ibottom = (int)vbottom;
 
 			for(v = itop; v < ibottom; v++)
@@ -810,7 +806,6 @@ void R_PolygonScanLeftEdge()
 		i--;
 		if(i == 0)
 			i = r_polydesc.nump;
-
 	} while(i != lmaxindex);
 }
 
@@ -822,14 +817,14 @@ void R_PolygonScanLeftEdge()
 */
 void R_PolygonScanRightEdge()
 {
-	int          i, v, itop, ibottom;
+	int i, v, itop, ibottom;
 	emitpoint_t *pvert, *pnext;
-	espan_t *    pspan;
-	float        du, dv, vtop, vbottom, slope, uvert, unext, vvert, vnext;
-	fixed16_t    u, u_step;
+	espan_t *pspan;
+	float du, dv, vtop, vbottom, slope, uvert, unext, vvert, vnext;
+	fixed16_t u, u_step;
 
 	pspan = s_polygon_spans;
-	i     = s_minindex;
+	i = s_minindex;
 
 	vvert = r_polydesc.pverts[i].v;
 	if(vvert < r_refdef.fvrecty_adj)
@@ -866,14 +861,14 @@ void R_PolygonScanRightEdge()
 			if(unext > r_refdef.fvrectright_adj)
 				unext = r_refdef.fvrectright_adj;
 
-			du     = unext - uvert;
-			dv     = vnext - vvert;
-			slope  = du / dv;
+			du = unext - uvert;
+			dv = vnext - vvert;
+			slope = du / dv;
 			u_step = (int)(slope * 0x10000);
 			// adjust u to ceil the integer portion
 			u = (int)((uvert + (slope * (vtop - vvert))) * 0x10000) +
-			    (0x10000 - 1);
-			itop    = (int)vtop;
+			(0x10000 - 1);
+			itop = (int)vtop;
 			ibottom = (int)vbottom;
 
 			for(v = itop; v < ibottom; v++)
@@ -884,13 +879,12 @@ void R_PolygonScanRightEdge()
 			}
 		}
 
-		vtop  = vbottom;
+		vtop = vbottom;
 		vvert = vnext;
 
 		i++;
 		if(i == r_polydesc.nump)
 			i = 0;
-
 	} while(i != s_maxindex);
 
 	pspan->count = DS_SPAN_LIST_END; // mark the end of the span list
@@ -902,10 +896,10 @@ void R_PolygonScanRightEdge()
 void R_ClipAndDrawPoly(float alpha, qboolean isturbulent, qboolean textured)
 {
 	emitpoint_t outverts[MAXWORKINGVERTS + 3], *pout;
-	float *     pv;
-	int         i, nump;
-	float       scale;
-	vec3_t      transformed, local;
+	float *pv;
+	int i, nump;
+	float scale;
+	vec3_t transformed, local;
 
 	if(!textured)
 	{
@@ -962,7 +956,7 @@ void R_ClipAndDrawPoly(float alpha, qboolean isturbulent, qboolean textured)
 	}
 
 	// clip to the frustum in worldspace
-	nump         = r_polydesc.nump;
+	nump = r_polydesc.nump;
 	clip_current = 0;
 
 	for(i = 0; i < 4; i++)
@@ -985,23 +979,23 @@ void R_ClipAndDrawPoly(float alpha, qboolean isturbulent, qboolean textured)
 		if(transformed[2] < NEAR_CLIP)
 			transformed[2] = NEAR_CLIP;
 
-		pout     = &outverts[i];
+		pout = &outverts[i];
 		pout->zi = 1.0 / transformed[2];
 
 		pout->s = pv[3];
 		pout->t = pv[4];
 
-		scale   = xscale * pout->zi;
+		scale = xscale * pout->zi;
 		pout->u = (xcenter + scale * transformed[0]);
 
-		scale   = yscale * pout->zi;
+		scale = yscale * pout->zi;
 		pout->v = (ycenter - scale * transformed[1]);
 
 		pv += sizeof(vec5_t) / sizeof(pv);
 	}
 
 	// draw it
-	r_polydesc.nump   = nump;
+	r_polydesc.nump = nump;
 	r_polydesc.pverts = outverts;
 
 	R_DrawPoly(isturbulent);
@@ -1012,19 +1006,19 @@ void R_ClipAndDrawPoly(float alpha, qboolean isturbulent, qboolean textured)
 */
 void R_BuildPolygonFromSurface(msurface_t *fa)
 {
-	int      i, lindex, lnumverts;
+	int i, lindex, lnumverts;
 	medge_t *pedges, *r_pedge;
-	int      vertpage;
-	float *  vec;
-	vec5_t * pverts;
-	float    tmins[2] = {0, 0};
+	int vertpage;
+	float *vec;
+	vec5_t *pverts;
+	float tmins[2] = { 0, 0 };
 
 	r_polydesc.nump = 0;
 
 	// reconstruct the polygon
-	pedges    = currentmodel->edges;
+	pedges = currentmodel->edges;
 	lnumverts = fa->numedges;
-	vertpage  = 0;
+	vertpage = 0;
 
 	pverts = r_clip_verts[0];
 
@@ -1035,12 +1029,12 @@ void R_BuildPolygonFromSurface(msurface_t *fa)
 		if(lindex > 0)
 		{
 			r_pedge = &pedges[lindex];
-			vec     = currentmodel->vertexes[r_pedge->v[0]].position;
+			vec = currentmodel->vertexes[r_pedge->v[0]].position;
 		}
 		else
 		{
 			r_pedge = &pedges[-lindex];
-			vec     = currentmodel->vertexes[r_pedge->v[1]].position;
+			vec = currentmodel->vertexes[r_pedge->v[1]].position;
 		}
 
 		VectorCopy(vec, pverts[i]);
@@ -1058,8 +1052,8 @@ void R_BuildPolygonFromSurface(msurface_t *fa)
 
 	if(fa->texinfo->flags & SURF_WARP)
 	{
-		r_polydesc.pixels       = fa->texinfo->image->pixels[0];
-		r_polydesc.pixel_width  = fa->texinfo->image->width;
+		r_polydesc.pixels = fa->texinfo->image->pixels[0];
+		r_polydesc.pixel_width = fa->texinfo->image->width;
 		r_polydesc.pixel_height = fa->texinfo->image->height;
 	}
 	else
@@ -1068,8 +1062,8 @@ void R_BuildPolygonFromSurface(msurface_t *fa)
 
 		scache = D_CacheSurface(fa, 0);
 
-		r_polydesc.pixels       = scache->data;
-		r_polydesc.pixel_width  = scache->width;
+		r_polydesc.pixels = scache->data;
+		r_polydesc.pixel_width = scache->width;
 		r_polydesc.pixel_height = scache->height;
 
 		tmins[0] = fa->texturemins[0];
@@ -1096,7 +1090,7 @@ void R_BuildPolygonFromSurface(msurface_t *fa)
 void R_PolygonCalculateGradients()
 {
 	vec3_t p_normal, p_saxis, p_taxis;
-	float  distinv;
+	float distinv;
 
 	TransformVector(r_polydesc.vpn, p_normal);
 	TransformVector(r_polydesc.vright, p_saxis);
@@ -1104,16 +1098,16 @@ void R_PolygonCalculateGradients()
 
 	distinv = 1.0 / (-(DotProduct(r_polydesc.viewer_position, r_polydesc.vpn)) + r_polydesc.dist);
 
-	d_sdivzstepu  = p_saxis[0] * xscaleinv;
-	d_sdivzstepv  = -p_saxis[1] * yscaleinv;
+	d_sdivzstepu = p_saxis[0] * xscaleinv;
+	d_sdivzstepv = -p_saxis[1] * yscaleinv;
 	d_sdivzorigin = p_saxis[2] - xcenter * d_sdivzstepu - ycenter * d_sdivzstepv;
 
-	d_tdivzstepu  = p_taxis[0] * xscaleinv;
-	d_tdivzstepv  = -p_taxis[1] * yscaleinv;
+	d_tdivzstepu = p_taxis[0] * xscaleinv;
+	d_tdivzstepv = -p_taxis[1] * yscaleinv;
 	d_tdivzorigin = p_taxis[2] - xcenter * d_tdivzstepu - ycenter * d_tdivzstepv;
 
-	d_zistepu  = p_normal[0] * xscaleinv * distinv;
-	d_zistepv  = -p_normal[1] * yscaleinv * distinv;
+	d_zistepu = p_normal[0] * xscaleinv * distinv;
+	d_zistepv = -p_normal[1] * yscaleinv * distinv;
 	d_ziorigin = p_normal[2] * distinv - xcenter * d_zistepu - ycenter * d_zistepv;
 
 	sadjust = (fixed16_t)((DotProduct(r_polydesc.viewer_position, r_polydesc.vright) + r_polydesc.s_offset) * 0x10000);
@@ -1134,30 +1128,30 @@ void R_PolygonCalculateGradients()
 */
 static void R_DrawPoly(qboolean iswater)
 {
-	int          i, nump;
-	float        ymin, ymax;
+	int i, nump;
+	float ymin, ymax;
 	emitpoint_t *pverts;
-	espan_t      spans[MAXHEIGHT + 1];
+	espan_t spans[MAXHEIGHT + 1];
 
 	s_polygon_spans = spans;
 
 	// find the top and bottom vertices, and make sure there's at least one scan to
 	// draw
-	ymin   = 999999.9;
-	ymax   = -999999.9;
+	ymin = 999999.9;
+	ymax = -999999.9;
 	pverts = r_polydesc.pverts;
 
 	for(i = 0; i < r_polydesc.nump; i++)
 	{
 		if(pverts->v < ymin)
 		{
-			ymin       = pverts->v;
+			ymin = pverts->v;
 			s_minindex = i;
 		}
 
 		if(pverts->v > ymax)
 		{
-			ymax       = pverts->v;
+			ymax = pverts->v;
 			s_maxindex = i;
 		}
 
@@ -1175,8 +1169,8 @@ static void R_DrawPoly(qboolean iswater)
 
 	// copy the first vertex to the last vertex, so we don't have to deal with
 	// wrapping
-	nump         = r_polydesc.nump;
-	pverts       = r_polydesc.pverts;
+	nump = r_polydesc.nump;
+	pverts = r_polydesc.pverts;
 	pverts[nump] = pverts[0];
 
 	R_PolygonCalculateGradients();

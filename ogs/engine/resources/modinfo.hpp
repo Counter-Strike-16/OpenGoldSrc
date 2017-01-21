@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 
 typedef enum {
 	BOTH = 0,

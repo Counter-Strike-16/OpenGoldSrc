@@ -80,17 +80,17 @@ int scr_copyeverything;
 float scr_con_current;
 float scr_conlines; // lines of console to display
 
-float  oldscreensize, oldfov;
-float  oldsbar;
-cvar_t scr_viewsize   = {"viewsize", "100", true};
-cvar_t scr_fov        = {"fov", "90"}; // 10 - 170
-cvar_t scr_conspeed   = {"scr_conspeed", "300"};
-cvar_t scr_centertime = {"scr_centertime", "2"};
-cvar_t scr_showram    = {"showram", "1"};
-cvar_t scr_showturtle = {"showturtle", "0"};
-cvar_t scr_showpause  = {"showpause", "1"};
-cvar_t scr_printspeed = {"scr_printspeed", "8"};
-cvar_t scr_allowsnap  = {"scr_allowsnap", "1"};
+float oldscreensize, oldfov;
+float oldsbar;
+cvar_t scr_viewsize = { "viewsize", "100", true };
+cvar_t scr_fov = { "fov", "90" }; // 10 - 170
+cvar_t scr_conspeed = { "scr_conspeed", "300" };
+cvar_t scr_centertime = { "scr_centertime", "2" };
+cvar_t scr_showram = { "showram", "1" };
+cvar_t scr_showturtle = { "showturtle", "0" };
+cvar_t scr_showpause = { "showpause", "1" };
+cvar_t scr_printspeed = { "scr_printspeed", "8" };
+cvar_t scr_allowsnap = { "scr_allowsnap", "1" };
 
 qboolean scr_initialized; // ready to draw
 
@@ -108,7 +108,7 @@ int sb_lines;
 viddef_t vid; // global video state
 
 vrect_t *pconupdate;
-vrect_t  scr_vrect;
+vrect_t scr_vrect;
 
 qboolean scr_disabled_for_loading;
 
@@ -127,12 +127,12 @@ CENTER PRINTING
 ===============================================================================
 */
 
-char  scr_centerstring[1024];
+char scr_centerstring[1024];
 float scr_centertime_start; // for slow victory printing
 float scr_centertime_off;
-int   scr_center_lines;
-int   scr_erase_lines;
-int   scr_erase_center;
+int scr_center_lines;
+int scr_erase_lines;
+int scr_erase_center;
 
 /*
 ==============
@@ -145,7 +145,7 @@ for a few moments
 void SCR_CenterPrint(char *str)
 {
 	strncpy(scr_centerstring, str, sizeof(scr_centerstring) - 1);
-	scr_centertime_off   = scr_centertime.value;
+	scr_centertime_off = scr_centertime.value;
 	scr_centertime_start = cl.time;
 
 	// count the number of lines for centering
@@ -180,10 +180,10 @@ void SCR_EraseCenterString(void)
 void SCR_DrawCenterString(void)
 {
 	char *start;
-	int   l;
-	int   j;
-	int   x, y;
-	int   remaining;
+	int l;
+	int j;
+	int x, y;
+	int remaining;
 
 	// the finale prints the characters one at a time
 	if(cl.intermission)
@@ -192,7 +192,7 @@ void SCR_DrawCenterString(void)
 		remaining = 9999;
 
 	scr_erase_center = 0;
-	start            = scr_centerstring;
+	start = scr_centerstring;
 
 	if(scr_center_lines <= 4)
 		y = vid.height * 0.35;
@@ -275,9 +275,9 @@ Internal use only
 static void SCR_CalcRefdef(void)
 {
 	vrect_t vrect;
-	float   size;
+	float size;
 
-	scr_fullupdate    = 0; // force a background redraw
+	scr_fullupdate = 0; // force a background redraw
 	vid.recalc_refdef = 0;
 
 	// force the status bar to redraw
@@ -315,9 +315,9 @@ static void SCR_CalcRefdef(void)
 
 	// these calculations mirror those in R_Init() for r_refdef, but take no
 	// account of water warping
-	vrect.x      = 0;
-	vrect.y      = 0;
-	vrect.width  = vid.width;
+	vrect.x = 0;
+	vrect.y = 0;
+	vrect.width = vid.width;
 	vrect.height = vid.height;
 
 	R_SetVrect(&vrect, &scr_vrect, sb_lines);
@@ -387,8 +387,8 @@ void SCR_Init(void)
 	Cmd_AddCommand("sizeup", SCR_SizeUp_f);
 	Cmd_AddCommand("sizedown", SCR_SizeDown_f);
 
-	scr_ram    = W_GetLumpName("ram");
-	scr_net    = W_GetLumpName("net");
+	scr_ram = W_GetLumpName("ram");
+	scr_net = W_GetLumpName("net");
 	scr_turtle = W_GetLumpName("turtle");
 
 	scr_initialized = true;
@@ -454,10 +454,10 @@ void SCR_DrawFPS(void)
 {
 	extern cvar_t show_fps;
 	static double lastframetime;
-	double        t;
-	extern int    fps_count;
+	double t;
+	extern int fps_count;
 	static lastfps;
-	int  x, y;
+	int x, y;
 	char st[80];
 
 	if(!show_fps.value)
@@ -466,8 +466,8 @@ void SCR_DrawFPS(void)
 	t = Sys_DoubleTime();
 	if((t - lastframetime) >= 1.0)
 	{
-		lastfps       = fps_count;
-		fps_count     = 0;
+		lastfps = fps_count;
+		fps_count = 0;
 		lastframetime = t;
 	}
 
@@ -512,7 +512,7 @@ void SCR_SetUpToDrawConsole(void)
 	// decide on the height of the console
 	if(cls.state != ca_active)
 	{
-		scr_conlines    = vid.height; // full screen
+		scr_conlines = vid.height; // full screen
 		scr_con_current = scr_conlines;
 	}
 	else if(key_dest == key_console)
@@ -584,9 +584,9 @@ WritePCXfile
 void WritePCXfile(char *filename, byte *data, int width, int height,
                   int rowbytes, byte *palette, qboolean upload)
 {
-	int    i, j, length;
+	int i, j, length;
 	pcx_t *pcx;
-	byte * pack;
+	byte *pack;
 
 	pcx = Hunk_TempAlloc(width * height * 2 + 1000);
 	if(pcx == NULL)
@@ -595,20 +595,20 @@ void WritePCXfile(char *filename, byte *data, int width, int height,
 		return;
 	}
 
-	pcx->manufacturer   = 0x0a; // PCX id
-	pcx->version        = 5;    // 256 color
-	pcx->encoding       = 1;    // uncompressed
-	pcx->bits_per_pixel = 8;    // 256 color
-	pcx->xmin           = 0;
-	pcx->ymin           = 0;
-	pcx->xmax           = LittleShort((short)(width - 1));
-	pcx->ymax           = LittleShort((short)(height - 1));
-	pcx->hres           = LittleShort((short)width);
-	pcx->vres           = LittleShort((short)height);
+	pcx->manufacturer = 0x0a; // PCX id
+	pcx->version = 5;         // 256 color
+	pcx->encoding = 1;        // uncompressed
+	pcx->bits_per_pixel = 8;  // 256 color
+	pcx->xmin = 0;
+	pcx->ymin = 0;
+	pcx->xmax = LittleShort((short)(width - 1));
+	pcx->ymax = LittleShort((short)(height - 1));
+	pcx->hres = LittleShort((short)width);
+	pcx->vres = LittleShort((short)height);
 	Q_memset(pcx->palette, 0, sizeof(pcx->palette));
-	pcx->color_planes   = 1; // chunky image
+	pcx->color_planes = 1; // chunky image
 	pcx->bytes_per_line = LittleShort((short)width);
-	pcx->palette_type   = LittleShort(2); // not a grey scale
+	pcx->palette_type = LittleShort(2); // not a grey scale
 	Q_memset(pcx->filler, 0, sizeof(pcx->filler));
 
 	// pack the image
@@ -650,7 +650,7 @@ SCR_ScreenShot_f
 */
 void SCR_ScreenShot_f(void)
 {
-	int  i;
+	int i;
 	char pcxname[80];
 	char checkname[MAX_OSPATH];
 
@@ -693,11 +693,11 @@ Find closest color in the palette for named color
 */
 int MipColor(int r, int g, int b)
 {
-	int        i;
-	float      dist;
-	int        best;
-	float      bestdist;
-	int        r1, g1, b1;
+	int i;
+	float dist;
+	int best;
+	float bestdist;
+	int r1, g1, b1;
 	static int lr = -1, lg = -1, lb = -1;
 	static int lastbest;
 
@@ -708,19 +708,19 @@ int MipColor(int r, int g, int b)
 
 	for(i = 0; i < 256; i++)
 	{
-		r1   = host_basepal[i * 3] - r;
-		g1   = host_basepal[i * 3 + 1] - g;
-		b1   = host_basepal[i * 3 + 2] - b;
+		r1 = host_basepal[i * 3] - r;
+		g1 = host_basepal[i * 3 + 1] - g;
+		b1 = host_basepal[i * 3 + 2] - b;
 		dist = r1 * r1 + g1 * g1 + b1 * b1;
 		if(dist < bestdist)
 		{
 			bestdist = dist;
-			best     = i;
+			best = i;
 		}
 	}
-	lr       = r;
-	lg       = g;
-	lb       = b;
+	lr = r;
+	lg = g;
+	lb = b;
 	lastbest = best;
 	return best;
 }
@@ -730,13 +730,13 @@ extern byte *draw_chars; // 8*8 graphic characters
 
 void SCR_DrawCharToSnap(int num, byte *dest, int width)
 {
-	int   row, col;
+	int row, col;
 	byte *source;
-	int   drawline;
-	int   x;
+	int drawline;
+	int x;
 
-	row    = num >> 4;
-	col    = num & 15;
+	row = num >> 4;
+	col = num & 15;
 	source = draw_chars + (row << 10) + (col << 3);
 
 	drawline = 8;
@@ -755,7 +755,7 @@ void SCR_DrawCharToSnap(int num, byte *dest, int width)
 
 void SCR_DrawStringToSnap(const char *s, byte *buf, int x, int y, int width)
 {
-	byte *               dest;
+	byte *dest;
 	const unsigned char *p;
 
 	dest = buf + ((y * width) + x);
@@ -775,19 +775,19 @@ SCR_RSShot_f
 */
 void SCR_RSShot_f(void)
 {
-	int            i, x, y;
+	int i, x, y;
 	unsigned char *src, *dest;
-	char           pcxname[80];
-	char           checkname[MAX_OSPATH];
+	char pcxname[80];
+	char checkname[MAX_OSPATH];
 	unsigned char *newbuf, *srcbuf;
-	int            srcrowbytes;
-	int            w, h;
-	int            dx, dy, dex, dey, nx;
-	int            r, b, g;
-	int            count;
-	float          fracw, frach;
-	char           st[80];
-	time_t         now;
+	int srcrowbytes;
+	int w, h;
+	int dx, dy, dex, dey, nx;
+	int r, b, g;
+	int count;
+	float fracw, frach;
+	char st[80];
+	time_t now;
 
 	if(CL_IsUploading())
 		return; // already one pending
@@ -848,11 +848,11 @@ void SCR_RSShot_f(void)
 		{
 			r = g = b = 0;
 
-			dx  = x * fracw;
+			dx = x * fracw;
 			dex = (x + 1) * fracw;
 			if(dex == dx)
 				dex++; // at least one
-			dy  = y * frach;
+			dy = y * frach;
 			dey = (y + 1) * frach;
 			if(dey == dy)
 				dey++; // at least one
@@ -903,15 +903,15 @@ void SCR_RSShot_f(void)
 
 //=============================================================================
 
-char *   scr_notifystring;
+char *scr_notifystring;
 qboolean scr_drawdialog;
 
 void SCR_DrawNotifyString(void)
 {
 	char *start;
-	int   l;
-	int   j;
-	int   x, y;
+	int l;
+	int j;
+	int x, y;
 
 	start = scr_notifystring;
 
@@ -1006,7 +1006,7 @@ needs almost the entire 256k of stack space!
 void SCR_UpdateScreen(void)
 {
 	static float oldscr_viewsize;
-	vrect_t      vrect;
+	vrect_t vrect;
 
 	if(scr_skipupdate || block_drawing)
 		return;
@@ -1023,7 +1023,7 @@ void SCR_UpdateScreen(void)
 	}
 #endif
 
-	scr_copytop        = 0;
+	scr_copytop = 0;
 	scr_copyeverything = 0;
 
 	if(!scr_initialized || !con_initialized)
@@ -1031,7 +1031,7 @@ void SCR_UpdateScreen(void)
 
 	if(scr_viewsize.value != oldscr_viewsize)
 	{
-		oldscr_viewsize   = scr_viewsize.value;
+		oldscr_viewsize = scr_viewsize.value;
 		vid.recalc_refdef = 1;
 	}
 
@@ -1040,19 +1040,19 @@ void SCR_UpdateScreen(void)
 	//
 	if(oldfov != scr_fov.value)
 	{
-		oldfov            = scr_fov.value;
+		oldfov = scr_fov.value;
 		vid.recalc_refdef = true;
 	}
 
 	if(oldscreensize != scr_viewsize.value)
 	{
-		oldscreensize     = scr_viewsize.value;
+		oldscreensize = scr_viewsize.value;
 		vid.recalc_refdef = true;
 	}
 
 	if(oldsbar != cl_sbar.value)
 	{
-		oldsbar           = cl_sbar.value;
+		oldsbar = cl_sbar.value;
 		vid.recalc_refdef = true;
 	}
 
@@ -1131,31 +1131,31 @@ void SCR_UpdateScreen(void)
 	//
 	if(scr_copyeverything)
 	{
-		vrect.x      = 0;
-		vrect.y      = 0;
-		vrect.width  = vid.width;
+		vrect.x = 0;
+		vrect.y = 0;
+		vrect.width = vid.width;
 		vrect.height = vid.height;
-		vrect.pnext  = 0;
+		vrect.pnext = 0;
 
 		VID_Update(&vrect);
 	}
 	else if(scr_copytop)
 	{
-		vrect.x      = 0;
-		vrect.y      = 0;
-		vrect.width  = vid.width;
+		vrect.x = 0;
+		vrect.y = 0;
+		vrect.width = vid.width;
 		vrect.height = vid.height - sb_lines;
-		vrect.pnext  = 0;
+		vrect.pnext = 0;
 
 		VID_Update(&vrect);
 	}
 	else
 	{
-		vrect.x      = scr_vrect.x;
-		vrect.y      = scr_vrect.y;
-		vrect.width  = scr_vrect.width;
+		vrect.x = scr_vrect.x;
+		vrect.y = scr_vrect.y;
+		vrect.width = scr_vrect.width;
 		vrect.height = scr_vrect.height;
-		vrect.pnext  = 0;
+		vrect.pnext = 0;
 
 		VID_Update(&vrect);
 	}

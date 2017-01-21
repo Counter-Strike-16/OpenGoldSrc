@@ -29,8 +29,8 @@
 /// @file
 /// @brief null system driver to aid porting efforts
 
-#include "quakedef.hpp"
 #include "errno.h"
+#include "quakedef.hpp"
 
 /*
 ================

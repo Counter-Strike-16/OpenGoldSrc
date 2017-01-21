@@ -19,15 +19,15 @@
 
 typedef struct tagHIGHCONTRASTA
 {
-	UINT  cbSize;
+	UINT cbSize;
 	DWORD dwFlags;
 	LPSTR lpszDefaultScheme;
 } HIGHCONTRASTA, *LPHIGHCONTRASTA;
 
 typedef struct tagHIGHCONTRASTW
 {
-	UINT   cbSize;
-	DWORD  dwFlags;
+	UINT cbSize;
+	DWORD dwFlags;
 	LPWSTR lpszDefaultScheme;
 } HIGHCONTRASTW, *LPHIGHCONTRASTW;
 
@@ -36,11 +36,11 @@ DECL_WINELIB_TYPE_AW(LPHIGHCONTRAST)
 
 typedef struct
 {
-	UINT  message;
-	UINT  paramL;
-	UINT  paramH;
+	UINT message;
+	UINT paramL;
+	UINT paramH;
 	DWORD time;
-	HWND  hwnd;
+	HWND hwnd;
 } EVENTMSG, *LPEVENTMSG;
 
 /* Mouse hook structure */
@@ -48,8 +48,8 @@ typedef struct
 typedef struct
 {
 	POINT pt;
-	HWND  hwnd;
-	UINT  wHitTestCode;
+	HWND hwnd;
+	UINT wHitTestCode;
 	DWORD dwExtraInfo;
 } MOUSEHOOKSTRUCT, *PMOUSEHOOKSTRUCT, *LPMOUSEHOOKSTRUCT;
 
@@ -57,8 +57,8 @@ typedef struct
 
 typedef struct
 {
-	HWND   hWnd;
-	UINT   wMessage;
+	HWND hWnd;
+	UINT wMessage;
 	WPARAM wParam;
 	LPARAM lParam;
 } HARDWAREHOOKSTRUCT, *LPHARDWAREHOOKSTRUCT;
@@ -67,11 +67,11 @@ typedef struct
 
 typedef struct
 {
-	DWORD  idThread;
-	DWORD  idThreadInstaller;
+	DWORD idThread;
+	DWORD idThreadInstaller;
 	LPARAM lParam;
 	WPARAM wParam;
-	INT    code;
+	INT code;
 } DEBUGHOOKINFO, *LPDEBUGHOOKINFO;
 
 #define HKL_PREV 0
@@ -101,7 +101,7 @@ typedef struct
 typedef struct tagANIMATIONINFO
 {
 	UINT cbSize;
-	INT  iMinAnimate;
+	INT iMinAnimate;
 } ANIMATIONINFO, *LPANIMATIONINFO;
 
 typedef struct tagNMHDR
@@ -114,9 +114,9 @@ typedef struct tagNMHDR
 typedef struct
 {
 	UINT cbSize;
-	INT  iTabLength;
-	INT  iLeftMargin;
-	INT  iRightMargin;
+	INT iTabLength;
+	INT iLeftMargin;
+	INT iRightMargin;
 	UINT uiLengthDrawn;
 } DRAWTEXTPARAMS, *LPDRAWTEXTPARAMS;
 
@@ -131,43 +131,43 @@ typedef struct
 
 typedef struct
 {
-	LPARAM   lParam;
+	LPARAM lParam;
 	WPARAM16 wParam;
-	UINT16   message;
-	HWND16   hwnd;
+	UINT16 message;
+	HWND16 hwnd;
 } CWPSTRUCT16, *LPCWPSTRUCT16;
 
 typedef struct
 {
 	LPARAM lParam;
 	WPARAM wParam;
-	UINT   message;
-	HWND   hwnd;
+	UINT message;
+	HWND hwnd;
 } CWPSTRUCT, *LPCWPSTRUCT;
 
 typedef struct
 {
-	LRESULT  lResult;
-	LPARAM   lParam;
+	LRESULT lResult;
+	LPARAM lParam;
 	WPARAM16 wParam;
-	DWORD    message;
-	HWND16   hwnd;
+	DWORD message;
+	HWND16 hwnd;
 } CWPRETSTRUCT16, *LPCWPRETSTRUCT16;
 
 typedef struct
 {
 	LRESULT lResult;
-	LPARAM  lParam;
-	WPARAM  wParam;
-	DWORD   message;
-	HWND    hwnd;
+	LPARAM lParam;
+	WPARAM wParam;
+	DWORD message;
+	HWND hwnd;
 } CWPRETSTRUCT, *LPCWPRETSTRUCT;
 
 typedef struct
 {
-	UINT  length;
-	UINT  flags;
-	UINT  showCmd;
+	UINT length;
+	UINT flags;
+	UINT showCmd;
 	POINT ptMinPosition WINE_PACKED;
 	POINT ptMaxPosition WINE_PACKED;
 	RECT rcNormalPosition WINE_PACKED;
@@ -779,34 +779,34 @@ typedef struct
 
 typedef struct tagCREATESTRUCTA
 {
-	LPVOID    lpCreateParams;
+	LPVOID lpCreateParams;
 	HINSTANCE hInstance;
-	HMENU     hMenu;
-	HWND      hwndParent;
-	INT       cy;
-	INT       cx;
-	INT       y;
-	INT       x;
-	LONG      style;
-	LPCSTR    lpszName;
-	LPCSTR    lpszClass;
-	DWORD     dwExStyle;
+	HMENU hMenu;
+	HWND hwndParent;
+	INT cy;
+	INT cx;
+	INT y;
+	INT x;
+	LONG style;
+	LPCSTR lpszName;
+	LPCSTR lpszClass;
+	DWORD dwExStyle;
 } CREATESTRUCTA, *LPCREATESTRUCTA;
 
 typedef struct
 {
-	LPVOID    lpCreateParams;
+	LPVOID lpCreateParams;
 	HINSTANCE hInstance;
-	HMENU     hMenu;
-	HWND      hwndParent;
-	INT       cy;
-	INT       cx;
-	INT       y;
-	INT       x;
-	LONG      style;
-	LPCWSTR   lpszName;
-	LPCWSTR   lpszClass;
-	DWORD     dwExStyle;
+	HMENU hMenu;
+	HWND hwndParent;
+	INT cy;
+	INT cx;
+	INT y;
+	INT x;
+	LONG style;
+	LPCWSTR lpszName;
+	LPCWSTR lpszClass;
+	DWORD dwExStyle;
 } CREATESTRUCTW, *LPCREATESTRUCTW;
 
 DECL_WINELIB_TYPE_AW(CREATESTRUCT)
@@ -814,44 +814,44 @@ DECL_WINELIB_TYPE_AW(LPCREATESTRUCT)
 
 typedef struct
 {
-	HDC      hdc;
+	HDC hdc;
 	WIN_BOOL fErase;
-	RECT     rcPaint;
+	RECT rcPaint;
 	WIN_BOOL fRestore;
 	WIN_BOOL fIncUpdate;
-	BYTE     rgbReserved[32];
+	BYTE rgbReserved[32];
 } PAINTSTRUCT, *PPAINTSTRUCT, *LPPAINTSTRUCT;
 
 typedef struct
 {
 	HMENU hWindowMenu;
-	UINT  idFirstChild;
+	UINT idFirstChild;
 } CLIENTCREATESTRUCT, *LPCLIENTCREATESTRUCT;
 
 typedef struct
 {
-	LPCSTR    szClass;
-	LPCSTR    szTitle;
+	LPCSTR szClass;
+	LPCSTR szTitle;
 	HINSTANCE hOwner;
-	INT       x;
-	INT       y;
-	INT       cx;
-	INT       cy;
-	DWORD     style;
-	LPARAM    lParam;
+	INT x;
+	INT y;
+	INT cx;
+	INT cy;
+	DWORD style;
+	LPARAM lParam;
 } MDICREATESTRUCTA, *LPMDICREATESTRUCTA;
 
 typedef struct
 {
-	LPCWSTR   szClass;
-	LPCWSTR   szTitle;
+	LPCWSTR szClass;
+	LPCWSTR szTitle;
 	HINSTANCE hOwner;
-	INT       x;
-	INT       y;
-	INT       cx;
-	INT       cy;
-	DWORD     style;
-	LPARAM    lParam;
+	INT x;
+	INT y;
+	INT cx;
+	INT cy;
+	DWORD style;
+	LPARAM lParam;
 } MDICREATESTRUCTW, *LPMDICREATESTRUCTW;
 
 DECL_WINELIB_TYPE_AW(MDICREATESTRUCT)
@@ -927,10 +927,10 @@ typedef struct tagWINDOWPOS
 {
 	HWND hwnd;
 	HWND hwndInsertAfter;
-	INT  x;
-	INT  y;
-	INT  cx;
-	INT  cy;
+	INT x;
+	INT y;
+	INT cx;
+	INT cy;
 	UINT flags;
 } WINDOWPOS, *PWINDOWPOS, *LPWINDOWPOS;
 
@@ -952,7 +952,7 @@ typedef struct tagWINDOWPOS
 /* WM_NCCALCSIZE parameter structure */
 typedef struct
 {
-	RECT       rgrc[3];
+	RECT rgrc[3];
 	WINDOWPOS *lppos;
 } NCCALCSIZE_PARAMS, *LPNCCALCSIZE_PARAMS;
 
@@ -1107,30 +1107,30 @@ typedef struct
 
 typedef struct
 {
-	UINT      style;
-	WNDPROC   lpfnWndProc;
-	INT       cbClsExtra;
-	INT       cbWndExtra;
+	UINT style;
+	WNDPROC lpfnWndProc;
+	INT cbClsExtra;
+	INT cbWndExtra;
 	HINSTANCE hInstance;
-	HICON     hIcon;
-	HCURSOR   hCursor;
-	HBRUSH    hbrBackground;
-	LPCSTR    lpszMenuName;
-	LPCSTR    lpszClassName;
+	HICON hIcon;
+	HCURSOR hCursor;
+	HBRUSH hbrBackground;
+	LPCSTR lpszMenuName;
+	LPCSTR lpszClassName;
 } WNDCLASSA, *LPWNDCLASSA;
 
 typedef struct
 {
-	UINT      style;
-	WNDPROC   lpfnWndProc;
-	INT       cbClsExtra;
-	INT       cbWndExtra;
+	UINT style;
+	WNDPROC lpfnWndProc;
+	INT cbClsExtra;
+	INT cbWndExtra;
 	HINSTANCE hInstance;
-	HICON     hIcon;
-	HCURSOR   hCursor;
-	HBRUSH    hbrBackground;
-	LPCWSTR   lpszMenuName;
-	LPCWSTR   lpszClassName;
+	HICON hIcon;
+	HCURSOR hCursor;
+	HBRUSH hbrBackground;
+	LPCWSTR lpszMenuName;
+	LPCWSTR lpszClassName;
 } WNDCLASSW, *LPWNDCLASSW;
 
 DECL_WINELIB_TYPE_AW(WNDCLASS)
@@ -1138,8 +1138,8 @@ DECL_WINELIB_TYPE_AW(LPWNDCLASS)
 
 typedef struct
 {
-	DWORD  dwData;
-	DWORD  cbData;
+	DWORD dwData;
+	DWORD cbData;
 	LPVOID lpData;
 } COPYDATASTRUCT, *PCOPYDATASTRUCT, *LPCOPYDATASTRUCT;
 
@@ -1147,7 +1147,7 @@ typedef struct
 {
 	HMENU hmenuIn;
 	HMENU hmenuNext;
-	HWND  hwndNext;
+	HWND hwndNext;
 } MDINEXTMENU, *PMDINEXTMENU, *LPMDINEXTMENU;
 
 /* WinHelp internal structure */
@@ -1164,8 +1164,8 @@ typedef struct
 typedef struct
 {
 	UINT16 mkSize;
-	BYTE   mkKeyList;
-	BYTE   szKeyphrase[1];
+	BYTE mkKeyList;
+	BYTE szKeyphrase[1];
 } MULTIKEYHELP, *LPMULTIKEYHELP;
 
 typedef struct
@@ -1233,34 +1233,34 @@ typedef struct
 
 typedef struct
 {
-	UINT      cbSize;
-	UINT      style;
-	WNDPROC   lpfnWndProc;
-	INT       cbClsExtra;
-	INT       cbWndExtra;
+	UINT cbSize;
+	UINT style;
+	WNDPROC lpfnWndProc;
+	INT cbClsExtra;
+	INT cbWndExtra;
 	HINSTANCE hInstance;
-	HICON     hIcon;
-	HCURSOR   hCursor;
-	HBRUSH    hbrBackground;
-	LPCSTR    lpszMenuName;
-	LPCSTR    lpszClassName;
-	HICON     hIconSm;
+	HICON hIcon;
+	HCURSOR hCursor;
+	HBRUSH hbrBackground;
+	LPCSTR lpszMenuName;
+	LPCSTR lpszClassName;
+	HICON hIconSm;
 } WNDCLASSEXA, *LPWNDCLASSEXA;
 
 typedef struct
 {
-	UINT      cbSize;
-	UINT      style;
-	WNDPROC   lpfnWndProc;
-	INT       cbClsExtra;
-	INT       cbWndExtra;
+	UINT cbSize;
+	UINT style;
+	WNDPROC lpfnWndProc;
+	INT cbClsExtra;
+	INT cbWndExtra;
 	HINSTANCE hInstance;
-	HICON     hIcon;
-	HCURSOR   hCursor;
-	HBRUSH    hbrBackground;
-	LPCWSTR   lpszMenuName;
-	LPCWSTR   lpszClassName;
-	HICON     hIconSm;
+	HICON hIcon;
+	HCURSOR hCursor;
+	HBRUSH hbrBackground;
+	LPCWSTR lpszMenuName;
+	LPCWSTR lpszClassName;
+	HICON hIconSm;
 } WNDCLASSEXW, *LPWNDCLASSEXW;
 
 DECL_WINELIB_TYPE_AW(WNDCLASSEX)
@@ -1268,12 +1268,12 @@ DECL_WINELIB_TYPE_AW(LPWNDCLASSEX)
 
 typedef struct tagMSG
 {
-	HWND   hwnd;
-	UINT   message;
+	HWND hwnd;
+	UINT message;
 	WPARAM wParam;
 	LPARAM lParam;
-	DWORD  time;
-	POINT  pt;
+	DWORD time;
+	POINT pt;
 } MSG, *LPMSG;
 
 #define POINTSTOPOINT(pt, pts)                       \
@@ -1289,10 +1289,10 @@ typedef struct tagMSG
 typedef struct
 {
 	WIN_BOOL fIcon;
-	DWORD    xHotspot;
-	DWORD    yHotspot;
-	HBITMAP  hbmMask;
-	HBITMAP  hbmColor;
+	DWORD xHotspot;
+	DWORD yHotspot;
+	HBITMAP hbmMask;
+	HBITMAP hbmColor;
 } ICONINFO, *LPICONINFO;
 
 /* this is the 6 byte accel struct used in Win32 when presented to the user */
@@ -1337,33 +1337,33 @@ typedef struct
 /* FIXME: not sure this one is correct */
 typedef struct
 {
-	UINT    cbSize;
-	UINT    fMask;
-	UINT    fType;
-	UINT    fState;
-	UINT    wID;
-	HMENU   hSubMenu;
+	UINT cbSize;
+	UINT fMask;
+	UINT fType;
+	UINT fState;
+	UINT wID;
+	HMENU hSubMenu;
 	HBITMAP hbmpChecked;
 	HBITMAP hbmpUnchecked;
-	DWORD   dwItemData;
-	LPSTR   dwTypeData;
-	UINT    cch;
+	DWORD dwItemData;
+	LPSTR dwTypeData;
+	UINT cch;
 	HBITMAP hbmpItem;
 } MENUITEMINFOA, *LPMENUITEMINFOA;
 
 typedef struct
 {
-	UINT    cbSize;
-	UINT    fMask;
-	UINT    fType;
-	UINT    fState;
-	UINT    wID;
-	HMENU   hSubMenu;
+	UINT cbSize;
+	UINT fMask;
+	UINT fType;
+	UINT fState;
+	UINT wID;
+	HMENU hSubMenu;
 	HBITMAP hbmpChecked;
 	HBITMAP hbmpUnchecked;
-	DWORD   dwItemData;
-	LPWSTR  dwTypeData;
-	UINT    cch;
+	DWORD dwItemData;
+	LPWSTR dwTypeData;
+	UINT cch;
 	HBITMAP hbmpItem;
 } MENUITEMINFOW, *LPMENUITEMINFOW;
 
@@ -1372,13 +1372,13 @@ DECL_WINELIB_TYPE_AW(LPMENUITEMINFO)
 
 typedef struct
 {
-	DWORD  cbSize;
-	DWORD  fMask;
-	DWORD  dwStyle;
-	UINT   cyMax;
+	DWORD cbSize;
+	DWORD fMask;
+	DWORD dwStyle;
+	UINT cyMax;
 	HBRUSH hbrBack;
-	DWORD  dwContextHelpID;
-	DWORD  dwMenuData;
+	DWORD dwContextHelpID;
+	DWORD dwMenuData;
 } MENUINFO, *LPMENUINFO;
 
 typedef MENUINFO const *LPCMENUINFO;
@@ -1398,12 +1398,12 @@ typedef struct
 
 typedef struct
 {
-	WORD  mtOption;
-	WORD  mtID;
+	WORD mtOption;
+	WORD mtID;
 	WCHAR mtString[1];
 } MENUITEMTEMPLATE, *PMENUITEMTEMPLATE;
 
-typedef VOID   MENUTEMPLATE;
+typedef VOID MENUTEMPLATE;
 typedef PVOID *LPMENUTEMPLATE;
 
 /* Field specifiers for MENUITEMINFO[AW] type.  */
@@ -1558,11 +1558,11 @@ typedef struct
 {
 	UINT cbSize;
 	UINT fMask;
-	INT  nMin;
-	INT  nMax;
+	INT nMin;
+	INT nMax;
 	UINT nPage;
-	INT  nPos;
-	INT  nTrackPos;
+	INT nPos;
+	INT nTrackPos;
 } SCROLLINFO, *LPSCROLLINFO;
 
 /* GetScrollInfo() flags */
@@ -1768,42 +1768,42 @@ typedef struct
 /* Structure pointed to by lParam of WM_HELP */
 typedef struct
 {
-	UINT   cbSize;       /* Size in bytes of this struct  */
-	INT    iContextType; /* Either HELPINFO_WINDOW or HELPINFO_MENUITEM */
-	INT    iCtrlId;      /* Control Id or a Menu item Id. */
-	HANDLE hItemHandle;  /* hWnd of control or hMenu.     */
-	DWORD  dwContextId;  /* Context Id associated with this item */
-	POINT  MousePos;     /* Mouse Position in screen co-ordinates */
+	UINT cbSize;        /* Size in bytes of this struct  */
+	INT iContextType;   /* Either HELPINFO_WINDOW or HELPINFO_MENUITEM */
+	INT iCtrlId;        /* Control Id or a Menu item Id. */
+	HANDLE hItemHandle; /* hWnd of control or hMenu.     */
+	DWORD dwContextId;  /* Context Id associated with this item */
+	POINT MousePos;     /* Mouse Position in screen co-ordinates */
 } HELPINFO, *LPHELPINFO;
 
 typedef void CALLBACK (*MSGBOXCALLBACK)(LPHELPINFO lpHelpInfo);
 
 typedef struct
 {
-	UINT           cbSize;
-	HWND           hwndOwner;
-	HINSTANCE      hInstance;
-	LPCSTR         lpszText;
-	LPCSTR         lpszCaption;
-	DWORD          dwStyle;
-	LPCSTR         lpszIcon;
-	DWORD          dwContextHelpId;
+	UINT cbSize;
+	HWND hwndOwner;
+	HINSTANCE hInstance;
+	LPCSTR lpszText;
+	LPCSTR lpszCaption;
+	DWORD dwStyle;
+	LPCSTR lpszIcon;
+	DWORD dwContextHelpId;
 	MSGBOXCALLBACK lpfnMsgBoxCallback;
-	DWORD          dwLanguageId;
+	DWORD dwLanguageId;
 } MSGBOXPARAMSA, *LPMSGBOXPARAMSA;
 
 typedef struct
 {
-	UINT           cbSize;
-	HWND           hwndOwner;
-	HINSTANCE      hInstance;
-	LPCWSTR        lpszText;
-	LPCWSTR        lpszCaption;
-	DWORD          dwStyle;
-	LPCWSTR        lpszIcon;
-	DWORD          dwContextHelpId;
+	UINT cbSize;
+	HWND hwndOwner;
+	HINSTANCE hInstance;
+	LPCWSTR lpszText;
+	LPCWSTR lpszCaption;
+	DWORD dwStyle;
+	LPCWSTR lpszIcon;
+	DWORD dwContextHelpId;
 	MSGBOXCALLBACK lpfnMsgBoxCallback;
-	DWORD          dwLanguageId;
+	DWORD dwLanguageId;
 } MSGBOXPARAMSW, *LPMSGBOXPARAMSW;
 
 DECL_WINELIB_TYPE_AW(MSGBOXPARAMS)
@@ -1811,45 +1811,45 @@ DECL_WINELIB_TYPE_AW(LPMSGBOXPARAMS)
 
 typedef struct numberfmt32a
 {
-	UINT   NumDigits;
-	UINT   LeadingZero;
-	UINT   Grouping;
+	UINT NumDigits;
+	UINT LeadingZero;
+	UINT Grouping;
 	LPCSTR lpDecimalSep;
 	LPCSTR lpThousandSep;
-	UINT   NegativeOrder;
+	UINT NegativeOrder;
 } NUMBERFMTA;
 
 typedef struct numberfmt32w
 {
-	UINT    NumDigits;
-	UINT    LeadingZero;
-	UINT    Grouping;
+	UINT NumDigits;
+	UINT LeadingZero;
+	UINT Grouping;
 	LPCWSTR lpDecimalSep;
 	LPCWSTR lpThousandSep;
-	UINT    NegativeOrder;
+	UINT NegativeOrder;
 } NUMBERFMTW;
 
 typedef struct currencyfmt32a
 {
-	UINT   NumDigits;
-	UINT   LeadingZero;
-	UINT   Grouping;
+	UINT NumDigits;
+	UINT LeadingZero;
+	UINT Grouping;
 	LPCSTR lpDecimalSep;
 	LPCSTR lpThousandSep;
-	UINT   NegativeOrder;
-	UINT   PositiveOrder;
+	UINT NegativeOrder;
+	UINT PositiveOrder;
 	LPCSTR lpCurrencySymbol;
 } CURRENCYFMTA;
 
 typedef struct currencyfmt32w
 {
-	UINT    NumDigits;
-	UINT    LeadingZero;
-	UINT    Grouping;
+	UINT NumDigits;
+	UINT LeadingZero;
+	UINT Grouping;
 	LPCWSTR lpDecimalSep;
 	LPCWSTR lpThousandSep;
-	UINT    NegativeOrder;
-	UINT    PositiveOrder;
+	UINT NegativeOrder;
+	UINT PositiveOrder;
 	LPCWSTR lpCurrencySymbol;
 } CURRENCYFMTW;
 
@@ -1862,8 +1862,8 @@ typedef struct currencyfmt32w
 typedef struct tagMONITORINFO
 {
 	DWORD cbSize;
-	RECT  rcMonitor;
-	RECT  rcWork;
+	RECT rcMonitor;
+	RECT rcWork;
 	DWORD dwFlags;
 } MONITORINFO, *LPMONITORINFO;
 
@@ -1875,7 +1875,7 @@ typedef struct tagDLGTEMPLATE
 {
 	DWORD style;
 	DWORD dwExtendedStyle;
-	WORD  cdit;
+	WORD cdit;
 	short x;
 	short y;
 	short cx;
@@ -1897,7 +1897,7 @@ typedef struct tagDLGITEMTEMPLATE
 	short y;
 	short cx;
 	short cy;
-	WORD  id;
+	WORD id;
 } DLGITEMTEMPLATE;
 
 typedef DLGITEMTEMPLATE *LPDLGITEMTEMPLATEA;
@@ -1924,13 +1924,13 @@ typedef const DLGITEMTEMPLATE *LPCDLGITEMTEMPLATEW;
 typedef struct
 {
 	CREATESTRUCTA *lpcs;
-	HWND           hwndInsertAfter;
+	HWND hwndInsertAfter;
 } CBT_CREATEWNDA, *LPCBT_CREATEWNDA;
 
 typedef struct
 {
 	CREATESTRUCTW *lpcs;
-	HWND           hwndInsertAfter;
+	HWND hwndInsertAfter;
 } CBT_CREATEWNDW, *LPCBT_CREATEWNDW;
 
 DECL_WINELIB_TYPE_AW(CBT_CREATEWND)
@@ -1939,7 +1939,7 @@ DECL_WINELIB_TYPE_AW(LPCBT_CREATEWND)
 typedef struct
 {
 	WIN_BOOL fMouse;
-	HWND     hWndActive;
+	HWND hWndActive;
 } CBTACTIVATESTRUCT, *LPCBTACTIVATESTRUCT;
 
 /* modifiers for RegisterHotKey */
@@ -2534,38 +2534,38 @@ typedef struct
 	UINT itemAction;
 	UINT itemState;
 	HWND hwndItem;
-	HDC  hDC;
+	HDC hDC;
 	RECT rcItem WINE_PACKED;
 	DWORD itemData WINE_PACKED;
 } DRAWITEMSTRUCT, *PDRAWITEMSTRUCT, *LPDRAWITEMSTRUCT;
 
 typedef struct
 {
-	UINT  CtlType;
-	UINT  CtlID;
-	UINT  itemID;
-	UINT  itemWidth;
-	UINT  itemHeight;
+	UINT CtlType;
+	UINT CtlID;
+	UINT itemID;
+	UINT itemWidth;
+	UINT itemHeight;
 	DWORD itemData;
 } MEASUREITEMSTRUCT, *PMEASUREITEMSTRUCT, *LPMEASUREITEMSTRUCT;
 
 typedef struct
 {
-	UINT  CtlType;
-	UINT  CtlID;
-	UINT  itemID;
-	HWND  hwndItem;
+	UINT CtlType;
+	UINT CtlID;
+	UINT itemID;
+	HWND hwndItem;
 	DWORD itemData;
 } DELETEITEMSTRUCT, *LPDELETEITEMSTRUCT;
 
 typedef struct
 {
-	UINT  CtlType;
-	UINT  CtlID;
-	HWND  hwndItem;
-	UINT  itemID1;
+	UINT CtlType;
+	UINT CtlID;
+	HWND hwndItem;
+	UINT itemID1;
 	DWORD itemData1;
-	UINT  itemID2;
+	UINT itemID2;
 	DWORD itemData2;
 	DWORD dwLocaleId;
 } COMPAREITEMSTRUCT, *PCOMPAREITEMSTRUCT, *LPCOMPAREITEMSTRUCT;
@@ -2814,9 +2814,9 @@ typedef struct
 
 typedef struct
 {
-	HWND16   hWnd;
+	HWND16 hWnd;
 	HANDLE16 hScope;
-	WORD     wFlags;
+	WORD wFlags;
 	HANDLE16 hList;
 	HANDLE16 hOfStruct;
 	POINT16 pt WINE_PACKED;

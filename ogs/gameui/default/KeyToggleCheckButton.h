@@ -24,7 +24,7 @@ private:
 private:
 	char *m_pszKeyName;
 	char *m_pszCmdName;
-	bool  m_bStartValue;
+	bool m_bStartValue;
 };
 
 #endif

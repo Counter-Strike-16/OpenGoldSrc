@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 #include "public/FileSystem.h"
 #include "rehlds/model.h"
 
@@ -40,7 +40,7 @@ const int MAX_DECALS = 512;
 #define DECAL_EXTRASIZE sizeof(texture_t) - sizeof(miptex_t)
 
 typedef struct lumpinfo_s lumpinfo_t;
-typedef struct texture_s  texture_t;
+typedef struct texture_s texture_t;
 
 typedef struct decalname_s
 {
@@ -51,7 +51,7 @@ typedef struct decalname_s
 typedef struct lumplist_s
 {
 	lumpinfo_t *lump;
-	qboolean    breplaced;
+	qboolean breplaced;
 	lumplist_s *next;
 } lumplist_t;
 

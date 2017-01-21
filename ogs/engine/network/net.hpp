@@ -30,10 +30,10 @@
 
 #pragma once
 
-#include "maintypes.h"
-#include "rehlds/common_rehlds.h"
 #include "common/enums.h"
 #include "common/netadr.h"
+#include "maintypes.h"
+#include "rehlds/common_rehlds.h"
 
 // MAX_CHALLENGES is made large to prevent a denial
 //  of service attack that could cycle all of them
@@ -48,10 +48,12 @@
 //  the server sends this value back
 #define S2C_CHALLENGE 'A' // + challenge value
 
-// Send a userid, client remote address, is this server secure and engine build number
+// Send a userid, client remote address, is this server secure and engine build
+// number
 #define S2C_CONNECTION 'B'
 
-// HLMaster rejected a server's connection because the server needs to be updated
+// HLMaster rejected a server's connection because the server needs to be
+// updated
 #define M2S_REQUESTRESTART 'O'
 
 // send a log event as key value
@@ -102,7 +104,8 @@
 // Max length of unreliable message
 #define MAX_DATAGRAM 4000
 
-// This is the packet payload without any header bytes (which are attached for actual sending)
+// This is the packet payload without any header bytes (which are attached for
+// actual sending)
 #define NET_MAX_PAYLOAD 65536
 
 // This is the payload plus any header info (excluding UDP header)
@@ -125,10 +128,12 @@
 	(((number) + ((boundary)-1)) / (boundary)) * (boundary)
 
 // Pad this to next higher 16 byte boundary
-// This is the largest packet that can come in/out over the wire, before processing the header
+// This is the largest packet that can come in/out over the wire, before
+// processing the header
 //  bytes will be stripped by the networking channel layer
 //#define NET_MAX_MESSAGE PAD_NUMBER( ( MAX_MSGLEN + HEADER_BYTES ), 16 )
-// This is currently used value in the engine. TODO: define above gives 4016, check it why.
+// This is currently used value in the engine. TODO: define above gives 4016,
+// check it why.
 #define NET_MAX_MESSAGE 4037
 
 enum
@@ -180,7 +185,8 @@ typedef struct flow_s
 // Client sends normal fragments only while connecting
 #define MAX_NORMAL_FRAGMENTS (NET_MAX_PAYLOAD / CLIENT_FRAGMENT_SIZE_ONCONNECT)
 
-// While client is connecting it sending fragments with minimal size, also it transfers sprays with minimal fragments...
+// While client is connecting it sending fragments with minimal size, also it
+// transfers sprays with minimal fragments...
 // But with sv_delayed_spray_upload it sends with cl_dlmax fragment size
 #define MAX_FILE_FRAGMENTS (CUSTOMIZATION_MAX_SIZE / FRAGMENT_C2S_MIN_SIZE)
 #endif

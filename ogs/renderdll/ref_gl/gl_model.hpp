@@ -60,10 +60,10 @@ typedef struct
 {
 	vec3_t mins, maxs;
 	vec3_t origin; // for sounds or lights
-	float  radius;
-	int    headnode;
-	int    visleafs; // not including the solid leaf 0
-	int    firstface, numfaces;
+	float radius;
+	int headnode;
+	int visleafs; // not including the solid leaf 0
+	int firstface, numfaces;
 } mmodel_t;
 
 #define SIDE_FRONT 0
@@ -80,16 +80,16 @@ typedef struct
 typedef struct
 {
 	unsigned short v[2];
-	unsigned int   cachededgeoffset;
+	unsigned int cachededgeoffset;
 } medge_t;
 
 typedef struct mtexinfo_s
 {
-	float              vecs[2][4];
-	int                flags;
-	int                numframes;
+	float vecs[2][4];
+	int flags;
+	int numframes;
 	struct mtexinfo_s *next; // animation chain
-	image_t *          image;
+	image_t *image;
 } mtexinfo_t;
 
 #define VERTEXSIZE 7
@@ -98,9 +98,9 @@ typedef struct glpoly_s
 {
 	struct glpoly_s *next;
 	struct glpoly_s *chain;
-	int              numverts;
-	int              flags;                // for SURF_UNDERWATER (not needed anymore?)
-	float            verts[4][VERTEXSIZE]; // variable sized (xyz s1t1 s2t2)
+	int numverts;
+	int flags;                  // for SURF_UNDERWATER (not needed anymore?)
+	float verts[4][VERTEXSIZE]; // variable sized (xyz s1t1 s2t2)
 } glpoly_t;
 
 typedef struct msurface_s
@@ -108,7 +108,7 @@ typedef struct msurface_s
 	int visframe; // should be drawn when node is crossed
 
 	cplane_t *plane;
-	int       flags;
+	int flags;
 
 	int firstedge; // look up in model->surfedges[], negative numbers
 	int numedges;  // are backwards edges
@@ -119,7 +119,7 @@ typedef struct msurface_s
 	int light_s, light_t;   // gl lightmap coordinates
 	int dlight_s, dlight_t; // gl lightmap coordinates for dynamic lightmaps
 
-	glpoly_t *         polys; // multiple if warped
+	glpoly_t *polys; // multiple if warped
 	struct msurface_s *texturechain;
 	struct msurface_s *lightmapchain;
 
@@ -129,8 +129,8 @@ typedef struct msurface_s
 	int dlightframe;
 	int dlightbits;
 
-	int   lightmaptexturenum;
-	byte  styles[MAXLIGHTMAPS];
+	int lightmaptexturenum;
+	byte styles[MAXLIGHTMAPS];
 	float cached_light[MAXLIGHTMAPS]; // values currently used in lightmap
 	byte *samples;                    // [numstyles*surfsize]
 } msurface_t;
@@ -146,7 +146,7 @@ typedef struct mnode_s
 	struct mnode_s *parent;
 
 	// node specific
-	cplane_t *      plane;
+	cplane_t *plane;
 	struct mnode_s *children[2];
 
 	unsigned short firstsurface;
@@ -168,7 +168,7 @@ typedef struct mleaf_s
 	int area;
 
 	msurface_t **firstmarksurface;
-	int          nummarksurfaces;
+	int nummarksurfaces;
 } mleaf_t;
 
 //===================================================================
@@ -189,7 +189,7 @@ typedef struct model_s
 	int registration_sequence;
 
 	modtype_t type;
-	int       numframes;
+	int numframes;
 
 	int flags;
 
@@ -197,13 +197,13 @@ typedef struct model_s
 	// volume occupied by the model graphics
 	//
 	vec3_t mins, maxs;
-	float  radius;
+	float radius;
 
 	//
 	// solid volume for clipping
 	//
 	qboolean clipbox;
-	vec3_t   clipmins, clipmaxs;
+	vec3_t clipmins, clipmaxs;
 
 	//
 	// brush model
@@ -211,35 +211,35 @@ typedef struct model_s
 	int firstmodelsurface, nummodelsurfaces;
 	int lightmap; // only for submodels
 
-	int       numsubmodels;
+	int numsubmodels;
 	mmodel_t *submodels;
 
-	int       numplanes;
+	int numplanes;
 	cplane_t *planes;
 
-	int      numleafs; // number of visible leafs, not counting 0
+	int numleafs; // number of visible leafs, not counting 0
 	mleaf_t *leafs;
 
-	int        numvertexes;
+	int numvertexes;
 	mvertex_t *vertexes;
 
-	int      numedges;
+	int numedges;
 	medge_t *edges;
 
-	int      numnodes;
-	int      firstnode;
+	int numnodes;
+	int firstnode;
 	mnode_t *nodes;
 
-	int         numtexinfo;
+	int numtexinfo;
 	mtexinfo_t *texinfo;
 
-	int         numsurfaces;
+	int numsurfaces;
 	msurface_t *surfaces;
 
-	int  numsurfedges;
+	int numsurfedges;
 	int *surfedges;
 
-	int          nummarksurfaces;
+	int nummarksurfaces;
 	msurface_t **marksurfaces;
 
 	dvis_t *vis;
@@ -249,14 +249,14 @@ typedef struct model_s
 	// for alias models and skins
 	image_t *skins[MAX_MD2SKINS];
 
-	int   extradatasize;
+	int extradatasize;
 	void *extradata;
 } model_t;
 
 //============================================================================
 
-void     Mod_Init();
-void     Mod_ClearAll();
+void Mod_Init();
+void Mod_ClearAll();
 model_t *Mod_ForName(char *name, qboolean crash);
 mleaf_t *Mod_PointInLeaf(float *p, model_t *model);
 byte *Mod_ClusterPVS(int cluster, model_t *model);
@@ -265,7 +265,7 @@ void Mod_Modellist_f();
 
 void *Hunk_Begin(int maxsize);
 void *Hunk_Alloc(int size);
-int  Hunk_End();
+int Hunk_End();
 void Hunk_Free(void *base);
 
 void Mod_FreeAll();

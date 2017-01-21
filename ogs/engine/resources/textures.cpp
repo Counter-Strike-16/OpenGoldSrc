@@ -31,14 +31,14 @@
 #include "precompiled.hpp"
 
 texlumpinfo_t *lumpinfo;
-int            nTexLumps;
-FILE *         texfiles[128];
-int            nTexFiles;
+int nTexLumps;
+FILE *texfiles[128];
+int nTexFiles;
 
 unsigned char texgammatable[256];
-texture_t *   r_notexture_mip;
+texture_t *r_notexture_mip;
 
-int  nummiptex;
+int nummiptex;
 char miptex[512][64];
 
 /*
@@ -46,7 +46,7 @@ char miptex[512][64];
  */
 #ifndef HOOK_ENGINE
 
-cvar_t r_wadtextures = {"r_wadtextures", "0", 0, 0.0f, NULL};
+cvar_t r_wadtextures = { "r_wadtextures", "0", 0, 0.0f, NULL };
 
 #else // HOOK_ENGINE
 
@@ -95,18 +95,19 @@ void ForwardSlashes(char *pname)
 
 qboolean TEX_InitFromWad(char *path)
 {
-	char *       pszWadFile;
+	char *pszWadFile;
 	FileHandle_t texfile;
-	char         szTmpPath[1024];
-	char         wadName[260];
-	char         wadPath[260];
-	wadinfo_t    header;
+	char szTmpPath[1024];
+	char wadName[260];
+	char wadPath[260];
+	wadinfo_t header;
 
 	Q_strncpy(szTmpPath, path, 1022);
 	szTmpPath[1022] = 0;
 	if(!Q_strchr(szTmpPath, ';'))
 		Q_strcat(szTmpPath, ";");
-	for(pszWadFile = strtok(szTmpPath, ";"); pszWadFile; pszWadFile = strtok(NULL, ";"))
+	for(pszWadFile = strtok(szTmpPath, ";"); pszWadFile;
+	    pszWadFile = strtok(NULL, ";"))
 	{
 		ForwardSlashes(pszWadFile);
 		COM_FileBase(pszWadFile, wadName);
@@ -117,31 +118,36 @@ qboolean TEX_InitFromWad(char *path)
 			continue;
 
 #ifdef REHLDS_FIXES
-		if(g_psv.active && Q_stricmp(wadPath, "halflife.wad") && Q_stricmp(wadPath, "xeno.wad") && Q_stricmp(wadPath, "decals.wad"))
+		if(g_psv.active && Q_stricmp(wadPath, "halflife.wad") &&
+		   Q_stricmp(wadPath, "xeno.wad") && Q_stricmp(wadPath, "decals.wad"))
 			PF_precache_generic_I(wadPath);
 #endif // REHLDS_FIXES
 
-		texfile               = FS_Open(wadPath, "rb");
+		texfile = FS_Open(wadPath, "rb");
 		texfiles[nTexFiles++] = texfile;
 		if(!texfile)
 			Sys_Error("WARNING: couldn't open %s\n", wadPath);
 
 		Con_DPrintf("Using WAD File: %s\n", wadPath);
 		SafeRead(texfile, &header, 12);
-		if(Q_strncmp(header.identification, "WAD2", 4) && Q_strncmp(header.identification, "WAD3", 4))
+		if(Q_strncmp(header.identification, "WAD2", 4) &&
+		   Q_strncmp(header.identification, "WAD3", 4))
 			Sys_Error("TEX_InitFromWad: %s isn't a wadfile", wadPath);
 
-		header.numlumps     = LittleLong(header.numlumps);
+		header.numlumps = LittleLong(header.numlumps);
 		header.infotableofs = LittleLong(header.infotableofs);
 		FS_Seek(texfile, header.infotableofs, FILESYSTEM_SEEK_HEAD);
-		lumpinfo = (texlumpinfo_t *)Mem_Realloc(lumpinfo, sizeof(texlumpinfo_t) * (header.numlumps + nTexLumps));
+		lumpinfo = (texlumpinfo_t *)Mem_Realloc(
+		lumpinfo, sizeof(texlumpinfo_t) * (header.numlumps + nTexLumps));
 
 		for(int i = 0; i < header.numlumps; i++, nTexLumps++)
 		{
 			SafeRead(texfile, &lumpinfo[nTexLumps], sizeof(lumpinfo_t));
 			CleanupName(lumpinfo[nTexLumps].lump.name, lumpinfo[nTexLumps].lump.name);
-			lumpinfo[nTexLumps].lump.filepos  = LittleLong(lumpinfo[nTexLumps].lump.filepos);
-			lumpinfo[nTexLumps].lump.disksize = LittleLong(lumpinfo[nTexLumps].lump.disksize);
+			lumpinfo[nTexLumps].lump.filepos =
+			LittleLong(lumpinfo[nTexLumps].lump.filepos);
+			lumpinfo[nTexLumps].lump.disksize =
+			LittleLong(lumpinfo[nTexLumps].lump.disksize);
 			;
 			lumpinfo[nTexLumps].iTexFile = nTexFiles - 1;
 		}
@@ -171,7 +177,7 @@ void TEX_CleanupWadInfo()
 int TEX_LoadLump(char *name, unsigned char *dest)
 {
 	texlumpinfo_t *found;
-	texlumpinfo_t  key;
+	texlumpinfo_t key;
 
 	CleanupName(name, key.lump.name);
 	found = (texlumpinfo_t *)bsearch(&key, lumpinfo, nTexLumps, sizeof(texlumpinfo_t), lump_sorter);

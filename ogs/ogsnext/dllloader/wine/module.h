@@ -28,12 +28,12 @@ typedef struct
 /* In-memory segment table */
 typedef struct
 {
-	WORD     filepos; /* Position in file, in sectors */
-	WORD     size;    /* Segment size on disk */
-	WORD     flags;   /* Segment flags */
-	WORD     minsize; /* Min. size of segment in memory */
-	HANDLE16 hSeg;    /* Selector or handle (selector - 1) */
-	                  /* of segment in memory */
+	WORD filepos;  /* Position in file, in sectors */
+	WORD size;     /* Segment size on disk */
+	WORD flags;    /* Segment flags */
+	WORD minsize;  /* Min. size of segment in memory */
+	HANDLE16 hSeg; /* Selector or handle (selector - 1) */
+	               /* of segment in memory */
 } SEGTABLEENTRY;
 
 /* Self-loading modules contain this structure in their first segment */
@@ -42,8 +42,8 @@ typedef struct
 
 typedef struct
 {
-	WORD      version; /* Must be "A0" (0x3041) */
-	WORD      reserved;
+	WORD version; /* Must be "A0" (0x3041) */
+	WORD reserved;
 	FARPROC16 BootApp;    /* startup procedure */
 	FARPROC16 LoadAppSeg; /* procedure to load a segment */
 	FARPROC16 reserved2;
@@ -51,7 +51,7 @@ typedef struct
                               * wine must write this field */
 	FARPROC16 EntryAddrProc;
 	FARPROC16 ExitProc; /* exit procedure */
-	WORD      reserved3[4];
+	WORD reserved3[4];
 	FARPROC16 SetOwner; /* Set Owner procedure, exported by wine */
 } SELFLOADHEADER;
 
@@ -66,10 +66,10 @@ typedef struct
 
 typedef struct
 {
-	LPSTR   lpEnvAddress;
-	LPSTR   lpCmdLine;
+	LPSTR lpEnvAddress;
+	LPSTR lpCmdLine;
 	UINT16 *lpCmdShow;
-	DWORD   dwReserved;
+	DWORD dwReserved;
 } LOADPARAMS;
 
 #include "poppack.h"
@@ -85,16 +85,16 @@ typedef struct wine_modref
 {
 	struct wine_modref *next;
 	struct wine_modref *prev;
-	MODULE32_TYPE       type;
+	MODULE32_TYPE type;
 	union
 	{
-		PE_MODREF  pe;
+		PE_MODREF pe;
 		ELF_MODREF elf;
 	} binfmt;
 
 	HMODULE module;
 
-	int                  nDeps;
+	int nDeps;
 	struct wine_modref **deps;
 
 	int flags;
@@ -130,7 +130,7 @@ struct modref_list_t;
 
 typedef struct modref_list_t
 {
-	WINE_MODREF *         wm;
+	WINE_MODREF *wm;
 	struct modref_list_t *next;
 	struct modref_list_t *prev;
 } modref_list;

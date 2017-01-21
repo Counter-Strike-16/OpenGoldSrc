@@ -12,27 +12,28 @@
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
 #else
-#include <string.h>
-#include <dlfcn.h>
-#include <stdarg.h>
 #include <ctype.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <malloc.h>
+#include <dlfcn.h>
 #include <errno.h>
-#include <unistd.h>
+#include <malloc.h>
 #include <signal.h>
+#include <stdarg.h>
+#include <string.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
-//#define FRAMERATE // define me to have hlds print out what it thinks the framerate is
+//#define FRAMERATE // define me to have hlds print out what it thinks the
+// framerate is
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "sys_ded.hpp"
+#include "common/exefuncs.h"
 #include "conproc.hpp"
 #include "dedicated.hpp"
-#include "common/exefuncs.h"
+#include "sys_ded.hpp"
 
 #include "common/dll_state.h"
 #include "enginecallback.hpp"
@@ -47,17 +48,17 @@ static HANDLE houtput;
 static const char *g_pszengine = "swds.dll";
 #else
 static const char *g_pszengine = "engine_i386.so";
-static char        g_szEXEName[256];
+static char g_szEXEName[256];
 #endif
 
 // System Memory & Size
 static unsigned char *gpMemBase = NULL;
-static int            giMemSize = 0x2000000; // 32 Mb default heapsize
+static int giMemSize = 0x2000000; // 32 Mb default heapsize
 
 exefuncs_t ef;
 
 static char console_text[256];
-static int  console_textlen;
+static int console_textlen;
 
 static long hDLLThirdParty = 0L;
 
@@ -87,22 +88,25 @@ void Sys_Sleep_Net(int msec)
 	}
 	else
 	{
-		Sys_Sleep_Old(msec); // NET_Sleep isn't hooked yet, fallback to the old method
+		Sys_Sleep_Old(
+		msec); // NET_Sleep isn't hooked yet, fallback to the old method
 	}
 }
 
-volatile char paused = 0; // this checks if pause has run yet, tell the compiler it can change at any time
+volatile char paused = 0; // this checks if pause has run yet, tell the compiler
+                          // it can change at any time
 // for Sys_Sleep_Timer()
 void alarmFunc(int num)
 {
 	signal(SIGALRM, alarmFunc); // reset the signal handler
 	if(!paused)
-	{ // paused is 0, the timer has fired before the pause was called... Lets queue it again
+	{ // paused is 0, the timer has fired before the pause was
+		// called... Lets queue it again
 		struct itimerval itim;
-		itim.it_interval.tv_sec  = 0;
+		itim.it_interval.tv_sec = 0;
 		itim.it_interval.tv_usec = 0;
-		itim.it_value.tv_sec     = 0;
-		itim.it_value.tv_usec    = 1000; // get it to run again real soon
+		itim.it_value.tv_sec = 0;
+		itim.it_value.tv_usec = 1000; // get it to run again real soon
 		setitimer(ITIMER_REAL, &itim, 0);
 	}
 }
@@ -127,9 +131,10 @@ void Sys_Sleep_Timer(int msec)
 
 	struct itimerval tm;
 
-	tm.it_value.tv_sec     = msec / 1000;                                     // convert msec to seconds
-	tm.it_value.tv_usec    = static_cast<__suseconds_t>((msec % 1000) * 1E3); // get the number of msecs and change to micros
-	tm.it_interval.tv_sec  = 0;
+	tm.it_value.tv_sec = msec / 1000; // convert msec to seconds
+	tm.it_value.tv_usec = static_cast<__suseconds_t>(
+	(msec % 1000) * 1E3); // get the number of msecs and change to micros
+	tm.it_interval.tv_sec = 0;
 	tm.it_interval.tv_usec = 0;
 
 	paused = 0;
@@ -150,7 +155,7 @@ void Sys_Sleep_Select(int msec)
 	struct timeval tv;
 
 	// Assumes msec < 1000
-	tv.tv_sec  = 0;
+	tv.tv_sec = 0;
 	tv.tv_usec = 1000 * msec;
 
 	select(1, NULL, NULL, NULL, &tv);
@@ -177,7 +182,8 @@ long Sys_LoadLibrary(char *lib)
 	char absolute_lib[1024];
 
 	if(!getcwd(cwd, sizeof(cwd)))
-		Sys_ErrorMessage(1, "Sys_LoadLibrary: Couldn't determine current directory.");
+		Sys_ErrorMessage(1,
+		                 "Sys_LoadLibrary: Couldn't determine current directory.");
 
 	if(cwd[strlen(cwd) - 1] == '/')
 		cwd[strlen(cwd) - 1] = 0;
@@ -247,11 +253,11 @@ Update status line at top of console if engine is running
 void UpdateStatus(int force)
 {
 	static double tLast = 0.0;
-	double        tCurrent;
-	char          szPrompt[256];
-	int           n, spec, nMax;
-	char          szMap[32];
-	float         fps;
+	double tCurrent;
+	char szPrompt[256];
+	int n, spec, nMax;
+	char szMap[32];
+	float fps;
 
 	if(!engineapi.Host_GetHostInfo)
 		return;
@@ -285,7 +291,7 @@ void Sys_ConsoleOutput(char *string)
 {
 #ifdef _WIN32
 	unsigned long dummy;
-	char          text[256];
+	char text[256];
 
 	if(console_textlen)
 	{
@@ -320,7 +326,7 @@ void Sys_Printf(char *fmt, ...)
 {
 	// Dump text to debugging console.
 	va_list argptr;
-	char    szText[1024];
+	char szText[1024];
 
 	va_start(argptr, fmt);
 	vsnprintf(szText, sizeof(szText), fmt, argptr);
@@ -374,15 +380,16 @@ void EF_VID_ForceLockState(int)
 ==============
 CheckParm
 
-Search for psz in command line to .exe, if **ppszValue is set, then the pointer is
+Search for psz in command line to .exe, if **ppszValue is set, then the pointer
+is
  directed at the NEXT argument in the command line
 ==============
 */
 char *CheckParm(const char *psz, char **ppszValue)
 {
-	int         i;
+	int i;
 	static char sz[128];
-	char *      pret;
+	char *pret;
 
 	if(!gpszCmdLine)
 		return NULL;
@@ -392,7 +399,7 @@ char *CheckParm(const char *psz, char **ppszValue)
 	// should we return a pointer to the value?
 	if(pret && ppszValue)
 	{
-		char *p1   = pret;
+		char *p1 = pret;
 		*ppszValue = NULL;
 
 		while(*p1 && (*p1 != 32))
@@ -409,7 +416,7 @@ char *CheckParm(const char *psz, char **ppszValue)
 				sz[i] = *p2++;
 			}
 
-			sz[i]      = 0;
+			sz[i] = 0;
 			*ppszValue = &sz[0];
 		}
 	}
@@ -432,15 +439,15 @@ int InitInstance(void)
 	memset(&ef, 0, sizeof(ef));
 
 	// Function pointers used by dedicated server
-	ef.Sys_Printf   = Sys_Printf;
+	ef.Sys_Printf = Sys_Printf;
 	ef.ErrorMessage = Sys_ErrorMessage;
 
-	ef.VID_ForceLockState              = EF_VID_ForceLockState;
+	ef.VID_ForceLockState = EF_VID_ForceLockState;
 	ef.VID_ForceUnlockedAndReturnState = EF_VID_ForceUnlockedAndReturnState;
 
 #ifdef _WIN32
 	// Data
-	ef.fMMX    = PROC_IsMMX();
+	ef.fMMX = PROC_IsMMX();
 	ef.iCPUMhz = PROC_GetSpeed(); // in MHz
 #endif
 
@@ -456,9 +463,9 @@ Sys_ConsoleInput
 #ifdef _WIN32
 char *Sys_ConsoleInput(void)
 {
-	INPUT_RECORD  recs[1024];
+	INPUT_RECORD recs[1024];
 	unsigned long dummy;
-	int           ch;
+	int ch;
 	unsigned long numread, numevents;
 
 	while(1)
@@ -493,7 +500,7 @@ char *Sys_ConsoleInput(void)
 					if(console_textlen)
 					{
 						console_text[console_textlen] = 0;
-						console_textlen               = 0;
+						console_textlen = 0;
 						return console_text;
 					}
 					break;
@@ -529,16 +536,17 @@ char *Sys_ConsoleInput(void)
 char *Sys_ConsoleInput(void)
 {
 	struct timeval tvTimeout;
-	fd_set         fdSet;
-	unsigned char  ch;
+	fd_set fdSet;
+	unsigned char ch;
 
 	FD_ZERO(&fdSet);
 	FD_SET(STDIN_FILENO, &fdSet);
 
-	tvTimeout.tv_sec  = 0;
+	tvTimeout.tv_sec = 0;
 	tvTimeout.tv_usec = 0;
 
-	if(select(1, &fdSet, NULL, NULL, &tvTimeout) == -1 || !FD_ISSET(STDIN_FILENO, &fdSet))
+	if(select(1, &fdSet, NULL, NULL, &tvTimeout) == -1 ||
+	   !FD_ISSET(STDIN_FILENO, &fdSet))
 		return NULL;
 
 	console_textlen = 0;
@@ -550,7 +558,8 @@ char *Sys_ConsoleInput(void)
 	{
 		if((ch == 10) || (console_textlen == 254))
 		{
-			// For commands longer than we can accept, consume the remainder of the input buffer
+			// For commands longer than we can accept, consume the remainder of the
+			// input buffer
 			if((console_textlen == 254) && (ch != 10))
 			{
 				while(read(STDIN_FILENO, &ch, 1))
@@ -560,9 +569,9 @@ char *Sys_ConsoleInput(void)
 				}
 			}
 
-			//Null terminate string and return
+			// Null terminate string and return
 			console_text[console_textlen] = 0;
-			console_textlen               = 0;
+			console_textlen = 0;
 			return console_text;
 		}
 
@@ -582,10 +591,10 @@ WriteStatusText
 */
 void WriteStatusText(char *szText)
 {
-	char  szFullLine[81];
+	char szFullLine[81];
 	COORD coord;
 	DWORD dwWritten = 0;
-	WORD  wAttrib[80];
+	WORD wAttrib[80];
 
 	int i;
 
@@ -620,7 +629,7 @@ int CreateConsoleWindow(void)
 		return 0;
 	}
 
-	hinput  = GetStdHandle(STD_INPUT_HANDLE);
+	hinput = GetStdHandle(STD_INPUT_HANDLE);
 	houtput = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	InitConProc();
@@ -689,14 +698,14 @@ int GameInit(void)
 
 #if !defined(_WIN32)
 	char *pPingType;
-	int   type;
+	int type;
 	if((CheckParm("-pingboost", &pPingType)) && pPingType)
 	{
 		type = atoi(pPingType);
 		switch(type)
 		{
 		case 1:
-			//printf("Using timer method\n");
+			// printf("Using timer method\n");
 			signal(SIGALRM, alarmFunc);
 			Sys_Sleep = Sys_Sleep_Timer;
 			break;
@@ -706,7 +715,7 @@ int GameInit(void)
 		case 3:
 			Sys_Sleep = Sys_Sleep_Net;
 			// we Sys_GetProcAddress NET_Sleep() from
-			//engine_i386.so later in this function
+			// engine_i386.so later in this function
 			break;
 		default: // just in case
 			Sys_Sleep = Sys_Sleep_Old;
@@ -752,7 +761,7 @@ int GameInit(void)
 	if(type == 3)
 	{
 		NET_Sleep = (NET_Sleep_t)Sys_GetProcAddress(ghMod, "NET_Sleep_Timeout");
-		//printf("Net_Sleep:%p\n",NET_Sleep);
+		// printf("Net_Sleep:%p\n",NET_Sleep);
 	}
 #endif
 
@@ -844,7 +853,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 		static double oldtime = 0.0;
 
-		MSG    msg;
+		MSG msg;
 		double newtime;
 		double dtime;
 
@@ -1000,11 +1009,11 @@ int main(int argc, char **argv)
 	{
 		static double oldtime = 0.0;
 
-		double                newtime;
-		double                dtime;
+		double newtime;
+		double dtime;
 
 #ifdef FRAMERATE
-		static int            frameNumber = 0, frameRate = 0;
+		static int frameNumber = 0, frameRate = 0;
 		static struct timeval beforeTime;
 		if(frameRate == 0)
 		{
@@ -1016,11 +1025,11 @@ int main(int argc, char **argv)
 		if(frameRate % 1000 == 0)
 		{
 			struct timeval afterTime;
-			float          timediff;
+			float timediff;
 
 			gettimeofday(&afterTime, NULL);
 			timediff = (float)(afterTime.tv_sec - beforeTime.tv_sec) +
-			    ((float)(afterTime.tv_usec - beforeTime.tv_usec)) / 1E6;
+			((float)(afterTime.tv_usec - beforeTime.tv_usec)) / 1E6;
 
 			printf("Frame Rate:%f\n", (float)frameRate / timediff);
 			frameRate = 0;

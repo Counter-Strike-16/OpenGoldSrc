@@ -63,10 +63,10 @@ typedef struct
 typedef struct mplane_s
 {
 	vec3_t normal;
-	float  dist;
-	byte   type;     // for texture axis selection and fast side tests
-	byte   signbits; // signx + signy<<1 + signz<<1
-	byte   pad[2];
+	float dist;
+	byte type;     // for texture axis selection and fast side tests
+	byte signbits; // signx + signy<<1 + signz<<1
+	byte pad[2];
 } mplane_t;
 
 // FIXME: differentiate from texinfo SURF_ flags
@@ -82,16 +82,16 @@ typedef struct mplane_s
 typedef struct
 {
 	unsigned short v[2];
-	unsigned int   cachededgeoffset;
+	unsigned int cachededgeoffset;
 } medge_t;
 
 typedef struct mtexinfo_s
 {
-	float              vecs[2][4];
-	float              mipadjust;
-	image_t *          image;
-	int                flags;
-	int                numframes;
+	float vecs[2][4];
+	float mipadjust;
+	image_t *image;
+	int flags;
+	int numframes;
 	struct mtexinfo_s *next; // animation chain
 } mtexinfo_t;
 
@@ -103,7 +103,7 @@ typedef struct msurface_s
 	int dlightbits;
 
 	mplane_t *plane;
-	int       flags;
+	int flags;
 
 	int firstedge; // look up in model->surfedges[], negative numbers
 	int numedges;  // are backwards edges
@@ -117,7 +117,7 @@ typedef struct msurface_s
 	mtexinfo_t *texinfo;
 
 	// lighting info
-	byte  styles[MAXLIGHTMAPS];
+	byte styles[MAXLIGHTMAPS];
 	byte *samples; // [numstyles*surfsize]
 
 	struct msurface_s *nextalphasurface;
@@ -135,7 +135,7 @@ typedef struct mnode_s
 	struct mnode_s *parent;
 
 	// node specific
-	mplane_t *      plane;
+	mplane_t *plane;
 	struct mnode_s *children[2];
 
 	unsigned short firstsurface;
@@ -157,8 +157,8 @@ typedef struct mleaf_s
 	int area;
 
 	msurface_t **firstmarksurface;
-	int          nummarksurfaces;
-	int          key; // BSP sequence number for leaf's contents
+	int nummarksurfaces;
+	int key; // BSP sequence number for leaf's contents
 } mleaf_t;
 
 //===================================================================
@@ -179,7 +179,7 @@ typedef struct model_s
 	int registration_sequence;
 
 	modtype_t type;
-	int       numframes;
+	int numframes;
 
 	int flags;
 
@@ -192,42 +192,42 @@ typedef struct model_s
 	// solid volume for clipping (sent from server)
 	//
 	qboolean clipbox;
-	vec3_t   clipmins, clipmaxs;
+	vec3_t clipmins, clipmaxs;
 
 	//
 	// brush model
 	//
 	int firstmodelsurface, nummodelsurfaces;
 
-	int       numsubmodels;
+	int numsubmodels;
 	dmodel_t *submodels;
 
-	int       numplanes;
+	int numplanes;
 	mplane_t *planes;
 
-	int      numleafs; // number of visible leafs, not counting 0
+	int numleafs; // number of visible leafs, not counting 0
 	mleaf_t *leafs;
 
-	int        numvertexes;
+	int numvertexes;
 	mvertex_t *vertexes;
 
-	int      numedges;
+	int numedges;
 	medge_t *edges;
 
-	int      numnodes;
-	int      firstnode;
+	int numnodes;
+	int firstnode;
 	mnode_t *nodes;
 
-	int         numtexinfo;
+	int numtexinfo;
 	mtexinfo_t *texinfo;
 
-	int         numsurfaces;
+	int numsurfaces;
 	msurface_t *surfaces;
 
-	int  numsurfedges;
+	int numsurfedges;
 	int *surfedges;
 
-	int          nummarksurfaces;
+	int nummarksurfaces;
 	msurface_t **marksurfaces;
 
 	dvis_t *vis;
@@ -236,14 +236,14 @@ typedef struct model_s
 
 	// for alias models and sprites
 	image_t *skins[MAX_MD2SKINS];
-	void *   extradata;
-	int      extradatasize;
+	void *extradata;
+	int extradatasize;
 } model_t;
 
 //============================================================================
 
-void     Mod_Init();
-void     Mod_ClearAll();
+void Mod_Init();
+void Mod_ClearAll();
 model_t *Mod_ForName(char *name, qboolean crash);
 void *Mod_Extradata(model_t *mod); // handles caching
 void Mod_TouchModel(char *name);

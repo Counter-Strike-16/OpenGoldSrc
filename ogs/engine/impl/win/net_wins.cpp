@@ -33,9 +33,9 @@
 
 netadr_t net_local_adr;
 
-netadr_t  net_from;
+netadr_t net_from;
 sizebuf_t net_message;
-int       net_socket;
+int net_socket;
 
 #define MAX_UDP_PACKET (MAX_MSGLEN * 2) // one more than msg + header
 byte net_message_buffer[MAX_UDP_PACKET];
@@ -50,25 +50,27 @@ void NetadrToSockadr(netadr_t *a, struct sockaddr_in *s)
 	s->sin_family = AF_INET;
 
 	*(int *)&s->sin_addr = *(int *)&a->ip;
-	s->sin_port          = a->port;
+	s->sin_port = a->port;
 }
 
 void SockadrToNetadr(struct sockaddr_in *s, netadr_t *a)
 {
 	*(int *)&a->ip = *(int *)&s->sin_addr;
-	a->port        = s->sin_port;
+	a->port = s->sin_port;
 }
 
 qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b)
 {
-	if(a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3])
+	if(a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] &&
+	   a.ip[3] == b.ip[3])
 		return true;
 	return false;
 }
 
 qboolean NET_CompareAdr(netadr_t a, netadr_t b)
 {
-	if(a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3] && a.port == b.port)
+	if(a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] &&
+	   a.ip[3] == b.ip[3] && a.port == b.port)
 		return true;
 	return false;
 }
@@ -103,10 +105,10 @@ idnewt:28000
 */
 qboolean NET_StringToAdr(char *s, netadr_t *a)
 {
-	struct hostent *   h;
+	struct hostent *h;
 	struct sockaddr_in sadr;
-	char *             colon;
-	char               copy[128];
+	char *colon;
+	char copy[128];
 
 	memset(&sadr, 0, sizeof(sadr));
 	sadr.sin_family = AF_INET;
@@ -118,7 +120,7 @@ qboolean NET_StringToAdr(char *s, netadr_t *a)
 	for(colon = copy; *colon; colon++)
 		if(*colon == ':')
 		{
-			*colon        = 0;
+			*colon = 0;
 			sadr.sin_port = htons((short)atoi(colon + 1));
 		}
 
@@ -142,12 +144,12 @@ qboolean NET_StringToAdr(char *s, netadr_t *a)
 
 qboolean NET_GetPacket()
 {
-	int                ret;
+	int ret;
 	struct sockaddr_in from;
-	int                fromlen;
+	int fromlen;
 
 	fromlen = sizeof(from);
-	ret     = recvfrom(net_socket, (char *)net_message_buffer, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
+	ret = recvfrom(net_socket, (char *)net_message_buffer, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
 	SockadrToNetadr(&from, &net_from);
 
 	if(ret == -1)
@@ -180,7 +182,7 @@ qboolean NET_GetPacket()
 
 void NET_SendPacket(int length, void *data, netadr_t to)
 {
-	int                ret;
+	int ret;
 	struct sockaddr_in addr;
 
 	NetadrToSockadr(&to, &addr);
@@ -207,10 +209,10 @@ void NET_SendPacket(int length, void *data, netadr_t to)
 
 int UDP_OpenSocket(int port)
 {
-	int                newsocket;
+	int newsocket;
 	struct sockaddr_in address;
-	unsigned long      _true = true;
-	int                i;
+	unsigned long _true = true;
+	int i;
 
 	if((newsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 		Sys_Error("UDP_OpenSocket: socket:", strerror(errno));
@@ -219,7 +221,7 @@ int UDP_OpenSocket(int port)
 		Sys_Error("UDP_OpenSocket: ioctl FIONBIO:", strerror(errno));
 
 	address.sin_family = AF_INET;
-	//ZOID -- check for interface binding option
+	// ZOID -- check for interface binding option
 	if((i = COM_CheckParm("-ip")) != 0 && i < com_argc)
 	{
 		address.sin_addr.s_addr = inet_addr(com_argv[i + 1]);
@@ -241,9 +243,9 @@ int UDP_OpenSocket(int port)
 
 void NET_GetLocalAddress()
 {
-	char               buff[512];
+	char buff[512];
 	struct sockaddr_in address;
-	int                namelen;
+	int namelen;
 
 	gethostname(buff, 512);
 	buff[512 - 1] = 0;
@@ -266,7 +268,7 @@ NET_Init
 void NET_Init(int port)
 {
 	WORD wVersionRequested;
-	int  r;
+	int r;
 
 	wVersionRequested = MAKEWORD(1, 1);
 
@@ -284,7 +286,7 @@ void NET_Init(int port)
 	// init the message buffer
 	//
 	net_message.maxsize = sizeof(net_message_buffer);
-	net_message.data    = net_message_buffer;
+	net_message.data = net_message_buffer;
 
 	//
 	// determine my name & address

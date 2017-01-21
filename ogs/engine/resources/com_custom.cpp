@@ -29,21 +29,21 @@
 /// @file
 
 //#include "precompiled.hpp"
+#include "client/client.hpp"
 #include "common/commontypes.h"
 #include "engine/custom.h"
-#include "rehlds/model.h"
+#include "filesystem/hashpak.hpp"
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
-#include "system/common.hpp"
-#include "client/client.hpp"
+#include "rehlds/model.h"
 #include "resources/decal.hpp"
-#include "filesystem/hashpak.hpp"
+#include "system/common.hpp"
 
 void COM_ClearCustomizationList(customization_t *pHead, qboolean bCleanDecals)
 {
 	customization_s *pCurrent, *pNext;
-	cachewad_t *     pWad;
-	cachepic_t *     pic;
+	cachewad_t *pWad;
+	cachepic_t *pic;
 
 	pCurrent = pHead->pNext;
 	if(!pCurrent)
@@ -93,15 +93,20 @@ void COM_ClearCustomizationList(customization_t *pHead, qboolean bCleanDecals)
 	pHead->pNext = NULL;
 }
 
-qboolean COM_CreateCustomization(customization_t *pListHead, resource_t *pResource, int playernumber, int flags, customization_t **pCustomization, int *nLumps)
+qboolean COM_CreateCustomization(customization_t *pListHead,
+                                 resource_t *pResource,
+                                 int playernumber,
+                                 int flags,
+                                 customization_t **pCustomization,
+                                 int *nLumps)
 {
-	customization_t *pCust;  //    91
-	qboolean         bError; //    92
+	customization_t *pCust; //    91
+	qboolean bError;        //    92
 
 	bError = FALSE;
 	if(pCustomization)
 		*pCustomization = NULL;
-	pCust               = (customization_t *)Mem_ZeroMalloc(sizeof(customization_t));
+	pCust = (customization_t *)Mem_ZeroMalloc(sizeof(customization_t));
 
 	Q_memcpy(&pCust->resource, pResource, sizeof(pCust->resource));
 	if(pResource->nDownloadSize <= 0)
@@ -125,7 +130,8 @@ qboolean COM_CreateCustomization(customization_t *pListHead, resource_t *pResour
 		pCust->pBuffer = COM_LoadFile(pResource->szFileName, 5, NULL);
 	}
 
-	if((pCust->resource.ucFlags & RES_CUSTOM) && pCust->resource.type == t_decal)
+	if((pCust->resource.ucFlags & RES_CUSTOM) &&
+	   pCust->resource.type == t_decal)
 	{
 		pCust->resource.playernum = playernumber;
 		if(!CustomDecal_Validate(pCust->pBuffer, pResource->nDownloadSize))
@@ -137,10 +143,12 @@ qboolean COM_CreateCustomization(customization_t *pListHead, resource_t *pResour
 		if(!(flags & RES_CUSTOM))
 		{
 			cachewad_t *pWad = (cachewad_t *)Mem_ZeroMalloc(sizeof(cachewad_t));
-			pCust->pInfo     = pWad;
-			if(pResource->nDownloadSize >= 1024 && pResource->nDownloadSize <= 20480)
+			pCust->pInfo = pWad;
+			if(pResource->nDownloadSize >= 1024 &&
+			   pResource->nDownloadSize <= 20480)
 			{
-				bError = (0 == CustomDecal_Init(pWad, pCust->pBuffer, pResource->nDownloadSize, playernumber));
+				bError =
+				(0 == CustomDecal_Init(pWad, pCust->pBuffer, pResource->nDownloadSize, playernumber));
 				if(bError)
 					goto CustomizationError;
 
@@ -150,8 +158,8 @@ qboolean COM_CreateCustomization(customization_t *pListHead, resource_t *pResour
 						*nLumps = pWad->lumpCount;
 
 					pCust->bTranslated = TRUE;
-					pCust->nUserData1  = 0;
-					pCust->nUserData2  = pWad->lumpCount;
+					pCust->nUserData1 = 0;
+					pCust->nUserData2 = pWad->lumpCount;
 					if(flags & FCUST_WIPEDATA)
 					{
 						Mem_Free(pWad->name);
@@ -178,8 +186,8 @@ CustomizationError:
 	{
 		if(pCustomization)
 			*pCustomization = pCust;
-		pCust->pNext        = pListHead->pNext;
-		pListHead->pNext    = pCust;
+		pCust->pNext = pListHead->pNext;
+		pListHead->pNext = pCust;
 	}
 	return bError == FALSE;
 }
@@ -187,14 +195,14 @@ CustomizationError:
 int COM_SizeofResourceList(resource_t *pList, resourceinfo_t *ri)
 {
 	resource_t *p;
-	int         nSize;
+	int nSize;
 
 	nSize = 0;
 	Q_memset(ri, 0, sizeof(*ri));
 	for(p = pList->pNext; p != pList; p = p->pNext)
 	{
 #ifdef REHLDS_FIXES
-		//skip resources with invalid type
+		// skip resources with invalid type
 		if(p->type >= rt_max)
 			continue;
 #endif

@@ -30,8 +30,8 @@
 
 //#include "precompiled.hpp"
 #include "filesystem/wad.hpp"
-#include "system/common.hpp"
 #include "console/console.hpp"
+#include "system/common.hpp"
 #include "system/system.hpp"
 #include "tier0/commonmacros.h"
 
@@ -82,20 +82,21 @@ int W_LoadWadFile(char *filename)
 	}
 
 	Q_strncpy(wad->wadname, filename, sizeof(wad->wadname) - 1);
-	wadinfo_t *header                      = (wadinfo_t *)wad->wad_base;
+	wadinfo_t *header = (wadinfo_t *)wad->wad_base;
 	wad->wadname[sizeof(wad->wadname) - 1] = 0;
-	wad->loaded                            = TRUE;
+	wad->loaded = TRUE;
 	if(*(uint32 *)header->identification != MAKEID('W', 'A', 'D', '3'))
 		Sys_Error("Wad file %s doesn't have WAD3 id\n", filename);
 	wad->wad_numlumps = LittleLong(header->numlumps);
 
-	lumpinfo_t *lump_p = (lumpinfo_t *)&wad->wad_base[LittleLong(header->infotableofs)];
-	wad->wad_lumps     = lump_p;
+	lumpinfo_t *lump_p =
+	(lumpinfo_t *)&wad->wad_base[LittleLong(header->infotableofs)];
+	wad->wad_lumps = lump_p;
 
 	for(int i = 0; i < wad->wad_numlumps; ++i, ++lump_p)
 	{
 		lump_p->filepos = LittleLong(lump_p->filepos);
-		lump_p->size    = LittleLong(lump_p->size);
+		lump_p->size = LittleLong(lump_p->size);
 		W_CleanupName(lump_p->name, lump_p->name);
 		if(lump_p->type == 66)
 			SwapPic((qpic_t *)&wad->wad_base[lump_p->filepos]);
@@ -106,9 +107,9 @@ int W_LoadWadFile(char *filename)
 
 lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror)
 {
-	int         i;
+	int i;
 	lumpinfo_t *lump_p;
-	char        clean[16];
+	char clean[16];
 
 	W_CleanupName(name, clean);
 	for(i = 0; i < wads[wad].wad_numlumps; i++)
@@ -156,6 +157,6 @@ void W_Shutdown()
 
 void SwapPic(qpic_t *pic)
 {
-	pic->width  = LittleLong(pic->width);
+	pic->width = LittleLong(pic->width);
 	pic->height = LittleLong(pic->height);
 }

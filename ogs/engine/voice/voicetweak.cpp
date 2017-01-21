@@ -47,11 +47,11 @@ int Voice_StartVoiceTweakMode()
 };
 
 void Voice_EndVoiceTweakMode(){
-    // TODO: implement
+	// TODO: implement
 };
 
 void Voice_SetControlFloat(VoiceTweakControl iControl, float value){
-    // TODO: implement
+	// TODO: implement
 };
 
 float Voice_GetControlFloat(VoiceTweakControl iControl)
@@ -68,12 +68,9 @@ int Voice_GetSpeakingVolume()
 
 }; // namespace
 
-IVoiceTweak gVoiceAPI =
-    {
-        Voice_StartVoiceTweakMode,
-        Voice_EndVoiceTweakMode,
+IVoiceTweak gVoiceAPI = { Voice_StartVoiceTweakMode, Voice_EndVoiceTweakMode,
 
-        Voice_SetControlFloat,
-        Voice_GetControlFloat,
+	                      Voice_SetControlFloat,
+	                      Voice_GetControlFloat,
 
-        Voice_GetSpeakingVolume};
+	                      Voice_GetSpeakingVolume };

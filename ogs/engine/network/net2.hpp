@@ -32,13 +32,13 @@
 
 typedef struct
 {
-	byte           ip[4];
+	byte ip[4];
 	unsigned short port;
 	unsigned short pad;
 } netadr_t;
 
-extern netadr_t  net_local_adr;
-extern netadr_t  net_from; // address of who sent the packet
+extern netadr_t net_local_adr;
+extern netadr_t net_from; // address of who sent the packet
 extern sizebuf_t net_message;
 
 extern cvar_t hostname;
@@ -87,13 +87,13 @@ typedef struct
 
 	// reliable staging and holding areas
 	sizebuf_t message; // writing buffer to send to server
-	byte      message_buf[MAX_MSGLEN];
+	byte message_buf[MAX_MSGLEN];
 
-	int  reliable_length;
+	int reliable_length;
 	byte reliable_buf[MAX_MSGLEN]; // unacked reliable message
 
 	// time and size data to calculate bandwidth
-	int    outgoing_size[MAX_LATENT];
+	int outgoing_size[MAX_LATENT];
 	double outgoing_time[MAX_LATENT];
 } netchan_t;
 

@@ -59,7 +59,7 @@ typedef unsigned long long __uint64;
 
 #else
 
-typedef unsigned __int8  __uint8;
+typedef unsigned __int8 __uint8;
 typedef unsigned __int16 __uint16;
 typedef unsigned __int32 __uint32;
 typedef unsigned __int64 __uint64;
@@ -82,7 +82,7 @@ typedef __uint32 UINT32;
 
 typedef ULONG32 *PULONG32;
 typedef DWORD32 *PDWORD32;
-typedef UINT32 * PUINT32;
+typedef UINT32 *PUINT32;
 
 /* Always signed and 64 bit wide */
 
@@ -90,7 +90,7 @@ typedef __int64 LONG64;
 typedef __int64 INT64;
 
 typedef LONG64 *PLONG64;
-typedef INT64 * PINT64;
+typedef INT64 *PINT64;
 
 /* Always unsigned and 64 bit wide */
 
@@ -100,13 +100,13 @@ typedef __uint64 UINT64;
 
 typedef ULONG64 *PULONG64;
 typedef DWORD64 *PDWORD64;
-typedef UINT64 * PUINT64;
+typedef UINT64 *PUINT64;
 
 /* Win32 or Win64 dependent typedef/defines. */
 
 #ifdef _WIN64
 
-typedef __int64  INT_PTR, *PINT_PTR;
+typedef __int64 INT_PTR, *PINT_PTR;
 typedef __uint64 UINT_PTR, *PUINT_PTR;
 
 #define MAXINT_PTR 0x7fffffffffffffff
@@ -120,33 +120,33 @@ typedef __int32 UHALF_PTR, *PUHALF_PTR;
 #define MINHALF_PTR 0x80000000
 #define MAXUHALF_PTR 0xffffffff
 
-typedef __int64  LONG_PTR, *PLONG_PTR;
+typedef __int64 LONG_PTR, *PLONG_PTR;
 typedef __uint64 ULONG_PTR, *PULONG_PTR;
 typedef __uint64 DWORD_PTR, *PDWORD_PTR;
 
 #else /* FIXME: defined(_WIN32) */
 
-typedef __int32  INT_PTR, *PINT_PTR;
+typedef __int32 INT_PTR, *PINT_PTR;
 typedef __uint32 UINT_PTR, *PUINT_PTR;
 
 #define MAXINT_PTR 0x7fffffff
 #define MININT_PTR 0x80000000
 #define MAXUINT_PTR 0xffffffff
 
-typedef __int16  HALF_PTR, *PHALF_PTR;
+typedef __int16 HALF_PTR, *PHALF_PTR;
 typedef __uint16 UHALF_PTR, *PUHALF_PTR;
 
 #define MAXUHALF_PTR 0xffff
 #define MAXHALF_PTR 0x7fff
 #define MINHALF_PTR 0x8000
 
-typedef __int32  LONG_PTR, *PLONG_PTR;
+typedef __int32 LONG_PTR, *PLONG_PTR;
 typedef __uint32 ULONG_PTR, *PULONG_PTR;
 typedef __uint32 DWORD_PTR, *PDWORD_PTR;
 
 #endif /* defined(_WIN64) || defined(_WIN32) */
 
-typedef INT_PTR  SSIZE_T, *PSSIZE_T;
+typedef INT_PTR SSIZE_T, *PSSIZE_T;
 typedef UINT_PTR SIZE_T, *PSIZE_T;
 
 #endif /* MPLAYER_BASETSD_H */

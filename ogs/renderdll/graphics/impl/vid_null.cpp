@@ -37,12 +37,12 @@ float scr_con_current;
 */
 #ifndef HOOK_ENGINE
 
-int    r_pixbytes = 1;
-cvar_t gl_vsync   = {"gl_vsync", "1", 0, 0.0f, NULL};
+int r_pixbytes = 1;
+cvar_t gl_vsync = { "gl_vsync", "1", 0, 0.0f, NULL };
 
 #else // HOOK_ENGINE
 
-int    r_pixbytes;
+int r_pixbytes;
 cvar_t gl_vsync;
 
 #endif // HOOK_ENGINE
@@ -99,9 +99,9 @@ void R_MarkLeaves()
 
 void R_InitTextures()
 {
-	r_notexture_mip             = (texture_t *)Hunk_AllocName(404, "notexture");
-	r_notexture_mip->height     = 16;
-	r_notexture_mip->width      = 16;
+	r_notexture_mip = (texture_t *)Hunk_AllocName(404, "notexture");
+	r_notexture_mip->height = 16;
+	r_notexture_mip->width = 16;
 	r_notexture_mip->offsets[0] = 64;
 	r_notexture_mip->offsets[1] = 320;
 	r_notexture_mip->offsets[2] = 384;
@@ -109,8 +109,8 @@ void R_InitTextures()
 
 	for(int m = 0; m < 4; m++)
 	{
-		int            texSize = 16 >> m;
-		unsigned char *dest    = (unsigned char *)r_notexture_mip + r_notexture_mip->offsets[m];
+		int texSize = 16 >> m;
+		unsigned char *dest = (unsigned char *)r_notexture_mip + r_notexture_mip->offsets[m];
 
 		for(int x = 0; x < texSize; x++)
 		{

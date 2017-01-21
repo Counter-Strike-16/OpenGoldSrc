@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "r_local.h"
 #include "d_local.h"
 
-int   iskyspeed  = 8;
-int   iskyspeed2 = 2;
+int iskyspeed = 8;
+int iskyspeed2 = 2;
 float skyspeed, skyspeed2;
 
 float skytime;
@@ -54,7 +54,7 @@ A sky texture is 256*128, with the right side being a masked overlay
 */
 void R_InitSky(texture_t *mt)
 {
-	int   i, j;
+	int i, j;
 	byte *src;
 
 	src = (byte *)mt + mt->offsets[0];
@@ -73,12 +73,12 @@ void R_InitSky(texture_t *mt)
 		{
 			if(src[i * 256 + (j & 0x7F)])
 			{
-				bottomsky[(i * 131) + j]  = src[i * 256 + (j & 0x7F)];
+				bottomsky[(i * 131) + j] = src[i * 256 + (j & 0x7F)];
 				bottommask[(i * 131) + j] = 0;
 			}
 			else
 			{
-				bottomsky[(i * 131) + j]  = 0;
+				bottomsky[(i * 131) + j] = 0;
 				bottommask[(i * 131) + j] = 0xff;
 			}
 		}
@@ -94,10 +94,10 @@ R_MakeSky
 */
 void R_MakeSky()
 {
-	int        x, y;
-	int        ofs, baseofs;
-	int        xshift, yshift;
-	unsigned * pnewsky;
+	int x, y;
+	int ofs, baseofs;
+	int xshift, yshift;
+	unsigned *pnewsky;
 	static int xlast = -1, ylast = -1;
 
 	xshift = skytime * skyspeed;
@@ -126,7 +126,7 @@ void R_MakeSky()
 
 			*pnewsky = (*(pnewsky + (128 / sizeof(unsigned))) &
 			            *(unsigned *)&bottommask[ofs]) |
-			    *(unsigned *)&bottomsky[ofs];
+			*(unsigned *)&bottomsky[ofs];
 			pnewsky++;
 		}
 
@@ -138,7 +138,7 @@ void R_MakeSky()
 
 			*(byte *)pnewsky = (*((byte *)pnewsky + 128) &
 			                    *(byte *)&bottommask[ofs]) |
-			    *(byte *)&bottomsky[ofs];
+			*(byte *)&bottomsky[ofs];
 			pnewsky = (unsigned *)((byte *)pnewsky + 1);
 		}
 
@@ -157,9 +157,9 @@ R_GenSkyTile
 */
 void R_GenSkyTile(void *pdest)
 {
-	int       x, y;
-	int       ofs, baseofs;
-	int       xshift, yshift;
+	int x, y;
+	int ofs, baseofs;
+	int xshift, yshift;
 	unsigned *pnewsky;
 	unsigned *pd;
 
@@ -167,7 +167,7 @@ void R_GenSkyTile(void *pdest)
 	yshift = skytime * skyspeed;
 
 	pnewsky = (unsigned *)&newsky[0];
-	pd      = (unsigned *)pdest;
+	pd = (unsigned *)pdest;
 
 	for(y = 0; y < SKYSIZE; y++)
 	{
@@ -184,7 +184,7 @@ void R_GenSkyTile(void *pdest)
 
 			*pd = (*(pnewsky + (128 / sizeof(unsigned))) &
 			       *(unsigned *)&bottommask[ofs]) |
-			    *(unsigned *)&bottomsky[ofs];
+			*(unsigned *)&bottomsky[ofs];
 			pnewsky++;
 			pd++;
 		}
@@ -197,9 +197,9 @@ void R_GenSkyTile(void *pdest)
 
 			*(byte *)pd = (*((byte *)pnewsky + 128) &
 			               *(byte *)&bottommask[ofs]) |
-			    *(byte *)&bottomsky[ofs];
+			*(byte *)&bottomsky[ofs];
 			pnewsky = (unsigned *)((byte *)pnewsky + 1);
-			pd      = (unsigned *)((byte *)pd + 1);
+			pd = (unsigned *)((byte *)pd + 1);
 		}
 
 #endif
@@ -215,17 +215,17 @@ R_GenSkyTile16
 */
 void R_GenSkyTile16(void *pdest)
 {
-	int             x, y;
-	int             ofs, baseofs;
-	int             xshift, yshift;
-	byte *          pnewsky;
+	int x, y;
+	int ofs, baseofs;
+	int xshift, yshift;
+	byte *pnewsky;
 	unsigned short *pd;
 
 	xshift = skytime * skyspeed;
 	yshift = skytime * skyspeed;
 
 	pnewsky = (byte *)&newsky[0];
-	pd      = (unsigned short *)pdest;
+	pd = (unsigned short *)pdest;
 
 	for(y = 0; y < SKYSIZE; y++)
 	{
@@ -255,15 +255,15 @@ R_SetSkyFrame
 */
 void R_SetSkyFrame()
 {
-	int   g, s1, s2;
+	int g, s1, s2;
 	float temp;
 
-	skyspeed  = iskyspeed;
+	skyspeed = iskyspeed;
 	skyspeed2 = iskyspeed2;
 
-	g    = GreatestCommonDivisor(iskyspeed, iskyspeed2);
-	s1   = iskyspeed / g;
-	s2   = iskyspeed2 / g;
+	g = GreatestCommonDivisor(iskyspeed, iskyspeed2);
+	s1 = iskyspeed / g;
+	s2 = iskyspeed2 / g;
 	temp = SKYSIZE * s1 * s2;
 
 	skytime = cl.time - ((int)(cl.time / temp) * temp);

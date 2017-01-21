@@ -39,9 +39,10 @@ static fxMesaContext fc = NULL;
 #define NUM_RESOLUTIONS 3
 
 static resolutions[NUM_RESOLUTIONS][3] = {
-    {512, 384, GR_RESOLUTION_512x384},
-    {640, 400, GR_RESOLUTION_640x400},
-    {640, 480, GR_RESOLUTION_640x480}};
+	{ 512, 384, GR_RESOLUTION_512x384 },
+	{ 640, 400, GR_RESOLUTION_640x400 },
+	{ 640, 480, GR_RESOLUTION_640x480 }
+};
 
 static int findres(int *width, int *height)
 {
@@ -50,12 +51,12 @@ static int findres(int *width, int *height)
 	for(i = 0; i < NUM_RESOLUTIONS; i++)
 		if((*width <= resolutions[i][0]) && (*height <= resolutions[i][1]))
 		{
-			*width  = resolutions[i][0];
+			*width = resolutions[i][0];
 			*height = resolutions[i][1];
 			return resolutions[i][2];
 		}
 
-	*width  = 640;
+	*width = 640;
 	*height = 480;
 	return GR_RESOLUTION_640x480;
 }
@@ -85,7 +86,7 @@ static void InitSig(void)
 */
 int GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 {
-	int   width, height;
+	int width, height;
 	GLint attribs[32];
 
 	ri.Con_Printf(PRINT_ALL, "Initializing OpenGL display\n");
@@ -116,7 +117,7 @@ int GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 	if(!fc)
 		return rserr_invalid_mode;
 
-	*pwidth  = width;
+	*pwidth = width;
 	*pheight = height;
 
 	// let the sound and input subsystems know about the new window
@@ -191,9 +192,9 @@ void Fake_glColorTableEXT(GLenum target, GLenum internalformat,
                           GLsizei width, GLenum format, GLenum type,
                           const GLvoid *table)
 {
-	byte  temptable[256][4];
+	byte temptable[256][4];
 	byte *intbl;
-	int   i;
+	int i;
 
 	for(intbl = (byte *)table, i = 0; i < 256; i++)
 	{

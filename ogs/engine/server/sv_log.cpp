@@ -29,10 +29,10 @@
 /// @file
 
 //#include "precompiled.hpp"
+#include "console/cmd.hpp"
+#include "console/console.hpp"
 #include "server/server.hpp"
 #include "system/common.hpp"
-#include "console/console.hpp"
-#include "console/cmd.hpp"
 
 LOGLIST_T *firstLog;
 
@@ -41,8 +41,8 @@ LOGLIST_T *firstLog;
 */
 #ifndef HOOK_ENGINE
 
-cvar_t mp_logecho = {"mp_logecho", "1", 0};
-cvar_t mp_logfile = {"mp_logfile", "1", FCVAR_SERVER};
+cvar_t mp_logecho = { "mp_logecho", "1", 0 };
+cvar_t mp_logfile = { "mp_logfile", "1", FCVAR_SERVER };
 
 #else // HOOK_ENGINE
 
@@ -53,10 +53,10 @@ cvar_t mp_logfile;
 
 void Log_Printf(const char *fmt, ...)
 {
-	va_list    argptr;
-	char       string[1024];
-	time_t     ltime;
-	tm *       today;
+	va_list argptr;
+	char string[1024];
+	time_t ltime;
+	tm *today;
 	LOGLIST_T *list;
 
 	if(!g_psvs.log.net_log_ && !firstLog && !g_psvs.log.active)
@@ -66,13 +66,7 @@ void Log_Printf(const char *fmt, ...)
 	today = localtime(&ltime);
 
 	va_start(argptr, fmt);
-	Q_snprintf(string, sizeof(string), "L %02i/%02i/%04i - %02i:%02i:%02i: ",
-	           today->tm_mon + 1,
-	           today->tm_mday,
-	           today->tm_year + 1900,
-	           today->tm_hour,
-	           today->tm_min,
-	           today->tm_sec);
+	Q_snprintf(string, sizeof(string), "L %02i/%02i/%04i - %02i:%02i:%02i: ", today->tm_mon + 1, today->tm_mday, today->tm_year + 1900, today->tm_hour, today->tm_min, today->tm_sec);
 
 	Q_vsnprintf(&string[Q_strlen(string)], sizeof(string) - Q_strlen(string), fmt, argptr);
 	va_end(argptr);
@@ -95,7 +89,8 @@ void Log_Printf(const char *fmt, ...)
 				Netchan_OutOfBandPrint(NS_SERVER, list->log.net_address_, "%c%s%s", S2A_LOGKEY, sv_logsecret.string, string);
 		}
 	}
-	if(g_psvs.log.active && (g_psvs.maxclients > 1 || sv_log_singleplayer.value != 0.0f))
+	if(g_psvs.log.active &&
+	   (g_psvs.maxclients > 1 || sv_log_singleplayer.value != 0.0f))
 	{
 		if(mp_logecho.value != 0.0f)
 			Con_Printf("%s", string);
@@ -135,13 +130,13 @@ void Log_Close(void)
 
 void Log_Open(void)
 {
-	time_t       ltime;
-	struct tm *  today;
-	char         szFileBase[MAX_PATH];
-	char         szTestFile[MAX_PATH];
-	int          i;
+	time_t ltime;
+	struct tm *today;
+	char szFileBase[MAX_PATH];
+	char szTestFile[MAX_PATH];
+	int i;
 	FileHandle_t fp;
-	char *       temp;
+	char *temp;
 
 	if(!g_psvs.log.active || (sv_log_onefile.value != 0.0f && g_psvs.log.file))
 		return;
@@ -156,7 +151,8 @@ void Log_Open(void)
 
 		temp = Cvar_VariableString("logsdir");
 
-		if(!temp || Q_strlen(temp) <= 0 || Q_strstr(temp, ":") || Q_strstr(temp, ".."))
+		if(!temp || Q_strlen(temp) <= 0 || Q_strstr(temp, ":") ||
+		   Q_strstr(temp, ".."))
 			Q_snprintf(szFileBase, sizeof(szFileBase), "logs/L%02i%02i", today->tm_mon + 1, today->tm_mday);
 
 		else
@@ -178,13 +174,20 @@ void Log_Open(void)
 				{
 					g_psvs.log.file = (void *)fp;
 					Con_Printf("Server logging data to file %s\n", szTestFile);
-					Log_Printf("Log file started (file \"%s\") (game \"%s\") (version \"%i/%s/%d\")\n", szTestFile, Info_ValueForKey(Info_Serverinfo(), "*gamedir"), PROTOCOL_VERSION, gpszVersionString, build_number());
+					Log_Printf("Log file started (file \"%s\") (game \"%s\") (version "
+					           "\"%i/%s/%d\")\n",
+					           szTestFile,
+					           Info_ValueForKey(Info_Serverinfo(), "*gamedir"),
+					           PROTOCOL_VERSION,
+					           gpszVersionString,
+					           build_number());
 				}
 				return;
 			}
 			FS_Close(fp);
 		}
-		Con_Printf("Unable to open logfiles under %s\nLogging disabled\n", szFileBase);
+		Con_Printf("Unable to open logfiles under %s\nLogging disabled\n",
+		           szFileBase);
 		g_psvs.log.active = FALSE;
 	}
 }
@@ -192,9 +195,9 @@ void Log_Open(void)
 void SV_SetLogAddress_f(void)
 {
 	const char *s;
-	int         nPort;
-	char        szAdr[MAX_PATH];
-	netadr_t    adr;
+	int nPort;
+	char szAdr[MAX_PATH];
+	netadr_t adr;
 
 	if(Cmd_Argc() != 3)
 	{
@@ -234,12 +237,12 @@ void SV_SetLogAddress_f(void)
 void SV_AddLogAddress_f(void)
 {
 	const char *s;
-	int         nPort;
-	char        szAdr[MAX_PATH];
-	netadr_t    adr;
-	LOGLIST_T * list;
-	qboolean    found = FALSE;
-	LOGLIST_T * tmp;
+	int nPort;
+	char szAdr[MAX_PATH];
+	netadr_t adr;
+	LOGLIST_T *list;
+	qboolean found = FALSE;
+	LOGLIST_T *tmp;
 
 	if(Cmd_Argc() != 3)
 	{
@@ -275,10 +278,11 @@ void SV_AddLogAddress_f(void)
 		for(list = firstLog; list != NULL; list = list->next)
 		{
 #ifdef REHLDS_FIXES
-			//for IPX support
+			// for IPX support
 			if(NET_CompareAdr(adr, list->log.net_address_))
 #else
-			if(Q_memcmp(adr.ip, list->log.net_address_.ip, 4) == 0 && adr.port == list->log.net_address_.port)
+			if(Q_memcmp(adr.ip, list->log.net_address_.ip, 4) == 0 &&
+			   adr.port == list->log.net_address_.port)
 #endif // REHLDS_FIXES
 			{
 				found = TRUE;
@@ -325,12 +329,12 @@ void SV_AddLogAddress_f(void)
 void SV_DelLogAddress_f(void)
 {
 	const char *s;
-	int         nPort;
-	char        szAdr[MAX_PATH];
-	netadr_t    adr;
-	LOGLIST_T * list;
-	LOGLIST_T * prev;
-	qboolean    found = FALSE;
+	int nPort;
+	char szAdr[MAX_PATH];
+	netadr_t adr;
+	LOGLIST_T *list;
+	LOGLIST_T *prev;
+	qboolean found = FALSE;
 
 	if(Cmd_Argc() != 3)
 	{
@@ -366,10 +370,11 @@ void SV_DelLogAddress_f(void)
 	for(list = firstLog, prev = firstLog; list != NULL; list = list->next)
 	{
 #ifdef REHLDS_FIXES
-		//for IPX
+		// for IPX
 		if(NET_CompareAdr(adr, list->log.net_address_))
 #else
-		if(Q_memcmp(adr.ip, list->log.net_address_.ip, 4) == 0 && adr.port == list->log.net_address_.port)
+		if(Q_memcmp(adr.ip, list->log.net_address_.ip, 4) == 0 &&
+		   adr.port == list->log.net_address_.port)
 #endif // REHLDS_FIXES
 		{
 			found = TRUE;

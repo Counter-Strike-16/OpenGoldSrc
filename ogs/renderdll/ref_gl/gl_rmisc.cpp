@@ -36,20 +36,20 @@ R_InitParticleTexture
 ==================
 */
 byte dottexture[8][8] =
-    {
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 1, 1, 0, 0, 0, 0},
-        {0, 1, 1, 1, 1, 0, 0, 0},
-        {0, 1, 1, 1, 1, 0, 0, 0},
-        {0, 0, 1, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
+{
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 1, 1, 0, 0, 0, 0 },
+  { 0, 1, 1, 1, 1, 0, 0, 0 },
+  { 0, 1, 1, 1, 1, 0, 0, 0 },
+  { 0, 0, 1, 1, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 
 void R_InitParticleTexture()
 {
-	int  x, y;
+	int x, y;
 	byte data[8][8][4];
 
 	//
@@ -93,11 +93,11 @@ void R_InitParticleTexture()
 
 typedef struct _TargaHeader
 {
-	unsigned char  id_length, colormap_type, image_type;
+	unsigned char id_length, colormap_type, image_type;
 	unsigned short colormap_index, colormap_length;
-	unsigned char  colormap_size;
+	unsigned char colormap_size;
 	unsigned short x_origin, y_origin, width, height;
-	unsigned char  pixel_size, attributes;
+	unsigned char pixel_size, attributes;
 } TargaHeader;
 
 /* 
@@ -108,9 +108,9 @@ GL_ScreenShot_f
 void GL_ScreenShot_f()
 {
 	byte *buffer;
-	char  picname[80];
-	char  checkname[MAX_OSPATH];
-	int   i, c, temp;
+	char picname[80];
+	char checkname[MAX_OSPATH];
+	int i, c, temp;
 	FILE *f;
 
 	// create the scrnshots directory if it doesn't exist
@@ -140,7 +140,7 @@ void GL_ScreenShot_f()
 
 	buffer = malloc(vid.width * vid.height * 3 + 18);
 	memset(buffer, 0, 18);
-	buffer[2]  = 2; // uncompressed type
+	buffer[2] = 2; // uncompressed type
 	buffer[12] = vid.width & 255;
 	buffer[13] = vid.width >> 8;
 	buffer[14] = vid.height & 255;
@@ -153,8 +153,8 @@ void GL_ScreenShot_f()
 	c = 18 + vid.width * vid.height * 3;
 	for(i = 18; i < c; i += 3)
 	{
-		temp          = buffer[i];
-		buffer[i]     = buffer[i + 2];
+		temp = buffer[i];
+		buffer[i] = buffer[i + 2];
 		buffer[i + 2] = temp;
 	}
 

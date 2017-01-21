@@ -30,45 +30,45 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 
-typedef struct cvar_s      cvar_t;
-typedef struct trace_s     trace_t;
-typedef struct mplane_s    mplane_t;
-typedef struct hull_s      hull_t;
+typedef struct cvar_s cvar_t;
+typedef struct trace_s trace_t;
+typedef struct mplane_s mplane_t;
+typedef struct hull_s hull_t;
 typedef struct dclipnode_s dclipnode_t;
-typedef struct mnode_s     mnode_t;
+typedef struct mnode_s mnode_t;
 
 typedef struct areanode_s
 {
-	int                axis;
-	float              dist;
+	int axis;
+	float dist;
 	struct areanode_s *children[2];
-	link_t             trigger_edicts;
-	link_t             solid_edicts;
+	link_t trigger_edicts;
+	link_t solid_edicts;
 } areanode_t;
 
 typedef struct moveclip_s // TODO: Move it to world.cpp someday
 {
-	vec3_t       boxmins;
-	vec3_t       boxmaxs;
+	vec3_t boxmins;
+	vec3_t boxmaxs;
 	const float *mins;
 	const float *maxs;
-	vec3_t       mins2;
-	vec3_t       maxs2;
+	vec3_t mins2;
+	vec3_t maxs2;
 	const float *start;
 	const float *end;
-	trace_t      trace;
-	short int    type;
-	short int    ignoretrans;
-	edict_t *    passedict;
-	qboolean     monsterClipBrush;
+	trace_t trace;
+	short int type;
+	short int ignoretrans;
+	edict_t *passedict;
+	qboolean monsterClipBrush;
 } moveclip_t;
 
 typedef dclipnode_t box_clipnodes_t[6];
-typedef mplane_t    box_planes_t[6];
-typedef mplane_t    beam_planes_t[6];
+typedef mplane_t box_planes_t[6];
+typedef mplane_t beam_planes_t[6];
 
 #ifdef HOOK_ENGINE
 
@@ -82,13 +82,13 @@ typedef mplane_t    beam_planes_t[6];
 
 #endif // HOOK_ENGINE
 
-extern hull_t          box_hull;
-extern hull_t          beam_hull;
+extern hull_t box_hull;
+extern hull_t beam_hull;
 extern box_clipnodes_t box_clipnodes;
-extern box_planes_t    box_planes;
-extern beam_planes_t   beam_planes;
-extern areanode_t      sv_areanodes[32];
-extern int             sv_numareanodes;
+extern box_planes_t box_planes;
+extern beam_planes_t beam_planes;
+extern areanode_t sv_areanodes[32];
+extern int sv_numareanodes;
 
 extern cvar_t sv_force_ent_intersection;
 
@@ -96,7 +96,7 @@ void ClearLink(link_t *l);
 void RemoveLink(link_t *l);
 void InsertLinkBefore(link_t *l, link_t *before);
 NOXREF void InsertLinkAfter(link_t *l, link_t *after);
-void    SV_InitBoxHull(void);
+void SV_InitBoxHull(void);
 hull_t *SV_HullForBox(const vec_t *mins, const vec_t *maxs);
 NOXREF hull_t *SV_HullForBeam(const vec_t *start, const vec_t *end, const vec_t *size);
 struct hull_s *SV_HullForBsp(edict_t *ent, const vec_t *mins, const vec_t *maxs, vec_t *offset);

@@ -29,7 +29,7 @@ int d_vrectx, d_vrecty, d_vrectright_particle, d_vrectbottom_particle;
 
 int d_y_aspect_shift, d_pix_min, d_pix_max, d_pix_shift;
 
-int    d_scantable[MAXHEIGHT];
+int d_scantable[MAXHEIGHT];
 short *zspantable[MAXHEIGHT];
 
 /*
@@ -72,13 +72,13 @@ void D_ViewChanged()
 		scale_for_mip = yscale;
 
 	d_zrowbytes = vid.width * 2;
-	d_zwidth    = vid.width;
+	d_zwidth = vid.width;
 
 	d_pix_min = r_refdef.vrect.width / 320;
 	if(d_pix_min < 1)
 		d_pix_min = 1;
 
-	d_pix_max   = (int)((float)r_refdef.vrect.width / (320.0 / 4.0) + 0.5);
+	d_pix_max = (int)((float)r_refdef.vrect.width / (320.0 / 4.0) + 0.5);
 	d_pix_shift = 8 - (int)((float)r_refdef.vrect.width / 320.0 + 0.5);
 	if(d_pix_max < 1)
 		d_pix_max = 1;
@@ -88,11 +88,11 @@ void D_ViewChanged()
 	else
 		d_y_aspect_shift = 0;
 
-	d_vrectx              = r_refdef.vrect.x;
-	d_vrecty              = r_refdef.vrect.y;
+	d_vrectx = r_refdef.vrect.x;
+	d_vrecty = r_refdef.vrect.y;
 	d_vrectright_particle = r_refdef.vrectright - d_pix_max;
 	d_vrectbottom_particle =
-	    r_refdef.vrectbottom - (d_pix_max << d_y_aspect_shift);
+	r_refdef.vrectbottom - (d_pix_max << d_y_aspect_shift);
 
 	{
 		int i;
@@ -100,7 +100,7 @@ void D_ViewChanged()
 		for(i = 0; i < vid.height; i++)
 		{
 			d_scantable[i] = i * rowbytes;
-			zspantable[i]  = d_pzbuffer + i * d_zwidth;
+			zspantable[i] = d_pzbuffer + i * d_zwidth;
 		}
 	}
 

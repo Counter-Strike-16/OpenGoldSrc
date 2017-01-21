@@ -27,17 +27,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 drawsurf_t r_drawsurf;
 
-int            lightleft, sourcesstep, blocksize, sourcetstep;
-int            lightdelta, lightdeltastep;
-int            lightright, lightleftstep, lightrightstep, blockdivshift;
-unsigned       blockdivmask;
-void *         prowdestbase;
+int lightleft, sourcesstep, blocksize, sourcetstep;
+int lightdelta, lightdeltastep;
+int lightright, lightleftstep, lightrightstep, blockdivshift;
+unsigned blockdivmask;
+void *prowdestbase;
 unsigned char *pbasesource;
-int            surfrowbytes; // used by ASM files
-unsigned *     r_lightptr;
-int            r_stepback;
-int            r_lightwidth;
-int            r_numhblocks, r_numvblocks;
+int surfrowbytes; // used by ASM files
+unsigned *r_lightptr;
+int r_stepback;
+int r_lightwidth;
+int r_numhblocks, r_numvblocks;
 unsigned char *r_source, *r_sourcemax;
 
 void R_DrawSurfaceBlock8_mip0();
@@ -46,10 +46,11 @@ void R_DrawSurfaceBlock8_mip2();
 void R_DrawSurfaceBlock8_mip3();
 
 static void (*surfmiptable[4])() = {
-    R_DrawSurfaceBlock8_mip0,
-    R_DrawSurfaceBlock8_mip1,
-    R_DrawSurfaceBlock8_mip2,
-    R_DrawSurfaceBlock8_mip3};
+	R_DrawSurfaceBlock8_mip0,
+	R_DrawSurfaceBlock8_mip1,
+	R_DrawSurfaceBlock8_mip2,
+	R_DrawSurfaceBlock8_mip3
+};
 
 unsigned blocklights[18 * 18];
 
@@ -61,28 +62,28 @@ R_AddDynamicLights
 void R_AddDynamicLights()
 {
 	msurface_t *surf;
-	int         lnum;
-	int         sd, td;
-	float       dist, rad, minlight;
-	vec3_t      impact, local;
-	int         s, t;
-	int         i;
-	int         smax, tmax;
+	int lnum;
+	int sd, td;
+	float dist, rad, minlight;
+	vec3_t impact, local;
+	int s, t;
+	int i;
+	int smax, tmax;
 	mtexinfo_t *tex;
 
 	surf = r_drawsurf.surf;
 	smax = (surf->extents[0] >> 4) + 1;
 	tmax = (surf->extents[1] >> 4) + 1;
-	tex  = surf->texinfo;
+	tex = surf->texinfo;
 
 	for(lnum = 0; lnum < MAX_DLIGHTS; lnum++)
 	{
 		if(!(surf->dlightbits & (1 << lnum)))
 			continue; // not lit by this light
 
-		rad  = cl_dlights[lnum].radius;
+		rad = cl_dlights[lnum].radius;
 		dist = DotProduct(cl_dlights[lnum].origin, surf->plane->normal) -
-		    surf->plane->dist;
+		surf->plane->dist;
 		rad -= fabs(dist);
 		minlight = cl_dlights[lnum].minlight;
 		if(rad < minlight)
@@ -92,7 +93,7 @@ void R_AddDynamicLights()
 		for(i = 0; i < 3; i++)
 		{
 			impact[i] = cl_dlights[lnum].origin[i] -
-			    surf->plane->normal[i] * dist;
+			surf->plane->normal[i] * dist;
 		}
 
 		local[0] = DotProduct(impact, tex->vecs[0]) + tex->vecs[0][3];
@@ -131,30 +132,30 @@ Combine and scale multiple lightmaps into the 8.8 format in blocklights
 */
 void R_BuildLightMap()
 {
-	int         smax, tmax;
-	int         t;
-	int         i, size;
-	byte *      lightmap;
-	unsigned    scale;
-	int         maps;
+	int smax, tmax;
+	int t;
+	int i, size;
+	byte *lightmap;
+	unsigned scale;
+	int maps;
 	msurface_t *surf;
 
 	surf = r_drawsurf.surf;
 
-	smax     = (surf->extents[0] >> 4) + 1;
-	tmax     = (surf->extents[1] >> 4) + 1;
-	size     = smax * tmax;
+	smax = (surf->extents[0] >> 4) + 1;
+	tmax = (surf->extents[1] >> 4) + 1;
+	size = smax * tmax;
 	lightmap = surf->samples;
 
 	if(/* r_fullbright.value || */ !cl.worldmodel->lightdata)
 	{
-		for(i              = 0; i < size; i++)
+		for(i = 0; i < size; i++)
 			blocklights[i] = 0;
 		return;
 	}
 
 	// clear to ambient
-	for(i              = 0; i < size; i++)
+	for(i = 0; i < size; i++)
 		blocklights[i] = r_refdef.ambientlight << 8;
 
 	// add all the lightmaps
@@ -228,10 +229,10 @@ R_DrawSurface
 void R_DrawSurface()
 {
 	unsigned char *basetptr;
-	int            smax, tmax, twidth;
-	int            u;
-	int            soffset, basetoffset, texwidth;
-	int            horzblockstep;
+	int smax, tmax, twidth;
+	int u;
+	int soffset, basetoffset, texwidth;
+	int horzblockstep;
 	unsigned char *pcolumndest;
 	void (*pblockdrawer)();
 	texture_t *mt;
@@ -250,9 +251,9 @@ void R_DrawSurface()
 
 	texwidth = mt->width >> r_drawsurf.surfmip;
 
-	blocksize     = 16 >> r_drawsurf.surfmip;
+	blocksize = 16 >> r_drawsurf.surfmip;
 	blockdivshift = 4 - r_drawsurf.surfmip;
-	blockdivmask  = (1 << blockdivshift) - 1;
+	blockdivmask = (1 << blockdivshift) - 1;
 
 	r_lightwidth = (r_drawsurf.surf->extents[0] >> 4) + 1;
 
@@ -274,19 +275,19 @@ void R_DrawSurface()
 		horzblockstep = blocksize << 1;
 	}
 
-	smax        = mt->width >> r_drawsurf.surfmip;
-	twidth      = texwidth;
-	tmax        = mt->height >> r_drawsurf.surfmip;
+	smax = mt->width >> r_drawsurf.surfmip;
+	twidth = texwidth;
+	tmax = mt->height >> r_drawsurf.surfmip;
 	sourcetstep = texwidth;
-	r_stepback  = tmax * twidth;
+	r_stepback = tmax * twidth;
 
 	r_sourcemax = r_source + (tmax * smax);
 
-	soffset     = r_drawsurf.surf->texturemins[0];
+	soffset = r_drawsurf.surf->texturemins[0];
 	basetoffset = r_drawsurf.surf->texturemins[1];
 
 	// << 16 components are to guarantee positive values for %
-	soffset  = ((soffset >> r_drawsurf.surfmip) + (smax << 16)) % smax;
+	soffset = ((soffset >> r_drawsurf.surfmip) + (smax << 16)) % smax;
 	basetptr = &r_source[((((basetoffset >> r_drawsurf.surfmip) + (tmax << 16)) % tmax) * twidth)];
 
 	pcolumndest = r_drawsurf.surfdat;
@@ -320,20 +321,20 @@ R_DrawSurfaceBlock8_mip0
 */
 void R_DrawSurfaceBlock8_mip0()
 {
-	int           v, i, b, lightstep, lighttemp, light;
+	int v, i, b, lightstep, lighttemp, light;
 	unsigned char pix, *psource, *prowdest;
 
-	psource  = pbasesource;
+	psource = pbasesource;
 	prowdest = prowdestbase;
 
 	for(v = 0; v < r_numvblocks; v++)
 	{
 		// FIXME: make these locals?
 		// FIXME: use delta rather than both right and left, like ASM?
-		lightleft  = r_lightptr[0];
+		lightleft = r_lightptr[0];
 		lightright = r_lightptr[1];
 		r_lightptr += r_lightwidth;
-		lightleftstep  = (r_lightptr[0] - lightleft) >> 4;
+		lightleftstep = (r_lightptr[0] - lightleft) >> 4;
 		lightrightstep = (r_lightptr[1] - lightright) >> 4;
 
 		for(i = 0; i < 16; i++)
@@ -345,9 +346,9 @@ void R_DrawSurfaceBlock8_mip0()
 
 			for(b = 15; b >= 0; b--)
 			{
-				pix         = psource[b];
+				pix = psource[b];
 				prowdest[b] = ((unsigned char *)vid.colormap)
-				    [(light & 0xFF00) + pix];
+				[(light & 0xFF00) + pix];
 				light += lightstep;
 			}
 
@@ -369,20 +370,20 @@ R_DrawSurfaceBlock8_mip1
 */
 void R_DrawSurfaceBlock8_mip1()
 {
-	int           v, i, b, lightstep, lighttemp, light;
+	int v, i, b, lightstep, lighttemp, light;
 	unsigned char pix, *psource, *prowdest;
 
-	psource  = pbasesource;
+	psource = pbasesource;
 	prowdest = prowdestbase;
 
 	for(v = 0; v < r_numvblocks; v++)
 	{
 		// FIXME: make these locals?
 		// FIXME: use delta rather than both right and left, like ASM?
-		lightleft  = r_lightptr[0];
+		lightleft = r_lightptr[0];
 		lightright = r_lightptr[1];
 		r_lightptr += r_lightwidth;
-		lightleftstep  = (r_lightptr[0] - lightleft) >> 3;
+		lightleftstep = (r_lightptr[0] - lightleft) >> 3;
 		lightrightstep = (r_lightptr[1] - lightright) >> 3;
 
 		for(i = 0; i < 8; i++)
@@ -394,9 +395,9 @@ void R_DrawSurfaceBlock8_mip1()
 
 			for(b = 7; b >= 0; b--)
 			{
-				pix         = psource[b];
+				pix = psource[b];
 				prowdest[b] = ((unsigned char *)vid.colormap)
-				    [(light & 0xFF00) + pix];
+				[(light & 0xFF00) + pix];
 				light += lightstep;
 			}
 
@@ -418,20 +419,20 @@ R_DrawSurfaceBlock8_mip2
 */
 void R_DrawSurfaceBlock8_mip2()
 {
-	int           v, i, b, lightstep, lighttemp, light;
+	int v, i, b, lightstep, lighttemp, light;
 	unsigned char pix, *psource, *prowdest;
 
-	psource  = pbasesource;
+	psource = pbasesource;
 	prowdest = prowdestbase;
 
 	for(v = 0; v < r_numvblocks; v++)
 	{
 		// FIXME: make these locals?
 		// FIXME: use delta rather than both right and left, like ASM?
-		lightleft  = r_lightptr[0];
+		lightleft = r_lightptr[0];
 		lightright = r_lightptr[1];
 		r_lightptr += r_lightwidth;
-		lightleftstep  = (r_lightptr[0] - lightleft) >> 2;
+		lightleftstep = (r_lightptr[0] - lightleft) >> 2;
 		lightrightstep = (r_lightptr[1] - lightright) >> 2;
 
 		for(i = 0; i < 4; i++)
@@ -443,9 +444,9 @@ void R_DrawSurfaceBlock8_mip2()
 
 			for(b = 3; b >= 0; b--)
 			{
-				pix         = psource[b];
+				pix = psource[b];
 				prowdest[b] = ((unsigned char *)vid.colormap)
-				    [(light & 0xFF00) + pix];
+				[(light & 0xFF00) + pix];
 				light += lightstep;
 			}
 
@@ -467,20 +468,20 @@ R_DrawSurfaceBlock8_mip3
 */
 void R_DrawSurfaceBlock8_mip3()
 {
-	int           v, i, b, lightstep, lighttemp, light;
+	int v, i, b, lightstep, lighttemp, light;
 	unsigned char pix, *psource, *prowdest;
 
-	psource  = pbasesource;
+	psource = pbasesource;
 	prowdest = prowdestbase;
 
 	for(v = 0; v < r_numvblocks; v++)
 	{
 		// FIXME: make these locals?
 		// FIXME: use delta rather than both right and left, like ASM?
-		lightleft  = r_lightptr[0];
+		lightleft = r_lightptr[0];
 		lightright = r_lightptr[1];
 		r_lightptr += r_lightwidth;
-		lightleftstep  = (r_lightptr[0] - lightleft) >> 1;
+		lightleftstep = (r_lightptr[0] - lightleft) >> 1;
 		lightrightstep = (r_lightptr[1] - lightright) >> 1;
 
 		for(i = 0; i < 2; i++)
@@ -492,9 +493,9 @@ void R_DrawSurfaceBlock8_mip3()
 
 			for(b = 1; b >= 0; b--)
 			{
-				pix         = psource[b];
+				pix = psource[b];
 				prowdest[b] = ((unsigned char *)vid.colormap)
-				    [(light & 0xFF00) + pix];
+				[(light & 0xFF00) + pix];
 				light += lightstep;
 			}
 
@@ -518,9 +519,9 @@ FIXME: make this work
 */
 void R_DrawSurfaceBlock16()
 {
-	int             k;
-	unsigned char * psource;
-	int             lighttemp, lightstep, light;
+	int k;
+	unsigned char *psource;
+	int lighttemp, lightstep, light;
 	unsigned short *prowdest;
 
 	prowdest = (unsigned short *)prowdestbase;
@@ -528,10 +529,10 @@ void R_DrawSurfaceBlock16()
 	for(k = 0; k < blocksize; k++)
 	{
 		unsigned short *pdest;
-		unsigned char   pix;
-		int             b;
+		unsigned char pix;
+		int b;
 
-		psource   = pbasesource;
+		psource = pbasesource;
 		lighttemp = lightright - lightleft;
 		lightstep = lighttemp >> blockdivshift;
 
@@ -540,7 +541,7 @@ void R_DrawSurfaceBlock16()
 
 		for(b = 0; b < blocksize; b++)
 		{
-			pix    = *psource;
+			pix = *psource;
 			*pdest = vid.colormap16[(light & 0xFF00) + pix];
 			psource += sourcesstep;
 			pdest++;
@@ -567,19 +568,19 @@ R_GenTurbTile
 */
 void R_GenTurbTile(pixel_t *pbasetex, void *pdest)
 {
-	int * turb;
-	int   i, j, s, t;
+	int *turb;
+	int i, j, s, t;
 	byte *pd;
 
 	turb = sintable + ((int)(cl.time * SPEED) & (CYCLE - 1));
-	pd   = (byte *)pdest;
+	pd = (byte *)pdest;
 
 	for(i = 0; i < TILE_SIZE; i++)
 	{
 		for(j = 0; j < TILE_SIZE; j++)
 		{
-			s     = (((j << 16) + turb[i & (CYCLE - 1)]) >> 16) & 63;
-			t     = (((i << 16) + turb[j & (CYCLE - 1)]) >> 16) & 63;
+			s = (((j << 16) + turb[i & (CYCLE - 1)]) >> 16) & 63;
+			t = (((i << 16) + turb[j & (CYCLE - 1)]) >> 16) & 63;
 			*pd++ = *(pbasetex + (t << 6) + s);
 		}
 	}
@@ -592,19 +593,19 @@ R_GenTurbTile16
 */
 void R_GenTurbTile16(pixel_t *pbasetex, void *pdest)
 {
-	int *           turb;
-	int             i, j, s, t;
+	int *turb;
+	int i, j, s, t;
 	unsigned short *pd;
 
 	turb = sintable + ((int)(cl.time * SPEED) & (CYCLE - 1));
-	pd   = (unsigned short *)pdest;
+	pd = (unsigned short *)pdest;
 
 	for(i = 0; i < TILE_SIZE; i++)
 	{
 		for(j = 0; j < TILE_SIZE; j++)
 		{
-			s     = (((j << 16) + turb[i & (CYCLE - 1)]) >> 16) & 63;
-			t     = (((i << 16) + turb[j & (CYCLE - 1)]) >> 16) & 63;
+			s = (((j << 16) + turb[i & (CYCLE - 1)]) >> 16) & 63;
+			t = (((i << 16) + turb[j & (CYCLE - 1)]) >> 16) & 63;
 			*pd++ = d_8to16table[*(pbasetex + (t << 6) + s)];
 		}
 	}

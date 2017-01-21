@@ -30,7 +30,7 @@
 
 #include "precompiled.hpp"
 
-vec3_t *  g_moved_from;
+vec3_t *g_moved_from;
 edict_t **g_moved_edict;
 
 /*
@@ -38,12 +38,12 @@ edict_t **g_moved_edict;
 */
 #ifndef HOOK_ENGINE
 
-cvar_t sv_maxvelocity = {"sv_maxvelocity", "2000", 0, 0.0f, NULL};
-cvar_t sv_gravity     = {"sv_gravity", "800", FCVAR_SERVER, 0.0f, NULL};
-cvar_t sv_bounce      = {"sv_bounce", "1", FCVAR_SERVER, 0.0f, NULL};
-cvar_t sv_stepsize    = {"sv_stepsize", "18", FCVAR_SERVER, 0.0f, NULL};
-cvar_t sv_friction    = {"sv_friction", "4", FCVAR_SERVER, 0.0f, NULL};
-cvar_t sv_stopspeed   = {"sv_stopspeed", "100", FCVAR_SERVER, 0.0f, NULL};
+cvar_t sv_maxvelocity = { "sv_maxvelocity", "2000", 0, 0.0f, NULL };
+cvar_t sv_gravity = { "sv_gravity", "800", FCVAR_SERVER, 0.0f, NULL };
+cvar_t sv_bounce = { "sv_bounce", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t sv_stepsize = { "sv_stepsize", "18", FCVAR_SERVER, 0.0f, NULL };
+cvar_t sv_friction = { "sv_friction", "4", FCVAR_SERVER, 0.0f, NULL };
+cvar_t sv_stopspeed = { "sv_stopspeed", "100", FCVAR_SERVER, 0.0f, NULL };
 
 #else // HOOK_ENGINE
 
@@ -58,7 +58,7 @@ cvar_t sv_stopspeed;
 
 NOXREF void SV_CheckAllEnts(void)
 {
-	int      e;
+	int e;
 	edict_t *check;
 
 	for(e = 1; e < g_psv.num_edicts; e++)
@@ -72,7 +72,8 @@ NOXREF void SV_CheckAllEnts(void)
 		if(check->v.movetype == MOVETYPE_NONE)
 			continue;
 
-		if(movetype != MOVETYPE_PUSH && movetype != MOVETYPE_NOCLIP && movetype != MOVETYPE_FOLLOW)
+		if(movetype != MOVETYPE_PUSH && movetype != MOVETYPE_NOCLIP &&
+		   movetype != MOVETYPE_FOLLOW)
 		{
 			if(SV_TestEntityPosition(check) != NULL)
 				Con_Printf("entity in invalid position\n");
@@ -97,12 +98,14 @@ void SV_CheckVelocity(edict_t *ent)
 
 		if(ent->v.velocity[i] > sv_maxvelocity.value)
 		{
-			Con_DPrintf("Got a velocity too high on %s\n", &pr_strings[ent->v.classname]);
+			Con_DPrintf("Got a velocity too high on %s\n",
+			            &pr_strings[ent->v.classname]);
 			ent->v.velocity[i] = sv_maxvelocity.value;
 		}
 		else if(ent->v.velocity[i] < -sv_maxvelocity.value)
 		{
-			Con_DPrintf("Got a velocity too low on %s\n", &pr_strings[ent->v.classname]);
+			Con_DPrintf("Got a velocity too low on %s\n",
+			            &pr_strings[ent->v.classname]);
 			ent->v.velocity[i] = -sv_maxvelocity.value;
 		}
 	}
@@ -129,7 +132,7 @@ qboolean SV_RunThink(edict_t *ent)
 			                               // it is possible to start that way
 			                               // by a trigger with a local time.
 		}
-		ent->v.nextthink      = 0.0;
+		ent->v.nextthink = 0.0;
 		gGlobalVariables.time = thinktime;
 		gEntityInterface.pfnThink(ent);
 	}
@@ -190,9 +193,9 @@ int ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 	float backoff = _DotProduct(in, normal) * overbounce;
 	for(int i = 0; i < 3; i++)
 	{
-		float tmp    = normal[i] * backoff;
+		float tmp = normal[i] * backoff;
 		float change = in[i] - tmp;
-		out[i]       = (change > -0.1f && change < 0.1f) ? 0.0f : change;
+		out[i] = (change > -0.1f && change < 0.1f) ? 0.0f : change;
 	}
 
 	return blocked;
@@ -201,7 +204,7 @@ int ClipVelocity(vec_t *in, vec_t *normal, vec_t *out, float overbounce)
 int SV_FlyMove(edict_t *ent, float time, trace_t *steptrace)
 {
 	vec_t planes[5][3];
-	int   numplanes = 0;
+	int numplanes = 0;
 
 	vec3_t primal_velocity;
 	primal_velocity[0] = ent->v.velocity[0];
@@ -216,10 +219,11 @@ int SV_FlyMove(edict_t *ent, float time, trace_t *steptrace)
 	vec3_t new_velocity;
 
 	qboolean monsterClip = (ent->v.flags & FL_MONSTERCLIP) ? 1 : 0;
-	int      blocked     = 0;
+	int blocked = 0;
 	for(int bumpcount = 0; bumpcount < 4; bumpcount++)
 	{
-		if(ent->v.velocity[0] == 0.0f && ent->v.velocity[1] == 0.0f && ent->v.velocity[2] == 0.0f)
+		if(ent->v.velocity[0] == 0.0f && ent->v.velocity[1] == 0.0f &&
+		   ent->v.velocity[2] == 0.0f)
 			break;
 
 		vec3_t end;
@@ -240,13 +244,13 @@ int SV_FlyMove(edict_t *ent, float time, trace_t *steptrace)
 			trace_t test = SV_Move(trace.endpos, ent->v.mins, ent->v.maxs, trace.endpos, 0, ent, monsterClip);
 			if(test.allsolid != 1)
 			{
-				ent->v.origin[0]   = trace.endpos[0];
-				ent->v.origin[1]   = trace.endpos[1];
-				ent->v.origin[2]   = trace.endpos[2];
+				ent->v.origin[0] = trace.endpos[0];
+				ent->v.origin[1] = trace.endpos[1];
+				ent->v.origin[2] = trace.endpos[2];
 				primal_velocity[0] = ent->v.velocity[0];
 				primal_velocity[1] = ent->v.velocity[1];
 				primal_velocity[2] = ent->v.velocity[2];
-				numplanes          = 0;
+				numplanes = 0;
 			}
 		}
 
@@ -259,7 +263,9 @@ int SV_FlyMove(edict_t *ent, float time, trace_t *steptrace)
 		if(trace.plane.normal[2] > 0.7)
 		{
 			blocked |= 1u;
-			if(trace.ent->v.solid == SOLID_BSP || trace.ent->v.movetype == MOVETYPE_PUSHSTEP || trace.ent->v.solid == SOLID_SLIDEBOX || ent->v.flags & FL_CLIENT)
+			if(trace.ent->v.solid == SOLID_BSP ||
+			   trace.ent->v.movetype == MOVETYPE_PUSHSTEP ||
+			   trace.ent->v.solid == SOLID_SLIDEBOX || ent->v.flags & FL_CLIENT)
 			{
 				ent->v.flags |= FL_ONGROUND;
 				ent->v.groundentity = trace.ent;
@@ -290,7 +296,8 @@ int SV_FlyMove(edict_t *ent, float time, trace_t *steptrace)
 		planes[numplanes][1] = trace.plane.normal[1];
 		planes[numplanes][2] = trace.plane.normal[2];
 		++numplanes;
-		if(numplanes != 1 || ent->v.movetype != MOVETYPE_WALK || ((ent->v.flags & FL_ONGROUND) && ent->v.friction == 1.0f))
+		if(numplanes != 1 || ent->v.movetype != MOVETYPE_WALK ||
+		   ((ent->v.flags & FL_ONGROUND) && ent->v.friction == 1.0f))
 		{
 			int i = 0;
 			for(; i < numplanes; i++)
@@ -363,9 +370,11 @@ void SV_AddGravity(edict_t *ent)
 	if(ent->v.gravity == 0.0)
 		ent_gravity = 1.0;
 	else
-		ent_gravity        = ent->v.gravity;
-	ent_gravity            = (float)(ent->v.velocity[2] - sv_gravity.value * ent_gravity * host_frametime);
-	ent->v.velocity[2]     = (float)(ent_gravity + ent->v.basevelocity[2] * host_frametime);
+		ent_gravity = ent->v.gravity;
+	ent_gravity = (float)(ent->v.velocity[2] -
+	                      sv_gravity.value * ent_gravity * host_frametime);
+	ent->v.velocity[2] =
+	(float)(ent_gravity + ent->v.basevelocity[2] * host_frametime);
 	ent->v.basevelocity[2] = 0;
 	SV_CheckVelocity(ent);
 }
@@ -376,7 +385,8 @@ NOXREF void SV_AddCorrectGravity(edict_t *ent)
 	if(ent->v.gravity != 0.0f)
 		ent_gravity = ent->v.gravity;
 
-	ent->v.velocity[2] -= (ent_gravity * sv_gravity.value * 0.5f * host_frametime);
+	ent->v.velocity[2] -=
+	(ent_gravity * sv_gravity.value * 0.5f * host_frametime);
 	ent->v.velocity[2] += ent->v.basevelocity[2] * host_frametime;
 
 	pmove->basevelocity[2] = 0.0f;
@@ -389,15 +399,16 @@ NOXREF void SV_FixupGravityVelocity(edict_t *ent)
 	if(ent->v.gravity != 0.0f)
 		ent_gravity = ent->v.gravity;
 
-	ent->v.velocity[2] -= (ent_gravity * sv_gravity.value * 0.5f * host_frametime);
+	ent->v.velocity[2] -=
+	(ent_gravity * sv_gravity.value * 0.5f * host_frametime);
 	SV_CheckVelocity(ent);
 }
 
 trace_t SV_PushEntity(edict_t *ent, vec_t *push)
 {
 	trace_t trace;
-	vec3_t  end;
-	int     moveType;
+	vec3_t end;
+	int moveType;
 
 	end[0] = push[0] + ent->v.origin[0];
 	end[1] = push[1] + ent->v.origin[1];
@@ -406,10 +417,11 @@ trace_t SV_PushEntity(edict_t *ent, vec_t *push)
 	if(ent->v.movetype == MOVETYPE_FLYMISSILE)
 		moveType = 2;
 	else
-		moveType = (ent->v.solid == SOLID_TRIGGER || ent->v.solid == SOLID_NOT) ? 1 : 0;
+		moveType =
+		(ent->v.solid == SOLID_TRIGGER || ent->v.solid == SOLID_NOT) ? 1 : 0;
 
 	qboolean monsterClip = (ent->v.flags & FL_MONSTERCLIP) ? 1 : 0;
-	trace                = SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, end, moveType, ent, monsterClip);
+	trace = SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, end, moveType, ent, monsterClip);
 	if(trace.fraction != 0.0)
 	{
 		ent->v.origin[0] = trace.endpos[0];
@@ -431,7 +443,8 @@ void SV_PushMove(edict_t *pusher, float movetime)
 	vec3_t move;
 	vec3_t pushorig;
 
-	if(pusher->v.velocity[0] == 0.0f && pusher->v.velocity[1] == 0.0f && pusher->v.velocity[2] == 0.0f)
+	if(pusher->v.velocity[0] == 0.0f && pusher->v.velocity[1] == 0.0f &&
+	   pusher->v.velocity[2] == 0.0f)
 	{
 		pusher->v.ltime = movetime + pusher->v.ltime;
 		return;
@@ -443,10 +456,10 @@ void SV_PushMove(edict_t *pusher, float movetime)
 
 	for(int i = 0; i < 3; i++)
 	{
-		float movedist      = movetime * pusher->v.velocity[i];
-		move[i]             = movedist;
-		mins[i]             = movedist + pusher->v.absmin[i];
-		maxs[i]             = movedist + pusher->v.absmax[i];
+		float movedist = movetime * pusher->v.velocity[i];
+		move[i] = movedist;
+		mins[i] = movedist + pusher->v.absmin[i];
+		maxs[i] = movedist + pusher->v.absmax[i];
 		pusher->v.origin[i] = movedist + pusher->v.origin[i];
 	}
 
@@ -467,10 +480,16 @@ void SV_PushMove(edict_t *pusher, float movetime)
 		if(check->v.movetype == MOVETYPE_PUSH)
 			continue;
 
-		if(check->v.movetype == MOVETYPE_NONE || check->v.movetype == MOVETYPE_FOLLOW || check->v.movetype == MOVETYPE_NOCLIP)
+		if(check->v.movetype == MOVETYPE_NONE ||
+		   check->v.movetype == MOVETYPE_FOLLOW ||
+		   check->v.movetype == MOVETYPE_NOCLIP)
 			continue;
 
-		if(((check->v.flags & FL_ONGROUND) && check->v.groundentity == pusher) || (check->v.absmin[0] < maxs[0] && check->v.absmin[1] < maxs[1] && check->v.absmin[2] < maxs[2] && check->v.absmax[0] > mins[0] && check->v.absmax[1] > mins[1] && check->v.absmax[2] > mins[2] && SV_TestEntityPosition(check)))
+		if(((check->v.flags & FL_ONGROUND) && check->v.groundentity == pusher) ||
+		   (check->v.absmin[0] < maxs[0] && check->v.absmin[1] < maxs[1] &&
+		    check->v.absmin[2] < maxs[2] && check->v.absmax[0] > mins[0] &&
+		    check->v.absmax[1] > mins[1] && check->v.absmax[2] > mins[2] &&
+		    SV_TestEntityPosition(check)))
 		{
 			if(check->v.movetype != MOVETYPE_WALK)
 				check->v.flags &= ~FL_ONGROUND;
@@ -480,11 +499,11 @@ void SV_PushMove(edict_t *pusher, float movetime)
 			entorigin[1] = check->v.origin[1];
 			entorigin[2] = check->v.origin[2];
 
-			pusher->v.solid            = SOLID_NOT;
+			pusher->v.solid = SOLID_NOT;
 			g_moved_from[num_moved][0] = check->v.origin[0];
 			g_moved_from[num_moved][1] = check->v.origin[1];
 			g_moved_from[num_moved][2] = check->v.origin[2];
-			g_moved_edict[num_moved]   = check;
+			g_moved_edict[num_moved] = check;
 			++num_moved;
 
 			SV_PushEntity(check, move);
@@ -543,13 +562,14 @@ int SV_PushRotate(edict_t *pusher, float movetime)
 	vec3_t rightNow;
 	vec3_t upNow;
 
-	if(pusher->v.avelocity[0] == 0.0 && pusher->v.avelocity[1] == 0.0 && pusher->v.avelocity[2] == 0.0)
+	if(pusher->v.avelocity[0] == 0.0 && pusher->v.avelocity[1] == 0.0 &&
+	   pusher->v.avelocity[2] == 0.0)
 	{
 		pusher->v.ltime = movetime + pusher->v.ltime;
 		return 1;
 	}
 
-	for(int i    = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 		amove[i] = movetime * pusher->v.avelocity[i];
 
 	AngleVectors(pusher->v.angles, forward, right, up);
@@ -579,10 +599,19 @@ int SV_PushRotate(edict_t *pusher, float movetime)
 		if(check->v.movetype == MOVETYPE_PUSH)
 			continue;
 
-		if(check->v.movetype == MOVETYPE_NONE || check->v.movetype == MOVETYPE_FOLLOW || check->v.movetype == MOVETYPE_NOCLIP)
+		if(check->v.movetype == MOVETYPE_NONE ||
+		   check->v.movetype == MOVETYPE_FOLLOW ||
+		   check->v.movetype == MOVETYPE_NOCLIP)
 			continue;
 
-		if(((check->v.flags & FL_ONGROUND) && check->v.groundentity == pusher) || (check->v.absmin[0] < pusher->v.absmax[0] && check->v.absmin[1] < pusher->v.absmax[1] && check->v.absmin[2] < pusher->v.absmax[2] && check->v.absmax[0] > pusher->v.absmin[0] && check->v.absmax[1] > pusher->v.absmin[1] && check->v.absmax[2] > pusher->v.absmin[2] && SV_TestEntityPosition(check)))
+		if(((check->v.flags & FL_ONGROUND) && check->v.groundentity == pusher) ||
+		   (check->v.absmin[0] < pusher->v.absmax[0] &&
+		    check->v.absmin[1] < pusher->v.absmax[1] &&
+		    check->v.absmin[2] < pusher->v.absmax[2] &&
+		    check->v.absmax[0] > pusher->v.absmin[0] &&
+		    check->v.absmax[1] > pusher->v.absmin[1] &&
+		    check->v.absmax[2] > pusher->v.absmin[2] &&
+		    SV_TestEntityPosition(check)))
 		{
 			if(check->v.movetype != MOVETYPE_WALK)
 				check->v.flags &= ~FL_ONGROUND;
@@ -595,7 +624,7 @@ int SV_PushRotate(edict_t *pusher, float movetime)
 			g_moved_from[num_moved][0] = check->v.origin[0];
 			g_moved_from[num_moved][1] = check->v.origin[1];
 			g_moved_from[num_moved][2] = check->v.origin[2];
-			g_moved_edict[num_moved]   = check;
+			g_moved_edict[num_moved] = check;
 			++num_moved;
 
 			if(num_moved >= g_psv.max_edicts)
@@ -606,9 +635,9 @@ int SV_PushRotate(edict_t *pusher, float movetime)
 			if(check->v.movetype == MOVETYPE_PUSHSTEP)
 			{
 				vec3_t org;
-				org[0]   = (check->v.absmax[0] + check->v.absmin[0]) * 0.5f;
-				org[1]   = (check->v.absmax[1] + check->v.absmin[1]) * 0.5f;
-				org[2]   = (check->v.absmax[2] + check->v.absmin[2]) * 0.5f;
+				org[0] = (check->v.absmax[0] + check->v.absmin[0]) * 0.5f;
+				org[1] = (check->v.absmax[1] + check->v.absmin[1]) * 0.5f;
+				org[2] = (check->v.absmax[2] + check->v.absmin[2]) * 0.5f;
 				start[0] = org[0] - pusher->v.origin[0];
 				start[1] = org[1] - pusher->v.origin[1];
 				start[2] = org[2] - pusher->v.origin[2];
@@ -625,9 +654,9 @@ int SV_PushRotate(edict_t *pusher, float movetime)
 			move[0] = _DotProduct(forward, start);
 			move[1] = -_DotProduct(right, start);
 			move[2] = _DotProduct(up, start);
-			end[0]  = _DotProduct(forwardNow, move);
-			end[1]  = _DotProduct(rightNow, move);
-			end[2]  = _DotProduct(upNow, move);
+			end[0] = _DotProduct(forwardNow, move);
+			end[1] = _DotProduct(rightNow, move);
+			end[2] = _DotProduct(upNow, move);
 			push[0] = end[0] - start[0];
 			push[1] = end[1] - start[1];
 			push[2] = end[2] - start[2];
@@ -638,14 +667,16 @@ int SV_PushRotate(edict_t *pusher, float movetime)
 			{
 				if(check->v.flags & FL_CLIENT)
 				{
-					check->v.fixangle     = 2;
+					check->v.fixangle = 2;
 					check->v.avelocity[1] = amove[1] + check->v.avelocity[1];
 				}
 				else
 				{
-					//check->v.angles[0] = check->v.angles[0] + 0.0f; //TODO: The 'check->v.angles[0]' variable is assigned to itself.
+					// check->v.angles[0] = check->v.angles[0] + 0.0f; //TODO: The
+					// 'check->v.angles[0]' variable is assigned to itself.
 					check->v.angles[1] = amove[1] + check->v.angles[1];
-					//check->v.angles[2] = check->v.angles[2] + 0.0f; //TODO: The 'check->v.angles[2]' variable is assigned to itself.
+					// check->v.angles[2] = check->v.angles[2] + 0.0f; //TODO: The
+					// 'check->v.angles[2]' variable is assigned to itself.
 				}
 			}
 
@@ -676,7 +707,7 @@ int SV_PushRotate(edict_t *pusher, float movetime)
 			gEntityInterface.pfnBlocked(pusher, check);
 			for(int e = 0; e < num_moved; e++)
 			{
-				edict_t *movedEnt     = g_moved_edict[e];
+				edict_t *movedEnt = g_moved_edict[e];
 				movedEnt->v.origin[0] = g_moved_from[e][0];
 				movedEnt->v.origin[1] = g_moved_from[e][1];
 				movedEnt->v.origin[2] = g_moved_from[e][2];
@@ -688,9 +719,11 @@ int SV_PushRotate(edict_t *pusher, float movetime)
 				{
 					if(movedEnt->v.movetype != MOVETYPE_PUSHSTEP)
 					{
-						//movedEnt->v.angles[0] = movedEnt->v.angles[0]; //TODO: V570 The 'movedEnt->v.angles[0]' variable is assigned to itself.
+						// movedEnt->v.angles[0] = movedEnt->v.angles[0]; //TODO: V570 The
+						// 'movedEnt->v.angles[0]' variable is assigned to itself.
 						movedEnt->v.angles[1] = movedEnt->v.angles[1] - amove[1];
-						//movedEnt->v.angles[2] = movedEnt->v.angles[2]; //TODO: V570 The 'movedEnt->v.angles[2]' variable is assigned to itself.
+						// movedEnt->v.angles[2] = movedEnt->v.angles[2]; //TODO: V570 The
+						// 'movedEnt->v.angles[2]' variable is assigned to itself.
 					}
 				}
 				SV_LinkEdict(movedEnt, 0);
@@ -706,7 +739,7 @@ int SV_PushRotate(edict_t *pusher, float movetime)
 void SV_Physics_Pusher(edict_t *ent)
 {
 	float thinktime = ent->v.nextthink;
-	float oldltime  = ent->v.ltime;
+	float oldltime = ent->v.ltime;
 	float movetime;
 
 	if(oldltime + host_frametime <= thinktime)
@@ -721,14 +754,16 @@ void SV_Physics_Pusher(edict_t *ent)
 	}
 	if(movetime != 0.0)
 	{
-		if(ent->v.avelocity[0] != 0.0 || ent->v.avelocity[1] != 0.0 || ent->v.avelocity[2] != 0.0)
+		if(ent->v.avelocity[0] != 0.0 || ent->v.avelocity[1] != 0.0 ||
+		   ent->v.avelocity[2] != 0.0)
 		{
-			if(ent->v.velocity[0] != 0.0 || ent->v.velocity[1] != 0.0 || ent->v.velocity[2] != 0.0)
+			if(ent->v.velocity[0] != 0.0 || ent->v.velocity[1] != 0.0 ||
+			   ent->v.velocity[2] != 0.0)
 			{
 				if(SV_PushRotate(ent, movetime))
 				{
 					float savetime = ent->v.ltime;
-					ent->v.ltime   = oldltime;
+					ent->v.ltime = oldltime;
 					SV_PushMove(ent, movetime);
 					if(ent->v.ltime < savetime)
 						ent->v.ltime = savetime;
@@ -751,13 +786,15 @@ void SV_Physics_Pusher(edict_t *ent)
 			ent->v.angles[i] = fmod(ent->v.angles[i], 3600.0f);
 	}
 
-	if(thinktime > oldltime && ((ent->v.flags & FL_ALWAYSTHINK) || thinktime <= ent->v.ltime)
+	if(thinktime > oldltime &&
+	   ((ent->v.flags & FL_ALWAYSTHINK) || thinktime <= ent->v.ltime)
 #ifdef REHLDS_FIXES
-	   && !(ent->v.flags & FL_KILLME)
+	   &&
+	   !(ent->v.flags & FL_KILLME)
 #endif // REHLDS_FIXES
-	       )
+	   )
 	{
-		ent->v.nextthink      = 0;
+		ent->v.nextthink = 0;
 		gGlobalVariables.time = (float)g_psv.time;
 		gEntityInterface.pfnThink(ent);
 	}
@@ -768,16 +805,16 @@ qboolean SV_CheckWater(edict_t *ent)
 	vec3_t point;
 
 	ent->v.waterlevel = 0;
-	ent->v.watertype  = -1;
-	g_groupmask       = ent->v.groupinfo;
-	point[0]          = (ent->v.absmax[0] + ent->v.absmin[0]) * 0.5f;
-	point[1]          = (ent->v.absmax[1] + ent->v.absmin[1]) * 0.5f;
-	point[2]          = ent->v.absmin[2] + 1.0f;
-	int cont          = SV_PointContents(point);
+	ent->v.watertype = -1;
+	g_groupmask = ent->v.groupinfo;
+	point[0] = (ent->v.absmax[0] + ent->v.absmin[0]) * 0.5f;
+	point[1] = (ent->v.absmax[1] + ent->v.absmin[1]) * 0.5f;
+	point[2] = ent->v.absmin[2] + 1.0f;
+	int cont = SV_PointContents(point);
 	if(cont > CONTENTS_WATER || cont <= CONTENTS_TRANSLUCENT)
 		return 0;
 
-	ent->v.watertype  = cont;
+	ent->v.watertype = cont;
 	ent->v.waterlevel = 1;
 	if(ent->v.absmin[2] == ent->v.absmax[2])
 	{
@@ -785,17 +822,17 @@ qboolean SV_CheckWater(edict_t *ent)
 	}
 	else
 	{
-		g_groupmask  = ent->v.groupinfo;
-		point[2]     = (ent->v.absmax[2] + ent->v.absmin[2]) * 0.5f;
+		g_groupmask = ent->v.groupinfo;
+		point[2] = (ent->v.absmax[2] + ent->v.absmin[2]) * 0.5f;
 		int truecont = SV_PointContents(point);
 		if(truecont <= CONTENTS_WATER && truecont > CONTENTS_TRANSLUCENT)
 		{
 			ent->v.waterlevel = 2;
-			g_groupmask       = ent->v.groupinfo;
-			point[0]          = point[0] + ent->v.view_ofs[0];
-			point[1]          = point[1] + ent->v.view_ofs[1];
-			point[2]          = point[2] + ent->v.view_ofs[2];
-			truecont          = SV_PointContents(point);
+			g_groupmask = ent->v.groupinfo;
+			point[0] = point[0] + ent->v.view_ofs[0];
+			point[1] = point[1] + ent->v.view_ofs[1];
+			point[2] = point[2] + ent->v.view_ofs[2];
+			truecont = SV_PointContents(point);
 			if(truecont <= CONTENTS_WATER && truecont > CONTENTS_TRANSLUCENT)
 				ent->v.waterlevel = 3;
 		}
@@ -803,14 +840,9 @@ qboolean SV_CheckWater(edict_t *ent)
 
 	if(cont <= CONTENTS_CURRENT_0 && cont >= CONTENTS_CURRENT_DOWN)
 	{
-		static vec_t current_table[6][3] =
-		    {
-		        {1.0f, 0.0f, 0.0f},
-		        {0.0f, 1.0f, 0.0f},
-		        {-1.0f, 0.0f, 0.0f},
-		        {0.0f, -1.0f, 0.0f},
-		        {0.0f, 0.0f, 1.0f},
-		        {0.0f, 0.0f, -1.0f}};
+		static vec_t current_table[6][3] = {
+			{ 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }
+		};
 
 		VectorMA(ent->v.basevelocity, ent->v.waterlevel * 50.0f, current_table[-(cont - CONTENTS_CURRENT_0)], ent->v.basevelocity);
 	}
@@ -840,12 +872,12 @@ float SV_RecursiveWaterLevel(vec_t *center, float out, float in, int count)
 
 float SV_Submerged(edict_t *ent)
 {
-	float  end;
+	float end;
 	vec3_t center;
 
-	center[0]   = (ent->v.absmax[0] + ent->v.absmin[0]) * 0.5f;
-	center[1]   = (ent->v.absmax[1] + ent->v.absmin[1]) * 0.5f;
-	center[2]   = (ent->v.absmin[2] + ent->v.absmax[2]) * 0.5f;
+	center[0] = (ent->v.absmax[0] + ent->v.absmin[0]) * 0.5f;
+	center[1] = (ent->v.absmax[1] + ent->v.absmin[1]) * 0.5f;
+	center[2] = (ent->v.absmin[2] + ent->v.absmax[2]) * 0.5f;
 	float start = ent->v.absmin[2] - center[2];
 	if(ent->v.waterlevel == 1)
 	{
@@ -861,9 +893,9 @@ float SV_Submerged(edict_t *ent)
 	if(ent->v.waterlevel == 3)
 	{
 		vec3_t point;
-		point[0]    = center[0];
-		point[1]    = center[1];
-		point[2]    = ent->v.absmax[2];
+		point[0] = center[0];
+		point[1] = center[1];
+		point[2] = ent->v.absmax[2];
 		g_groupmask = ent->v.groupinfo;
 		if(SV_PointContents(point) == -3)
 			return ent->v.maxs[2] - ent->v.mins[2];
@@ -897,7 +929,8 @@ void SV_Physics_Follow(edict_t *ent)
 		}
 		else
 		{
-			Con_DPrintf("%s movetype FOLLOW with NULL aiment\n", &pr_strings[ent->v.classname]);
+			Con_DPrintf("%s movetype FOLLOW with NULL aiment\n",
+			            &pr_strings[ent->v.classname]);
 			ent->v.movetype = 0;
 		}
 	}
@@ -918,14 +951,14 @@ void SV_CheckWaterTransition(edict_t *ent)
 	vec3_t point;
 
 	g_groupmask = ent->v.groupinfo;
-	point[0]    = (ent->v.absmax[0] + ent->v.absmin[0]) * 0.5f;
-	point[1]    = (ent->v.absmax[1] + ent->v.absmin[1]) * 0.5f;
-	point[2]    = ent->v.absmin[2] + 1.0f;
-	int cont    = SV_PointContents(point);
+	point[0] = (ent->v.absmax[0] + ent->v.absmin[0]) * 0.5f;
+	point[1] = (ent->v.absmax[1] + ent->v.absmin[1]) * 0.5f;
+	point[2] = ent->v.absmin[2] + 1.0f;
+	int cont = SV_PointContents(point);
 
 	if(ent->v.watertype == 0)
 	{
-		ent->v.watertype  = cont;
+		ent->v.watertype = cont;
 		ent->v.waterlevel = 1;
 		return;
 	}
@@ -934,7 +967,7 @@ void SV_CheckWaterTransition(edict_t *ent)
 	{
 		if(ent->v.watertype != -1)
 			SV_StartSound(0, ent, 0, "player/pl_wade2.wav", 255, 1.0, 0, 100);
-		ent->v.watertype  = -1;
+		ent->v.watertype = -1;
 		ent->v.waterlevel = 0;
 		return;
 	}
@@ -945,7 +978,7 @@ void SV_CheckWaterTransition(edict_t *ent)
 		ent->v.velocity[2] = ent->v.velocity[2] * 0.5f;
 	}
 
-	ent->v.watertype  = cont;
+	ent->v.watertype = cont;
 	ent->v.waterlevel = 1;
 	if(ent->v.absmin[2] == ent->v.absmax[2])
 	{
@@ -954,16 +987,16 @@ void SV_CheckWaterTransition(edict_t *ent)
 	}
 
 	g_groupmask = ent->v.groupinfo;
-	point[2]    = (ent->v.absmin[2] + ent->v.absmax[2]) * 0.5f;
-	cont        = SV_PointContents(point);
+	point[2] = (ent->v.absmin[2] + ent->v.absmax[2]) * 0.5f;
+	cont = SV_PointContents(point);
 	if(cont <= CONTENTS_WATER && cont > CONTENTS_TRANSLUCENT)
 	{
 		ent->v.waterlevel = 2;
-		g_groupmask       = ent->v.groupinfo;
-		point[0]          = point[0] + ent->v.view_ofs[0];
-		point[1]          = point[1] + ent->v.view_ofs[1];
-		point[2]          = point[2] + ent->v.view_ofs[2];
-		cont              = SV_PointContents(point);
+		g_groupmask = ent->v.groupinfo;
+		point[0] = point[0] + ent->v.view_ofs[0];
+		point[1] = point[1] + ent->v.view_ofs[1];
+		point[2] = point[2] + ent->v.view_ofs[2];
+		cont = SV_PointContents(point);
 		if(cont <= CONTENTS_WATER && cont > CONTENTS_TRANSLUCENT)
 		{
 			ent->v.waterlevel = 3;
@@ -977,10 +1010,12 @@ void SV_Physics_Toss(edict_t *ent)
 	if(!SV_RunThink(ent))
 		return;
 
-	if(ent->v.velocity[2] > 0.0 || ent->v.groundentity == NULL || ent->v.groundentity->v.flags & (FL_MONSTER | FL_CLIENT))
+	if(ent->v.velocity[2] > 0.0 || ent->v.groundentity == NULL ||
+	   ent->v.groundentity->v.flags & (FL_MONSTER | FL_CLIENT))
 		ent->v.flags &= ~FL_ONGROUND;
 
-	if((ent->v.flags & FL_ONGROUND) && VectorCompare(ent->v.velocity, vec_origin))
+	if((ent->v.flags & FL_ONGROUND) &&
+	   VectorCompare(ent->v.velocity, vec_origin))
 	{
 		ent->v.avelocity[0] = vec3_origin[0];
 		ent->v.avelocity[1] = vec3_origin[1];
@@ -990,7 +1025,9 @@ void SV_Physics_Toss(edict_t *ent)
 	}
 
 	SV_CheckVelocity(ent);
-	if(ent->v.movetype != MOVETYPE_FLY && ent->v.movetype != MOVETYPE_BOUNCEMISSILE && ent->v.movetype != MOVETYPE_FLYMISSILE)
+	if(ent->v.movetype != MOVETYPE_FLY &&
+	   ent->v.movetype != MOVETYPE_BOUNCEMISSILE &&
+	   ent->v.movetype != MOVETYPE_FLYMISSILE)
 		SV_AddGravity(ent);
 
 	VectorMA(ent->v.angles, (float)host_frametime, ent->v.avelocity, ent->v.angles);
@@ -1010,9 +1047,9 @@ void SV_Physics_Toss(edict_t *ent)
 
 	if(trace.allsolid)
 	{
-		ent->v.velocity[0]  = vec3_origin[0];
-		ent->v.velocity[1]  = vec3_origin[1];
-		ent->v.velocity[2]  = vec3_origin[2];
+		ent->v.velocity[0] = vec3_origin[0];
+		ent->v.velocity[1] = vec3_origin[1];
+		ent->v.velocity[2] = vec3_origin[2];
 		ent->v.avelocity[0] = vec3_origin[0];
 		ent->v.avelocity[1] = vec3_origin[1];
 		ent->v.avelocity[2] = vec3_origin[2];
@@ -1053,13 +1090,14 @@ void SV_Physics_Toss(edict_t *ent)
 	if(sv_gravity.value * host_frametime > move[2])
 	{
 		ent->v.flags |= FL_ONGROUND;
-		ent->v.velocity[2]  = 0;
+		ent->v.velocity[2] = 0;
 		ent->v.groundentity = trace.ent;
 	}
 
 	if(_DotProduct(move, move) >= 900.0f)
 	{
-		if(ent->v.movetype == MOVETYPE_BOUNCE || ent->v.movetype == MOVETYPE_BOUNCEMISSILE)
+		if(ent->v.movetype == MOVETYPE_BOUNCE ||
+		   ent->v.movetype == MOVETYPE_BOUNCEMISSILE)
 		{
 			float scale = (1.0 - trace.fraction) * host_frametime * 0.9f;
 			VectorScale(ent->v.velocity, scale, move);
@@ -1072,9 +1110,9 @@ void SV_Physics_Toss(edict_t *ent)
 
 	ent->v.flags |= FL_ONGROUND;
 	ent->v.groundentity = trace.ent;
-	ent->v.velocity[0]  = vec3_origin[0];
-	ent->v.velocity[1]  = vec3_origin[1];
-	ent->v.velocity[2]  = vec3_origin[2];
+	ent->v.velocity[0] = vec3_origin[0];
+	ent->v.velocity[1] = vec3_origin[1];
+	ent->v.velocity[2] = vec3_origin[2];
 	ent->v.avelocity[0] = vec3_origin[0];
 	ent->v.avelocity[1] = vec3_origin[1];
 	ent->v.avelocity[2] = vec3_origin[2];
@@ -1083,9 +1121,9 @@ void SV_Physics_Toss(edict_t *ent)
 
 void PF_WaterMove(edict_t *pSelf)
 {
-	int   flags;
-	int   waterlevel;
-	int   watertype;
+	int flags;
+	int waterlevel;
+	int watertype;
 	float drownlevel;
 
 	if(pSelf->v.movetype == MOVETYPE_NOCLIP)
@@ -1099,23 +1137,25 @@ void PF_WaterMove(edict_t *pSelf)
 
 	drownlevel = pSelf->v.deadflag ? 1.0f : 3.0f;
 	waterlevel = pSelf->v.waterlevel;
-	watertype  = pSelf->v.watertype;
-	flags      = pSelf->v.flags;
+	watertype = pSelf->v.watertype;
+	flags = pSelf->v.flags;
 	if(!(flags & (FL_IMMUNE_WATER | FL_GODMODE)))
 	{
-		if(flags & FL_SWIM && (waterlevel < drownlevel) || (waterlevel >= drownlevel))
+		if(flags & FL_SWIM && (waterlevel < drownlevel) ||
+		   (waterlevel >= drownlevel))
 		{
-			if(pSelf->v.air_finished < g_psv.time && pSelf->v.pain_finished < g_psv.time)
+			if(pSelf->v.air_finished < g_psv.time &&
+			   pSelf->v.pain_finished < g_psv.time)
 			{
 				pSelf->v.dmg += 2.0;
 				if(pSelf->v.dmg > 15.0)
-					pSelf->v.dmg       = 10.0f;
+					pSelf->v.dmg = 10.0f;
 				pSelf->v.pain_finished = (float)(g_psv.time + 1.0f);
 			}
 		}
 		else
 		{
-			pSelf->v.dmg          = 2.0f;
+			pSelf->v.dmg = 2.0f;
 			pSelf->v.air_finished = (float)(g_psv.time + 12.0);
 		}
 	}
@@ -1148,7 +1188,8 @@ void PF_WaterMove(edict_t *pSelf)
 
 	if(watertype == -5)
 	{
-		if(!(flags & (FL_IMMUNE_LAVA | FL_GODMODE)) && pSelf->v.dmgtime < g_psv.time)
+		if(!(flags & (FL_IMMUNE_LAVA | FL_GODMODE)) &&
+		   pSelf->v.dmgtime < g_psv.time)
 		{
 			if(g_psv.time <= pSelf->v.radsuit_finished)
 				pSelf->v.dmgtime = (float)(g_psv.time + 1.0);
@@ -1158,7 +1199,9 @@ void PF_WaterMove(edict_t *pSelf)
 	}
 	else
 	{
-		if(watertype == -4 && !(flags & (FL_IMMUNE_SLIME | FL_GODMODE)) && pSelf->v.dmgtime < g_psv.time && pSelf->v.radsuit_finished < g_psv.time)
+		if(watertype == -4 && !(flags & (FL_IMMUNE_SLIME | FL_GODMODE)) &&
+		   pSelf->v.dmgtime < g_psv.time &&
+		   pSelf->v.radsuit_finished < g_psv.time)
 		{
 			pSelf->v.dmgtime = (float)(g_psv.time + 1.0);
 		}
@@ -1187,12 +1230,15 @@ void PF_WaterMove(edict_t *pSelf)
 			}
 		}
 		pSelf->v.dmgtime = 0;
-		pSelf->v.flags   = flags | FL_INWATER;
+		pSelf->v.flags = flags | FL_INWATER;
 	}
 
 	if(!(flags & FL_WATERJUMP))
 	{
-		VectorMA(pSelf->v.velocity, (float)(pSelf->v.waterlevel * host_frametime * -0.8), pSelf->v.velocity, pSelf->v.velocity);
+		VectorMA(pSelf->v.velocity,
+		         (float)(pSelf->v.waterlevel * host_frametime * -0.8),
+		         pSelf->v.velocity,
+		         pSelf->v.velocity);
 	}
 }
 
@@ -1205,10 +1251,11 @@ void SV_Physics_Step(edict_t *ent)
 	PF_WaterMove(ent);
 	SV_CheckVelocity(ent);
 	qboolean wasonground = (ent->v.flags & FL_ONGROUND) ? 1 : 0;
-	qboolean inwater     = SV_CheckWater(ent);
+	qboolean inwater = SV_CheckWater(ent);
 	if((ent->v.flags & FL_FLOAT) && ent->v.waterlevel > 0) // FL_FLOAT
 	{
-		float waterLevel = (float)(SV_Submerged(ent) * ent->v.skin * host_frametime);
+		float waterLevel =
+		(float)(SV_Submerged(ent) * ent->v.skin * host_frametime);
 		SV_AddGravity(ent);
 		ent->v.velocity[2] += waterLevel;
 	}
@@ -1223,11 +1270,13 @@ void SV_Physics_Step(edict_t *ent)
 			}
 		}
 	}
-	if(VectorCompare(ent->v.velocity, vec_origin) && VectorCompare(ent->v.basevelocity, vec_origin))
+	if(VectorCompare(ent->v.velocity, vec_origin) &&
+	   VectorCompare(ent->v.basevelocity, vec_origin))
 	{
 		if(gGlobalVariables.force_retouch != 0.0)
 		{
-			trace_t trace = SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, ent->v.origin, 0, ent, (ent->v.flags & FL_MONSTERCLIP) ? 1 : 0);
+			trace_t trace =
+			SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, ent->v.origin, 0, ent, (ent->v.flags & FL_MONSTERCLIP) ? 1 : 0);
 			if(trace.fraction < 1.0 || trace.startsolid)
 			{
 				if(trace.ent)
@@ -1240,17 +1289,20 @@ void SV_Physics_Step(edict_t *ent)
 		ent->v.flags &= ~FL_ONGROUND;
 		if(wasonground && (ent->v.health > 0.0 || SV_CheckBottom(ent)))
 		{
-			float speed = (float)Q_sqrt((long double)(ent->v.velocity[0] * ent->v.velocity[0] + ent->v.velocity[1] * ent->v.velocity[1]));
+			float speed =
+			(float)Q_sqrt((long double)(ent->v.velocity[0] * ent->v.velocity[0] +
+			                            ent->v.velocity[1] * ent->v.velocity[1]));
 			if(speed != 0.0)
 			{
-				float friction  = sv_friction.value * ent->v.friction;
+				float friction = sv_friction.value * ent->v.friction;
 				ent->v.friction = 1.0f;
-				float control   = (speed >= sv_stopspeed.value) ? speed : sv_stopspeed.value;
+				float control =
+				(speed >= sv_stopspeed.value) ? speed : sv_stopspeed.value;
 
 				float newspeed = (float)(speed - control * friction * host_frametime);
 				if(newspeed < 0.0)
 					newspeed = 0.0;
-				newspeed     = newspeed / speed;
+				newspeed = newspeed / speed;
 
 				ent->v.velocity[0] *= newspeed;
 				ent->v.velocity[1] *= newspeed;
@@ -1266,19 +1318,19 @@ void SV_Physics_Step(edict_t *ent)
 		ent->v.velocity[1] -= ent->v.basevelocity[1];
 		ent->v.velocity[2] -= ent->v.basevelocity[2];
 		SV_CheckVelocity(ent);
-		mins[0]  = ent->v.mins[0] + ent->v.origin[0];
-		mins[1]  = ent->v.mins[1] + ent->v.origin[1];
-		mins[2]  = ent->v.mins[2] + ent->v.origin[2];
-		maxs[0]  = ent->v.maxs[0] + ent->v.origin[0];
-		maxs[1]  = ent->v.maxs[1] + ent->v.origin[1];
+		mins[0] = ent->v.mins[0] + ent->v.origin[0];
+		mins[1] = ent->v.mins[1] + ent->v.origin[1];
+		mins[2] = ent->v.mins[2] + ent->v.origin[2];
+		maxs[0] = ent->v.maxs[0] + ent->v.origin[0];
+		maxs[1] = ent->v.maxs[1] + ent->v.origin[1];
 		point[2] = mins[2] - 1.0f;
 
 		for(int x = 0; x <= 1; x++)
 		{
 			for(int y = 0; y <= 1; y++)
 			{
-				point[0]    = x ? (maxs[0]) : (mins[0]);
-				point[1]    = y ? (maxs[1]) : (mins[1]);
+				point[0] = x ? (maxs[0]) : (mins[0]);
+				point[1] = y ? (maxs[1]) : (mins[1]);
 				g_groupmask = ent->v.groupinfo;
 				if(SV_PointContents(point) == -2)
 				{
@@ -1380,9 +1432,9 @@ trace_t SV_Trace_Toss(edict_t *ent, edict_t *ignore)
 {
 	edict_t tempent;
 	trace_t trace;
-	vec3_t  move;
-	vec3_t  end;
-	double  save_frametime;
+	vec3_t move;
+	vec3_t end;
+	double save_frametime;
 
 	save_frametime = host_frametime;
 	host_frametime = 5.0;
@@ -1395,10 +1447,10 @@ trace_t SV_Trace_Toss(edict_t *ent, edict_t *ignore)
 			SV_AddGravity(&tempent);
 			VectorMA(tempent.v.angles, (float)host_frametime, tempent.v.avelocity, tempent.v.angles);
 			VectorScale(tempent.v.velocity, (float)host_frametime, move);
-			end[0]              = tempent.v.origin[0] + move[0];
-			end[1]              = tempent.v.origin[1] + move[1];
-			end[2]              = tempent.v.origin[2] + move[2];
-			trace               = SV_Move(tempent.v.origin, tempent.v.mins, tempent.v.maxs, end, 0, &tempent, 0);
+			end[0] = tempent.v.origin[0] + move[0];
+			end[1] = tempent.v.origin[1] + move[1];
+			end[2] = tempent.v.origin[2] + move[2];
+			trace = SV_Move(tempent.v.origin, tempent.v.mins, tempent.v.maxs, end, 0, &tempent, 0);
 			tempent.v.origin[1] = trace.endpos[1];
 			tempent.v.origin[0] = trace.endpos[0];
 			tempent.v.origin[2] = trace.endpos[2];

@@ -1,22 +1,22 @@
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <ctype.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <mntent.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/ipc.h>
+#include <sys/mman.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
-#include <string.h>
-#include <ctype.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/mman.h>
-#include <errno.h>
-#include <mntent.h>
+#include <unistd.h>
+#include <unistd.h>
 
 #include <dlfcn.h>
 
@@ -28,7 +28,7 @@ cvar_t *nostdout;
 
 unsigned sys_frame_time;
 
-uid_t    saved_euid;
+uid_t saved_euid;
 qboolean stdin_active = true;
 
 // =======================================================================
@@ -45,8 +45,8 @@ void Sys_ConsoleOutput(char *string)
 
 void Sys_Printf(char *fmt, ...)
 {
-	va_list        argptr;
-	char           text[1024];
+	va_list argptr;
+	char text[1024];
 	unsigned char *p;
 
 	va_start(argptr, fmt);
@@ -87,7 +87,7 @@ void Sys_Init(void)
 void Sys_Error(char *error, ...)
 {
 	va_list argptr;
-	char    string[1024];
+	char string[1024];
 
 	// change stdin to non blocking
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
@@ -106,7 +106,7 @@ void Sys_Error(char *error, ...)
 void Sys_Warn(char *warning, ...)
 {
 	va_list argptr;
-	char    string[1024];
+	char string[1024];
 
 	va_start(argptr, warning);
 	vsprintf(string, warning, argptr);
@@ -139,9 +139,9 @@ void floating_point_exception_handler(int whatever)
 
 char *Sys_ConsoleInput(void)
 {
-	static char    text[256];
-	int            len;
-	fd_set         fdset;
+	static char text[256];
+	int len;
+	fd_set fdset;
 	struct timeval timeout;
 
 	if(!dedicated || !dedicated->value)
@@ -152,7 +152,7 @@ char *Sys_ConsoleInput(void)
 
 	FD_ZERO(&fdset);
 	FD_SET(0, &fdset); // stdin
-	timeout.tv_sec  = 0;
+	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
 	if(select(1, &fdset, NULL, NULL, &timeout) == -1 || !FD_ISSET(0, &fdset))
 		return NULL;
@@ -198,12 +198,12 @@ void *Sys_GetGameAPI(void *parms)
 {
 	void *(*GetGameAPI)(void *);
 
-	char  name[MAX_OSPATH];
-	char  curpath[MAX_OSPATH];
+	char name[MAX_OSPATH];
+	char curpath[MAX_OSPATH];
 	char *path;
 #ifdef __i386__
 	const char *gamename = "gamei386.so";
-#elif defined   __alpha__
+#elif defined __alpha__
 	const char *gamename = "gameaxp.so";
 #else
 #error Unknown arch
@@ -295,7 +295,7 @@ int main(int argc, char **argv)
 		do
 		{
 			newtime = Sys_Milliseconds();
-			time    = newtime - oldtime;
+			time = newtime - oldtime;
 		} while(time < 1);
 		Qcommon_Frame(time);
 		oldtime = newtime;
@@ -304,11 +304,11 @@ int main(int argc, char **argv)
 
 void Sys_CopyProtect(void)
 {
-	FILE *         mnt;
+	FILE *mnt;
 	struct mntent *ent;
-	char           path[MAX_OSPATH];
-	struct stat    st;
-	qboolean       found_cd = false;
+	char path[MAX_OSPATH];
+	struct stat st;
+	qboolean found_cd = false;
 
 	static qboolean checked = false;
 
@@ -316,7 +316,8 @@ void Sys_CopyProtect(void)
 		return;
 
 	if((mnt = setmntent("/etc/mtab", "r")) == NULL)
-		Com_Error(ERR_FATAL, "Can't read mount table to determine mounted cd location.");
+		Com_Error(ERR_FATAL,
+		          "Can't read mount table to determine mounted cd location.");
 
 	while((ent = getmntent(mnt)) != NULL)
 	{
@@ -354,8 +355,9 @@ void Sys_CopyProtect(void)
 
 	if(found_cd)
 		Com_Error(ERR_FATAL, "Could not find a Quake2 CD in your CD drive.");
-	Com_Error(ERR_FATAL, "Unable to find a mounted iso9660 file system.\n"
-	                     "You must mount the Quake2 CD in a cdrom drive in order to play.");
+	Com_Error(ERR_FATAL,
+	          "Unable to find a mounted iso9660 file system.\n"
+	          "You must mount the Quake2 CD in a cdrom drive in order to play.");
 }
 
 #if 0

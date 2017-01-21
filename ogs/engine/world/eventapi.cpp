@@ -145,7 +145,7 @@ void EventAPI_KillEvents(int entnum, const char *eventname)
 		return;
 
 	event_state_t *es = &cl.events;
-	event_info_t * ei = nullptr;
+	event_info_t *ei = nullptr;
 
 	// find all events with specified index and kill it
 	for(int i = 0; i < MAX_EVENT_QUEUE; ++i)

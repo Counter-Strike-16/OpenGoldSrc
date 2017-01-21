@@ -41,10 +41,10 @@
 using namespace vgui;
 
 extern vgui::DHANDLE<CLoadingDialog> g_hLoadingDialog;
-extern CBasePanel *                  staticPanel;
+extern CBasePanel *staticPanel;
 
-static CBasePanel *g_pBasePanel         = NULL;
-static float       g_flAnimationPadding = 0.01f;
+static CBasePanel *g_pBasePanel = NULL;
+static float g_flAnimationPadding = 0.01f;
 
 CBasePanel *BasePanel(void)
 {
@@ -154,7 +154,7 @@ public:
 	{
 		for(int i = 0; i < GetChildCount(); i++)
 		{
-			Panel *   child    = GetChild(i);
+			Panel *child = GetChild(i);
 			MenuItem *menuItem = dynamic_cast<MenuItem *>(child);
 
 			if(menuItem)
@@ -252,13 +252,13 @@ public:
 	{
 		for(int i = 0; i < GetChildCount(); i++)
 		{
-			Panel *   child    = GetChild(i);
+			Panel *child = GetChild(i);
 			MenuItem *menuItem = dynamic_cast<MenuItem *>(child);
 
 			if(menuItem)
 			{
-				bool       shouldBeVisible = true;
-				KeyValues *kv              = menuItem->GetUserData();
+				bool shouldBeVisible = true;
+				KeyValues *kv = menuItem->GetUserData();
 
 				if(!kv)
 					continue;
@@ -325,7 +325,7 @@ public:
 	}
 
 private:
-	CFooterPanel *          m_pConsoleFooter;
+	CFooterPanel *m_pConsoleFooter;
 	vgui::CKeyRepeatHandler m_KeyRepeat;
 };
 
@@ -342,24 +342,24 @@ static CBackgroundMenuButton *CreateMenuButton(CBasePanel *parent, const char *p
 CBasePanel::CBasePanel(void)
     : Panel(NULL, "BaseGameUIPanel")
 {
-	g_pBasePanel                     = this;
-	m_bLevelLoading                  = false;
-	m_eBackgroundState               = BACKGROUND_INITIAL;
-	m_flTransitionStartTime          = 0.0f;
-	m_flTransitionEndTime            = 0.0f;
-	m_flFrameFadeInTime              = 0.5f;
+	g_pBasePanel = this;
+	m_bLevelLoading = false;
+	m_eBackgroundState = BACKGROUND_INITIAL;
+	m_flTransitionStartTime = 0.0f;
+	m_flTransitionEndTime = 0.0f;
+	m_flFrameFadeInTime = 0.5f;
 	m_bRenderingBackgroundTransition = false;
-	m_bFadingInMenus                 = false;
-	m_bEverActivated                 = false;
-	m_iGameMenuInset                 = 24;
-	m_bHaveDarkenedBackground        = false;
-	m_bHaveDarkenedTitleText         = true;
-	m_bForceTitleTextUpdate          = true;
-	m_BackdropColor                  = Color(0, 0, 0, 128);
-	m_pConsoleAnimationController    = NULL;
-	m_pConsoleControlSettings        = NULL;
-	m_iToolBarSize                   = 40;
-	m_bInitialLoading                = true;
+	m_bFadingInMenus = false;
+	m_bEverActivated = false;
+	m_iGameMenuInset = 24;
+	m_bHaveDarkenedBackground = false;
+	m_bHaveDarkenedTitleText = true;
+	m_bForceTitleTextUpdate = true;
+	m_BackdropColor = Color(0, 0, 0, 128);
+	m_pConsoleAnimationController = NULL;
+	m_pConsoleControlSettings = NULL;
+	m_iToolBarSize = 40;
+	m_bInitialLoading = true;
 
 	m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton", ModInfo().GetGameTitle()));
 	m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton2", ModInfo().GetGameTitle2()));
@@ -376,7 +376,7 @@ CBasePanel::CBasePanel(void)
 	SetMenuAlpha(0);
 
 	m_pFocusParent = NULL;
-	m_pFocusPanel  = NULL;
+	m_pFocusPanel = NULL;
 }
 
 KeyValues *CBasePanel::GetConsoleControlSettings(void)
@@ -396,7 +396,7 @@ void CBasePanel::PaintBackground(void)
 {
 	if(!m_hOptionsDialog.Get())
 	{
-		m_hOptionsDialog               = new COptionsDialog(this);
+		m_hOptionsDialog = new COptionsDialog(this);
 		m_hCreateMultiplayerGameDialog = new CCreateMultiplayerGameDialog(this);
 
 		PositionDialog(m_hOptionsDialog);
@@ -460,12 +460,12 @@ void CBasePanel::UpdateBackgroundState(void)
 	}
 
 	bool bHaveActiveDialogs = false;
-	bool bIsInLevel         = GameUI().IsInLevel();
+	bool bIsInLevel = GameUI().IsInLevel();
 
 	for(int i = 0; i < GetChildCount(); ++i)
 	{
-		VPANEL      child = ipanel()->GetChild(GetVPanel(), i);
-		const char *name  = ipanel()->GetName(child);
+		VPANEL child = ipanel()->GetChild(GetVPanel(), i);
+		const char *name = ipanel()->GetName(child);
 
 		if(child && ipanel()->IsVisible(child) && ipanel()->IsPopup(child) && child != m_pGameMenu->GetVPanel())
 		{
@@ -499,12 +499,12 @@ void CBasePanel::UpdateBackgroundState(void)
 		if(bNeedDarkenedBackground || m_eBackgroundState == BACKGROUND_LOADING)
 		{
 			targetAlpha = m_BackdropColor[3];
-			duration    = m_flFrameFadeInTime;
+			duration = m_flFrameFadeInTime;
 		}
 		else
 		{
 			targetAlpha = 0.0f;
-			duration    = 2.0f;
+			duration = 2.0f;
 		}
 
 		m_bHaveDarkenedBackground = bNeedDarkenedBackground;
@@ -526,12 +526,12 @@ void CBasePanel::UpdateBackgroundState(void)
 
 		if(bHaveActiveDialogs || m_eBackgroundState == BACKGROUND_LOADING)
 		{
-			duration         = m_flFrameFadeInTime;
+			duration = m_flFrameFadeInTime;
 			targetTitleAlpha = 128.0f;
 		}
 		else
 		{
-			duration         = 2.0f;
+			duration = 2.0f;
 			targetTitleAlpha = 255.0f;
 		}
 
@@ -550,9 +550,9 @@ void CBasePanel::UpdateBackgroundState(void)
 		for(int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 			GetAnimationController()->RunAnimationCommand(m_pGameMenuButtons[i], "alpha", targetTitleAlpha, 0.0f, duration, AnimationController::INTERPOLATOR_LINEAR);
 
-		m_bFadingInMenus         = false;
+		m_bFadingInMenus = false;
 		m_bHaveDarkenedTitleText = bNeedDarkenedTitleText;
-		m_bForceTitleTextUpdate  = false;
+		m_bForceTitleTextUpdate = false;
 	}
 }
 
@@ -564,16 +564,16 @@ void CBasePanel::SetBackgroundRenderState(EBackgroundState state)
 	float frametime = engine->GetAbsoluteTime();
 
 	m_bRenderingBackgroundTransition = false;
-	m_bFadingInMenus                 = false;
+	m_bFadingInMenus = false;
 
 	if(state == BACKGROUND_EXITING)
 	{
 	}
 	else if(state == BACKGROUND_DISCONNECTED || state == BACKGROUND_MAINMENU)
 	{
-		m_bFadingInMenus      = true;
+		m_bFadingInMenus = true;
 		m_flFadeMenuStartTime = frametime;
-		m_flFadeMenuEndTime   = frametime + 3.0f;
+		m_flFadeMenuEndTime = frametime + 3.0f;
 
 		if(m_pBinkPanel)
 			m_pBinkPanel->SetVisible(true);
@@ -628,7 +628,7 @@ void CBasePanel::DrawBackgroundImage(void)
 	GetSize(wide, tall);
 
 	float frametime = engine->GetAbsoluteTime();
-	int   alpha     = 255;
+	int alpha = 255;
 
 	if(m_bRenderingBackgroundTransition)
 	{
@@ -795,7 +795,7 @@ void CBasePanel::CreateToolbar(void)
 void CBasePanel::UpdateGameMenus(void)
 {
 	bool isInGame = GameUI().IsInLevel();
-	bool isMulti  = isInGame && (engine->GetMaxClients() > 1);
+	bool isMulti = isInGame && (engine->GetMaxClients() > 1);
 
 	m_pGameMenu->UpdateMenuItemState(isInGame, isMulti);
 	m_pGameMenu->SetVisible(true);
@@ -810,8 +810,8 @@ CGameMenu *CBasePanel::RecursiveLoadGameMenu(KeyValues *datafile)
 	for(KeyValues *dat = datafile->GetFirstSubKey(); dat != NULL; dat = dat->GetNextKey())
 	{
 		const char *label = dat->GetString("label", "<unknown>");
-		const char *cmd   = dat->GetString("command", NULL);
-		const char *name  = dat->GetString("name", label);
+		const char *cmd = dat->GetString("command", NULL);
+		const char *name = dat->GetString("name", label);
 
 		menu->AddMenuItem(name, label, cmd, this, dat);
 	}
@@ -842,7 +842,7 @@ void CBasePanel::PerformLayout(void)
 	m_pGameMenu->GetSize(menuWide, menuTall);
 
 	int idealMenuY = tall - menuTall - m_iGameMenuInset;
-	int yDiff      = idealMenuY - m_iGameMenuPos.y;
+	int yDiff = idealMenuY - m_iGameMenuPos.y;
 
 	for(int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 	{
@@ -918,20 +918,20 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 	SetBgColor(Color(0, 0, 0, 0));
 
 	m_flFrameFadeInTime = atof(pScheme->GetResourceString("Frame.TransitionEffectTime"));
-	m_BackdropColor     = pScheme->GetColor("mainmenu.backdrop", Color(0, 0, 0, 128));
+	m_BackdropColor = pScheme->GetColor("mainmenu.backdrop", Color(0, 0, 0, 128));
 
 	int screenWide, screenTall;
 	surface()->GetScreenSize(screenWide, screenTall);
 
-	float aspectRatio   = (float)screenWide / (float)screenTall;
-	bool  bIsWidescreen = aspectRatio >= 1.5999f;
+	float aspectRatio = (float)screenWide / (float)screenTall;
+	bool bIsWidescreen = aspectRatio >= 1.5999f;
 
 	for(int y = 0; y < BACKGROUND_ROWS; y++)
 	{
 		for(int x = 0; x < BACKGROUND_COLUMNS; x++)
 		{
 			bimage_t &bimage = m_ImageID[y][x];
-			bimage.imageID   = surface()->CreateNewTextureID();
+			bimage.imageID = surface()->CreateNewTextureID();
 
 			char filename[MAX_PATH];
 			sprintf(filename, "resource/background/800_%d_%c_loading", y + 1, 'a' + x);
@@ -1138,7 +1138,7 @@ void CBasePanel::SetMenuItemBlinkingState(const char *itemName, bool state)
 {
 	for(int i = 0; i < GetChildCount(); i++)
 	{
-		Panel *    child     = GetChild(i);
+		Panel *child = GetChild(i);
 		CGameMenu *pGameMenu = dynamic_cast<CGameMenu *>(child);
 
 		if(pGameMenu)
@@ -1166,14 +1166,14 @@ CFooterPanel::CFooterPanel(Panel *parent, const char *panelName)
 	SetVisible(true);
 	SetAlpha(0);
 
-	m_pHelpName    = NULL;
+	m_pHelpName = NULL;
 	m_pSizingLabel = new vgui::Label(this, "SizingLabel", "");
 	m_pSizingLabel->SetVisible(false);
 
-	m_nButtonGap        = 32;
+	m_nButtonGap = 32;
 	m_nButtonGapDefault = 32;
-	m_ButtonPinRight    = 100;
-	m_FooterTall        = 80;
+	m_ButtonPinRight = 100;
+	m_FooterTall = 80;
 
 	int wide, tall;
 	surface()->GetScreenSize(wide, tall);
@@ -1182,16 +1182,16 @@ CFooterPanel::CFooterPanel(Panel *parent, const char *panelName)
 		m_FooterTall = 60;
 
 	m_ButtonOffsetFromTop = 0;
-	m_ButtonSeparator     = 4;
-	m_TextAdjust          = 0;
+	m_ButtonSeparator = 4;
+	m_TextAdjust = 0;
 
-	m_bPaintBackground  = false;
+	m_bPaintBackground = false;
 	m_bCenterHorizontal = false;
 
 	m_szButtonFont[0] = '\0';
-	m_szTextFont[0]   = '\0';
-	m_szFGColor[0]    = '\0';
-	m_szBGColor[0]    = '\0';
+	m_szTextFont[0] = '\0';
+	m_szFGColor[0] = '\0';
+	m_szBGColor[0] = '\0';
 }
 
 CFooterPanel::~CFooterPanel(void)
@@ -1206,7 +1206,7 @@ void CFooterPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 	BaseClass::ApplySchemeSettings(pScheme);
 
 	m_hButtonFont = pScheme->GetFont((m_szButtonFont[0] != '\0') ? m_szButtonFont : "GameUIButtons");
-	m_hTextFont   = pScheme->GetFont((m_szTextFont[0] != '\0') ? m_szTextFont : "MenuLarge");
+	m_hTextFont = pScheme->GetFont((m_szTextFont[0] != '\0') ? m_szTextFont : "MenuLarge");
 
 	SetFgColor(pScheme->GetColor(m_szFGColor, Color(255, 255, 255, 255)));
 	SetBgColor(pScheme->GetColor(m_szBGColor, Color(0, 0, 0, 255)));
@@ -1220,16 +1220,16 @@ void CFooterPanel::ApplySettings(KeyValues *inResourceData)
 {
 	BaseClass::ApplySettings(inResourceData);
 
-	m_nButtonGap          = inResourceData->GetInt("buttongap", 32);
-	m_nButtonGapDefault   = m_nButtonGap;
-	m_ButtonPinRight      = inResourceData->GetInt("button_pin_right", 100);
-	m_FooterTall          = inResourceData->GetInt("tall", 80);
+	m_nButtonGap = inResourceData->GetInt("buttongap", 32);
+	m_nButtonGapDefault = m_nButtonGap;
+	m_ButtonPinRight = inResourceData->GetInt("button_pin_right", 100);
+	m_FooterTall = inResourceData->GetInt("tall", 80);
 	m_ButtonOffsetFromTop = inResourceData->GetInt("buttonoffsety", 0);
-	m_ButtonSeparator     = inResourceData->GetInt("button_separator", 4);
-	m_TextAdjust          = inResourceData->GetInt("textadjust", 0);
+	m_ButtonSeparator = inResourceData->GetInt("button_separator", 4);
+	m_TextAdjust = inResourceData->GetInt("textadjust", 0);
 
 	m_bCenterHorizontal = (inResourceData->GetInt("center", 0) == 1);
-	m_bPaintBackground  = (inResourceData->GetInt("paintbackground", 0) == 1);
+	m_bPaintBackground = (inResourceData->GetInt("paintbackground", 0) == 1);
 
 	Q_strncpy(m_szTextFont, inResourceData->GetString("fonttext", "MenuLarge"), sizeof(m_szTextFont));
 	Q_strncpy(m_szButtonFont, inResourceData->GetString("fontbutton", "GameUIButtons"), sizeof(m_szButtonFont));
@@ -1370,12 +1370,12 @@ void CFooterPanel::PaintBackground(void)
 
 void CFooterPanel::Paint(void)
 {
-	int wide  = GetWide();
+	int wide = GetWide();
 	int right = wide - m_ButtonPinRight;
 
 	int buttonHeight = vgui::surface()->GetFontTall(m_hButtonFont);
-	int fontHeight   = vgui::surface()->GetFontTall(m_hTextFont);
-	int textY        = (buttonHeight - fontHeight) / 2 + m_TextAdjust;
+	int fontHeight = vgui::surface()->GetFontTall(m_hTextFont);
+	int textY = (buttonHeight - fontHeight) / 2 + m_TextAdjust;
 
 	if(textY < 0)
 		textY = 0;
@@ -1421,9 +1421,9 @@ void CFooterPanel::Paint(void)
 	}
 	else
 	{
-		int x            = wide / 2;
-		int totalWidth   = 0;
-		int i            = 0;
+		int x = wide / 2;
+		int totalWidth = 0;
+		int i = 0;
 		int nButtonCount = 0;
 
 		for(i = 0; i < m_ButtonLabels.Count(); ++i)

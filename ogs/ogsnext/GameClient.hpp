@@ -85,7 +85,7 @@ typedef struct client_s
 	double svtimebase;
 
 	sizebuf_t datagram;
-	byte      datagram_buf[MAX_DATAGRAM];
+	byte datagram_buf[MAX_DATAGRAM];
 
 	double connection_started;
 	double next_messagetime;
@@ -98,16 +98,16 @@ typedef struct client_s
 
 	event_state_t events;
 
-	edict_t *      edict;
+	edict_t *edict;
 	const edict_t *pViewEntity;
 
-	int      userid;
+	int userid;
 	USERID_t network_userid;
 
 	char userinfo[MAX_INFO_STRING];
 
 	qboolean sendinfo;
-	float    sendinfo_time;
+	float sendinfo_time;
 
 	char hashedcdkey[64];
 	char name[32];
@@ -121,7 +121,7 @@ typedef struct client_s
 	resource_t resourcesneeded;
 
 	FileHandle_t upload;
-	qboolean     uploaddoneregistering;
+	qboolean uploaddoneregistering;
 
 	customization_t customdata;
 
@@ -166,7 +166,7 @@ public:
 
 	void UpdateUserInfo();
 
-	int  CalcPing();
+	int CalcPing();
 	bool ShouldUpdatePing();
 
 	void CheckRate();
@@ -185,9 +185,19 @@ public:
 
 	void FullUpdate(sizebuf_t *sb);
 
-	const char *GetName() { return mpPODClient->name; }
-	int         GetID() { return mpPODClient->userid; }
-	edict_t *   GetEdict() { return mpPODClient->edict; }
+	const char *GetName()
+	{
+		return mpPODClient->name;
+	}
+	int GetID()
+	{
+		return mpPODClient->userid;
+	}
+	edict_t *GetEdict()
+	{
+		return mpPODClient->edict;
+	}
+
 private:
 	client_t *mpPODClient;
 };

@@ -29,13 +29,13 @@
 /// @file
 /// @brief export engine functions for client side
 
-#include "engine/cdll_int.h"
-#include "system/system.hpp"
 #include "client/cl_demo.hpp"
-#include "input/keys.hpp"
-#include "graphics/view.hpp"
+#include "engine/cdll_int.h"
 #include "graphics/spriteapi.hpp"
+#include "graphics/view.hpp"
+#include "input/keys.hpp"
 #include "network/netapi.hpp"
+#include "system/system.hpp"
 #include "voice/voicetweak.hpp"
 
 namespace
@@ -68,13 +68,13 @@ int EngFunc_GetScreenInfo(SCREENINFO *pscrinfo)
 
 	if(scale_factor && scale_factor != 1.0f)
 	{
-		clgame.scrInfo.iWidth  = scr_width->integer / scale_factor;
+		clgame.scrInfo.iWidth = scr_width->integer / scale_factor;
 		clgame.scrInfo.iHeight = scr_height->integer / scale_factor;
 		clgame.scrInfo.iFlags |= SCRINFO_STRETCHED;
 	}
 	else
 	{
-		clgame.scrInfo.iWidth  = scr_width->integer;
+		clgame.scrInfo.iWidth = scr_width->integer;
 		clgame.scrInfo.iHeight = scr_height->integer;
 		clgame.scrInfo.iFlags &= ~SCRINFO_STRETCHED;
 	};
@@ -97,7 +97,7 @@ void EngFunc_SetCrosshair(HSPRITE_ hspr, wrect_t rc, int r, int g, int b)
 	clgame.ds.rgbaCrosshair[2] = (byte)b;
 	clgame.ds.rgbaCrosshair[3] = (byte)0xFF;
 
-	clgame.ds.pCrosshair  = CL_GetSpritePointer(hspr);
+	clgame.ds.pCrosshair = CL_GetSpritePointer(hspr);
 	clgame.ds.rcCrosshair = rc;
 };
 
@@ -156,8 +156,8 @@ int EngFunc_ClientCmd(char *szCmdString)
 void EngFunc_GetPlayerInfo(int ent_num, hud_player_info_t *pinfo)
 {
 	player_info_t *player;
-	cl_entity_t *  ent;
-	qboolean       spec = false;
+	cl_entity_t *ent;
+	qboolean spec = false;
 
 	ent = CL_GetEntityByIndex(ent_num);
 	ent_num -= 1; // player list if offset by 1 from ents
@@ -168,19 +168,20 @@ void EngFunc_GetPlayerInfo(int ent_num, hud_player_info_t *pinfo)
 		return;
 	}
 
-	player            = &cl.players[ent_num];
+	player = &cl.players[ent_num];
 	pinfo->thisplayer = (ent_num == cl.playernum) ? true : false;
 	if(ent)
 		spec = ent->curstate.spectator;
 
-	pinfo->name  = player->name;
+	pinfo->name = player->name;
 	pinfo->model = player->model;
 
-	pinfo->spectator   = spec;
-	pinfo->ping        = player->ping;
-	pinfo->packetloss  = player->packet_loss;
-	pinfo->topcolor    = Q_atoi(Info_ValueForKey(player->userinfo, "topcolor"));
-	pinfo->bottomcolor = Q_atoi(Info_ValueForKey(player->userinfo, "bottomcolor"));
+	pinfo->spectator = spec;
+	pinfo->ping = player->ping;
+	pinfo->packetloss = player->packet_loss;
+	pinfo->topcolor = Q_atoi(Info_ValueForKey(player->userinfo, "topcolor"));
+	pinfo->bottomcolor =
+	Q_atoi(Info_ValueForKey(player->userinfo, "bottomcolor"));
 };
 
 void EngFunc_PlaySoundByName(char *szSound, float volume)
@@ -441,29 +442,19 @@ void EngFunc_PlaySoundByNameAtLocation(char *szSound, float volume, float *origi
 
 unsigned short EngFunc_PrecacheEvent(int type, const char *psz){};
 
-void EngFunc_PlaybackEvent(int                   flags,
-                           const struct edict_s *pInvoker,
-                           unsigned short        eventindex,
-                           float                 delay,
-                           float *               origin,
-                           float *               angles,
-                           float                 fparam1,
-                           float                 fparam2,
-                           int                   iparam1,
-                           int                   iparam2,
-                           int                   bparam1,
-                           int                   bparam2){};
+void EngFunc_PlaybackEvent(int flags, const struct edict_s *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2){};
 
 void EngFunc_WeaponAnim(int iAnim, int body){};
 
 long EngFunc_RandomLong(long lLow, long lHigh){};
 
-//pfnHookEvent( const char *filename, pfnEventHook pfn )
-void EngFunc_HookEvent(char *name, void (*pfnEvent)(struct event_args_s *args))
+// pfnHookEvent( const char *filename, pfnEventHook pfn )
+void EngFunc_HookEvent(char *name,
+                       void (*pfnEvent)(struct event_args_s *args))
 {
-	char             name[64];
+	char name[64];
 	cl_user_event_t *ev;
-	int              i;
+	int i;
 
 	// ignore blank names
 	if(!filename || !*filename)
@@ -529,8 +520,8 @@ int EngFunc_IsSpectateOnly()
 struct model_s *EngFunc_LoadMapSprite(const char *filename)
 {
 	char name[64];
-	int  i;
-	int  texFlags = TF_NOPICMIP;
+	int i;
+	int texFlags = TF_NOPICMIP;
 
 	if(cl_sprite_nearest->value)
 		texFlags |= TF_NEAREST;
@@ -564,7 +555,9 @@ struct model_s *EngFunc_LoadMapSprite(const char *filename)
 
 	if(i == MAX_IMAGES)
 	{
-		MsgDev(D_ERROR, "LoadMapSprite: can't load %s, MAX_HSPRITES limit exceeded\n", filename);
+		MsgDev(D_ERROR,
+		       "LoadMapSprite: can't load %s, MAX_HSPRITES limit exceeded\n",
+		       filename);
 		return NULL;
 	}
 
@@ -625,7 +618,8 @@ int EngFunc_GetPlayerForTrackerID(int trackerID)
 		if(!cl.players[i].userinfo[0] || !cl.players[i].name[0])
 			continue;
 
-		if(Q_atoi(Info_ValueForKey(cl.players[i].userinfo, "*tracker")) == trackerID)
+		if(Q_atoi(Info_ValueForKey(cl.players[i].userinfo, "*tracker")) ==
+		   trackerID)
 		{
 			// make into a player slot
 			return (i + 1);
@@ -769,191 +763,188 @@ void EngFunc_FillRGBABlend(int x, int y, int width, int height, int r, int g, in
 
 int EngFunc_GetAppID()
 {
-	return 130; //return 220; // standard Valve value
+	return 130; // return 220; // standard Valve value
 };
 
 void EngFunc_VguiWrap2_GetMouseDelta(int *x, int *y){
-    // TODO: implement
+	// TODO: implement
 };
 
 }; // namespace
 
-// clang-format off
-
 cl_enginefunc_t gClEngFuncs =
-    {
-        SPR_Load,
-		
-        SPR_Frames,
-		
-        SPR_Height,
-        SPR_Width,
-		
-        SPR_Set,
-		
-        SPR_Draw,
-        SPR_DrawHoles,
-        SPR_DrawAdditive,
-		
-        SPR_EnableScissor,
-        SPR_DisableScissor,
-		
-        SPR_GetList,
+{
+  SPR_Load,
 
-        pfnFillRGBA,
+  SPR_Frames,
 
-        pfnGetScreenInfo,
+  SPR_Height,
+  SPR_Width,
 
-        pfnSetCrosshair,
+  SPR_Set,
 
-        (void *)pfnCvar_RegisterVariable,
-        (void *)Cvar_VariableValue,
-        (void *)Cvar_VariableString,
+  SPR_Draw,
+  SPR_DrawHoles,
+  SPR_DrawAdditive,
 
-        (void *)pfnAddClientCommand,
+  SPR_EnableScissor,
+  SPR_DisableScissor,
 
-        (void *)pfnHookUserMsg,
+  SPR_GetList,
 
-        (void *)pfnServerCmd,
-        (void *)pfnClientCmd,
+  pfnFillRGBA,
 
-        pfnGetPlayerInfo,
+  pfnGetScreenInfo,
 
-        (void *)pfnPlaySoundByName,
-        pfnPlaySoundByIndex,
+  pfnSetCrosshair,
 
-        AngleVectors,
+  (void *)pfnCvar_RegisterVariable,
+  (void *)Cvar_VariableValue,
+  (void *)Cvar_VariableString,
 
-        CL_TextMessageGet,
+  (void *)pfnAddClientCommand,
 
-        pfnDrawCharacter,
-        pfnDrawConsoleString,
-        pfnDrawSetTextColor,
-        pfnDrawConsoleStringLen,
+  (void *)pfnHookUserMsg,
 
-        pfnConsolePrint,
-        pfnCenterPrint,
+  (void *)pfnServerCmd,
+  (void *)pfnClientCmd,
 
-        pfnGetWindowCenterX,
-        pfnGetWindowCenterY,
+  pfnGetPlayerInfo,
 
-        pfnGetViewAngles,
-        pfnSetViewAngles,
+  (void *)pfnPlaySoundByName,
+  pfnPlaySoundByIndex,
 
-        CL_GetMaxClients,
+  AngleVectors,
 
-        (void *)Cvar_SetFloat,
+  CL_TextMessageGet,
 
-        Cmd_Argc,
-        Cmd_Argv,
+  pfnDrawCharacter,
+  pfnDrawConsoleString,
+  pfnDrawSetTextColor,
+  pfnDrawConsoleStringLen,
 
-        Con_Printf,
-        Con_DPrintf,
-        Con_NPrintf,
-        Con_NXPrintf,
+  pfnConsolePrint,
+  pfnCenterPrint,
 
-        pfnPhysInfo_ValueForKey,
-        pfnServerInfo_ValueForKey,
+  pfnGetWindowCenterX,
+  pfnGetWindowCenterY,
 
-        pfnGetClientMaxspeed,
-        pfnCheckParm,
-        (void *)Key_Event,
-        CL_GetMousePosition,
-        pfnIsNoClipping,
-        CL_GetLocalPlayer,
-        pfnGetViewModel,
-        CL_GetEntityByIndex,
-        pfnGetClientTime,
-        pfnCalcShake,
-        pfnApplyShake,
-        (void *)pfnPointContents,
-        (void *)CL_WaterEntity,
-        pfnTraceLine,
-        CL_LoadModel,
-        CL_AddEntity,
-        CL_GetSpritePointer,
-        pfnPlaySoundByNameAtLocation,
-		
-        pfnPrecacheEvent,
-        CL_PlaybackEvent,
-		
-        CL_WeaponAnim,
-		
-        Com_RandomFloat,
-        Com_RandomLong,
-		
-        (void *)pfnHookEvent,
-        (void *)Con_Visible,
-        pfnGetGameDirectory,
-        pfnCVarGetPointer,
-        Key_LookupBinding,
-        pfnGetLevelName,
-		
-        pfnGetScreenFade,
-        pfnSetScreenFade,
-		
-        VGui_GetPanel,
-        VGui_ViewportPaintBackground,
-		
-        (void *)COM_LoadFile,
-        COM_ParseFile,
-        COM_FreeFile,
-		
-        &gTriAPI,
-        &gEfxAPI,
-        &gEventAPI,
-        &gDemoAPI,
-        &gNetAPI,
-        &gVoiceAPI,
-		
-        pfnIsSpectateOnly,
-        pfnLoadMapSprite,
-        COM_AddAppDirectoryToSearchPath,
-        COM_ExpandFilename,
-        PlayerInfo_ValueForKey,
-        PlayerInfo_SetValueForKey,
-        pfnGetPlayerUniqueID,
-        pfnGetTrackerIDForPlayer,
-        pfnGetPlayerForTrackerID,
-        pfnServerCmdUnreliable,
-		
-        pfnGetMousePos,
-        pfnSetMousePos,
-		
-        pfnSetMouseEnable,
-		
-        Cvar_GetList,
-        (void *)Cmd_GetFirstFunctionHandle,
-        (void *)Cmd_GetNextFunctionHandle,
-        (void *)Cmd_GetName,
-        pfnGetClientOldTime,
-        pfnGetGravity,
-        Mod_Handle,
-        pfnEnableTexSort,
-        pfnSetLightmapColor,
-        pfnSetLightmapScale,
-        pfnSequenceGet,
-        pfnSPR_DrawGeneric,
-        pfnSequencePickSentence,
-        pfnDrawString,
-        pfnDrawStringReverse,
-        LocalPlayerInfo_ValueForKey,
-        pfnVGUI2DrawCharacter,
-        pfnVGUI2DrawCharacterAdditive,
-        (void *)Sound_GetApproxWavePlayLen,
-        GetCareerGameInterface,
-        (void *)Cvar_Set,
-        pfnIsCareerMatch,
-        pfnPlaySoundVoiceByName,
-        pfnMP3_InitStream,
-        Sys_DoubleTime,
-        pfnProcessTutorMessageDecayBuffer,
-        pfnConstructTutorMessageDecayBuffer,
-        pfnResetTutorMessageDecayData,
-        pfnPlaySoundByNameAtPitch,
-        pfnFillRGBABlend,
-        pfnGetAppID,
-        Cmd_AliasGetList,
-        pfnVguiWrap2_GetMouseDelta};
+  pfnGetViewAngles,
+  pfnSetViewAngles,
 
-// clang-format on
+  CL_GetMaxClients,
+
+  (void *)Cvar_SetFloat,
+
+  Cmd_Argc,
+  Cmd_Argv,
+
+  Con_Printf,
+  Con_DPrintf,
+  Con_NPrintf,
+  Con_NXPrintf,
+
+  pfnPhysInfo_ValueForKey,
+  pfnServerInfo_ValueForKey,
+
+  pfnGetClientMaxspeed,
+  pfnCheckParm,
+  (void *)Key_Event,
+  CL_GetMousePosition,
+  pfnIsNoClipping,
+  CL_GetLocalPlayer,
+  pfnGetViewModel,
+  CL_GetEntityByIndex,
+  pfnGetClientTime,
+  pfnCalcShake,
+  pfnApplyShake,
+  (void *)pfnPointContents,
+  (void *)CL_WaterEntity,
+  pfnTraceLine,
+  CL_LoadModel,
+  CL_AddEntity,
+  CL_GetSpritePointer,
+  pfnPlaySoundByNameAtLocation,
+
+  pfnPrecacheEvent,
+  CL_PlaybackEvent,
+
+  CL_WeaponAnim,
+
+  Com_RandomFloat,
+  Com_RandomLong,
+
+  (void *)pfnHookEvent,
+  (void *)Con_Visible,
+  pfnGetGameDirectory,
+  pfnCVarGetPointer,
+  Key_LookupBinding,
+  pfnGetLevelName,
+
+  pfnGetScreenFade,
+  pfnSetScreenFade,
+
+  VGui_GetPanel,
+  VGui_ViewportPaintBackground,
+
+  (void *)COM_LoadFile,
+  COM_ParseFile,
+  COM_FreeFile,
+
+  &gTriAPI,
+  &gEfxAPI,
+  &gEventAPI,
+  &gDemoAPI,
+  &gNetAPI,
+  &gVoiceAPI,
+
+  pfnIsSpectateOnly,
+  pfnLoadMapSprite,
+  COM_AddAppDirectoryToSearchPath,
+  COM_ExpandFilename,
+  PlayerInfo_ValueForKey,
+  PlayerInfo_SetValueForKey,
+  pfnGetPlayerUniqueID,
+  pfnGetTrackerIDForPlayer,
+  pfnGetPlayerForTrackerID,
+  pfnServerCmdUnreliable,
+
+  pfnGetMousePos,
+  pfnSetMousePos,
+
+  pfnSetMouseEnable,
+
+  Cvar_GetList,
+  (void *)Cmd_GetFirstFunctionHandle,
+  (void *)Cmd_GetNextFunctionHandle,
+  (void *)Cmd_GetName,
+  pfnGetClientOldTime,
+  pfnGetGravity,
+  Mod_Handle,
+  pfnEnableTexSort,
+  pfnSetLightmapColor,
+  pfnSetLightmapScale,
+  pfnSequenceGet,
+  pfnSPR_DrawGeneric,
+  pfnSequencePickSentence,
+  pfnDrawString,
+  pfnDrawStringReverse,
+  LocalPlayerInfo_ValueForKey,
+  pfnVGUI2DrawCharacter,
+  pfnVGUI2DrawCharacterAdditive,
+  (void *)Sound_GetApproxWavePlayLen,
+  GetCareerGameInterface,
+  (void *)Cvar_Set,
+  pfnIsCareerMatch,
+  pfnPlaySoundVoiceByName,
+  pfnMP3_InitStream,
+  Sys_DoubleTime,
+  pfnProcessTutorMessageDecayBuffer,
+  pfnConstructTutorMessageDecayBuffer,
+  pfnResetTutorMessageDecayData,
+  pfnPlaySoundByNameAtPitch,
+  pfnFillRGBABlend,
+  pfnGetAppID,
+  Cmd_AliasGetList,
+  pfnVguiWrap2_GetMouseDelta
+};

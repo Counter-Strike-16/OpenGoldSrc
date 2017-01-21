@@ -30,17 +30,18 @@
 
 #pragma once
 
-#include "common/commontypes.h"
 #include "common/com_model.h"
+#include "common/commontypes.h"
 
-// max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in dlls\util.h!!!
+// max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in
+// dlls\util.h!!!
 const int CVOXFILESENTENCEMAX = 1536;
 
 typedef struct sfx_s
 {
-	char         name[MAX_QPATH];
+	char name[MAX_QPATH];
 	cache_user_t cache;
-	int          servercount;
+	int servercount;
 } sfx_t;
 
 void S_Init();

@@ -30,16 +30,16 @@
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"
-#include "memory/zone.hpp"
-#include "system/buildinfo.hpp"
-#include "system/system.hpp"
-#include "system/sizebuf.hpp"
-#include "system/host.hpp"
-#include "console/console.hpp"
 #include "console/cmd.hpp"
-#include "network/protocol.hpp"
+#include "console/console.hpp"
+#include "memory/zone.hpp"
 #include "network/net_msg.hpp"
+#include "network/protocol.hpp"
 #include "sound/sound.hpp"
+#include "system/buildinfo.hpp"
+#include "system/host.hpp"
+#include "system/sizebuf.hpp"
+#include "system/system.hpp"
 
 #ifdef _WIN32
 #include "winsock.h"
@@ -49,57 +49,57 @@
 
 qboolean noclip_anglehack; // remnant from old quake
 
-cvar_t rcon_password = {"rcon_password", ""};
-cvar_t rcon_address  = {"rcon_address", ""};
+cvar_t rcon_password = { "rcon_password", "" };
+cvar_t rcon_address = { "rcon_address", "" };
 
-cvar_t cl_timeout = {"cl_timeout", "60"};
+cvar_t cl_timeout = { "cl_timeout", "60" };
 
-cvar_t cl_shownet = {"cl_shownet", "0"}; // can be 0, 1, or 2
+cvar_t cl_shownet = { "cl_shownet", "0" }; // can be 0, 1, or 2
 
-cvar_t cl_sbar    = {"cl_sbar", "0", FCVAR_ARCHIVE};
-cvar_t cl_hudswap = {"cl_hudswap", "0", FCVAR_ARCHIVE};
+cvar_t cl_sbar = { "cl_sbar", "0", FCVAR_ARCHIVE };
+cvar_t cl_hudswap = { "cl_hudswap", "0", FCVAR_ARCHIVE };
 
-cvar_t entlatency          = {"entlatency", "20"};
-cvar_t cl_predict_players  = {"cl_predict_players", "1"};
-cvar_t cl_predict_players2 = {"cl_predict_players2", "1"};
-cvar_t cl_solid_players    = {"cl_solid_players", "1"};
+cvar_t entlatency = { "entlatency", "20" };
+cvar_t cl_predict_players = { "cl_predict_players", "1" };
+cvar_t cl_predict_players2 = { "cl_predict_players2", "1" };
+cvar_t cl_solid_players = { "cl_solid_players", "1" };
 
 static qboolean allowremotecmd = true;
 
 //
 // userinfo mirrors
 //
-cvar_t password    = {"password", "", FCVAR_USERINFO};
-cvar_t name        = {"name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO};
-cvar_t team        = {"team", "", FCVAR_ARCHIVE | FCVAR_USERINFO};
-cvar_t model       = {"model", "", FCVAR_ARCHIVE | FCVAR_USERINFO};
-cvar_t skin        = {"skin", "", FCVAR_ARCHIVE | FCVAR_USERINFO};
-cvar_t topcolor    = {"topcolor", "0", FCVAR_ARCHIVE | FCVAR_USERINFO};
-cvar_t bottomcolor = {"bottomcolor", "0", FCVAR_ARCHIVE | FCVAR_USERINFO};
-cvar_t rate        = {"rate", "2500", FCVAR_ARCHIVE | FCVAR_USERINFO};
+cvar_t password = { "password", "", FCVAR_USERINFO };
+cvar_t name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO };
+cvar_t team = { "team", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
+cvar_t model = { "model", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
+cvar_t skin = { "skin", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
+cvar_t topcolor = { "topcolor", "0", FCVAR_ARCHIVE | FCVAR_USERINFO };
+cvar_t bottomcolor = { "bottomcolor", "0", FCVAR_ARCHIVE | FCVAR_USERINFO };
+cvar_t rate = { "rate", "2500", FCVAR_ARCHIVE | FCVAR_USERINFO };
 
-cvar_t console = {"console", "1", FCVAR_ARCHIVE};
+cvar_t console = { "console", "1", FCVAR_ARCHIVE };
 
 extern cvar_t cl_hightrack;
 
 client_static_t cls;
-client_state_t  cl;
+client_state_t cl;
 
 playermove_t g_clmove;
-qboolean     cl_inmovie;
+qboolean cl_inmovie;
 
 entity_state_t cl_baselines[MAX_EDICTS];
-efrag_t        cl_efrags[MAX_EFRAGS];
-cl_entity_t    cl_static_entities[MAX_STATIC_ENTITIES];
-lightstyle_t   cl_lightstyle[MAX_LIGHTSTYLES];
-dlight_t       cl_dlights[MAX_DLIGHTS];
+efrag_t cl_efrags[MAX_EFRAGS];
+cl_entity_t cl_static_entities[MAX_STATIC_ENTITIES];
+lightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
+dlight_t cl_dlights[MAX_DLIGHTS];
 
 // refresh list
 // this is double buffered so the last frame
 // can be scanned for oldorigins of trailing objects
-int          cl_numvisedicts, cl_oldnumvisedicts;
+int cl_numvisedicts, cl_oldnumvisedicts;
 cl_entity_t *cl_visedicts, *cl_oldvisedicts;
-cl_entity_t  cl_visedicts_list[2][MAX_VISEDICTS];
+cl_entity_t cl_visedicts_list[2][MAX_VISEDICTS];
 
 double connect_time = -1; // for connection retransmits
 
@@ -110,7 +110,7 @@ byte *host_colormap;
 
 netadr_t master_adr; // address of the master server
 
-cvar_t show_fps = {"cl_showfps", "0"}; // set for running times
+cvar_t show_fps = { "cl_showfps", "0" }; // set for running times
 
 int fps_count;
 
@@ -120,19 +120,13 @@ void Master_Connect_f();
 
 float server_version = 0; // version of server we connected to
 
-char emodel_name[] =
-    {'e' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0};
-char pmodel_name[] =
-    {'p' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0};
-char prespawn_name[] =
-    {'p' ^ 0xff, 'r' ^ 0xff, 'e' ^ 0xff, 's' ^ 0xff, 'p' ^ 0xff, 'a' ^ 0xff, 'w' ^ 0xff, 'n' ^ 0xff,
-     ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '0' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0};
-char modellist_name[] =
-    {'m' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 'l' ^ 0xff, 'i' ^ 0xff, 's' ^ 0xff, 't' ^ 0xff,
-     ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0};
-char soundlist_name[] =
-    {'s' ^ 0xff, 'o' ^ 0xff, 'u' ^ 0xff, 'n' ^ 0xff, 'd' ^ 0xff, 'l' ^ 0xff, 'i' ^ 0xff, 's' ^ 0xff, 't' ^ 0xff,
-     ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0};
+char emodel_name[] = { 'e' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0 };
+char pmodel_name[] = { 'p' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0 };
+char prespawn_name[] = {
+	'p' ^ 0xff, 'r' ^ 0xff, 'e' ^ 0xff, 's' ^ 0xff, 'p' ^ 0xff, 'a' ^ 0xff, 'w' ^ 0xff, 'n' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '0' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0
+};
+char modellist_name[] = { 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 'l' ^ 0xff, 'i' ^ 0xff, 's' ^ 0xff, 't' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0 };
+char soundlist_name[] = { 's' ^ 0xff, 'o' ^ 0xff, 'u' ^ 0xff, 'n' ^ 0xff, 'd' ^ 0xff, 'l' ^ 0xff, 'i' ^ 0xff, 's' ^ 0xff, 't' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0 };
 
 /*
 =======================
@@ -145,7 +139,7 @@ We have gotten a challenge from the server, so try and connect
 void CL_SendConnectPacket()
 {
 	netadr_t adr;
-	char     data[2048];
+	char data[2048];
 
 	// JACK: Fixed bug where DNS lookups would cause two connects real fast
 	//       Now, adds lookup time to the connect time.
@@ -175,8 +169,7 @@ void CL_SendConnectPacket()
 	Info_SetValueForStarKey(cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING);
 
 	//	Con_Printf ("Connecting to %s...\n", cls.servername);
-	sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
-	        255, 255, 255, 255, PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
+	sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n", 255, 255, 255, 255, PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
 
 	NET_SendPacket(strlen(data), data, adr);
 };
@@ -191,7 +184,7 @@ Resend a connect message if the last one has timed out
 void CL_CheckForResend()
 {
 	netadr_t adr;
-	char     data[2048];
+	char data[2048];
 
 	if(cls.connect_time == -1)
 		return;
@@ -261,13 +254,14 @@ CL_Rcon_f
 */
 void CL_Rcon_f()
 {
-	char     message[1024];
-	int      i;
+	char message[1024];
+	int i;
 	netadr_t to;
 
 	if(!rcon_password.string)
 	{
-		Con_Printf("You must set 'rcon_password' before issuing an rcon command.\n");
+		Con_Printf(
+		"You must set 'rcon_password' before issuing an rcon command.\n");
 		return;
 	};
 
@@ -300,7 +294,7 @@ void CL_Rcon_f()
 
 			return;
 		};
-		
+
 		NET_StringToAdr(rcon_address.string, &to);
 	};
 
@@ -343,7 +337,7 @@ void CL_ClearState()
 	//
 	cl.free_efrags = cl_efrags;
 
-	for(i                         = 0; i < MAX_EFRAGS - 1; ++i)
+	for(i = 0; i < MAX_EFRAGS - 1; ++i)
 		cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
 
 	cl.free_efrags[i].entnext = NULL;
@@ -375,7 +369,7 @@ void CL_Disconnect()
 	mvStates[state]->OnDisconnect();
 
 	cls.demoplayback = cls.timedemo = false;
-	cls.signon                      = 0;
+	cls.signon = 0;
 
 	Cam_Reset();
 
@@ -417,7 +411,8 @@ void CL_User_f()
 		if(!cl.players[i].name[0])
 			continue;
 
-		if(cl.players[i].userid == uid || !strcmp(cl.players[i].name, Cmd_Argv(1)))
+		if(cl.players[i].userid == uid ||
+		   !strcmp(cl.players[i].name, Cmd_Argv(1)))
 		{
 			Info_Print(cl.players[i].userinfo);
 			return;
@@ -455,7 +450,7 @@ void CL_Users_f()
 
 void CL_Color_f()
 {
-	int  top, bottom;
+	int top, bottom;
 	char num[16];
 
 	if(Cmd_Argc() == 1)
@@ -471,7 +466,7 @@ void CL_Color_f()
 		top = bottom = atoi(Cmd_Argv(1));
 	else
 	{
-		top    = atoi(Cmd_Argv(1));
+		top = atoi(Cmd_Argv(1));
 		bottom = atoi(Cmd_Argv(2));
 	};
 
@@ -529,8 +524,8 @@ Allow clients to change userinfo
 */
 void CL_FullInfo_f()
 {
-	char  key[512];
-	char  value[512];
+	char key[512];
+	char value[512];
 	char *o;
 	char *s;
 
@@ -543,15 +538,15 @@ void CL_FullInfo_f()
 	s = Cmd_Argv(1);
 	if(*s == '\\')
 		s++;
-	
+
 	while(*s)
 	{
 		o = key;
-		
+
 		while(*s && *s != '\\')
 			*o++ = *s++;
-		
-		*o       = 0;
+
+		*o = 0;
 
 		if(!*s)
 		{
@@ -563,7 +558,7 @@ void CL_FullInfo_f()
 		s++;
 		while(*s && *s != '\\')
 			*o++ = *s++;
-		*o       = 0;
+		*o = 0;
 
 		if(*s)
 			s++;
@@ -615,9 +610,9 @@ Contents allows \n escape character
 */
 void CL_Packet_f()
 {
-	char     send[2048];
-	int      i, l;
-	char *   in, *out;
+	char send[2048];
+	int i, l;
+	char *in, *out;
 	netadr_t adr;
 
 	if(Cmd_Argc() != 3)
@@ -632,8 +627,8 @@ void CL_Packet_f()
 		return;
 	};
 
-	in      = Cmd_Argv(2);
-	out     = send + 4;
+	in = Cmd_Argv(2);
+	out = send + 4;
 	send[0] = send[1] = send[2] = send[3] = 0xff;
 
 	l = strlen(in);
@@ -647,7 +642,7 @@ void CL_Packet_f()
 		else
 			*out++ = in[i];
 	};
-	
+
 	*out = 0;
 
 	NET_SendPacket(out - send, send, adr);
@@ -672,7 +667,7 @@ void CL_NextDemo()
 		cls.demonum = 0;
 		if(!cls.demos[cls.demonum][0])
 		{
-			//Con_Printf ("No demos listed with startdemos\n");
+			// Con_Printf ("No demos listed with startdemos\n");
 			cls.demonum = -1;
 			return;
 		}
@@ -700,12 +695,12 @@ void CL_Changing_f()
 
 	S_StopAllSounds(true);
 	cl.intermission = 0;
-	
+
 	SCR_BeginLoadingPlaque();
-	
+
 	// not active anymore, but not disconnected
 	cls.state = ca_connected;
-	
+
 	Con_Printf("\nChanging map...\n");
 };
 
@@ -751,7 +746,7 @@ Responses to broadcasts, etc
 void CL_ConnectionlessPacket()
 {
 	char *s;
-	int   c;
+	int c;
 
 	MSG_BeginReading();
 	MSG_ReadLong(); // skip the -1
@@ -769,7 +764,7 @@ void CL_ConnectionlessPacket()
 				Con_Printf("Dup connect received.  Ignored.\n");
 			return;
 		};
-		
+
 		Netchan_Setup(&cls.netchan, net_from, cls.qport);
 		MSG_WriteChar(&cls.netchan.message, clc_stringcmd);
 		MSG_WriteString(&cls.netchan.message, "new");
@@ -778,7 +773,7 @@ void CL_ConnectionlessPacket()
 		allowremotecmd = false; // localid required now for remote cmds
 		return;
 	};
-	
+
 	// remote command from gui front end
 	if(c == A2C_CLIENT_COMMAND)
 	{
@@ -786,17 +781,18 @@ void CL_ConnectionlessPacket()
 
 		Con_Printf("client command\n");
 
-		if((*(unsigned *)net_from.ip != *(unsigned *)net_local_adr.ip && *(unsigned *)net_from.ip != htonl(INADDR_LOOPBACK)))
+		if((*(unsigned *)net_from.ip != *(unsigned *)net_local_adr.ip &&
+		    *(unsigned *)net_from.ip != htonl(INADDR_LOOPBACK)))
 		{
 			Con_Printf("Command packet from remote host.  Ignored.\n");
 			return;
 		};
-		
+
 #ifdef _WIN32
 		ShowWindow(mainwindow, SW_RESTORE);
 		SetForegroundWindow(mainwindow);
 #endif
-		
+
 		s = MSG_ReadString();
 
 		strncpy(cmdtext, s, sizeof(cmdtext) - 1);
@@ -824,7 +820,8 @@ void CL_ConnectionlessPacket()
 			Con_Printf("Invalid localid on command packet received from local host. "
 			           "\n|%s| != |%s|\n"
 			           "You may need to reload your server browser and QuakeWorld.\n",
-			           s, localid.string);
+			           s,
+			           localid.string);
 			Con_Printf("===========================\n");
 			Cvar_Set("localid", "");
 			return;
@@ -834,7 +831,7 @@ void CL_ConnectionlessPacket()
 		allowremotecmd = false;
 		return;
 	};
-	
+
 	// print command from somewhere
 	if(c == A2C_PRINT)
 	{
@@ -867,10 +864,10 @@ void CL_ConnectionlessPacket()
 	{
 		Con_Printf("challenge\n");
 
-		s             = MSG_ReadString();
-		
+		s = MSG_ReadString();
+
 		cls.challenge = atoi(s);
-		
+
 		CL_SendConnectPacket();
 		return;
 	};
@@ -916,25 +913,29 @@ void CL_ReadPackets()
 		//
 		// packet from server
 		//
-		if(!cls.demoplayback && !NET_CompareAdr(net_from, cls.netchan.remote_address))
+		if(!cls.demoplayback &&
+		   !NET_CompareAdr(net_from, cls.netchan.remote_address))
 		{
-			Con_DPrintf("%s:sequenced packet without connection\n", NET_AdrToString(net_from));
+			Con_DPrintf("%s:sequenced packet without connection\n",
+			            NET_AdrToString(net_from));
 			continue;
 		};
-		
+
 		if(!Netchan_Process(&cls.netchan))
 			continue; // wasn't accepted for some reason
-		
+
 		CL_ParseServerMessage();
 
-		//		if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())
+		//		if (cls.demoplayback && cls.state >= ca_active &&
+		//!CL_DemoBehind())
 		//			return;
 	};
 
 	//
 	// check timeout
 	//
-	if(cls.state >= ca_connected && realtime - cls.netchan.last_received > cl_timeout.value)
+	if(cls.state >= ca_connected &&
+	   realtime - cls.netchan.last_received > cl_timeout.value)
 	{
 		Con_Printf("\nServer connection timed out.\n");
 		CL_Disconnect();
@@ -975,14 +976,14 @@ void CL_Download_f()
 			*q = 0;
 			Sys_mkdir(cls.downloadname);
 			*q = '/';
-			p  = q + 1;
+			p = q + 1;
 		}
 		else
 			break;
 	};
 
 	strcpy(cls.downloadtempname, cls.downloadname);
-	cls.download     = fopen(cls.downloadname, "wb");
+	cls.download = fopen(cls.downloadname, "wb");
 	cls.downloadtype = dl_single;
 
 	MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
@@ -1041,11 +1042,11 @@ void CL_Init()
 	Cvar_RegisterVariable(&rate);
 	Cvar_RegisterVariable(&msg);
 	Cvar_RegisterVariable(&noaim);
-	
-	Cmd_AddCommand ("cmd", CL_ForwardToServer_f);
-	Cmd_AddCommand ("pause", CL_Pause_f);
-	Cmd_AddCommand ("pingservers", CL_PingServers_f);
-	
+
+	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
+	Cmd_AddCommand("pause", CL_Pause_f);
+	Cmd_AddCommand("pingservers", CL_PingServers_f);
+
 	Cmd_AddCommand("changing", CL_Changing_f);
 	Cmd_AddCommand("rerecord", CL_ReRecord_f);
 
@@ -1056,7 +1057,7 @@ void CL_Init()
 	Cmd_AddCommand("reconnect", CL_Reconnect_f);
 
 	Cmd_AddCommand("rcon", CL_Rcon_f);
-	//Cmd_AddCommand("packet", CL_Packet_f); // this is dangerous to leave in
+	// Cmd_AddCommand("packet", CL_Packet_f); // this is dangerous to leave in
 	Cmd_AddCommand("user", CL_User_f);
 	Cmd_AddCommand("users", CL_Users_f);
 
@@ -1071,21 +1072,21 @@ void CL_Init()
 	// to work -- all unknown commands are automatically
 	// forwarded to the server
 	//
-	
+
 	Cmd_AddCommand("dropclient", NULL);
 	Cmd_AddCommand("kill", NULL);
 	Cmd_AddCommand("pause", NULL);
-	
+
 	Cmd_AddCommand("say", NULL);
 	Cmd_AddCommand("say_team", NULL);
-	
+
 	Cmd_AddCommand("serverinfo", NULL);
-	Cmd_AddCommand ("god", NULL);
-	Cmd_AddCommand ("notarget", NULL);
-	Cmd_AddCommand ("noclip", NULL);
-	
-	Cmd_AddCommand ("invprev", NULL);
-	Cmd_AddCommand ("invnext", NULL);
+	Cmd_AddCommand("god", NULL);
+	Cmd_AddCommand("notarget", NULL);
+	Cmd_AddCommand("noclip", NULL);
+
+	Cmd_AddCommand("invprev", NULL);
+	Cmd_AddCommand("invnext", NULL);
 };
 
 //============================================================================
@@ -1117,97 +1118,97 @@ qboolean Host_SimulationTime(float time)
 };
 #endif
 
-int  nopacketcount;
+int nopacketcount;
 /*
 void Host_Frame(float time)
 {
-	static double time1 = 0;
-	static double time2 = 0;
-	static double time3 = 0;
-	int           pass1, pass2, pass3;
-	float         fps;
-	if(setjmp(host_abort))
-		return; // something bad happened, or the server disconnected
+        static double time1 = 0;
+        static double time2 = 0;
+        static double time3 = 0;
+        int           pass1, pass2, pass3;
+        float         fps;
+        if(setjmp(host_abort))
+                return; // something bad happened, or the server disconnected
 
-	// decide the simulation time
-	realtime += time;
-	if(oldrealtime > realtime)
-		oldrealtime = 0;
+        // decide the simulation time
+        realtime += time;
+        if(oldrealtime > realtime)
+                oldrealtime = 0;
 
-	if(cl_maxfps.value)
-		fps = max(30.0, min(cl_maxfps.value, 72.0));
-	else
-		fps = max(30.0, min(rate.value / 80.0, 72.0));
+        if(cl_maxfps.value)
+                fps = max(30.0, min(cl_maxfps.value, 72.0));
+        else
+                fps = max(30.0, min(rate.value / 80.0, 72.0));
 
-	if(!cls.timedemo && realtime - oldrealtime < 1.0 / fps)
-		return; // framerate is too high
+        if(!cls.timedemo && realtime - oldrealtime < 1.0 / fps)
+                return; // framerate is too high
 
-	host_frametime = realtime - oldrealtime;
-	oldrealtime    = realtime;
-	if(host_frametime > 0.2)
-		host_frametime = 0.2;
+        host_frametime = realtime - oldrealtime;
+        oldrealtime    = realtime;
+        if(host_frametime > 0.2)
+                host_frametime = 0.2;
 
-	// get new key events
-	Sys_SendKeyEvents();
+        // get new key events
+        Sys_SendKeyEvents();
 
-	// allow mice or other external controllers to add commands
-	IN_Commands();
+        // allow mice or other external controllers to add commands
+        IN_Commands();
 
-	Cbuf_Execute();
+        Cbuf_Execute();
 
-	CL_ReadPackets();
+        CL_ReadPackets();
 
-	// send intentions now
-	// resend a connection request if necessary
-	if(cls.state == ca_disconnected)
-		CL_CheckForResend();
-	else
-		CL_SendCmd();
+        // send intentions now
+        // resend a connection request if necessary
+        if(cls.state == ca_disconnected)
+                CL_CheckForResend();
+        else
+                CL_SendCmd();
 
-	// Set up prediction for other players
-	CL_SetUpPlayerPrediction(false);
+        // Set up prediction for other players
+        CL_SetUpPlayerPrediction(false);
 
-	// do client side motion prediction
-	CL_PredictMove();
+        // do client side motion prediction
+        CL_PredictMove();
 
-	// Set up prediction for other players
-	CL_SetUpPlayerPrediction(true);
+        // Set up prediction for other players
+        CL_SetUpPlayerPrediction(true);
 
-	// build a refresh entity list
-	CL_EmitEntities();
+        // build a refresh entity list
+        CL_EmitEntities();
 
-	// update video
-	if(host_speeds.value)
-		time1 = Sys_DoubleTime();
+        // update video
+        if(host_speeds.value)
+                time1 = Sys_DoubleTime();
 
-	SCR_UpdateScreen();
+        SCR_UpdateScreen();
 
-	if(host_speeds.value)
-		time2 = Sys_DoubleTime();
+        if(host_speeds.value)
+                time2 = Sys_DoubleTime();
 
-	// update audio
-	if(cls.state == ca_active)
-	{
-		S_Update(r_origin, vpn, vright, vup);
-		CL_DecayLights();
-	}
-	else
-		S_Update(vec3_origin, vec3_origin, vec3_origin, vec3_origin);
+        // update audio
+        if(cls.state == ca_active)
+        {
+                S_Update(r_origin, vpn, vright, vup);
+                CL_DecayLights();
+        }
+        else
+                S_Update(vec3_origin, vec3_origin, vec3_origin, vec3_origin);
 
-	CDAudio_Update();
+        CDAudio_Update();
 
-	if(host_speeds.value)
-	{
-		pass1 = (time1 - time3) * 1000;
-		time3 = Sys_DoubleTime();
-		pass2 = (time2 - time1) * 1000;
-		pass3 = (time3 - time2) * 1000;
-		Con_Printf("%3i tot %3i server %3i gfx %3i snd\n",
-		           pass1 + pass2 + pass3, pass1, pass2, pass3);
-	}
+        if(host_speeds.value)
+        {
+                pass1 = (time1 - time3) * 1000;
+                time3 = Sys_DoubleTime();
+                pass2 = (time2 - time1) * 1000;
+                pass3 = (time3 - time2) * 1000;
+                Con_Printf("%3i tot %3i server %3i gfx %3i snd\n",
+                           pass1 + pass2 + pass3, pass1, pass2, pass3);
+        }
 
-	host_framecount++;
-	fps_count++;
+        host_framecount++;
+        fps_count++;
 }
 */
 
@@ -1231,32 +1232,34 @@ void Host_FixupModelNames()
 /*
 void Host_Init(quakeparms_t *parms)
 {
-	COM_InitArgv(parms->argc, parms->argv);
-	COM_AddParm("-game");
-	COM_AddParm("qw");
+        COM_InitArgv(parms->argc, parms->argv);
+        COM_AddParm("-game");
+        COM_AddParm("qw");
 
-	Sys_mkdir("qw");
+        Sys_mkdir("qw");
 
-	if(parms->memsize < MINIMUM_MEMORY)
-		Sys_Error("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
+        if(parms->memsize < MINIMUM_MEMORY)
+                Sys_Error("Only %4.1f megs of memory reported, can't execute
+game", parms->memsize / (float)0x100000);
 
-	COM_Init();
+        COM_Init();
 
-	Host_FixupModelNames();
+        Host_FixupModelNames();
 
-	NET_Init(PORT_CLIENT);
-	Netchan_Init();
+        NET_Init(PORT_CLIENT);
+        Netchan_Init();
 
-	//	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
-	Con_Printf("%4.1f megs RAM used.\n", parms->memsize / (1024 * 1024.0));
+        //	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
+        Con_Printf("%4.1f megs RAM used.\n", parms->memsize / (1024 * 1024.0));
 
-	host_basepal = (byte *)COM_LoadHunkFile("gfx/palette.lmp");
-	if(!host_basepal)
-		Sys_Error("Couldn't load gfx/palette.lmp");
-	host_colormap = (byte *)COM_LoadHunkFile("gfx/colormap.lmp");
-	if(!host_colormap)
-		Sys_Error("Couldn't load gfx/colormap.lmp");
+        host_basepal = (byte *)COM_LoadHunkFile("gfx/palette.lmp");
+        if(!host_basepal)
+                Sys_Error("Couldn't load gfx/palette.lmp");
+        host_colormap = (byte *)COM_LoadHunkFile("gfx/colormap.lmp");
+        if(!host_colormap)
+                Sys_Error("Couldn't load gfx/colormap.lmp");
 
-	Con_Printf("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
+        Con_Printf("\nClient Version %4.2f (Build %04d)\n\n", VERSION,
+build_number());
 }
 */

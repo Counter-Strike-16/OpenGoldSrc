@@ -14,9 +14,9 @@ public:
 	virtual void Initialize(CreateInterfaceFn *factories, int count);
 	virtual void Start(struct cl_enginefuncs_s *engineFuncs, int interfaceVersion, void *system);
 	virtual void Shutdown(void);
-	virtual int  ActivateGameUI(void);
-	virtual int  ActivateDemoUI(void);
-	virtual int  HasExclusiveInput(void);
+	virtual int ActivateGameUI(void);
+	virtual int ActivateDemoUI(void);
+	virtual int HasExclusiveInput(void);
 	virtual void RunFrame(void);
 	virtual void ConnectToServer(const char *game, int IP, int port);
 	virtual void DisconnectFromServer(void);
@@ -33,11 +33,22 @@ public:
 	virtual void ValidateCDKey(bool force, bool inConnect);
 
 public:
-	virtual void PaddingFunction1(int param1, int param2) {}
-	virtual void PaddingFunction2(int param1, int param2) {}
-	virtual void PaddingFunction3(int param1, int param2) {}
-	virtual void PaddingFunction4(int param1, int param2) {}
-	virtual void PaddingFunction5(int param1, int param2) {}
+	virtual void PaddingFunction1(int param1, int param2)
+	{
+	}
+	virtual void PaddingFunction2(int param1, int param2)
+	{
+	}
+	virtual void PaddingFunction3(int param1, int param2)
+	{
+	}
+	virtual void PaddingFunction4(int param1, int param2)
+	{
+	}
+	virtual void PaddingFunction5(int param1, int param2)
+	{
+	}
+
 public:
 	bool IsServerBrowserValid(void);
 	void ActivateServerBrowser(void);
@@ -51,7 +62,7 @@ private:
 	char m_szPreviousStatusText[128];
 };
 
-extern CGameUI &    GameUI(void);
+extern CGameUI &GameUI(void);
 extern vgui::Panel *StaticPanel(void);
 
 #endif

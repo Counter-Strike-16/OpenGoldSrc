@@ -1,32 +1,31 @@
 ---
 
-# BasedOnStyle:  LLVM
+# BasedOnStyle: LLVM
 
-Language:        Cpp
+Language: Cpp
 
 AccessModifierOffset: -4
 
 AlignAfterOpenBracket:			Align
-AlignConsecutiveAssignments:	true
-AlignConsecutiveDeclarations:	true
+AlignConsecutiveAssignments:	false
+AlignConsecutiveDeclarations:	false
 AlignEscapedNewlinesLeft:		false
 AlignOperands:					false
 AlignTrailingComments:			true
 
-AllowAllParametersOfDeclarationOnNextLine: true
-AllowShortBlocksOnASingleLine: false
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
+AllowAllParametersOfDeclarationOnNextLine:	true
+AllowShortBlocksOnASingleLine:				false
+AllowShortCaseLabelsOnASingleLine:			false
+AllowShortFunctionsOnASingleLine:			Inline
+AllowShortIfStatementsOnASingleLine:		false
+AllowShortLoopsOnASingleLine:				false
 
-AlwaysBreakAfterDefinitionReturnType: None
-AlwaysBreakAfterReturnType: None #!
-AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: false #!
+AlwaysBreakAfterReturnType:				None #!
+AlwaysBreakBeforeMultilineStrings:		false
+AlwaysBreakTemplateDeclarations:		true
 
-BinPackArguments: true
-BinPackParameters: true
+BinPackArguments:	true
+BinPackParameters:	true
 
 BraceWrapping:   
   AfterClass:				true
@@ -40,21 +39,20 @@ BraceWrapping:
   BeforeElse:				true
   IndentBraces:				false
 
-BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Custom
-BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: false
-BreakStringLiterals: true
+BreakBeforeBinaryOperators:					None
+BreakBeforeBraces:							Custom
+BreakBeforeTernaryOperators:				true
+BreakConstructorInitializersBeforeComma:	false
+BreakStringLiterals:						true
 
 ColumnLimit:     0
 CommentPragmas:  '^ IWYU pragma:'
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
-ContinuationIndentWidth: 4
-Cpp11BracedListStyle: true
+ContinuationIndentWidth: 0
+Cpp11BracedListStyle: false
 DerivePointerAlignment: false
 DisableFormat:   false
-ExperimentalAutoDetectBinPacking: false
 ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 IncludeCategories: 
   - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
@@ -86,6 +84,7 @@ ReflowComments:  false
 SortIncludes:    false
 
 SpaceAfterCStyleCast:			false
+#SpaceAfterTemplateKeyword:		false
 SpaceBeforeAssignmentOperators:	true
 SpaceBeforeParens:				Never
 SpaceInEmptyParentheses:		false
@@ -97,8 +96,8 @@ SpacesInCStyleCastParentheses:	false
 SpacesInParentheses:			false
 SpacesInSquareBrackets:			false
 
-Standard:        Auto
-TabWidth:        4
-UseTab:          ForIndentation
+Standard:	Auto
+TabWidth:	4
+UseTab:		ForIndentation
 
 ...

@@ -32,8 +32,8 @@
 
 #include "common/commontypes.h"
 
-typedef struct client_s   client_t;
-typedef struct sizebuf_s  sizebuf_t;
+typedef struct client_s client_t;
+typedef struct sizebuf_s sizebuf_t;
 typedef struct resource_s resource_t;
 
 qboolean SV_CheckFile(sizebuf_t *msg, char *filename);
@@ -45,8 +45,8 @@ void SV_MoveToOnHandList(resource_t *pResource);
 void SV_AddToResourceList(resource_t *pResource, resource_t *pList);
 void SV_ClearResourceList(resource_t *pList);
 void SV_RemoveFromResourceList(resource_t *pResource);
-int      SV_EstimateNeededResources();
-void     SV_RequestMissingResourcesFromClients();
+int SV_EstimateNeededResources();
+void SV_RequestMissingResourcesFromClients();
 qboolean SV_UploadComplete(client_t *cl);
 void SV_BatchUploadRequest(client_t *cl);
 qboolean SV_RequestMissingResources();

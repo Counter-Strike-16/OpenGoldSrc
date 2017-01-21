@@ -1,4 +1,5 @@
-// Null implementation for game dll exports (in case we couldn't load that dll instead of check for func presence)
+// Null implementation for game dll exports (in case we couldn't load that dll
+// instead of check for func presence)
 
 #include "common/mathlib.h"
 #include "engine/eiface.h"
@@ -95,7 +96,10 @@ char GameDLL_PM_FindTextureType(char *name)
 	return ' ';
 };
 
-void GameDLL_SetupVisibility(struct edict_s *pViewEntity, struct edict_s *pClient, unsigned char **pvs, unsigned char **pas){};
+void GameDLL_SetupVisibility(struct edict_s *pViewEntity,
+                             struct edict_s *pClient,
+                             unsigned char **pvs,
+                             unsigned char **pas){};
 
 void GameDLL_UpdateClientData(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd){};
 
@@ -117,7 +121,10 @@ void GameDLL_CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsign
 
 void GameDLL_CmdEnd(const edict_t *player){};
 
-int GameDLL_ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size)
+int GameDLL_ConnectionlessPacket(const struct netadr_s *net_from,
+                                 const char *args,
+                                 char *response_buffer,
+                                 int *response_buffer_size)
 {
 	return 0;
 };
@@ -140,78 +147,76 @@ int GameDLL_AllowLagCompensation()
 };
 }; // namespace
 
-DLL_FUNCTIONS gGameDLLFuncsNull =
-    {
-        GameDLL_GameInit,
+DLL_FUNCTIONS gGameDLLFuncsNull = { GameDLL_GameInit,
 
-        GameDLL_Spawn,
-        GameDLL_Think,
-        GameDLL_Use,
-        GameDLL_Touch,
-        GameDLL_Blocked,
-        GameDLL_KeyValue,
-        GameDLL_Save,
-        GameDLL_Restore,
-        GameDLL_SetAbsBox,
+	                                GameDLL_Spawn,
+	                                GameDLL_Think,
+	                                GameDLL_Use,
+	                                GameDLL_Touch,
+	                                GameDLL_Blocked,
+	                                GameDLL_KeyValue,
+	                                GameDLL_Save,
+	                                GameDLL_Restore,
+	                                GameDLL_SetAbsBox,
 
-        GameDLL_SaveWriteFields,
-        GameDLL_SaveReadFields,
+	                                GameDLL_SaveWriteFields,
+	                                GameDLL_SaveReadFields,
 
-        GameDLL_SaveGlobalState,
-        GameDLL_RestoreGlobalState,
-        GameDLL_ResetGlobalState,
+	                                GameDLL_SaveGlobalState,
+	                                GameDLL_RestoreGlobalState,
+	                                GameDLL_ResetGlobalState,
 
-        GameDLL_ClientConnect,
-        GameDLL_ClientDisconnect,
-        GameDLL_ClientKill,
-        GameDLL_ClientPutInServer,
-        GameDLL_ClientCommand,
-        GameDLL_ClientUserInfoChanged,
+	                                GameDLL_ClientConnect,
+	                                GameDLL_ClientDisconnect,
+	                                GameDLL_ClientKill,
+	                                GameDLL_ClientPutInServer,
+	                                GameDLL_ClientCommand,
+	                                GameDLL_ClientUserInfoChanged,
 
-        GameDLL_ServerActivate,
-        GameDLL_ServerDeactivate,
+	                                GameDLL_ServerActivate,
+	                                GameDLL_ServerDeactivate,
 
-        GameDLL_PlayerPreThink,
-        GameDLL_PlayerPostThink,
+	                                GameDLL_PlayerPreThink,
+	                                GameDLL_PlayerPostThink,
 
-        GameDLL_StartFrame,
+	                                GameDLL_StartFrame,
 
-        GameDLL_ParmsNewLevel,
-        GameDLL_ParmsChangeLevel,
+	                                GameDLL_ParmsNewLevel,
+	                                GameDLL_ParmsChangeLevel,
 
-        GameDLL_GetGameDescription,
+	                                GameDLL_GetGameDescription,
 
-        GameDLL_PlayerCustomization,
+	                                GameDLL_PlayerCustomization,
 
-        GameDLL_SpectatorConnect,
-        GameDLL_SpectatorDisconnect,
-        GameDLL_SpectatorThink,
+	                                GameDLL_SpectatorConnect,
+	                                GameDLL_SpectatorDisconnect,
+	                                GameDLL_SpectatorThink,
 
-        GameDLL_Sys_Error,
+	                                GameDLL_Sys_Error,
 
-        GameDLL_PM_Move,
-        GameDLL_PM_Init,
-        GameDLL_PM_FindTextureType,
+	                                GameDLL_PM_Move,
+	                                GameDLL_PM_Init,
+	                                GameDLL_PM_FindTextureType,
 
-        GameDLL_SetupVisibility,
-        GameDLL_UpdateClientData,
+	                                GameDLL_SetupVisibility,
+	                                GameDLL_UpdateClientData,
 
-        GameDLL_AddToFullPack,
+	                                GameDLL_AddToFullPack,
 
-        GameDLL_CreateBaseline,
+	                                GameDLL_CreateBaseline,
 
-        GameDLL_RegisterEncoders,
+	                                GameDLL_RegisterEncoders,
 
-        GameDLL_GetWeaponData,
+	                                GameDLL_GetWeaponData,
 
-        GameDLL_CmdStart,
-        GameDLL_CmdEnd,
+	                                GameDLL_CmdStart,
+	                                GameDLL_CmdEnd,
 
-        GameDLL_ConnectionlessPacket,
+	                                GameDLL_ConnectionlessPacket,
 
-        GameDLL_GetHullBounds,
+	                                GameDLL_GetHullBounds,
 
-        GameDLL_CreateInstancedBaselines,
+	                                GameDLL_CreateInstancedBaselines,
 
-        GameDLL_InconsistentFile,
-        GameDLL_AllowLagCompensation};
+	                                GameDLL_InconsistentFile,
+	                                GameDLL_AllowLagCompensation };

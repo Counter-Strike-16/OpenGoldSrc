@@ -28,33 +28,33 @@
 
 /// @file
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <sys/file.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <string.h>
-#include <time.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 
 #include <linux/cdrom.h>
 
 #include "quakedef.h"
 
-static qboolean cdValid     = false;
-static qboolean playing     = false;
-static qboolean wasPlaying  = false;
+static qboolean cdValid = false;
+static qboolean playing = false;
+static qboolean wasPlaying = false;
 static qboolean initialized = false;
-static qboolean enabled     = true;
+static qboolean enabled = true;
 static qboolean playLooping = false;
-static float    cdvolume;
-static byte     remap[100];
-static byte     playTrack;
-static byte     maxTrack;
+static float cdvolume;
+static byte remap[100];
+static byte playTrack;
+static byte maxTrack;
 
-static int  cdfile     = -1;
+static int cdfile = -1;
 static char cd_dev[64] = "/dev/cdrom";
 
 static void CDAudio_Eject(void)
@@ -93,7 +93,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 		return -1;
 	}
 
-	cdValid  = true;
+	cdValid = true;
 	maxTrack = tochdr.cdth_trk1;
 
 	return 0;
@@ -102,7 +102,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 void CDAudio_Play(byte track, qboolean looping)
 {
 	struct cdrom_tocentry entry;
-	struct cdrom_ti       ti;
+	struct cdrom_ti ti;
 
 	if(cdfile == -1 || !enabled)
 		return;
@@ -123,7 +123,7 @@ void CDAudio_Play(byte track, qboolean looping)
 	}
 
 	// don't try to play a non-audio track
-	entry.cdte_track  = track;
+	entry.cdte_track = track;
 	entry.cdte_format = CDROM_MSF;
 	if(ioctl(cdfile, CDROMREADTOCENTRY, &entry) == -1)
 	{
@@ -158,8 +158,8 @@ void CDAudio_Play(byte track, qboolean looping)
 		Con_DPrintf("ioctl cdromresume failed\n");
 
 	playLooping = looping;
-	playTrack   = track;
-	playing     = true;
+	playTrack = track;
+	playing = true;
 
 	if(cdvolume == 0.0)
 		CDAudio_Pause();
@@ -177,7 +177,7 @@ void CDAudio_Stop(void)
 		Con_DPrintf("ioctl cdromstop failed (%d)\n", errno);
 
 	wasPlaying = false;
-	playing    = false;
+	playing = false;
 }
 
 void CDAudio_Pause(void)
@@ -192,7 +192,7 @@ void CDAudio_Pause(void)
 		Con_DPrintf("ioctl cdrompause failed\n");
 
 	wasPlaying = playing;
-	playing    = false;
+	playing = false;
 }
 
 void CDAudio_Resume(void)
@@ -214,8 +214,8 @@ void CDAudio_Resume(void)
 static void CD_f(void)
 {
 	char *command;
-	int   ret;
-	int   n;
+	int ret;
+	int n;
 
 	if(Cmd_Argc() < 2)
 		return;
@@ -241,7 +241,7 @@ static void CD_f(void)
 		enabled = true;
 		if(playing)
 			CDAudio_Stop();
-		for(n        = 0; n < 100; n++)
+		for(n = 0; n < 100; n++)
 			remap[n] = n;
 		CDAudio_GetAudioDiskInfo();
 		return;
@@ -257,7 +257,7 @@ static void CD_f(void)
 					Con_Printf("  %u -> %u\n", n, remap[n]);
 			return;
 		}
-		for(n        = 1; n <= ret; n++)
+		for(n = 1; n <= ret; n++)
 			remap[n] = Q_atoi(Cmd_Argv(n + 1));
 		return;
 	}
@@ -332,7 +332,7 @@ static void CD_f(void)
 void CDAudio_Update(void)
 {
 	struct cdrom_subchnl subchnl;
-	static time_t        lastchk;
+	static time_t lastchk;
 
 	if(!enabled)
 		return;
@@ -355,7 +355,7 @@ void CDAudio_Update(void)
 
 	if(playing && lastchk < time(NULL))
 	{
-		lastchk             = time(NULL) + 2; //two seconds between chks
+		lastchk = time(NULL) + 2; // two seconds between chks
 		subchnl.cdsc_format = CDROM_MSF;
 		if(ioctl(cdfile, CDROMSUBCHNL, &subchnl) == -1)
 		{
@@ -398,10 +398,10 @@ int CDAudio_Init(void)
 		return -1;
 	}
 
-	for(i        = 0; i < 100; i++)
+	for(i = 0; i < 100; i++)
 		remap[i] = i;
-	initialized  = true;
-	enabled      = true;
+	initialized = true;
+	enabled = true;
 
 	if(CDAudio_GetAudioDiskInfo())
 	{

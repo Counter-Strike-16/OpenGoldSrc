@@ -22,12 +22,12 @@ private:
 };
 
 static CRegistry g_Registry;
-IRegistry *      registry = (IRegistry *)&g_Registry;
+IRegistry *registry = (IRegistry *)&g_Registry;
 
 CRegistry::CRegistry()
 {
 	m_bValid = false;
-	m_hKey   = 0;
+	m_hKey = 0;
 }
 
 CRegistry::~CRegistry()
@@ -36,7 +36,7 @@ CRegistry::~CRegistry()
 
 int CRegistry::ReadInt(const char *key, int defaultValue)
 {
-	LONG  lResult;
+	LONG lResult;
 	DWORD dwType;
 	DWORD dwSize;
 
@@ -45,7 +45,7 @@ int CRegistry::ReadInt(const char *key, int defaultValue)
 	if(!m_bValid)
 		return defaultValue;
 
-	dwSize  = sizeof(DWORD);
+	dwSize = sizeof(DWORD);
 	lResult = RegQueryValueEx(m_hKey, key, 0, &dwType, (LPBYTE)&value, &dwSize);
 
 	if(lResult != ERROR_SUCCESS)
@@ -70,7 +70,7 @@ void CRegistry::WriteInt(const char *key, int value)
 
 const char *CRegistry::ReadString(const char *key, const char *defaultValue)
 {
-	LONG  lResult;
+	LONG lResult;
 	DWORD dwType;
 	DWORD dwSize = 512;
 
@@ -109,7 +109,7 @@ static char *GetPlatformName()
 
 void CRegistry::Init()
 {
-	LONG  lResult;
+	LONG lResult;
 	DWORD dwDisposition;
 
 	char szModelKey[1024];

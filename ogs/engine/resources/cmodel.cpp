@@ -30,17 +30,17 @@
 
 //#include "precompiled.hpp"
 #include "resources/cmodel.hpp"
+#include "console/console.hpp"
+#include "memory/mem.hpp"
+#include "resources/model_rehlds.hpp"
+#include "server/server.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
-#include "memory/mem.hpp"
-#include "console/console.hpp"
-#include "server/server.hpp"
-#include "resources/model_rehlds.hpp"
 
 unsigned char *gPAS;
 unsigned char *gPVS;
-int            gPVSRowBytes;
-unsigned char  mod_novis[MODEL_MAX_PVS];
+int gPVSRowBytes;
+unsigned char mod_novis[MODEL_MAX_PVS];
 
 void Mod_Init()
 {
@@ -84,7 +84,7 @@ unsigned char *Mod_LeafPVS(mleaf_t *leaf, model_t *model)
 
 void CM_DecompressPVS(unsigned char *in, unsigned char *decompressed, int byteCount)
 {
-	int            c;
+	int c;
 	unsigned char *out;
 
 	if(in == NULL)
@@ -104,7 +104,9 @@ void CM_DecompressPVS(unsigned char *in, unsigned char *decompressed, int byteCo
 			continue;
 		}
 
-		c = in[1]; // TODO: Check that input buffer is correct (last byte on the buffer could be zero and we will go out of the buffer - check the model)
+		c = in[1]; // TODO: Check that input buffer is correct (last byte on the
+		           // buffer could be zero and we will go out of the buffer - check
+		           // the model)
 		in += 2;
 
 		// Prevent buffer overrun
@@ -149,30 +151,30 @@ void CM_FreePAS()
 
 void CM_CalcPAS(model_t *pModel)
 {
-	int            rows, rowwords;
-	int            actualRowBytes;
-	int            i, j, k, l;
-	int            index;
-	int            bitbyte;
-	unsigned int * dest, *src;
+	int rows, rowwords;
+	int actualRowBytes;
+	int i, j, k, l;
+	int index;
+	int bitbyte;
+	unsigned int *dest, *src;
 	unsigned char *scan;
-	int            count, vcount, acount;
+	int count, vcount, acount;
 
 	Con_DPrintf("Building PAS...\n");
 	CM_FreePAS();
 
 	// Calculate memory: matrix of each to each leaf visibility
-	rows           = (pModel->numleafs + 7) / 8;
-	count          = pModel->numleafs + 1;
+	rows = (pModel->numleafs + 7) / 8;
+	count = pModel->numleafs + 1;
 	actualRowBytes = (rows + 3) & 0xFFFFFFFC; // 4-byte align
-	rowwords       = actualRowBytes / 4;
-	gPVSRowBytes   = actualRowBytes;
+	rowwords = actualRowBytes / 4;
+	gPVSRowBytes = actualRowBytes;
 
 	// Alloc PVS
 	gPVS = (byte *)Mem_Calloc(gPVSRowBytes, count);
 
 	// Decompress visibility data
-	scan   = gPVS;
+	scan = gPVS;
 	vcount = 0;
 	for(i = 0; i < count; i++, scan += gPVSRowBytes)
 	{
@@ -197,8 +199,8 @@ void CM_CalcPAS(model_t *pModel)
 
 	// Build PAS
 	acount = 0;
-	scan   = gPVS;
-	dest   = (unsigned int *)gPAS;
+	scan = gPVS;
+	dest = (unsigned int *)gPAS;
 	for(i = 0; i < count; i++, scan += gPVSRowBytes, dest += rowwords)
 	{
 		Q_memcpy(dest, scan, gPVSRowBytes);
@@ -246,12 +248,15 @@ void CM_CalcPAS(model_t *pModel)
 		}
 	}
 
-	Con_DPrintf("Average leaves visible / audible / total: %i / %i / %i\n", vcount / count, acount / count, count);
+	Con_DPrintf("Average leaves visible / audible / total: %i / %i / %i\n",
+	            vcount / count,
+	            acount / count,
+	            count);
 }
 
 qboolean CM_HeadnodeVisible(mnode_t *node, unsigned char *visbits, int *first_visible_leafnum)
 {
-	int      leafnum;
+	int leafnum;
 	mleaf_t *leaf;
 
 	leaf = (mleaf_t *)node;

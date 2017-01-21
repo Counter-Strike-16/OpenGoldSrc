@@ -28,12 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct
 {
 	plane_t *plane;
-	vec3_t   origin;
-	vec3_t   normal;
-	vec3_t   up;
-	vec3_t   right;
-	vec3_t   reflect;
-	float    length;
+	vec3_t origin;
+	vec3_t normal;
+	vec3_t up;
+	vec3_t right;
+	vec3_t reflect;
+	float length;
 } puff_t;
 
 #define MAX_PUFFS 64
@@ -44,7 +44,7 @@ void Test_Init(void)
 {
 }
 
-plane_t  junk;
+plane_t junk;
 plane_t *HitPlane(vec3_t start, vec3_t end)
 {
 	trace_t trace;
@@ -63,13 +63,13 @@ plane_t *HitPlane(vec3_t start, vec3_t end)
 
 void Test_Spawn(vec3_t origin)
 {
-	int      i;
-	puff_t * p;
-	vec3_t   temp;
-	vec3_t   normal;
-	vec3_t   incoming;
+	int i;
+	puff_t *p;
+	vec3_t temp;
+	vec3_t normal;
+	vec3_t incoming;
 	plane_t *plane;
-	float    d;
+	float d;
 
 	for(i = 0, p = puffs; i < MAX_PUFFS; i++, p++)
 	{
@@ -101,8 +101,8 @@ void Test_Spawn(vec3_t origin)
 void DrawPuff(puff_t *p)
 {
 	vec3_t pts[2][3];
-	int    i, j;
-	float  s, d;
+	int i, j;
+	float s, d;
 
 	for(i = 0; i < 2; i++)
 	{
@@ -168,7 +168,7 @@ void DrawPuff(puff_t *p)
 
 void Test_Draw(void)
 {
-	int     i;
+	int i;
 	puff_t *p;
 
 	for(i = 0, p = puffs; i < MAX_PUFFS; i++, p++)

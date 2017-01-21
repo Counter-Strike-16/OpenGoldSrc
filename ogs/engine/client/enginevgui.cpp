@@ -31,7 +31,7 @@
 //#include "precompiled.hpp"
 #include "client/enginevgui.hpp"
 
-IGameUI *     gpGameUI      = nullptr;
+IGameUI *gpGameUI = nullptr;
 IGameConsole *gpGameConsole = nullptr;
 
 static CEngineVGui gEngineVGui;
@@ -54,7 +54,8 @@ void CEngineVGui::Init()
 	if(!gpGameUI)
 		return;
 
-	gpGameConsole = (IGameConsole *)fnLauncherFactory(GAMECONSOLE_INTERFACE_VERSION, nullptr);
+	gpGameConsole =
+	(IGameConsole *)fnLauncherFactory(GAMECONSOLE_INTERFACE_VERSION, nullptr);
 
 	if(!gpGameConsole)
 		return;
@@ -72,7 +73,8 @@ void CEngineVGui::Shutdown()
 };
 
 //-----------------------------------------------------------------------------
-// add all the base search paths used by VGUI (platform, skins directory, language dirs)
+// add all the base search paths used by VGUI (platform, skins directory,
+// language dirs)
 //-----------------------------------------------------------------------------
 bool CEngineVGui::SetVGUIDirectories()
 {
@@ -108,12 +110,13 @@ CreateInterfaceFn CEngineVGui::GetGameUIFactory()
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: Returns 1 if the key event is handled, 0 if the engine should handle it
+// Purpose: Returns 1 if the key event is handled, 0 if the engine should handle
+// it
 //-----------------------------------------------------------------------------
 bool CEngineVGui::Key_Event(const InputEvent_t &event)
 {
-	bool         bDown = event.m_nType != IE_ButtonReleased;
-	ButtonCode_t code  = (ButtonCode_t)event.m_nData;
+	bool bDown = event.m_nType != IE_ButtonReleased;
+	ButtonCode_t code = (ButtonCode_t)event.m_nData;
 
 	if(IsPC() && IsShiftKeyDown())
 	{
@@ -180,7 +183,8 @@ void CEngineVGui::BackwardCompatibility_Paint()
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: Returns 1 if the key event is handled, 0 if the engine should handle it
+// Purpose: Returns 1 if the key event is handled, 0 if the engine should handle
+// it
 //-----------------------------------------------------------------------------
 void CEngineVGui::UpdateButtonState(const InputEvent_t &event)
 {
@@ -236,7 +240,7 @@ void CEngineVGui::Paint(PaintMode_t mode)
 	if(mode & PAINT_UIPANELS)
 	{
 		// Hide the client dll, and paint everything else
-		bool bSaveVisible      = staticClientDLLPanel->IsVisible();
+		bool bSaveVisible = staticClientDLLPanel->IsVisible();
 		bool bSaveToolsVisible = staticClientDLLToolsPanel->IsVisible();
 
 		staticClientDLLPanel->SetVisible(false);
@@ -253,8 +257,10 @@ void CEngineVGui::Paint(PaintMode_t mode)
 		bool bSaveVisible = vgui::ipanel()->IsVisible(pVPanel);
 		vgui::ipanel()->SetVisible(pVPanel, false);
 
-		// Remove the client dll from the main hierarchy so that popups will only paint for the client .dll here
-		// NOTE: Disconnect each surface one at a time so that we don't draw popups twice
+		// Remove the client dll from the main hierarchy so that popups will only
+		// paint for the client .dll here
+		// NOTE: Disconnect each surface one at a time so that we don't draw popups
+		// twice
 
 		// Paint the client dll only
 		vgui::VPANEL ingameRoot = staticClientDLLPanel->GetVPanel();
@@ -265,7 +271,7 @@ void CEngineVGui::Paint(PaintMode_t mode)
 
 		// Overlay the client dll tools next
 		vgui::VPANEL ingameToolsRoot = staticClientDLLToolsPanel->GetVPanel();
-		vgui::VPANEL saveToolParent  = vgui::ipanel()->GetParent(ingameToolsRoot);
+		vgui::VPANEL saveToolParent = vgui::ipanel()->GetParent(ingameToolsRoot);
 		vgui::ipanel()->SetParent(ingameToolsRoot, 0);
 		vgui::surface()->PaintTraverseEx(ingameToolsRoot, true);
 		vgui::ipanel()->SetParent(ingameToolsRoot, saveToolParent);
@@ -286,7 +292,7 @@ void CEngineVGui::SetGameUIActive(bool bActive)
 
 bool CEngineVGui::IsGameUIActive()
 {
-	//return gpGameUI && gpGameUI->IsGameUIActive();
+	// return gpGameUI && gpGameUI->IsGameUIActive();
 	return false;
 };
 
@@ -349,9 +355,9 @@ void CEngineVGui::OnLevelLoadingStarted()
 	// reset progress bar timers
 	mfLoadingStartTime = Plat_FloatTime();
 	m_LoadingProgress.RemoveAll();
-	meLastProgressPoint            = PROGRESS_NONE;
+	meLastProgressPoint = PROGRESS_NONE;
 	mnLastProgressPointRepeatCount = 0;
-	m_ProgressBias                 = 0;
+	m_ProgressBias = 0;
 
 	// choose which progress bar to use
 	if(NET_IsMultiplayer())
@@ -380,7 +386,7 @@ void CEngineVGui::OnLevelLoadingFinished()
 	// clear any error message
 	gfExtendedError = false;
 
-	gsDisconnectReason[0]         = 0;
+	gsDisconnectReason[0] = 0;
 	gsExtendedDisconnectReason[0] = 0;
 
 #if defined(ENABLE_LOADING_PROGRESS_PROFILING)
@@ -388,9 +394,10 @@ void CEngineVGui::OnLevelLoadingFinished()
 	float fEndTime = (float)Plat_FloatTime();
 
 	// add a finished entry
-	LoadingProgressEntry_t &entry = m_LoadingProgress[m_LoadingProgress.AddToTail()];
-	entry.flTime                  = fEndTime - mfLoadingStartTime;
-	entry.eProgress               = PROGRESS_HIGHESTITEM;
+	LoadingProgressEntry_t &entry =
+	m_LoadingProgress[m_LoadingProgress.AddToTail()];
+	entry.flTime = fEndTime - mfLoadingStartTime;
+	entry.eProgress = PROGRESS_HIGHESTITEM;
 
 	// dump the info
 	Msg("Level load timings:\n");
@@ -399,13 +406,14 @@ void CEngineVGui::OnLevelLoadingFinished()
 
 	int nRepeatCount = 0;
 
-	float fTimeTaken             = 0.0f;
+	float fTimeTaken = 0.0f;
 	float fFirstLoadProgressTime = 0.0f;
 
 	for(int i = 0; i < m_LoadingProgress.Count() - 1; i++)
 	{
 		// keep track of time
-		fTimeTaken += (float)m_LoadingProgress[i + 1].flTime - m_LoadingProgress[i].flTime;
+		fTimeTaken +=
+		(float)m_LoadingProgress[i + 1].flTime - m_LoadingProgress[i].flTime;
 
 		// keep track of how often something is repeated
 		if(m_LoadingProgress[i + 1].eProgress == m_LoadingProgress[i].eProgress)
@@ -421,16 +429,22 @@ void CEngineVGui::OnLevelLoadingFinished()
 		if(nRepeatCount == 0)
 			fFirstLoadProgressTime = m_LoadingProgress[i].flTime;
 
-		int nPerc     = (int)(100 * (fFirstLoadProgressTime / fTotalTime));
-		int nTickPerc = (int)(100 * ((float)m_LoadingProgress[i].eProgress / (float)PROGRESS_HIGHESTITEM));
+		int nPerc = (int)(100 * (fFirstLoadProgressTime / fTotalTime));
+		int nTickPerc = (int)(100 * ((float)m_LoadingProgress[i].eProgress /
+		                             (float)PROGRESS_HIGHESTITEM));
 
 		// interpolated percentage is in between the real times and the most ticks
 		int nInterpPerc = (nPerc + nTickPerc) * 0.5f;
-		Msg("\t%d\t%.3f\t\ttime: %d%%\t\tinterp: %d%%\t\trepeat: %d\n", m_LoadingProgress[i].eProgress, flTimeTaken, nPerc, nInterpPerc, nRepeatCount);
+		Msg("\t%d\t%.3f\t\ttime: %d%%\t\tinterp: %d%%\t\trepeat: %d\n",
+		    m_LoadingProgress[i].eProgress,
+		    flTimeTaken,
+		    nPerc,
+		    nInterpPerc,
+		    nRepeatCount);
 
 		// reset accumlated vars
 		nRepeatCount = 0;
-		fTimeTaken   = 0.0f;
+		fTimeTaken = 0.0f;
 	};
 #endif // ENABLE_LOADING_PROGRESS_PROFILING
 
@@ -478,9 +492,10 @@ void CEngineVGui::UpdateProgressBar(LevelLoadingProgress_e progress)
 
 #if defined(ENABLE_LOADING_PROGRESS_PROFILING)
 	// track the progress times, for debugging & tuning
-	LoadingProgressEntry_t &entry = m_LoadingProgress[m_LoadingProgress.AddToTail()];
-	entry.flTime                  = Plat_FloatTime() - mfLoadingStartTime;
-	entry.eProgress               = progress;
+	LoadingProgressEntry_t &entry =
+	m_LoadingProgress[m_LoadingProgress.AddToTail()];
+	entry.flTime = Plat_FloatTime() - mfLoadingStartTime;
+	entry.eProgress = progress;
 #endif
 
 	if(!gpLoadingProgressDescriptions)
@@ -504,13 +519,15 @@ void CEngineVGui::UpdateProgressBar(LevelLoadingProgress_e progress)
 	if(desc.nRepeat > 1 && mnLastProgressPointRepeatCount)
 	{
 		// cap the repeat count
-		mnLastProgressPointRepeatCount = min(mnLastProgressPointRepeatCount, desc.nRepeat);
+		mnLastProgressPointRepeatCount =
+		min(mnLastProgressPointRepeatCount, desc.nRepeat);
 
 		// next progress point
 		float fNextPerc = GetProgressDescription(progress + 1).nPercent / 100.0f;
 
 		// move along partially towards the next tick
-		fPerc += (fNextPerc - fPerc) * ((float)mnLastProgressPointRepeatCount / desc.nRepeat);
+		fPerc += (fNextPerc - fPerc) *
+		((float)mnLastProgressPointRepeatCount / desc.nRepeat);
 	};
 
 	// the bias allows the loading bar to have an optional reserved initial band
@@ -575,7 +592,7 @@ void CEngineVGui::ShowErrorMessage()
 	// clear any error message
 	gfExtendedError = false;
 
-	gsDisconnectReason[0]         = 0;
+	gsDisconnectReason[0] = 0;
 	gsExtendedDisconnectReason[0] = 0;
 
 	HideGameUI();
@@ -610,8 +627,10 @@ void CEngineVGui::Simulate()
 		VPROF_BUDGET("CEngineVGui::Simulate", VPROF_BUDGETGROUP_OTHER_VGUI);
 
 		// update vgui animations
-		//!! currently this has to be done once per dll, because the anim controller object is in a lib;
-		//!! need to make it globally pumped (gameUI.dll has it's own version of this)
+		//!! currently this has to be done once per dll, because the anim controller
+		//!object is in a lib;
+		//!! need to make it globally pumped (gameUI.dll has it's own version of
+		//!this)
 		vgui::GetAnimationController()->UpdateAnimations(Sys_FloatTime());
 
 		RECT rect;

@@ -81,7 +81,7 @@ WINE_MODREF *MODULE_FindNearFunctionName(FARPROC f)
 	//    while(strcmp(m, list->wm->filename))
 	while(list && !s)
 	{
-		s    = PE_FindNearFunctionName(list->wm, f);
+		s = PE_FindNearFunctionName(list->wm, f);
 		list = list->prev;
 	}
 	return s;
@@ -149,8 +149,7 @@ static WIN_BOOL MODULE_InitDll(WINE_MODREF *wm, DWORD type, LPVOID lpReserved)
 	WIN_BOOL retv = TRUE;
 
 #ifdef DEBUG
-	static LPCSTR typeName[] = {"PROCESS_DETACH", "PROCESS_ATTACH",
-	                            "THREAD_ATTACH", "THREAD_DETACH"};
+	static LPCSTR typeName[] = { "PROCESS_DETACH", "PROCESS_ATTACH", "THREAD_ATTACH", "THREAD_DETACH" };
 #endif
 
 	assert(wm);
@@ -244,17 +243,17 @@ static WIN_BOOL MODULE_DllProcessAttach(WINE_MODREF *wm, LPVOID lpReserved)
 	//local_wm=wm;
 	if(local_wm)
 	{
-		local_wm->next       = malloc(sizeof(modref_list));
+		local_wm->next = malloc(sizeof(modref_list));
 		local_wm->next->prev = local_wm;
 		local_wm->next->next = NULL;
-		local_wm->next->wm   = wm;
-		local_wm             = local_wm->next;
+		local_wm->next->wm = wm;
+		local_wm = local_wm->next;
 	}
 	else
 	{
-		local_wm       = malloc(sizeof(modref_list));
+		local_wm = malloc(sizeof(modref_list));
 		local_wm->next = local_wm->prev = NULL;
-		local_wm->wm                    = wm;
+		local_wm->wm = wm;
 	}
 	/* Remove recursion flag */
 	wm->flags &= ~WINE_MODREF_MARKER;
@@ -306,7 +305,7 @@ static void MODULE_DllProcessDetach(WINE_MODREF *wm, WIN_BOOL bForceDetach, LPVO
  */
 static WINE_MODREF *MODULE_LoadLibraryExA(LPCSTR libname, HFILE hfile, DWORD flags)
 {
-	DWORD        err = GetLastError();
+	DWORD err = GetLastError();
 	WINE_MODREF *pwm;
 	//	module_loadorder_t *plo;
 
@@ -362,11 +361,11 @@ static WIN_BOOL MODULE_FreeLibrary(WINE_MODREF *wm)
  */
 HMODULE WINAPI LoadLibraryExA(LPCSTR libname, HANDLE hfile, DWORD flags)
 {
-	WINE_MODREF *wm         = 0;
-	char *       listpath[] = {"", "", 0};
-	char         path[512];
-	char         checked[2000];
-	int          i = -1;
+	WINE_MODREF *wm = 0;
+	char *listpath[] = { "", "", 0 };
+	char path[512];
+	char checked[2000];
+	int i = -1;
 
 	checked[0] = 0;
 	if(!libname)
@@ -409,7 +408,7 @@ HMODULE WINAPI LoadLibraryExA(LPCSTR libname, HANDLE hfile, DWORD flags)
 			strncat(path, libname, 100);
 		}
 		path[511] = 0;
-		wm        = MODULE_LoadLibraryExA(path, hfile, flags);
+		wm = MODULE_LoadLibraryExA(path, hfile, flags);
 
 		if(!wm)
 		{
@@ -603,7 +602,7 @@ HMODULE WINAPI LoadLibraryA(LPCSTR libname)
  */
 WIN_BOOL WINAPI FreeLibrary(HINSTANCE hLibModule)
 {
-	WIN_BOOL     retv = FALSE;
+	WIN_BOOL retv = FALSE;
 	WINE_MODREF *wm;
 
 	wm = MODULE32_LookupHMODULE(hLibModule);
@@ -637,9 +636,9 @@ FARPROC WINAPI GetProcAddress(HMODULE hModule, LPCSTR function)
  *           MODULE_GetProcAddress   		(internal)
  */
 FARPROC MODULE_GetProcAddress(
-    HMODULE  hModule,  /* [in] current module handle */
-    LPCSTR   function, /* [in] function to be looked up */
-    WIN_BOOL snoop)
+HMODULE hModule, /* [in] current module handle */
+LPCSTR function, /* [in] function to be looked up */
+WIN_BOOL snoop)
 {
 	WINE_MODREF *wm = MODULE32_LookupHMODULE(hModule);
 	//    WINE_MODREF *wm=local_wm;

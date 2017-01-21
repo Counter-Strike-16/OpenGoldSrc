@@ -42,7 +42,7 @@ Draw_FindPic
 image_t *Draw_FindPic(char *name)
 {
 	image_t *image;
-	char     fullname[MAX_QPATH];
+	char fullname[MAX_QPATH];
 
 	if(name[0] != '/' && name[0] != '\\')
 	{
@@ -78,8 +78,8 @@ void Draw_Char(int x, int y, int num)
 {
 	byte *dest;
 	byte *source;
-	int   drawline;
-	int   row, col;
+	int drawline;
+	int row, col;
 
 	num &= 255;
 
@@ -100,8 +100,8 @@ void Draw_Char(int x, int y, int num)
 		ri.Sys_Error(ERR_FATAL, "Con_DrawCharacter: char %i", num);
 #endif
 
-	row    = num >> 4;
-	col    = num & 15;
+	row = num >> 4;
+	col = num & 15;
 	source = draw_chars->pixels[0] + (row << 10) + (col << 3);
 
 	if(y < 0)
@@ -165,10 +165,10 @@ Draw_StretchPicImplementation
 void Draw_StretchPicImplementation(int x, int y, int w, int h, image_t *pic)
 {
 	byte *dest, *source;
-	int   v, u, sv;
-	int   height;
-	int   f, fstep;
-	int   skip;
+	int v, u, sv;
+	int height;
+	int f, fstep;
+	int skip;
 
 	if((x < 0) ||
 	   (x + w > vid.width) ||
@@ -191,13 +191,13 @@ void Draw_StretchPicImplementation(int x, int y, int w, int h, image_t *pic)
 
 	for(v = 0; v < height; v++, dest += vid.rowbytes)
 	{
-		sv     = (skip + v) * pic->height / h;
+		sv = (skip + v) * pic->height / h;
 		source = pic->pixels[0] + sv * pic->width;
 		if(w == pic->width)
 			memcpy(dest, source, w);
 		else
 		{
-			f     = 0;
+			f = 0;
 			fstep = pic->width * 0x10000 / w;
 			for(u = 0; u < w; u += 4)
 			{
@@ -242,8 +242,8 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data)
 	image_t pic;
 
 	pic.pixels[0] = data;
-	pic.width     = cols;
-	pic.height    = rows;
+	pic.width = cols;
+	pic.height = rows;
 	Draw_StretchPicImplementation(x, y, w, h, &pic);
 }
 
@@ -255,10 +255,10 @@ Draw_Pic
 void Draw_Pic(int x, int y, char *name)
 {
 	image_t *pic;
-	byte *   dest, *source;
-	int      v, u;
-	int      tbyte;
-	int      height;
+	byte *dest, *source;
+	int v, u;
+	int tbyte;
+	int height;
 
 	pic = Draw_FindPic(name);
 	if(!pic)
@@ -299,7 +299,7 @@ void Draw_Pic(int x, int y, char *name)
 			for(v = 0; v < height; v++)
 			{
 				for(u = 0; u < pic->width; u++)
-					if((tbyte   = source[u]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u]) != TRANSPARENT_COLOR)
 						dest[u] = tbyte;
 
 				dest += vid.rowbytes;
@@ -312,21 +312,21 @@ void Draw_Pic(int x, int y, char *name)
 			{
 				for(u = 0; u < pic->width; u += 8)
 				{
-					if((tbyte   = source[u]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u]) != TRANSPARENT_COLOR)
 						dest[u] = tbyte;
-					if((tbyte       = source[u + 1]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 1]) != TRANSPARENT_COLOR)
 						dest[u + 1] = tbyte;
-					if((tbyte       = source[u + 2]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 2]) != TRANSPARENT_COLOR)
 						dest[u + 2] = tbyte;
-					if((tbyte       = source[u + 3]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 3]) != TRANSPARENT_COLOR)
 						dest[u + 3] = tbyte;
-					if((tbyte       = source[u + 4]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 4]) != TRANSPARENT_COLOR)
 						dest[u + 4] = tbyte;
-					if((tbyte       = source[u + 5]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 5]) != TRANSPARENT_COLOR)
 						dest[u + 5] = tbyte;
-					if((tbyte       = source[u + 6]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 6]) != TRANSPARENT_COLOR)
 						dest[u + 6] = tbyte;
-					if((tbyte       = source[u + 7]) != TRANSPARENT_COLOR)
+					if((tbyte = source[u + 7]) != TRANSPARENT_COLOR)
 						dest[u + 7] = tbyte;
 				}
 				dest += vid.rowbytes;
@@ -346,11 +346,11 @@ refresh window.
 */
 void Draw_TileClear(int x, int y, int w, int h, char *name)
 {
-	int      i, j;
-	byte *   psrc;
-	byte *   pdest;
+	int i, j;
+	byte *psrc;
+	byte *pdest;
 	image_t *pic;
-	int      x2;
+	int x2;
 
 	if(x < 0)
 	{
@@ -375,12 +375,12 @@ void Draw_TileClear(int x, int y, int w, int h, char *name)
 		ri.Con_Printf(PRINT_ALL, "Can't find pic: %s\n", name);
 		return;
 	}
-	x2    = x + w;
+	x2 = x + w;
 	pdest = vid.buffer + y * vid.rowbytes;
 	for(i = 0; i < h; i++, pdest += vid.rowbytes)
 	{
 		psrc = pic->pixels[0] + pic->width * ((i + y) & 63);
-		for(j        = x; j < x2; j++)
+		for(j = x; j < x2; j++)
 			pdest[j] = psrc[j & 63];
 	}
 }
@@ -395,7 +395,7 @@ Fills a box of pixels with a single color
 void Draw_Fill(int x, int y, int w, int h, int c)
 {
 	byte *dest;
-	int   u, v;
+	int u, v;
 
 	if(x + w > vid.width)
 		w = vid.width - x;
@@ -415,7 +415,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 		return;
 	dest = vid.buffer + y * vid.rowbytes + x;
 	for(v = 0; v < h; v++, dest += vid.rowbytes)
-		for(u       = 0; u < w; u++)
+		for(u = 0; u < w; u++)
 			dest[u] = c;
 }
 //=============================================================================
@@ -428,14 +428,14 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen()
 {
-	int   x, y;
+	int x, y;
 	byte *pbuf;
-	int   t;
+	int t;
 
 	for(y = 0; y < vid.height; y++)
 	{
 		pbuf = (byte *)(vid.buffer + vid.rowbytes * y);
-		t    = (y & 1) << 1;
+		t = (y & 1) << 1;
 
 		for(x = 0; x < vid.width; x++)
 		{

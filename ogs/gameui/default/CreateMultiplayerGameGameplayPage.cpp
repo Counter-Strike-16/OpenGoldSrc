@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "EngineInterface.h"
 #include "CreateMultiplayerGameGameplayPage.h"
+#include "EngineInterface.h"
 
 using namespace vgui;
 
 #include <KeyValues.h>
 #include <vgui/ILocalize.h>
-#include <vgui_controls/ComboBox.h>
 #include <vgui_controls/CheckButton.h>
+#include <vgui_controls/ComboBox.h>
 #include <vgui_controls/Label.h>
 #include <vgui_controls/TextEntry.h>
 
@@ -30,7 +30,8 @@ public:
 	void WriteFileHeader(FileHandle_t fp);
 };
 
-CCreateMultiplayerGameGameplayPage::CCreateMultiplayerGameGameplayPage(vgui::Panel *parent, const char *name)
+CCreateMultiplayerGameGameplayPage::CCreateMultiplayerGameGameplayPage(
+vgui::Panel *parent, const char *name)
     : PropertyPage(parent, name)
 {
 	m_pOptionsList = new CPanelListPanel(this, "GameOptions");
@@ -64,7 +65,9 @@ const char *CCreateMultiplayerGameGameplayPage::GetHostName(void)
 	return GetValue("hostname", "Half-Life");
 }
 
-const char *CCreateMultiplayerGameGameplayPage::GetValue(const char *cvarName, const char *defaultValue)
+const char *
+CCreateMultiplayerGameGameplayPage::GetValue(const char *cvarName,
+                                             const char *defaultValue)
 {
 	for(mpcontrol_t *mp = m_pList; mp != NULL; mp = mp->next)
 	{
@@ -72,7 +75,7 @@ const char *CCreateMultiplayerGameGameplayPage::GetValue(const char *cvarName, c
 
 		if(control && !stricmp(mp->GetName(), cvarName))
 		{
-			KeyValues * data = new KeyValues("GetText");
+			KeyValues *data = new KeyValues("GetText");
 			static char buf[128];
 
 			if(control && control->RequestInfo(data))
@@ -127,11 +130,11 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList(void)
 	m_pList = NULL;
 
 	CScriptObject *pObj = m_pDescription->pObjList;
-	mpcontrol_t *  pCtrl;
+	mpcontrol_t *pCtrl;
 
-	CheckButton *    pBox;
-	TextEntry *      pEdit;
-	ComboBox *       pCombo;
+	CheckButton *pBox;
+	TextEntry *pEdit;
+	ComboBox *pCombo;
 	CScriptListItem *pListItem;
 
 	Panel *objParent = m_pOptionsList;
@@ -144,7 +147,7 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList(void)
 			continue;
 		}
 
-		pCtrl       = new mpcontrol_t(objParent, pObj->cvarname);
+		pCtrl = new mpcontrol_t(objParent, pObj->cvarname);
 		pCtrl->type = pObj->type;
 
 		switch(pCtrl->type)
@@ -168,7 +171,7 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList(void)
 
 		case O_LIST:
 		{
-			pCombo    = new ComboBox(pCtrl, "DescEdit", 5, false);
+			pCombo = new ComboBox(pCtrl, "DescEdit", 5, false);
 			pListItem = pObj->pListItems;
 
 			while(pListItem)
@@ -200,7 +203,7 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList(void)
 
 		if(!m_pList)
 		{
-			m_pList     = pCtrl;
+			m_pList = pCtrl;
 			pCtrl->next = NULL;
 		}
 		else
@@ -211,7 +214,7 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList(void)
 			{
 				if(!p->next)
 				{
-					p->next     = pCtrl;
+					p->next = pCtrl;
 					pCtrl->next = NULL;
 					break;
 				}
@@ -230,16 +233,16 @@ void CCreateMultiplayerGameGameplayPage::GatherCurrentValues(void)
 		return;
 
 	CheckButton *pBox;
-	TextEntry *  pEdit;
-	ComboBox *   pCombo;
+	TextEntry *pEdit;
+	ComboBox *pCombo;
 
 	mpcontrol_t *pList;
 
-	CScriptObject *  pObj;
+	CScriptObject *pObj;
 	CScriptListItem *pItem;
 
-	char    szValue[256];
-	char    strValue[256];
+	char szValue[256];
+	char strValue[256];
 	wchar_t w_szStrValue[256];
 
 	pList = m_pList;
@@ -290,7 +293,7 @@ void CCreateMultiplayerGameGameplayPage::GatherCurrentValues(void)
 			while(pItem)
 			{
 				wchar_t *wLocalizedString = NULL;
-				wchar_t  w_szStrTemp[256];
+				wchar_t w_szStrTemp[256];
 
 				if(pItem->szItemText[0] == '#')
 					wLocalizedString = g_pVGuiLocalize->Find(pItem->szItemText);
@@ -328,7 +331,20 @@ void CCreateMultiplayerGameGameplayPage::GatherCurrentValues(void)
 CServerDescription::CServerDescription(CPanelListPanel *panel)
     : CDescription(panel)
 {
-	setHint("// NOTE:  THIS FILE IS AUTOMATICALLY REGENERATED, \r\n//DO NOT EDIT THIS HEADER, YOUR COMMENTS WILL BE LOST IF YOU DO\r\n// Multiplayer options script\r\n//\r\n// Format:\r\n//  Version [float]\r\n//  Options description followed by \r\n//  Options defaults\r\n//\r\n// Option description syntax:\r\n//\r\n//  \"cvar\" { \"Prompt\" { type [ type info ] } { default } }\r\n//\r\n//  type = \r\n//   BOOL   (a yes/no toggle)\r\n//   STRING\r\n//   NUMBER\r\n//   LIST\r\n//\r\n// type info:\r\n// BOOL                 no type info\r\n// NUMBER       min max range, use -1 -1 for no limits\r\n// STRING       no type info\r\n// LIST          delimited list of options value pairs\r\n//\r\n//\r\n// default depends on type\r\n// BOOL is \"0\" or \"1\"\r\n// NUMBER is \"value\"\r\n// STRING is \"value\"\r\n// LIST is \"index\", where index \"0\" is the first element of the list\r\n\r\n\r\n");
+	setHint("// NOTE:  THIS FILE IS AUTOMATICALLY REGENERATED, \r\n//DO NOT EDIT "
+	        "THIS HEADER, YOUR COMMENTS WILL BE LOST IF YOU DO\r\n// Multiplayer "
+	        "options script\r\n//\r\n// Format:\r\n//  Version [float]\r\n//  "
+	        "Options description followed by \r\n//  Options "
+	        "defaults\r\n//\r\n// Option description syntax:\r\n//\r\n//  "
+	        "\"cvar\" { \"Prompt\" { type [ type info ] } { default } "
+	        "}\r\n//\r\n//  type = \r\n//   BOOL   (a yes/no toggle)\r\n//   "
+	        "STRING\r\n//   NUMBER\r\n//   LIST\r\n//\r\n// type info:\r\n// "
+	        "BOOL                 no type info\r\n// NUMBER       min max range, "
+	        "use -1 -1 for no limits\r\n// STRING       no type info\r\n// LIST  "
+	        "        delimited list of options value pairs\r\n//\r\n//\r\n// "
+	        "default depends on type\r\n// BOOL is \"0\" or \"1\"\r\n// NUMBER "
+	        "is \"value\"\r\n// STRING is \"value\"\r\n// LIST is \"index\", "
+	        "where index \"0\" is the first element of the list\r\n\r\n\r\n");
 	setDescription("SERVER_OPTIONS");
 }
 
@@ -336,9 +352,9 @@ void CServerDescription::WriteScriptHeader(FileHandle_t fp)
 {
 	char am_pm[] = "AM";
 
-	time_t timer   = time(NULL);
-	tm *   tblock  = localtime(&timer);
-	tm     newtime = *tblock;
+	time_t timer = time(NULL);
+	tm *tblock = localtime(&timer);
+	tm newtime = *tblock;
 
 	if(newtime.tm_hour > 12)
 		Q_strncpy(am_pm, "PM", sizeof(am_pm));
@@ -351,7 +367,9 @@ void CServerDescription::WriteScriptHeader(FileHandle_t fp)
 
 	g_pFullFileSystem->FPrintf(fp, (char *)getHint());
 
-	g_pFullFileSystem->FPrintf(fp, "// Half-Life Server Configuration Layout Script (stores last settings chosen, too)\r\n");
+	g_pFullFileSystem->FPrintf(fp, "// Half-Life Server Configuration Layout "
+	                               "Script (stores last settings chosen, "
+	                               "too)\r\n");
 	g_pFullFileSystem->FPrintf(fp, "// File generated:  %.19s %s\r\n", asctime(&newtime), am_pm);
 	g_pFullFileSystem->FPrintf(fp, "//\r\n//\r\n// Cvar\t-\tSetting\r\n\r\n");
 	g_pFullFileSystem->FPrintf(fp, "VERSION %.1f\r\n\r\n", SCRIPT_VERSION);
@@ -362,9 +380,9 @@ void CServerDescription::WriteFileHeader(FileHandle_t fp)
 {
 	char am_pm[] = "AM";
 
-	time_t timer   = time(NULL);
-	tm *   tblock  = localtime(&timer);
-	tm     newtime = *tblock;
+	time_t timer = time(NULL);
+	tm *tblock = localtime(&timer);
+	tm newtime = *tblock;
 
 	if(newtime.tm_hour > 12)
 		Q_strncpy(am_pm, "PM", sizeof(am_pm));
@@ -375,7 +393,8 @@ void CServerDescription::WriteFileHeader(FileHandle_t fp)
 	if(newtime.tm_hour == 0)
 		newtime.tm_hour = 12;
 
-	g_pFullFileSystem->FPrintf(fp, "// Half-Life Server Configuration Settings\r\n");
+	g_pFullFileSystem->FPrintf(fp,
+	                           "// Half-Life Server Configuration Settings\r\n");
 	g_pFullFileSystem->FPrintf(fp, "// DO NOT EDIT, GENERATED BY HALF-LIFE\r\n");
 	g_pFullFileSystem->FPrintf(fp, "// File generated:  %.19s %s\r\n", asctime(&newtime), am_pm);
 	g_pFullFileSystem->FPrintf(fp, "//\r\n//\r\n// Cvar\t-\tSetting\r\n\r\n");

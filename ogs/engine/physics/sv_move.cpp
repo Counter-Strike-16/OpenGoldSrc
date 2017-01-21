@@ -37,26 +37,26 @@
 #ifndef HOOK_ENGINE
 
 static int c_yes = 0;
-static int c_no  = 0;
+static int c_no = 0;
 
-#else //HOOK_ENGINE
+#else // HOOK_ENGINE
 
 int c_yes;
 int c_no;
 
-#endif //HOOK_ENGINE
+#endif // HOOK_ENGINE
 
 qboolean SV_CheckBottom(edict_t *ent)
 {
-	vec3_t   mins;
-	vec3_t   maxs;
-	vec3_t   start;
-	vec3_t   stop;   //    29
-	trace_t  trace;  //    30
-	int      x;      //    31
-	int      y;      //    31
-	float    mid;    //    32
-	float    bottom; //    32
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t start;
+	vec3_t stop;   //    29
+	trace_t trace; //    30
+	int x;         //    31
+	int y;         //    31
+	float mid;     //    32
+	float bottom;  //    32
 	qboolean monsterClip = (ent->v.flags & FL_MONSTERCLIP) ? 1 : 0;
 
 	_VectorAdd(ent->v.origin, ent->v.mins, mins);
@@ -85,8 +85,8 @@ realcheck:
 
 	start[0] = stop[0] = (mins[0] + maxs[0]) * 0.5f;
 	start[1] = stop[1] = (mins[1] + maxs[1]) * 0.5f;
-	stop[2]            = start[2] - 2 * sv_stepsize.value;
-	trace              = SV_Move(start, vec3_origin, vec3_origin, stop, 1, ent, monsterClip);
+	stop[2] = start[2] - 2 * sv_stepsize.value;
+	trace = SV_Move(start, vec3_origin, vec3_origin, stop, 1, ent, monsterClip);
 
 	if(trace.fraction == 1.0f)
 		return 0;
@@ -100,7 +100,8 @@ realcheck:
 			start[0] = stop[0] = x ? maxs[0] : mins[0];
 			start[1] = stop[1] = y ? maxs[1] : mins[1];
 
-			trace = SV_Move(start, vec3_origin, vec3_origin, stop, 1, ent, monsterClip);
+			trace =
+			SV_Move(start, vec3_origin, vec3_origin, stop, 1, ent, monsterClip);
 
 			if(trace.fraction != 1.0f && trace.endpos[2] > bottom)
 				bottom = trace.endpos[2];
@@ -114,9 +115,9 @@ realcheck:
 
 qboolean SV_movetest(edict_t *ent, vec_t *move, qboolean relink)
 {
-	vec3_t  oldorg;
-	vec3_t  neworg;
-	vec3_t  end;
+	vec3_t oldorg;
+	vec3_t neworg;
+	vec3_t end;
 	trace_t trace;
 
 	oldorg[0] = ent->v.origin[0];
@@ -126,12 +127,12 @@ qboolean SV_movetest(edict_t *ent, vec_t *move, qboolean relink)
 	neworg[0] = ent->v.origin[0] + move[0];
 	neworg[1] = ent->v.origin[1] + move[1];
 	neworg[2] = ent->v.origin[2] + move[2];
-	end[0]    = neworg[0];
-	end[1]    = neworg[1];
+	end[0] = neworg[0];
+	end[1] = neworg[1];
 
 	neworg[2] += sv_stepsize.value;
 	end[2] = neworg[2] - (2 * sv_stepsize.value);
-	trace  = SV_MoveNoEnts(neworg, ent->v.mins, ent->v.maxs, end, 0, ent);
+	trace = SV_MoveNoEnts(neworg, ent->v.mins, ent->v.maxs, end, 0, ent);
 	if(trace.allsolid)
 		return 0;
 
@@ -188,29 +189,29 @@ qboolean SV_movetest(edict_t *ent, vec_t *move, qboolean relink)
 
 qboolean SV_movestep(edict_t *ent, vec_t *move, qboolean relink)
 {
-	trace_t  trace;
-	vec3_t   end;
-	vec3_t   oldorg;
-	float    dz;
+	trace_t trace;
+	vec3_t end;
+	vec3_t oldorg;
+	float dz;
 	qboolean monsterClipBrush;
-	vec3_t   start;
+	vec3_t start;
 
 	oldorg[0] = ent->v.origin[0];
 	oldorg[1] = ent->v.origin[1];
 	oldorg[2] = ent->v.origin[2];
 
-	start[0]         = ent->v.origin[0] + move[0];
-	start[1]         = ent->v.origin[1] + move[1];
-	start[2]         = ent->v.origin[2] + move[2];
+	start[0] = ent->v.origin[0] + move[0];
+	start[1] = ent->v.origin[1] + move[1];
+	start[2] = ent->v.origin[2] + move[2];
 	monsterClipBrush = (ent->v.flags & FL_MONSTERCLIP) != 0;
 	if(ent->v.flags & (FL_FLY | FL_SWIM))
 	{
 		int i = 0;
 		while(i < 2)
 		{
-			start[0]       = ent->v.origin[0] + move[0];
-			start[1]       = ent->v.origin[1] + move[1];
-			start[2]       = ent->v.origin[2] + move[2];
+			start[0] = ent->v.origin[0] + move[0];
+			start[1] = ent->v.origin[1] + move[1];
+			start[2] = ent->v.origin[2] + move[2];
 			edict_t *enemy = ent->v.enemy;
 
 			if(i == 0 && enemy)
@@ -251,14 +252,15 @@ qboolean SV_movestep(edict_t *ent, vec_t *move, qboolean relink)
 	end[0] = start[0];
 	end[1] = start[1];
 	end[2] = start[2] - (2 * sv_stepsize.value);
-	trace  = SV_Move(start, ent->v.mins, ent->v.maxs, end, 0, ent, (ent->v.flags & FL_MONSTERCLIP) != 0);
+	trace = SV_Move(start, ent->v.mins, ent->v.maxs, end, 0, ent, (ent->v.flags & FL_MONSTERCLIP) != 0);
 	if(trace.allsolid)
 		return 0;
 
 	if(trace.startsolid)
 	{
 		start[2] = start[2] - sv_stepsize.value;
-		trace    = SV_Move(start, ent->v.mins, ent->v.maxs, end, 0, ent, monsterClipBrush);
+		trace =
+		SV_Move(start, ent->v.mins, ent->v.maxs, end, 0, ent, monsterClipBrush);
 		if(trace.allsolid || trace.startsolid)
 			return 0;
 	}
@@ -352,7 +354,7 @@ NOXREF void SV_NewChaseDir(edict_t *actor, edict_t *enemy, float dist)
 	float olddir;
 	float turnaround;
 
-	olddir     = anglemod(45.0 * (int)(actor->v.ideal_yaw / 45.0));
+	olddir = anglemod(45.0 * (int)(actor->v.ideal_yaw / 45.0));
 	turnaround = anglemod(olddir - 180.0);
 
 	deltax = enemy->v.origin[0] - actor->v.origin[0];
@@ -389,10 +391,12 @@ NOXREF void SV_NewChaseDir(edict_t *actor, edict_t *enemy, float dist)
 		d[2] = tdir;
 	}
 
-	if(d[1] != DI_NODIR && d[1] != turnaround && SV_StepDirection(actor, d[1], dist))
+	if(d[1] != DI_NODIR && d[1] != turnaround &&
+	   SV_StepDirection(actor, d[1], dist))
 		return;
 
-	if(d[2] != DI_NODIR && d[2] != turnaround && SV_StepDirection(actor, d[2], dist))
+	if(d[2] != DI_NODIR && d[2] != turnaround &&
+	   SV_StepDirection(actor, d[2], dist))
 		return;
 
 	if(olddir != DI_NODIR && SV_StepDirection(actor, olddir, dist))
@@ -455,10 +459,10 @@ void SV_NewChaseDir2(edict_t *actor, vec_t *vecGoal, float dist)
 	float olddir;
 	float turnaround;
 
-	olddir     = anglemod(45 * (int)(actor->v.ideal_yaw / 45.0));
+	olddir = anglemod(45 * (int)(actor->v.ideal_yaw / 45.0));
 	turnaround = anglemod(olddir - 180.0);
-	deltax     = vecGoal[0] - actor->v.origin[0];
-	deltay     = vecGoal[1] - actor->v.origin[1];
+	deltax = vecGoal[0] - actor->v.origin[0];
+	deltay = vecGoal[1] - actor->v.origin[1];
 
 	if(deltax > 10)
 		d_1 = 0;
@@ -488,14 +492,16 @@ void SV_NewChaseDir2(edict_t *actor, vec_t *vecGoal, float dist)
 	if(RandomLong(0, 1) || abs(deltay) > abs(deltax))
 	{
 		tdir = d_1;
-		d_1  = d_2;
-		d_2  = tdir;
+		d_1 = d_2;
+		d_2 = tdir;
 	}
 
-	if(d_1 != DI_NODIR && d_1 != turnaround && SV_StepDirection(actor, d_1, dist))
+	if(d_1 != DI_NODIR && d_1 != turnaround &&
+	   SV_StepDirection(actor, d_1, dist))
 		return;
 
-	if(d_2 != DI_NODIR && d_2 != turnaround && SV_StepDirection(actor, d_2, dist))
+	if(d_2 != DI_NODIR && d_2 != turnaround &&
+	   SV_StepDirection(actor, d_2, dist))
 		return;
 
 	if(olddir != DI_NODIR && SV_StepDirection(actor, olddir, dist))

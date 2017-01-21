@@ -94,12 +94,14 @@ bool CGameUI::IsGameUIActive()
 	return mbActive;
 };
 
-void CGameUI::LoadingStarted(const char *resourceType, const char *resourceName)
+void CGameUI::LoadingStarted(const char *resourceType,
+                             const char *resourceName)
 {
 	TRACE("CGameUI::LoadingStarted");
 };
 
-void CGameUI::LoadingFinished(const char *resourceType, const char *resourceName)
+void CGameUI::LoadingFinished(const char *resourceType,
+                              const char *resourceName)
 {
 	TRACE("CGameUI::LoadingFinished");
 };

@@ -38,21 +38,20 @@ WORD WINE_LanguageId = 0x409; //english
 typedef struct HRSRC_ELEM
 {
 	HANDLE hRsrc;
-	WORD   type;
+	WORD type;
 } HRSRC_ELEM;
 
 typedef struct HRSRC_MAP
 {
-	int         nAlloc;
-	int         nUsed;
+	int nAlloc;
+	int nUsed;
 	HRSRC_ELEM *elem;
 } HRSRC_MAP;
 
-static HRSRC RES_FindResource2(HMODULE hModule, LPCSTR type,
-                               LPCSTR name, WORD lang, int unicode)
+static HRSRC RES_FindResource2(HMODULE hModule, LPCSTR type, LPCSTR name, WORD lang, int unicode)
 {
-	HRSRC        hRsrc = 0;
-	LPWSTR       typeStr, nameStr;
+	HRSRC hRsrc = 0;
+	LPWSTR typeStr, nameStr;
 	WINE_MODREF *wm = MODULE32_LookupHMODULE(hModule);
 
 	if(!wm)
@@ -82,8 +81,7 @@ static HRSRC RES_FindResource2(HMODULE hModule, LPCSTR type,
  *          RES_FindResource
  */
 
-static HRSRC RES_FindResource(HMODULE hModule, LPCSTR type,
-                              LPCSTR name, WORD lang, int unicode)
+static HRSRC RES_FindResource(HMODULE hModule, LPCSTR type, LPCSTR name, WORD lang, int unicode)
 {
 	HRSRC hRsrc;
 	//    __TRY
@@ -202,30 +200,30 @@ static WIN_BOOL RES_FreeResource(HGLOBAL handle)
  */
 HANDLE WINAPI FindResourceA(HMODULE hModule, LPCSTR name, LPCSTR type)
 {
-	return RES_FindResource(hModule, type, name,
-	                        WINE_LanguageId, 0);
+	return RES_FindResource(hModule, type, name, WINE_LanguageId, 0);
 }
 HANDLE WINAPI FindResourceW(HMODULE hModule, LPCWSTR name, LPCWSTR type)
 {
-	return RES_FindResource(hModule, (LPCSTR)type, (LPCSTR)name,
-	                        WINE_LanguageId, 1);
+	return RES_FindResource(hModule, (LPCSTR)type, (LPCSTR)name, WINE_LanguageId, 1);
 }
 
 /**********************************************************************
  *	    FindResourceExA  (KERNEL32.129)
  */
 HANDLE WINAPI FindResourceExA(HMODULE hModule,
-                              LPCSTR type, LPCSTR name, WORD lang)
+                              LPCSTR type,
+                              LPCSTR name,
+                              WORD lang)
 {
-	return RES_FindResource(hModule, type, name,
-	                        lang, 0);
+	return RES_FindResource(hModule, type, name, lang, 0);
 }
 
 HANDLE WINAPI FindResourceExW(HMODULE hModule,
-                              LPCWSTR type, LPCWSTR name, WORD lang)
+                              LPCWSTR type,
+                              LPCWSTR name,
+                              WORD lang)
 {
-	return RES_FindResource(hModule, (LPCSTR)type, (LPCSTR)name,
-	                        lang, 1);
+	return RES_FindResource(hModule, (LPCSTR)type, (LPCSTR)name, lang, 1);
 }
 
 /**********************************************************************
@@ -259,20 +257,18 @@ DWORD WINAPI SizeofResource(HINSTANCE hModule, HRSRC hRsrc)
 	return RES_SizeofResource(hModule, hRsrc);
 }
 
-INT WINAPI LoadStringW(HINSTANCE instance, UINT resource_id,
-                       LPWSTR buffer, INT buflen);
+INT WINAPI LoadStringW(HINSTANCE instance, UINT resource_id, LPWSTR buffer, INT buflen);
 
 /**********************************************************************
  *	LoadStringA	(USER32.375)
  */
-INT WINAPI LoadStringA(HINSTANCE instance, UINT resource_id,
-                       LPSTR buffer, INT buflen)
+INT WINAPI LoadStringA(HINSTANCE instance, UINT resource_id, LPSTR buffer, INT buflen)
 {
-	INT    retval;
-	INT    wbuflen;
-	INT    abuflen;
+	INT retval;
+	INT wbuflen;
+	INT abuflen;
 	LPWSTR wbuf = NULL;
-	LPSTR  abuf = NULL;
+	LPSTR abuf = NULL;
 
 	if(buffer != NULL && buflen > 0)
 		*buffer = 0;
@@ -282,8 +278,8 @@ INT WINAPI LoadStringA(HINSTANCE instance, UINT resource_id,
 		return 0;
 	wbuflen++;
 
-	retval  = 0;
-	wbuf    = (LPWSTR)HeapAlloc(GetProcessHeap(), 0, wbuflen * sizeof(WCHAR));
+	retval = 0;
+	wbuf = (LPWSTR)HeapAlloc(GetProcessHeap(), 0, wbuflen * sizeof(WCHAR));
 	wbuflen = LoadStringW(instance, resource_id, wbuf, wbuflen);
 	if(wbuflen > 0)
 	{
@@ -294,14 +290,14 @@ INT WINAPI LoadStringA(HINSTANCE instance, UINT resource_id,
 				retval = abuflen;
 			else
 			{
-				abuf    = (LPSTR)HeapAlloc(GetProcessHeap(), 0, abuflen * sizeof(CHAR));
+				abuf = (LPSTR)HeapAlloc(GetProcessHeap(), 0, abuflen * sizeof(CHAR));
 				abuflen = WideCharToMultiByte(CP_ACP, 0, wbuf, wbuflen, abuf, abuflen, NULL, NULL);
 				if(abuflen > 0)
 				{
 					abuflen = min(abuflen, buflen - 1);
 					memcpy(buffer, abuf, abuflen);
 					buffer[abuflen] = 0;
-					retval          = abuflen;
+					retval = abuflen;
 				}
 				HeapFree(GetProcessHeap(), 0, abuf);
 			}
@@ -315,32 +311,33 @@ INT WINAPI LoadStringA(HINSTANCE instance, UINT resource_id,
 /**********************************************************************
  *	LoadStringW		(USER32.376)
  */
-INT WINAPI LoadStringW(HINSTANCE instance, UINT resource_id,
-                       LPWSTR buffer, INT buflen)
+INT WINAPI LoadStringW(HINSTANCE instance, UINT resource_id, LPWSTR buffer, INT buflen)
 {
 	HGLOBAL hmem;
-	HRSRC   hrsrc;
-	WCHAR * p;
-	int     string_num;
-	int     i;
+	HRSRC hrsrc;
+	WCHAR *p;
+	int string_num;
+	int i;
 
 	if(HIWORD(resource_id) == 0xFFFF) /* netscape 3 passes this */
 		resource_id = (UINT)(-((INT)resource_id));
 	TRACE("instance = %04x, id = %04x, buffer = %08x, "
 	      "length = %d\n",
-	      instance, (int)resource_id, (int)buffer, buflen);
+	      instance,
+	      (int)resource_id,
+	      (int)buffer,
+	      buflen);
 
 	/* Use bits 4 - 19 (incremented by 1) as resourceid, mask out
      * 20 - 31. */
-	hrsrc = FindResourceW(instance, (LPCWSTR)(((resource_id >> 4) & 0xffff) + 1),
-	                      RT_STRINGW);
+	hrsrc = FindResourceW(instance, (LPCWSTR)(((resource_id >> 4) & 0xffff) + 1), RT_STRINGW);
 	if(!hrsrc)
 		return 0;
 	hmem = LoadResource(instance, hrsrc);
 	if(!hmem)
 		return 0;
 
-	p          = (WCHAR *)LockResource(hmem);
+	p = (WCHAR *)LockResource(hmem);
 	string_num = resource_id & 0x000f;
 	for(i = 0; i < string_num; i++)
 		p += *p + 1;
@@ -396,15 +393,14 @@ INT WINAPI LoadStringW(HINSTANCE instance, UINT resource_id,
 /**********************************************************************
  *	LoadMessageA		(internal)
  */
-INT WINAPI LoadMessageA(HMODULE instance, UINT id, WORD lang,
-                        LPSTR buffer, INT buflen)
+INT WINAPI LoadMessageA(HMODULE instance, UINT id, WORD lang, LPSTR buffer, INT buflen)
 {
-	HGLOBAL                 hmem;
-	HRSRC                   hrsrc;
-	PMESSAGE_RESOURCE_DATA  mrd;
+	HGLOBAL hmem;
+	HRSRC hrsrc;
+	PMESSAGE_RESOURCE_DATA mrd;
 	PMESSAGE_RESOURCE_BLOCK mrb;
 	PMESSAGE_RESOURCE_ENTRY mre;
-	int                     i, slen;
+	int i, slen;
 
 	TRACE("instance = %08lx, id = %08lx, buffer = %p, length = %ld\n", (DWORD)instance, (DWORD)id, buffer, (DWORD)buflen);
 
@@ -463,8 +459,7 @@ INT WINAPI LoadMessageA(HMODULE instance, UINT id, WORD lang,
 /**********************************************************************
  *	EnumResourceTypesA	(KERNEL32.90)
  */
-WIN_BOOL WINAPI EnumResourceTypesA(HMODULE hmodule, ENUMRESTYPEPROCA lpfun,
-                                   LONG lParam)
+WIN_BOOL WINAPI EnumResourceTypesA(HMODULE hmodule, ENUMRESTYPEPROCA lpfun, LONG lParam)
 {
 	/* FIXME: move WINE_MODREF stuff here */
 	return PE_EnumResourceTypesA(hmodule, lpfun, lParam);
@@ -473,8 +468,7 @@ WIN_BOOL WINAPI EnumResourceTypesA(HMODULE hmodule, ENUMRESTYPEPROCA lpfun,
 /**********************************************************************
  *	EnumResourceNamesA	(KERNEL32.88)
  */
-WIN_BOOL WINAPI EnumResourceNamesA(HMODULE hmodule, LPCSTR type,
-                                   ENUMRESNAMEPROCA lpfun, LONG lParam)
+WIN_BOOL WINAPI EnumResourceNamesA(HMODULE hmodule, LPCSTR type, ENUMRESNAMEPROCA lpfun, LONG lParam)
 {
 	/* FIXME: move WINE_MODREF stuff here */
 	return PE_EnumResourceNamesA(hmodule, type, lpfun, lParam);
@@ -482,9 +476,7 @@ WIN_BOOL WINAPI EnumResourceNamesA(HMODULE hmodule, LPCSTR type,
 /**********************************************************************
  *	EnumResourceLanguagesA	(KERNEL32.86)
  */
-WIN_BOOL WINAPI EnumResourceLanguagesA(HMODULE hmodule, LPCSTR type,
-                                       LPCSTR name, ENUMRESLANGPROCA lpfun,
-                                       LONG lParam)
+WIN_BOOL WINAPI EnumResourceLanguagesA(HMODULE hmodule, LPCSTR type, LPCSTR name, ENUMRESLANGPROCA lpfun, LONG lParam)
 {
 	/* FIXME: move WINE_MODREF stuff here */
 	return PE_EnumResourceLanguagesA(hmodule, type, name, lpfun, lParam);

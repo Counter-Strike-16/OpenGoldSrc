@@ -86,7 +86,8 @@ static qboolean SPR_Scissor(float *x, float *y, float *width, float *height, flo
 
 	if(*x + *width > clgame.ds.scissor_x + clgame.ds.scissor_width)
 	{
-		*u1 -= (*x + *width - (clgame.ds.scissor_x + clgame.ds.scissor_width)) * dudx;
+		*u1 -=
+		(*x + *width - (clgame.ds.scissor_x + clgame.ds.scissor_width)) * dudx;
 		*width = clgame.ds.scissor_x + clgame.ds.scissor_width - *x;
 	}
 
@@ -99,7 +100,8 @@ static qboolean SPR_Scissor(float *x, float *y, float *width, float *height, flo
 
 	if(*y + *height > clgame.ds.scissor_y + clgame.ds.scissor_height)
 	{
-		*v1 -= (*y + *height - (clgame.ds.scissor_y + clgame.ds.scissor_height)) * dvdy;
+		*v1 -= (*y + *height - (clgame.ds.scissor_y + clgame.ds.scissor_height)) *
+		dvdy;
 		*height = clgame.ds.scissor_y + clgame.ds.scissor_height - *y;
 	}
 
@@ -109,7 +111,7 @@ static qboolean SPR_Scissor(float *x, float *y, float *width, float *height, flo
 HSPRITE SPR_LoadExt(const char *szPicName, uint texFlags)
 {
 	char name[64];
-	int  i;
+	int i;
 
 	if(!szPicName || !*szPicName)
 	{
@@ -194,7 +196,7 @@ int SPR_Width(HSPRITE_ hPic, int frame)
 
 void SPR_Set(HSPRITE_ hPic, int r, int g, int b)
 {
-	clgame.ds.pSprite        = CL_GetSpritePointer(hPic);
+	clgame.ds.pSprite = CL_GetSpritePointer(hPic);
 	clgame.ds.spriteColor[0] = bound(0, r, 255);
 	clgame.ds.spriteColor[1] = bound(0, g, 255);
 	clgame.ds.spriteColor[2] = bound(0, b, 255);
@@ -237,23 +239,23 @@ void SPR_EnableScissor(int x, int y, int width, int height)
 	x = bound(0, x, clgame.scrInfo.iWidth);
 	y = bound(0, y, clgame.scrInfo.iHeight);
 
-	width  = bound(0, width, clgame.scrInfo.iWidth - x);
+	width = bound(0, width, clgame.scrInfo.iWidth - x);
 	height = bound(0, height, clgame.scrInfo.iHeight - y);
 
-	clgame.ds.scissor_x      = x;
-	clgame.ds.scissor_width  = width;
-	clgame.ds.scissor_y      = y;
+	clgame.ds.scissor_x = x;
+	clgame.ds.scissor_width = width;
+	clgame.ds.scissor_y = y;
 	clgame.ds.scissor_height = height;
-	clgame.ds.scissor_test   = true;
+	clgame.ds.scissor_test = true;
 };
 
 void SPR_DisableScissor()
 {
-	clgame.ds.scissor_x      = 0;
-	clgame.ds.scissor_width  = 0;
-	clgame.ds.scissor_y      = 0;
+	clgame.ds.scissor_x = 0;
+	clgame.ds.scissor_width = 0;
+	clgame.ds.scissor_y = 0;
 	clgame.ds.scissor_height = 0;
-	clgame.ds.scissor_test   = false;
+	clgame.ds.scissor_test = false;
 };
 
 /*
@@ -266,10 +268,10 @@ for parsing half-life scripts - hud.txt etc
 client_sprite_t *SPR_GetList(char *psz, int *piCount)
 {
 	client_sprite_t *pList;
-	int              index, numSprites = 0;
-	char *           afile, *pfile;
-	string           token;
-	byte *           pool;
+	int index, numSprites = 0;
+	char *afile, *pfile;
+	string token;
+	byte *pool;
 
 	if(piCount)
 		*piCount = 0;
@@ -281,8 +283,8 @@ client_sprite_t *SPR_GetList(char *psz, int *piCount)
 	if(!afile)
 		return NULL;
 
-	pfile      = afile;
-	pfile      = COM_ParseFile(pfile, token);
+	pfile = afile;
+	pfile = COM_ParseFile(pfile, token);
 	numSprites = Q_atoi(token);
 
 	if(!cl.video_prepped)
@@ -291,7 +293,8 @@ client_sprite_t *SPR_GetList(char *psz, int *piCount)
 		pool = com_studiocache; // temporary
 
 	// name, res, pic, x, y, w, h
-	// NOTE: we must use com_studiocache because it will be purge on next restart or change map
+	// NOTE: we must use com_studiocache because it will be purge on next restart
+	// or change map
 	pList = Mem_Alloc(pool, sizeof(client_sprite_t) * numSprites);
 
 	for(index = 0; index < numSprites; index++)
@@ -302,7 +305,7 @@ client_sprite_t *SPR_GetList(char *psz, int *piCount)
 		Q_strncpy(pList[index].szName, token, sizeof(pList[index].szName));
 
 		// read resolution
-		pfile             = COM_ParseFile(pfile, token);
+		pfile = COM_ParseFile(pfile, token);
 		pList[index].iRes = Q_atoi(token);
 
 		// read spritename
@@ -310,16 +313,16 @@ client_sprite_t *SPR_GetList(char *psz, int *piCount)
 		Q_strncpy(pList[index].szSprite, token, sizeof(pList[index].szSprite));
 
 		// parse rectangle
-		pfile                = COM_ParseFile(pfile, token);
+		pfile = COM_ParseFile(pfile, token);
 		pList[index].rc.left = Q_atoi(token);
 
-		pfile               = COM_ParseFile(pfile, token);
+		pfile = COM_ParseFile(pfile, token);
 		pList[index].rc.top = Q_atoi(token);
 
-		pfile                 = COM_ParseFile(pfile, token);
+		pfile = COM_ParseFile(pfile, token);
 		pList[index].rc.right = pList[index].rc.left + Q_atoi(token);
 
-		pfile                  = COM_ParseFile(pfile, token);
+		pfile = COM_ParseFile(pfile, token);
 		pList[index].rc.bottom = pList[index].rc.top + Q_atoi(token);
 
 		if(piCount)

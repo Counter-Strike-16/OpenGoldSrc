@@ -45,9 +45,9 @@ void R_AnimateLight(void)
 			d_lightstylevalue[j] = 256;
 			continue;
 		}
-		k                    = i % cl_lightstyle[j].length;
-		k                    = cl_lightstyle[j].map[k] - 'a';
-		k                    = k * 22;
+		k = i % cl_lightstyle[j].length;
+		k = cl_lightstyle[j].map[k] - 'a';
+		k = k * 22;
 		d_lightstylevalue[j] = k;
 	}
 }
@@ -78,8 +78,8 @@ float bubble_sintable[17], bubble_costable[17];
 
 void R_InitBubble()
 {
-	float  a;
-	int    i;
+	float a;
+	int i;
 	float *bub_sin, *bub_cos;
 
 	bub_sin = bubble_sintable;
@@ -87,7 +87,7 @@ void R_InitBubble()
 
 	for(i = 16; i >= 0; i--)
 	{
-		a          = i / 16.0 * M_PI * 2;
+		a = i / 16.0 * M_PI * 2;
 		*bub_sin++ = sin(a);
 		*bub_cos++ = cos(a);
 	}
@@ -98,12 +98,12 @@ void R_RenderDlight(dlight_t *light)
 	int i, j;
 	//	float	a;
 	vec3_t v;
-	float  rad;
+	float rad;
 	float *bub_sin, *bub_cos;
 
 	bub_sin = bubble_sintable;
 	bub_cos = bubble_costable;
-	rad     = light->radius * 0.35;
+	rad = light->radius * 0.35;
 
 	VectorSubtract(light->origin, r_origin, v);
 	if(Length(v) < rad)
@@ -117,14 +117,14 @@ void R_RenderDlight(dlight_t *light)
 	//	glColor3f (0.2,0.1,0.05); // changed dimlight effect
 	glColor4f(light->color[0], light->color[1], light->color[2],
 	          light->color[3]);
-	for(i    = 0; i < 3; i++)
+	for(i = 0; i < 3; i++)
 		v[i] = light->origin[i] - vpn[i] * rad;
 	glVertex3fv(v);
 	glColor3f(0, 0, 0);
 	for(i = 16; i >= 0; i--)
 	{
 		//		a = i/16.0 * M_PI*2;
-		for(j    = 0; j < 3; j++)
+		for(j = 0; j < 3; j++)
 			v[j] = light->origin[j] + (vright[j] * (*bub_cos) + +vup[j] * (*bub_sin)) * rad;
 		bub_sin++;
 		bub_cos++;
@@ -140,7 +140,7 @@ R_RenderDlights
 */
 void R_RenderDlights(void)
 {
-	int       i;
+	int i;
 	dlight_t *l;
 
 	if(!gl_flashblend.value)
@@ -184,16 +184,16 @@ R_MarkLights
 */
 void R_MarkLights(dlight_t *light, int bit, mnode_t *node)
 {
-	mplane_t *  splitplane;
-	float       dist;
+	mplane_t *splitplane;
+	float dist;
 	msurface_t *surf;
-	int         i;
+	int i;
 
 	if(node->contents < 0)
 		return;
 
 	splitplane = node->plane;
-	dist       = DotProduct(light->origin, splitplane->normal) - splitplane->dist;
+	dist = DotProduct(light->origin, splitplane->normal) - splitplane->dist;
 
 	if(dist > light->radius)
 	{
@@ -212,7 +212,7 @@ void R_MarkLights(dlight_t *light, int bit, mnode_t *node)
 	{
 		if(surf->dlightframe != r_dlightframecount)
 		{
-			surf->dlightbits  = 0;
+			surf->dlightbits = 0;
 			surf->dlightframe = r_dlightframecount;
 		}
 		surf->dlightbits |= bit;
@@ -229,7 +229,7 @@ R_PushDlights
 */
 void R_PushDlights(void)
 {
-	int       i;
+	int i;
 	dlight_t *l;
 
 	if(gl_flashblend.value)
@@ -256,22 +256,22 @@ LIGHT SAMPLING
 */
 
 mplane_t *lightplane;
-vec3_t    lightspot;
+vec3_t lightspot;
 
 int RecursiveLightPoint(mnode_t *node, vec3_t start, vec3_t end)
 {
-	int         r;
-	float       front, back, frac;
-	int         side;
-	mplane_t *  plane;
-	vec3_t      mid;
+	int r;
+	float front, back, frac;
+	int side;
+	mplane_t *plane;
+	vec3_t mid;
 	msurface_t *surf;
-	int         s, t, ds, dt;
-	int         i;
+	int s, t, ds, dt;
+	int i;
 	mtexinfo_t *tex;
-	byte *      lightmap;
-	unsigned    scale;
-	int         maps;
+	byte *lightmap;
+	unsigned scale;
+	int maps;
 
 	if(node->contents < 0)
 		return -1; // didn't hit anything
@@ -281,13 +281,13 @@ int RecursiveLightPoint(mnode_t *node, vec3_t start, vec3_t end)
 	// FIXME: optimize for axial
 	plane = node->plane;
 	front = DotProduct(start, plane->normal) - plane->dist;
-	back  = DotProduct(end, plane->normal) - plane->dist;
-	side  = front < 0;
+	back = DotProduct(end, plane->normal) - plane->dist;
+	side = front < 0;
 
 	if((back < 0) == side)
 		return RecursiveLightPoint(node->children[side], start, end);
 
-	frac   = front / (front - back);
+	frac = front / (front - back);
 	mid[0] = start[0] + (end[0] - start[0]) * frac;
 	mid[1] = start[1] + (end[1] - start[1]) * frac;
 	mid[2] = start[2] + (end[2] - start[2]) * frac;
@@ -333,7 +333,7 @@ int RecursiveLightPoint(mnode_t *node, vec3_t start, vec3_t end)
 		dt >>= 4;
 
 		lightmap = surf->samples;
-		r        = 0;
+		r = 0;
 		if(lightmap)
 		{
 			lightmap += dt * ((surf->extents[0] >> 4) + 1) + ds;
@@ -344,7 +344,7 @@ int RecursiveLightPoint(mnode_t *node, vec3_t start, vec3_t end)
 				scale = d_lightstylevalue[surf->styles[maps]];
 				r += *lightmap * scale;
 				lightmap += ((surf->extents[0] >> 4) + 1) *
-				    ((surf->extents[1] >> 4) + 1);
+				((surf->extents[1] >> 4) + 1);
 			}
 
 			r >>= 8;
@@ -360,7 +360,7 @@ int RecursiveLightPoint(mnode_t *node, vec3_t start, vec3_t end)
 int R_LightPoint(vec3_t p)
 {
 	vec3_t end;
-	int    r;
+	int r;
 
 	if(!cl.worldmodel->lightdata)
 		return 255;

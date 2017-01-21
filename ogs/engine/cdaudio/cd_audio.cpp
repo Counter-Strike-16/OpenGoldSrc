@@ -30,9 +30,9 @@
 
 //#include "precompiled.hpp"
 #include "cdaudio/cdaudio.hpp"
-#include <dpmi.h>
-#include "quakedef.h"
 #include "dosisms.h"
+#include "quakedef.h"
+#include <dpmi.h>
 
 extern cvar_t bgmvolume;
 
@@ -107,42 +107,42 @@ extern cvar_t bgmvolume;
 struct playAudioRequest
 {
 	char addressingMode;
-	int  startLocation;
-	int  sectors;
+	int startLocation;
+	int sectors;
 };
 
 struct readRequest
 {
-	char  mediaDescriptor;
+	char mediaDescriptor;
 	short bufferOffset;
 	short bufferSegment;
 	short length;
 	short startSector;
-	int   volumeID;
+	int volumeID;
 };
 
 struct writeRequest
 {
-	char  mediaDescriptor;
+	char mediaDescriptor;
 	short bufferOffset;
 	short bufferSegment;
 	short length;
 	short startSector;
-	int   volumeID;
+	int volumeID;
 };
 
 struct cd_request
 {
-	char  headerLength;
-	char  unit;
-	char  command;
+	char headerLength;
+	char unit;
+	char command;
 	short status;
-	char  reserved[8];
+	char reserved[8];
 	union
 	{
 		struct playAudioRequest playAudio;
-		struct readRequest      read;
-		struct writeRequest     write;
+		struct readRequest read;
+		struct writeRequest write;
 	} x;
 };
 
@@ -162,7 +162,7 @@ struct audioChannelInfo_s
 struct deviceStatus_s
 {
 	char code;
-	int  status;
+	int status;
 };
 
 struct mediaChange_s
@@ -176,23 +176,23 @@ struct audioDiskInfo_s
 	char code;
 	char lowTrack;
 	char highTrack;
-	int  leadOutStart;
+	int leadOutStart;
 };
 
 struct audioTrackInfo_s
 {
 	char code;
 	char track;
-	int  start;
+	int start;
 	char control;
 };
 
 struct audioStatus_s
 {
-	char  code;
+	char code;
 	short status;
-	int   PRstartLocation;
-	int   PRendLocation;
+	int PRstartLocation;
+	int PRendLocation;
 };
 
 struct reset_s
@@ -203,12 +203,12 @@ struct reset_s
 union readInfo_u
 {
 	struct audioChannelInfo_s audioChannelInfo;
-	struct deviceStatus_s     deviceStatus;
-	struct mediaChange_s      mediaChange;
-	struct audioDiskInfo_s    audioDiskInfo;
-	struct audioTrackInfo_s   audioTrackInfo;
-	struct audioStatus_s      audioStatus;
-	struct reset_s            reset;
+	struct deviceStatus_s deviceStatus;
+	struct mediaChange_s mediaChange;
+	struct audioDiskInfo_s audioDiskInfo;
+	struct audioTrackInfo_s audioTrackInfo;
+	struct audioStatus_s audioStatus;
+	struct reset_s reset;
 };
 
 #pragma pack()
@@ -217,38 +217,38 @@ union readInfo_u
 
 typedef struct
 {
-	int      start;
-	int      length;
+	int start;
+	int length;
 	qboolean isData;
 } track_info;
 
 typedef struct
 {
-	qboolean   valid;
-	int        leadOutAddress;
+	qboolean valid;
+	int leadOutAddress;
 	track_info track[MAXIMUM_TRACKS];
-	byte       lowTrack;
-	byte       highTrack;
+	byte lowTrack;
+	byte highTrack;
 } cd_info;
 
 static struct cd_request *cdRequest;
-static union readInfo_u * readInfo;
-static cd_info            cd;
+static union readInfo_u *readInfo;
+static cd_info cd;
 
-static qboolean playing     = false;
-static qboolean wasPlaying  = false;
-static qboolean mediaCheck  = false;
+static qboolean playing = false;
+static qboolean wasPlaying = false;
+static qboolean mediaCheck = false;
 static qboolean initialized = false;
-static qboolean enabled     = true;
+static qboolean enabled = true;
 static qboolean playLooping = false;
-static short    cdRequestSegment;
-static short    cdRequestOffset;
-static short    readInfoSegment;
-static short    readInfoOffset;
-static byte     remap[256];
-static byte     cdrom;
-static byte     playTrack;
-static byte     cdvolume;
+static short cdRequestSegment;
+static short cdRequestOffset;
+static short readInfoSegment;
+static short readInfoOffset;
+static byte remap[256];
+static byte cdrom;
+static byte playTrack;
+static byte cdvolume;
 
 static int RedBookToSector(int rb)
 {
@@ -258,23 +258,23 @@ static int RedBookToSector(int rb)
 
 	minute = (rb >> 16) & 0xff;
 	second = (rb >> 8) & 0xff;
-	frame  = rb & 0xff;
+	frame = rb & 0xff;
 	return minute * 60 * 75 + second * 75 + frame;
 }
 
 static void CDAudio_Reset(void)
 {
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_WRITE;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_WRITE;
+	cdRequest->status = 0;
 
 	cdRequest->x.write.mediaDescriptor = 0;
-	cdRequest->x.write.bufferOffset    = readInfoOffset;
-	cdRequest->x.write.bufferSegment   = readInfoSegment;
-	cdRequest->x.write.length          = sizeof(struct reset_s);
-	cdRequest->x.write.startSector     = 0;
-	cdRequest->x.write.volumeID        = 0;
+	cdRequest->x.write.bufferOffset = readInfoOffset;
+	cdRequest->x.write.bufferSegment = readInfoSegment;
+	cdRequest->x.write.length = sizeof(struct reset_s);
+	cdRequest->x.write.startSector = 0;
+	cdRequest->x.write.volumeID = 0;
 
 	readInfo->reset.code = WRITE_REQUEST_RESET;
 
@@ -288,16 +288,16 @@ static void CDAudio_Reset(void)
 static void CDAudio_Eject(void)
 {
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_WRITE;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_WRITE;
+	cdRequest->status = 0;
 
 	cdRequest->x.write.mediaDescriptor = 0;
-	cdRequest->x.write.bufferOffset    = readInfoOffset;
-	cdRequest->x.write.bufferSegment   = readInfoSegment;
-	cdRequest->x.write.length          = sizeof(struct reset_s);
-	cdRequest->x.write.startSector     = 0;
-	cdRequest->x.write.volumeID        = 0;
+	cdRequest->x.write.bufferOffset = readInfoOffset;
+	cdRequest->x.write.bufferSegment = readInfoSegment;
+	cdRequest->x.write.length = sizeof(struct reset_s);
+	cdRequest->x.write.startSector = 0;
+	cdRequest->x.write.volumeID = 0;
 
 	readInfo->reset.code = WRITE_REQUEST_EJECT;
 
@@ -313,18 +313,18 @@ static int CDAudio_GetAudioTrackInfo(byte track, int *start)
 	byte control;
 
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_READ;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_READ;
+	cdRequest->status = 0;
 
 	cdRequest->x.read.mediaDescriptor = 0;
-	cdRequest->x.read.bufferOffset    = readInfoOffset;
-	cdRequest->x.read.bufferSegment   = readInfoSegment;
-	cdRequest->x.read.length          = sizeof(struct audioTrackInfo_s);
-	cdRequest->x.read.startSector     = 0;
-	cdRequest->x.read.volumeID        = 0;
+	cdRequest->x.read.bufferOffset = readInfoOffset;
+	cdRequest->x.read.bufferSegment = readInfoSegment;
+	cdRequest->x.read.length = sizeof(struct audioTrackInfo_s);
+	cdRequest->x.read.startSector = 0;
+	cdRequest->x.read.volumeID = 0;
 
-	readInfo->audioTrackInfo.code  = READ_REQUEST_AUDIO_TRACK_INFO;
+	readInfo->audioTrackInfo.code = READ_REQUEST_AUDIO_TRACK_INFO;
 	readInfo->audioTrackInfo.track = track;
 
 	regs.x.ax = 0x1510;
@@ -339,7 +339,7 @@ static int CDAudio_GetAudioTrackInfo(byte track, int *start)
 		return -1;
 	}
 
-	*start  = readInfo->audioTrackInfo.start;
+	*start = readInfo->audioTrackInfo.start;
 	control = readInfo->audioTrackInfo.control & AUDIO_CONTROL_MASK;
 	return (control & AUDIO_CONTROL_DATA_TRACK);
 }
@@ -349,16 +349,16 @@ static int CDAudio_GetAudioDiskInfo(void)
 	int n;
 
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_READ;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_READ;
+	cdRequest->status = 0;
 
 	cdRequest->x.read.mediaDescriptor = 0;
-	cdRequest->x.read.bufferOffset    = readInfoOffset;
-	cdRequest->x.read.bufferSegment   = readInfoSegment;
-	cdRequest->x.read.length          = sizeof(struct audioDiskInfo_s);
-	cdRequest->x.read.startSector     = 0;
-	cdRequest->x.read.volumeID        = 0;
+	cdRequest->x.read.bufferOffset = readInfoOffset;
+	cdRequest->x.read.bufferSegment = readInfoSegment;
+	cdRequest->x.read.length = sizeof(struct audioDiskInfo_s);
+	cdRequest->x.read.startSector = 0;
+	cdRequest->x.read.volumeID = 0;
 
 	readInfo->audioDiskInfo.code = READ_REQUEST_AUDIO_DISK_INFO;
 
@@ -374,9 +374,9 @@ static int CDAudio_GetAudioDiskInfo(void)
 		return -1;
 	}
 
-	cd.valid          = true;
-	cd.lowTrack       = readInfo->audioDiskInfo.lowTrack;
-	cd.highTrack      = readInfo->audioDiskInfo.highTrack;
+	cd.valid = true;
+	cd.lowTrack = readInfo->audioDiskInfo.lowTrack;
+	cd.highTrack = readInfo->audioDiskInfo.highTrack;
 	cd.leadOutAddress = readInfo->audioDiskInfo.leadOutStart;
 
 	for(n = cd.lowTrack; n <= cd.highTrack; n++)
@@ -384,9 +384,11 @@ static int CDAudio_GetAudioDiskInfo(void)
 		cd.track[n].isData = CDAudio_GetAudioTrackInfo(n, &cd.track[n].start);
 		if(n > cd.lowTrack)
 		{
-			cd.track[n - 1].length = RedBookToSector(cd.track[n].start) - RedBookToSector(cd.track[n - 1].start);
+			cd.track[n - 1].length = RedBookToSector(cd.track[n].start) -
+			RedBookToSector(cd.track[n - 1].start);
 			if(n == cd.highTrack)
-				cd.track[n].length = RedBookToSector(cd.leadOutAddress) - RedBookToSector(cd.track[n].start);
+				cd.track[n].length = RedBookToSector(cd.leadOutAddress) -
+				RedBookToSector(cd.track[n].start);
 		}
 	}
 
@@ -396,16 +398,16 @@ static int CDAudio_GetAudioDiskInfo(void)
 static int CDAudio_GetAudioStatus(void)
 {
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_READ;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_READ;
+	cdRequest->status = 0;
 
 	cdRequest->x.read.mediaDescriptor = 0;
-	cdRequest->x.read.bufferOffset    = readInfoOffset;
-	cdRequest->x.read.bufferSegment   = readInfoSegment;
-	cdRequest->x.read.length          = sizeof(struct audioStatus_s);
-	cdRequest->x.read.startSector     = 0;
-	cdRequest->x.read.volumeID        = 0;
+	cdRequest->x.read.bufferOffset = readInfoOffset;
+	cdRequest->x.read.bufferSegment = readInfoSegment;
+	cdRequest->x.read.length = sizeof(struct audioStatus_s);
+	cdRequest->x.read.startSector = 0;
+	cdRequest->x.read.volumeID = 0;
 
 	readInfo->audioDiskInfo.code = READ_REQUEST_AUDIO_STATUS;
 
@@ -423,16 +425,16 @@ static int CDAudio_GetAudioStatus(void)
 static int CDAudio_MediaChange(void)
 {
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_READ;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_READ;
+	cdRequest->status = 0;
 
 	cdRequest->x.read.mediaDescriptor = 0;
-	cdRequest->x.read.bufferOffset    = readInfoOffset;
-	cdRequest->x.read.bufferSegment   = readInfoSegment;
-	cdRequest->x.read.length          = sizeof(struct mediaChange_s);
-	cdRequest->x.read.startSector     = 0;
-	cdRequest->x.read.volumeID        = 0;
+	cdRequest->x.read.bufferOffset = readInfoOffset;
+	cdRequest->x.read.bufferSegment = readInfoSegment;
+	cdRequest->x.read.length = sizeof(struct mediaChange_s);
+	cdRequest->x.read.startSector = 0;
+	cdRequest->x.read.volumeID = 0;
 
 	readInfo->mediaChange.code = READ_REQUEST_MEDIA_CHANGE;
 
@@ -458,25 +460,25 @@ void CDAudio_SetVolume(byte volume)
 		return;
 
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_WRITE;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_WRITE;
+	cdRequest->status = 0;
 
 	cdRequest->x.read.mediaDescriptor = 0;
-	cdRequest->x.read.bufferOffset    = readInfoOffset;
-	cdRequest->x.read.bufferSegment   = readInfoSegment;
-	cdRequest->x.read.length          = sizeof(struct audioChannelInfo_s);
-	cdRequest->x.read.startSector     = 0;
-	cdRequest->x.read.volumeID        = 0;
+	cdRequest->x.read.bufferOffset = readInfoOffset;
+	cdRequest->x.read.bufferSegment = readInfoSegment;
+	cdRequest->x.read.length = sizeof(struct audioChannelInfo_s);
+	cdRequest->x.read.startSector = 0;
+	cdRequest->x.read.volumeID = 0;
 
-	readInfo->audioChannelInfo.code           = WRITE_REQUEST_AUDIO_CHANNEL_INFO;
-	readInfo->audioChannelInfo.channel0input  = 0;
+	readInfo->audioChannelInfo.code = WRITE_REQUEST_AUDIO_CHANNEL_INFO;
+	readInfo->audioChannelInfo.channel0input = 0;
 	readInfo->audioChannelInfo.channel0volume = 0;
-	readInfo->audioChannelInfo.channel1input  = 1;
+	readInfo->audioChannelInfo.channel1input = 1;
 	readInfo->audioChannelInfo.channel1volume = 0;
-	readInfo->audioChannelInfo.channel2input  = 2;
+	readInfo->audioChannelInfo.channel2input = 2;
 	readInfo->audioChannelInfo.channel2volume = 0;
-	readInfo->audioChannelInfo.channel3input  = 3;
+	readInfo->audioChannelInfo.channel3input = 3;
 	readInfo->audioChannelInfo.channel3volume = 0;
 
 	regs.x.ax = 0x1510;
@@ -531,13 +533,13 @@ void CDAudio_Play(byte track, qboolean looping)
 	}
 
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_PLAY_AUDIO;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_PLAY_AUDIO;
+	cdRequest->status = 0;
 
 	cdRequest->x.playAudio.addressingMode = ADDRESS_MODE_RED_BOOK;
-	cdRequest->x.playAudio.startLocation  = cd.track[track].start;
-	cdRequest->x.playAudio.sectors        = cd.track[track].length;
+	cdRequest->x.playAudio.startLocation = cd.track[track].start;
+	cdRequest->x.playAudio.sectors = cd.track[track].length;
 
 	regs.x.ax = 0x1510;
 	regs.x.cx = cdrom;
@@ -549,7 +551,7 @@ void CDAudio_Play(byte track, qboolean looping)
 	{
 		Con_DPrintf("CDAudio_Play: track %u failed\n", track);
 		cd.valid = false;
-		playing  = false;
+		playing = false;
 		return;
 	}
 
@@ -562,9 +564,9 @@ void CDAudio_Stop(void)
 		return;
 
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_STOP_AUDIO;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_STOP_AUDIO;
+	cdRequest->status = 0;
 
 	regs.x.ax = 0x1510;
 	regs.x.cx = cdrom;
@@ -573,7 +575,7 @@ void CDAudio_Stop(void)
 	dos_int86(0x2f);
 
 	wasPlaying = playing;
-	playing    = false;
+	playing = false;
 }
 
 void CDAudio_Resume(void)
@@ -588,9 +590,9 @@ void CDAudio_Resume(void)
 		return;
 
 	cdRequest->headerLength = 13;
-	cdRequest->unit         = 0;
-	cdRequest->command      = COMMAND_RESUME_AUDIO;
-	cdRequest->status       = 0;
+	cdRequest->unit = 0;
+	cdRequest->command = COMMAND_RESUME_AUDIO;
+	cdRequest->status = 0;
 
 	regs.x.ax = 0x1510;
 	regs.x.cx = cdrom;
@@ -604,9 +606,9 @@ void CDAudio_Resume(void)
 static void CD_f(void)
 {
 	char *command;
-	int   ret;
-	int   n;
-	int   startAddress;
+	int ret;
+	int n;
+	int startAddress;
 
 	if(Cmd_Argc() < 2)
 		return;
@@ -632,7 +634,7 @@ static void CD_f(void)
 		enabled = true;
 		if(playing)
 			CDAudio_Stop();
-		for(n        = 0; n < 256; n++)
+		for(n = 0; n < 256; n++)
 			remap[n] = n;
 		CDAudio_Reset();
 		CDAudio_GetAudioDiskInfo();
@@ -649,7 +651,7 @@ static void CD_f(void)
 					Con_Printf("  %u -> %u\n", n, remap[n]);
 			return;
 		}
-		for(n        = 1; n <= ret; n++)
+		for(n = 1; n <= ret; n++)
 			remap[n] = Q_atoi(Cmd_Argv(n + 1));
 		return;
 	}
@@ -712,8 +714,8 @@ static void CD_f(void)
 
 void CDAudio_Update(void)
 {
-	int           ret;
-	int           newVolume;
+	int ret;
+	int newVolume;
 	static double lastUpdate;
 
 	if(!initialized || !enabled)
@@ -735,9 +737,9 @@ void CDAudio_Update(void)
 		if(ret == MEDIA_CHANGED)
 		{
 			Con_DPrintf("CDAudio: media changed\n");
-			playing    = false;
+			playing = false;
 			wasPlaying = false;
-			cd.valid   = false;
+			cd.valid = false;
 			CDAudio_GetAudioDiskInfo();
 			return;
 		}
@@ -777,7 +779,7 @@ qboolean CDAudio_Playing(void)
 int CDAudio_Init(void)
 {
 	char *memory;
-	int   n;
+	int n;
 
 	if(cls.state == ca_dedicated)
 		return -1;
@@ -793,11 +795,10 @@ int CDAudio_Init(void)
 	dos_int86(0x2f);
 	if(regs.x.bx == 0)
 	{
-		Con_NotifyBox(
-		    "MSCDEX not loaded, music is\n"
-		    "disabled.  Use \"-nocdaudio\" if you\n"
-		    "wish to avoid this message in the\n"
-		    "future.  See README.TXT for help.\n");
+		Con_NotifyBox("MSCDEX not loaded, music is\n"
+		              "disabled.  Use \"-nocdaudio\" if you\n"
+		              "wish to avoid this message in the\n"
+		              "future.  See README.TXT for help.\n");
 		return -1;
 	}
 	if(regs.x.bx > 1)
@@ -809,10 +810,9 @@ int CDAudio_Init(void)
 	dos_int86(0x2f);
 	if(regs.x.bx == 0)
 	{
-		Con_NotifyBox(
-		    "MSCDEX version 2.00 or later\n"
-		    "required for music. See README.TXT\n"
-		    "for help.\n");
+		Con_NotifyBox("MSCDEX version 2.00 or later\n"
+		              "required for music. See README.TXT\n"
+		              "for help.\n");
 		Con_DPrintf("CDAudio_Init: MSCDEX version 2.00 or later required.\n");
 		return -1;
 	}
@@ -824,17 +824,17 @@ int CDAudio_Init(void)
 		return -1;
 	}
 
-	cdRequest        = (struct cd_request *)memory;
+	cdRequest = (struct cd_request *)memory;
 	cdRequestSegment = ptr2real(cdRequest) >> 4;
-	cdRequestOffset  = ptr2real(cdRequest) & 0xf;
+	cdRequestOffset = ptr2real(cdRequest) & 0xf;
 
-	readInfo        = (union readInfo_u *)(memory + sizeof(struct cd_request));
+	readInfo = (union readInfo_u *)(memory + sizeof(struct cd_request));
 	readInfoSegment = ptr2real(readInfo) >> 4;
-	readInfoOffset  = ptr2real(readInfo) & 0xf;
+	readInfoOffset = ptr2real(readInfo) & 0xf;
 
-	for(n        = 0; n < 256; n++)
+	for(n = 0; n < 256; n++)
 		remap[n] = n;
-	initialized  = true;
+	initialized = true;
 
 	CDAudio_SetVolume(255);
 	if(CDAudio_GetAudioDiskInfo())

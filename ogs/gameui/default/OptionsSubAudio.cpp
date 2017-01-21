@@ -22,7 +22,7 @@ COptionsSubAudio::COptionsSubAudio(vgui::Panel *parent)
 	m_pEAXCheckButton = new CCvarToggleCheckButton(this, "EAX", "#GameUI_EnableEAX", "s_eax");
 	m_pA3DCheckButton = new CCvarToggleCheckButton(this, "A3D", "#GameUI_EnableA3D", "s_a3d");
 
-	m_pSFXSlider   = new CCvarSlider(this, "SFXSlider", "#GameUI_SoundEffectVolume", 0.0f, 1.0f, "volume");
+	m_pSFXSlider = new CCvarSlider(this, "SFXSlider", "#GameUI_SoundEffectVolume", 0.0f, 1.0f, "volume");
 	m_pMusicSlider = new CCvarSlider(this, "MusicSlider", "#GameUI_MusicVolume", 0.0f, 1.0f, "mp3volume");
 
 	m_pSoundQualityCombo = new CLabeledCommandComboBox(this, "SoundQuality");

@@ -16,10 +16,10 @@ void my_garbagecollection(void);
 
 typedef struct
 {
-	UINT       uDriverSignature;
-	HINSTANCE  hDriverModule;
+	UINT uDriverSignature;
+	HINSTANCE hDriverModule;
 	DRIVERPROC DriverProc;
-	DWORD      dwDriverID;
+	DWORD dwDriverID;
 } DRVR;
 
 typedef DRVR *PDRVR;

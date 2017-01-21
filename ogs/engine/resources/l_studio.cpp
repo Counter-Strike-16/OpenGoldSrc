@@ -29,32 +29,32 @@
 /// @file
 
 //#include "precompiled.hpp"
-#include "maintypes.h"
 #include "resources/l_studio.hpp"
+#include "maintypes.h"
 #include "system/common.hpp"
 
-//int giTextureSize;
+// int giTextureSize;
 
 void EXT_FUNC Mod_LoadStudioModel_internal(model_t *mod, void *buffer)
 {
-	uint8 *           poutdata;
-	uint8 *           pindata;
+	uint8 *poutdata;
+	uint8 *pindata;
 	mstudiotexture_t *ptexture;
-	int               size;
-	int               i;
-	uint8 *           pout;
+	int size;
+	int i;
+	uint8 *pout;
 
 	studiohdr_t *phdr = (studiohdr_t *)buffer;
-	i                 = LittleLong(phdr->version);
+	i = LittleLong(phdr->version);
 	if(i != STUDIO_VERSION)
 	{
 		Q_memset(phdr, 0, 244u);
 		Q_strcpy(phdr->name, "bogus");
-		phdr->length           = 244;
+		phdr->length = 244;
 		phdr->texturedataindex = 244;
 	}
 
-	mod->type  = mod_studio;
+	mod->type = mod_studio;
 	mod->flags = phdr->flags;
 	Cache_Alloc(&mod->cache, phdr->length + 1280 * phdr->numtextures, mod->name);
 	pout = (uint8 *)mod->cache.data;
@@ -64,11 +64,11 @@ void EXT_FUNC Mod_LoadStudioModel_internal(model_t *mod, void *buffer)
 		{
 			Q_memcpy(pout, buffer, phdr->texturedataindex);
 			poutdata = pout + phdr->texturedataindex;
-			pindata  = (uint8 *)buffer + phdr->texturedataindex;
+			pindata = (uint8 *)buffer + phdr->texturedataindex;
 			ptexture = (mstudiotexture_t *)(pout + phdr->textureindex);
 			for(i = 0; i < phdr->numtextures; i++, ptexture++)
 			{
-				size            = ptexture->height * ptexture->width;
+				size = ptexture->height * ptexture->width;
 				ptexture->index = poutdata - pout;
 				Q_memcpy(poutdata, pindata, size);
 				poutdata += size;
@@ -92,5 +92,6 @@ void EXT_FUNC Mod_LoadStudioModel_internal(model_t *mod, void *buffer)
 
 void Mod_LoadStudioModel(model_t *mod, void *buffer)
 {
-	g_RehldsHookchains.m_Mod_LoadStudioModel.callChain(&Mod_LoadStudioModel_internal, mod, buffer);
+	g_RehldsHookchains.m_Mod_LoadStudioModel.callChain(
+	&Mod_LoadStudioModel_internal, mod, buffer);
 }

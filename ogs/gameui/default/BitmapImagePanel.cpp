@@ -7,8 +7,8 @@ CBitmapImagePanel::CBitmapImagePanel(Panel *parent, char const *panelName, char 
     : Panel(parent, panelName)
 {
 	m_szTexture[0] = 0;
-	m_bUploaded    = false;
-	m_nTextureId   = -1;
+	m_bUploaded = false;
+	m_nTextureId = -1;
 
 	SetBounds(0, 0, 100, 100);
 
@@ -55,7 +55,7 @@ void CBitmapImagePanel::forceUpload(void)
 	if(!m_szTexture[0])
 		return;
 
-	m_bUploaded  = true;
+	m_bUploaded = true;
 	m_nTextureId = surface()->CreateNewTextureID();
 
 	surface()->DrawSetTextureFile(m_nTextureId, m_szTexture, true, true);
@@ -63,7 +63,7 @@ void CBitmapImagePanel::forceUpload(void)
 	if(!surface()->IsTextureIDValid(m_nTextureId))
 	{
 		m_szTexture[0] = 0;
-		m_bUploaded    = false;
+		m_bUploaded = false;
 	}
 }
 
@@ -80,6 +80,6 @@ void CBitmapImagePanel::forceReload(void)
 	if(!surface()->IsTextureIDValid(m_nTextureId))
 	{
 		m_szTexture[0] = 0;
-		m_bUploaded    = false;
+		m_bUploaded = false;
 	}
 }

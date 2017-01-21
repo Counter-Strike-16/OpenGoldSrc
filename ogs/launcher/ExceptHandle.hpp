@@ -31,7 +31,7 @@
 struct EXCEPTION_REGISTRATION
 {
 	EXCEPTION_REGISTRATION *prev;
-	FARPROC                 handler;
+	FARPROC handler;
 };
 
 extern "C" int _except_handler3(PEXCEPTION_RECORD, EXCEPTION_REGISTRATION *, PCONTEXT, PEXCEPTION_RECORD);

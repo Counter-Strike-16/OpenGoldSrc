@@ -30,18 +30,17 @@
 
 #pragma once
 
-#include "maintypes.h"
-#include "common/commontypes.h"
-#include "public/archtypes.h"
-#include "public/FileSystem.h"
-#include "engine/eiface.h"
 #include "client/client.hpp"
+#include "common/commontypes.h"
+#include "engine/eiface.h"
+#include "maintypes.h"
+#include "public/FileSystem.h"
+#include "public/archtypes.h"
 
 #define FILETIME_TO_QWORD(ft) \
 	((((uint64)ft.dwHighDateTime) << 32) + ft.dwLowDateTime)
 
-#define FILETIME_TO_PAIR(f, h) \
-	(((uint64)f << 32) | h)
+#define FILETIME_TO_PAIR(f, h) (((uint64)f << 32) | h)
 
 typedef void (*SV_SAVEGAMECOMMENT_FUNC)(char *, int);
 
@@ -49,23 +48,23 @@ typedef struct GAME_HEADER_s
 {
 	char mapName[32];
 	char comment[80];
-	int  mapCount;
+	int mapCount;
 } GAME_HEADER;
 
 typedef struct SAVE_HEADER_s
 {
-	int   saveId;
-	int   version;
-	int   skillLevel;
-	int   entityCount;
-	int   connectionCount;
-	int   lightStyleCount;
+	int saveId;
+	int version;
+	int skillLevel;
+	int entityCount;
+	int connectionCount;
+	int lightStyleCount;
 	float time;
-	char  mapName[32];
-	char  skyName[32];
-	int   skyColor_r;
-	int   skyColor_g;
-	int   skyColor_b;
+	char mapName[32];
+	char skyName[32];
+	int skyColor_r;
+	int skyColor_g;
+	int skyColor_b;
 	float skyVec_x;
 	float skyVec_y;
 	float skyVec_z;
@@ -73,7 +72,7 @@ typedef struct SAVE_HEADER_s
 
 typedef struct SAVELIGHTSTYLE_s
 {
-	int  index;
+	int index;
 	char style[64];
 } SAVELIGHTSTYLE;
 
@@ -108,32 +107,32 @@ typedef struct TITLECOMMENT_s
 
 #endif // HOOK_ENGINE
 
-extern int                     r_dointerp;
-extern vec3_t                  r_origin;
-extern double                  cpuPercent;
-extern int32                   startTime;
-extern int                     current_skill;
-extern int                     gHostSpawnCount;
-extern CareerStateType         g_careerState;
+extern int r_dointerp;
+extern vec3_t r_origin;
+extern double cpuPercent;
+extern int32 startTime;
+extern int current_skill;
+extern int gHostSpawnCount;
+extern CareerStateType g_careerState;
 extern SV_SAVEGAMECOMMENT_FUNC g_pSaveGameCommentFunc;
-extern qboolean                g_bMajorMapChange;
-extern cvar_t                  voice_recordtofile;
-extern cvar_t                  voice_inputfromfile;
-extern TITLECOMMENT            gTitleComments[66];
-extern TYPEDESCRIPTION         gGameHeaderDescription[3];
-extern TYPEDESCRIPTION         gSaveHeaderDescription[13];
-extern TYPEDESCRIPTION         gAdjacencyDescription[4];
-extern TYPEDESCRIPTION         gEntityTableDescription[5];
-extern TYPEDESCRIPTION         gLightstyleDescription[2];
-extern cvar_t                  gHostMap;
-extern int                     g_iQuitCommandIssued;
-extern char *                  g_pPostRestartCmdLineArgs;
+extern qboolean g_bMajorMapChange;
+extern cvar_t voice_recordtofile;
+extern cvar_t voice_inputfromfile;
+extern TITLECOMMENT gTitleComments[66];
+extern TYPEDESCRIPTION gGameHeaderDescription[3];
+extern TYPEDESCRIPTION gSaveHeaderDescription[13];
+extern TYPEDESCRIPTION gAdjacencyDescription[4];
+extern TYPEDESCRIPTION gEntityTableDescription[5];
+extern TYPEDESCRIPTION gLightstyleDescription[2];
+extern cvar_t gHostMap;
+extern int g_iQuitCommandIssued;
+extern char *g_pPostRestartCmdLineArgs;
 
 void SV_GetPlayerHulls();
 void Host_InitializeGameDLL();
 void Host_Motd_f();
 void Host_Motd_Write_f();
-int  Host_GetStartTime();
+int Host_GetStartTime();
 void Host_UpdateStats();
 void GetStatsString(char *buf, int bufSize);
 void Host_Stats_f();
@@ -144,23 +143,23 @@ void Host_Status_f();
 void Host_Status_Formatted_f();
 void Host_Ping_f();
 void Host_Map(qboolean bIsDemo, char *mapstring, char *mapName, qboolean loadGame);
-void        Host_Map_f();
-void        Host_Career_f();
-void        Host_Maps_f();
-void        Host_Changelevel_f();
+void Host_Map_f();
+void Host_Career_f();
+void Host_Maps_f();
+void Host_Changelevel_f();
 const char *Host_FindRecentSave(char *pNameBuf);
-void  Host_Restart_f();
-void  Host_Reload_f();
-void  Host_Reconnect_f();
+void Host_Restart_f();
+void Host_Reload_f();
+void Host_Reconnect_f();
 char *Host_SaveGameDirectory();
 void Host_SavegameComment(char *pszBuffer, int iSizeBuffer);
 void Host_SaveAgeList(const char *pName, int count);
-int              Host_ValidSave();
+int Host_ValidSave();
 SAVERESTOREDATA *SaveInit(int size);
 void SaveExit(SAVERESTOREDATA *save);
 qboolean SaveGameSlot(const char *pSaveName, const char *pSaveComment);
-void     Host_Savegame_f();
-void     Host_AutoSave_f();
+void Host_Savegame_f();
+void Host_AutoSave_f();
 qboolean SaveGame(const char *pszSlot, const char *pszComment);
 int SaveReadHeader(FileHandle_t pFile, GAME_HEADER *pHeader, int readGlobalState);
 void SaveReadComment(FileHandle_t f, char *name);
@@ -184,26 +183,26 @@ void FileCopy(FileHandle_t pOutput, FileHandle_t pInput, int fileSize);
 void DirectoryCopy(const char *pPath, FileHandle_t pFile);
 void DirectoryExtract(FileHandle_t pFile, int fileCount);
 int DirectoryCount(const char *pPath);
-void        Host_ClearSaveDirectory();
-void        Host_ClearGameState();
-void        Host_Changelevel2_f();
-void        Host_Version_f();
-void        Host_FullInfo_f();
+void Host_ClearSaveDirectory();
+void Host_ClearGameState();
+void Host_Changelevel2_f();
+void Host_Version_f();
+void Host_FullInfo_f();
 NOXREF void Host_KillVoice_f();
-void        Host_SetInfo_f();
+void Host_SetInfo_f();
 void Host_Say(qboolean teamonly);
-void        Host_Say_f();
-void        Host_Say_Team_f();
-void        Host_Tell_f();
-void        Host_Kill_f();
-void        Host_TogglePause_f();
-void        Host_Pause_f();
-void        Host_Unpause_f();
-void        Host_Interp_f();
-void        Host_NextDemo();
-void        Host_Startdemos_f();
-void        Host_Demos_f();
-void        Host_Stopdemo_f();
+void Host_Say_f();
+void Host_Say_Team_f();
+void Host_Tell_f();
+void Host_Kill_f();
+void Host_TogglePause_f();
+void Host_Pause_f();
+void Host_Unpause_f();
+void Host_Interp_f();
+void Host_NextDemo();
+void Host_Startdemos_f();
+void Host_Demos_f();
+void Host_Stopdemo_f();
 NOXREF void Host_EndSection(const char *pszSection);
 void Host_Soundfade_f();
 void Host_KillServer_f();

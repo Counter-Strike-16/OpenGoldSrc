@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 #include "pm_shared/pm_defs.h"
 #include "rehlds/model.h"
 #include "world/world.hpp"
@@ -43,15 +43,15 @@
 #define box_planes_0 (*pbox_planes_0)
 #endif // HOOK_ENGINE
 
-extern int             g_contentsresult;
-extern hull_t          box_hull_0;
+extern int g_contentsresult;
+extern hull_t box_hull_0;
 extern box_clipnodes_t box_clipnodes_0;
-extern box_planes_t    box_planes_0;
+extern box_planes_t box_planes_0;
 
 float PM_TraceModel(physent_t *pEnt, vec_t *start, vec_t *end, trace_t *trace);
 void PM_GetModelBounds(struct model_s *mod, vec_t *mins, vec_t *maxs);
 int PM_GetModelType(struct model_s *mod);
-void    PM_InitBoxHull(void);
+void PM_InitBoxHull(void);
 hull_t *PM_HullForBox(vec_t *mins, vec_t *maxs);
 int PM_HullPointContents(hull_t *hull, int num, vec_t *p);
 int PM_LinkContents(vec_t *p, int *pIndex);

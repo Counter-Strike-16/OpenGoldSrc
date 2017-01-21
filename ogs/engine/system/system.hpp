@@ -30,18 +30,18 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
-#include "system/systemtypes.hpp"
 #include "engine/eiface.h"
+#include "maintypes.h"
+#include "system/systemtypes.hpp"
 //#include "public/interface.h"
 //#include "tier0/platform.h"
 #include "public/FileSystem.h"
 #include "world/pr_dlls.hpp"
 
-//vmodes.h must be included before cdll_int.h (wrect_t declaration)
-#include "common/wrect.h"
+// vmodes.h must be included before cdll_int.h (wrect_t declaration)
 #include "common/enums.h"
+#include "common/wrect.h"
 #include "engine/cdll_int.h"
 
 //#include "engine_launcher_api.h"
@@ -105,7 +105,7 @@ extern char *szReslistsBaseDir;
 extern char *szReslistsExt;
 
 extern FileFindHandle_t g_hfind;
-extern enginefuncs_t    g_engfuncsExportedToDlls;
+extern enginefuncs_t g_engfuncsExportedToDlls;
 
 extern char gszDisconnectReason[MAX_DISCONNECT_REASON];
 extern char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON];
@@ -116,7 +116,7 @@ extern int giSubState;
 extern int giActive;
 extern int giStateInfo;
 
-extern DLL_FUNCTIONS     gEntityInterface;
+extern DLL_FUNCTIONS gEntityInterface;
 extern NEW_DLL_FUNCTIONS gNewDLLFunctions;
 
 extern modfuncs_t g_modfuncs;
@@ -154,10 +154,10 @@ extern void (*Launcher_ConsolePrintf)(char *, ...);
 #define g_WinNTOrHigher (*pg_WinNTOrHigher)
 #endif
 
-extern int              g_PerfCounterInitialized;
+extern int g_PerfCounterInitialized;
 extern CRITICAL_SECTION g_PerfCounterMutex;
 
-extern int    g_PerfCounterShiftRightAmount;
+extern int g_PerfCounterShiftRightAmount;
 extern double g_PerfCounterSlice;
 extern double g_CurrentTime;
 extern double g_StartTime;
@@ -266,10 +266,10 @@ NOXREF void Sys_ShutdownArgv();
 void Sys_InitMemory();
 void Sys_ShutdownMemory();
 
-void        Sys_InitLauncherInterface();
+void Sys_InitLauncherInterface();
 NOXREF void Sys_ShutdownLauncherInterface();
 
-void        Sys_InitAuthentication();
+void Sys_InitAuthentication();
 NOXREF void Sys_ShutdownAuthentication();
 
 void Sys_ShowProgressTicks(char *specialProgressMsg);
@@ -280,4 +280,4 @@ void Sys_ShutdownGame();
 void ClearIOStates();
 
 // TODO: Needs rechecking
-//NOXREF int BuildMapCycleListHints(char **hints);
+// NOXREF int BuildMapCycleListHints(char **hints);

@@ -1,8 +1,8 @@
-#include "EngineInterface.h"
 #include "BinkPanel.h"
-#include <vgui/ISurface.h>
-#include <IFileSystem.h>
 #include "Bink.h"
+#include "EngineInterface.h"
+#include <IFileSystem.h>
+#include <vgui/ISurface.h>
 
 using namespace vgui;
 
@@ -10,8 +10,8 @@ CBinkPanel::CBinkPanel(Panel *parent, char const *panelName)
     : Panel(parent, panelName)
 {
 	m_pPixelBuffer = NULL;
-	m_iTextureId   = surface()->CreateNewTextureID();
-	m_color        = Color(255, 255, 255, 255);
+	m_iTextureId = surface()->CreateNewTextureID();
+	m_color = Color(255, 255, 255, 255);
 }
 
 CBinkPanel::~CBinkPanel(void)
@@ -65,7 +65,8 @@ void CBinkPanel::OnThink(void)
 	{
 		float time = engine->GetAbsoluteTime();
 
-		if(time - m_flLastPaintTime > (float)m_hBink->FrameRateDiv / m_hBink->FrameRate)
+		if(time - m_flLastPaintTime >
+		   (float)m_hBink->FrameRateDiv / m_hBink->FrameRate)
 		{
 			m_iLastFrame = m_iCurrentFrame;
 			m_iCurrentFrame++;
@@ -100,7 +101,7 @@ bool CBinkPanel::OpenBink(const char *filename, int flags)
 		m_iPixelSize = 4;
 	}
 
-	m_iBinkFlags   = flags;
+	m_iBinkFlags = flags;
 	m_pPixelBuffer = new byte[m_hBink->Width * m_hBink->Height * m_iPixelSize];
 	return true;
 }
@@ -119,7 +120,10 @@ void CBinkPanel::CloseBink(void)
 
 float CBinkPanel::GetPlayTime(void)
 {
-	return m_hBink ? (float)m_hBink->Frames / (float)m_hBink->FrameRate / m_hBink->FrameRateDiv : 0;
+	return m_hBink
+	? (float)m_hBink->Frames / (float)m_hBink->FrameRate /
+	m_hBink->FrameRateDiv
+	: 0;
 }
 
 void CBinkPanel::SetColor(Color col)
@@ -129,9 +133,9 @@ void CBinkPanel::SetColor(Color col)
 
 void CBinkPanel::Play(void)
 {
-	m_iCurrentFrame   = 0;
+	m_iCurrentFrame = 0;
 	m_flLastPaintTime = engine->GetAbsoluteTime();
-	m_bPlaying        = true;
+	m_bPlaying = true;
 }
 
 void CBinkPanel::Pause(void)
@@ -147,5 +151,5 @@ void CBinkPanel::Continue(void)
 void CBinkPanel::Stop(void)
 {
 	m_iCurrentFrame = 0;
-	m_bPlaying      = false;
+	m_bPlaying = false;
 }

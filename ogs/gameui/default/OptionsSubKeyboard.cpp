@@ -268,7 +268,7 @@ COptionsSubKeyboard::COptionsSubKeyboard(vgui::Panel *parent)
 	SaveCurrentBindings();
 	ParseActionDescriptions();
 
-	m_pSetBindingButton   = new Button(this, "ChangeKeyButton", "");
+	m_pSetBindingButton = new Button(this, "ChangeKeyButton", "");
 	m_pClearBindingButton = new Button(this, "ClearKeyButton", "");
 
 	LoadControlSettingsFromScheme("OptionsSubKeyboard.res");
@@ -376,9 +376,9 @@ char *UTIL_CopyString(char const *in)
 
 char *UTIL_va(char *format, ...)
 {
-	va_list     argptr;
+	va_list argptr;
 	static char string[4][1024];
-	static int  curstring = 0;
+	static int curstring = 0;
 
 	curstring = (curstring + 1) % 4;
 
@@ -404,14 +404,14 @@ void COptionsSubKeyboard::ParseActionDescriptions(void)
 	if(fh == FILESYSTEM_INVALID_HANDLE)
 		return;
 
-	int        size = g_pFullFileSystem->Size(fh);
+	int size = g_pFullFileSystem->Size(fh);
 	CUtlBuffer buf(0, size, CUtlBuffer::TEXT_BUFFER);
 	g_pFullFileSystem->Read(buf.Base(), size, fh);
 	g_pFullFileSystem->Close(fh);
 
 	const char *data = (const char *)buf.Base();
 
-	int  sectionIndex = 0;
+	int sectionIndex = 0;
 	char token[512];
 
 	while(TRUE)
@@ -465,8 +465,8 @@ KeyValues *COptionsSubKeyboard::GetItemForBinding(const char *binding)
 		if(!item)
 			continue;
 
-		KeyValues * bindingItem = item->FindKey(bindingSymbol);
-		const char *bindString  = bindingItem->GetString();
+		KeyValues *bindingItem = item->FindKey(bindingSymbol);
+		const char *bindString = bindingItem->GetString();
 
 		if(!stricmp(bindString, binding))
 			return item;
@@ -692,7 +692,7 @@ void COptionsSubKeyboard::FillInDefaultBindings(void)
 	ClearBindItems();
 
 	const char *data = (const char *)buf.Base();
-	KeyValues * item;
+	KeyValues *item;
 
 	while(TRUE)
 	{
@@ -885,8 +885,8 @@ void COptionsSubKeyboard::OnKeyCodePressed(vgui::KeyCode code)
 {
 	if(!m_pKeyBindList->IsCapturing())
 	{
-		int  r = m_pKeyBindList->GetItemOfInterest();
-		int  x, y, w, h;
+		int r = m_pKeyBindList->GetItemOfInterest();
+		int x, y, w, h;
 		bool visible = m_pKeyBindList->GetCellBounds(r, 1, x, y, w, h);
 
 		if(visible)
@@ -898,7 +898,7 @@ void COptionsSubKeyboard::OnKeyCodePressed(vgui::KeyCode code)
 			}
 			else if(code == KEY_DELETE)
 			{
-				KeyValues * kv     = m_pKeyBindList->GetItemData(r);
+				KeyValues *kv = m_pKeyBindList->GetItemData(r);
 				const char *altkey = kv->GetString("AltKey", NULL);
 
 				if(altkey && *altkey)

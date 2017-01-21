@@ -31,20 +31,20 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "public/archtypes.h"
 #include "engine/eiface.h"
+#include "public/archtypes.h"
 
 typedef struct functiontable_s
 {
 	uint32 pFunction;
-	char * pFunctionName;
+	char *pFunctionName;
 } functiontable_t;
 
 typedef struct extensiondll_s
 {
-	void *           lDLLHandle;
+	void *lDLLHandle;
 	functiontable_t *functionTable;
-	int              functionCount;
+	int functionCount;
 } extensiondll_t;
 
 typedef void (*ENTITYINIT)(struct entvars_s *);

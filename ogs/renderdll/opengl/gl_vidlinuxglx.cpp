@@ -43,9 +43,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define WARP_WIDTH 320
 #define WARP_HEIGHT 200
 
-static Display *  dpy = NULL;
-static int        scrnum;
-static Window     win;
+static Display *dpy = NULL;
+static int scrnum;
+static Window win;
 static GLXContext ctx = NULL;
 
 #define KEY_MASK (KeyPressMask | KeyReleaseMask)
@@ -54,21 +54,21 @@ static GLXContext ctx = NULL;
 #define X_MASK (KEY_MASK | MOUSE_MASK | VisibilityChangeMask | StructureNotifyMask)
 
 unsigned short d_8to16table[256];
-unsigned       d_8to24table[256];
-unsigned char  d_15to8table[65536];
+unsigned d_8to24table[256];
+unsigned char d_15to8table[65536];
 
-cvar_t vid_mode = {"vid_mode", "0", false};
+cvar_t vid_mode = { "vid_mode", "0", false };
 
 static qboolean mouse_avail;
 static qboolean mouse_active;
-static int      mx, my;
-static int      old_mouse_x, old_mouse_y;
+static int mx, my;
+static int old_mouse_x, old_mouse_y;
 
-static cvar_t in_mouse    = {"in_mouse", "1", false};
-static cvar_t in_dgamouse = {"in_dgamouse", "1", false};
-static cvar_t m_filter    = {"m_filter", "0"};
+static cvar_t in_mouse = { "in_mouse", "1", false };
+static cvar_t in_dgamouse = { "in_dgamouse", "1", false };
+static cvar_t m_filter = { "m_filter", "0" };
 
-qboolean dgamouse    = false;
+qboolean dgamouse = false;
 qboolean vidmode_ext = false;
 
 static int win_x, win_y;
@@ -76,9 +76,9 @@ static int win_x, win_y;
 static int scr_width, scr_height;
 
 static XF86VidModeModeInfo **vidmodes;
-static int                   default_dotclock_vidmode;
-static int                   num_vidmodes;
-static qboolean              vidmode_active = false;
+static int default_dotclock_vidmode;
+static int num_vidmodes;
+static qboolean vidmode_active = false;
 
 /*-----------------------------------------------------------------------*/
 
@@ -93,7 +93,7 @@ int texture_extension_number = 1;
 
 float gldepthmin, gldepthmax;
 
-cvar_t gl_ztrick = {"gl_ztrick", "1"};
+cvar_t gl_ztrick = { "gl_ztrick", "1" };
 
 const char *gl_vendor;
 const char *gl_renderer;
@@ -105,8 +105,8 @@ void (*qgl3DfxSetPaletteEXT)(GLuint *);
 
 static float vid_gamma = 1.0;
 
-qboolean is8bit      = false;
-qboolean isPermedia  = false;
+qboolean is8bit = false;
+qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 /*-----------------------------------------------------------------------*/
@@ -120,8 +120,8 @@ void D_EndDirectRect(int x, int y, int width, int height)
 
 static int XLateKey(XKeyEvent *ev)
 {
-	int    key;
-	char   buf[64];
+	int key;
+	char buf[64];
 	KeySym keysym;
 
 	key = 0;
@@ -319,20 +319,20 @@ static int XLateKey(XKeyEvent *ev)
 
 static Cursor CreateNullCursor(Display *display, Window root)
 {
-	Pixmap    cursormask;
+	Pixmap cursormask;
 	XGCValues xgc;
-	GC        gc;
-	XColor    dummycolour;
-	Cursor    cursor;
+	GC gc;
+	XColor dummycolour;
+	Cursor cursor;
 
-	cursormask   = XCreatePixmap(display, root, 1, 1, 1 /*depth*/);
+	cursormask = XCreatePixmap(display, root, 1, 1, 1 /*depth*/);
 	xgc.function = GXclear;
-	gc           = XCreateGC(display, cursormask, GCFunction, &xgc);
+	gc = XCreateGC(display, cursormask, GCFunction, &xgc);
 	XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
 	dummycolour.pixel = 0;
-	dummycolour.red   = 0;
+	dummycolour.red = 0;
 	dummycolour.flags = 04;
-	cursor            = XCreatePixmapCursor(display, cursormask, cursormask,
+	cursor = XCreatePixmapCursor(display, cursormask, cursormask,
 	                             &dummycolour, &dummycolour, 0, 0);
 	XFreePixmap(display, cursormask);
 	XFreeGC(display, gc);
@@ -408,12 +408,12 @@ static void uninstall_grabs(void)
 
 static void HandleEvents(void)
 {
-	XEvent   event;
-	KeySym   ks;
-	int      b;
+	XEvent event;
+	KeySym ks;
+	int b;
 	qboolean dowarp = false;
-	int      mwx    = vid.width / 2;
-	int      mwy    = vid.height / 2;
+	int mwx = vid.width / 2;
+	int mwy = vid.height / 2;
 
 	if(!dpy)
 		return;
@@ -536,9 +536,9 @@ void VID_Shutdown(void)
 		XCloseDisplay(dpy);
 	}
 	vidmode_active = false;
-	dpy            = NULL;
-	win            = 0;
-	ctx            = NULL;
+	dpy = NULL;
+	win = 0;
+	ctx = NULL;
 }
 
 void signal_handler(int sig)
@@ -569,21 +569,21 @@ void VID_ShiftPalette(unsigned char *p)
 
 void VID_SetPalette(unsigned char *palette)
 {
-	byte *         pal;
-	unsigned       r, g, b;
-	unsigned       v;
-	int            r1, g1, b1;
-	int            j, k, l, m;
+	byte *pal;
+	unsigned r, g, b;
+	unsigned v;
+	int r1, g1, b1;
+	int j, k, l, m;
 	unsigned short i;
-	unsigned *     table;
-	FILE *         f;
-	char           s[255];
-	int            dist, bestdist;
+	unsigned *table;
+	FILE *f;
+	char s[255];
+	int dist, bestdist;
 
 	//
 	// 8 8 8 encoding
 	//
-	pal   = palette;
+	pal = palette;
 	table = d_8to24table;
 	for(i = 0; i < 256; i++)
 	{
@@ -592,7 +592,7 @@ void VID_SetPalette(unsigned char *palette)
 		b = pal[2];
 		pal += 3;
 
-		v        = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
+		v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
 		*table++ = v;
 	}
 	d_8to24table[255] &= 0xffffff; // 255 is transparent
@@ -605,19 +605,19 @@ void VID_SetPalette(unsigned char *palette)
 		000001111100000 = Blue = 0x03E0
 		111110000000000 = Grn  = 0x7C00
 		*/
-		r   = ((i & 0x1F) << 3) + 4;
-		g   = ((i & 0x03E0) >> 2) + 4;
-		b   = ((i & 0x7C00) >> 7) + 4;
+		r = ((i & 0x1F) << 3) + 4;
+		g = ((i & 0x03E0) >> 2) + 4;
+		b = ((i & 0x7C00) >> 7) + 4;
 		pal = (unsigned char *)d_8to24table;
 		for(v = 0, k = 0, bestdist = 10000 * 10000; v < 256; v++, pal += 4)
 		{
-			r1   = (int)r - (int)pal[0];
-			g1   = (int)g - (int)pal[1];
-			b1   = (int)b - (int)pal[2];
+			r1 = (int)r - (int)pal[0];
+			g1 = (int)g - (int)pal[1];
+			b1 = (int)b - (int)pal[2];
 			dist = (r1 * r1) + (g1 * g1) + (b1 * b1);
 			if(dist < bestdist)
 			{
-				k        = v;
+				k = v;
 				bestdist = dist;
 			}
 		}
@@ -639,7 +639,7 @@ void CheckMultiTextureExtensions(void)
 			return;
 		}
 
-		qglMTexCoord2fSGIS   = (void *)dlsym(prjobj, "glMTexCoord2fSGIS");
+		qglMTexCoord2fSGIS = (void *)dlsym(prjobj, "glMTexCoord2fSGIS");
 		qglSelectTextureSGIS = (void *)dlsym(prjobj, "glSelectTextureSGIS");
 
 		if(qglMTexCoord2fSGIS && qglSelectTextureSGIS)
@@ -707,7 +707,7 @@ void GL_BeginRendering(int *x, int *y, int *width, int *height)
 	extern cvar_t gl_clear;
 
 	*x = *y = 0;
-	*width  = scr_width;
+	*width = scr_width;
 	*height = scr_height;
 
 	//    if (!wglMakeCurrent( maindc, baseRC ))
@@ -730,7 +730,7 @@ qboolean VID_Is8bit(void)
 void VID_Init8bitPalette(void)
 {
 	// Check for 8bit Extensions and initialize them.
-	int   i;
+	int i;
 	void *prjobj;
 
 	if((prjobj = dlopen(NULL, RTLD_LAZY)) == NULL)
@@ -743,7 +743,7 @@ void VID_Init8bitPalette(void)
 	   (qgl3DfxSetPaletteEXT = dlsym(prjobj, "gl3DfxSetPaletteEXT")) != NULL)
 	{
 		GLubyte table[256][4];
-		char *  oldpal;
+		char *oldpal;
 
 		Con_SafePrintf("8-bit GL extensions enabled.\n");
 		glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
@@ -762,7 +762,7 @@ void VID_Init8bitPalette(void)
 	else if(strstr(gl_extensions, "GL_EXT_shared_texture_palette") &&
 	        (qglColorTableEXT = dlsym(prjobj, "glColorTableEXT")) != NULL)
 	{
-		char  thePalette[256 * 3];
+		char thePalette[256 * 3];
 		char *oldPalette, *newPalette;
 
 		Con_SafePrintf("8-bit GL extensions enabled.\n");
@@ -785,9 +785,9 @@ void VID_Init8bitPalette(void)
 
 static void Check_Gamma(unsigned char *pal)
 {
-	float         f, inf;
+	float f, inf;
 	unsigned char palette[768];
-	int           i;
+	int i;
 
 	if((i = COM_CheckParm("-gamma")) == 0)
 	{
@@ -802,12 +802,12 @@ static void Check_Gamma(unsigned char *pal)
 
 	for(i = 0; i < 768; i++)
 	{
-		f   = pow((pal[i] + 1) / 256.0, vid_gamma);
+		f = pow((pal[i] + 1) / 256.0, vid_gamma);
 		inf = f * 255 + 0.5;
 		if(inf < 0)
 			inf = 0;
 		if(inf > 255)
-			inf    = 255;
+			inf = 255;
 		palette[i] = inf;
 	}
 
@@ -818,22 +818,23 @@ void VID_Init(unsigned char *palette)
 {
 	int i;
 	int attrib[] = {
-	    GLX_RGBA,
-	    GLX_RED_SIZE, 1,
-	    GLX_GREEN_SIZE, 1,
-	    GLX_BLUE_SIZE, 1,
-	    GLX_DOUBLEBUFFER,
-	    GLX_DEPTH_SIZE, 1,
-	    None};
-	char                 gldir[MAX_OSPATH];
-	int                  width = 640, height = 480;
+		GLX_RGBA,
+		GLX_RED_SIZE, 1,
+		GLX_GREEN_SIZE, 1,
+		GLX_BLUE_SIZE, 1,
+		GLX_DOUBLEBUFFER,
+		GLX_DEPTH_SIZE, 1,
+		None
+	};
+	char gldir[MAX_OSPATH];
+	int width = 640, height = 480;
 	XSetWindowAttributes attr;
-	unsigned long        mask;
-	Window               root;
-	XVisualInfo *        visinfo;
-	qboolean             fullscreen = true;
-	int                  MajorVersion, MinorVersion;
-	int                  actualWidth, actualHeight;
+	unsigned long mask;
+	Window root;
+	XVisualInfo *visinfo;
+	qboolean fullscreen = true;
+	int MajorVersion, MinorVersion;
+	int actualWidth, actualHeight;
 
 	Cvar_RegisterVariable(&vid_mode);
 	Cvar_RegisterVariable(&in_mouse);
@@ -841,10 +842,10 @@ void VID_Init(unsigned char *palette)
 	Cvar_RegisterVariable(&m_filter);
 	Cvar_RegisterVariable(&gl_ztrick);
 
-	vid.maxwarpwidth  = WARP_WIDTH;
+	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
-	vid.colormap      = host_colormap;
-	vid.fullbright    = 256 - LittleLong(*((int *)vid.colormap + 2048));
+	vid.colormap = host_colormap;
+	vid.fullbright = 256 - LittleLong(*((int *)vid.colormap + 2048));
 
 	// interpret command-line params
 
@@ -883,7 +884,7 @@ void VID_Init(unsigned char *palette)
 	}
 
 	scrnum = DefaultScreen(dpy);
-	root   = RootWindow(dpy, scrnum);
+	root = RootWindow(dpy, scrnum);
 
 	// Get video mode list
 	MajorVersion = MinorVersion = 0;
@@ -914,7 +915,7 @@ void VID_Init(unsigned char *palette)
 		if(fullscreen)
 		{
 			best_dist = 9999999;
-			best_fit  = -1;
+			best_fit = -1;
 
 			for(i = 0; i < num_vidmodes; i++)
 			{
@@ -922,19 +923,19 @@ void VID_Init(unsigned char *palette)
 				   height > vidmodes[i]->vdisplay)
 					continue;
 
-				x    = width - vidmodes[i]->hdisplay;
-				y    = height - vidmodes[i]->vdisplay;
+				x = width - vidmodes[i]->hdisplay;
+				y = height - vidmodes[i]->vdisplay;
 				dist = (x * x) + (y * y);
 				if(dist < best_dist)
 				{
 					best_dist = dist;
-					best_fit  = i;
+					best_fit = i;
 				}
 			}
 
 			if(best_fit != -1)
 			{
-				actualWidth  = vidmodes[best_fit]->hdisplay;
+				actualWidth = vidmodes[best_fit]->hdisplay;
 				actualHeight = vidmodes[best_fit]->vdisplay;
 
 				// change to the mode
@@ -951,16 +952,16 @@ void VID_Init(unsigned char *palette)
 
 	/* window attributes */
 	attr.background_pixel = 0;
-	attr.border_pixel     = 0;
-	attr.colormap         = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
-	attr.event_mask       = X_MASK;
+	attr.border_pixel = 0;
+	attr.colormap = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
+	attr.event_mask = X_MASK;
 	if(vidmode_active)
 	{
 		mask = CWBackPixel | CWColormap | CWSaveUnder | CWBackingStore |
-		    CWEventMask | CWOverrideRedirect;
+		CWEventMask | CWOverrideRedirect;
 		attr.override_redirect = True;
-		attr.backing_store     = NotUseful;
-		attr.save_under        = False;
+		attr.backing_store = NotUseful;
+		attr.save_under = False;
 	}
 	else
 		mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
@@ -986,17 +987,17 @@ void VID_Init(unsigned char *palette)
 
 	glXMakeCurrent(dpy, win, ctx);
 
-	scr_width  = width;
+	scr_width = width;
 	scr_height = height;
 
 	if(vid.conheight > height)
 		vid.conheight = height;
 	if(vid.conwidth > width)
 		vid.conwidth = width;
-	vid.width        = vid.conwidth;
-	vid.height       = vid.conheight;
+	vid.width = vid.conwidth;
+	vid.height = vid.conheight;
 
-	vid.aspect   = ((float)vid.height / (float)vid.width) * (320.0 / 240.0);
+	vid.aspect = ((float)vid.height / (float)vid.width) * (320.0 / 240.0);
 	vid.numpages = 2;
 
 	InitSig(); // trap evil signals

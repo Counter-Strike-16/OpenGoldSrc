@@ -44,18 +44,16 @@ void GL_BeginRendering(int *x, int *y, int *width, int *height);
 void GL_EndRendering(void);
 
 // Function prototypes for the Texture Object Extension routines
-typedef GLboolean(APIENTRY *ARETEXRESFUNCPTR)(GLsizei, const GLuint *,
-                                              const GLboolean *);
+typedef GLboolean(APIENTRY *ARETEXRESFUNCPTR)(GLsizei, const GLuint *, const GLboolean *);
 typedef void(APIENTRY *BINDTEXFUNCPTR)(GLenum, GLuint);
 typedef void(APIENTRY *DELTEXFUNCPTR)(GLsizei, const GLuint *);
 typedef void(APIENTRY *GENTEXFUNCPTR)(GLsizei, GLuint *);
 typedef GLboolean(APIENTRY *ISTEXFUNCPTR)(GLuint);
-typedef void(APIENTRY *PRIORTEXFUNCPTR)(GLsizei, const GLuint *,
-                                        const GLclampf *);
+typedef void(APIENTRY *PRIORTEXFUNCPTR)(GLsizei, const GLuint *, const GLclampf *);
 typedef void(APIENTRY *TEXSUBIMAGEPTR)(int, int, int, int, int, int, int, int, void *);
 
 extern BINDTEXFUNCPTR bindTexFunc;
-extern DELTEXFUNCPTR  delTexFunc;
+extern DELTEXFUNCPTR delTexFunc;
 extern TEXSUBIMAGEPTR TexSubImage2DFunc;
 
 extern int texture_extension_number;
@@ -102,47 +100,47 @@ extern PROC glVertexPointerEXT;
 
 #define BACKFACE_EPSILON 0.01
 
-void       R_TimeRefresh_f(void);
-void       R_ReadPointFile_f(void);
+void R_TimeRefresh_f(void);
+void R_ReadPointFile_f(void);
 texture_t *R_TextureAnimation(texture_t *base);
 
 typedef struct surfcache_s
 {
-	struct surfcache_s * next;
-	struct surfcache_s **owner;                  // NULL is an empty chunk of memory
-	int                  lightadj[MAXLIGHTMAPS]; // checked for strobe flush
-	int                  dlight;
-	int                  size; // including header
-	unsigned             width;
-	unsigned             height; // DEBUG only needed for debug
-	float                mipscale;
-	struct texture_s *   texture; // checked for animating textures
-	byte                 data[4]; // width*height elements
+	struct surfcache_s *next;
+	struct surfcache_s **owner; // NULL is an empty chunk of memory
+	int lightadj[MAXLIGHTMAPS]; // checked for strobe flush
+	int dlight;
+	int size; // including header
+	unsigned width;
+	unsigned height; // DEBUG only needed for debug
+	float mipscale;
+	struct texture_s *texture; // checked for animating textures
+	byte data[4];              // width*height elements
 } surfcache_t;
 
 typedef struct
 {
-	pixel_t *   surfdat;  // destination for generated surface
-	int         rowbytes; // destination logical width in bytes
-	msurface_t *surf;     // description for surface to generate
-	fixed8_t    lightadj[MAXLIGHTMAPS];
+	pixel_t *surfdat; // destination for generated surface
+	int rowbytes;     // destination logical width in bytes
+	msurface_t *surf; // description for surface to generate
+	fixed8_t lightadj[MAXLIGHTMAPS];
 	// adjust for lightmap levels for dynamic lighting
-	texture_t *texture;    // corrected for animating textures
-	int        surfmip;    // mipmapped ratio of surface texels / world pixels
-	int        surfwidth;  // in mipmapped texels
-	int        surfheight; // in mipmapped texels
+	texture_t *texture; // corrected for animating textures
+	int surfmip;        // mipmapped ratio of surface texels / world pixels
+	int surfwidth;      // in mipmapped texels
+	int surfheight;     // in mipmapped texels
 } drawsurf_t;
 
 //====================================================
 
-extern cl_entity_t  r_worldentity;
-extern qboolean     r_cache_thrash; // compatability
-extern vec3_t       modelorg, r_entorigin;
+extern cl_entity_t r_worldentity;
+extern qboolean r_cache_thrash; // compatability
+extern vec3_t modelorg, r_entorigin;
 extern cl_entity_t *currententity;
-extern int          r_visframecount; // ??? what difs?
-extern int          r_framecount;
-extern mplane_t     frustum[4];
-extern int          c_brush_polys, c_alias_polys;
+extern int r_visframecount; // ??? what difs?
+extern int r_framecount;
+extern mplane_t frustum[4];
+extern int c_brush_polys, c_alias_polys;
 
 //
 // view origin
@@ -155,17 +153,17 @@ extern vec3_t r_origin;
 //
 // screen size info
 //
-extern refdef_t   r_refdef;
-extern mleaf_t *  r_viewleaf, *r_oldviewleaf;
+extern refdef_t r_refdef;
+extern mleaf_t *r_viewleaf, *r_oldviewleaf;
 extern texture_t *r_notexture_mip;
-extern int        d_lightstylevalue[256]; // 8.8 fraction of base light value
+extern int d_lightstylevalue[256]; // 8.8 fraction of base light value
 
 extern qboolean envmap;
-extern int      currenttexture;
-extern int      cnttextures[2];
-extern int      particletexture;
-extern int      netgraphtexture; // netgraph texture
-extern int      playertextures;
+extern int currenttexture;
+extern int cnttextures[2];
+extern int particletexture;
+extern int netgraphtexture; // netgraph texture
+extern int playertextures;
 
 extern int skytexturenum; // index in cl.loadmodel, not gl texture object
 
@@ -204,8 +202,8 @@ extern int gl_alpha_format;
 extern cvar_t gl_max_size;
 extern cvar_t gl_playermip;
 
-extern int       mirrortexturenum; // quake texturenum, not gltexturenum
-extern qboolean  mirror;
+extern int mirrortexturenum; // quake texturenum, not gltexturenum
+extern qboolean mirror;
 extern mplane_t *mirror_plane;
 
 extern float r_world_matrix[16];
@@ -225,8 +223,8 @@ void GL_Bind(int texnum);
 #ifdef _WIN32
 typedef void(APIENTRY *lpMTexFUNC)(GLenum, GLfloat, GLfloat);
 typedef void(APIENTRY *lpSelTexFUNC)(GLenum);
-extern lpMTexFUNC      qglMTexCoord2fSGIS;
-extern lpSelTexFUNC    qglSelectTextureSGIS;
+extern lpMTexFUNC qglMTexCoord2fSGIS;
+extern lpSelTexFUNC qglSelectTextureSGIS;
 #endif
 
 extern qboolean gl_mtexable;

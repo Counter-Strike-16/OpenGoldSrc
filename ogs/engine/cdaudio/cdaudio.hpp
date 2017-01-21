@@ -33,7 +33,7 @@
 
 #include "common/commontypes.h"
 
-int  CDAudio_Init();
+int CDAudio_Init();
 void CDAudio_Shutdown();
 
 void CDAudio_Update();

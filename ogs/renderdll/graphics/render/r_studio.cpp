@@ -32,25 +32,25 @@
 
 typedef struct r_studiocache_s
 {
-	float         frame;
-	int           sequence;
-	vec3_t        angles;
-	vec3_t        origin;
-	vec3_t        size;
+	float frame;
+	int sequence;
+	vec3_t angles;
+	vec3_t origin;
+	vec3_t size;
 	unsigned char controller[4];
 	unsigned char blending[2];
-	model_t *     pModel;
-	int           nStartHull;
-	int           nStartPlane;
-	int           numhulls;
+	model_t *pModel;
+	int nStartHull;
+	int nStartPlane;
+	int numhulls;
 } r_studiocache_t;
 
 studiohdr_t *pstudiohdr;
 
 //auxvert_t auxverts[2048];
 //vec_t lightvalues[2048][3];
-int      cache_hull_hitgroup[128];
-hull_t   cache_hull[128];
+int cache_hull_hitgroup[128];
+hull_t cache_hull[128];
 mplane_t cache_planes[768];
 
 r_studiocache_t rgStudioCache[STUDIO_CACHE_SIZE];
@@ -59,10 +59,10 @@ int nCurrentHull;
 int nCurrentPlane;
 int r_cachecurrent;
 
-int         studio_hull_hitgroup[STUDIO_NUM_HULLS];
-hull_t      studio_hull[STUDIO_NUM_HULLS];
+int studio_hull_hitgroup[STUDIO_NUM_HULLS];
+hull_t studio_hull[STUDIO_NUM_HULLS];
 dclipnode_t studio_clipnodes[6];
-mplane_t    studio_planes[6 * STUDIO_NUM_HULLS];
+mplane_t studio_planes[6 * STUDIO_NUM_HULLS];
 
 float bonetransform[STUDIO_NUM_HULLS][3][4];
 float rotationmatrix[3][4];
@@ -72,17 +72,17 @@ float rotationmatrix[3][4];
 */
 #ifndef HOOK_ENGINE
 
-cvar_t                   r_cachestudio     = {"r_cachestudio", "1", 0, 0.0f, NULL};
-sv_blending_interface_t  svBlending        = {1, SV_StudioSetupBones};
-sv_blending_interface_t *g_pSvBlendingAPI  = &svBlending;
-server_studio_api_t      server_studio_api = {Mem_Calloc, Cache_Check, COM_LoadCacheFile, Mod_Extradata};
+cvar_t r_cachestudio = { "r_cachestudio", "1", 0, 0.0f, NULL };
+sv_blending_interface_t svBlending = { 1, SV_StudioSetupBones };
+sv_blending_interface_t *g_pSvBlendingAPI = &svBlending;
+server_studio_api_t server_studio_api = { Mem_Calloc, Cache_Check, COM_LoadCacheFile, Mod_Extradata };
 
 #else // HOOK_ENGINE
 
-cvar_t                   r_cachestudio;
-sv_blending_interface_t  svBlending;
+cvar_t r_cachestudio;
+sv_blending_interface_t svBlending;
 sv_blending_interface_t *g_pSvBlendingAPI;
-server_studio_api_t      server_studio_api;
+server_studio_api_t server_studio_api;
 
 #endif // HOOK_ENGINE
 
@@ -92,18 +92,18 @@ void SV_InitStudioHull()
 	{
 		for(int i = 0; i < 6; i++)
 		{
-			int side                               = i & 1;
-			studio_clipnodes[i].planenum           = i;
-			studio_clipnodes[i].children[side]     = -1;
+			int side = i & 1;
+			studio_clipnodes[i].planenum = i;
+			studio_clipnodes[i].children[side] = -1;
 			studio_clipnodes[i].children[side ^ 1] = (i < 5) ? i + 1 : -2;
 		}
 
 		for(int i = 0; i < STUDIO_NUM_HULLS; i++)
 		{
-			studio_hull[i].planes        = &studio_planes[i * 6];
-			studio_hull[i].clipnodes     = &studio_clipnodes[0];
+			studio_hull[i].planes = &studio_planes[i * 6];
+			studio_hull[i].clipnodes = &studio_clipnodes[0];
 			studio_hull[i].firstclipnode = 0;
-			studio_hull[i].lastclipnode  = 5;
+			studio_hull[i].lastclipnode = 5;
 		}
 	}
 }
@@ -146,7 +146,7 @@ NOXREF void R_AddToStudioCache(float frame, int sequence, const vec_t *angles, c
 
 	p = &rgStudioCache[r_cachecurrent & 0xF];
 
-	p->frame    = frame;
+	p->frame = frame;
 	p->sequence = sequence;
 
 	p->angles[0] = angles[0];
@@ -164,9 +164,9 @@ NOXREF void R_AddToStudioCache(float frame, int sequence, const vec_t *angles, c
 	Q_memcpy(p->controller, controller, sizeof(p->controller));
 	Q_memcpy(p->blending, pblending, sizeof(p->blending));
 
-	p->pModel      = pModel;
+	p->pModel = pModel;
 	p->nStartPlane = nCurrentPlane;
-	p->nStartHull  = nCurrentHull;
+	p->nStartHull = nCurrentHull;
 
 	Q_memcpy(&cache_hull[nCurrentHull], pHulls, sizeof(hull_t) * numhulls);
 	Q_memcpy(&cache_planes[nCurrentPlane], studio_planes, sizeof(mplane_t) * 6 * numhulls);
@@ -185,14 +185,14 @@ void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 
 	// FIXME: rescale the inputs to 1/2 angle
 	angle = angles[2] * 0.5f;
-	sy    = sin(angle);
-	cy    = cos(angle);
+	sy = sin(angle);
+	cy = cos(angle);
 	angle = angles[1] * 0.5f;
-	sp    = sin(angle);
-	cp    = cos(angle);
+	sp = sin(angle);
+	cp = cos(angle);
 	angle = angles[0] * 0.5f;
-	sr    = sin(angle);
-	cr    = cos(angle);
+	sr = sin(angle);
+	cr = cos(angle);
 
 	quaternion[0] = sr * cp * cy - cr * sp * sy; // X
 	quaternion[1] = cr * sp * cy + sr * cp * sy; // Y
@@ -202,7 +202,7 @@ void AngleQuaternion(vec_t *angles, vec_t *quaternion)
 
 void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 {
-	int   i;
+	int i;
 	float omega, cosom, sinom, sclp, sclq;
 
 	// decide if one of the quaternions is backwards
@@ -229,8 +229,8 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 		{
 			omega = acos(cosom);
 			sinom = sin(omega);
-			sclp  = (float)(sin((1.0 - t) * omega) / sinom);
-			sclq  = (float)(sin(t * omega) / sinom);
+			sclp = (float)(sin((1.0 - t) * omega) / sinom);
+			sclq = (float)(sin(t * omega) / sinom);
 		}
 		else
 		{
@@ -248,8 +248,8 @@ void QuaternionSlerp(vec_t *p, vec_t *q, float t, vec_t *qt)
 		qt[1] = p[0];
 		qt[2] = -p[3];
 		qt[3] = p[2];
-		sclp  = (float)sin((1.0 - t) * 0.5 * M_PI);
-		sclq  = (float)sin(t * 0.5 * M_PI);
+		sclp = (float)sin((1.0 - t) * 0.5 * M_PI);
+		sclq = (float)sin(t * 0.5 * M_PI);
 		for(i = 0; i < 3; i++)
 		{
 			qt[i] = sclp * p[i] + sclq * qt[i];
@@ -274,8 +274,8 @@ void QuaternionMatrix(vec_t *quaternion, float matrix[3][4])
 
 void R_StudioCalcBoneAdj(float dadt, float *adj, const unsigned char *pcontroller1, const unsigned char *pcontroller2, unsigned char mouthopen)
 {
-	int                      i, j;
-	float                    value;
+	int i, j;
+	float value;
 	mstudiobonecontroller_t *pbonecontroller;
 	pbonecontroller = (mstudiobonecontroller_t *)((byte *)pstudiohdr + pstudiohdr->bonecontrollerindex);
 
@@ -290,8 +290,8 @@ void R_StudioCalcBoneAdj(float dadt, float *adj, const unsigned char *pcontrolle
 				if(abs(pcontroller1[i] - pcontroller2[i]) > 128)
 				{
 					int a, b;
-					a     = (pcontroller1[j] + 128) % 256;
-					b     = (pcontroller2[j] + 128) % 256;
+					a = (pcontroller1[j] + 128) % 256;
+					b = (pcontroller2[j] + 128) % 256;
 					value = (float)(((a * dadt) + (b * (1 - dadt)) - 128) * (360.0 / 256.0) + pbonecontroller[j].start);
 				}
 				else
@@ -304,7 +304,7 @@ void R_StudioCalcBoneAdj(float dadt, float *adj, const unsigned char *pcontrolle
 					value = 0.0f;
 				if(value > 1.0)
 					value = 1.0f;
-				value     = (float)((1.0 - value) * pbonecontroller[j].start + value * pbonecontroller[j].end);
+				value = (float)((1.0 - value) * pbonecontroller[j].start + value * pbonecontroller[j].end);
 			}
 			// Con_DPrintf( "%d %d %f : %f\n", m_pCurrentEntity->curstate.controller[j], m_pCurrentEntity->latched.prevcontroller[j], value, dadt );
 		}
@@ -313,7 +313,7 @@ void R_StudioCalcBoneAdj(float dadt, float *adj, const unsigned char *pcontrolle
 			value = (float)(mouthopen / 64.0);
 			if(value > 1.0)
 				value = 1.0f;
-			value     = (float)((1.0 - value) * pbonecontroller[j].start + value * pbonecontroller[j].end);
+			value = (float)((1.0 - value) * pbonecontroller[j].start + value * pbonecontroller[j].end);
 			// Con_DPrintf("%d %f\n", mouthopen, value );
 		}
 		switch(pbonecontroller[j].type & STUDIO_TYPES)
@@ -334,9 +334,9 @@ void R_StudioCalcBoneAdj(float dadt, float *adj, const unsigned char *pcontrolle
 
 void R_StudioCalcBoneQuaterion(int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, float *adj, float *q)
 {
-	int                 j, k;
-	vec4_t              q1, q2;
-	vec3_t              angle1, angle2;
+	int j, k;
+	vec4_t q1, q2;
+	vec3_t angle1, angle2;
 	mstudioanimvalue_t *panimvalue;
 
 	for(j = 0; j < 3; j++)
@@ -348,7 +348,7 @@ void R_StudioCalcBoneQuaterion(int frame, float s, mstudiobone_t *pbone, mstudio
 		else
 		{
 			panimvalue = (mstudioanimvalue_t *)((byte *)panim + panim->offset[j + 3]);
-			k          = frame;
+			k = frame;
 			while(panimvalue->num.total <= k)
 			{
 				k -= panimvalue->num.total;
@@ -408,7 +408,7 @@ void R_StudioCalcBoneQuaterion(int frame, float s, mstudiobone_t *pbone, mstudio
 
 void R_StudioCalcBonePosition(int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, float *adj, float *pos)
 {
-	int                 j, k;
+	int j, k;
 	mstudioanimvalue_t *panimvalue;
 
 	for(j = 0; j < 3; j++)
@@ -476,9 +476,9 @@ void R_StudioCalcBonePosition(int frame, float s, mstudiobone_t *pbone, mstudioa
 
 void R_StudioSlerpBones(vec4_t *q1, vec3_t *pos1, vec4_t *q2, vec3_t *pos2, float s)
 {
-	int    i;
+	int i;
 	vec4_t q3;
-	float  s1;
+	float s1;
 
 	if(s < 0)
 		s = 0;
@@ -490,10 +490,10 @@ void R_StudioSlerpBones(vec4_t *q1, vec3_t *pos1, vec4_t *q2, vec3_t *pos2, floa
 	for(i = 0; i < pstudiohdr->numbones; i++)
 	{
 		QuaternionSlerp(q1[i], q2[i], s, q3);
-		q1[i][0]   = q3[0];
-		q1[i][1]   = q3[1];
-		q1[i][2]   = q3[2];
-		q1[i][3]   = q3[3];
+		q1[i][0] = q3[0];
+		q1[i][1] = q3[1];
+		q1[i][2] = q3[2];
+		q1[i][3] = q3[3];
 		pos1[i][0] = pos1[i][0] * s1 + pos2[i][0] * s;
 		pos1[i][1] = pos1[i][1] * s1 + pos2[i][1] * s;
 		pos1[i][2] = pos1[i][2] * s1 + pos2[i][2] * s;
@@ -503,7 +503,7 @@ void R_StudioSlerpBones(vec4_t *q1, vec3_t *pos1, vec4_t *q2, vec3_t *pos2, floa
 mstudioanim_t *R_GetAnim(model_t *psubmodel, mstudioseqdesc_t *pseqdesc)
 {
 	mstudioseqgroup_t *pseqgroup;
-	cache_user_t *     paSequences;
+	cache_user_t *paSequences;
 
 	pseqgroup = (mstudioseqgroup_t *)((char *)pstudiohdr + pstudiohdr->seqgroupindex);
 	pseqgroup += pseqdesc->seqgroup;
@@ -513,7 +513,7 @@ mstudioanim_t *R_GetAnim(model_t *psubmodel, mstudioseqdesc_t *pseqdesc)
 	paSequences = (cache_user_t *)psubmodel->submodels;
 	if(!paSequences)
 	{
-		paSequences          = (cache_user_t *)Mem_Calloc(16, 4);
+		paSequences = (cache_user_t *)Mem_Calloc(16, 4);
 		psubmodel->submodels = (dmodel_t *)paSequences;
 	}
 	if(!Cache_Check(&paSequences[pseqdesc->seqgroup]))
@@ -532,15 +532,15 @@ void EXT_FUNC SV_StudioSetupBones(model_t *pModel, float frame, int sequence, co
 	static vec4_t q2[128];
 	static vec3_t pos2[128];
 
-	int               chainlength;
-	mstudiobone_t *   pbones;
+	int chainlength;
+	mstudiobone_t *pbones;
 	mstudioseqdesc_t *pseqdesc;
-	int               chain[128];
-	float             bonematrix[3][4];
-	mstudioanim_t *   panim;
-	float             f;
-	float             adj[8];
-	float             s;
+	int chain[128];
+	float bonematrix[3][4];
+	mstudioanim_t *panim;
+	float f;
+	float adj[8];
+	float s;
 
 	chainlength = 0;
 	if(sequence < 0 || sequence >= pstudiohdr->numseq)
@@ -548,7 +548,7 @@ void EXT_FUNC SV_StudioSetupBones(model_t *pModel, float frame, int sequence, co
 		Con_DPrintf("SV_StudioSetupBones:  sequence %i/%i out of range for model %s\n", sequence, pstudiohdr->numseq, pstudiohdr->name);
 		sequence = 0;
 	}
-	pbones   = (mstudiobone_t *)((char *)pstudiohdr + pstudiohdr->boneindex);
+	pbones = (mstudiobone_t *)((char *)pstudiohdr + pstudiohdr->boneindex);
 	pseqdesc = (mstudioseqdesc_t *)((char *)pstudiohdr + pstudiohdr->seqindex);
 	pseqdesc += sequence;
 	panim = R_GetAnim(pModel, pseqdesc);
@@ -561,7 +561,7 @@ void EXT_FUNC SV_StudioSetupBones(model_t *pModel, float frame, int sequence, co
 		do
 		{
 			chain[chainlength++] = iBone;
-			iBone                = pbones[iBone].parent;
+			iBone = pbones[iBone].parent;
 		} while(iBone != -1);
 	}
 	else
@@ -606,7 +606,7 @@ void EXT_FUNC SV_StudioSetupBones(model_t *pModel, float frame, int sequence, co
 	rotationmatrix[2][3] = origin[2];
 	for(int i = chainlength - 1; i >= 0; i--)
 	{
-		int bone   = chain[i];
+		int bone = chain[i];
 		int parent = pbones[bone].parent;
 		QuaternionMatrix(q1[bone], bonematrix);
 
@@ -642,7 +642,7 @@ hull_t *R_StudioHull(model_t *pModel, float frame, int sequence, const vec_t *an
 
 	pstudiohdr = (studiohdr_t *)Mod_Extradata(pModel);
 
-	vec_t angles2[3] = {-angles[0], angles[1], angles[2]};
+	vec_t angles2[3] = { -angles[0], angles[1], angles[2] };
 	g_pSvBlendingAPI->SV_StudioSetupBones(pModel, frame, sequence, angles2, origin, pcontroller, pblending, -1, pEdict);
 
 	mstudiobbox_t *pbbox = (mstudiobbox_t *)((char *)pstudiohdr + pstudiohdr->hitboxindex);
@@ -697,8 +697,8 @@ NOXREF void R_InitStudioCache()
 	Q_memset(rgStudioCache, 0, sizeof(rgStudioCache));
 
 	r_cachecurrent = 0;
-	nCurrentHull   = 0;
-	nCurrentPlane  = 0;
+	nCurrentHull = 0;
+	nCurrentPlane = 0;
 }
 
 NOXREF void R_FlushStudioCache()
@@ -715,7 +715,7 @@ int R_StudioBodyVariations(model_t *model)
 	if(!shdr)
 		return 0;
 
-	int                 count     = 1;
+	int count = 1;
 	mstudiobodyparts_t *pbodypart = (mstudiobodyparts_t *)((char *)shdr + shdr->bodypartindex);
 	for(int i = 0; i < shdr->numbodyparts; i++, pbodypart++)
 	{
@@ -757,12 +757,12 @@ void R_StudioPlayerBlend(mstudioseqdesc_t *pseqdesc, int *pBlend, float *pPitch)
 hull_t *SV_HullForStudioModel(const edict_t *pEdict, const vec_t *mins, const vec_t *maxs, vec_t *offset, int *pNumHulls)
 {
 	qboolean useComplexHull = FALSE;
-	vec3_t   size;
-	float    factor      = 0.5;
-	int      bSkipShield = 0;
-	size[0]              = maxs[0] - mins[0];
-	size[1]              = maxs[1] - mins[1];
-	size[2]              = maxs[2] - mins[2];
+	vec3_t size;
+	float factor = 0.5;
+	int bSkipShield = 0;
+	size[0] = maxs[0] - mins[0];
+	size[1] = maxs[1] - mins[1];
+	size[2] = maxs[2] - mins[2];
 	if(VectorCompare(vec3_origin, size))
 	{
 		if(!(gGlobalVariables.trace_flags & FTRACE_SIMPLEBOX))
@@ -779,7 +779,7 @@ hull_t *SV_HullForStudioModel(const edict_t *pEdict, const vec_t *mins, const ve
 					size[2] = 1.0f;
 					size[1] = 1.0f;
 					size[0] = 1.0f;
-					factor  = sv_clienttrace.value * 0.5f;
+					factor = sv_clienttrace.value * 0.5f;
 				}
 			}
 		}
@@ -808,35 +808,35 @@ hull_t *SV_HullForStudioModel(const edict_t *pEdict, const vec_t *mins, const ve
 			int iBlend;
 			R_StudioPlayerBlend(pseqdesc, &iBlend, angles);
 
-			unsigned char blending      = (unsigned char)iBlend;
-			unsigned char controller[4] = {0x7F, 0x7F, 0x7F, 0x7F};
+			unsigned char blending = (unsigned char)iBlend;
+			unsigned char controller[4] = { 0x7F, 0x7F, 0x7F, 0x7F };
 			return R_StudioHull(
-			    g_psv.models[pEdict->v.modelindex],
-			    pEdict->v.frame,
-			    pEdict->v.sequence,
-			    angles,
-			    pEdict->v.origin,
-			    size,
-			    controller,
-			    &blending,
-			    pNumHulls,
-			    pEdict,
-			    bSkipShield);
+			g_psv.models[pEdict->v.modelindex],
+			pEdict->v.frame,
+			pEdict->v.sequence,
+			angles,
+			pEdict->v.origin,
+			size,
+			controller,
+			&blending,
+			pNumHulls,
+			pEdict,
+			bSkipShield);
 		}
 		else
 		{
 			return R_StudioHull(
-			    g_psv.models[pEdict->v.modelindex],
-			    pEdict->v.frame,
-			    pEdict->v.sequence,
-			    pEdict->v.angles,
-			    pEdict->v.origin,
-			    size,
-			    pEdict->v.controller,
-			    pEdict->v.blending,
-			    pNumHulls,
-			    pEdict,
-			    bSkipShield);
+			g_psv.models[pEdict->v.modelindex],
+			pEdict->v.frame,
+			pEdict->v.sequence,
+			pEdict->v.angles,
+			pEdict->v.origin,
+			size,
+			pEdict->v.controller,
+			pEdict->v.blending,
+			pNumHulls,
+			pEdict,
+			bSkipShield);
 		}
 	}
 	else
@@ -849,30 +849,30 @@ hull_t *SV_HullForStudioModel(const edict_t *pEdict, const vec_t *mins, const ve
 qboolean DoesSphereIntersect(float *vSphereCenter, float fSphereRadiusSquared, float *vLinePt, float *vLineDir)
 {
 	vec3_t P;
-	float  a;
-	float  b;
-	float  c;
-	float  insideSqr;
+	float a;
+	float b;
+	float c;
+	float insideSqr;
 
 	P[0] = *vLinePt - *vSphereCenter;
 	P[1] = vLinePt[1] - vSphereCenter[1];
 	P[2] = vLinePt[2] - vSphereCenter[2];
-	a    = vLineDir[0] * vLineDir[0] + vLineDir[1] * vLineDir[1] + vLineDir[2] * vLineDir[2];
-	b    = P[2] * vLineDir[2] + P[1] * vLineDir[1] + P[0] * vLineDir[0];
+	a = vLineDir[0] * vLineDir[0] + vLineDir[1] * vLineDir[1] + vLineDir[2] * vLineDir[2];
+	b = P[2] * vLineDir[2] + P[1] * vLineDir[1] + P[0] * vLineDir[0];
 	b *= 2;
-	c         = P[2] * P[2] + P[1] * P[1] + P[0] * P[0] - fSphereRadiusSquared;
+	c = P[2] * P[2] + P[1] * P[1] + P[0] * P[0] - fSphereRadiusSquared;
 	insideSqr = b * b - c * a * 4.0f;
 	return insideSqr > 0.000001;
 }
 
 qboolean SV_CheckSphereIntersection(edict_t *ent, const vec_t *start, const vec_t *end)
 {
-	studiohdr_t *     studiohdr;
+	studiohdr_t *studiohdr;
 	mstudioseqdesc_t *pseqdesc;
 
 	vec3_t traceOrg;
 	vec3_t traceDir;
-	float  radiusSquared;
+	float radiusSquared;
 	vec3_t maxDim;
 
 	radiusSquared = 0.0f;
@@ -887,7 +887,7 @@ qboolean SV_CheckSphereIntersection(edict_t *ent, const vec_t *start, const vec_
 	traceDir[2] = end[2] - start[2];
 
 	studiohdr = (studiohdr_t *)Mod_Extradata(g_psv.models[ent->v.modelindex]);
-	pseqdesc  = (mstudioseqdesc_t *)((char *)studiohdr + studiohdr->seqindex);
+	pseqdesc = (mstudioseqdesc_t *)((char *)studiohdr + studiohdr->seqindex);
 	pseqdesc += ent->v.sequence;
 	for(int i = 0; i < 3; i++)
 	{
@@ -905,15 +905,15 @@ void EXT_FUNC GetBonePosition(const edict_t *pEdict, int iBone, float *rgflOrigi
 {
 	pstudiohdr = (studiohdr_t *)Mod_Extradata(g_psv.models[pEdict->v.modelindex]);
 	g_pSvBlendingAPI->SV_StudioSetupBones(
-	    g_psv.models[pEdict->v.modelindex],
-	    pEdict->v.frame,
-	    pEdict->v.sequence,
-	    pEdict->v.angles,
-	    pEdict->v.origin,
-	    pEdict->v.controller,
-	    pEdict->v.blending,
-	    iBone,
-	    pEdict);
+	g_psv.models[pEdict->v.modelindex],
+	pEdict->v.frame,
+	pEdict->v.sequence,
+	pEdict->v.angles,
+	pEdict->v.origin,
+	pEdict->v.controller,
+	pEdict->v.blending,
+	iBone,
+	pEdict);
 
 	if(rgflOrigin)
 	{
@@ -926,26 +926,26 @@ void EXT_FUNC GetBonePosition(const edict_t *pEdict, int iBone, float *rgflOrigi
 void EXT_FUNC GetAttachment(const edict_t *pEdict, int iAttachment, float *rgflOrigin, float *rgflAngles)
 {
 	mstudioattachment_t *pattachment;
-	vec3_t               angles;
+	vec3_t angles;
 
 	angles[0] = -pEdict->v.angles[0];
 	angles[1] = pEdict->v.angles[1];
 	angles[2] = pEdict->v.angles[2];
 
-	pstudiohdr  = (studiohdr_t *)Mod_Extradata(g_psv.models[pEdict->v.modelindex]);
+	pstudiohdr = (studiohdr_t *)Mod_Extradata(g_psv.models[pEdict->v.modelindex]);
 	pattachment = (mstudioattachment_t *)((char *)pstudiohdr + pstudiohdr->attachmentindex);
 	pattachment += iAttachment;
 
 	g_pSvBlendingAPI->SV_StudioSetupBones(
-	    g_psv.models[pEdict->v.modelindex],
-	    pEdict->v.frame,
-	    pEdict->v.sequence,
-	    angles,
-	    pEdict->v.origin,
-	    pEdict->v.controller,
-	    pEdict->v.blending,
-	    pattachment->bone,
-	    pEdict);
+	g_psv.models[pEdict->v.modelindex],
+	pEdict->v.frame,
+	pEdict->v.sequence,
+	angles,
+	pEdict->v.origin,
+	pEdict->v.controller,
+	pEdict->v.blending,
+	pattachment->bone,
+	pEdict);
 
 	if(rgflOrigin)
 		VectorTransform(pattachment->org, (float *)bonetransform[pattachment->bone], rgflOrigin);
@@ -1043,7 +1043,7 @@ void R_StudioAccumulateBoneVerts(vec_t *mins, vec_t *maxs, int *vertcount, vec_t
 		VectorScale(delta, -0.5, point);
 		R_StudioBoundVertex(mins, maxs, vertcount, point);
 
-		for(int i        = 0; i < 3; i++)
+		for(int i = 0; i < 3; i++)
 			bone_mins[i] = bone_maxs[i] = 0;
 
 		*bonecount = 0;
@@ -1057,33 +1057,33 @@ int R_StudioComputeBounds(unsigned char *pBuffer, float *mins, float *maxs)
 	vec3_t vert_mins;
 	vec3_t vert_maxs;
 
-	for(int i        = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 		bone_mins[i] = bone_maxs[i] = vert_mins[i] = vert_maxs[i] = 0;
 
-	studiohdr_t *       header    = (studiohdr_t *)pBuffer;
+	studiohdr_t *header = (studiohdr_t *)pBuffer;
 	mstudiobodyparts_t *bodyparts = (mstudiobodyparts_t *)((char *)header + header->bodypartindex);
 
 	int nummodels = 0;
 	for(int i = 0; i < header->numbodyparts; i++)
 		nummodels += bodyparts[i].nummodels;
 
-	int             vert_count = 0;
-	mstudiomodel_t *pmodel     = (mstudiomodel_t *)&bodyparts[header->numbodyparts];
+	int vert_count = 0;
+	mstudiomodel_t *pmodel = (mstudiomodel_t *)&bodyparts[header->numbodyparts];
 	for(int model = 0; model < nummodels; model++, pmodel++)
 	{
-		int     num_verts = pmodel->numverts;
-		vec3_t *pverts    = (vec3_t *)((char *)header + pmodel->vertindex);
+		int num_verts = pmodel->numverts;
+		vec3_t *pverts = (vec3_t *)((char *)header + pmodel->vertindex);
 		for(int v = 0; v < num_verts; v++)
 			R_StudioBoundVertex(vert_mins, vert_maxs, &vert_count, pverts[v]);
 	}
 
-	int               bone_count = 0;
-	mstudiobone_t *   pbones     = (mstudiobone_t *)((char *)header + header->boneindex);
-	mstudioseqdesc_t *pseq       = (mstudioseqdesc_t *)((char *)header + header->seqindex);
+	int bone_count = 0;
+	mstudiobone_t *pbones = (mstudiobone_t *)((char *)header + header->boneindex);
+	mstudioseqdesc_t *pseq = (mstudioseqdesc_t *)((char *)header + header->seqindex);
 	for(int sequence = 0; sequence < header->numseq; sequence++, pseq++)
 	{
-		int            num_frames = pseq->numframes;
-		mstudioanim_t *panim      = (mstudioanim_t *)((char *)header + pseq->animindex);
+		int num_frames = pseq->numframes;
+		mstudioanim_t *panim = (mstudioanim_t *)((char *)header + pseq->animindex);
 		for(int bone = 0; bone < header->numbones; bone++)
 		{
 			for(int f = 0; f < num_frames; ++f)
@@ -1108,10 +1108,10 @@ int R_StudioComputeBounds(unsigned char *pBuffer, float *mins, float *maxs)
 
 int R_GetStudioBounds(const char *filename, float *mins, float *maxs)
 {
-	int      iret            = 0;
+	int iret = 0;
 	qboolean usingReadBuffer = 0;
 
-	for(int i   = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 		mins[0] = maxs[0] = vec3_origin[i];
 
 	if(!Q_strstr(filename, "models") || !Q_strstr(filename, ".mdl"))
@@ -1121,7 +1121,7 @@ int R_GetStudioBounds(const char *filename, float *mins, float *maxs)
 	if(!fp)
 		return 0;
 
-	int   length;
+	int length;
 	char *pBuffer = (char *)FS_GetReadBuffer(fp, &length);
 	if(pBuffer)
 		usingReadBuffer = 1;

@@ -32,9 +32,9 @@
 #include "r_local.hpp"
 
 unsigned char *r_turb_pbase, *r_turb_pdest;
-fixed16_t      r_turb_s, r_turb_t, r_turb_sstep, r_turb_tstep;
-int *          r_turb_turb;
-int            r_turb_spancount;
+fixed16_t r_turb_s, r_turb_t, r_turb_sstep, r_turb_tstep;
+int *r_turb_turb;
+int r_turb_spancount;
 
 void D_DrawTurbulent8Span();
 
@@ -48,16 +48,16 @@ the sine warp, to keep the edges from wrapping
 */
 void D_WarpScreen()
 {
-	int    w, h;
-	int    u, v, u2, v2;
-	byte * dest;
-	int *  turb;
-	int *  col;
+	int w, h;
+	int u, v, u2, v2;
+	byte *dest;
+	int *turb;
+	int *col;
 	byte **row;
 
-	static int   cached_width, cached_height;
+	static int cached_width, cached_height;
 	static byte *rowptr[1200 + AMP2 * 2];
-	static int   column[1600 + AMP2 * 2];
+	static int column[1600 + AMP2 * 2];
 
 	//
 	// these are constant over resolutions, and can be saved
@@ -66,17 +66,17 @@ void D_WarpScreen()
 	h = r_newrefdef.height;
 	if(w != cached_width || h != cached_height)
 	{
-		cached_width  = w;
+		cached_width = w;
 		cached_height = h;
 		for(v = 0; v < h + AMP2 * 2; v++)
 		{
-			v2        = (int)((float)v / (h + AMP2 * 2) * r_refdef.vrect.height);
+			v2 = (int)((float)v / (h + AMP2 * 2) * r_refdef.vrect.height);
 			rowptr[v] = r_warpbuffer + (WARP_WIDTH * v2);
 		}
 
 		for(u = 0; u < w + AMP2 * 2; u++)
 		{
-			u2        = (int)((float)u / (w + AMP2 * 2) * r_refdef.vrect.width);
+			u2 = (int)((float)u / (w + AMP2 * 2) * r_refdef.vrect.width);
 			column[u] = u2;
 		}
 	}
@@ -111,8 +111,8 @@ void D_DrawTurbulent8Span()
 
 	do
 	{
-		sturb           = ((r_turb_s + r_turb_turb[(r_turb_t >> 16) & (CYCLE - 1)]) >> 16) & 63;
-		tturb           = ((r_turb_t + r_turb_turb[(r_turb_s >> 16) & (CYCLE - 1)]) >> 16) & 63;
+		sturb = ((r_turb_s + r_turb_turb[(r_turb_t >> 16) & (CYCLE - 1)]) >> 16) & 63;
+		tturb = ((r_turb_t + r_turb_turb[(r_turb_s >> 16) & (CYCLE - 1)]) >> 16) & 63;
 		*r_turb_pdest++ = *(r_turb_pbase + (tturb << 6) + sturb);
 		r_turb_s += r_turb_sstep;
 		r_turb_t += r_turb_tstep;
@@ -128,10 +128,10 @@ Turbulent8
 */
 void Turbulent8(espan_t *pspan)
 {
-	int       count;
+	int count;
 	fixed16_t snext, tnext;
-	float     sdivz, tdivz, zi, z, du, dv, spancountminus1;
-	float     sdivz16stepu, tdivz16stepu, zi16stepu;
+	float sdivz, tdivz, zi, z, du, dv, spancountminus1;
+	float sdivz16stepu, tdivz16stepu, zi16stepu;
 
 	r_turb_turb = sintable + ((int)(r_newrefdef.time * SPEED) & (CYCLE - 1));
 
@@ -142,7 +142,7 @@ void Turbulent8(espan_t *pspan)
 
 	sdivz16stepu = d_sdivzstepu * 16;
 	tdivz16stepu = d_tdivzstepu * 16;
-	zi16stepu    = d_zistepu * 16;
+	zi16stepu = d_zistepu * 16;
 
 	do
 	{
@@ -157,8 +157,8 @@ void Turbulent8(espan_t *pspan)
 
 		sdivz = d_sdivzorigin + dv * d_sdivzstepv + du * d_sdivzstepu;
 		tdivz = d_tdivzorigin + dv * d_tdivzstepv + du * d_tdivzstepu;
-		zi    = d_ziorigin + dv * d_zistepv + du * d_zistepu;
-		z     = (float)0x10000 / zi; // prescale to 16.16 fixed-point
+		zi = d_ziorigin + dv * d_zistepv + du * d_zistepu;
+		z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 
 		r_turb_s = (int)(sdivz * z) + sadjust;
 		if(r_turb_s > bbextents)
@@ -218,7 +218,7 @@ void Turbulent8(espan_t *pspan)
 				sdivz += d_sdivzstepu * spancountminus1;
 				tdivz += d_tdivzstepu * spancountminus1;
 				zi += d_zistepu * spancountminus1;
-				z     = (float)0x10000 / zi; // prescale to 16.16 fixed-point
+				z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 				snext = (int)(sdivz * z) + sadjust;
 				if(snext > bbextents)
 					snext = bbextents;
@@ -247,9 +247,7 @@ void Turbulent8(espan_t *pspan)
 
 			r_turb_s = snext;
 			r_turb_t = tnext;
-
 		} while(count > 0);
-
 	} while((pspan = pspan->pnext) != NULL);
 }
 
@@ -263,10 +261,10 @@ NonTurbulent8 - this is for drawing scrolling textures. they're warping water te
 */
 void NonTurbulent8(espan_t *pspan)
 {
-	int       count;
+	int count;
 	fixed16_t snext, tnext;
-	float     sdivz, tdivz, zi, z, du, dv, spancountminus1;
-	float     sdivz16stepu, tdivz16stepu, zi16stepu;
+	float sdivz, tdivz, zi, z, du, dv, spancountminus1;
+	float sdivz16stepu, tdivz16stepu, zi16stepu;
 
 	//	r_turb_turb = sintable + ((int)(r_newrefdef.time*SPEED)&(CYCLE-1));
 	r_turb_turb = blanktable;
@@ -278,7 +276,7 @@ void NonTurbulent8(espan_t *pspan)
 
 	sdivz16stepu = d_sdivzstepu * 16;
 	tdivz16stepu = d_tdivzstepu * 16;
-	zi16stepu    = d_zistepu * 16;
+	zi16stepu = d_zistepu * 16;
 
 	do
 	{
@@ -293,8 +291,8 @@ void NonTurbulent8(espan_t *pspan)
 
 		sdivz = d_sdivzorigin + dv * d_sdivzstepv + du * d_sdivzstepu;
 		tdivz = d_tdivzorigin + dv * d_tdivzstepv + du * d_tdivzstepu;
-		zi    = d_ziorigin + dv * d_zistepv + du * d_zistepu;
-		z     = (float)0x10000 / zi; // prescale to 16.16 fixed-point
+		zi = d_ziorigin + dv * d_zistepv + du * d_zistepu;
+		z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 
 		r_turb_s = (int)(sdivz * z) + sadjust;
 		if(r_turb_s > bbextents)
@@ -354,7 +352,7 @@ void NonTurbulent8(espan_t *pspan)
 				sdivz += d_sdivzstepu * spancountminus1;
 				tdivz += d_tdivzstepu * spancountminus1;
 				zi += d_zistepu * spancountminus1;
-				z     = (float)0x10000 / zi; // prescale to 16.16 fixed-point
+				z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 				snext = (int)(sdivz * z) + sadjust;
 				if(snext > bbextents)
 					snext = bbextents;
@@ -383,9 +381,7 @@ void NonTurbulent8(espan_t *pspan)
 
 			r_turb_s = snext;
 			r_turb_t = tnext;
-
 		} while(count > 0);
-
 	} while((pspan = pspan->pnext) != NULL);
 }
 //PGM
@@ -402,11 +398,11 @@ D_DrawSpans16
 */
 void D_DrawSpans16(espan_t *pspan)
 {
-	int            count, spancount;
+	int count, spancount;
 	unsigned char *pbase, *pdest;
-	fixed16_t      s, t, snext, tnext, sstep, tstep;
-	float          sdivz, tdivz, zi, z, du, dv, spancountminus1;
-	float          sdivz8stepu, tdivz8stepu, zi8stepu;
+	fixed16_t s, t, snext, tnext, sstep, tstep;
+	float sdivz, tdivz, zi, z, du, dv, spancountminus1;
+	float sdivz8stepu, tdivz8stepu, zi8stepu;
 
 	sstep = 0; // keep compiler happy
 	tstep = 0; // ditto
@@ -415,7 +411,7 @@ void D_DrawSpans16(espan_t *pspan)
 
 	sdivz8stepu = d_sdivzstepu * 8;
 	tdivz8stepu = d_tdivzstepu * 8;
-	zi8stepu    = d_zistepu * 8;
+	zi8stepu = d_zistepu * 8;
 
 	do
 	{
@@ -430,8 +426,8 @@ void D_DrawSpans16(espan_t *pspan)
 
 		sdivz = d_sdivzorigin + dv * d_sdivzstepv + du * d_sdivzstepu;
 		tdivz = d_tdivzorigin + dv * d_tdivzstepv + du * d_tdivzstepu;
-		zi    = d_ziorigin + dv * d_zistepv + du * d_zistepu;
-		z     = (float)0x10000 / zi; // prescale to 16.16 fixed-point
+		zi = d_ziorigin + dv * d_zistepv + du * d_zistepu;
+		z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 
 		s = (int)(sdivz * z) + sadjust;
 		if(s > bbextents)
@@ -491,7 +487,7 @@ void D_DrawSpans16(espan_t *pspan)
 				sdivz += d_sdivzstepu * spancountminus1;
 				tdivz += d_tdivzstepu * spancountminus1;
 				zi += d_zistepu * spancountminus1;
-				z     = (float)0x10000 / zi; // prescale to 16.16 fixed-point
+				z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 				snext = (int)(sdivz * z) + sadjust;
 				if(snext > bbextents)
 					snext = bbextents;
@@ -522,9 +518,7 @@ void D_DrawSpans16(espan_t *pspan)
 
 			s = snext;
 			t = tnext;
-
 		} while(count > 0);
-
 	} while((pspan = pspan->pnext) != NULL);
 }
 
@@ -539,12 +533,12 @@ D_DrawZSpans
 */
 void D_DrawZSpans(espan_t *pspan)
 {
-	int      count, doublecount, izistep;
-	int      izi;
-	short *  pdest;
+	int count, doublecount, izistep;
+	int izi;
+	short *pdest;
 	unsigned ltemp;
-	float    zi;
-	float    du, dv;
+	float zi;
+	float du, dv;
 
 	// FIXME: check for clamping/range problems
 	// we count on FP exceptions being turned off to avoid range problems
@@ -586,7 +580,6 @@ void D_DrawZSpans(espan_t *pspan)
 
 		if(count & 1)
 			*pdest = (short)(izi >> 16);
-
 	} while((pspan = pspan->pnext) != NULL);
 }
 

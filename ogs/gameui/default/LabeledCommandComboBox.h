@@ -32,7 +32,7 @@ public:
 public:
 	enum
 	{
-		MAX_NAME_LEN    = 256,
+		MAX_NAME_LEN = 256,
 		MAX_COMMAND_LEN = 256
 	};
 
@@ -44,13 +44,13 @@ private:
 	{
 		char name[MAX_NAME_LEN];
 		char command[MAX_COMMAND_LEN];
-		int  comboBoxID;
+		int comboBoxID;
 	};
 
 private:
 	CUtlVector<COMMANDITEM> m_Items;
-	int                     m_iCurrentSelection;
-	int                     m_iStartSelection;
+	int m_iCurrentSelection;
+	int m_iStartSelection;
 };
 
 #endif

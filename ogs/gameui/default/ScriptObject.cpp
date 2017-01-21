@@ -28,21 +28,21 @@ void StripFloatTrailingZeros(char *str)
 }
 
 objtypedesc_t objtypes[] =
-    {
-        {O_BOOL, "BOOL"},
-        {O_NUMBER, "NUMBER"},
-        {O_LIST, "LIST"},
-        {O_STRING, "STRING"},
-        {O_OBSOLETE, "OBSOLETE"},
+{
+  { O_BOOL, "BOOL" },
+  { O_NUMBER, "NUMBER" },
+  { O_LIST, "LIST" },
+  { O_STRING, "STRING" },
+  { O_OBSOLETE, "OBSOLETE" },
 };
 
 mpcontrol_t::mpcontrol_t(Panel *parent, char const *panelName)
     : Panel(parent, panelName)
 {
-	type     = O_BADTYPE;
+	type = O_BADTYPE;
 	pControl = NULL;
-	pPrompt  = NULL;
-	pScrObj  = NULL;
+	pPrompt = NULL;
+	pScrObj = NULL;
 
 	next = NULL;
 
@@ -85,9 +85,9 @@ CScriptListItem::CScriptListItem(char const *strItem, char const *strValue)
 
 CScriptObject::CScriptObject(void)
 {
-	type       = O_BOOL;
-	bSetInfo   = false;
-	pNext      = NULL;
+	type = O_BOOL;
+	bSetInfo = false;
+	pNext = NULL;
 	pListItems = NULL;
 }
 
@@ -124,7 +124,7 @@ void CScriptObject::AddItem(CScriptListItem *pItem)
 
 	if(!p)
 	{
-		pListItems   = pItem;
+		pListItems = pItem;
 		pItem->pNext = NULL;
 		return;
 	}
@@ -133,7 +133,7 @@ void CScriptObject::AddItem(CScriptListItem *pItem)
 	{
 		if(!p->pNext)
 		{
-			p->pNext     = pItem;
+			p->pNext = pItem;
 			pItem->pNext = NULL;
 			return;
 		}
@@ -144,10 +144,10 @@ void CScriptObject::AddItem(CScriptListItem *pItem)
 
 void UTIL_StripInvalidCharacters(char *pszInput, int maxlen)
 {
-	char  szOutput[4096];
+	char szOutput[4096];
 	char *pIn, *pOut;
 
-	pIn  = pszInput;
+	pIn = pszInput;
 	pOut = szOutput;
 
 	*pOut = '\0';
@@ -175,7 +175,7 @@ void FixupString(char *inString, int maxlen)
 
 char *CleanFloat(float val)
 {
-	static int  curstring = 0;
+	static int curstring = 0;
 	static char string[2][32];
 	curstring = (curstring + 1) % 2;
 
@@ -281,8 +281,8 @@ void CScriptObject::WriteToFile(FileHandle_t fp)
 	g_pFullFileSystem->FPrintf(fp, "\"%s\"\t\t", cvarname);
 
 	CScriptListItem *pItem;
-	int              n, i;
-	float            fVal;
+	int n, i;
+	float fVal;
 
 	switch(type)
 	{
@@ -316,8 +316,8 @@ void CScriptObject::WriteToFile(FileHandle_t fp)
 	case O_LIST:
 	{
 		pItem = pListItems;
-		n     = (int)fcurValue;
-		i     = 0;
+		n = (int)fcurValue;
+		i = 0;
 
 		while((i < n) && pItem)
 		{
@@ -344,13 +344,13 @@ void CScriptObject::WriteToConfig(void)
 		return;
 
 	char *pszKey;
-	char  szValue[2048];
+	char szValue[2048];
 
 	pszKey = (char *)cvarname;
 
 	CScriptListItem *pItem;
-	int              n, i;
-	float            fVal;
+	int n, i;
+	float fVal;
 
 	switch(type)
 	{
@@ -384,8 +384,8 @@ void CScriptObject::WriteToConfig(void)
 	case O_LIST:
 	{
 		pItem = pListItems;
-		n     = (int)fcurValue;
-		i     = 0;
+		n = (int)fcurValue;
+		i = 0;
 
 		while((i < n) && pItem)
 		{
@@ -657,7 +657,7 @@ CDescription::~CDescription(void)
 
 	while(p)
 	{
-		n        = p->pNext;
+		n = p->pNext;
 		p->pNext = NULL;
 		p->MarkForDeletion();
 		p = n;
@@ -698,7 +698,7 @@ void CDescription::AddObject(CScriptObject *pObj)
 
 	if(!p)
 	{
-		pObjList    = pObj;
+		pObjList = pObj;
 		pObj->pNext = NULL;
 		return;
 	}
@@ -707,7 +707,7 @@ void CDescription::AddObject(CScriptObject *pObj)
 	{
 		if(!p->pNext)
 		{
-			p->pNext    = pObj;
+			p->pNext = pObj;
 			pObj->pNext = NULL;
 			return;
 		}
@@ -781,7 +781,7 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 		return false;
 	}
 
-	char *         pStart;
+	char *pStart;
 	CScriptObject *pObj;
 
 	while(1)
@@ -799,7 +799,7 @@ bool CDescription::ReadFromBuffer(char **pBuffer)
 		*pBuffer = pStart;
 
 		bool mustAdd = true;
-		pObj         = FindObject(token);
+		pObj = FindObject(token);
 
 		if(pObj)
 		{
@@ -902,7 +902,7 @@ void CDescription::WriteToScriptFile(FileHandle_t fp)
 
 void CDescription::TransferCurrentValues(const char *pszConfigFile)
 {
-	char           szValue[1024];
+	char szValue[1024];
 	CScriptObject *pObj;
 
 	pObj = pObjList;

@@ -52,4 +52,4 @@ void V_ParseDamage();
 
 void V_SetContentsColor(int contents);
 
-void  V_CalcBlend();
+void V_CalcBlend();

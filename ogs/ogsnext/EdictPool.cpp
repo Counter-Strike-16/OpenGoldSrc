@@ -95,19 +95,19 @@ void CEdictPool::FreeEdict(edict_t *edict) // can be turned into method of edict
 
 		ed->serialnumber++;
 		ed->freetime = (float)g_psv.time;
-		ed->free     = TRUE;
-		ed->v.flags  = 0;
-		ed->v.model  = 0;
+		ed->free = TRUE;
+		ed->v.flags = 0;
+		ed->v.model = 0;
 
 		ed->v.takedamage = 0;
 		ed->v.modelindex = 0;
-		ed->v.colormap   = 0;
-		ed->v.skin       = 0;
-		ed->v.frame      = 0;
-		ed->v.scale      = 0;
-		ed->v.gravity    = 0;
-		ed->v.nextthink  = -1.0f;
-		ed->v.solid      = SOLID_NOT;
+		ed->v.colormap = 0;
+		ed->v.skin = 0;
+		ed->v.frame = 0;
+		ed->v.scale = 0;
+		ed->v.gravity = 0;
+		ed->v.nextthink = -1.0f;
+		ed->v.solid = SOLID_NOT;
 
 		//
 

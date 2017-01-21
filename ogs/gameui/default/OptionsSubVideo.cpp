@@ -30,16 +30,16 @@ using namespace vgui;
 
 struct RatioToAspectMode_t
 {
-	int   anamorphic;
+	int anamorphic;
 	float aspectRatio;
 };
 
 RatioToAspectMode_t g_RatioToAspectModes[] =
-    {
-        {0, 4.0f / 3.0f},
-        {1, 16.0f / 9.0f},
-        {2, 16.0f / 10.0f},
-        {2, 1.0f},
+{
+  { 0, 4.0f / 3.0f },
+  { 1, 16.0f / 9.0f },
+  { 2, 16.0f / 10.0f },
+  { 2, 1.0f },
 };
 
 int GetScreenAspectMode(int width, int height)
@@ -47,7 +47,7 @@ int GetScreenAspectMode(int width, int height)
 	float aspectRatio = (float)width / (float)height;
 
 	float closestAspectRatioDist = 99999.0f;
-	int   closestAnamorphic      = 0;
+	int closestAnamorphic = 0;
 
 	for(int i = 0; i < ARRAYSIZE(g_RatioToAspectModes); i++)
 	{
@@ -56,7 +56,7 @@ int GetScreenAspectMode(int width, int height)
 		if(dist < closestAspectRatioDist)
 		{
 			closestAspectRatioDist = dist;
-			closestAnamorphic      = g_RatioToAspectModes[i].anamorphic;
+			closestAnamorphic = g_RatioToAspectModes[i].anamorphic;
 		}
 	}
 
@@ -81,8 +81,8 @@ public:
 		SetDeleteSelfOnClose(true);
 
 		m_pGammaSlider = new CCvarSlider(this, "Gamma", "#GameUI_Gamma", 1.6f, 2.6f, "bte_monitorgamma");
-		m_pGammaLabel  = new Label(this, "Gamma label", "#GameUI_Gamma");
-		m_pGammaEntry  = new TextEntry(this, "GammaEntry");
+		m_pGammaLabel = new Label(this, "Gamma label", "#GameUI_Gamma");
+		m_pGammaEntry = new TextEntry(this, "GammaEntry");
 
 		Button *ok = new Button(this, "OKButton", "#vgui_ok");
 		ok->SetCommand(new KeyValues("OK"));
@@ -152,10 +152,10 @@ public:
 	}
 
 private:
-	CCvarSlider *    m_pGammaSlider;
-	vgui::Label *    m_pGammaLabel;
+	CCvarSlider *m_pGammaSlider;
+	vgui::Label *m_pGammaLabel;
 	vgui::TextEntry *m_pGammaEntry;
-	float            m_flOriginalGamma;
+	float m_flOriginalGamma;
 };
 
 class COptionsSubVideoAdvancedDlg : public vgui::Frame
@@ -179,8 +179,8 @@ public:
 		m_pAnisotropicFiltering->AddItem("16X", NULL);
 
 		m_pDetailTexture = new CheckButton(this, "DetailTexture", "#GameUI_Detail_Texture");
-		m_pWaterReflect  = new CheckButton(this, "WaterReflect", "#GameUI_Water_Reflect");
-		m_pWaitForVSync  = new CheckButton(this, "WaitForVSync", "#GameUI_Wait_For_VSync");
+		m_pWaterReflect = new CheckButton(this, "WaterReflect", "#GameUI_Water_Reflect");
+		m_pWaitForVSync = new CheckButton(this, "WaitForVSync", "#GameUI_Wait_For_VSync");
 
 		LoadControlSettingsFromScheme("OptionsSubVideoAdvancedDlg.res");
 	}
@@ -294,8 +294,8 @@ public:
 	}
 
 private:
-	bool               m_bUseChanges;
-	vgui::ComboBox *   m_pAnisotropicFiltering;
+	bool m_bUseChanges;
+	vgui::ComboBox *m_pAnisotropicFiltering;
 	vgui::CheckButton *m_pDetailTexture, *m_pWaterReflect, *m_pWaitForVSync;
 };
 
@@ -306,7 +306,7 @@ COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent)
 	memset(&m_CurrentSettings, 0, sizeof(m_CurrentSettings));
 
 	m_pBrightnessSlider = new CCvarSlider(this, "Brightness", "#GameUI_Brightness", 0.0f, 2.0f, "brightness");
-	m_pGammaSlider      = new CCvarSlider(this, "Gamma", "#GameUI_Gamma", 1.0f, 3.0f, "gamma");
+	m_pGammaSlider = new CCvarSlider(this, "Gamma", "#GameUI_Gamma", 1.0f, 3.0f, "gamma");
 
 	m_bRequireRestart = false;
 
@@ -314,14 +314,14 @@ COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent)
 
 	m_pGammaButton = new Button(this, "GammaButton", "#GameUI_AdjustGamma");
 	m_pGammaButton->SetCommand(new KeyValues("OpenGammaDialog"));
-	m_pMode        = new ComboBox(this, "Resolution", 8, false);
+	m_pMode = new ComboBox(this, "Resolution", 8, false);
 	m_pAspectRatio = new ComboBox(this, "AspectRatio", 6, false);
-	m_pAdvanced    = new Button(this, "AdvancedButton", "#GameUI_AdvancedEllipsis");
+	m_pAdvanced = new Button(this, "AdvancedButton", "#GameUI_AdvancedEllipsis");
 	m_pAdvanced->SetCommand(new KeyValues("OpenAdvanced"));
 	m_pThirdPartyCredits = new URLButton(this, "ThirdPartyVideoCredits", "#GameUI_ThirdPartyTechCredits");
 	m_pThirdPartyCredits->SetCommand(new KeyValues("OpenThirdPartyVideoCreditsDialog"));
 
-	char     pszAspectName[3][64];
+	char pszAspectName[3][64];
 	wchar_t *unicodeText = g_pVGuiLocalize->Find("#GameUI_AspectNormal");
 	g_pVGuiLocalize->ConvertUnicodeToANSI(unicodeText, pszAspectName[0], 32);
 	unicodeText = g_pVGuiLocalize->Find("#GameUI_AspectWide16x9");
@@ -330,8 +330,8 @@ COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent)
 	g_pVGuiLocalize->ConvertUnicodeToANSI(unicodeText, pszAspectName[2], 32);
 
 	int iNormalItemID = m_pAspectRatio->AddItem(pszAspectName[0], NULL);
-	int i16x9ItemID   = m_pAspectRatio->AddItem(pszAspectName[1], NULL);
-	int i16x10ItemID  = m_pAspectRatio->AddItem(pszAspectName[2], NULL);
+	int i16x9ItemID = m_pAspectRatio->AddItem(pszAspectName[1], NULL);
+	int i16x10ItemID = m_pAspectRatio->AddItem(pszAspectName[2], NULL);
 
 	int iAspectMode = GetScreenAspectMode(m_CurrentSettings.w, m_CurrentSettings.h);
 
@@ -362,7 +362,7 @@ COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent)
 	m_pColorDepth->AddItem("#GameUI_HighBitDepth", NULL);
 	m_pColorDepth->SetVisible(false);
 
-	m_pWindowed  = new CheckButton(this, "Windowed", "#GameUI_Windowed");
+	m_pWindowed = new CheckButton(this, "Windowed", "#GameUI_Windowed");
 	m_pCSOModels = new CheckButton(this, "CSOModels", "#GameUI_CSOModels");
 
 	m_pAdvanced->SetEnabled(false);
@@ -384,18 +384,18 @@ void COptionsSubVideo::PrepareResolutionList(void)
 	m_pAspectRatio->SetItemEnabled(2, false);
 
 	vmode_t *plist = NULL;
-	int      count = 0;
+	int count = 0;
 	gameuifuncs->GetVideoModes(&plist, &count);
 
 	bool bFoundWidescreen = false;
-	int  selectedItemID   = -1;
+	int selectedItemID = -1;
 
 	for(int i = 0; i < count; i++, plist++)
 	{
 		char sz[256];
 		GetResolutionName(plist, sz, sizeof(sz));
 
-		int itemID      = -1;
+		int itemID = -1;
 		int iAspectMode = GetScreenAspectMode(plist->width, plist->height);
 
 		if(iAspectMode > 0)
@@ -461,7 +461,7 @@ void COptionsSubVideo::OnResetData(void)
 void COptionsSubVideo::SetCurrentResolutionComboItem(void)
 {
 	vmode_t *plist = NULL;
-	int      count = 0;
+	int count = 0;
 	gameuifuncs->GetVideoModes(&plist, &count);
 
 	int resolution = -1;

@@ -97,39 +97,37 @@ void EventAPI_StopAllSounds(int entnum, int entchannel){};
 void EventAPI_KillEvents(int entnum, const char *eventname){};
 }; // namespace
 
-event_api_t gEventAPI =
-    {
-        EVENT_API_VERSION,
+event_api_t gEventAPI = { EVENT_API_VERSION,
 
-        EventAPI_PlaySound,
-        EventAPI_StopSound,
+	                      EventAPI_PlaySound,
+	                      EventAPI_StopSound,
 
-        EventAPI_FindModelIndex,
+	                      EventAPI_FindModelIndex,
 
-        EventAPI_IsLocal /*Player*/,
-        EventAPI_LocalPlayerDucking,
-        EventAPI_LocalPlayerViewheight,
-        EventAPI_LocalPlayerBounds,
+	                      EventAPI_IsLocal /*Player*/,
+	                      EventAPI_LocalPlayerDucking,
+	                      EventAPI_LocalPlayerViewheight,
+	                      EventAPI_LocalPlayerBounds,
 
-        EventAPI_IndexFromTrace,
+	                      EventAPI_IndexFromTrace,
 
-        EventAPI_GetPhysent,
+	                      EventAPI_GetPhysent,
 
-        EventAPI_SetUpPlayerPrediction,
+	                      EventAPI_SetUpPlayerPrediction,
 
-        EventAPI_PushPMStates,
-        EventAPI_PopPMStates,
+	                      EventAPI_PushPMStates,
+	                      EventAPI_PopPMStates,
 
-        EventAPI_SetSolidPlayers,
+	                      EventAPI_SetSolidPlayers,
 
-        EventAPI_SetTraceHull,
-        EventAPI_PlayerTrace,
+	                      EventAPI_SetTraceHull,
+	                      EventAPI_PlayerTrace,
 
-        EventAPI_WeaponAnimation,
+	                      EventAPI_WeaponAnimation,
 
-        EventAPI_PrecacheEvent,
-        EventAPI_PlaybackEvent,
+	                      EventAPI_PrecacheEvent,
+	                      EventAPI_PlaybackEvent,
 
-        EventAPI_TraceTexture,
-        EventAPI_StopAllSounds,
-        EventAPI_KillEvents};
+	                      EventAPI_TraceTexture,
+	                      EventAPI_StopAllSounds,
+	                      EventAPI_KillEvents };

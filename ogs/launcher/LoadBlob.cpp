@@ -36,7 +36,7 @@
 extern IFileSystem *gpFileSystem;
 
 #pragma data_seg(".data")
-BYTE         g_pBlobBuffer[0x2000000];
+BYTE g_pBlobBuffer[0x2000000];
 BlobHeader_t g_BlobHeader;
 
 BlobHeader_t *GetBlobHeader()
@@ -84,10 +84,10 @@ DWORD NLoadBlobFile(const char *pstFileName, BlobFootprint_t *pblobfootprint, vo
 
 DWORD LoadBlobFile(BYTE *pBuffer, BlobFootprint_t *pblobfootprint, void **pv, DWORD dwSize)
 {
-	BYTE           bXor = 0x57;
-	BlobHeader_t * pHeader;
+	BYTE bXor = 0x57;
+	BlobHeader_t *pHeader;
 	BlobSection_t *pSection;
-	DWORD          dwAddress = 0;
+	DWORD dwAddress = 0;
 
 	for(size_t i = sizeof(BlobInfo_t); i < dwSize; i++)
 	{
@@ -119,12 +119,12 @@ DWORD LoadBlobFile(BYTE *pBuffer, BlobFootprint_t *pblobfootprint, void **pv, DW
 
 	while(pImport->Name)
 	{
-		HMODULE           hPorcDll = LoadLibrary((char *)(pHeader->m_dwImageBase + pImport->Name));
-		PIMAGE_THUNK_DATA pThunk   = (PIMAGE_THUNK_DATA)(pHeader->m_dwImageBase + pImport++->FirstThunk);
+		HMODULE hPorcDll = LoadLibrary((char *)(pHeader->m_dwImageBase + pImport->Name));
+		PIMAGE_THUNK_DATA pThunk = (PIMAGE_THUNK_DATA)(pHeader->m_dwImageBase + pImport++->FirstThunk);
 
 		while(pThunk->u1.Function)
 		{
-			const char *pszProcName    = IMAGE_SNAP_BY_ORDINAL(pThunk->u1.Ordinal) ? (char *)((LONG)pThunk->u1.Ordinal & IMAGE_ORDINAL_FLAG32 - 1) : (char *)(pHeader->m_dwImageBase + ((IMAGE_IMPORT_BY_NAME *)((LONG)pThunk->u1.Ordinal & IMAGE_ORDINAL_FLAG32 - 1))->Name);
+			const char *pszProcName = IMAGE_SNAP_BY_ORDINAL(pThunk->u1.Ordinal) ? (char *)((LONG)pThunk->u1.Ordinal & IMAGE_ORDINAL_FLAG32 - 1) : (char *)(pHeader->m_dwImageBase + ((IMAGE_IMPORT_BY_NAME *)((LONG)pThunk->u1.Ordinal & IMAGE_ORDINAL_FLAG32 - 1))->Name);
 			pThunk++->u1.AddressOfData = (DWORD)GetProcAddress(hPorcDll, pszProcName);
 		}
 	}

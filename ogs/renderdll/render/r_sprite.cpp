@@ -23,9 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "r_local.h"
 
-static int    clip_current;
+static int clip_current;
 static vec5_t clip_verts[2][MAXWORKINGVERTS];
-static int    sprite_width, sprite_height;
+static int sprite_width, sprite_height;
 
 spritedesc_t r_spritedesc;
 
@@ -56,25 +56,25 @@ Throws out the back side
 */
 int R_ClipSpriteFace(int nump, clipplane_t *pclipplane)
 {
-	int    i, outcount;
-	float  dists[MAXWORKINGVERTS + 1];
-	float  frac, clipdist, *pclipnormal;
+	int i, outcount;
+	float dists[MAXWORKINGVERTS + 1];
+	float frac, clipdist, *pclipnormal;
 	float *in, *instep, *outstep, *vert2;
 
-	clipdist    = pclipplane->dist;
+	clipdist = pclipplane->dist;
 	pclipnormal = pclipplane->normal;
 
 	// calc dists
 	if(clip_current)
 	{
-		in           = clip_verts[1][0];
-		outstep      = clip_verts[0][0];
+		in = clip_verts[1][0];
+		outstep = clip_verts[0][0];
 		clip_current = 0;
 	}
 	else
 	{
-		in           = clip_verts[0][0];
-		outstep      = clip_verts[1][0];
+		in = clip_verts[0][0];
+		outstep = clip_verts[1][0];
 		clip_current = 1;
 	}
 
@@ -89,7 +89,7 @@ int R_ClipSpriteFace(int nump, clipplane_t *pclipplane)
 	Q_memcpy(instep, in, sizeof(vec5_t));
 
 	// clip the winding
-	instep   = in;
+	instep = in;
 	outcount = 0;
 
 	for(i = 0; i < nump; i++, instep += sizeof(vec5_t) / sizeof(float))
@@ -132,10 +132,10 @@ R_SetupAndDrawSprite
 */
 void R_SetupAndDrawSprite()
 {
-	int         i, nump;
-	float       dot, scale, *pv;
-	vec5_t *    pverts;
-	vec3_t      left, up, right, down, transformed, local;
+	int i, nump;
+	float dot, scale, *pv;
+	vec5_t *pverts;
+	vec3_t left, up, right, down, transformed, local;
 	emitpoint_t outverts[MAXWORKINGVERTS + 1], *pout;
 
 	dot = DotProduct(r_spritedesc.vpn, modelorg);
@@ -177,7 +177,7 @@ void R_SetupAndDrawSprite()
 	pverts[3][4] = sprite_height;
 
 	// clip to the frustum in worldspace
-	nump         = 4;
+	nump = 4;
 	clip_current = 0;
 
 	for(i = 0; i < 4; i++)
@@ -190,7 +190,7 @@ void R_SetupAndDrawSprite()
 	}
 
 	// transform vertices into viewspace and project
-	pv                  = &clip_verts[clip_current][0][0];
+	pv = &clip_verts[clip_current][0][0];
 	r_spritedesc.nearzi = -999999;
 
 	for(i = 0; i < nump; i++)
@@ -201,7 +201,7 @@ void R_SetupAndDrawSprite()
 		if(transformed[2] < NEAR_CLIP)
 			transformed[2] = NEAR_CLIP;
 
-		pout     = &outverts[i];
+		pout = &outverts[i];
 		pout->zi = 1.0 / transformed[2];
 		if(pout->zi > r_spritedesc.nearzi)
 			r_spritedesc.nearzi = pout->zi;
@@ -209,17 +209,17 @@ void R_SetupAndDrawSprite()
 		pout->s = pv[3];
 		pout->t = pv[4];
 
-		scale   = xscale * pout->zi;
+		scale = xscale * pout->zi;
 		pout->u = (xcenter + scale * transformed[0]);
 
-		scale   = yscale * pout->zi;
+		scale = yscale * pout->zi;
 		pout->v = (ycenter - scale * transformed[1]);
 
 		pv += sizeof(vec5_t) / sizeof(*pv);
 	}
 
 	// draw it
-	r_spritedesc.nump   = nump;
+	r_spritedesc.nump = nump;
 	r_spritedesc.pverts = outverts;
 	D_DrawSprite();
 }
@@ -233,8 +233,8 @@ mspriteframe_t *R_GetSpriteframe(msprite_t *psprite)
 {
 	mspritegroup_t *pspritegroup;
 	mspriteframe_t *pspriteframe;
-	int             i, numframes, frame;
-	float *         pintervals, fullinterval, targettime, time;
+	int i, numframes, frame;
+	float *pintervals, fullinterval, targettime, time;
 
 	frame = currententity->frame;
 
@@ -251,8 +251,8 @@ mspriteframe_t *R_GetSpriteframe(msprite_t *psprite)
 	else
 	{
 		pspritegroup = (mspritegroup_t *)psprite->frames[frame].frameptr;
-		pintervals   = pspritegroup->intervals;
-		numframes    = pspritegroup->numframes;
+		pintervals = pspritegroup->intervals;
+		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes - 1];
 
 		time = cl.time + currententity->syncbase;
@@ -280,16 +280,16 @@ R_DrawSprite
 */
 void R_DrawSprite(void)
 {
-	int        i;
+	int i;
 	msprite_t *psprite;
-	vec3_t     tvec;
-	float      dot, angle, sr, cr;
+	vec3_t tvec;
+	float dot, angle, sr, cr;
 
 	psprite = currententity->model->cache.data;
 
 	r_spritedesc.pspriteframe = R_GetSpriteframe(psprite);
 
-	sprite_width  = r_spritedesc.pspriteframe->width;
+	sprite_width = r_spritedesc.pspriteframe->width;
 	sprite_height = r_spritedesc.pspriteframe->height;
 
 	// TODO: make this caller-selectable
@@ -309,9 +309,9 @@ void R_DrawSprite(void)
 		//  r_spritedesc.vup is 0, 0, 1
 		if((dot > 0.999848) || (dot < -0.999848)) // cos(1 degree) = 0.999848
 			return;
-		r_spritedesc.vup[0]    = 0;
-		r_spritedesc.vup[1]    = 0;
-		r_spritedesc.vup[2]    = 1;
+		r_spritedesc.vup[0] = 0;
+		r_spritedesc.vup[1] = 0;
+		r_spritedesc.vup[2] = 1;
 		r_spritedesc.vright[0] = tvec[1];
 		// CrossProduct(r_spritedesc.vup, -modelorg,
 		r_spritedesc.vright[1] = -tvec[0];
@@ -331,9 +331,9 @@ void R_DrawSprite(void)
 		// position relative to the viewer
 		for(i = 0; i < 3; i++)
 		{
-			r_spritedesc.vup[i]    = vup[i];
+			r_spritedesc.vup[i] = vup[i];
 			r_spritedesc.vright[i] = vright[i];
-			r_spritedesc.vpn[i]    = vpn[i];
+			r_spritedesc.vpn[i] = vpn[i];
 		}
 	}
 	else if(psprite->type == SPR_VP_PARALLEL_UPRIGHT)
@@ -348,9 +348,9 @@ void R_DrawSprite(void)
 		//  r_spritedesc.vup is 0, 0, 1
 		if((dot > 0.999848) || (dot < -0.999848)) // cos(1 degree) = 0.999848
 			return;
-		r_spritedesc.vup[0]    = 0;
-		r_spritedesc.vup[1]    = 0;
-		r_spritedesc.vup[2]    = 1;
+		r_spritedesc.vup[0] = 0;
+		r_spritedesc.vup[1] = 0;
+		r_spritedesc.vup[2] = 1;
 		r_spritedesc.vright[0] = vpn[1];
 		// CrossProduct (r_spritedesc.vup, vpn,
 		r_spritedesc.vright[1] = -vpn[0]; //  r_spritedesc.vright)
@@ -374,14 +374,14 @@ void R_DrawSprite(void)
 		// that plane around the center according to the sprite entity's roll
 		// angle. So vpn stays the same, but vright and vup rotate
 		angle = currententity->angles[ROLL] * (M_PI * 2 / 360);
-		sr    = sin(angle);
-		cr    = cos(angle);
+		sr = sin(angle);
+		cr = cos(angle);
 
 		for(i = 0; i < 3; i++)
 		{
-			r_spritedesc.vpn[i]    = vpn[i];
+			r_spritedesc.vpn[i] = vpn[i];
 			r_spritedesc.vright[i] = vright[i] * cr + vup[i] * sr;
-			r_spritedesc.vup[i]    = vright[i] * -sr + vup[i] * cr;
+			r_spritedesc.vup[i] = vright[i] * -sr + vup[i] * cr;
 		}
 	}
 	else

@@ -1,38 +1,38 @@
-#include "EngineInterface.h"
 #include "CreateMultiplayerGameBotPage.h"
+#include "EngineInterface.h"
 
 using namespace vgui;
 
 #include <KeyValues.h>
-#include <vgui_controls/ComboBox.h>
 #include <vgui_controls/CheckButton.h>
+#include <vgui_controls/ComboBox.h>
 #include <vgui_controls/Label.h>
 #include <vgui_controls/TextEntry.h>
 
+#include "CvarToggleCheckButton.h"
 #include "FileSystem.h"
 #include "PanelListPanel.h"
 #include "ScriptObject.h"
 #include <tier0/vcrmode.h>
-#include "CvarToggleCheckButton.h"
 
 enum BotGUITeamType
 {
 	BOT_GUI_TEAM_RANDOM = 0,
-	BOT_GUI_TEAM_CT     = 1,
-	BOT_GUI_TEAM_T      = 2
+	BOT_GUI_TEAM_CT = 1,
+	BOT_GUI_TEAM_T = 2
 };
 
-static const char *joinTeamArg[] = {"any", "ct", "t", NULL};
+static const char *joinTeamArg[] = { "any", "ct", "t", NULL };
 
 enum BotGUIChatterType
 {
-	BOT_GUI_CHATTER_NORMAL  = 0,
+	BOT_GUI_CHATTER_NORMAL = 0,
 	BOT_GUI_CHATTER_MINIMAL = 1,
-	BOT_GUI_CHATTER_RADIO   = 2,
-	BOT_GUI_CHATTER_OFF     = 3
+	BOT_GUI_CHATTER_RADIO = 2,
+	BOT_GUI_CHATTER_OFF = 3
 };
 
-static const char *chatterArg[] = {"normal", "minimal", "radio", "off", NULL};
+static const char *chatterArg[] = { "normal", "minimal", "radio", "off", NULL };
 
 extern void UTIL_StripInvalidCharacters(char *pszInput);
 
@@ -70,21 +70,25 @@ void CCreateMultiplayerGameBotPage::SetChatterCombo(const char *chatter)
 		m_joinTeamCombo->ActivateItemByRow(BOT_GUI_CHATTER_NORMAL);
 }
 
-CCreateMultiplayerGameBotPage::CCreateMultiplayerGameBotPage(vgui::Panel *parent, const char *name, KeyValues *botKeys)
+CCreateMultiplayerGameBotPage::CCreateMultiplayerGameBotPage(
+vgui::Panel *parent, const char *name, KeyValues *botKeys)
     : PropertyPage(parent, name)
 {
 	m_pSavedData = botKeys;
 
-	m_allowRogues         = new CCvarToggleCheckButton(this, "BotAllowRogueCheck", "", "bot_allow_rogues");
-	m_allowPistols        = new CCvarToggleCheckButton(this, "BotAllowPistolsCheck", "", "bot_allow_pistols");
-	m_allowShotguns       = new CCvarToggleCheckButton(this, "BotAllowShotgunsCheck", "", "bot_allow_shotguns");
-	m_allowSubmachineGuns = new CCvarToggleCheckButton(this, "BotAllowSubmachineGunsCheck", "", "bot_allow_sub_machine_guns");
-	m_allowRifles         = new CCvarToggleCheckButton(this, "BotAllowRiflesCheck", "", "bot_allow_rifles");
-	m_allowMachineGuns    = new CCvarToggleCheckButton(this, "BotAllowMachineGunsCheck", "", "bot_allow_machine_guns");
-	m_allowGrenades       = new CCvarToggleCheckButton(this, "BotAllowGrenadesCheck", "", "bot_allow_grenades");
-	m_allowSnipers        = new CCvarToggleCheckButton(this, "BotAllowSnipersCheck", "", "bot_allow_snipers");
+	m_allowRogues = new CCvarToggleCheckButton(this, "BotAllowRogueCheck", "", "bot_allow_rogues");
+	m_allowPistols = new CCvarToggleCheckButton(this, "BotAllowPistolsCheck", "", "bot_allow_pistols");
+	m_allowShotguns = new CCvarToggleCheckButton(this, "BotAllowShotgunsCheck", "", "bot_allow_shotguns");
+	m_allowSubmachineGuns = new CCvarToggleCheckButton(
+	this, "BotAllowSubmachineGunsCheck", "", "bot_allow_sub_machine_guns");
+	m_allowRifles = new CCvarToggleCheckButton(this, "BotAllowRiflesCheck", "", "bot_allow_rifles");
+	m_allowMachineGuns = new CCvarToggleCheckButton(
+	this, "BotAllowMachineGunsCheck", "", "bot_allow_machine_guns");
+	m_allowGrenades = new CCvarToggleCheckButton(this, "BotAllowGrenadesCheck", "", "bot_allow_grenades");
+	m_allowSnipers = new CCvarToggleCheckButton(this, "BotAllowSnipersCheck", "", "bot_allow_snipers");
 
-	m_joinAfterPlayer = new CCvarToggleCheckButton(this, "BotJoinAfterPlayerCheck", "", "bot_join_after_player");
+	m_joinAfterPlayer = new CCvarToggleCheckButton(
+	this, "BotJoinAfterPlayerCheck", "", "bot_join_after_player");
 
 	m_deferToHuman = new CCvarToggleCheckButton(this, "BotDeferToHumanCheck", "", "bot_defer_to_human");
 
@@ -99,7 +103,7 @@ CCreateMultiplayerGameBotPage::CCreateMultiplayerGameBotPage(vgui::Panel *parent
 	m_chatterCombo->AddItem("#Cstrike_Bot_Chatter_Radio", NULL);
 	m_chatterCombo->AddItem("#Cstrike_Bot_Chatter_Off", NULL);
 
-	m_prefixEntry  = new TextEntry(this, "BotPrefixEntry");
+	m_prefixEntry = new TextEntry(this, "BotPrefixEntry");
 	m_profileEntry = new TextEntry(this, "BotProfileEntry");
 
 	LoadControlSettingsFromScheme("CreateMultiplayerGameBotPage.res");
@@ -108,7 +112,8 @@ CCreateMultiplayerGameBotPage::CCreateMultiplayerGameBotPage(vgui::Panel *parent
 	m_allowRogues->SetSelected(botKeys->GetInt("bot_allow_rogues", 1));
 	m_allowPistols->SetSelected(botKeys->GetInt("bot_allow_pistols", 1));
 	m_allowShotguns->SetSelected(botKeys->GetInt("bot_allow_shotguns", 1));
-	m_allowSubmachineGuns->SetSelected(botKeys->GetInt("bot_allow_sub_machine_guns", 1));
+	m_allowSubmachineGuns->SetSelected(
+	botKeys->GetInt("bot_allow_sub_machine_guns", 1));
 	m_allowMachineGuns->SetSelected(botKeys->GetInt("bot_allow_machine_guns", 1));
 	m_allowRifles->SetSelected(botKeys->GetInt("bot_allow_rifles", 1));
 	m_allowSnipers->SetSelected(botKeys->GetInt("bot_allow_snipers", 1));
@@ -184,6 +189,26 @@ char *CCreateMultiplayerGameBotPage::GetBOTCommandBuffer(void)
 	m_prefixEntry->GetText(entryBuffer, sizeof(entryBuffer));
 
 	static char buffer[1024];
-	sprintf(buffer, "bot_join_after_player %d\nbot_allow_rogues %d\nbot_allow_pistols %d\nbot_allow_shotguns %d\nbot_allow_sub_machine_guns %d\nbot_allow_machine_guns %d\nbot_allow_rifles %d\nbot_allow_snipers %d\nbot_allow_grenades %d\nbot_allow_shield 0\nbot_defer_to_human %d\nbot_join_team \"%s\"\nbot_prefix \"%s\"\nbot_chatter \"%s\"\nbot_profile_db \"%s\"\n", m_joinAfterPlayer->IsSelected(), m_allowRogues->IsSelected(), m_allowPistols->IsSelected(), m_allowShotguns->IsSelected(), m_allowSubmachineGuns->IsSelected(), m_allowMachineGuns->IsSelected(), m_allowRifles->IsSelected(), m_allowSnipers->IsSelected(), m_allowGrenades->IsSelected(), m_deferToHuman->IsSelected(), joinTeamArg[m_joinTeamCombo->GetActiveItem()], entryBuffer, chatterArg[m_chatterCombo->GetActiveItem()], profile);
+	sprintf(buffer, "bot_join_after_player %d\nbot_allow_rogues "
+	                "%d\nbot_allow_pistols %d\nbot_allow_shotguns "
+	                "%d\nbot_allow_sub_machine_guns %d\nbot_allow_machine_guns "
+	                "%d\nbot_allow_rifles %d\nbot_allow_snipers "
+	                "%d\nbot_allow_grenades %d\nbot_allow_shield "
+	                "0\nbot_defer_to_human %d\nbot_join_team \"%s\"\nbot_prefix "
+	                "\"%s\"\nbot_chatter \"%s\"\nbot_profile_db \"%s\"\n",
+	        m_joinAfterPlayer->IsSelected(),
+	        m_allowRogues->IsSelected(),
+	        m_allowPistols->IsSelected(),
+	        m_allowShotguns->IsSelected(),
+	        m_allowSubmachineGuns->IsSelected(),
+	        m_allowMachineGuns->IsSelected(),
+	        m_allowRifles->IsSelected(),
+	        m_allowSnipers->IsSelected(),
+	        m_allowGrenades->IsSelected(),
+	        m_deferToHuman->IsSelected(),
+	        joinTeamArg[m_joinTeamCombo->GetActiveItem()],
+	        entryBuffer,
+	        chatterArg[m_chatterCombo->GetActiveItem()],
+	        profile);
 	return buffer;
 }

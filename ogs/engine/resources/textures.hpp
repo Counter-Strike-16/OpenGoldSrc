@@ -38,7 +38,7 @@ const int MAX_MAP_TEXTURES = 512;
 typedef struct texlumpinfo_s
 {
 	lumpinfo_t lump;
-	int        iTexFile;
+	int iTexFile;
 } texlumpinfo_t;
 
 #ifdef HOOK_ENGINE
@@ -57,17 +57,17 @@ typedef struct texlumpinfo_s
 #endif
 
 typedef struct texture_s texture_t;
-typedef struct cvar_s    cvar_t;
+typedef struct cvar_s cvar_t;
 
 extern texlumpinfo_t *lumpinfo;
-extern int            nTexLumps;
-extern FILE *         texfiles[128];
-extern int            nTexFiles;
+extern int nTexLumps;
+extern FILE *texfiles[128];
+extern int nTexFiles;
 
 extern unsigned char texgammatable[256];
-extern texture_t *   r_notexture_mip;
+extern texture_t *r_notexture_mip;
 
-extern int  nummiptex;
+extern int nummiptex;
 extern char miptex[512][64];
 
 extern cvar_t r_wadtextures;

@@ -42,7 +42,7 @@ public:
 	virtual bool Shutdown();
 	virtual bool CreateGameWindow();
 	virtual void SleepUntilInput(int time);
-	virtual HWND  GetMainWindow();
+	virtual HWND GetMainWindow();
 	virtual HWND *GetMainWindowAddress();
 	virtual void SetWindowXY(int x, int y);
 	virtual void SetWindowSize(int w, int h);
@@ -59,7 +59,7 @@ public:
 	bool Shutdown_noVirt();
 	bool CreateGameWindow_noVirt();
 	void SleepUntilInput_noVirt(int time);
-	HWND  GetMainWindow_noVirt();
+	HWND GetMainWindow_noVirt();
 	HWND *GetMainWindowAddress_noVirt();
 	void SetWindowXY_noVirt(int x, int y);
 	void SetWindowSize_noVirt(int w, int h);

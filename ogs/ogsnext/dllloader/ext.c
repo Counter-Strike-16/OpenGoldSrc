@@ -141,7 +141,7 @@ INT WINAPI lstrlenW(LPCWSTR s)
 LPSTR WINAPI lstrcpynWtoA(LPSTR dest, LPCWSTR src, INT count)
 {
 	LPSTR result = dest;
-	int   moved  = 0;
+	int moved = 0;
 	if((dest == 0) || (src == 0))
 		return 0;
 	while(moved < count)
@@ -199,19 +199,19 @@ LPSTR HEAP_strdupA(HANDLE heap, DWORD flags, LPCSTR string)
 }
 LPWSTR HEAP_strdupAtoW(HANDLE heap, DWORD flags, LPCSTR string)
 {
-	int    size, i;
+	int size, i;
 	WCHAR *answer;
 	if(string == 0)
 		return 0;
-	size   = strlen(string);
+	size = strlen(string);
 	answer = malloc(sizeof(WCHAR) * (size + 1));
-	for(i         = 0; i <= size; i++)
+	for(i = 0; i <= size; i++)
 		answer[i] = (short)string[i];
 	return answer;
 }
 LPSTR HEAP_strdupWtoA(HANDLE heap, DWORD flags, LPCWSTR string)
 {
-	int   size, i;
+	int size, i;
 	char *answer;
 	if(string == 0)
 		return 0;
@@ -219,7 +219,7 @@ LPSTR HEAP_strdupWtoA(HANDLE heap, DWORD flags, LPCWSTR string)
 	while(string[size])
 		size++;
 	answer = malloc(size + 2);
-	for(i         = 0; i <= size; i++)
+	for(i = 0; i <= size; i++)
 		answer[i] = (char)string[i];
 	return answer;
 }
@@ -235,8 +235,8 @@ LPVOID FILE_dommap(int unix_handle, LPVOID start,
                    DWORD offset_high, DWORD offset_low,
                    int prot, int flags)
 {
-	int    fd = -1;
-	int    pos;
+	int fd = -1;
+	int pos;
 	LPVOID ret;
 
 	if(size_high || offset_high)
@@ -248,7 +248,7 @@ LPVOID FILE_dommap(int unix_handle, LPVOID start,
 	}
 	else
 	{
-		fd  = unix_handle;
+		fd = unix_handle;
 		ret = mmap(start, size_low, prot, flags, fd, offset_low);
 	}
 
@@ -316,9 +316,9 @@ int FILE_munmap(LPVOID start, DWORD size_high, DWORD size_low)
 struct file_mapping_s;
 typedef struct file_mapping_s
 {
-	int                    mapping_size;
-	char *                 name;
-	LPVOID                 handle;
+	int mapping_size;
+	char *name;
+	LPVOID handle;
 	struct file_mapping_s *next;
 	struct file_mapping_s *prev;
 } file_mapping;
@@ -340,11 +340,11 @@ HANDLE WINAPI CreateFileMappingA(HANDLE handle, LPSECURITY_ATTRIBUTES lpAttr,
                                  DWORD dwMaxHigh, DWORD dwMaxLow,
                                  LPCSTR name)
 {
-	int          hFile = (int)handle;
+	int hFile = (int)handle;
 	unsigned int len;
-	LPVOID       answer;
-	int          anon        = 0;
-	int          mmap_access = 0;
+	LPVOID answer;
+	int anon = 0;
+	int mmap_access = 0;
 	if(hFile < 0)
 		anon = 1;
 
@@ -370,16 +370,16 @@ HANDLE WINAPI CreateFileMappingA(HANDLE handle, LPSECURITY_ATTRIBUTES lpAttr,
 	{
 		if(fm == 0)
 		{
-			fm       = malloc(sizeof(file_mapping));
+			fm = malloc(sizeof(file_mapping));
 			fm->prev = NULL;
 		}
 		else
 		{
-			fm->next       = malloc(sizeof(file_mapping));
+			fm->next = malloc(sizeof(file_mapping));
 			fm->next->prev = fm;
-			fm             = fm->next;
+			fm = fm->next;
 		}
-		fm->next   = NULL;
+		fm->next = NULL;
 		fm->handle = answer;
 		if(name)
 		{
@@ -387,7 +387,7 @@ HANDLE WINAPI CreateFileMappingA(HANDLE handle, LPSECURITY_ATTRIBUTES lpAttr,
 			strcpy(fm->name, name);
 		}
 		else
-			fm->name     = NULL;
+			fm->name = NULL;
 		fm->mapping_size = len;
 
 		return (HANDLE)answer;
@@ -397,7 +397,7 @@ HANDLE WINAPI CreateFileMappingA(HANDLE handle, LPSECURITY_ATTRIBUTES lpAttr,
 WIN_BOOL WINAPI UnmapViewOfFile(LPVOID handle)
 {
 	file_mapping *p;
-	int           result;
+	int result;
 	if(fm == 0)
 		return 0;
 	for(p = fm; p; p = p->next)
@@ -422,11 +422,11 @@ WIN_BOOL WINAPI UnmapViewOfFile(LPVOID handle)
 struct virt_alloc_s;
 typedef struct virt_alloc_s
 {
-	int                  mapping_size;
-	char *               address;
+	int mapping_size;
+	char *address;
 	struct virt_alloc_s *next;
 	struct virt_alloc_s *prev;
-	int                  state;
+	int state;
 } virt_alloc;
 static virt_alloc *vm = 0;
 #define MEM_COMMIT 0x00001000
@@ -435,7 +435,7 @@ static virt_alloc *vm = 0;
 LPVOID WINAPI VirtualAlloc(LPVOID address, DWORD size, DWORD type, DWORD protection)
 {
 	void *answer;
-	long  pgsz;
+	long pgsz;
 
 	//printf("VirtualAlloc(0x%08X, %u, 0x%08X, 0x%08X)\n", (unsigned)address, size, type, protection);
 
@@ -502,7 +502,7 @@ LPVOID WINAPI VirtualAlloc(LPVOID address, DWORD size, DWORD type, DWORD protect
 	   a successful call but an overlapping or non-allocated region.  */
 		munmap(answer, size);
 		answer = (void *)-1;
-		errno  = EINVAL;
+		errno = EINVAL;
 		//printf(" VirtualAlloc(...) cannot satisfy requested address but address=NULL would work.\n");
 	}
 	if(answer == (void *)-1)
@@ -513,18 +513,18 @@ LPVOID WINAPI VirtualAlloc(LPVOID address, DWORD size, DWORD type, DWORD protect
 	}
 	else
 	{
-		virt_alloc *new_vm   = malloc(sizeof(virt_alloc));
+		virt_alloc *new_vm = malloc(sizeof(virt_alloc));
 		new_vm->mapping_size = size;
-		new_vm->address      = (char *)answer;
-		new_vm->prev         = vm;
+		new_vm->address = (char *)answer;
+		new_vm->prev = vm;
 		if(type == MEM_RESERVE)
 			new_vm->state = 0;
 		else
 			new_vm->state = 1;
 		if(vm)
 			vm->next = new_vm;
-		vm           = new_vm;
-		vm->next     = 0;
+		vm = new_vm;
+		vm->next = 0;
 		//if(va_size!=0)
 		//    printf("Multiple VirtualAlloc!\n");
 		//printf(" VirtualAlloc(...) provides (0x%08X, %u)\n", (unsigned)answer, size);
@@ -535,7 +535,7 @@ LPVOID WINAPI VirtualAlloc(LPVOID address, DWORD size, DWORD type, DWORD protect
 WIN_BOOL WINAPI VirtualFree(LPVOID address, SIZE_T dwSize, DWORD dwFreeType) //not sure
 {
 	virt_alloc *str = vm;
-	int         answer;
+	int answer;
 
 	//printf("VirtualFree(0x%08X, %d, 0x%08X)\n", (unsigned)address, dwSize, dwFreeType);
 	while(str)

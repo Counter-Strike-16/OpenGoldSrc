@@ -37,7 +37,7 @@
 
 typedef struct extra_baselines_s
 {
-	int            number;
-	int            classname[NUM_BASELINES];
+	int number;
+	int classname[NUM_BASELINES];
 	entity_state_t baseline[NUM_BASELINES];
 } extra_baselines_t;

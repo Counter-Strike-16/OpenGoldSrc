@@ -31,9 +31,9 @@
 //#include "precompiled.hpp"
 #include "world/ed_strpool.hpp"
 #include "common/commontypes.h"
+#include "memory/zone.hpp"
 #include "rehlds/static_map.h"
 #include "system/common.hpp"
-#include "memory/zone.hpp"
 
 class CStringPoolMap : public CStaticMap<const char *, char *, 8, 2048>
 {
@@ -56,29 +56,30 @@ public:
 };
 
 CStringPoolMap g_EdStringPool;
-sizebuf_t      g_EdStringPool_Hunk;
+sizebuf_t g_EdStringPool_Hunk;
 
 void Ed_StrPool_Init()
 {
 	Q_memset(&g_EdStringPool_Hunk, 0, sizeof(g_EdStringPool_Hunk));
 
-	g_EdStringPool_Hunk.maxsize    = 128 * 1024;
-	g_EdStringPool_Hunk.data       = (byte *)Hunk_AllocName(g_EdStringPool_Hunk.maxsize, "Ed_StrPool");
-	g_EdStringPool_Hunk.cursize    = 0;
+	g_EdStringPool_Hunk.maxsize = 128 * 1024;
+	g_EdStringPool_Hunk.data =
+	(byte *)Hunk_AllocName(g_EdStringPool_Hunk.maxsize, "Ed_StrPool");
+	g_EdStringPool_Hunk.cursize = 0;
 	g_EdStringPool_Hunk.buffername = "Ed_StrPool";
-	g_EdStringPool_Hunk.flags      = SIZEBUF_ALLOW_OVERFLOW;
+	g_EdStringPool_Hunk.flags = SIZEBUF_ALLOW_OVERFLOW;
 }
 
 void Ed_StrPool_Reset()
 {
 	g_EdStringPool_Hunk.cursize = 0;
-	g_EdStringPool_Hunk.flags   = SIZEBUF_ALLOW_OVERFLOW;
+	g_EdStringPool_Hunk.flags = SIZEBUF_ALLOW_OVERFLOW;
 	g_EdStringPool.clear();
 }
 
 char *Ed_StrPool_Alloc(const char *origStr)
 {
-	char         str[2048];
+	char str[2048];
 	unsigned int len = Q_strlen(origStr) + 1;
 
 	if(len >= ARRAYSIZE(str))
@@ -103,7 +104,7 @@ char *Ed_StrPool_Alloc(const char *origStr)
 	}
 
 	*new_p = 0;
-	len    = Q_strlen(str) + 1;
+	len = Q_strlen(str) + 1;
 
 	auto node = g_EdStringPool.get(str);
 	if(node)
@@ -113,7 +114,7 @@ char *Ed_StrPool_Alloc(const char *origStr)
 
 	char *val = NULL;
 
-	//try to alloc string from shared hunk
+	// try to alloc string from shared hunk
 	if(!(g_EdStringPool_Hunk.flags & SIZEBUF_OVERFLOWED))
 	{
 		val = (char *)g_EdStringPool_Hunk.data + g_EdStringPool_Hunk.cursize;

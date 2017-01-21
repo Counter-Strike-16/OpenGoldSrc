@@ -64,13 +64,13 @@ static void R_LineGraph(int x, int h)
 
 void Draw_CharToNetGraph(int x, int y, int num)
 {
-	int   row, col;
+	int row, col;
 	byte *source;
-	int   drawline;
-	int   nx;
+	int drawline;
+	int nx;
 
-	row    = num >> 4;
-	col    = num & 15;
+	row = num >> 4;
+	col = num & 15;
 	source = draw_chars + (row << 10) + (col << 3);
 
 	for(drawline = 8; drawline; drawline--, y++)
@@ -89,12 +89,12 @@ R_NetGraph
 */
 void R_NetGraph(void)
 {
-	int      a, x, i, y;
-	int      lost;
-	char     st[80];
+	int a, x, i, y;
+	int lost;
+	char st[80];
 	unsigned ngraph_pixels[NET_GRAPHHEIGHT][NET_TIMINGS];
 
-	x    = 0;
+	x = 0;
 	lost = CL_CalcNet();
 	for(a = 0; a < NET_TIMINGS; a++)
 	{
@@ -104,7 +104,7 @@ void R_NetGraph(void)
 
 	// now load the netgraph texture into gl and draw it
 	for(y = 0; y < NET_GRAPHHEIGHT; y++)
-		for(x                   = 0; x < NET_TIMINGS; x++)
+		for(x = 0; x < NET_TIMINGS; x++)
 			ngraph_pixels[y][x] = d_8to24table[ngraph_texels[y][x]];
 
 	x = -((vid.width - 320) >> 1);

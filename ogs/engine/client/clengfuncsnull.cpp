@@ -190,18 +190,7 @@ unsigned short EngFunc_PrecacheEvent(int type, const char *psz)
 	return 0;
 };
 
-void EngFunc_PlaybackEvent(int                   flags,
-                           const struct edict_s *pInvoker,
-                           unsigned short        eventindex,
-                           float                 delay,
-                           float *               origin,
-                           float *               angles,
-                           float                 fparam1,
-                           float                 fparam2,
-                           int                   iparam1,
-                           int                   iparam2,
-                           int                   bparam1,
-                           int                   bparam2){};
+void EngFunc_PlaybackEvent(int flags, const struct edict_s *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2){};
 
 void EngFunc_WeaponAnim(int iAnim, int body){};
 
@@ -210,7 +199,8 @@ long EngFunc_RandomLong(long lLow, long lHigh)
 	return 0;
 };
 
-void EngFunc_HookEvent(char *name, void (*pfnEvent)(struct event_args_s *args)){};
+void EngFunc_HookEvent(char *name,
+                       void (*pfnEvent)(struct event_args_s *args)){};
 
 const char *EngFunc_GetGameDirectory()
 {

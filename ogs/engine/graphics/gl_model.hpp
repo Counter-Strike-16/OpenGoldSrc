@@ -30,9 +30,9 @@
 
 #pragma once
 
+#include "common/com_model.h"
 #include "rehlds/modelgen.h"
 #include "rehlds/spritegn.h"
-#include "common/com_model.h"
 
 /*
 
@@ -81,7 +81,7 @@ typedef struct msurface_s
 {
 	int light_s, light_t; // gl lightmap coordinates
 
-	glpoly_t *         polys; // multiple if warped
+	glpoly_t *polys; // multiple if warped
 	struct msurface_s *texturechain;
 
 	mtexinfo_t *texinfo;
@@ -90,11 +90,11 @@ typedef struct msurface_s
 	int dlightframe;
 	int dlightbits;
 
-	int      lightmaptexturenum;
-	byte     styles[MAXLIGHTMAPS];
-	int      cached_light[MAXLIGHTMAPS]; // values currently used in lightmap
-	qboolean cached_dlight;              // true if dynamic light in cache
-	byte *   samples;                    // [numstyles*surfsize]
+	int lightmaptexturenum;
+	byte styles[MAXLIGHTMAPS];
+	int cached_light[MAXLIGHTMAPS]; // values currently used in lightmap
+	qboolean cached_dlight;         // true if dynamic light in cache
+	byte *samples;                  // [numstyles*surfsize]
 } msurface_t;
 
 /*
@@ -108,33 +108,33 @@ SPRITE MODELS
 // FIXME: shorten these?
 typedef struct mspriteframe_s
 {
-	int   width;
-	int   height;
+	int width;
+	int height;
 	float up, down, left, right;
-	int   gl_texturenum;
+	int gl_texturenum;
 } mspriteframe_t;
 
 typedef struct
 {
-	int             numframes;
-	float *         intervals;
+	int numframes;
+	float *intervals;
 	mspriteframe_t *frames[1];
 } mspritegroup_t;
 
 typedef struct
 {
 	spriteframetype_t type;
-	mspriteframe_t *  frameptr;
+	mspriteframe_t *frameptr;
 } mspriteframedesc_t;
 
 typedef struct
 {
-	int                type;
-	int                maxwidth;
-	int                maxheight;
-	int                numframes;
-	float              beamlength; // remove?
-	void *             cachespot;  // remove?
+	int type;
+	int maxwidth;
+	int maxheight;
+	int numframes;
+	float beamlength; // remove?
+	void *cachespot;  // remove?
 	mspriteframedesc_t frames[1];
 } msprite_t;
 
@@ -149,26 +149,26 @@ Alias models are position independent, so the cache manager can move them.
 
 typedef struct
 {
-	int        firstpose;
-	int        numposes;
-	float      interval;
+	int firstpose;
+	int numposes;
+	float interval;
 	trivertx_t bboxmin;
 	trivertx_t bboxmax;
-	int        frame;
-	char       name[16];
+	int frame;
+	char name[16];
 } maliasframedesc_t;
 
 typedef struct
 {
 	trivertx_t bboxmin;
 	trivertx_t bboxmax;
-	int        frame;
+	int frame;
 } maliasgroupframedesc_t;
 
 typedef struct
 {
-	int                    numframes;
-	int                    intervals;
+	int numframes;
+	int intervals;
 	maliasgroupframedesc_t frames[1];
 } maliasgroup_t;
 
@@ -182,27 +182,27 @@ typedef struct mtriangle_s
 #define MAX_SKINS 32
 typedef struct
 {
-	int        ident;
-	int        version;
-	vec3_t     scale;
-	vec3_t     scale_origin;
-	float      boundingradius;
-	vec3_t     eyeposition;
-	int        numskins;
-	int        skinwidth;
-	int        skinheight;
-	int        numverts;
-	int        numtris;
-	int        numframes;
+	int ident;
+	int version;
+	vec3_t scale;
+	vec3_t scale_origin;
+	float boundingradius;
+	vec3_t eyeposition;
+	int numskins;
+	int skinwidth;
+	int skinheight;
+	int numverts;
+	int numtris;
+	int numframes;
 	synctype_t synctype;
-	int        flags;
-	float      size;
+	int flags;
+	float size;
 
-	int               numposes;
-	int               poseverts;
-	int               posedata; // numposes*poseverts trivert_t
-	int               commands; // gl command list with embedded s/t
-	int               gl_texturenum[MAX_SKINS][4];
+	int numposes;
+	int poseverts;
+	int posedata; // numposes*poseverts trivert_t
+	int commands; // gl command list with embedded s/t
+	int gl_texturenum[MAX_SKINS][4];
 	maliasframedesc_t frames[1]; // variable sized
 } aliashdr_t;
 
@@ -210,7 +210,7 @@ typedef struct
 #define MAXALIASFRAMES 256
 #define MAXALIASTRIS 2048
 extern aliashdr_t *pheader;
-extern stvert_t    stverts[MAXALIASVERTS];
+extern stvert_t stverts[MAXALIASVERTS];
 extern mtriangle_t triangles[MAXALIASTRIS];
 extern trivertx_t *poseverts[MAXALIASFRAMES];
 
@@ -234,33 +234,33 @@ typedef struct model_s
 {
 
 //
-// solid volume for clipping 
+// solid volume for clipping
 //
-	qboolean	clipbox;
-	vec3_t		clipmins, clipmaxs;
+        qboolean	clipbox;
+        vec3_t		clipmins, clipmaxs;
 
 //
 // brush model
 //
-	int			firstmodelsurface, nummodelsurfaces;
-	
-	//...
+        int			firstmodelsurface, nummodelsurfaces;
 
-	unsigned	checksum;
-	unsigned	checksum2;
+        //...
+
+        unsigned	checksum;
+        unsigned	checksum2;
 
 //
 // additional model data
 //
-	cache_user_t	cache;		// only access through Mod_Extradata
+        cache_user_t	cache;		// only access through Mod_Extradata
 
 } model_t;
 */
 
 //============================================================================
 
-void     Mod_Init();
-void     Mod_ClearAll();
+void Mod_Init();
+void Mod_ClearAll();
 model_t *Mod_ForName(char *name, qboolean crash);
 void *Mod_Extradata(model_t *mod); // handles caching
 void Mod_TouchModel(char *name);

@@ -34,34 +34,34 @@
 
 typedef struct delta_link_s
 {
-	delta_link_t *       next;
+	delta_link_t *next;
 	delta_description_t *delta;
 } delta_link_t;
 
 typedef struct delta_definition_s
 {
 	char *fieldName;
-	int   fieldOffset;
+	int fieldOffset;
 } delta_definition_t;
 
 typedef struct delta_definition_list_s
 {
 	delta_definition_list_t *next;
-	char *                   ptypename;
-	int                      numelements;
-	delta_definition_t *     pdefinition;
+	char *ptypename;
+	int numelements;
+	delta_definition_t *pdefinition;
 } delta_definition_list_t;
 
 typedef struct delta_registry_s
 {
 	delta_registry_t *next;
-	char *            name;
-	delta_t *         pdesc;
+	char *name;
+	delta_t *pdesc;
 } delta_registry_t;
 
 delta_definition_list_t *g_defs;
-delta_encoder_t *        g_encoders;
-delta_registry_t *       g_deltaregistry;
+delta_encoder_t *g_encoders;
+delta_registry_t *g_deltaregistry;
 
 #endif // Defines_and_Variables_region
 
@@ -73,255 +73,234 @@ delta_registry_t *       g_deltaregistry;
 		#member, offsetof(structname, member) \
 	}
 
-static delta_definition_t g_DeltaDataDefinition[] =
-    {
-        DELTA_DEF(delta_description_s, fieldType),
-        DELTA_DEF(delta_description_s, fieldName),
-        DELTA_DEF(delta_description_s, fieldOffset),
-        DELTA_DEF(delta_description_s, fieldSize),
-        DELTA_DEF(delta_description_s, significant_bits),
-        DELTA_DEF(delta_description_s, premultiply),
-        DELTA_DEF(delta_description_s, postmultiply),
-        DELTA_DEF(delta_description_s, flags),
+static delta_definition_t g_DeltaDataDefinition[] = {
+	DELTA_DEF(delta_description_s, fieldType),
+	DELTA_DEF(delta_description_s, fieldName),
+	DELTA_DEF(delta_description_s, fieldOffset),
+	DELTA_DEF(delta_description_s, fieldSize),
+	DELTA_DEF(delta_description_s, significant_bits),
+	DELTA_DEF(delta_description_s, premultiply),
+	DELTA_DEF(delta_description_s, postmultiply),
+	DELTA_DEF(delta_description_s, flags),
 };
 
-static delta_description_t g_MetaDescription[] =
-    {
-        {DT_INTEGER, DELTA_D_DEF(fieldType), 1, 32, 1.0, 1.0, 0, 0, 0},
-        {DT_STRING, DELTA_D_DEF(fieldName), 1, 1, 1.0, 1.0, 0, 0, 0},
-        {DT_INTEGER, DELTA_D_DEF(fieldOffset), 1, 16, 1.0, 1.0, 0, 0, 0},
-        {DT_INTEGER, DELTA_D_DEF(fieldSize), 1, 8, 1.0, 1.0, 0, 0, 0},
-        {DT_INTEGER, DELTA_D_DEF(significant_bits), 1, 8, 1.0, 1.0, 0, 0, 0},
-        {DT_FLOAT, DELTA_D_DEF(premultiply), 1, 32, 4000.0, 1.0, 0, 0, 0},
-        {DT_FLOAT, DELTA_D_DEF(postmultiply), 1, 32, 4000.0, 1.0, 0, 0, 0},
+static delta_description_t g_MetaDescription[] = {
+	{ DT_INTEGER, DELTA_D_DEF(fieldType), 1, 32, 1.0, 1.0, 0, 0, 0 },
+	{ DT_STRING, DELTA_D_DEF(fieldName), 1, 1, 1.0, 1.0, 0, 0, 0 },
+	{ DT_INTEGER, DELTA_D_DEF(fieldOffset), 1, 16, 1.0, 1.0, 0, 0, 0 },
+	{ DT_INTEGER, DELTA_D_DEF(fieldSize), 1, 8, 1.0, 1.0, 0, 0, 0 },
+	{ DT_INTEGER, DELTA_D_DEF(significant_bits), 1, 8, 1.0, 1.0, 0, 0, 0 },
+	{ DT_FLOAT, DELTA_D_DEF(premultiply), 1, 32, 4000.0, 1.0, 0, 0, 0 },
+	{ DT_FLOAT, DELTA_D_DEF(postmultiply), 1, 32, 4000.0, 1.0, 0, 0, 0 },
 };
 
-delta_t g_MetaDelta[] =
-    {
-        {0, ARRAYSIZE(g_MetaDescription), "", NULL, g_MetaDescription},
+delta_t g_MetaDelta[] = {
+	{ 0, ARRAYSIZE(g_MetaDescription), "", NULL, g_MetaDescription },
 };
 
-static delta_definition_t g_EventDataDefinition[] =
-    {
-        DELTA_DEF(event_args_s, entindex),
-        DELTA_DEF(event_args_s, origin[0]),
-        DELTA_DEF(event_args_s, origin[1]),
-        DELTA_DEF(event_args_s, origin[2]),
-        DELTA_DEF(event_args_s, angles[0]),
-        DELTA_DEF(event_args_s, angles[1]),
-        DELTA_DEF(event_args_s, angles[2]),
-        DELTA_DEF(event_args_s, fparam1),
-        DELTA_DEF(event_args_s, fparam2),
-        DELTA_DEF(event_args_s, iparam1),
-        DELTA_DEF(event_args_s, iparam2),
-        DELTA_DEF(event_args_s, bparam1),
-        DELTA_DEF(event_args_s, bparam2),
-        DELTA_DEF(event_args_s, ducking),
+static delta_definition_t g_EventDataDefinition[] = {
+	DELTA_DEF(event_args_s, entindex), DELTA_DEF(event_args_s, origin[0]), DELTA_DEF(event_args_s, origin[1]), DELTA_DEF(event_args_s, origin[2]), DELTA_DEF(event_args_s, angles[0]), DELTA_DEF(event_args_s, angles[1]), DELTA_DEF(event_args_s, angles[2]), DELTA_DEF(event_args_s, fparam1), DELTA_DEF(event_args_s, fparam2), DELTA_DEF(event_args_s, iparam1), DELTA_DEF(event_args_s, iparam2), DELTA_DEF(event_args_s, bparam1), DELTA_DEF(event_args_s, bparam2), DELTA_DEF(event_args_s, ducking),
 };
 
-static delta_definition_t g_EntityDataDefinition[] =
-    {
-        DELTA_DEF(entity_state_s, startpos[0]),
-        DELTA_DEF(entity_state_s, startpos[1]),
-        DELTA_DEF(entity_state_s, startpos[2]),
-        DELTA_DEF(entity_state_s, endpos[0]),
-        DELTA_DEF(entity_state_s, endpos[1]),
-        DELTA_DEF(entity_state_s, endpos[2]),
-        DELTA_DEF(entity_state_s, impacttime),
-        DELTA_DEF(entity_state_s, starttime),
-        DELTA_DEF(entity_state_s, origin[0]),
-        DELTA_DEF(entity_state_s, origin[1]),
-        DELTA_DEF(entity_state_s, origin[2]),
-        DELTA_DEF(entity_state_s, angles[0]),
-        DELTA_DEF(entity_state_s, angles[1]),
-        DELTA_DEF(entity_state_s, angles[2]),
-        DELTA_DEF(entity_state_s, modelindex),
-        DELTA_DEF(entity_state_s, frame),
-        DELTA_DEF(entity_state_s, movetype),
-        DELTA_DEF(entity_state_s, colormap),
-        DELTA_DEF(entity_state_s, skin),
-        DELTA_DEF(entity_state_s, solid),
-        DELTA_DEF(entity_state_s, scale),
-        DELTA_DEF(entity_state_s, effects),
-        DELTA_DEF(entity_state_s, sequence),
-        DELTA_DEF(entity_state_s, animtime),
-        DELTA_DEF(entity_state_s, framerate),
-        DELTA_DEF(entity_state_s, controller[0]),
-        DELTA_DEF(entity_state_s, controller[1]),
-        DELTA_DEF(entity_state_s, controller[2]),
-        DELTA_DEF(entity_state_s, controller[3]),
-        DELTA_DEF(entity_state_s, blending[0]),
-        DELTA_DEF(entity_state_s, blending[1]),
-        DELTA_DEF(entity_state_s, body),
-        DELTA_DEF(entity_state_s, owner),
-        DELTA_DEF(entity_state_s, rendermode),
-        DELTA_DEF(entity_state_s, renderamt),
-        DELTA_DEF(entity_state_s, renderfx),
-        DELTA_DEF(entity_state_s, rendercolor.r),
-        DELTA_DEF(entity_state_s, rendercolor.g),
-        DELTA_DEF(entity_state_s, rendercolor.b),
-        DELTA_DEF(entity_state_s, weaponmodel),
-        DELTA_DEF(entity_state_s, gaitsequence),
-        DELTA_DEF(entity_state_s, mins[0]),
-        DELTA_DEF(entity_state_s, mins[1]),
-        DELTA_DEF(entity_state_s, mins[2]),
-        DELTA_DEF(entity_state_s, maxs[0]),
-        DELTA_DEF(entity_state_s, maxs[1]),
-        DELTA_DEF(entity_state_s, maxs[2]),
-        DELTA_DEF(entity_state_s, aiment),
-        DELTA_DEF(entity_state_s, basevelocity[0]),
-        DELTA_DEF(entity_state_s, basevelocity[1]),
-        DELTA_DEF(entity_state_s, basevelocity[2]),
-        DELTA_DEF(entity_state_s, friction),
-        DELTA_DEF(entity_state_s, gravity),
-        DELTA_DEF(entity_state_s, spectator),
-        DELTA_DEF(entity_state_s, velocity[0]),
-        DELTA_DEF(entity_state_s, velocity[1]),
-        DELTA_DEF(entity_state_s, velocity[2]),
-        DELTA_DEF(entity_state_s, team),
-        DELTA_DEF(entity_state_s, playerclass),
-        DELTA_DEF(entity_state_s, health),
-        DELTA_DEF(entity_state_s, usehull),
-        DELTA_DEF(entity_state_s, oldbuttons),
-        DELTA_DEF(entity_state_s, onground),
-        DELTA_DEF(entity_state_s, iStepLeft),
-        DELTA_DEF(entity_state_s, flFallVelocity),
-        DELTA_DEF(entity_state_s, weaponanim),
-        DELTA_DEF(entity_state_s, eflags),
-        DELTA_DEF(entity_state_s, iuser1),
-        DELTA_DEF(entity_state_s, iuser2),
-        DELTA_DEF(entity_state_s, iuser3),
-        DELTA_DEF(entity_state_s, iuser4),
-        DELTA_DEF(entity_state_s, fuser1),
-        DELTA_DEF(entity_state_s, fuser2),
-        DELTA_DEF(entity_state_s, fuser3),
-        DELTA_DEF(entity_state_s, fuser4),
-        DELTA_DEF(entity_state_s, vuser1[0]),
-        DELTA_DEF(entity_state_s, vuser1[1]),
-        DELTA_DEF(entity_state_s, vuser1[2]),
-        DELTA_DEF(entity_state_s, vuser2[0]),
-        DELTA_DEF(entity_state_s, vuser2[1]),
-        DELTA_DEF(entity_state_s, vuser2[2]),
-        DELTA_DEF(entity_state_s, vuser3[0]),
-        DELTA_DEF(entity_state_s, vuser3[1]),
-        DELTA_DEF(entity_state_s, vuser3[2]),
-        DELTA_DEF(entity_state_s, vuser4[0]),
-        DELTA_DEF(entity_state_s, vuser4[1]),
-        DELTA_DEF(entity_state_s, vuser4[2]),
+static delta_definition_t g_EntityDataDefinition[] = {
+	DELTA_DEF(entity_state_s, startpos[0]),
+	DELTA_DEF(entity_state_s, startpos[1]),
+	DELTA_DEF(entity_state_s, startpos[2]),
+	DELTA_DEF(entity_state_s, endpos[0]),
+	DELTA_DEF(entity_state_s, endpos[1]),
+	DELTA_DEF(entity_state_s, endpos[2]),
+	DELTA_DEF(entity_state_s, impacttime),
+	DELTA_DEF(entity_state_s, starttime),
+	DELTA_DEF(entity_state_s, origin[0]),
+	DELTA_DEF(entity_state_s, origin[1]),
+	DELTA_DEF(entity_state_s, origin[2]),
+	DELTA_DEF(entity_state_s, angles[0]),
+	DELTA_DEF(entity_state_s, angles[1]),
+	DELTA_DEF(entity_state_s, angles[2]),
+	DELTA_DEF(entity_state_s, modelindex),
+	DELTA_DEF(entity_state_s, frame),
+	DELTA_DEF(entity_state_s, movetype),
+	DELTA_DEF(entity_state_s, colormap),
+	DELTA_DEF(entity_state_s, skin),
+	DELTA_DEF(entity_state_s, solid),
+	DELTA_DEF(entity_state_s, scale),
+	DELTA_DEF(entity_state_s, effects),
+	DELTA_DEF(entity_state_s, sequence),
+	DELTA_DEF(entity_state_s, animtime),
+	DELTA_DEF(entity_state_s, framerate),
+	DELTA_DEF(entity_state_s, controller[0]),
+	DELTA_DEF(entity_state_s, controller[1]),
+	DELTA_DEF(entity_state_s, controller[2]),
+	DELTA_DEF(entity_state_s, controller[3]),
+	DELTA_DEF(entity_state_s, blending[0]),
+	DELTA_DEF(entity_state_s, blending[1]),
+	DELTA_DEF(entity_state_s, body),
+	DELTA_DEF(entity_state_s, owner),
+	DELTA_DEF(entity_state_s, rendermode),
+	DELTA_DEF(entity_state_s, renderamt),
+	DELTA_DEF(entity_state_s, renderfx),
+	DELTA_DEF(entity_state_s, rendercolor.r),
+	DELTA_DEF(entity_state_s, rendercolor.g),
+	DELTA_DEF(entity_state_s, rendercolor.b),
+	DELTA_DEF(entity_state_s, weaponmodel),
+	DELTA_DEF(entity_state_s, gaitsequence),
+	DELTA_DEF(entity_state_s, mins[0]),
+	DELTA_DEF(entity_state_s, mins[1]),
+	DELTA_DEF(entity_state_s, mins[2]),
+	DELTA_DEF(entity_state_s, maxs[0]),
+	DELTA_DEF(entity_state_s, maxs[1]),
+	DELTA_DEF(entity_state_s, maxs[2]),
+	DELTA_DEF(entity_state_s, aiment),
+	DELTA_DEF(entity_state_s, basevelocity[0]),
+	DELTA_DEF(entity_state_s, basevelocity[1]),
+	DELTA_DEF(entity_state_s, basevelocity[2]),
+	DELTA_DEF(entity_state_s, friction),
+	DELTA_DEF(entity_state_s, gravity),
+	DELTA_DEF(entity_state_s, spectator),
+	DELTA_DEF(entity_state_s, velocity[0]),
+	DELTA_DEF(entity_state_s, velocity[1]),
+	DELTA_DEF(entity_state_s, velocity[2]),
+	DELTA_DEF(entity_state_s, team),
+	DELTA_DEF(entity_state_s, playerclass),
+	DELTA_DEF(entity_state_s, health),
+	DELTA_DEF(entity_state_s, usehull),
+	DELTA_DEF(entity_state_s, oldbuttons),
+	DELTA_DEF(entity_state_s, onground),
+	DELTA_DEF(entity_state_s, iStepLeft),
+	DELTA_DEF(entity_state_s, flFallVelocity),
+	DELTA_DEF(entity_state_s, weaponanim),
+	DELTA_DEF(entity_state_s, eflags),
+	DELTA_DEF(entity_state_s, iuser1),
+	DELTA_DEF(entity_state_s, iuser2),
+	DELTA_DEF(entity_state_s, iuser3),
+	DELTA_DEF(entity_state_s, iuser4),
+	DELTA_DEF(entity_state_s, fuser1),
+	DELTA_DEF(entity_state_s, fuser2),
+	DELTA_DEF(entity_state_s, fuser3),
+	DELTA_DEF(entity_state_s, fuser4),
+	DELTA_DEF(entity_state_s, vuser1[0]),
+	DELTA_DEF(entity_state_s, vuser1[1]),
+	DELTA_DEF(entity_state_s, vuser1[2]),
+	DELTA_DEF(entity_state_s, vuser2[0]),
+	DELTA_DEF(entity_state_s, vuser2[1]),
+	DELTA_DEF(entity_state_s, vuser2[2]),
+	DELTA_DEF(entity_state_s, vuser3[0]),
+	DELTA_DEF(entity_state_s, vuser3[1]),
+	DELTA_DEF(entity_state_s, vuser3[2]),
+	DELTA_DEF(entity_state_s, vuser4[0]),
+	DELTA_DEF(entity_state_s, vuser4[1]),
+	DELTA_DEF(entity_state_s, vuser4[2]),
 };
 
-static delta_definition_t g_UsercmdDataDefinition[] =
-    {
-        DELTA_DEF(usercmd_s, lerp_msec),
-        DELTA_DEF(usercmd_s, msec),
-        DELTA_DEF(usercmd_s, lightlevel),
-        DELTA_DEF(usercmd_s, viewangles[0]),
-        DELTA_DEF(usercmd_s, viewangles[1]),
-        DELTA_DEF(usercmd_s, viewangles[2]),
-        DELTA_DEF(usercmd_s, buttons),
-        DELTA_DEF(usercmd_s, forwardmove),
-        DELTA_DEF(usercmd_s, sidemove),
-        DELTA_DEF(usercmd_s, upmove),
-        DELTA_DEF(usercmd_s, impulse),
-        DELTA_DEF(usercmd_s, weaponselect),
-        DELTA_DEF(usercmd_s, impact_index),
-        DELTA_DEF(usercmd_s, impact_position[0]),
-        DELTA_DEF(usercmd_s, impact_position[1]),
-        DELTA_DEF(usercmd_s, impact_position[2]),
+static delta_definition_t g_UsercmdDataDefinition[] = {
+	DELTA_DEF(usercmd_s, lerp_msec),
+	DELTA_DEF(usercmd_s, msec),
+	DELTA_DEF(usercmd_s, lightlevel),
+	DELTA_DEF(usercmd_s, viewangles[0]),
+	DELTA_DEF(usercmd_s, viewangles[1]),
+	DELTA_DEF(usercmd_s, viewangles[2]),
+	DELTA_DEF(usercmd_s, buttons),
+	DELTA_DEF(usercmd_s, forwardmove),
+	DELTA_DEF(usercmd_s, sidemove),
+	DELTA_DEF(usercmd_s, upmove),
+	DELTA_DEF(usercmd_s, impulse),
+	DELTA_DEF(usercmd_s, weaponselect),
+	DELTA_DEF(usercmd_s, impact_index),
+	DELTA_DEF(usercmd_s, impact_position[0]),
+	DELTA_DEF(usercmd_s, impact_position[1]),
+	DELTA_DEF(usercmd_s, impact_position[2]),
 };
 
-static delta_definition_t g_WeaponDataDefinition[] =
-    {
-        DELTA_DEF(weapon_data_s, m_iId),
-        DELTA_DEF(weapon_data_s, m_iClip),
-        DELTA_DEF(weapon_data_s, m_flNextPrimaryAttack),
-        DELTA_DEF(weapon_data_s, m_flNextSecondaryAttack),
-        DELTA_DEF(weapon_data_s, m_flTimeWeaponIdle),
-        DELTA_DEF(weapon_data_s, m_fInReload),
-        DELTA_DEF(weapon_data_s, m_fInSpecialReload),
-        DELTA_DEF(weapon_data_s, m_flNextReload),
-        DELTA_DEF(weapon_data_s, m_flPumpTime),
-        DELTA_DEF(weapon_data_s, m_fReloadTime),
-        DELTA_DEF(weapon_data_s, m_fAimedDamage),
-        DELTA_DEF(weapon_data_s, m_fNextAimBonus),
-        DELTA_DEF(weapon_data_s, m_fInZoom),
-        DELTA_DEF(weapon_data_s, m_iWeaponState),
-        DELTA_DEF(weapon_data_s, iuser1),
-        DELTA_DEF(weapon_data_s, iuser2),
-        DELTA_DEF(weapon_data_s, iuser3),
-        DELTA_DEF(weapon_data_s, iuser4),
-        DELTA_DEF(weapon_data_s, fuser1),
-        DELTA_DEF(weapon_data_s, fuser2),
-        DELTA_DEF(weapon_data_s, fuser3),
-        DELTA_DEF(weapon_data_s, fuser4),
+static delta_definition_t g_WeaponDataDefinition[] = {
+	DELTA_DEF(weapon_data_s, m_iId),
+	DELTA_DEF(weapon_data_s, m_iClip),
+	DELTA_DEF(weapon_data_s, m_flNextPrimaryAttack),
+	DELTA_DEF(weapon_data_s, m_flNextSecondaryAttack),
+	DELTA_DEF(weapon_data_s, m_flTimeWeaponIdle),
+	DELTA_DEF(weapon_data_s, m_fInReload),
+	DELTA_DEF(weapon_data_s, m_fInSpecialReload),
+	DELTA_DEF(weapon_data_s, m_flNextReload),
+	DELTA_DEF(weapon_data_s, m_flPumpTime),
+	DELTA_DEF(weapon_data_s, m_fReloadTime),
+	DELTA_DEF(weapon_data_s, m_fAimedDamage),
+	DELTA_DEF(weapon_data_s, m_fNextAimBonus),
+	DELTA_DEF(weapon_data_s, m_fInZoom),
+	DELTA_DEF(weapon_data_s, m_iWeaponState),
+	DELTA_DEF(weapon_data_s, iuser1),
+	DELTA_DEF(weapon_data_s, iuser2),
+	DELTA_DEF(weapon_data_s, iuser3),
+	DELTA_DEF(weapon_data_s, iuser4),
+	DELTA_DEF(weapon_data_s, fuser1),
+	DELTA_DEF(weapon_data_s, fuser2),
+	DELTA_DEF(weapon_data_s, fuser3),
+	DELTA_DEF(weapon_data_s, fuser4),
 };
 
-static delta_definition_t g_ClientDataDefinition[] =
-    {
-        DELTA_DEF(clientdata_s, origin[0]),
-        DELTA_DEF(clientdata_s, origin[1]),
-        DELTA_DEF(clientdata_s, origin[2]),
-        DELTA_DEF(clientdata_s, velocity[0]),
-        DELTA_DEF(clientdata_s, velocity[1]),
-        DELTA_DEF(clientdata_s, velocity[2]),
-        DELTA_DEF(clientdata_s, viewmodel),
-        DELTA_DEF(clientdata_s, punchangle[0]),
-        DELTA_DEF(clientdata_s, punchangle[1]),
-        DELTA_DEF(clientdata_s, punchangle[2]),
-        DELTA_DEF(clientdata_s, flags),
-        DELTA_DEF(clientdata_s, waterlevel),
-        DELTA_DEF(clientdata_s, watertype),
-        DELTA_DEF(clientdata_s, view_ofs[0]),
-        DELTA_DEF(clientdata_s, view_ofs[1]),
-        DELTA_DEF(clientdata_s, view_ofs[2]),
-        DELTA_DEF(clientdata_s, health),
-        DELTA_DEF(clientdata_s, bInDuck),
-        DELTA_DEF(clientdata_s, weapons),
-        DELTA_DEF(clientdata_s, flTimeStepSound),
-        DELTA_DEF(clientdata_s, flDuckTime),
-        DELTA_DEF(clientdata_s, flSwimTime),
-        DELTA_DEF(clientdata_s, waterjumptime),
-        DELTA_DEF(clientdata_s, maxspeed),
-        DELTA_DEF(clientdata_s, m_iId),
-        DELTA_DEF(clientdata_s, ammo_nails),
-        DELTA_DEF(clientdata_s, ammo_shells),
-        DELTA_DEF(clientdata_s, ammo_cells),
-        DELTA_DEF(clientdata_s, ammo_rockets),
-        DELTA_DEF(clientdata_s, m_flNextAttack),
-        DELTA_DEF(clientdata_s, physinfo),
-        DELTA_DEF(clientdata_s, fov),
-        DELTA_DEF(clientdata_s, weaponanim),
-        DELTA_DEF(clientdata_s, tfstate),
-        DELTA_DEF(clientdata_s, pushmsec),
-        DELTA_DEF(clientdata_s, deadflag),
-        DELTA_DEF(clientdata_s, iuser1),
-        DELTA_DEF(clientdata_s, iuser2),
-        DELTA_DEF(clientdata_s, iuser3),
-        DELTA_DEF(clientdata_s, iuser4),
-        DELTA_DEF(clientdata_s, fuser1),
-        DELTA_DEF(clientdata_s, fuser2),
-        DELTA_DEF(clientdata_s, fuser3),
-        DELTA_DEF(clientdata_s, fuser4),
-        DELTA_DEF(clientdata_s, vuser1[0]),
-        DELTA_DEF(clientdata_s, vuser1[1]),
-        DELTA_DEF(clientdata_s, vuser1[2]),
-        DELTA_DEF(clientdata_s, vuser2[0]),
-        DELTA_DEF(clientdata_s, vuser2[1]),
-        DELTA_DEF(clientdata_s, vuser2[2]),
-        DELTA_DEF(clientdata_s, vuser3[0]),
-        DELTA_DEF(clientdata_s, vuser3[1]),
-        DELTA_DEF(clientdata_s, vuser3[2]),
-        DELTA_DEF(clientdata_s, vuser4[0]),
-        DELTA_DEF(clientdata_s, vuser4[1]),
-        DELTA_DEF(clientdata_s, vuser4[2]),
+static delta_definition_t g_ClientDataDefinition[] = {
+	DELTA_DEF(clientdata_s, origin[0]),
+	DELTA_DEF(clientdata_s, origin[1]),
+	DELTA_DEF(clientdata_s, origin[2]),
+	DELTA_DEF(clientdata_s, velocity[0]),
+	DELTA_DEF(clientdata_s, velocity[1]),
+	DELTA_DEF(clientdata_s, velocity[2]),
+	DELTA_DEF(clientdata_s, viewmodel),
+	DELTA_DEF(clientdata_s, punchangle[0]),
+	DELTA_DEF(clientdata_s, punchangle[1]),
+	DELTA_DEF(clientdata_s, punchangle[2]),
+	DELTA_DEF(clientdata_s, flags),
+	DELTA_DEF(clientdata_s, waterlevel),
+	DELTA_DEF(clientdata_s, watertype),
+	DELTA_DEF(clientdata_s, view_ofs[0]),
+	DELTA_DEF(clientdata_s, view_ofs[1]),
+	DELTA_DEF(clientdata_s, view_ofs[2]),
+	DELTA_DEF(clientdata_s, health),
+	DELTA_DEF(clientdata_s, bInDuck),
+	DELTA_DEF(clientdata_s, weapons),
+	DELTA_DEF(clientdata_s, flTimeStepSound),
+	DELTA_DEF(clientdata_s, flDuckTime),
+	DELTA_DEF(clientdata_s, flSwimTime),
+	DELTA_DEF(clientdata_s, waterjumptime),
+	DELTA_DEF(clientdata_s, maxspeed),
+	DELTA_DEF(clientdata_s, m_iId),
+	DELTA_DEF(clientdata_s, ammo_nails),
+	DELTA_DEF(clientdata_s, ammo_shells),
+	DELTA_DEF(clientdata_s, ammo_cells),
+	DELTA_DEF(clientdata_s, ammo_rockets),
+	DELTA_DEF(clientdata_s, m_flNextAttack),
+	DELTA_DEF(clientdata_s, physinfo),
+	DELTA_DEF(clientdata_s, fov),
+	DELTA_DEF(clientdata_s, weaponanim),
+	DELTA_DEF(clientdata_s, tfstate),
+	DELTA_DEF(clientdata_s, pushmsec),
+	DELTA_DEF(clientdata_s, deadflag),
+	DELTA_DEF(clientdata_s, iuser1),
+	DELTA_DEF(clientdata_s, iuser2),
+	DELTA_DEF(clientdata_s, iuser3),
+	DELTA_DEF(clientdata_s, iuser4),
+	DELTA_DEF(clientdata_s, fuser1),
+	DELTA_DEF(clientdata_s, fuser2),
+	DELTA_DEF(clientdata_s, fuser3),
+	DELTA_DEF(clientdata_s, fuser4),
+	DELTA_DEF(clientdata_s, vuser1[0]),
+	DELTA_DEF(clientdata_s, vuser1[1]),
+	DELTA_DEF(clientdata_s, vuser1[2]),
+	DELTA_DEF(clientdata_s, vuser2[0]),
+	DELTA_DEF(clientdata_s, vuser2[1]),
+	DELTA_DEF(clientdata_s, vuser2[2]),
+	DELTA_DEF(clientdata_s, vuser3[0]),
+	DELTA_DEF(clientdata_s, vuser3[1]),
+	DELTA_DEF(clientdata_s, vuser3[2]),
+	DELTA_DEF(clientdata_s, vuser4[0]),
+	DELTA_DEF(clientdata_s, vuser4[1]),
+	DELTA_DEF(clientdata_s, vuser4[2]),
 };
 
 #endif
 
 delta_description_t *DELTA_FindField(delta_t *pFields, const char *pszField)
 {
-	int                  fieldCount = pFields->fieldCount;
-	delta_description_t *pitem      = pFields->pdd;
+	int fieldCount = pFields->fieldCount;
+	delta_description_t *pitem = pFields->pdd;
 
 	for(int i = 0; i < fieldCount; i++, pitem++)
 	{
@@ -335,10 +314,11 @@ delta_description_t *DELTA_FindField(delta_t *pFields, const char *pszField)
 	return NULL;
 }
 
-int EXT_FUNC DELTA_FindFieldIndex(struct delta_s *pFields, const char *fieldname)
+int EXT_FUNC DELTA_FindFieldIndex(struct delta_s *pFields,
+                                  const char *fieldname)
 {
-	int                  fieldCount = pFields->fieldCount;
-	delta_description_t *pitem      = pFields->pdd;
+	int fieldCount = pFields->fieldCount;
+	delta_description_t *pitem = pFields->pdd;
 
 	for(int i = 0; i < fieldCount; i++, pitem++)
 	{
@@ -395,7 +375,8 @@ void EXT_FUNC DELTA_SetFieldByIndex(struct delta_s *pFields, int fieldNumber)
 #endif
 }
 
-void EXT_FUNC DELTA_UnsetFieldByIndex(struct delta_s *pFields, int fieldNumber)
+void EXT_FUNC DELTA_UnsetFieldByIndex(struct delta_s *pFields,
+                                      int fieldNumber)
 {
 #if defined(REHLDS_OPT_PEDANTIC) || defined(REHLDS_FIXES)
 	DELTAJit_UnsetFieldByIndex(pFields, fieldNumber);
@@ -406,7 +387,7 @@ void EXT_FUNC DELTA_UnsetFieldByIndex(struct delta_s *pFields, int fieldNumber)
 
 void DELTA_ClearFlags(delta_t *pFields)
 {
-	int                  i;
+	int i;
 	delta_description_t *pitem;
 	for(i = 0, pitem = pFields->pdd; i < pFields->fieldCount; i++, pitem++)
 	{
@@ -419,15 +400,15 @@ int DELTA_TestDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 #if defined(REHLDS_OPT_PEDANTIC) || defined(REHLDS_FIXES)
 	return DELTAJit_TestDelta(from, to, pFields);
 #else
-	int                  i;
-	char *               st1, *st2;
+	int i;
+	char *st1, *st2;
 	delta_description_t *pTest;
-	int                  fieldType;
-	int                  fieldCount = pFields->fieldCount;
-	int                  length;
-	int                  different;
-	int                  neededBits = 0;
-	int                  highestBit = -1;
+	int fieldType;
+	int fieldCount = pFields->fieldCount;
+	int length;
+	int different;
+	int neededBits = 0;
+	int highestBit = -1;
 
 	for(i = 0, pTest = pFields->pdd; i < fieldCount; i++, pTest++)
 	{
@@ -440,36 +421,44 @@ int DELTA_TestDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 			different = from[pTest->fieldOffset] != to[pTest->fieldOffset];
 			break;
 		case DT_SHORT:
-			different = *(uint16 *)&from[pTest->fieldOffset] != *(uint16 *)&to[pTest->fieldOffset];
+			different = *(uint16 *)&from[pTest->fieldOffset] !=
+			*(uint16 *)&to[pTest->fieldOffset];
 			break;
 		case DT_FLOAT:
 		case DT_INTEGER:
 		case DT_ANGLE:
-			different = *(uint32 *)&from[pTest->fieldOffset] != *(uint32 *)&to[pTest->fieldOffset];
+			different = *(uint32 *)&from[pTest->fieldOffset] !=
+			*(uint32 *)&to[pTest->fieldOffset];
 			break;
 #ifdef REHLDS_FIXES
 		// don't use multiplier when checking, to increase performance
 		// check values binary like it does in jit
 		case DT_TIMEWINDOW_8:
 		case DT_TIMEWINDOW_BIG:
-			different = (*(int32 *)&from[pTest->fieldOffset]) != (*(int32 *)&to[pTest->fieldOffset]);
+			different = (*(int32 *)&from[pTest->fieldOffset]) !=
+			(*(int32 *)&to[pTest->fieldOffset]);
 			break;
 #else
 		case DT_TIMEWINDOW_8:
-			different = (int32)(*(float *)&from[pTest->fieldOffset] * 100.0) != (int32)(*(float *)&to[pTest->fieldOffset] * 100.0);
+			different = (int32)(*(float *)&from[pTest->fieldOffset] * 100.0) !=
+			(int32)(*(float *)&to[pTest->fieldOffset] * 100.0);
 			break;
 		case DT_TIMEWINDOW_BIG:
-			different = (int32)(*(float *)&from[pTest->fieldOffset] * 1000.0) != (int32)(*(float *)&to[pTest->fieldOffset] * 1000.0);
+			different = (int32)(*(float *)&from[pTest->fieldOffset] * 1000.0) !=
+			(int32)(*(float *)&to[pTest->fieldOffset] * 1000.0);
 			break;
 #endif
 		case DT_STRING:
 			st1 = (char *)&from[pTest->fieldOffset];
 			st2 = (char *)&to[pTest->fieldOffset];
-			if(!(!*st1 && !*st2 || *st1 && *st2 && !Q_stricmp(st1, st2))) // Not sure why it is case insensitive, but it looks so
+			if(!(!*st1 && !*st2 ||
+			     *st1 && *st2 && !Q_stricmp(st1, st2))) // Not sure why it is case
+			                                            // insensitive, but it looks
+			                                            // so
 			{
 #ifdef REHLDS_FIXES
 				different = TRUE;
-				length    = Q_strlen(st2) * 8;
+				length = Q_strlen(st2) * 8;
 #else  // REHLDS_FIXES
 				length = Q_strlen(st2);
 #endif // REHLDS_FIXES
@@ -483,7 +472,8 @@ int DELTA_TestDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 		if(different)
 		{
 			highestBit = i;
-			neededBits += fieldType == DT_STRING ? length + 8 : pTest->significant_bits;
+			neededBits +=
+			fieldType == DT_STRING ? length + 8 : pTest->significant_bits;
 		}
 	}
 
@@ -498,8 +488,8 @@ int DELTA_TestDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 
 int DELTA_CountSendFields(delta_t *pFields)
 {
-	int                  i, c;
-	int                  fieldCount = pFields->fieldCount;
+	int i, c;
+	int fieldCount = pFields->fieldCount;
 	delta_description_t *pitem;
 	for(i = 0, c = 0, pitem = pFields->pdd; i < fieldCount; i++, pitem++)
 	{
@@ -514,11 +504,11 @@ int DELTA_CountSendFields(delta_t *pFields)
 
 void DELTA_MarkSendFields(unsigned char *from, unsigned char *to, delta_t *pFields)
 {
-	int                  i;
-	char *               st1, *st2;
+	int i;
+	char *st1, *st2;
 	delta_description_t *pTest;
-	int                  fieldType;
-	int                  fieldCount = pFields->fieldCount;
+	int fieldType;
+	int fieldCount = pFields->fieldCount;
 
 	for(i = 0, pTest = pFields->pdd; i < fieldCount; i++, pTest++)
 	{
@@ -530,13 +520,15 @@ void DELTA_MarkSendFields(unsigned char *from, unsigned char *to, delta_t *pFiel
 				pTest->flags |= FDT_MARK;
 			break;
 		case DT_SHORT:
-			if(*(uint16 *)&from[pTest->fieldOffset] != *(uint16 *)&to[pTest->fieldOffset])
+			if(*(uint16 *)&from[pTest->fieldOffset] !=
+			   *(uint16 *)&to[pTest->fieldOffset])
 				pTest->flags |= FDT_MARK;
 			break;
 		case DT_FLOAT:
 		case DT_INTEGER:
 		case DT_ANGLE:
-			if(*(uint32 *)&from[pTest->fieldOffset] != *(uint32 *)&to[pTest->fieldOffset])
+			if(*(uint32 *)&from[pTest->fieldOffset] !=
+			   *(uint32 *)&to[pTest->fieldOffset])
 				pTest->flags |= FDT_MARK;
 			break;
 
@@ -544,23 +536,29 @@ void DELTA_MarkSendFields(unsigned char *from, unsigned char *to, delta_t *pFiel
 #ifdef REHLDS_FIXES
 		case DT_TIMEWINDOW_8:
 		case DT_TIMEWINDOW_BIG:
-			if(*(uint32 *)&from[pTest->fieldOffset] != *(uint32 *)&to[pTest->fieldOffset])
+			if(*(uint32 *)&from[pTest->fieldOffset] !=
+			   *(uint32 *)&to[pTest->fieldOffset])
 				pTest->flags |= FDT_MARK;
 			break;
 #else
 		case DT_TIMEWINDOW_8:
-			if((int32)(*(float *)&from[pTest->fieldOffset] * 100.0) != (int32)(*(float *)&to[pTest->fieldOffset] * 100.0))
+			if((int32)(*(float *)&from[pTest->fieldOffset] * 100.0) !=
+			   (int32)(*(float *)&to[pTest->fieldOffset] * 100.0))
 				pTest->flags |= FDT_MARK;
 			break;
 		case DT_TIMEWINDOW_BIG:
-			if((int32)(*(float *)&from[pTest->fieldOffset] * 1000.0) != (int32)(*(float *)&to[pTest->fieldOffset] * 1000.0))
+			if((int32)(*(float *)&from[pTest->fieldOffset] * 1000.0) !=
+			   (int32)(*(float *)&to[pTest->fieldOffset] * 1000.0))
 				pTest->flags |= FDT_MARK;
 			break;
 #endif
 		case DT_STRING:
 			st1 = (char *)&from[pTest->fieldOffset];
 			st2 = (char *)&to[pTest->fieldOffset];
-			if(!(!*st1 && !*st2 || *st1 && *st2 && !Q_stricmp(st1, st2))) // Not sure why it is case insensitive, but it looks so
+			if(!(!*st1 && !*st2 ||
+			     *st1 && *st2 && !Q_stricmp(st1, st2))) // Not sure why it is case
+				                                        // insensitive, but it looks
+				                                        // so
 				pTest->flags |= FDT_MARK;
 			break;
 		default:
@@ -575,9 +573,9 @@ void DELTA_MarkSendFields(unsigned char *from, unsigned char *to, delta_t *pFiel
 void DELTA_SetSendFlagBits(delta_t *pFields, int *bits, int *bytecount)
 {
 	delta_description_t *pTest;
-	int                  i;
-	int                  lastbit    = -1;
-	int                  fieldCount = pFields->fieldCount;
+	int i;
+	int lastbit = -1;
+	int fieldCount = pFields->fieldCount;
 
 	Q_memset(bits, 0, 8);
 
@@ -614,13 +612,13 @@ qboolean DELTA_IsFieldMarked(delta_t *pFields, int fieldNumber)
 
 void DELTA_WriteMarkedFields(unsigned char *from, unsigned char *to, delta_t *pFields)
 {
-	int                  i;
+	int i;
 	delta_description_t *pTest;
-	int                  fieldSign;
-	int                  fieldType;
+	int fieldSign;
+	int fieldType;
 
 	float f2;
-	int   fieldCount = pFields->fieldCount;
+	int fieldCount = pFields->fieldCount;
 
 	for(i = 0, pTest = pFields->pdd; i < fieldCount; i++, pTest++)
 	{
@@ -640,13 +638,13 @@ void DELTA_WriteMarkedFields(unsigned char *from, unsigned char *to, delta_t *pF
 			if(fieldSign)
 			{
 				int8 si8 = *(int8 *)&to[pTest->fieldOffset];
-				si8      = (int8)((double)si8 * pTest->premultiply);
+				si8 = (int8)((double)si8 * pTest->premultiply);
 				MSG_WriteSBits(si8, pTest->significant_bits);
 			}
 			else
 			{
 				uint8 i8 = *(uint8 *)&to[pTest->fieldOffset];
-				i8       = (uint8)((double)i8 * pTest->premultiply);
+				i8 = (uint8)((double)i8 * pTest->premultiply);
 				MSG_WriteBits(i8, pTest->significant_bits);
 			}
 			break;
@@ -654,19 +652,20 @@ void DELTA_WriteMarkedFields(unsigned char *from, unsigned char *to, delta_t *pF
 			if(fieldSign)
 			{
 				int16 si16 = *(int16 *)&to[pTest->fieldOffset];
-				si16       = (int16)((double)si16 * pTest->premultiply);
+				si16 = (int16)((double)si16 * pTest->premultiply);
 				MSG_WriteSBits(si16, pTest->significant_bits);
 			}
 			else
 			{
 				uint16 i16 = *(uint16 *)&to[pTest->fieldOffset];
-				i16        = (uint16)((double)i16 * pTest->premultiply);
+				i16 = (uint16)((double)i16 * pTest->premultiply);
 				MSG_WriteBits(i16, pTest->significant_bits);
 			}
 			break;
 		case DT_FLOAT:
 		{
-			double val = (double)(*(float *)&to[pTest->fieldOffset]) * pTest->premultiply;
+			double val =
+			(double)(*(float *)&to[pTest->fieldOffset]) * pTest->premultiply;
 			if(fieldSign)
 			{
 				MSG_WriteSBits((int32)val, pTest->significant_bits);
@@ -705,15 +704,16 @@ void DELTA_WriteMarkedFields(unsigned char *from, unsigned char *to, delta_t *pF
 			break;
 		case DT_TIMEWINDOW_8:
 		{
-			f2          = *(float *)&to[pTest->fieldOffset];
+			f2 = *(float *)&to[pTest->fieldOffset];
 			int32 twVal = (int)(g_psv.time * 100.0) - (int)(f2 * 100.0);
 			MSG_WriteSBits(twVal, 8);
 			break;
 		}
 		case DT_TIMEWINDOW_BIG:
 		{
-			f2          = *(float *)&to[pTest->fieldOffset];
-			int32 twVal = (int)(g_psv.time * pTest->premultiply) - (int)(f2 * pTest->premultiply);
+			f2 = *(float *)&to[pTest->fieldOffset];
+			int32 twVal = (int)(g_psv.time * pTest->premultiply) -
+			(int)(f2 * pTest->premultiply);
 			MSG_WriteSBits((int32)twVal, pTest->significant_bits);
 			break;
 		}
@@ -758,10 +758,11 @@ NOINLINE qboolean DELTA_WriteDelta(unsigned char *from, unsigned char *to, qbool
 	return sendfields;
 }
 
-#ifdef REHLDS_FIXES //Fix for https://github.com/dreamstalker/rehlds/issues/24
+#ifdef REHLDS_FIXES // Fix for https://github.com/dreamstalker/rehlds/issues/24
 qboolean DELTA_WriteDeltaForceMask(unsigned char *from, unsigned char *to, qboolean force, delta_t *pFields, void (*callback)(void), void *pForceMask)
 {
-	qboolean sendfields = DELTAJit_Fields_Clear_Mark_Check(from, to, pFields, pForceMask);
+	qboolean sendfields =
+	DELTAJit_Fields_Clear_Mark_Check(from, to, pFields, pForceMask);
 	_DELTA_WriteDelta(from, to, force, pFields, callback, sendfields);
 	return sendfields;
 }
@@ -799,20 +800,20 @@ qboolean _DELTA_WriteDelta(unsigned char *from, unsigned char *to, qboolean forc
 int DELTA_ParseDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 {
 	delta_description_t *pTest;
-	int                  i;
-	int                  bits[2]; // this is a limit with 64 fields max in delta
-	int                  nbytes;
-	int                  bitfieldnumber;
-	int                  fieldCount = pFields->fieldCount;
-	int                  fieldType;
-	int                  fieldSign;
+	int i;
+	int bits[2]; // this is a limit with 64 fields max in delta
+	int nbytes;
+	int bitfieldnumber;
+	int fieldCount = pFields->fieldCount;
+	int fieldType;
+	int fieldSign;
 
 	double d2;
-	float  t;
-	int    addt;
-	char * st2;
-	char   c;
-	int    startbit;
+	float t;
+	int addt;
+	char *st2;
+	char c;
+	int startbit;
 
 	startbit = MSG_CurrentBit();
 	Q_memset(bits, 0, 8);
@@ -837,17 +838,20 @@ int DELTA_ParseDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 				to[pTest->fieldOffset] = from[pTest->fieldOffset];
 				break;
 			case DT_SHORT:
-				*(uint16 *)&to[pTest->fieldOffset] = *(uint16 *)&from[pTest->fieldOffset];
+				*(uint16 *)&to[pTest->fieldOffset] =
+				*(uint16 *)&from[pTest->fieldOffset];
 				break;
 			case DT_FLOAT:
 			case DT_INTEGER:
 			case DT_ANGLE:
 			case DT_TIMEWINDOW_8:
 			case DT_TIMEWINDOW_BIG:
-				*(uint32 *)&to[pTest->fieldOffset] = *(uint32 *)&from[pTest->fieldOffset];
+				*(uint32 *)&to[pTest->fieldOffset] =
+				*(uint32 *)&from[pTest->fieldOffset];
 				break;
 			case DT_STRING:
-				Q_strcpy((char *)&to[pTest->fieldOffset], (char *)&from[pTest->fieldOffset]);
+				Q_strcpy((char *)&to[pTest->fieldOffset],
+				         (char *)&from[pTest->fieldOffset]);
 				break;
 			default:
 				Con_Printf("%s: unparseable field type %i\n", __FUNCTION__, fieldType);
@@ -964,18 +968,20 @@ int DELTA_ParseDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 			}
 			break;
 		case DT_ANGLE:
-			*(float *)&to[pTest->fieldOffset] = MSG_ReadBitAngle(pTest->significant_bits);
+			*(float *)&to[pTest->fieldOffset] =
+			MSG_ReadBitAngle(pTest->significant_bits);
 			break;
 		case DT_TIMEWINDOW_8:
-			addt                              = MSG_ReadSBits(8);
-			t                                 = (float)((cl.mtime[0] * 100.0 - addt) / 100.0);
+			addt = MSG_ReadSBits(8);
+			t = (float)((cl.mtime[0] * 100.0 - addt) / 100.0);
 			*(float *)&to[pTest->fieldOffset] = t;
 			break;
 		case DT_TIMEWINDOW_BIG:
 			addt = MSG_ReadSBits(pTest->significant_bits);
 			if(pTest->premultiply <= 0.9999 || pTest->premultiply >= 1.0001)
 			{
-				t = (float)((cl.mtime[0] * pTest->premultiply - addt) / pTest->premultiply);
+				t = (float)((cl.mtime[0] * pTest->premultiply - addt) /
+				            pTest->premultiply);
 			}
 			else
 			{
@@ -987,7 +993,7 @@ int DELTA_ParseDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 			st2 = (char *)&to[pTest->fieldOffset];
 			do
 			{
-				c      = MSG_ReadBits(8);
+				c = MSG_ReadBits(8);
 				*st2++ = c;
 			} while(c);
 			break;
@@ -1000,13 +1006,15 @@ int DELTA_ParseDelta(unsigned char *from, unsigned char *to, delta_t *pFields)
 	return MSG_CurrentBit() - startbit;
 }
 
-void EXT_FUNC DELTA_AddEncoder(char *name, void (*conditionalencode)(struct delta_s *, const unsigned char *, const unsigned char *))
+void EXT_FUNC
+DELTA_AddEncoder(char *name, void (*conditionalencode)(struct delta_s *, const unsigned char *, const unsigned char *))
 {
-	delta_encoder_t *p   = (delta_encoder_t *)Mem_ZeroMalloc(sizeof(delta_encoder_t));
-	p->name              = Mem_Strdup(name);
+	delta_encoder_t *p =
+	(delta_encoder_t *)Mem_ZeroMalloc(sizeof(delta_encoder_t));
+	p->name = Mem_Strdup(name);
 	p->conditionalencode = conditionalencode;
-	p->next              = g_encoders;
-	g_encoders           = p;
+	p->next = g_encoders;
+	g_encoders = p;
 }
 
 void DELTA_ClearEncoders(void)
@@ -1056,10 +1064,10 @@ void DELTA_ReverseLinks(delta_link_t **plinks)
 
 	while(p)
 	{
-		n       = p->next;
+		n = p->next;
 		p->next = newlist;
 		newlist = p;
-		p       = n;
+		p = n;
 	}
 
 	*plinks = newlist;
@@ -1080,9 +1088,9 @@ void DELTA_ClearLinks(delta_link_t **plinks)
 delta_t *DELTA_BuildFromLinks(delta_link_t **pplinks)
 {
 	delta_description_t *pdesc, *pcur;
-	delta_t *            pdelta;
-	delta_link_t *       p;
-	int                  count;
+	delta_t *pdelta;
+	delta_link_t *p;
+	int count;
 
 	pdelta = (delta_t *)Mem_ZeroMalloc(sizeof(delta_t));
 
@@ -1092,10 +1100,14 @@ delta_t *DELTA_BuildFromLinks(delta_link_t **pplinks)
 
 #ifdef REHLDS_FIXES
 	if(count > DELTA_MAX_FIELDS)
-		Sys_Error("%s: Too many fields in delta description %i (MAX %i)\n", __FUNCTION__, count, DELTA_MAX_FIELDS);
+		Sys_Error("%s: Too many fields in delta description %i (MAX %i)\n",
+		          __FUNCTION__,
+		          count,
+		          DELTA_MAX_FIELDS);
 #endif
 
-	pdesc = (delta_description_t *)Mem_ZeroMalloc(sizeof(delta_description_t) * count);
+	pdesc = (delta_description_t *)Mem_ZeroMalloc(sizeof(delta_description_t) *
+	                                              count);
 
 	for(p = *pplinks, pcur = pdesc; p != NULL; p = p->next, pcur++)
 	{
@@ -1106,9 +1118,9 @@ delta_t *DELTA_BuildFromLinks(delta_link_t **pplinks)
 
 	DELTA_ClearLinks(pplinks);
 
-	pdelta->dynamic    = 1;
+	pdelta->dynamic = 1;
 	pdelta->fieldCount = count;
-	pdelta->pdd        = pdesc;
+	pdelta->pdd = pdesc;
 
 	return pdelta;
 }
@@ -1161,7 +1173,8 @@ qboolean DELTA_ParseType(delta_description_t *pdelta, char **pstream)
 	}
 
 	// We are hit the end of the stream
-	Sys_Error("%s:  Expecting fieldtype info\n", __FUNCTION__); // Was Con_Printf here
+	Sys_Error("%s:  Expecting fieldtype info\n",
+	          __FUNCTION__); // Was Con_Printf here
 	return FALSE;
 }
 
@@ -1193,7 +1206,7 @@ qboolean DELTA_ParseField(int count, delta_definition_t *pdefinition, delta_link
 
 	Q_strncpy(pField->delta->fieldName, com_token, 31);
 	pField->delta->fieldName[31] = 0;
-	pField->delta->fieldOffset   = DELTA_FindOffset(count, pdefinition, com_token);
+	pField->delta->fieldOffset = DELTA_FindOffset(count, pdefinition, com_token);
 
 	*pstream = COM_Parse(*pstream);
 	if(!DELTA_ParseType(pField->delta, pstream))
@@ -1201,17 +1214,17 @@ qboolean DELTA_ParseField(int count, delta_definition_t *pdefinition, delta_link
 		return FALSE;
 	}
 
-	*pstream                        = COM_Parse(*pstream);
-	pField->delta->fieldSize        = 1;
+	*pstream = COM_Parse(*pstream);
+	pField->delta->fieldSize = 1;
 	pField->delta->significant_bits = Q_atoi(com_token);
-	*pstream                        = COM_Parse(*pstream);
-	*pstream                        = COM_Parse(*pstream);
-	pField->delta->premultiply      = (float)Q_atof(com_token);
+	*pstream = COM_Parse(*pstream);
+	*pstream = COM_Parse(*pstream);
+	pField->delta->premultiply = (float)Q_atof(com_token);
 
 	if(readpost)
 	{
-		*pstream                    = COM_Parse(*pstream);
-		*pstream                    = COM_Parse(*pstream);
+		*pstream = COM_Parse(*pstream);
+		*pstream = COM_Parse(*pstream);
 		pField->delta->postmultiply = (float)Q_atof(com_token);
 	}
 	else
@@ -1222,7 +1235,8 @@ qboolean DELTA_ParseField(int count, delta_definition_t *pdefinition, delta_link
 	*pstream = COM_Parse(*pstream);
 	if(Q_stricmp(com_token, ")"))
 	{
-		Sys_Error("%s:  Expecting ), got %s\n", __FUNCTION__, com_token); // Was Con_Printf here
+		Sys_Error("%s:  Expecting ), got %s\n", __FUNCTION__,
+		          com_token); // Was Con_Printf here
 		return FALSE;
 	}
 
@@ -1266,10 +1280,11 @@ void DELTA_AddDefinition(char *name, delta_definition_t *pdef, int numelements)
 
 	if(p == NULL)
 	{
-		p            = (delta_definition_list_t *)Mem_ZeroMalloc(sizeof(delta_definition_list_t));
+		p = (delta_definition_list_t *)Mem_ZeroMalloc(
+		sizeof(delta_definition_list_t));
 		p->ptypename = Mem_Strdup(name);
-		p->next      = g_defs;
-		g_defs       = p;
+		p->next = g_defs;
+		g_defs = p;
 	}
 
 	p->pdefinition = pdef;
@@ -1324,7 +1339,7 @@ void DELTA_SkipDescription(char **pstream)
 qboolean DELTA_ParseOneField(char **ppstream, delta_link_t **pplist, int count, delta_definition_t *pdefinition)
 {
 	delta_link_t *newlink;
-	delta_link_t  link;
+	delta_link_t link;
 
 	while(true)
 	{
@@ -1341,30 +1356,31 @@ qboolean DELTA_ParseOneField(char **ppstream, delta_link_t **pplist, int count, 
 		}
 
 		Q_memset(&link, 0, 8u);
-		link.delta = (delta_description_t *)Mem_ZeroMalloc(sizeof(delta_description_t));
+		link.delta =
+		(delta_description_t *)Mem_ZeroMalloc(sizeof(delta_description_t));
 		if(!DELTA_ParseField(count, pdefinition, &link, ppstream))
 		{
 			return FALSE;
 		}
 
-		newlink        = (delta_link_t *)Mem_ZeroMalloc(sizeof(delta_link_t));
+		newlink = (delta_link_t *)Mem_ZeroMalloc(sizeof(delta_link_t));
 		newlink->delta = link.delta;
-		newlink->next  = *pplist;
-		*pplist        = newlink;
+		newlink->next = *pplist;
+		*pplist = newlink;
 	}
 	return TRUE;
 }
 
 qboolean DELTA_ParseDescription(char *name, delta_t **ppdesc, char *pstream)
 {
-	delta_link_t *      links;
+	delta_link_t *links;
 	delta_definition_t *pdefinition;
-	char                encoder[32];
-	char                source[32];
-	int                 count;
+	char encoder[32];
+	char source[32];
+	int count;
 
-	links      = NULL;
-	count      = 0;
+	links = NULL;
+	count = 0;
 	encoder[0] = 0;
 
 	if(!ppdesc)
@@ -1398,7 +1414,10 @@ qboolean DELTA_ParseDescription(char *name, delta_t **ppdesc, char *pstream)
 			pstream = COM_Parse(pstream);
 			if(com_token[0] == 0)
 			{
-				Sys_Error("%s:  Unknown encoder :  %s\nValid values:\nnone\ngamedll funcname\nclientdll funcname\n", __FUNCTION__, com_token);
+				Sys_Error("%s:  Unknown encoder :  %s\nValid values:\nnone\ngamedll "
+				          "funcname\nclientdll funcname\n",
+				          __FUNCTION__,
+				          com_token);
 			}
 			if(Q_stricmp(com_token, "none"))
 			{
@@ -1426,7 +1445,8 @@ qboolean DELTA_ParseDescription(char *name, delta_t **ppdesc, char *pstream)
 
 				if(Q_stricmp(com_token, "{"))
 				{
-					Sys_Error("%s:  Expecting {, got %s\n", __FUNCTION__, com_token); // Was Con_Printf here
+					Sys_Error("%s:  Expecting {, got %s\n", __FUNCTION__,
+					          com_token); // Was Con_Printf here
 					return FALSE;
 				}
 				if(!DELTA_ParseOneField(&pstream, &links, count, pdefinition))
@@ -1442,8 +1462,10 @@ qboolean DELTA_ParseDescription(char *name, delta_t **ppdesc, char *pstream)
 	if(encoder[0] != 0)
 	{
 		Q_strncpy((*ppdesc)->conditionalencodename, encoder, sizeof((*ppdesc)->conditionalencodename) - 1);
-		(*ppdesc)->conditionalencodename[sizeof((*ppdesc)->conditionalencodename) - 1] = 0;
-		(*ppdesc)->conditionalencode                                                   = 0;
+		(*ppdesc)
+		->conditionalencodename[sizeof((*ppdesc)->conditionalencodename) - 1] =
+		0;
+		(*ppdesc)->conditionalencode = 0;
 	}
 
 	return TRUE;
@@ -1451,7 +1473,7 @@ qboolean DELTA_ParseDescription(char *name, delta_t **ppdesc, char *pstream)
 
 qboolean DELTA_Load(char *name, delta_t **ppdesc, char *pszFile)
 {
-	char *   pbuf;
+	char *pbuf;
 	qboolean bret;
 
 	pbuf = (char *)COM_LoadFile(pszFile, 5, 0);
@@ -1469,11 +1491,12 @@ qboolean DELTA_Load(char *name, delta_t **ppdesc, char *pszFile)
 
 void DELTA_RegisterDescription(char *name)
 {
-	delta_registry_t *p = (delta_registry_t *)Mem_ZeroMalloc(sizeof(delta_registry_t));
-	p->next             = g_deltaregistry;
-	g_deltaregistry     = p;
-	p->name             = Mem_Strdup(name);
-	p->pdesc            = 0;
+	delta_registry_t *p =
+	(delta_registry_t *)Mem_ZeroMalloc(sizeof(delta_registry_t));
+	p->next = g_deltaregistry;
+	g_deltaregistry = p;
+	p->name = Mem_Strdup(name);
+	p->pdesc = 0;
 }
 
 void DELTA_ClearRegistrations(void)
@@ -1513,7 +1536,7 @@ void DELTA_ClearStats(delta_t *p)
 	{
 		for(i = p->fieldCount - 1; i >= 0; i--)
 		{
-			p->pdd[i].stats.sendcount     = 0;
+			p->pdd[i].stats.sendcount = 0;
 			p->pdd[i].stats.receivedcount = 0;
 		}
 	}

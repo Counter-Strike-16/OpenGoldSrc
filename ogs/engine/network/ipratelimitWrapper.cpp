@@ -29,9 +29,9 @@
 /// @file
 
 //#include "precompiled.hpp"
+#include "ipratelimitWrapper.hpp"
 #include "common/commontypes.h"
 #include "common/netadr.h"
-#include "ipratelimitWrapper.hpp"
 
 #ifdef HOOK_ENGINE
 int (*pCheckIP)(netadr_t adr);
@@ -49,7 +49,8 @@ int CheckIP(netadr_t adr)
 	}
 	return res;
 #else
-	CRehldsPlatformHolder::get()->time(NULL); //time() is called inside IpRateLimiter
+	CRehldsPlatformHolder::get()->time(
+	NULL); // time() is called inside IpRateLimiter
 	return 1;
 #endif
 }

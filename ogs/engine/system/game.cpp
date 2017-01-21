@@ -36,7 +36,7 @@
 */
 #ifndef HOOK_ENGINE
 
-CGame  g_Game;
+CGame g_Game;
 IGame *game = &g_Game;
 
 #else // HOOK_ENGINE

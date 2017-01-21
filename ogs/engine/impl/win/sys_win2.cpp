@@ -1,16 +1,16 @@
 
 
 #include "../qcommon/qcommon.h"
-#include "winquake.h"
-#include "resource.h"
-#include <errno.h>
-#include <float.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <direct.h>
-#include <io.h>
-#include <conio.h>
 #include "../win32/conproc.h"
+#include "resource.h"
+#include "winquake.h"
+#include <conio.h>
+#include <direct.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <float.h>
+#include <io.h>
+#include <stdio.h>
 
 #define MINIMUM_WIN_MEMORY 0x0a00000
 #define MAXIMUM_WIN_MEMORY 0x1000000
@@ -19,8 +19,8 @@
 
 qboolean s_win95;
 
-int      starttime;
-int      ActiveApp;
+int starttime;
+int ActiveApp;
 qboolean Minimized;
 
 static HANDLE hinput, houtput;
@@ -31,7 +31,7 @@ unsigned sys_frame_time;
 static HANDLE qwclsemaphore;
 
 #define MAX_NUM_ARGVS 128
-int   argc;
+int argc;
 char *argv[MAX_NUM_ARGVS];
 
 /*
@@ -45,7 +45,7 @@ SYSTEM IO
 void Sys_Error(char *error, ...)
 {
 	va_list argptr;
-	char    text[1024];
+	char text[1024];
 
 	CL_Shutdown();
 	Qcommon_Shutdown();
@@ -85,14 +85,13 @@ void WinError(void)
 {
 	LPVOID lpMsgBuf;
 
-	FormatMessage(
-	    FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-	    NULL,
-	    GetLastError(),
-	    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-	    (LPTSTR)&lpMsgBuf,
-	    0,
-	    NULL);
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+	              NULL,
+	              GetLastError(),
+	              MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+	              (LPTSTR)&lpMsgBuf,
+	              0,
+	              NULL);
 
 	// Display the string.
 	MessageBox(NULL, lpMsgBuf, "GetLastError", MB_OK | MB_ICONINFORMATION);
@@ -111,12 +110,12 @@ Sys_ScanForCD
 */
 char *Sys_ScanForCD(void)
 {
-	static char     cddir[MAX_OSPATH];
+	static char cddir[MAX_OSPATH];
 	static qboolean done;
 #ifndef DEMO
-	char  drive[4];
+	char drive[4];
 	FILE *f;
-	char  test[MAX_QPATH];
+	char test[MAX_QPATH];
 
 	if(done) // don't re-check
 		return cddir;
@@ -218,7 +217,7 @@ void Sys_Init(void)
 	{
 		if(!AllocConsole())
 			Sys_Error("Couldn't create dedicated server console");
-		hinput  = GetStdHandle(STD_INPUT_HANDLE);
+		hinput = GetStdHandle(STD_INPUT_HANDLE);
 		houtput = GetStdHandle(STD_OUTPUT_HANDLE);
 
 		// let QHOST hook in
@@ -227,7 +226,7 @@ void Sys_Init(void)
 }
 
 static char console_text[256];
-static int  console_textlen;
+static int console_textlen;
 
 /*
 ================
@@ -237,8 +236,8 @@ Sys_ConsoleInput
 char *Sys_ConsoleInput(void)
 {
 	INPUT_RECORD recs[1024];
-	int          dummy;
-	int          ch, numread, numevents;
+	int dummy;
+	int ch, numread, numevents;
 
 	if(!dedicated || !dedicated->value)
 		return NULL;
@@ -271,7 +270,7 @@ char *Sys_ConsoleInput(void)
 					if(console_textlen)
 					{
 						console_text[console_textlen] = 0;
-						console_textlen               = 0;
+						console_textlen = 0;
 						return console_text;
 					}
 					break;
@@ -313,7 +312,7 @@ Print text to the dedicated console
 */
 void Sys_ConsoleOutput(char *string)
 {
-	int  dummy;
+	int dummy;
 	char text[256];
 
 	if(!dedicated || !dedicated->value)
@@ -438,10 +437,10 @@ Loads the game dll
 void *Sys_GetGameAPI(void *parms)
 {
 	void *(*GetGameAPI)(void *);
-	char        name[MAX_OSPATH];
-	char *      path;
-	char        cwd[MAX_OSPATH];
-#if defined     _M_IX86
+	char name[MAX_OSPATH];
+	char *path;
+	char cwd[MAX_OSPATH];
+#if defined _M_IX86
 	const char *gamename = "gamex86.dll";
 
 #ifdef NDEBUG
@@ -521,7 +520,7 @@ ParseCommandLine
 */
 void ParseCommandLine(LPSTR lpCmdLine)
 {
-	argc    = 1;
+	argc = 1;
 	argv[0] = "exe";
 
 	while(*lpCmdLine && (argc < MAX_NUM_ARGVS))
@@ -556,8 +555,8 @@ HINSTANCE global_hInstance;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	MSG   msg;
-	int   time, oldtime, newtime;
+	MSG msg;
+	int time, oldtime, newtime;
 	char *cddir;
 
 	/* previous instances do not exist in Win32 */
@@ -610,9 +609,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		do
 		{
 			newtime = Sys_Milliseconds();
-			time    = newtime - oldtime;
+			time = newtime - oldtime;
 		} while(time < 1);
-		//			Con_Printf ("time:%5.2f - %5.2f = %5.2f\n", newtime, oldtime, time);
+		//			Con_Printf ("time:%5.2f - %5.2f = %5.2f\n", newtime, oldtime,
+		//time);
 
 		//	_controlfp( ~( _EM_ZERODIVIDE /*| _EM_INVALID*/ ), _MCW_EM );
 		_controlfp(_PC_24, _MCW_PC);

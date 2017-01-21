@@ -52,9 +52,9 @@ public:
 	public:
 		const char *initname;
 		const char *shutdownname;
-		int         referencecount;
-		int         sequence;
-		bool        warningprinted;
+		int referencecount;
+		int sequence;
+		bool warningprinted;
 
 		double inittime;
 		double shutdowntime;
@@ -67,7 +67,7 @@ public:
 	void Shutdown(const char *shutdown, int listnum);
 
 private:
-	int                    m_nNumFuncs[NUM_LISTS];
+	int m_nNumFuncs[NUM_LISTS];
 	CUtlVector<InitFunc *> m_Funcs[NUM_LISTS];
 };
 

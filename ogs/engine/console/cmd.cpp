@@ -32,33 +32,33 @@
 //#include "precompiled.hpp"
 //#include "system/quakedef.hpp"
 #include "console/cmd.hpp"
-#include "memory/zone.hpp"
-#include "memory/mem.hpp"
-#include "system/common.hpp"
-#include "system/system.hpp"
-#include "system/sizebuf.hpp"
-#include "filesystem/filesystem_internal.hpp"
-#include "console/console.hpp"
 #include "client/client.hpp"
+#include "console/console.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "memory/mem.hpp"
+#include "memory/zone.hpp"
 #include "network/net_msg.hpp"
+#include "system/common.hpp"
+#include "system/sizebuf.hpp"
+#include "system/system.hpp"
 
 const int MAX_ARGS = 80;
 
-int   cmd_argc;
+int cmd_argc;
 char *cmd_argv[MAX_ARGS];
 
 // Complete arguments string
 char *cmd_args = NULL;
 
 cmd_source_t cmd_source;
-qboolean     cmd_wait;
-cmdalias_t * cmd_alias;
+qboolean cmd_wait;
+cmdalias_t *cmd_alias;
 
-//int trashtest;
-//int *trashspot;
+// int trashtest;
+// int *trashspot;
 
 cmd_function_t *cmd_functions;
-char *const     cmd_null_string = "";
+char *const cmd_null_string = "";
 
 /*
 ============
@@ -76,8 +76,8 @@ void Cmd_Wait_f()
 
 void Cmd_StuffCmds_f()
 {
-	int   i;
-	int   s;
+	int i;
+	int s;
 	char *build;
 
 	if(Cmd_Argc() != 1)
@@ -101,7 +101,7 @@ void Cmd_StuffCmds_f()
 		return;
 
 	// Create buffer able to get all arguments
-	build    = (char *)Z_Malloc(s + com_argc * 2);
+	build = (char *)Z_Malloc(s + com_argc * 2);
 	build[0] = 0;
 
 	//  Iterate thru arguments searching for ones starting with +
@@ -111,7 +111,8 @@ void Cmd_StuffCmds_f()
 		{
 			// Add command or cvar
 			Q_strcat(build, &com_argv[i][1]);
-			// Then add all following parameters till we meet argument with + or -, which means next command/cvar/parameter
+			// Then add all following parameters till we meet argument with + or -,
+			// which means next command/cvar/parameter
 			i++;
 			while(com_argv[i] && com_argv[i][0] != '+' && com_argv[i][0] != '-')
 			{
@@ -134,10 +135,10 @@ void Cmd_StuffCmds_f()
 
 void Cmd_Exec_f()
 {
-	const char * pszFileName;
-	const char * pszFileExt;
-	char *       pszFileData;
-	int          nAddLen;
+	const char *pszFileName;
+	const char *pszFileExt;
+	char *pszFileData;
+	int nAddLen;
 	FileHandle_t hFile;
 
 	if(Cmd_Argc() != 2)
@@ -152,7 +153,9 @@ void Cmd_Exec_f()
 		return;
 	}
 
-	if(Q_strstr(pszFileName, "\\") || Q_strstr(pszFileName, ":") || Q_strstr(pszFileName, "~") || Q_strstr(pszFileName, "..") || *pszFileName == '/')
+	if(Q_strstr(pszFileName, "\\") || Q_strstr(pszFileName, ":") ||
+	   Q_strstr(pszFileName, "~") || Q_strstr(pszFileName, "..") ||
+	   *pszFileName == '/')
 	{
 		Con_Printf("exec %s: invalid path.\n", pszFileName);
 		return;
@@ -177,7 +180,11 @@ void Cmd_Exec_f()
 
 	if(!hFile)
 	{
-		if(!Q_strstr(pszFileName, "autoexec.cfg") && !Q_strstr(pszFileName, "userconfig.cfg") && !Q_strstr(pszFileName, "hw/opengl.cfg") && !Q_strstr(pszFileName, "joystick.cfg") && !Q_strstr(pszFileName, "game.cfg"))
+		if(!Q_strstr(pszFileName, "autoexec.cfg") &&
+		   !Q_strstr(pszFileName, "userconfig.cfg") &&
+		   !Q_strstr(pszFileName, "hw/opengl.cfg") &&
+		   !Q_strstr(pszFileName, "joystick.cfg") &&
+		   !Q_strstr(pszFileName, "game.cfg"))
 		{
 			Con_Printf("couldn't exec %s\n", pszFileName);
 		}
@@ -185,7 +192,7 @@ void Cmd_Exec_f()
 		return;
 	}
 
-	nAddLen     = FS_Size(hFile);
+	nAddLen = FS_Size(hFile);
 	pszFileData = (char *)Mem_Malloc(nAddLen + 1);
 
 	if(!pszFileData)
@@ -210,7 +217,9 @@ void Cmd_Exec_f()
 		char *pszDataPtr = pszFileData;
 		while(true)
 		{
-			Cbuf_Execute(); // TODO: This doesn't obey the rule to first execute commands from the file, and then the others in the buffer
+			Cbuf_Execute(); // TODO: This doesn't obey the rule to first execute
+			                // commands from the file, and then the others in the
+			                // buffer
 			pszDataPtr = COM_ParseLine(pszDataPtr);
 
 			if(com_token[0] == 0)
@@ -249,8 +258,8 @@ void Cmd_Alias_f()
 {
 	cmdalias_t *a;
 	const char *s;
-	char        cmd[MAX_CMD_LINE];
-	int         i, c;
+	char cmd[MAX_CMD_LINE];
+	int i, c;
 
 	if(Cmd_Argc() == 1)
 	{
@@ -259,7 +268,9 @@ void Cmd_Alias_f()
 
 		for(a = cmd_alias; a; a = a->next)
 		{
-			Con_Printf("%s : %s", a->name, a->value); // Don't need \n here, because each alias value is appended with it
+			Con_Printf("%s : %s", a->name, a->value); // Don't need \n here, because
+			                                          // each alias value is appended
+			                                          // with it
 		}
 
 		return;
@@ -282,7 +293,9 @@ void Cmd_Alias_f()
 	SetCStrikeFlags(); // TODO: Do this once somewhere at the server start
 
 	if((g_bIsCStrike || g_bIsCZero) &&
-	   (!Q_stricmp(s, "cl_autobuy") || !Q_stricmp(s, "cl_rebuy") || !Q_stricmp(s, "gl_ztrick") || !Q_stricmp(s, "gl_ztrick_old") || !Q_stricmp(s, "gl_d3dflip")))
+	   (!Q_stricmp(s, "cl_autobuy") || !Q_stricmp(s, "cl_rebuy") ||
+	    !Q_stricmp(s, "gl_ztrick") || !Q_stricmp(s, "gl_ztrick_old") ||
+	    !Q_stricmp(s, "gl_d3dflip")))
 	{
 		Con_Printf("Alias name is invalid\n");
 		return;
@@ -297,10 +310,11 @@ void Cmd_Alias_f()
 
 	// Gather arguments into one string
 	cmd[0] = 0;
-	c      = Cmd_Argc();
+	c = Cmd_Argc();
 	for(i = 2; i <= c; i++)
 	{
-		Q_strncat(cmd, Cmd_Argv(i), MAX_CMD_LINE - 2 - Q_strlen(cmd)); // always have a space for \n or ' ' and \0
+		Q_strncat(cmd, Cmd_Argv(i),
+		          MAX_CMD_LINE - 2 - Q_strlen(cmd)); // always have a space for \n or ' ' and \0
 
 		if(i != c)
 		{
@@ -328,8 +342,8 @@ void Cmd_Alias_f()
 	if(!a)
 	{
 		// Alloc new alias
-		a         = (cmdalias_t *)Z_Malloc(sizeof(cmdalias_t));
-		a->next   = cmd_alias;
+		a = (cmdalias_t *)Z_Malloc(sizeof(cmdalias_t));
+		a->next = cmd_alias;
 		cmd_alias = a;
 
 		Q_strncpy(a->name, s, ARRAYSIZE(a->name) - 1);
@@ -365,7 +379,8 @@ void Cmd_Shutdown()
 	cmd_argc = 0;
 	cmd_args = NULL;
 
-	cmd_functions = NULL; // TODO: Check that memory from functions is released too
+	cmd_functions =
+	NULL; // TODO: Check that memory from functions is released too
 }
 
 int EXT_FUNC Cmd_Argc()
@@ -387,7 +402,8 @@ const char *EXT_FUNC Cmd_Argv(int arg)
 	{
 		return cmd_argv[arg];
 	}
-	return ""; // TODO: Possibly better to return NULL here, but require to check all usages
+	return ""; // TODO: Possibly better to return NULL here, but require to check
+	           // all usages
 }
 
 const char *EXT_FUNC Cmd_Args()
@@ -520,7 +536,7 @@ void Cmd_InsertCommand(cmd_function_t *cmd)
 		{
 			// Current command name is bigger, insert before it
 			cmd->next = c;
-			*p        = cmd;
+			*p = cmd;
 			return;
 		}
 		p = &c->next;
@@ -529,10 +545,11 @@ void Cmd_InsertCommand(cmd_function_t *cmd)
 
 	// All commands in the list are lower then the new one
 	cmd->next = NULL;
-	*p        = cmd;
+	*p = cmd;
 }
 
-// Use this for engine inside call only, not from user code, because it doesn't alloc string for the name.
+// Use this for engine inside call only, not from user code, because it doesn't
+// alloc string for the name.
 void Cmd_AddCommand(char *cmd_name, xcommand_t function)
 {
 	cmd_function_t *cmd;
@@ -557,10 +574,10 @@ void Cmd_AddCommand(char *cmd_name, xcommand_t function)
 	}
 
 	// Create cmd_function
-	cmd           = (cmd_function_t *)Hunk_Alloc(sizeof(cmd_function_t));
-	cmd->name     = cmd_name;
+	cmd = (cmd_function_t *)Hunk_Alloc(sizeof(cmd_function_t));
+	cmd->name = cmd_name;
 	cmd->function = function ? function : Cmd_ForwardToServer;
-	cmd->flags    = 0;
+	cmd->flags = 0;
 
 	Cmd_InsertCommand(cmd);
 }
@@ -585,10 +602,12 @@ void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag)
 	}
 
 	// Create cmd_function
-	cmd           = (cmd_function_t *)Mem_Malloc(sizeof(cmd_function_t));
-	cmd->name     = CopyString(cmd_name); // alloc string, so it will not dissapear on side modules unloading and to maintain the same name during run
+	cmd = (cmd_function_t *)Mem_Malloc(sizeof(cmd_function_t));
+	cmd->name = CopyString(cmd_name); // alloc string, so it will not dissapear on
+	                                  // side modules unloading and to maintain
+	                                  // the same name during run
 	cmd->function = function ? function : Cmd_ForwardToServer;
-	cmd->flags    = flag;
+	cmd->flags = flag;
 
 	Cmd_InsertCommand(cmd);
 }
@@ -671,19 +690,21 @@ NOXREF char *Cmd_CompleteCommand(char *search, int forward)
 {
 	NOXREFCHECK;
 
-	// TODO: We have a command name length limit here: prepare for unforeseen consequences!
-	static char     lastpartial[256];
-	char            partial[256];
+	// TODO: We have a command name length limit here: prepare for unforeseen
+	// consequences!
+	static char lastpartial[256];
+	char partial[256];
 	cmd_function_t *cmd;
-	int             len;
-	char *          pPartial;
+	int len;
+	char *pPartial;
 
 	Q_strncpy(partial, search, 255);
 	partial[255] = 0;
-	len          = Q_strlen(partial);
+	len = Q_strlen(partial);
 
 	// Trim tail spaces
-	for(pPartial = partial + len - 1; pPartial >= partial && *pPartial == ' '; pPartial--, len--)
+	for(pPartial = partial + len - 1; pPartial >= partial && *pPartial == ' ';
+	    pPartial--, len--)
 	{
 		*pPartial = 0;
 	}
@@ -696,7 +717,8 @@ NOXREF char *Cmd_CompleteCommand(char *search, int forward)
 	if(!Q_stricmp(partial, lastpartial))
 	{
 		// Same partial, find this then next/prev cvar, if any.
-		// TODO: But where it match for entered by user partial? Because we store full name
+		// TODO: But where it match for entered by user partial? Because we store
+		// full name
 		cmd = Cmd_FindCmd(partial);
 		if(cmd)
 		{
@@ -740,7 +762,8 @@ void EXT_FUNC Cmd_ExecuteString_internal(const char *cmdName, cmd_source_t src, 
 		{
 			cmd->function();
 
-			if(cls.demorecording && (cmd->flags & FCMD_HUD_COMMAND) && !cls.spectator)
+			if(cls.demorecording && (cmd->flags & FCMD_HUD_COMMAND) &&
+			   !cls.spectator)
 			{
 				CL_RecordHUDCommand(cmd->name);
 			}
@@ -787,11 +810,16 @@ void Cmd_ExecuteString(char *text, cmd_source_t src)
 		return;
 	}
 
-	IGameClient *cl = (src == src_client) ? GetRehldsApiClient(host_client) : NULL;
-	if(!g_RehldsHookchains.m_ValidateCommand.callChain(ValidateCmd_API, cmd_argv[0], src, cl))
+	IGameClient *cl =
+	(src == src_client) ? GetRehldsApiClient(host_client) : NULL;
+	if(!g_RehldsHookchains.m_ValidateCommand.callChain(ValidateCmd_API,
+	                                                   cmd_argv[0],
+	                                                   src,
+	                                                   cl))
 		return;
 
-	g_RehldsHookchains.m_ExecuteServerStringCmd.callChain(Cmd_ExecuteString_internal, cmd_argv[0], src, cl);
+	g_RehldsHookchains.m_ExecuteServerStringCmd.callChain(
+	Cmd_ExecuteString_internal, cmd_argv[0], src, cl);
 }
 
 qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
@@ -813,15 +841,15 @@ qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
 		return FALSE;
 	}
 
-	char      tempData[4096];
+	char tempData[4096];
 	sizebuf_t tempBuf;
 
 	sprintf(tempBuf.buffername, "%s::tempBuf", __FUNCTION__);
 
-	tempBuf.data    = (byte *)tempData;
+	tempBuf.data = (byte *)tempData;
 	tempBuf.maxsize = 4096;
 	tempBuf.cursize = 0;
-	tempBuf.flags   = SIZEBUF_ALLOW_OVERFLOW;
+	tempBuf.flags = SIZEBUF_ALLOW_OVERFLOW;
 
 	MSG_WriteByte(&tempBuf, clc_stringcmd);
 
@@ -883,19 +911,19 @@ NOXREF int Cmd_CheckParm(char *parm)
 void Cmd_CmdList_f()
 {
 	cmd_function_t *cmd;
-	int             iCmds;
-	int             iArgs;
-	const char *    partial, *arg1;
-	int             ipLen;
-	char            szTemp[MAX_PATH];
-	FileHandle_t    f;
-	FileHandle_t    fp;
-	qboolean        bLogging;
+	int iCmds;
+	int iArgs;
+	const char *partial, *arg1;
+	int ipLen;
+	char szTemp[MAX_PATH];
+	FileHandle_t f;
+	FileHandle_t fp;
+	qboolean bLogging;
 
-	iCmds    = 0;
-	partial  = NULL;
-	f        = NULL;
-	fp       = NULL;
+	iCmds = 0;
+	partial = NULL;
+	f = NULL;
+	fp = NULL;
 	bLogging = FALSE;
 
 	iArgs = Cmd_Argc();
@@ -905,7 +933,9 @@ void Cmd_CmdList_f()
 
 		if(!Q_stricmp(arg1, "?"))
 		{
-			Con_Printf("CmdList           : List all commands\nCmdList [Partial] : List commands starting with 'Partial'\nCmdList log [Partial] : Logs commands to file \"cmdlist.txt\" in the gamedir.\n");
+			Con_Printf("CmdList           : List all commands\nCmdList [Partial] : "
+			           "List commands starting with 'Partial'\nCmdList log [Partial] "
+			           ": Logs commands to file \"cmdlist.txt\" in the gamedir.\n");
 			return;
 		}
 
@@ -928,7 +958,8 @@ void Cmd_CmdList_f()
 
 			if(i >= 100)
 			{
-				Con_Printf("Can't cmdlist! Too many existing cmdlist output files in the gamedir!\n");
+				Con_Printf("Can't cmdlist! Too many existing cmdlist output files in "
+				           "the gamedir!\n");
 				return;
 			}
 
@@ -944,13 +975,13 @@ void Cmd_CmdList_f()
 			if(iArgs >= 2)
 			{
 				partial = Cmd_Argv(2);
-				ipLen   = Q_strlen(partial);
+				ipLen = Q_strlen(partial);
 			}
 		}
 		else
 		{
 			partial = arg1;
-			ipLen   = Q_strlen(partial);
+			ipLen = Q_strlen(partial);
 		}
 	}
 
@@ -971,9 +1002,12 @@ void Cmd_CmdList_f()
 	}
 
 	if(partial && *partial)
-		Con_Printf("--------------\n%3i Commands for [%s]\nCmdList ? for syntax\n", iCmds, partial);
+		Con_Printf("--------------\n%3i Commands for [%s]\nCmdList ? for syntax\n",
+		           iCmds,
+		           partial);
 	else
-		Con_Printf("--------------\n%3i Total Commands\nCmdList ? for syntax\n", iCmds);
+		Con_Printf("--------------\n%3i Total Commands\nCmdList ? for syntax\n",
+		           iCmds);
 
 	// Close log
 	if(bLogging)

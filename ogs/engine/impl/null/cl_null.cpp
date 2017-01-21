@@ -27,33 +27,34 @@
  */
 
 /// @file
-/// @brief this file can stub out the entire client system for pure dedicated servers
+/// @brief this file can stub out the entire client system for pure dedicated
+/// servers
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"
 
 client_static_t cls;
-client_state_t  cl;
+client_state_t cl;
 
 playermove_t g_clmove;
-qboolean     cl_inmovie;
+qboolean cl_inmovie;
 
 /*
 * Globals initialization
 */
 #ifndef HOOK_ENGINE
 
-cvar_t cl_name = {"name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO, 0.0f, NULL};
-cvar_t rate_   = {"rate", "2500", FCVAR_USERINFO, 0.0f, NULL};
-cvar_t console = {"console", "1.0", FCVAR_ARCHIVE, 0.0f, NULL};
+cvar_t cl_name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO, 0.0f, NULL };
+cvar_t rate_ = { "rate", "2500", FCVAR_USERINFO, 0.0f, NULL };
+cvar_t console = { "console", "1.0", FCVAR_ARCHIVE, 0.0f, NULL };
 
-#else //HOOK_ENGINE
+#else // HOOK_ENGINE
 
 cvar_t cl_name;
 cvar_t rate_;
 cvar_t console;
 
-#endif //HOOK_ENGINE
+#endif // HOOK_ENGINE
 
 void CL_RecordHUDCommand(char *cmdname)
 {
@@ -229,7 +230,8 @@ int EXT_FUNC VGuiWrap2_GetLocalizedStringLength(const char *label)
 {
 	return 0;
 }
-void VGuiWrap2_LoadingStarted(const char *resourceType, const char *resourceName)
+void VGuiWrap2_LoadingStarted(const char *resourceType,
+                              const char *resourceName)
 {
 }
 void EXT_FUNC ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength)

@@ -53,7 +53,7 @@ typedef enum cactive_e {
 
 /// Career states
 typedef enum CareerStateType_e {
-	CAREER_NONE    = 0,
+	CAREER_NONE = 0,
 	CAREER_LOADING = 1,
 	CAREER_PLAYING = 2,
 } CareerStateType;

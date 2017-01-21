@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -27,10 +27,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct
 {
 	HINSTANCE hInstance;
-	void *    wndproc;
+	void *wndproc;
 
-	HDC   hDC;   // handle to device context
-	HWND  hWnd;  // handle to window
+	HDC hDC;     // handle to device context
+	HWND hWnd;   // handle to window
 	HGLRC hGLRC; // handle to GL rendering context
 
 	HINSTANCE hinstOpenGL; // HINSTANCE for the OpenGL library

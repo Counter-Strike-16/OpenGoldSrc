@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,19 +21,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /// @file
 
 #include "precompiled.h"
-#include <termios.h>
+#include <asm/io.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/vt.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <signal.h>
-#include <asm/io.h>
+#include <termios.h>
 
 //#include <X11/cursorfont.h>
+#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/Xatom.h>
 #include <X11/keysym.h>
 
 #include "GL/gl.h"
@@ -44,13 +44,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define WARP_WIDTH 320
 #define WARP_HEIGHT 200
 
-static Display *  dpy = NULL;
-static Window     win;
+static Display *dpy = NULL;
+static Window win;
 static GLXContext ctx = NULL;
 
 unsigned short d_8to16table[256];
-unsigned int   d_8to24table[256];
-unsigned char  d_15to8table[65536];
+unsigned int d_8to24table[256];
+unsigned char d_15to8table[65536];
 
 static qboolean usedga = false;
 
@@ -59,54 +59,51 @@ static qboolean usedga = false;
 		#m, m        \
 	}
 
-cvar_t vid_mode = {"vid_mode", "0", false};
+cvar_t vid_mode = { "vid_mode", "0", false };
 
-cvar_t mouse_button_commands[3] =
-    {
-        {"mouse1", "+attack"},
-        {"mouse2", "+strafe"},
-        {"mouse3", "+forward"},
+cvar_t mouse_button_commands[3] = {
+	{ "mouse1", "+attack" }, { "mouse2", "+strafe" }, { "mouse3", "+forward" },
 };
 
-static int   mouse_buttons = 3;
-static int   mouse_buttonstate;
-static int   mouse_oldbuttonstate;
+static int mouse_buttons = 3;
+static int mouse_buttonstate;
+static int mouse_oldbuttonstate;
 static float mouse_x, mouse_y;
 static float p_mouse_x, p_mouse_y;
 static float old_mouse_x, old_mouse_y;
 
-cvar_t       _windowed_mouse = {"_windowed_mouse", "1", true};
-cvar_t       m_filter        = {"m_filter", "0"};
+cvar_t _windowed_mouse = { "_windowed_mouse", "1", true };
+cvar_t m_filter = { "m_filter", "0" };
 static float old_windowed_mouse;
 
 static int scr_width, scr_height;
 
 #define KEY_MASK (KeyPressMask | KeyReleaseMask)
-#define MOUSE_MASK (ButtonPressMask | ButtonReleaseMask | \
-                    PointerMotionMask | ButtonMotionMask)
+#define MOUSE_MASK \
+	(ButtonPressMask | ButtonReleaseMask | PointerMotionMask | ButtonMotionMask)
 
 /*-----------------------------------------------------------------------*/
 
-//int		texture_mode = GL_NEAREST;
-//int		texture_mode = GL_NEAREST_MIPMAP_NEAREST;
-//int		texture_mode = GL_NEAREST_MIPMAP_LINEAR;
+// int		texture_mode = GL_NEAREST;
+// int		texture_mode = GL_NEAREST_MIPMAP_NEAREST;
+// int		texture_mode = GL_NEAREST_MIPMAP_LINEAR;
 int texture_mode = GL_LINEAR;
-//int		texture_mode = GL_LINEAR_MIPMAP_NEAREST;
-//int		texture_mode = GL_LINEAR_MIPMAP_LINEAR;
+// int		texture_mode = GL_LINEAR_MIPMAP_NEAREST;
+// int		texture_mode = GL_LINEAR_MIPMAP_LINEAR;
 
 int texture_extension_number = 1;
 
 float gldepthmin, gldepthmax;
 
-cvar_t gl_ztrick = {"gl_ztrick", "1"};
+cvar_t gl_ztrick = { "gl_ztrick", "1" };
 
 const char *gl_vendor;
 const char *gl_renderer;
 const char *gl_version;
 const char *gl_extensions;
 
-qboolean is8bit      = false;
-qboolean isPermedia  = false;
+qboolean is8bit = false;
+qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 /*-----------------------------------------------------------------------*/
@@ -127,9 +124,9 @@ Keybinding command
 */
 void VID_Gamma_f(void)
 {
-	float         gamma, f, inf;
+	float gamma, f, inf;
 	unsigned char palette[768];
-	int           i;
+	int i;
 
 	if(Cmd_Argc() == 2)
 	{
@@ -137,12 +134,12 @@ void VID_Gamma_f(void)
 
 		for(i = 0; i < 768; i++)
 		{
-			f   = pow((host_basepal[i] + 1) / 256.0, gamma);
+			f = pow((host_basepal[i] + 1) / 256.0, gamma);
 			inf = f * 255 + 0.5;
 			if(inf < 0)
 				inf = 0;
 			if(inf > 255)
-				inf    = 255;
+				inf = 255;
 			palette[i] = inf;
 		}
 
@@ -170,8 +167,8 @@ void VID_Shutdown(void)
 
 int XLateKey(XKeyEvent *ev)
 {
-	int    key;
-	char   buf[64];
+	int key;
+	char buf[64];
 	KeySym keysym;
 
 	key = 0;
@@ -361,7 +358,8 @@ int XLateKey(XKeyEvent *ev)
 		key = *(unsigned char *)buf;
 		if(key >= 'A' && key <= 'Z')
 			key = key - 'A' + 'a';
-		//			fprintf(stdout, "case 0x0%x: key = ___;break;/* [%c] */\n", keysym);
+		//			fprintf(stdout, "case 0x0%x: key = ___;break;/* [%c] */\n",
+		//keysym);
 		break;
 	}
 
@@ -390,14 +388,14 @@ qboolean Keyboard_Update(void)
 	switch(x_event.type)
 	{
 	case KeyPress:
-		keyq[keyq_head].key  = XLateKey(&x_event.xkey);
+		keyq[keyq_head].key = XLateKey(&x_event.xkey);
 		keyq[keyq_head].down = true;
-		keyq_head            = (keyq_head + 1) & 63;
+		keyq_head = (keyq_head + 1) & 63;
 		break;
 	case KeyRelease:
-		keyq[keyq_head].key  = XLateKey(&x_event.xkey);
+		keyq[keyq_head].key = XLateKey(&x_event.xkey);
 		keyq[keyq_head].down = false;
-		keyq_head            = (keyq_head + 1) & 63;
+		keyq_head = (keyq_head + 1) & 63;
 		break;
 	}
 
@@ -407,7 +405,7 @@ qboolean Keyboard_Update(void)
 qboolean Mouse_Update(void)
 {
 	XEvent x_event;
-	int    b;
+	int b;
 
 	if(!XCheckMaskEvent(dpy, MOUSE_MASK, &x_event))
 		return false;
@@ -432,8 +430,8 @@ qboolean Mouse_Update(void)
 		}
 		else
 		{
-			mouse_x   = (float)(x_event.xmotion.x - p_mouse_x);
-			mouse_y   = (float)(x_event.xmotion.y - p_mouse_y);
+			mouse_x = (float)(x_event.xmotion.x - p_mouse_x);
+			mouse_y = (float)(x_event.xmotion.y - p_mouse_y);
 			p_mouse_x = x_event.xmotion.x;
 			p_mouse_y = x_event.xmotion.y;
 		}
@@ -481,15 +479,11 @@ qboolean Mouse_Update(void)
 			/* grab the pointer */
 			Con_Printf("Grabbing mouse.\n");
 
-			XGrabPointer(dpy, win, False, MOUSE_MASK, GrabModeAsync,
-			             GrabModeAsync, win, None, CurrentTime);
+			XGrabPointer(dpy, win, False, MOUSE_MASK, GrabModeAsync, GrabModeAsync, win, None, CurrentTime);
 			XWarpPointer(dpy, None, win, 0, 0, 0, 0, scr_width / 2, scr_height / 2);
-			XGrabKeyboard(dpy, win,
-			              False,
-			              GrabModeAsync, GrabModeAsync,
-			              CurrentTime);
+			XGrabKeyboard(dpy, win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
 
-			//XSync(dpy,True);
+			// XSync(dpy,True);
 		}
 	}
 	return true;
@@ -522,22 +516,22 @@ void VID_ShiftPalette(unsigned char *p)
 
 void VID_SetPalette(unsigned char *palette)
 {
-	byte *          pal;
-	unsigned short  r, g, b;
-	int             v;
-	int             r1, g1, b1;
-	int             k;
-	unsigned short  i;
-	unsigned *      table;
-	FILE *          f;
-	char            s[255];
-	float           dist, bestdist;
+	byte *pal;
+	unsigned short r, g, b;
+	int v;
+	int r1, g1, b1;
+	int k;
+	unsigned short i;
+	unsigned *table;
+	FILE *f;
+	char s[255];
+	float dist, bestdist;
 	static qboolean palflag = false;
 
 	//
 	// 8 8 8 encoding
 	//
-	pal   = palette;
+	pal = palette;
 	table = d_8to24table;
 	for(i = 0; i < 256; i++)
 	{
@@ -548,7 +542,7 @@ void VID_SetPalette(unsigned char *palette)
 
 		//		v = (255<<24) + (r<<16) + (g<<8) + (b<<0);
 		//		v = (255<<0) + (r<<8) + (g<<16) + (b<<24);
-		v        = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
+		v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
 		*table++ = v;
 	}
 	d_8to24table[255] &= 0xffffff; // 255 is transparent
@@ -570,24 +564,24 @@ void VID_SetPalette(unsigned char *palette)
 		for(i = 0; i < (1 << 15); i++)
 		{
 			/* Maps
- 			000000000000000
- 			000000000011111 = Red  = 0x1F
- 			000001111100000 = Blue = 0x03E0
- 			111110000000000 = Grn  = 0x7C00
- 			*/
-			r   = ((i & 0x1F) << 3) + 4;
-			g   = ((i & 0x03E0) >> 2) + 4;
-			b   = ((i & 0x7C00) >> 7) + 4;
+      000000000000000
+      000000000011111 = Red  = 0x1F
+      000001111100000 = Blue = 0x03E0
+      111110000000000 = Grn  = 0x7C00
+      */
+			r = ((i & 0x1F) << 3) + 4;
+			g = ((i & 0x03E0) >> 2) + 4;
+			b = ((i & 0x7C00) >> 7) + 4;
 			pal = (unsigned char *)d_8to24table;
 			for(v = 0, k = 0, bestdist = 10000.0; v < 256; v++, pal += 4)
 			{
-				r1   = (int)r - (int)pal[0];
-				g1   = (int)g - (int)pal[1];
-				b1   = (int)b - (int)pal[2];
+				r1 = (int)r - (int)pal[0];
+				g1 = (int)g - (int)pal[1];
+				b1 = (int)b - (int)pal[2];
 				dist = sqrt(((r1 * r1) + (g1 * g1) + (b1 * b1)));
 				if(dist < bestdist)
 				{
-					k        = v;
+					k = v;
 					bestdist = dist;
 				}
 			}
@@ -655,7 +649,7 @@ void GL_BeginRendering(int *x, int *y, int *width, int *height)
 	extern cvar_t gl_clear;
 
 	*x = *y = 0;
-	*width  = scr_width;
+	*width = scr_width;
 	*height = scr_height;
 
 	//    if (!wglMakeCurrent( maindc, baseRC ))
@@ -679,8 +673,8 @@ qboolean VID_Is8bit(void)
 void VID_Init8bitPalette()
 {
 	// Check for 8bit Extensions and initialize them.
-	int   i;
-	char  thePalette[256 * 3];
+	int i;
+	char thePalette[256 * 3];
 	char *oldPalette, *newPalette;
 
 	if(strstr(gl_extensions, "GL_EXT_shared_texture_palette") == NULL)
@@ -688,7 +682,7 @@ void VID_Init8bitPalette()
 
 	Con_SafePrintf("8-bit GL extensions enabled.\n");
 	glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
-	oldPalette = (char *)d_8to24table; //d_8to24table3dfx;
+	oldPalette = (char *)d_8to24table; // d_8to24table3dfx;
 	newPalette = thePalette;
 	for(i = 0; i < 256; i++)
 	{
@@ -707,16 +701,16 @@ extern void gl3DfxSetPaletteEXT(GLuint *pal);
 void VID_Init8bitPalette(void)
 {
 	// Check for 8bit Extensions and initialize them.
-	int     i;
+	int i;
 	GLubyte table[256][4];
-	char *  oldpal;
+	char *oldpal;
 
 	if(strstr(gl_extensions, "3DFX_set_global_palette") == NULL)
 		return;
 
 	Con_SafePrintf("8-bit GL extensions enabled.\n");
 	glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
-	oldpal = (char *)d_8to24table; //d_8to24table3dfx;
+	oldpal = (char *)d_8to24table; // d_8to24table3dfx;
 	for(i = 0; i < 256; i++)
 	{
 		table[i][2] = *oldpal++;
@@ -732,32 +726,35 @@ void VID_Init8bitPalette(void)
 
 void VID_Init(unsigned char *palette)
 {
-	int  i;
+	int i;
 	char gldir[MAX_OSPATH];
-	int  width = 640, height = 480;
-	int  attrib[] = {
-	    GLX_RGBA,
-	    GLX_RED_SIZE, 1,
-	    GLX_GREEN_SIZE, 1,
-	    GLX_BLUE_SIZE, 1,
-	    GLX_DOUBLEBUFFER,
-	    GLX_DEPTH_SIZE, 1,
-	    None};
-	int                  scrnum;
+	int width = 640, height = 480;
+	int attrib[] = { GLX_RGBA,
+		             GLX_RED_SIZE,
+		             1,
+		             GLX_GREEN_SIZE,
+		             1,
+		             GLX_BLUE_SIZE,
+		             1,
+		             GLX_DOUBLEBUFFER,
+		             GLX_DEPTH_SIZE,
+		             1,
+		             None };
+	int scrnum;
 	XSetWindowAttributes attr;
-	unsigned long        mask;
-	Window               root;
-	XVisualInfo *        visinfo;
+	unsigned long mask;
+	Window root;
+	XVisualInfo *visinfo;
 
 	S_Init();
 
 	Cvar_RegisterVariable(&vid_mode);
 	Cvar_RegisterVariable(&gl_ztrick);
 
-	vid.maxwarpwidth  = WARP_WIDTH;
+	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
-	vid.colormap      = host_colormap;
-	vid.fullbright    = 256 - LittleLong(*((int *)vid.colormap + 2048));
+	vid.colormap = host_colormap;
+	vid.fullbright = 256 - LittleLong(*((int *)vid.colormap + 2048));
 
 	// interpret command-line params
 
@@ -793,25 +790,24 @@ void VID_Init(unsigned char *palette)
 	}
 
 	scrnum = DefaultScreen(dpy);
-	root   = RootWindow(dpy, scrnum);
+	root = RootWindow(dpy, scrnum);
 
 	visinfo = glXChooseVisual(dpy, scrnum, attrib);
 	if(!visinfo)
 	{
-		fprintf(stderr, "Error couldn't get an RGB, Double-buffered, Depth visual\n");
+		fprintf(stderr,
+		        "Error couldn't get an RGB, Double-buffered, Depth visual\n");
 		exit(1);
 	}
 
 	/* window attributes */
 	attr.background_pixel = 0;
-	attr.border_pixel     = 0;
-	attr.colormap         = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
-	attr.event_mask       = KEY_MASK | MOUSE_MASK | VisibilityChangeMask;
-	mask                  = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
+	attr.border_pixel = 0;
+	attr.colormap = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
+	attr.event_mask = KEY_MASK | MOUSE_MASK | VisibilityChangeMask;
+	mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 
-	win = XCreateWindow(dpy, root, 0, 0, width, height,
-	                    0, visinfo->depth, InputOutput,
-	                    visinfo->visual, mask, &attr);
+	win = XCreateWindow(dpy, root, 0, 0, width, height, 0, visinfo->depth, InputOutput, visinfo->visual, mask, &attr);
 	XMapWindow(dpy, win);
 
 	XMoveWindow(dpy, win, 0, 0);
@@ -833,18 +829,17 @@ void VID_Init(unsigned char *palette)
 
 	glXMakeCurrent(dpy, win, ctx);
 
-	scr_width  = width;
+	scr_width = width;
 	scr_height = height;
 
 	if(vid.conheight > height)
 		vid.conheight = height;
 	if(vid.conwidth > width)
 		vid.conwidth = width;
-	vid.width        = vid.conwidth;
-	vid.height       = vid.conheight;
+	vid.width = vid.conwidth;
+	vid.height = vid.conheight;
 
-	vid.aspect = ((float)vid.height / (float)vid.width) *
-	    (320.0 / 240.0);
+	vid.aspect = ((float)vid.height / (float)vid.width) * (320.0 / 240.0);
 	vid.numpages = 2;
 
 	InitSig(); // trap evil signals

@@ -32,9 +32,9 @@
 #pragma once
 
 #include "maintypes.h"
-#include "rehlds/common_rehlds.h"
 #include "public/FileSystem.h"
 #include "rehlds/bspfile.h"
+#include "rehlds/common_rehlds.h"
 #include "system/info.hpp"
 
 #ifndef REHLDS_FIXES
@@ -85,10 +85,10 @@ extern char serverinfo[MAX_INFO_STRING];
 extern char gpszVersionString[32];
 extern char gpszProductString[32];
 
-typedef struct bf_read_s  bf_read_t;
+typedef struct bf_read_s bf_read_t;
 typedef struct bf_write_s bf_write_t;
 
-extern bf_read_t  bfread;
+extern bf_read_t bfread;
 extern bf_write_t bfwrite;
 
 extern int msg_badread;
@@ -105,7 +105,7 @@ extern int (*LittleLong)(int l);
 extern float (*BigFloat)(float l);
 extern float (*LittleFloat)(float l);
 
-extern int    com_argc;
+extern int com_argc;
 extern char **com_argv;
 
 extern char com_token[COM_TOKEN_LEN];
@@ -119,9 +119,9 @@ extern char com_cmdline[COM_MAX_CMD_LINE];
 
 typedef struct cache_user_s cache_user_t;
 
-extern cache_user_t * loadcache;
+extern cache_user_t *loadcache;
 extern unsigned char *loadbuf;
-extern int            loadsize;
+extern int loadsize;
 
 //#define Q_functions
 #ifndef Q_functions
@@ -129,7 +129,7 @@ extern int            loadsize;
 #ifndef _WIN32
 #define _strlwr(p)                 \
 	for(int i = 0; p[i] != 0; i++) \
-		p[i]  = tolower(p[i]);
+		p[i] = tolower(p[i]);
 #endif
 
 #if defined(REHLDS_OPT_PEDANTIC) || defined(REHLDS_FIXES)
@@ -238,7 +238,7 @@ void COM_StripExtension(char *in, char *out);
 char *COM_FileExtension(char *in);
 void COM_FileBase(const char *in, char *out);
 void COM_DefaultExtension(char *path, const char *extension);
-void  COM_UngetToken();
+void COM_UngetToken();
 char *COM_Parse(char *data);
 char *COM_ParseLine(char *data);
 int COM_TokenWaiting(char *buffer);
@@ -265,7 +265,7 @@ unsigned char *COM_LoadHunkFile(char *path);
 unsigned char *COM_LoadTempFile(char *path, int *pLength);
 void COM_LoadCacheFile(char *path, struct cache_user_s *cu);
 NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length);
-void        COM_Shutdown();
+void COM_Shutdown();
 NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName);
 void COM_AddDefaultDir(char *pszDir);
 void COM_StripTrailingSlash(char *ppath);

@@ -33,23 +33,23 @@ static char *localregpathname = NULL;
 
 typedef struct reg_handle_s
 {
-	int                  handle;
-	char *               name;
+	int handle;
+	char *name;
 	struct reg_handle_s *next;
 	struct reg_handle_s *prev;
 } reg_handle_t;
 
 struct reg_value
 {
-	int   type;
+	int type;
 	char *name;
-	int   len;
+	int len;
 	char *value;
 };
 
 static struct reg_value *regs = NULL;
-static int               reg_size;
-static reg_handle_t *    head = NULL;
+static int reg_size;
+static reg_handle_t *head = NULL;
 
 #define DIR -25
 
@@ -66,23 +66,23 @@ static void create_registry(void)
 		save_registry();
 		return;
 	}
-	regs         = malloc(3 * sizeof(struct reg_value));
+	regs = malloc(3 * sizeof(struct reg_value));
 	regs[0].type = regs[1].type = DIR;
-	regs[0].name                = malloc(5);
+	regs[0].name = malloc(5);
 	strcpy(regs[0].name, "HKLM");
 	regs[1].name = malloc(5);
 	strcpy(regs[1].name, "HKCU");
 	regs[0].value = regs[1].value = NULL;
 	regs[0].len = regs[1].len = 0;
-	reg_size                  = 2;
-	head                      = 0;
+	reg_size = 2;
+	head = 0;
 	save_registry();
 }
 
 static void open_registry(void)
 {
-	int          fd;
-	int          i;
+	int fd;
+	int i;
 	unsigned int len;
 	if(regs)
 	{
@@ -234,18 +234,18 @@ static reg_handle_t *insert_handle(long handle, const char *name)
 	else
 	{
 		head->next = t;
-		t->prev    = head;
+		t->prev = head;
 	}
 	t->next = 0;
 	t->name = malloc(strlen(name) + 1);
 	strcpy(t->name, name);
 	t->handle = handle;
-	head      = t;
+	head = t;
 	return t;
 }
 static char *build_keyname(long key, const char *subkey)
 {
-	char *        full_name;
+	char *full_name;
 	reg_handle_t *t;
 	if((t = find_handle(key)) == 0)
 	{
@@ -254,7 +254,7 @@ static char *build_keyname(long key, const char *subkey)
 	}
 	if(subkey == NULL)
 		subkey = "<default>";
-	full_name  = malloc(strlen(t->name) + strlen(subkey) + 10);
+	full_name = malloc(strlen(t->name) + strlen(subkey) + 10);
 	strcpy(full_name, t->name);
 	strcat(full_name, "\\");
 	strcat(full_name, subkey);
@@ -263,7 +263,7 @@ static char *build_keyname(long key, const char *subkey)
 static struct reg_value *insert_reg_value(int handle, const char *name, int type, const void *value, int len)
 {
 	struct reg_value *v;
-	char *            fullname;
+	char *fullname;
 	if((fullname = build_keyname(handle, name)) == NULL)
 	{
 		TRACE("Invalid handle\n");
@@ -287,8 +287,8 @@ static struct reg_value *insert_reg_value(int handle, const char *name, int type
 		free(v->name);
 	}
 	TRACE("RegInsert '%s'  %p  v:%d  len:%d\n", name, value, *(int *)value, len);
-	v->type  = type;
-	v->len   = len;
+	v->type = type;
+	v->len = len;
 	v->value = malloc(len);
 	memcpy(v->value, value, len);
 	v->name = malloc(strlen(fullname) + 1);
@@ -304,7 +304,7 @@ static void init_registry(void)
 	// can't be free-ed - it's static and probably thread
 	// unsafe structure which is stored in glibc
 
-	regpathname      = "/mnt/data/xash/registry/"; //get_path("registry");
+	regpathname = "/mnt/data/xash/registry/"; //get_path("registry");
 	localregpathname = regpathname;
 
 	open_registry();
@@ -336,8 +336,8 @@ static reg_handle_t* find_handle_2(long key, const char* subkey)
 
 long __stdcall RegOpenKeyExA(long key, const char *subkey, long reserved, long access, int *newkey)
 {
-	char *            full_name;
-	reg_handle_t *    t;
+	char *full_name;
+	reg_handle_t *t;
 	struct reg_value *v;
 	TRACE("Opening key %s\n", subkey);
 
@@ -357,7 +357,7 @@ long __stdcall RegOpenKeyExA(long key, const char *subkey, long reserved, long a
 	TRACE("Opening key Fullname %s\n", full_name);
 	v = find_value_by_name(full_name);
 
-	t       = insert_handle(generate_handle(), full_name);
+	t = insert_handle(generate_handle(), full_name);
 	*newkey = t->handle;
 	free(full_name);
 
@@ -387,7 +387,7 @@ long __stdcall RegCloseKey(long key)
 long __stdcall RegQueryValueExA(long key, const char *value, int *reserved, int *type, int *data, int *count)
 {
 	struct reg_value *t;
-	char *            c;
+	char *c;
 	TRACE("Querying value %s\n", value);
 	if(!regs)
 		init_registry();
@@ -443,12 +443,10 @@ long __stdcall RegQueryValueExA(long key, const char *value, int *reserved, int 
 	}
 	return ERROR_SUCCESS;
 }
-long __stdcall RegCreateKeyExA(long key, const char *name, long reserved,
-                               void *classs, long options, long security,
-                               void *sec_attr, int *newkey, int *status)
+long __stdcall RegCreateKeyExA(long key, const char *name, long reserved, void *classs, long options, long security, void *sec_attr, int *newkey, int *status)
 {
-	reg_handle_t *    t;
-	char *            fullname;
+	reg_handle_t *t;
+	char *fullname;
 	struct reg_value *v;
 	//        TRACE("Creating/Opening key %s\n", name);
 	if(!regs)
@@ -462,13 +460,13 @@ long __stdcall RegCreateKeyExA(long key, const char *name, long reserved,
 	if(v == 0)
 	{
 		int qw = 45708;
-		v      = insert_reg_value(key, name, DIR, &qw, 4);
+		v = insert_reg_value(key, name, DIR, &qw, 4);
 		if(status)
 			*status = REG_CREATED_NEW_KEY;
 		//		return 0;
 	}
 
-	t       = insert_handle(generate_handle(), fullname);
+	t = insert_handle(generate_handle(), fullname);
 	*newkey = t->handle;
 	free(fullname);
 	return 0;
@@ -487,8 +485,7 @@ LONG RegEnumValue(
 );
 */
 
-long __stdcall RegEnumValueA(HKEY hkey, DWORD index, LPSTR value, LPDWORD val_count,
-                             LPDWORD reserved, LPDWORD type, LPBYTE data, LPDWORD count)
+long __stdcall RegEnumValueA(HKEY hkey, DWORD index, LPSTR value, LPDWORD val_count, LPDWORD reserved, LPDWORD type, LPBYTE data, LPDWORD count)
 {
 	// currenly just made to support MSZH & ZLIB
 	//printf("Reg Enum 0x%x %d  %s %d   data: %p %d  %d >%s<\n", hkey, index,
@@ -526,9 +523,7 @@ long __stdcall RegSetValueExA(long key, const char *name, long v1, long v2, cons
 	return 0;
 }
 
-long __stdcall RegEnumKeyExA(HKEY hKey, DWORD dwIndex, LPSTR lpName, LPDWORD lpcbName,
-                             LPDWORD lpReserved, LPSTR lpClass, LPDWORD lpcbClass,
-                             LPFILETIME lpftLastWriteTime)
+long __stdcall RegEnumKeyExA(HKEY hKey, DWORD dwIndex, LPSTR lpName, LPDWORD lpcbName, LPDWORD lpReserved, LPSTR lpClass, LPDWORD lpcbClass, LPFILETIME lpftLastWriteTime)
 {
 	return ERROR_NO_MORE_ITEMS;
 }

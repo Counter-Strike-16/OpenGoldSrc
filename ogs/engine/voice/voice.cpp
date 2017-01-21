@@ -29,10 +29,12 @@
 /// @file
 
 //#include "precompiled.hpp"
-#include "maintypes.h"
 #include "voice/voice.hpp"
+#include "maintypes.h"
 
-qboolean Voice_RecordStart(const char *pUncompressedFile, const char *pDecompressedFile, const char *pMicInputFile)
+qboolean Voice_RecordStart(const char *pUncompressedFile,
+                           const char *pDecompressedFile,
+                           const char *pMicInputFile)
 {
 	return FALSE;
 };

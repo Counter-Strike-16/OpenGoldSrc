@@ -28,17 +28,20 @@
 
 /// @file
 
-#include "precompiled.hpp"
 #include "server/sv_upld.hpp"
+#include "precompiled.hpp"
 
-// Checks MD5 of the resource against local cache and returns TRUE if resource was found or if downloads are disabled. Otherwise, if resource was requested from the player, it returns FALSE.
+// Checks MD5 of the resource against local cache and returns TRUE if resource
+// was found or if downloads are disabled. Otherwise, if resource was requested
+// from the player, it returns FALSE.
 qboolean SV_CheckFile(sizebuf_t *msg, char *filename)
 {
 	resource_t p = {};
 
 #ifdef REHLDS_FIXES
 
-	// FIXED: First, check for allowed downloads, then try to lookup, this is faster if downloads aren't enabled
+	// FIXED: First, check for allowed downloads, then try to lookup, this is
+	// faster if downloads aren't enabled
 	if(sv_allow_upload.value == 0.0f)
 	{
 		// Downloads are not allowed, continue with the state we have
@@ -100,33 +103,42 @@ void SV_ClearResourceLists(client_t *cl)
 	SV_ClearResourceList(&cl->resourcesonhand);
 }
 
-// Reinitializes customizations list. Tries to create customization for each resource in on-hands list.
+// Reinitializes customizations list. Tries to create customization for each
+// resource in on-hands list.
 void SV_CreateCustomizationList(client_t *pHost)
 {
 	resource_t *pResource;
 
 // Clear customizations list
 #ifdef REHLDS_FIXES
-	// FIXED: Do it right, free mem, even if this is not actually needed (should be freed already on disconnect)
+	// FIXED: Do it right, free mem, even if this is not actually needed (should
+	// be freed already on disconnect)
 	COM_ClearCustomizationList(&pHost->customdata, FALSE);
 #else  // REHLDS_FIXES
 	pHost->customdata.pNext = NULL;
 #endif // REHLDS_FIXES
 
-	for(pResource = pHost->resourcesonhand.pNext; pResource != &pHost->resourcesonhand; pResource = pResource->pNext)
+	for(pResource = pHost->resourcesonhand.pNext;
+	    pResource != &pHost->resourcesonhand;
+	    pResource = pResource->pNext)
 	{
-		// TODO: Check if we need to filter resources here based on type (t_decal) and flags (RES_CUSTOM)
+		// TODO: Check if we need to filter resources here based on type (t_decal)
+		// and flags (RES_CUSTOM)
 
 		// Search if this resource already in customizations list
-		qboolean         bFound = FALSE;
-		customization_t *pList  = pHost->customdata.pNext;
-		while(pList && Q_memcmp(pList->resource.rgucMD5_hash, pResource->rgucMD5_hash, 16))
+		qboolean bFound = FALSE;
+		customization_t *pList = pHost->customdata.pNext;
+		while(pList && Q_memcmp(pList->resource.rgucMD5_hash,
+		                        pResource->rgucMD5_hash,
+		                        16))
 		{
 			pList = pList->pNext;
 		}
 		if(pList != NULL)
 		{
-			Con_DPrintf("SV_CreateCustomization list, ignoring dup. resource for player %s\n", pHost->name);
+			Con_DPrintf(
+			"SV_CreateCustomization list, ignoring dup. resource for player %s\n",
+			pHost->name);
 			bFound = TRUE;
 		}
 
@@ -134,9 +146,9 @@ void SV_CreateCustomizationList(client_t *pHost)
 		{
 			// Try to create customization and add it to the list
 			customization_t *pCust;
-			qboolean         bNoError;
-			int              nLumps = 0;
-			bNoError                = COM_CreateCustomization(&pHost->customdata, pResource, -1, FCUST_WIPEDATA | FCUST_FROMHPAK, &pCust, &nLumps);
+			qboolean bNoError;
+			int nLumps = 0;
+			bNoError = COM_CreateCustomization(&pHost->customdata, pResource, -1, FCUST_WIPEDATA | FCUST_FROMHPAK, &pCust, &nLumps);
 			if(bNoError)
 			{
 				pCust->nUserData2 = nLumps;
@@ -156,8 +168,8 @@ void SV_CreateCustomizationList(client_t *pHost)
 // Sends resource to all other players, optionally skipping originating player.
 void SV_Customization(client_t *pPlayer, resource_t *pResource, qboolean bSkipPlayer)
 {
-	int       i;
-	int       nPlayerNumber;
+	int i;
+	int nPlayerNumber;
 	client_t *pHost;
 
 	// Get originating player id
@@ -196,21 +208,28 @@ void SV_Customization(client_t *pPlayer, resource_t *pResource, qboolean bSkipPl
 	}
 }
 
-// Creates customizations list for the current player and sends resources to other players.
+// Creates customizations list for the current player and sends resources to
+// other players.
 void SV_RegisterResources(void)
 {
 	resource_t *pResource;
-	client_t *  pHost = host_client;
+	client_t *pHost = host_client;
 
 	pHost->uploading = FALSE;
 #ifdef REHLDS_FIXES
-	SV_CreateCustomizationList(pHost); // FIXED: Call this function only once. It was crazy to call it for each resource available.
-	for(pResource = pHost->resourcesonhand.pNext; pResource != &pHost->resourcesonhand; pResource = pResource->pNext)
+	SV_CreateCustomizationList(pHost); // FIXED: Call this function only once. It
+	                                   // was crazy to call it for each resource
+	                                   // available.
+	for(pResource = pHost->resourcesonhand.pNext;
+	    pResource != &pHost->resourcesonhand;
+	    pResource = pResource->pNext)
 	{
 		SV_Customization(pHost, pResource, TRUE);
 	}
 #else  // REHLDS_FIXES
-	for(pResource = pHost->resourcesonhand.pNext; pResource != &pHost->resourcesonhand; pResource = pResource->pNext)
+	for(pResource = pHost->resourcesonhand.pNext;
+	    pResource != &pHost->resourcesonhand;
+	    pResource = pResource->pNext)
 	{
 		SV_CreateCustomizationList(pHost);
 		SV_Customization(pHost, pResource, TRUE);
@@ -238,10 +257,10 @@ void SV_AddToResourceList(resource_t *pResource, resource_t *pList)
 		return;
 	}
 
-	pResource->pPrev    = pList->pPrev;
-	pResource->pNext    = pList;
+	pResource->pPrev = pList->pPrev;
+	pResource->pNext = pList;
 	pList->pPrev->pNext = pResource;
-	pList->pPrev        = pResource;
+	pList->pPrev = pResource;
 }
 
 void SV_ClearResourceList(resource_t *pList)
@@ -264,24 +283,29 @@ void SV_RemoveFromResourceList(resource_t *pResource)
 {
 	pResource->pPrev->pNext = pResource->pNext;
 	pResource->pNext->pPrev = pResource->pPrev;
-	pResource->pPrev        = NULL;
-	pResource->pNext        = NULL;
+	pResource->pPrev = NULL;
+	pResource->pNext = NULL;
 }
 
-// For each t_decal and RES_CUSTOM resource the player had shown to us, tries to find it locally or count size required to be downloaded.
+// For each t_decal and RES_CUSTOM resource the player had shown to us, tries to
+// find it locally or count size required to be downloaded.
 int SV_EstimateNeededResources(void)
 {
 	resource_t *p;
-	int         missing;
-	int         size = 0;
+	int missing;
+	int size = 0;
 
-	for(p = host_client->resourcesneeded.pNext; p != &host_client->resourcesneeded; p = p->pNext)
+	for(p = host_client->resourcesneeded.pNext;
+	    p != &host_client->resourcesneeded;
+	    p = p->pNext)
 	{
 #ifdef REHLDS_FIXES
-		if(p->type == t_decal && (p->ucFlags & RES_CUSTOM) && p->nDownloadSize > 0) // FIXED: We don't need to lookup if we can't or will not download anyway
-#else                                                                               // REHLDS_FIXES
+		if(p->type == t_decal && (p->ucFlags & RES_CUSTOM) &&
+		   p->nDownloadSize > 0) // FIXED: We don't need to lookup if we can't or
+                                 // will not download anyway
+#else                            // REHLDS_FIXES
 		if(p->type == t_decal)
-#endif                                                                              // REHLDS_FIXES
+#endif                           // REHLDS_FIXES
 		{
 			missing = !HPAK_ResourceForHash("custom.hpk", p->rgucMD5_hash, NULL);
 			if(missing)
@@ -302,7 +326,8 @@ int SV_EstimateNeededResources(void)
 	return size;
 }
 
-// This is called each frame to do checks on players if they uploaded all files that where requested from them.
+// This is called each frame to do checks on players if they uploaded all files
+// that where requested from them.
 void SV_RequestMissingResourcesFromClients(void)
 {
 	host_client = g_psvs.clients;
@@ -317,12 +342,15 @@ void SV_RequestMissingResourcesFromClients(void)
 	}
 }
 
-// Creates customizations list for a player (the current player actually, see the caller) and sends them out to other players when all needed resources are on-hands. Also sends other players customizations to the current player.
+// Creates customizations list for a player (the current player actually, see
+// the caller) and sends them out to other players when all needed resources are
+// on-hands. Also sends other players customizations to the current player.
 qboolean SV_UploadComplete(client_t *cl)
 {
 	if(cl->resourcesneeded.pNext == &cl->resourcesneeded)
 	{
-		// All resources are available locally, now we can do customizations propagation
+		// All resources are available locally, now we can do customizations
+		// propagation
 		SV_RegisterResources();
 		SV_PropagateCustomizations();
 		if(sv_allow_upload.value != 0.0f)
@@ -335,11 +363,13 @@ qboolean SV_UploadComplete(client_t *cl)
 	return FALSE;
 }
 
-// For each resource the player had shown to us, moves it to on-hands list. For t_decal and RES_CUSTOM it tries to find it locally or request resource from the player.
+// For each resource the player had shown to us, moves it to on-hands list. For
+// t_decal and RES_CUSTOM it tries to find it locally or request resource from
+// the player.
 void SV_BatchUploadRequest(client_t *cl)
 {
 	resource_t *p, *n;
-	char        filename[MAX_PATH];
+	char filename[MAX_PATH];
 
 	for(p = cl->resourcesneeded.pNext; p != &cl->resourcesneeded; p = n)
 	{
@@ -368,7 +398,8 @@ void SV_BatchUploadRequest(client_t *cl)
 	}
 }
 
-// This is used to do recurring checks on the current player that he uploaded all resources that where needed.
+// This is used to do recurring checks on the current player that he uploaded
+// all resources that where needed.
 qboolean SV_RequestMissingResources(void)
 {
 	if(host_client->uploading && !host_client->uploaddoneregistering)
@@ -380,9 +411,9 @@ qboolean SV_RequestMissingResources(void)
 
 void SV_ParseResourceList(client_t *pSenderClient)
 {
-	int            i, total;
-	int            totalsize;
-	resource_t *   resource;
+	int i, total;
+	int totalsize;
+	resource_t *resource;
 	resourceinfo_t ri;
 
 	total = MSG_ReadShort();
@@ -407,25 +438,34 @@ void SV_ParseResourceList(client_t *pSenderClient)
 		resource = (resource_t *)Mem_ZeroMalloc(sizeof(resource_t));
 		Q_strncpy(resource->szFileName, MSG_ReadString(), sizeof(resource->szFileName) - 1);
 		resource->szFileName[sizeof(resource->szFileName) - 1] = 0;
-		resource->type                                         = (resourcetype_t)MSG_ReadByte();
-		resource->nIndex                                       = MSG_ReadShort();
-		resource->nDownloadSize                                = MSG_ReadLong();
-		resource->ucFlags                                      = MSG_ReadByte() & (~RES_WASMISSING);
+		resource->type = (resourcetype_t)MSG_ReadByte();
+		resource->nIndex = MSG_ReadShort();
+		resource->nDownloadSize = MSG_ReadLong();
+		resource->ucFlags = MSG_ReadByte() & (~RES_WASMISSING);
 		if(resource->ucFlags & RES_CUSTOM)
 			MSG_ReadBuf(16, resource->rgucMD5_hash);
 		resource->pNext = NULL;
 		resource->pPrev = NULL;
 
 #ifdef REHLDS_FIXES
-		SV_AddToResourceList(resource, &host_client->resourcesneeded); // FIXED: Mem leak. Add to list to free current resource in SV_ClearResourceList if something goes wrong.
-#endif                                                                 // REHLDS_FIXES
+		SV_AddToResourceList(
+		resource, &host_client->resourcesneeded); // FIXED: Mem leak. Add to
+                                                  // list to free current
+                                                  // resource in
+                                                  // SV_ClearResourceList if
+                                                  // something goes wrong.
+#endif                                            // REHLDS_FIXES
 
 		if(msg_badread || resource->type > t_world ||
 #ifdef REHLDS_FIXES
-		   resource->type != t_decal || !(resource->ucFlags & RES_CUSTOM) || Q_strcmp(resource->szFileName, "tempdecal.wad") != 0 || // client uses only tempdecal.wad for customization
-		   resource->nDownloadSize <= 0 ||                                                                                           // FIXED: Check that download size is valid
-#endif                                                                                                                               // REHLDS_FIXES
-		   resource->nDownloadSize > 1024 * 1024 * 1024)                                                                             // FIXME: Are they gone crazy??!
+		   resource->type != t_decal || !(resource->ucFlags & RES_CUSTOM) ||
+		   Q_strcmp(resource->szFileName, "tempdecal.wad") !=
+		   0 || // client uses only tempdecal.wad for customization
+		   resource->nDownloadSize <=
+		   0 || // FIXED: Check that download size is valid
+#endif          // REHLDS_FIXES
+		   resource->nDownloadSize >
+		   1024 * 1024 * 1024) // FIXME: Are they gone crazy??!
 		{
 #ifdef REHLDS_FIXES
 			SV_ClearResourceLists(host_client);
@@ -452,7 +492,8 @@ void SV_ParseResourceList(client_t *pSenderClient)
 #endif // REHLDS_FIXES
 		{
 			Con_DPrintf("Custom resources total %.2fK\n", total / 1024.0f);
-#ifndef REHLDS_FIXES // because client can send only decals, why there is need to check other types?
+#ifndef REHLDS_FIXES // because client can send only decals, why there is need
+			         // to check other types?
 			if(ri.info[t_model].size)
 			{
 				total = ri.info[t_model].size;
@@ -498,7 +539,7 @@ void SV_ParseResourceList(client_t *pSenderClient)
 #else  // REHLDS_FIXES
 				SV_ClearResourceList(&host_client->resourcesneeded);
 				SV_ClearResourceList(&host_client->resourcesonhand);
-#endif //REHLDS_FIXES
+#endif // REHLDS_FIXES
 				return;
 			}
 
@@ -509,7 +550,7 @@ void SV_ParseResourceList(client_t *pSenderClient)
 		}
 	}
 
-	host_client->uploading             = TRUE;
+	host_client->uploading = TRUE;
 	host_client->uploaddoneregistering = FALSE;
 
 	SV_BatchUploadRequest(host_client);

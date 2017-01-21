@@ -67,7 +67,7 @@ void CGameClient::Drop()
 		mpDownload = NULL;
 	};
 
-	meState   = cs_zombie; // become free in a few seconds
+	meState = cs_zombie; // become free in a few seconds
 	msName[0] = 0;
 };
 
@@ -136,16 +136,16 @@ SV_SendClientDatagram
 */
 bool CGameClient::SendDatagram(/*client_t *client*/)
 {
-	byte      buf[MAX_DATAGRAM];
+	byte buf[MAX_DATAGRAM];
 	sizebuf_t msg;
 
 	// CNetBuffer *pNetBuffer = mpNetChan->CreateBuffer(blablabla); ?
 
-	msg.data          = buf;
-	msg.maxsize       = sizeof(buf);
-	msg.cursize       = 0;
+	msg.data = buf;
+	msg.maxsize = sizeof(buf);
+	msg.cursize = 0;
 	msg.allowoverflow = true;
-	msg.overflowed    = false;
+	msg.overflowed = false;
 
 	MSG_WriteByte(&msg, svc_time);
 	MSG_WriteFloat(&msg, sv.time);
@@ -180,9 +180,9 @@ message buffer
 void CGameClient::SendNop(/*client_t *client*/)
 {
 	sizebuf_t msg;
-	byte      buf[4];
+	byte buf[4];
 
-	msg.data    = buf;
+	msg.data = buf;
 	msg.maxsize = sizeof(buf);
 	msg.cursize = 0;
 
@@ -204,7 +204,7 @@ This will be sent on the initial connection and upon each server load.
 void CGameClient::SendServerinfo(client_t *client)
 {
 	char **s;
-	char   message[2048];
+	char message[2048];
 
 	MSG_WriteByte(&client->message, svc_print);
 	sprintf(message, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, VERSION, pr_crc);
@@ -244,7 +244,7 @@ void CGameClient::SendServerinfo(client_t *client)
 	MSG_WriteByte(&client->message, 1);
 
 	client->sendsignon = true;
-	client->spawned    = false; // need prespawn, spawn, etc
+	client->spawned = false; // need prespawn, spawn, etc
 };
 
 /*
@@ -255,11 +255,11 @@ SV_WriteEntitiesToClient
 */
 void CGameClient::WriteEntities(edict_t *clent, sizebuf_t *msg)
 {
-	int      e, i;
-	int      bits;
-	byte *   pvs;
-	vec3_t   org;
-	float    miss;
+	int e, i;
+	int bits;
+	byte *pvs;
+	vec3_t org;
+	float miss;
 	edict_t *ent;
 
 	// find the client's PVS
@@ -388,7 +388,7 @@ into a more C freindly form.
 void CGameClient::UserinfoChanged(client_t *cl)
 {
 	char *val;
-	int   i;
+	int i;
 
 	// call prog code to allow overrides
 	ge->ClientUserinfoChanged(cl->edict, cl->userinfo);
@@ -403,7 +403,7 @@ void CGameClient::UserinfoChanged(client_t *cl)
 	val = Info_ValueForKey(cl->userinfo, "rate");
 	if(strlen(val))
 	{
-		i        = atoi(val);
+		i = atoi(val);
 		cl->rate = i;
 		if(cl->rate < 100)
 			cl->rate = 100;
@@ -434,7 +434,7 @@ void CGameClient::Printf(CGameClient *cl, /*int level,*/ char *fmt, ...)
 		return;
 
 	va_list argptr;
-	char    string[1024];
+	char string[1024];
 
 	va_start(argptr, fmt);
 	vsprintf(string, fmt, argptr);
@@ -456,8 +456,8 @@ when a reliable message can be delivered this frame.
 void CGameClient::UpdateStats(client_t *client)
 {
 	edict_t *ent;
-	int      stats[MAX_CL_STATS];
-	int      i;
+	int stats[MAX_CL_STATS];
+	int i;
 
 	ent = client->edict;
 	memset(stats, 0, sizeof(stats));
@@ -467,14 +467,14 @@ void CGameClient::UpdateStats(client_t *client)
 	if(client->spectator && client->spec_track > 0)
 		ent = svs.clients[client->spec_track - 1].edict;
 
-	stats[STAT_HEALTH]  = ent->v.health;
-	stats[STAT_WEAPON]  = SV_ModelIndex(PR_GetString(ent->v.weaponmodel));
-	stats[STAT_AMMO]    = ent->v.currentammo;
-	stats[STAT_ARMOR]   = ent->v.armorvalue;
-	stats[STAT_SHELLS]  = ent->v.ammo_shells;
-	stats[STAT_NAILS]   = ent->v.ammo_nails;
+	stats[STAT_HEALTH] = ent->v.health;
+	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->v.weaponmodel));
+	stats[STAT_AMMO] = ent->v.currentammo;
+	stats[STAT_ARMOR] = ent->v.armorvalue;
+	stats[STAT_SHELLS] = ent->v.ammo_shells;
+	stats[STAT_NAILS] = ent->v.ammo_nails;
 	stats[STAT_ROCKETS] = ent->v.ammo_rockets;
-	stats[STAT_CELLS]   = ent->v.ammo_cells;
+	stats[STAT_CELLS] = ent->v.ammo_cells;
 	if(!client->spectator)
 		stats[STAT_ACTIVEWEAPON] = ent->v.weapon;
 	// stuff the sigil bits into the high bits of items for sbar

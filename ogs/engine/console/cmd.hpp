@@ -30,17 +30,17 @@
 
 #pragma once
 
-#include "maintypes.h"
 #include "common/commontypes.h"
+#include "maintypes.h"
 #include "rehlds/cmd_rehlds.h"
 
 // All command/alias names are case insensitive! Arguments not
 
 const int MAX_CMD_BUFFER = 16384;
 const int MAX_CMD_TOKENS = 80;
-const int MAX_CMD_LINE   = 1024;
+const int MAX_CMD_LINE = 1024;
 
-typedef struct sizebuf_s  sizebuf_t;
+typedef struct sizebuf_s sizebuf_t;
 typedef struct cmdalias_s cmdalias_t;
 
 /*
@@ -77,16 +77,16 @@ not apropriate.
 #define cmd_alias (*pcmd_alias)
 #endif // HOOK_ENGINE
 
-extern int   cmd_argc;
+extern int cmd_argc;
 extern char *cmd_argv[80];
 extern char *cmd_args;
 
-extern sizebuf_t    cmd_text;
+extern sizebuf_t cmd_text;
 extern cmd_source_t cmd_source;
-extern qboolean     cmd_wait;
+extern qboolean cmd_wait;
 
 extern cmd_function_t *cmd_functions;
-extern cmdalias_t *    cmd_alias;
+extern cmdalias_t *cmd_alias;
 
 void Cbuf_Init();
 void Cbuf_AddText(char *text);
@@ -128,8 +128,8 @@ void Cmd_AddGameCommand(char *cmd_name, xcommand_t function);
 
 void Cmd_RemoveMallocedCmds(int flag);
 NOXREF void Cmd_RemoveHudCmds();
-void        Cmd_RemoveGameCmds();
-void        Cmd_RemoveWrapperCmds();
+void Cmd_RemoveGameCmds();
+void Cmd_RemoveWrapperCmds();
 
 qboolean Cmd_Exists(const char *cmd_name);
 
@@ -138,7 +138,7 @@ NOXREF char *Cmd_CompleteCommand(char *search, int forward);
 void Cmd_ExecuteString(char *text, cmd_source_t src);
 
 qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf);
-void     Cmd_ForwardToServer();
+void Cmd_ForwardToServer();
 qboolean Cmd_ForwardToServerUnreliable();
 
 NOXREF int Cmd_CheckParm(char *parm);

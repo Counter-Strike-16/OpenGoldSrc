@@ -16,7 +16,7 @@
 #include "common.h"
 #include "encode.h"
 
-CGameConsole  g_GameConsole;
+CGameConsole g_GameConsole;
 CGameConsole *g_pGameConsole = NULL;
 
 CGameConsole &GameConsole(void)
@@ -110,7 +110,7 @@ void CGameConsole::Printf(const char *format, ...)
 	if(!m_bInitialized)
 		return;
 
-	va_list     argptr;
+	va_list argptr;
 	static char text[4096];
 
 	va_start(argptr, format);
@@ -125,7 +125,7 @@ void CGameConsole::DPrintf(const char *format, ...)
 	if(!m_bInitialized)
 		return;
 
-	va_list     argptr;
+	va_list argptr;
 	static char text[4096];
 
 	va_start(argptr, format);

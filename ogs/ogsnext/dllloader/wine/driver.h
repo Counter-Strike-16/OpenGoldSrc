@@ -57,14 +57,14 @@
 
 typedef struct
 {
-	DWORD  dwDCISize;
+	DWORD dwDCISize;
 	LPCSTR lpszDCISectionName;
 	LPCSTR lpszDCIAliasName;
 } DRVCONFIGINFO16, *LPDRVCONFIGINFO16;
 
 typedef struct
 {
-	DWORD   dwDCISize;
+	DWORD dwDCISize;
 	LPCWSTR lpszDCISectionName;
 	LPCWSTR lpszDCIAliasName;
 } DRVCONFIGINFO, *LPDRVCONFIGINFO;
@@ -75,10 +75,10 @@ typedef struct
  */
 typedef struct
 {
-	UINT16      length;
-	HDRVR16     hDriver;
+	UINT16 length;
+	HDRVR16 hDriver;
 	HINSTANCE16 hModule;
-	CHAR        szAliasName[128];
+	CHAR szAliasName[128];
 } DRIVERINFOSTRUCT16, *LPDRIVERINFOSTRUCT16;
 
 LRESULT WINAPI DefDriverProc16(DWORD dwDevID, HDRVR16 hDriv, UINT16 wMsg,

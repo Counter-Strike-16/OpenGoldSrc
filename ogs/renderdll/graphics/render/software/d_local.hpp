@@ -38,16 +38,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct surfcache_s
 {
-	struct surfcache_s * next;
-	struct surfcache_s **owner;                  // NULL is an empty chunk of memory
-	int                  lightadj[MAXLIGHTMAPS]; // checked for strobe flush
-	int                  dlight;
-	int                  size; // including header
-	unsigned             width;
-	unsigned             height; // DEBUG only needed for debug
-	float                mipscale;
-	struct texture_s *   texture; // checked for animating textures
-	byte                 data[4]; // width*height elements
+	struct surfcache_s *next;
+	struct surfcache_s **owner; // NULL is an empty chunk of memory
+	int lightadj[MAXLIGHTMAPS]; // checked for strobe flush
+	int dlight;
+	int size; // including header
+	unsigned width;
+	unsigned height; // DEBUG only needed for debug
+	float mipscale;
+	struct texture_s *texture; // checked for animating textures
+	byte data[4];              // width*height elements
 } surfcache_t;
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
@@ -60,7 +60,7 @@ extern cvar_t d_subdiv16;
 
 extern float scale_for_mip;
 
-extern qboolean     d_roverwrapped;
+extern qboolean d_roverwrapped;
 extern surfcache_t *sc_rover;
 extern surfcache_t *d_initial_rover;
 
@@ -91,11 +91,11 @@ extern void D_PolysetAff8Start();
 extern void D_PolysetAff8End();
 #endif
 
-extern short *      d_pzbuffer;
+extern short *d_pzbuffer;
 extern unsigned int d_zrowbytes, d_zwidth;
 
 extern int *d_pscantable;
-extern int  d_scantable[MAXHEIGHT];
+extern int d_scantable[MAXHEIGHT];
 
 extern int d_vrectx, d_vrecty, d_vrectright_particle, d_vrectbottom_particle;
 
@@ -105,7 +105,7 @@ extern pixel_t *d_viewbuffer;
 
 extern short *zspantable[MAXHEIGHT];
 
-extern int   d_minmip;
+extern int d_minmip;
 extern float d_scalemip[3];
 
 extern void (*d_drawspans)(espan_t *pspan);

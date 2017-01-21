@@ -54,9 +54,9 @@ void Show()
 	vrect_t vr;
 
 	vr.x = vr.y = 0;
-	vr.width    = vid.width;
-	vr.height   = vid.height;
-	vr.pnext    = NULL;
+	vr.width = vid.width;
+	vr.height = vid.height;
+	vr.pnext = NULL;
 	VID_Update(&vr);
 }
 
@@ -69,9 +69,9 @@ For program optimization
 */
 void R_TimeRefresh_f()
 {
-	int     i;
-	float   start, stop, time;
-	int     startangle;
+	int i;
+	float start, stop, time;
+	int startangle;
 	vrect_t vr;
 
 	startangle = r_refdef.viewangles[1];
@@ -87,11 +87,11 @@ void R_TimeRefresh_f()
 
 		VID_UnlockBuffer();
 
-		vr.x      = r_refdef.vrect.x;
-		vr.y      = r_refdef.vrect.y;
-		vr.width  = r_refdef.vrect.width;
+		vr.x = r_refdef.vrect.x;
+		vr.y = r_refdef.vrect.y;
+		vr.width = r_refdef.vrect.width;
 		vr.height = r_refdef.vrect.height;
-		vr.pnext  = NULL;
+		vr.pnext = NULL;
 		VID_Update(&vr);
 	}
 	stop = Sys_DoubleTime();
@@ -110,10 +110,10 @@ Only called by R_DisplayTime
 */
 void R_LineGraph(int x, int y, int h)
 {
-	int   i;
+	int i;
 	byte *dest;
-	int   s;
-	int   color;
+	int s;
+	int color;
 
 	// FIXME: should be disabled on no-buffer adapters, or should be in the driver
 
@@ -159,14 +159,14 @@ Performance monitoring tool
 */
 #define MAX_TIMINGS 100
 extern float mouse_x, mouse_y;
-int          graphval;
-void         R_TimeGraph()
+int graphval;
+void R_TimeGraph()
 {
-	static int  timex;
-	int         a;
-	float       r_time2;
+	static int timex;
+	int a;
+	float r_time2;
 	static byte r_timings[MAX_TIMINGS];
-	int         x;
+	int x;
 
 	r_time2 = Sys_DoubleTime();
 
@@ -181,13 +181,13 @@ void         R_TimeGraph()
 	a = graphval;
 
 	r_timings[timex] = a;
-	a                = timex;
+	a = timex;
 
 	if(r_refdef.vrect.width <= MAX_TIMINGS)
 		x = r_refdef.vrect.width - 1;
 	else
 		x = r_refdef.vrect.width -
-		    (r_refdef.vrect.width - MAX_TIMINGS) / 2;
+		(r_refdef.vrect.width - MAX_TIMINGS) / 2;
 	do
 	{
 		R_LineGraph(x, r_refdef.vrect.height - 2, r_timings[a]);
@@ -209,10 +209,10 @@ R_NetGraph
 */
 void R_NetGraph()
 {
-	int      a, x, y, y2, w, i;
+	int a, x, y, y2, w, i;
 	frame_t *frame;
-	int      lost;
-	char     st[80];
+	int lost;
+	char st[80];
 
 	if(vid.width - 16 <= NET_TIMINGS)
 		w = vid.width - 16;
@@ -224,9 +224,9 @@ void R_NetGraph()
 
 	M_DrawTextBox(x, y, (w + 7) / 8, ((int)r_graphheight.value * 2 + 7) / 8 + 1);
 	y2 = y + 8;
-	y  = vid.height - sb_lines - 8 - 2;
+	y = vid.height - sb_lines - 8 - 2;
 
-	x    = 8;
+	x = 8;
 	lost = CL_CalcNet();
 	for(a = NET_TIMINGS - w; a < w; a++)
 	{
@@ -244,7 +244,7 @@ R_ZGraph
 */
 void R_ZGraph()
 {
-	int        a, x, w, i;
+	int a, x, w, i;
 	static int height[256];
 
 	if(r_refdef.vrect.width <= 256)
@@ -298,7 +298,7 @@ void R_PrintDSpeeds()
 	se_time = (se_time2 - se_time1) * 1000;
 	de_time = (de_time2 - de_time1) * 1000;
 	dv_time = (dv_time2 - dv_time1) * 1000;
-	ms      = (r_time2 - r_time1) * 1000;
+	ms = (r_time2 - r_time1) * 1000;
 
 	Con_Printf("%3i %4.1fp %3iw %4.1fb %3is %4.1fe %4.1fv\n",
 	           (int)ms, dp_time, (int)rw_time, db_time, (int)se_time, de_time,
@@ -317,9 +317,9 @@ void R_PrintAliasStats()
 
 void WarpPalette()
 {
-	int  i, j;
+	int i, j;
 	byte newpalette[768];
-	int  basecolor[3];
+	int basecolor[3];
 
 	basecolor[0] = 130;
 	basecolor[1] = 80;
@@ -344,7 +344,7 @@ R_TransformFrustum
 */
 void R_TransformFrustum()
 {
-	int    i;
+	int i;
 	vec3_t v, v2;
 
 	for(i = 0; i < 4; i++)
@@ -388,7 +388,7 @@ void R_TransformPlane(mplane_t *p, float *normal, float *dist)
 {
 	float d;
 
-	d     = DotProduct(r_origin, p->normal);
+	d = DotProduct(r_origin, p->normal);
 	*dist = p->dist - d;
 	// TODO: when we have rotating entities, this will need to use the view matrix
 	TransformVector(p->normal, normal);
@@ -411,12 +411,12 @@ void R_SetUpFrustumIndexes()
 		{
 			if(view_clipplanes[i].normal[j] < 0)
 			{
-				pindex[j]     = j;
+				pindex[j] = j;
 				pindex[j + 3] = j + 3;
 			}
 			else
 			{
-				pindex[j]     = j + 3;
+				pindex[j] = j + 3;
 				pindex[j + 3] = j;
 			}
 		}
@@ -434,15 +434,15 @@ R_SetupFrame
 */
 void R_SetupFrame()
 {
-	int     edgecount;
+	int edgecount;
 	vrect_t vrect;
-	float   w, h;
+	float w, h;
 
 	// don't allow cheats in multiplayer
-	r_draworder.value  = 0;
+	r_draworder.value = 0;
 	r_fullbright.value = 0;
-	r_ambient.value    = 0;
-	r_drawflat.value   = 0;
+	r_ambient.value = 0;
+	r_drawflat.value = 0;
 
 	if(r_numsurfs.value)
 	{
@@ -498,10 +498,10 @@ void R_SetupFrame()
 
 	// current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf    = Mod_PointInLeaf(r_origin, cl.worldmodel);
+	r_viewleaf = Mod_PointInLeaf(r_origin, cl.worldmodel);
 
 	r_dowarpold = r_dowarp;
-	r_dowarp    = r_waterwarp.value && (r_viewleaf->contents <= CONTENTS_WATER);
+	r_dowarp = r_waterwarp.value && (r_viewleaf->contents <= CONTENTS_WATER);
 
 	if((r_dowarp != r_dowarpold) || r_viewchanged)
 	{
@@ -510,9 +510,9 @@ void R_SetupFrame()
 			if((vid.width <= vid.maxwarpwidth) &&
 			   (vid.height <= vid.maxwarpheight))
 			{
-				vrect.x      = 0;
-				vrect.y      = 0;
-				vrect.width  = vid.width;
+				vrect.x = 0;
+				vrect.y = 0;
+				vrect.width = vid.width;
 				vrect.height = vid.height;
 
 				R_ViewChanged(&vrect, sb_lines, vid.aspect);
@@ -534,22 +534,22 @@ void R_SetupFrame()
 					w *= (float)vid.maxwarpheight / h;
 				}
 
-				vrect.x      = 0;
-				vrect.y      = 0;
-				vrect.width  = (int)w;
+				vrect.x = 0;
+				vrect.y = 0;
+				vrect.width = (int)w;
 				vrect.height = (int)h;
 
 				R_ViewChanged(&vrect,
 				              (int)((float)sb_lines * (h / (float)vid.height)),
 				              vid.aspect * (h / w) *
-				                  ((float)vid.width / (float)vid.height));
+				              ((float)vid.width / (float)vid.height));
 			}
 		}
 		else
 		{
-			vrect.x      = 0;
-			vrect.y      = 0;
-			vrect.width  = vid.width;
+			vrect.x = 0;
+			vrect.y = 0;
+			vrect.width = vid.width;
 			vrect.height = vid.height;
 
 			R_ViewChanged(&vrect, sb_lines, vid.aspect);
@@ -574,14 +574,14 @@ void R_SetupFrame()
 	r_cache_thrash = false;
 
 	// clear frame counts
-	c_faceclip       = 0;
-	d_spanpixcount   = 0;
-	r_polycount      = 0;
+	c_faceclip = 0;
+	d_spanpixcount = 0;
+	r_polycount = 0;
 	r_drawnpolycount = 0;
 	r_wholepolycount = 0;
-	r_amodels_drawn  = 0;
-	r_outofsurfaces  = 0;
-	r_outofedges     = 0;
+	r_amodels_drawn = 0;
+	r_outofsurfaces = 0;
+	r_outofedges = 0;
 
 	D_SetupFrame();
 }

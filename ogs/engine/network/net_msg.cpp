@@ -30,10 +30,10 @@
 
 //#include "precompiled/hpp"
 #include "network/net_msg.hpp"
+#include "common/usercmd.h"
 #include "system/common.hpp"
 #include "system/sizebuf.hpp"
 #include "system/systemtypes.hpp"
-#include "common/usercmd.h"
 
 // MESSAGE IO FUNCTIONS
 // Handles byte ordering and avoids alignment errors
@@ -42,73 +42,46 @@ int msg_badread;
 int msg_readcount;
 
 // Some bit tables...
-const uint32 BITTABLE[] =
-    {
-        0x00000001, 0x00000002, 0x00000004, 0x00000008,
-        0x00000010, 0x00000020, 0x00000040, 0x00000080,
-        0x00000100, 0x00000200, 0x00000400, 0x00000800,
-        0x00001000, 0x00002000, 0x00004000, 0x00008000,
-        0x00010000, 0x00020000, 0x00040000, 0x00080000,
-        0x00100000, 0x00200000, 0x00400000, 0x00800000,
-        0x01000000, 0x02000000, 0x04000000, 0x08000000,
-        0x10000000, 0x20000000, 0x40000000, 0x80000000,
-        0x00000000,
+const uint32 BITTABLE[] = {
+	0x00000001, 0x00000002, 0x00000004, 0x00000008, 0x00000010, 0x00000020, 0x00000040, 0x00000080, 0x00000100, 0x00000200, 0x00000400, 0x00000800, 0x00001000, 0x00002000, 0x00004000, 0x00008000, 0x00010000, 0x00020000, 0x00040000, 0x00080000, 0x00100000, 0x00200000, 0x00400000, 0x00800000, 0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000, 0x20000000, 0x40000000, 0x80000000, 0x00000000,
 };
 
-const uint32 ROWBITTABLE[] =
-    {
-        0x00000000, 0x00000001, 0x00000003, 0x00000007,
-        0x0000000F, 0x0000001F, 0x0000003F, 0x0000007F,
-        0x000000FF, 0x000001FF, 0x000003FF, 0x000007FF,
-        0x00000FFF, 0x00001FFF, 0x00003FFF, 0x00007FFF,
-        0x0000FFFF, 0x0001FFFF, 0x0003FFFF, 0x0007FFFF,
-        0x000FFFFF, 0x001FFFFF, 0x003FFFFF, 0x007FFFFF,
-        0x00FFFFFF, 0x01FFFFFF, 0x03FFFFFF, 0x07FFFFFF,
-        0x0FFFFFFF, 0x1FFFFFFF, 0x3FFFFFFF, 0x7FFFFFFF,
-        0xFFFFFFFF,
+const uint32 ROWBITTABLE[] = {
+	0x00000000, 0x00000001, 0x00000003, 0x00000007, 0x0000000F, 0x0000001F, 0x0000003F, 0x0000007F, 0x000000FF, 0x000001FF, 0x000003FF, 0x000007FF, 0x00000FFF, 0x00001FFF, 0x00003FFF, 0x00007FFF, 0x0000FFFF, 0x0001FFFF, 0x0003FFFF, 0x0007FFFF, 0x000FFFFF, 0x001FFFFF, 0x003FFFFF, 0x007FFFFF, 0x00FFFFFF, 0x01FFFFFF, 0x03FFFFFF, 0x07FFFFFF, 0x0FFFFFFF, 0x1FFFFFFF, 0x3FFFFFFF, 0x7FFFFFFF, 0xFFFFFFFF,
 };
 
-const uint32 INVBITTABLE[] =
-    {
-        0xFFFFFFFE, 0xFFFFFFFD, 0xFFFFFFFB, 0xFFFFFFF7,
-        0xFFFFFFEF, 0xFFFFFFDF, 0xFFFFFFBF, 0xFFFFFF7F,
-        0xFFFFFEFF, 0xFFFFFDFF, 0xFFFFFBFF, 0xFFFFF7FF,
-        0xFFFFEFFF, 0xFFFFDFFF, 0xFFFFBFFF, 0xFFFF7FFF,
-        0xFFFEFFFF, 0xFFFDFFFF, 0xFFFBFFFF, 0xFFF7FFFF,
-        0xFFEFFFFF, 0xFFDFFFFF, 0xFFBFFFFF, 0xFF7FFFFF,
-        0xFEFFFFFF, 0xFDFFFFFF, 0xFBFFFFFF, 0xF7FFFFFF,
-        0xEFFFFFFF, 0xDFFFFFFF, 0xBFFFFFFF, 0x7FFFFFFF,
-        0xFFFFFFFF,
+const uint32 INVBITTABLE[] = {
+	0xFFFFFFFE, 0xFFFFFFFD, 0xFFFFFFFB, 0xFFFFFFF7, 0xFFFFFFEF, 0xFFFFFFDF, 0xFFFFFFBF, 0xFFFFFF7F, 0xFFFFFEFF, 0xFFFFFDFF, 0xFFFFFBFF, 0xFFFFF7FF, 0xFFFFEFFF, 0xFFFFDFFF, 0xFFFFBFFF, 0xFFFF7FFF, 0xFFFEFFFF, 0xFFFDFFFF, 0xFFFBFFFF, 0xFFF7FFFF, 0xFFEFFFFF, 0xFFDFFFFF, 0xFFBFFFFF, 0xFF7FFFFF, 0xFEFFFFFF, 0xFDFFFFFF, 0xFBFFFFFF, 0xF7FFFFFF, 0xEFFFFFFF, 0xDFFFFFFF, 0xBFFFFFFF, 0x7FFFFFFF, 0xFFFFFFFF,
 };
 
 void MSG_WriteChar(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 1);
-	*(char *)buf       = (char)c;
+	*(char *)buf = (char)c;
 }
 
 void MSG_WriteByte(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 1);
-	*(byte *)buf       = (byte)c;
+	*(byte *)buf = (byte)c;
 }
 
 void MSG_WriteShort(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 2);
-	*(int16 *)buf      = (int16)c;
+	*(int16 *)buf = (int16)c;
 }
 
 void MSG_WriteWord(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 2);
-	*(uint16 *)buf     = (uint16)c;
+	*(uint16 *)buf = (uint16)c;
 }
 
 void MSG_WriteLong(sizebuf_t *sb, int c)
 {
 	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 4);
-	*(uint32 *)buf     = (uint32)c;
+	*(uint32 *)buf = (uint32)c;
 }
 
 void MSG_WriteFloat(sizebuf_t *sb, float f)
@@ -144,7 +117,8 @@ void MSG_WriteAngle(sizebuf_t *sb, float f)
 
 void MSG_WriteHiresAngle(sizebuf_t *sb, float f)
 {
-	MSG_WriteShort(sb, (int64)(fmod((double)f, 360.0) * 65536.0 / 360.0) & 0xFFFF);
+	MSG_WriteShort(sb,
+	               (int64)(fmod((double)f, 360.0) * 65536.0 / 360.0) & 0xFFFF);
 }
 
 void MSG_WriteUsercmd(sizebuf_t *buf, usercmd_t *to, usercmd_t *from)
@@ -167,30 +141,30 @@ typedef struct bf_write_s
 	{
 		uint64 u64;
 		uint32 u32[2];
-		uint8  u8[8];
+		uint8 u8[8];
 	} pendingData;
 	uint64 sse_highbits;
 #pragma pack(pop)
 
-	int        nCurOutputBit;
+	int nCurOutputBit;
 	sizebuf_t *pbuf;
 
 #else // defined(REHLDS_FIXES)
 
-	int            nCurOutputBit;
+	int nCurOutputBit;
 	unsigned char *pOutByte;
-	sizebuf_t *    pbuf;
+	sizebuf_t *pbuf;
 
 #endif // defined(REHLDS_FIXES)
 } bf_write_t;
 
 typedef struct bf_read_s
 {
-	int            nMsgReadCount; // was msg_readcount
-	sizebuf_t *    pbuf;
-	int            nBitFieldReadStartByte;
-	int            nBytesRead;
-	int            nCurInputBit;
+	int nMsgReadCount; // was msg_readcount
+	sizebuf_t *pbuf;
+	int nBitFieldReadStartByte;
+	int nBytesRead;
+	int nCurInputBit;
 	unsigned char *pInByte;
 } bf_read_t;
 
@@ -223,7 +197,9 @@ void MSG_WBits_MaybeFlush()
 
 void MSG_WriteBits(uint32 data, int numbits)
 {
-	uint32 maxval = _mm_cvtsi128_si32(_mm_slli_epi64(_mm_cvtsi32_si128(1), numbits)) - 1; //maxval = (1 << numbits) - 1
+	uint32 maxval =
+	_mm_cvtsi128_si32(_mm_slli_epi64(_mm_cvtsi32_si128(1), numbits)) -
+	1; // maxval = (1 << numbits) - 1
 	if(data > maxval)
 		data = maxval;
 
@@ -231,8 +207,10 @@ void MSG_WriteBits(uint32 data, int numbits)
 
 	__m128i pending = _mm_load_si128((__m128i *)&bfwrite.pendingData.u64);
 
-	__m128i mmdata = _mm_slli_epi64(_mm_cvtsi32_si128(data), bfwrite.nCurOutputBit); //mmdata = data << bfwrite.nCurOutputBit
-	pending        = _mm_or_si128(pending, mmdata);
+	__m128i mmdata = _mm_slli_epi64(
+	_mm_cvtsi32_si128(data),
+	bfwrite.nCurOutputBit); // mmdata = data << bfwrite.nCurOutputBit
+	pending = _mm_or_si128(pending, mmdata);
 
 	_mm_store_si128((__m128i *)&bfwrite.pendingData.u64, pending);
 	bfwrite.nCurOutputBit += numbits;
@@ -245,8 +223,8 @@ void MSG_WriteOneBit(int nValue)
 
 void MSG_StartBitWriting(sizebuf_t *buf)
 {
-	bfwrite.nCurOutputBit   = 0;
-	bfwrite.pbuf            = buf;
+	bfwrite.nCurOutputBit = 0;
+	bfwrite.pbuf = buf;
 	bfwrite.pendingData.u64 = 0;
 }
 
@@ -297,8 +275,8 @@ void MSG_WriteOneBit(int nValue)
 void MSG_StartBitWriting(sizebuf_t *buf)
 {
 	bfwrite.nCurOutputBit = 0;
-	bfwrite.pbuf          = buf;
-	bfwrite.pOutByte      = &buf->data[buf->cursize];
+	bfwrite.pbuf = buf;
+	bfwrite.pOutByte = &buf->data[buf->cursize];
 }
 
 void MSG_EndBitWriting(sizebuf_t *buf)
@@ -308,8 +286,8 @@ void MSG_EndBitWriting(sizebuf_t *buf)
 		*bfwrite.pOutByte &= 255 >> (8 - bfwrite.nCurOutputBit);
 		SZ_GetSpace(bfwrite.pbuf, 1);
 		bfwrite.nCurOutputBit = 0;
-		bfwrite.pOutByte      = 0;
-		bfwrite.pbuf          = 0;
+		bfwrite.pOutByte = 0;
+		bfwrite.pbuf = 0;
 	}
 }
 
@@ -324,7 +302,7 @@ void MSG_WriteBits(uint32 data, int numbits)
 	int surplusBytes = 0;
 	if((uint32)bfwrite.nCurOutputBit >= 8)
 	{
-		surplusBytes          = 1;
+		surplusBytes = 1;
 		bfwrite.nCurOutputBit = 0;
 		++bfwrite.pOutByte;
 	}
@@ -333,17 +311,19 @@ void MSG_WriteBits(uint32 data, int numbits)
 	if(bits <= 32)
 	{
 		int bytesToWrite = bits >> 3;
-		int bitsLeft     = bits & 7;
+		int bitsLeft = bits & 7;
 		if(!bitsLeft)
 			--bytesToWrite;
 		SZ_GetSpace(bfwrite.pbuf, surplusBytes + bytesToWrite);
 		if(!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
 		{
-			*(uint32 *)bfwrite.pOutByte = (data << bfwrite.nCurOutputBit) | *(uint32 *)bfwrite.pOutByte & ROWBITTABLE[bfwrite.nCurOutputBit];
-			bfwrite.nCurOutputBit       = 8;
+			*(uint32 *)bfwrite.pOutByte =
+			(data << bfwrite.nCurOutputBit) |
+			*(uint32 *)bfwrite.pOutByte & ROWBITTABLE[bfwrite.nCurOutputBit];
+			bfwrite.nCurOutputBit = 8;
 			if(bitsLeft)
 				bfwrite.nCurOutputBit = bitsLeft;
-			bfwrite.pOutByte          = &bfwrite.pOutByte[bytesToWrite];
+			bfwrite.pOutByte = &bfwrite.pOutByte[bytesToWrite];
 		}
 	}
 	else
@@ -351,16 +331,18 @@ void MSG_WriteBits(uint32 data, int numbits)
 		SZ_GetSpace(bfwrite.pbuf, surplusBytes + 4);
 		if(!(bfwrite.pbuf->flags & SIZEBUF_OVERFLOWED))
 		{
-			*(uint32 *)bfwrite.pOutByte = (data << bfwrite.nCurOutputBit) | *(uint32 *)bfwrite.pOutByte & ROWBITTABLE[bfwrite.nCurOutputBit];
-			int leftBits                = 32 - bfwrite.nCurOutputBit;
-			bfwrite.nCurOutputBit       = bits & 7;
+			*(uint32 *)bfwrite.pOutByte =
+			(data << bfwrite.nCurOutputBit) |
+			*(uint32 *)bfwrite.pOutByte & ROWBITTABLE[bfwrite.nCurOutputBit];
+			int leftBits = 32 - bfwrite.nCurOutputBit;
+			bfwrite.nCurOutputBit = bits & 7;
 			bfwrite.pOutByte += 4;
 			*(uint32 *)bfwrite.pOutByte = data >> leftBits;
 		}
 	}
 }
 
-#endif //defined(REHLDS_FIXES)
+#endif // defined(REHLDS_FIXES)
 
 NOXREF qboolean MSG_IsBitWriting()
 {
@@ -417,10 +399,11 @@ void MSG_WriteBitData(void *src, int length)
 void MSG_WriteBitAngle(float fAngle, int numbits)
 {
 	if(numbits >= 32)
-		Sys_Error("%s: Can't write bit angle with 32 bits precision\n", __FUNCTION__);
+		Sys_Error("%s: Can't write bit angle with 32 bits precision\n",
+		          __FUNCTION__);
 
 	uint32 shift = (1 << numbits);
-	uint32 mask  = shift - 1;
+	uint32 mask = shift - 1;
 
 	int d = (int)(shift * fmod((double)fAngle, 360.0)) / 360;
 	d &= mask;
@@ -452,12 +435,12 @@ NOXREF qboolean MSG_IsBitReading()
 
 void MSG_StartBitReading(sizebuf_t *buf)
 {
-	bfread.nCurInputBit           = 0;
-	bfread.nBytesRead             = 0;
+	bfread.nCurInputBit = 0;
+	bfread.nBytesRead = 0;
 	bfread.nBitFieldReadStartByte = msg_readcount;
-	bfread.pbuf                   = buf;
-	bfread.pInByte                = &buf->data[msg_readcount];
-	bfread.nMsgReadCount          = msg_readcount + 1;
+	bfread.pbuf = buf;
+	bfread.pInByte = &buf->data[msg_readcount];
+	bfread.nMsgReadCount = msg_readcount + 1;
 
 	if(msg_readcount + 1 > buf->cursize)
 		msg_badread = 1;
@@ -468,12 +451,12 @@ void MSG_EndBitReading(sizebuf_t *buf)
 	if(bfread.nMsgReadCount > buf->cursize)
 		msg_badread = 1;
 
-	msg_readcount                 = bfread.nMsgReadCount;
+	msg_readcount = bfread.nMsgReadCount;
 	bfread.nBitFieldReadStartByte = 0;
-	bfread.nCurInputBit           = 0;
-	bfread.nBytesRead             = 0;
-	bfread.pInByte                = 0;
-	bfread.pbuf                   = 0;
+	bfread.nCurInputBit = 0;
+	bfread.nBytesRead = 0;
+	bfread.pInByte = 0;
+	bfread.pbuf = 0;
 }
 
 int MSG_ReadOneBit()
@@ -501,7 +484,7 @@ int MSG_ReadOneBit()
 		}
 		else
 		{
-			nValue      = 1;
+			nValue = 1;
 			msg_badread = 1;
 		}
 	}
@@ -535,7 +518,8 @@ uint32 MSG_ReadBits(int numbits)
 
 		if((unsigned int)(bfread.nCurInputBit + numbits) <= 32)
 		{
-			result = (*(unsigned int *)bfread.pInByte >> bfread.nCurInputBit) & ROWBITTABLE[numbits];
+			result = (*(unsigned int *)bfread.pInByte >> bfread.nCurInputBit) &
+			ROWBITTABLE[numbits];
 
 			uint32 bytes = (bfread.nCurInputBit + numbits) >> 3;
 
@@ -555,7 +539,9 @@ uint32 MSG_ReadBits(int numbits)
 		}
 		else
 		{
-			result              = ((*(unsigned int *)(bfread.pInByte + 4) & ROWBITTABLE[bits]) << (32 - bfread.nCurInputBit)) | (*(unsigned int *)bfread.pInByte >> bfread.nCurInputBit);
+			result = ((*(unsigned int *)(bfread.pInByte + 4) & ROWBITTABLE[bits])
+			          << (32 - bfread.nCurInputBit)) |
+			(*(unsigned int *)bfread.pInByte >> bfread.nCurInputBit);
 			bfread.nCurInputBit = bits;
 			bfread.pInByte += 4;
 			bfread.nMsgReadCount += 4;
@@ -564,7 +550,7 @@ uint32 MSG_ReadBits(int numbits)
 
 		if(bfread.nMsgReadCount > bfread.pbuf->cursize)
 		{
-			result      = 1;
+			result = 1;
 			msg_badread = 1;
 		}
 	}
@@ -577,8 +563,8 @@ NOXREF uint32 MSG_PeekBits(int numbits)
 	NOXREFCHECK;
 
 	bf_read_t savebf = bfread;
-	uint32    r      = MSG_ReadBits(numbits);
-	bfread           = savebf;
+	uint32 r = MSG_ReadBits(numbits);
+	bfread = savebf;
 
 	return r;
 }
@@ -586,7 +572,7 @@ NOXREF uint32 MSG_PeekBits(int numbits)
 int MSG_ReadSBits(int numbits)
 {
 	int nSignBit = MSG_ReadOneBit();
-	int result   = MSG_ReadBits(numbits - 1);
+	int result = MSG_ReadBits(numbits - 1);
 
 	if(nSignBit)
 		result = -result;
@@ -622,7 +608,7 @@ int MSG_ReadBitData(void *dest, int length)
 {
 	if(length > 0)
 	{
-		int            i = length;
+		int i = length;
 		unsigned char *p = (unsigned char *)dest;
 
 		do
@@ -642,7 +628,7 @@ NOXREF float MSG_ReadBitCoord()
 
 	float value = 0;
 
-	int intval   = MSG_ReadOneBit();
+	int intval = MSG_ReadOneBit();
 	int fractval = MSG_ReadOneBit();
 
 	if(intval || fractval)
@@ -666,8 +652,8 @@ NOXREF float MSG_ReadBitCoord()
 
 void MSG_WriteBitCoord(const float f)
 {
-	int signbit  = f <= -0.125;
-	int intval   = abs((int32)f);
+	int signbit = f <= -0.125;
+	int intval = abs((int32)f);
 	int fractval = abs((int32)f * 8) & 7;
 
 	MSG_WriteOneBit(intval);
@@ -757,7 +743,7 @@ NOXREF void MSG_WriteVec3Coord(sizebuf_t *sb, const vec3_t fa)
 void MSG_BeginReading()
 {
 	msg_readcount = 0;
-	msg_badread   = 0;
+	msg_badread = 0;
 }
 
 int MSG_ReadChar()
@@ -772,7 +758,7 @@ int MSG_ReadChar()
 	else
 	{
 		msg_badread = 1;
-		c           = -1;
+		c = -1;
 	}
 
 	return c;
@@ -790,7 +776,7 @@ int MSG_ReadByte()
 	else
 	{
 		msg_badread = 1;
-		c           = -1;
+		c = -1;
 	}
 
 	return c;
@@ -808,7 +794,7 @@ int MSG_ReadShort()
 	else
 	{
 		msg_badread = 1;
-		c           = -1;
+		c = -1;
 	}
 
 	return c;
@@ -828,7 +814,7 @@ NOXREF int MSG_ReadWord()
 	else
 	{
 		msg_badread = 1;
-		c           = -1;
+		c = -1;
 	}
 
 	return c;
@@ -846,7 +832,7 @@ int MSG_ReadLong()
 	else
 	{
 		msg_badread = 1;
-		c           = -1;
+		c = -1;
 	}
 
 	return c;
@@ -866,7 +852,7 @@ NOXREF float MSG_ReadFloat()
 	else
 	{
 		msg_badread = 1;
-		f           = -1.0;
+		f = -1.0;
 	}
 
 	return f;
@@ -888,7 +874,7 @@ int MSG_ReadBuf(int iSize, void *pbuf)
 
 char *MSG_ReadString()
 {
-	int         c = 0, l = 0;
+	int c = 0, l = 0;
 	static char string[8192];
 
 	while((c = MSG_ReadChar(), c) && c != -1 && l < ARRAYSIZE(string) - 1)
@@ -902,10 +888,11 @@ char *MSG_ReadString()
 
 char *MSG_ReadStringLine()
 {
-	int         c = 0, l = 0;
+	int c = 0, l = 0;
 	static char string[2048];
 
-	while((c        = MSG_ReadChar(), c) && c != '\n' && c != -1 && l < ARRAYSIZE(string) - 1)
+	while((c = MSG_ReadChar(), c) && c != '\n' && c != -1 &&
+	      l < ARRAYSIZE(string) - 1)
 		string[l++] = c;
 
 	string[l] = 0;
@@ -919,7 +906,8 @@ NOXREF float MSG_ReadAngle()
 
 	int c = MSG_ReadChar();
 #ifdef REHLDS_FIXES
-	if(c == -1) // FIXED: Added check for wrong value, but just return 0 instead of -1 * (360.0 / 256)
+	if(c == -1) // FIXED: Added check for wrong value, but just return 0 instead
+	            // of -1 * (360.0 / 256)
 	{
 		return 0;
 	}
@@ -934,7 +922,8 @@ NOXREF float MSG_ReadHiresAngle()
 	int c = MSG_ReadShort();
 
 #ifdef REHLDS_FIXES
-	if(c == -1) // FIXED: Added check for wrong value, but just return 0 instead of -1 * (360.0 / 65536)
+	if(c == -1) // FIXED: Added check for wrong value, but just return 0 instead
+		        // of -1 * (360.0 / 65536)
 		return 0;
 #endif
 

@@ -11,32 +11,32 @@
 typedef struct __attribute__((__packed__))
 {
 	short bfType;
-	long  bfSize;
+	long bfSize;
 	short bfReserved1;
 	short bfReserved2;
-	long  bfOffBits;
+	long bfOffBits;
 } BITMAPFILEHEADER;
 
 #ifndef _BITMAPINFOHEADER_
 #define _BITMAPINFOHEADER_
 typedef struct __attribute__((__packed__))
 {
-	long  biSize;
-	long  biWidth;
-	long  biHeight;
+	long biSize;
+	long biWidth;
+	long biHeight;
 	short biPlanes;
 	short biBitCount;
-	long  biCompression;
-	long  biSizeImage;
-	long  biXPelsPerMeter;
-	long  biYPelsPerMeter;
-	long  biClrUsed;
-	long  biClrImportant;
+	long biCompression;
+	long biSizeImage;
+	long biXPelsPerMeter;
+	long biYPelsPerMeter;
+	long biClrUsed;
+	long biClrImportant;
 } BITMAPINFOHEADER, *PBITMAPINFOHEADER, *LPBITMAPINFOHEADER;
 typedef struct
 {
 	BITMAPINFOHEADER bmiHeader;
-	int              bmiColors[1];
+	int bmiColors[1];
 } BITMAPINFO, *LPBITMAPINFO;
 #endif
 
@@ -64,16 +64,16 @@ typedef long(__stdcall__ *DRIVERPROC)(long, HDRVR, unsigned int, long, long);
 /* HIC struct (same layout as Win95 one) */
 typedef struct tagWINE_HIC
 {
-	long       magic;      /* 00: 'Smag' */
-	HANDLE     curthread;  /* 04: */
-	long       type;       /* 08: */
-	long       handler;    /* 0C: */
-	HDRVR      hdrv;       /* 10: */
-	long       driverid;   /* 14:(handled by SendDriverMessage)*/
+	long magic;            /* 00: 'Smag' */
+	HANDLE curthread;      /* 04: */
+	long type;             /* 08: */
+	long handler;          /* 0C: */
+	HDRVR hdrv;            /* 10: */
+	long driverid;         /* 14:(handled by SendDriverMessage)*/
 	DRIVERPROC driverproc; /* 18:(handled by SendDriverMessage)*/
-	long       x1;         /* 1c: name? */
-	short      x2;         /* 20: */
-	long       x3;         /* 22: */
+	long x1;               /* 1c: name? */
+	short x2;              /* 20: */
+	long x3;               /* 22: */
 	                       /* 26: */
 } WINE_HIC;
 
@@ -178,77 +178,77 @@ typedef struct tagWINE_HIC
 
 typedef struct
 {
-	long    dwSize;      /* 00: size */
-	long    fccType;     /* 04: type 'vidc' usually */
-	long    fccHandler;  /* 08: */
-	long    dwVersion;   /* 0c: version of compman opening you */
-	long    dwFlags;     /* 10: LOshort is type specific */
-	LRESULT dwError;     /* 14: */
-	void *  pV1Reserved; /* 18: */
-	void *  pV2Reserved; /* 1c: */
-	long    dnDevNode;   /* 20: */
-	/* 24: */
+	long dwSize;       /* 00: size */
+	long fccType;      /* 04: type 'vidc' usually */
+	long fccHandler;   /* 08: */
+	long dwVersion;    /* 0c: version of compman opening you */
+	long dwFlags;      /* 10: LOshort is type specific */
+	LRESULT dwError;   /* 14: */
+	void *pV1Reserved; /* 18: */
+	void *pV2Reserved; /* 1c: */
+	long dnDevNode;    /* 20: */
+	                   /* 24: */
 } ICOPEN, *LPICOPEN;
 
 #define ICCOMPRESS_KEYFRAME 0x00000001L
 
 typedef struct
 {
-	long               dwFlags;
+	long dwFlags;
 	LPBITMAPINFOHEADER lpbiOutput;
-	void *             lpOutput;
+	void *lpOutput;
 	LPBITMAPINFOHEADER lpbiInput;
-	const void *       lpInput;
-	long *             lpckid;
-	long *             lpdwFlags;
-	long               lFrameNum;
-	long               dwFrameSize;
-	long               dwQuality;
+	const void *lpInput;
+	long *lpckid;
+	long *lpdwFlags;
+	long lFrameNum;
+	long dwFrameSize;
+	long dwQuality;
 	LPBITMAPINFOHEADER lpbiPrev;
-	void *             lpPrev;
+	void *lpPrev;
 } ICCOMPRESS;
 
 long VFWAPI VideoForWindowsVersion(void);
 
 long VFWAPIV ICCompress(
-    HIC hic, long dwFlags, LPBITMAPINFOHEADER lpbiOutput, void *lpData,
-    LPBITMAPINFOHEADER lpbiInput, void *lpBits, long *lpckid,
-    long *lpdwFlags, long lFrameNum, long dwFrameSize, long dwQuality,
-    LPBITMAPINFOHEADER lpbiPrev, void *lpPrev);
+HIC hic, long dwFlags, LPBITMAPINFOHEADER lpbiOutput, void *lpData,
+LPBITMAPINFOHEADER lpbiInput, void *lpBits, long *lpckid,
+long *lpdwFlags, long lFrameNum, long dwFrameSize, long dwQuality,
+LPBITMAPINFOHEADER lpbiPrev, void *lpPrev);
 
-#define ICCompressGetFormat(hic, lpbiInput, lpbiOutput)          \
-	ICSendMessage(                                               \
-	    hic, ICM_COMPRESS_GET_FORMAT, (long)(void *)(lpbiInput), \
-	    (long)(void *)(lpbiOutput))
+#define ICCompressGetFormat(hic, lpbiInput, lpbiOutput)      \
+	ICSendMessage(                                           \
+	hic, ICM_COMPRESS_GET_FORMAT, (long)(void *)(lpbiInput), \
+	(long)(void *)(lpbiOutput))
 
 #define ICCompressGetFormatSize(hic, lpbi) ICCompressGetFormat(hic, lpbi, NULL)
 
 #define ICGetDefaultKeyFrameRate(hic, lpint) \
 	ICSendMessage(                           \
-	    hic, ICM_GETDEFAULTKEYFRAMERATE,     \
-	    (long)(void *)(lpint),               \
-	    0)
+	hic, ICM_GETDEFAULTKEYFRAMERATE,         \
+	(long)(void *)(lpint),                   \
+	0)
 
 #define ICGetDefaultQuality(hic, lpint) \
 	ICSendMessage(                      \
-	    hic, ICM_GETDEFAULTQUALITY,     \
-	    (long)(void *)(lpint),          \
-	    0)
+	hic, ICM_GETDEFAULTQUALITY,         \
+	(long)(void *)(lpint),              \
+	0)
 
-#define ICCompressBegin(hic, lpbiInput, lpbiOutput)         \
-	ICSendMessage(                                          \
-	    hic, ICM_COMPRESS_BEGIN, (long)(void *)(lpbiInput), \
-	    (long)(void *)(lpbiOutput))
+#define ICCompressBegin(hic, lpbiInput, lpbiOutput)     \
+	ICSendMessage(                                      \
+	hic, ICM_COMPRESS_BEGIN, (long)(void *)(lpbiInput), \
+	(long)(void *)(lpbiOutput))
 
-#define ICCompressGetSize(hic, lpbiInput, lpbiOutput)          \
-	ICSendMessage(                                             \
-	    hic, ICM_COMPRESS_GET_SIZE, (long)(void *)(lpbiInput), \
-	    (long)(void *)(lpbiOutput))
+#define ICCompressGetSize(hic, lpbiInput, lpbiOutput)      \
+	ICSendMessage(                                         \
+	hic, ICM_COMPRESS_GET_SIZE, (long)(void *)(lpbiInput), \
+	(long)(void *)(lpbiOutput))
 
-#define ICCompressQuery(hic, lpbiInput, lpbiOutput)         \
-	ICSendMessage(                                          \
-	    hic, ICM_COMPRESS_QUERY, (long)(void *)(lpbiInput), \
-	    (long)(void *)(lpbiOutput))
+#define ICCompressQuery(hic, lpbiInput, lpbiOutput)     \
+	ICSendMessage(                                      \
+	hic, ICM_COMPRESS_QUERY, (long)(void *)(lpbiInput), \
+	(long)(void *)(lpbiOutput))
 
 #define ICCompressEnd(hic) ICSendMessage(hic, ICM_COMPRESS_END, 0, 0)
 
@@ -256,20 +256,20 @@ long VFWAPIV ICCompress(
 #define ICCOMPRESSFRAMES_PADDING 0x00000001
 typedef struct
 {
-	long               dwFlags;
+	long dwFlags;
 	LPBITMAPINFOHEADER lpbiOutput;
-	LPARAM             lOutput;
+	LPARAM lOutput;
 	LPBITMAPINFOHEADER lpbiInput;
-	LPARAM             lInput;
-	long               lStartFrame;
-	long               lFrameCount;
-	long               lQuality;
-	long               lDataRate;
-	long               lKeyRate;
-	long               dwRate;
-	long               dwScale;
-	long               dwOverheadPerFrame;
-	long               dwReserved2;
+	LPARAM lInput;
+	long lStartFrame;
+	long lFrameCount;
+	long lQuality;
+	long lDataRate;
+	long lKeyRate;
+	long dwRate;
+	long dwScale;
+	long dwOverheadPerFrame;
+	long dwReserved2;
 	long CALLBACK (*GetData)(LPARAM lInput, long lFrame, void *lpBits, long len);
 	long CALLBACK (*PutData)(LPARAM lOutput, long lFrame, void *lpBits, long len);
 } ICCOMPRESSFRAMES;
@@ -342,21 +342,21 @@ typedef struct
 
 typedef struct
 {
-	long               dwFlags;    /* flags (from AVI index...) */
+	long dwFlags;                  /* flags (from AVI index...) */
 	LPBITMAPINFOHEADER lpbiInput;  /* BITMAPINFO of compressed data */
-	const void *       lpInput;    /* compressed data */
+	const void *lpInput;           /* compressed data */
 	LPBITMAPINFOHEADER lpbiOutput; /* DIB to decompress to */
-	void *             lpOutput;
-	long               ckid; /* ckid from AVI file */
+	void *lpOutput;
+	long ckid; /* ckid from AVI file */
 } ICDECOMPRESS;
 
 typedef struct
 {
-	long               dwFlags;
+	long dwFlags;
 	LPBITMAPINFOHEADER lpbiSrc;
-	const void *       lpSrc;
+	const void *lpSrc;
 	LPBITMAPINFOHEADER lpbiDst;
-	void *             lpDst;
+	void *lpDst;
 
 	/* changed for ICM_DECOMPRESSEX */
 	INT xDst; /* destination rectangle */
@@ -374,43 +374,43 @@ long VFWAPIV ICDecompress(HIC hic, long dwFlags, LPBITMAPINFOHEADER lpbiFormat, 
 long VFWAPIV ICDecompressEx(HIC hic, long dwFlags, LPBITMAPINFOHEADER lpbiFormat, void *lpData, LPBITMAPINFOHEADER lpbi, void *lpBits);
 long VFWAPIV ICUniversalEx(HIC hic, int command, LPBITMAPINFOHEADER lpbiFormat, LPBITMAPINFOHEADER lpbi);
 
-#define ICDecompressBegin(hic, lpbiInput, lpbiOutput)         \
-	ICSendMessage(                                            \
-	    hic, ICM_DECOMPRESS_BEGIN, (long)(void *)(lpbiInput), \
-	    (long)(void *)(lpbiOutput))
+#define ICDecompressBegin(hic, lpbiInput, lpbiOutput)     \
+	ICSendMessage(                                        \
+	hic, ICM_DECOMPRESS_BEGIN, (long)(void *)(lpbiInput), \
+	(long)(void *)(lpbiOutput))
 
 #define ICDecompressBeginEx(hic, lpbiInput, lpbiOutput) \
 	ICUniversalEx(                                      \
-	    hic, ICM_DECOMPRESSEX_BEGIN, (lpbiInput),       \
-	    (lpbiOutput))
+	hic, ICM_DECOMPRESSEX_BEGIN, (lpbiInput),           \
+	(lpbiOutput))
 
-#define ICDecompressQuery(hic, lpbiInput, lpbiOutput)         \
-	ICSendMessage(                                            \
-	    hic, ICM_DECOMPRESS_QUERY, (long)(void *)(lpbiInput), \
-	    (long)(void *)(lpbiOutput))
+#define ICDecompressQuery(hic, lpbiInput, lpbiOutput)     \
+	ICSendMessage(                                        \
+	hic, ICM_DECOMPRESS_QUERY, (long)(void *)(lpbiInput), \
+	(long)(void *)(lpbiOutput))
 
 #define ICDecompressQueryEx(hic, lpbiInput, lpbiOutput) \
 	ICUniversalEx(                                      \
-	    hic, ICM_DECOMPRESSEX_QUERY, (lpbiInput),       \
-	    (lpbiOutput))
+	hic, ICM_DECOMPRESSEX_QUERY, (lpbiInput),           \
+	(lpbiOutput))
 
-#define ICDecompressGetFormat(hic, lpbiInput, lpbiOutput)          \
-	((long)ICSendMessage(                                          \
-	    hic, ICM_DECOMPRESS_GET_FORMAT, (long)(void *)(lpbiInput), \
-	    (long)(void *)(lpbiOutput)))
+#define ICDecompressGetFormat(hic, lpbiInput, lpbiOutput)      \
+	((long)ICSendMessage(                                      \
+	hic, ICM_DECOMPRESS_GET_FORMAT, (long)(void *)(lpbiInput), \
+	(long)(void *)(lpbiOutput)))
 
 #define ICDecompressGetFormatSize(hic, lpbi) \
 	ICDecompressGetFormat(hic, lpbi, NULL)
 
-#define ICDecompressGetPalette(hic, lpbiInput, lpbiOutput)          \
-	ICSendMessage(                                                  \
-	    hic, ICM_DECOMPRESS_GET_PALETTE, (long)(void *)(lpbiInput), \
-	    (long)(void *)(lpbiOutput))
+#define ICDecompressGetPalette(hic, lpbiInput, lpbiOutput)      \
+	ICSendMessage(                                              \
+	hic, ICM_DECOMPRESS_GET_PALETTE, (long)(void *)(lpbiInput), \
+	(long)(void *)(lpbiOutput))
 
 #define ICDecompressSetPalette(hic, lpbiPalette) \
 	ICSendMessage(                               \
-	    hic, ICM_DECOMPRESS_SET_PALETTE,         \
-	    (long)(void *)(lpbiPalette), 0)
+	hic, ICM_DECOMPRESS_SET_PALETTE,             \
+	(long)(void *)(lpbiPalette), 0)
 
 #define ICDecompressEnd(hic) ICSendMessage(hic, ICM_DECOMPRESS_END, 0, 0)
 #define ICDecompressEndEx(hic) ICSendMessage(hic, ICM_DECOMPRESSEX_END, 0, 0)
@@ -431,41 +431,41 @@ LRESULT VFWAPI ICSendMessage(HIC hic, unsigned int msg, long dw1, long dw2);
 int VFWAPI ICDoSomething(void);
 
 long VFWAPIV ICDrawBegin(
-    HIC                hic,
-    long               dwFlags, /* flags */
-    HPALETTE           hpal,    /* palette to draw with */
-    HWND               hwnd,    /* window to draw to */
-    HDC                hdc,     /* HDC to draw to */
-    INT                xDst,    /* destination rectangle */
-    INT                yDst,
-    INT                dxDst,
-    INT                dyDst,
-    LPBITMAPINFOHEADER lpbi, /* format of frame to draw */
-    INT                xSrc, /* source rectangle */
-    INT                ySrc,
-    INT                dxSrc,
-    INT                dySrc,
-    long               dwRate, /* frames/second = (dwRate/dwScale) */
-    long               dwScale);
+HIC hic,
+long dwFlags,  /* flags */
+HPALETTE hpal, /* palette to draw with */
+HWND hwnd,     /* window to draw to */
+HDC hdc,       /* HDC to draw to */
+INT xDst,      /* destination rectangle */
+INT yDst,
+INT dxDst,
+INT dyDst,
+LPBITMAPINFOHEADER lpbi, /* format of frame to draw */
+INT xSrc,                /* source rectangle */
+INT ySrc,
+INT dxSrc,
+INT dySrc,
+long dwRate, /* frames/second = (dwRate/dwScale) */
+long dwScale);
 
 /* as passed to ICM_DRAW_BEGIN (FIXME: correct only for Win32?)  */
 typedef struct
 {
-	long               dwFlags;
-	HPALETTE           hpal;
-	HWND               hwnd;
-	HDC                hdc;
-	INT                xDst;
-	INT                yDst;
-	INT                dxDst;
-	INT                dyDst;
+	long dwFlags;
+	HPALETTE hpal;
+	HWND hwnd;
+	HDC hdc;
+	INT xDst;
+	INT yDst;
+	INT dxDst;
+	INT dyDst;
 	LPBITMAPINFOHEADER lpbi;
-	INT                xSrc;
-	INT                ySrc;
-	INT                dxSrc;
-	INT                dySrc;
-	long               dwRate;
-	long               dwScale;
+	INT xSrc;
+	INT ySrc;
+	INT dxSrc;
+	INT dySrc;
+	long dwRate;
+	long dwScale;
 } ICDRAWBEGIN;
 
 #define ICDRAW_HURRYUP 0x80000000L     /* don't draw just buffer (hurry up!) */
@@ -476,11 +476,11 @@ typedef struct
 
 typedef struct
 {
-	long  dwFlags;
+	long dwFlags;
 	void *lpFormat;
 	void *lpData;
-	long  cbData;
-	long  lTime;
+	long cbData;
+	long lTime;
 } ICDRAW;
 
 long VFWAPIV ICDraw(HIC hic, long dwFlags, void *lpFormat, void *lpData, long cbData, long lTime);
@@ -489,45 +489,45 @@ long VFWAPIV ICDraw(HIC hic, long dwFlags, void *lpFormat, void *lpData, long cb
 
 typedef struct AVISTREAMINFOA
 {
-	long  fccType;
-	long  fccHandler;
-	long  dwFlags; /* AVIIF_* */
-	long  dwCaps;
+	long fccType;
+	long fccHandler;
+	long dwFlags; /* AVIIF_* */
+	long dwCaps;
 	short wPriority;
 	short wLanguage;
-	long  dwScale;
-	long  dwRate; /* dwRate / dwScale == samples/second */
-	long  dwStart;
-	long  dwLength; /* In units above... */
-	long  dwInitialFrames;
-	long  dwSuggestedBufferSize;
-	long  dwQuality;
-	long  dwSampleSize;
-	RECT  rcFrame;
-	long  dwEditCount;
-	long  dwFormatChangeCount;
-	char  szName[64];
+	long dwScale;
+	long dwRate; /* dwRate / dwScale == samples/second */
+	long dwStart;
+	long dwLength; /* In units above... */
+	long dwInitialFrames;
+	long dwSuggestedBufferSize;
+	long dwQuality;
+	long dwSampleSize;
+	RECT rcFrame;
+	long dwEditCount;
+	long dwFormatChangeCount;
+	char szName[64];
 } AVISTREAMINFOA, *LPAVISTREAMINFOA, *PAVISTREAMINFOA;
 
 typedef struct AVISTREAMINFOW
 {
-	long  fccType;
-	long  fccHandler;
-	long  dwFlags;
-	long  dwCaps;
+	long fccType;
+	long fccHandler;
+	long dwFlags;
+	long dwCaps;
 	short wPriority;
 	short wLanguage;
-	long  dwScale;
-	long  dwRate; /* dwRate / dwScale == samples/second */
-	long  dwStart;
-	long  dwLength; /* In units above... */
-	long  dwInitialFrames;
-	long  dwSuggestedBufferSize;
-	long  dwQuality;
-	long  dwSampleSize;
-	RECT  rcFrame;
-	long  dwEditCount;
-	long  dwFormatChangeCount;
+	long dwScale;
+	long dwRate; /* dwRate / dwScale == samples/second */
+	long dwStart;
+	long dwLength; /* In units above... */
+	long dwInitialFrames;
+	long dwSuggestedBufferSize;
+	long dwQuality;
+	long dwSampleSize;
+	RECT rcFrame;
+	long dwEditCount;
+	long dwFormatChangeCount;
 	short szName[64];
 } AVISTREAMINFOW, *LPAVISTREAMINFOW, *PAVISTREAMINFOW;
 DECL_WINELIB_TYPE_AW(AVISTREAMINFO)
@@ -552,17 +552,17 @@ DECL_WINELIB_TYPE_AW(PAVISTREAMINFO)
 
 typedef struct AVIFILEINFOW
 {
-	long  dwMaxBytesPerSec;
-	long  dwFlags;
-	long  dwCaps;
-	long  dwStreams;
-	long  dwSuggestedBufferSize;
-	long  dwWidth;
-	long  dwHeight;
-	long  dwScale;
-	long  dwRate;
-	long  dwLength;
-	long  dwEditCount;
+	long dwMaxBytesPerSec;
+	long dwFlags;
+	long dwCaps;
+	long dwStreams;
+	long dwSuggestedBufferSize;
+	long dwWidth;
+	long dwHeight;
+	long dwScale;
+	long dwRate;
+	long dwLength;
+	long dwEditCount;
 	short szFileType[64];
 } AVIFILEINFOW, *LPAVIFILEINFOW, *PAVIFILEINFOW;
 
@@ -594,17 +594,17 @@ DECL_WINELIB_TYPE_AW(LPAVIFILEINFO)
 
 typedef struct
 {
-	long  fccType;          /* stream type, for consistency */
-	long  fccHandler;       /* compressor */
-	long  dwKeyFrameEvery;  /* keyframe rate */
-	long  dwQuality;        /* compress quality 0-10,000 */
-	long  dwBytesPerSecond; /* unsigned chars per second */
-	long  dwFlags;          /* flags... see below */
-	void *lpFormat;         /* save format */
-	long  cbFormat;
+	long fccType;          /* stream type, for consistency */
+	long fccHandler;       /* compressor */
+	long dwKeyFrameEvery;  /* keyframe rate */
+	long dwQuality;        /* compress quality 0-10,000 */
+	long dwBytesPerSecond; /* unsigned chars per second */
+	long dwFlags;          /* flags... see below */
+	void *lpFormat;        /* save format */
+	long cbFormat;
 	void *lpParms; /* compressor options */
-	long  cbParms;
-	long  dwInterleaveEvery; /* for non-video streams only */
+	long cbParms;
+	long dwInterleaveEvery; /* for non-video streams only */
 } AVICOMPRESSOPTIONS, *LPAVICOMPRESSOPTIONS, *PAVICOMPRESSOPTIONS;
 
 typedef struct
@@ -612,21 +612,21 @@ typedef struct
 	long cbSize;          // set to sizeof(COMPVARS) before
 	                      // calling ICCompressorChoose
 	long dwFlags;         // see below...
-	HIC  hic;             // HIC of chosen compressor
+	HIC hic;              // HIC of chosen compressor
 	long fccType;         // basically ICTYPE_VIDEO
 	long fccHandler;      // handler of chosen compressor or
 	                      // "" or "DIB "
 	LPBITMAPINFO lpbiIn;  // input format
 	LPBITMAPINFO lpbiOut; // output format - will compress to this
-	void *       lpBitsOut;
-	void *       lpBitsPrev;
-	long         lFrame;
-	long         lKey;      // key frames how often?
-	long         lDataRate; // desired data rate KB/Sec
-	long         lQ;        // desired quality
-	long         lKeyCount;
-	void *       lpState; // state of compressor
-	long         cbState; // size of the state
+	void *lpBitsOut;
+	void *lpBitsPrev;
+	long lFrame;
+	long lKey;      // key frames how often?
+	long lDataRate; // desired data rate KB/Sec
+	long lQ;        // desired quality
+	long lKeyCount;
+	void *lpState; // state of compressor
+	long cbState;  // size of the state
 } COMPVARS, *PCOMPVARS;
 
 // FLAGS for dwFlags element of COMPVARS structure:

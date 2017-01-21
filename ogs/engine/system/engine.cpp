@@ -30,17 +30,17 @@
 
 //#include "precompiled.hpp"
 #include "system/engine.hpp"
-#include "system/system.hpp"
-#include "system/host.hpp"
-#include "console/cmd.hpp"
 #include "client/client.hpp"
+#include "console/cmd.hpp"
+#include "system/host.hpp"
+#include "system/system.hpp"
 
 /*
 * Globals initialization
 */
 #ifndef HOOK_ENGINE
 
-CEngine  g_Engine;
+CEngine g_Engine;
 IEngine *eng = &g_Engine;
 
 #else // HOOK_ENGINE
@@ -51,15 +51,15 @@ IEngine *eng;
 
 CEngine::CEngine()
 {
-	m_fFrameTime    = 0.0f;
-	m_nSubState     = 0;
-	m_nDLLState     = DLL_INACTIVE;
-	m_fOldTime      = 0.0f;
-	m_bTrapMode     = false;
+	m_fFrameTime = 0.0f;
+	m_nSubState = 0;
+	m_nDLLState = DLL_INACTIVE;
+	m_fOldTime = 0.0f;
+	m_bTrapMode = false;
 	m_bDoneTrapping = false;
-	m_nTrapKey      = 0;
-	m_nTrapButtons  = 0;
-	m_nQuitting     = QUIT_NOTQUITTING;
+	m_nTrapKey = 0;
+	m_nTrapButtons = 0;
+	m_nQuitting = QUIT_NOTQUITTING;
 
 #ifdef REHLDS_FIXES
 	m_fCurTime = 0.0f;
@@ -89,18 +89,18 @@ void ForceReloadProfile()
 	if(COM_CheckParm("-nomousegrab"))
 		Cvar_Set("cl_mousegrab", "0");
 
-	//Key_SetBinding(126, "toggleconsole");
-	//Key_SetBinding(96, "toggleconsole");
-	//Key_SetBinding(27, "cancelselect");
-	//SDL_GL_SetSwapInterval((gl_vsync.value <= 0.0) - 1);
+	// Key_SetBinding(126, "toggleconsole");
+	// Key_SetBinding(96, "toggleconsole");
+	// Key_SetBinding(27, "cancelselect");
+	// SDL_GL_SetSwapInterval((gl_vsync.value <= 0.0) - 1);
 	if(cls.state != ca_dedicated)
 	{
 		Sys_Error("Only dedicated mode is supported");
 		/*
-		v0 = GetRateRegistrySetting(rate.string);
-		Q_strncpy(szRate, v0, 0x20u);
-		Cvar_DirectSet(&rate, szRate);
-		*/
+    v0 = GetRateRegistrySetting(rate.string);
+    Q_strncpy(szRate, v0, 0x20u);
+    Cvar_DirectSet(&rate, szRate);
+    */
 	}
 }
 
@@ -135,11 +135,12 @@ int CEngine::Frame_noVirt()
 #endif // SWDS
 
 	if(!game->IsActiveApp())
-		game->SleepUntilInput(m_nDLLState != DLL_PAUSED ? MINIMIZED_SLEEP : NOT_FOCUS_SLEEP);
+		game->SleepUntilInput(m_nDLLState != DLL_PAUSED ? MINIMIZED_SLEEP
+		                                                : NOT_FOCUS_SLEEP);
 
-	m_fCurTime   = Sys_DoubleTime();
+	m_fCurTime = Sys_DoubleTime();
 	m_fFrameTime = m_fCurTime - m_fOldTime;
-	m_fOldTime   = m_fCurTime;
+	m_fOldTime = m_fCurTime;
 	if(m_fFrameTime < 0.0)
 	{
 		m_fFrameTime = 0.001;
@@ -246,10 +247,10 @@ void CEngine::TrapMouse_Event_noVirt(int buttons, bool down)
 {
 	if(m_bTrapMode && buttons && !down)
 	{
-		m_bTrapMode     = false;
+		m_bTrapMode = false;
 		m_bDoneTrapping = true;
-		m_nTrapKey      = 0;
-		m_nTrapButtons  = buttons;
+		m_nTrapKey = 0;
+		m_nTrapButtons = buttons;
 	}
 	else
 	{
@@ -267,7 +268,7 @@ void CEngine::StartTrapMode_noVirt()
 	if(!m_bTrapMode)
 	{
 		m_bDoneTrapping = false;
-		m_bTrapMode     = true;
+		m_bTrapMode = true;
 	}
 }
 
@@ -295,8 +296,8 @@ bool CEngine::CheckDoneTrapping_noVirt(int &buttons, int &key)
 	else if(m_bDoneTrapping)
 	{
 		m_bDoneTrapping = false;
-		key             = m_nTrapKey;
-		buttons         = m_nTrapButtons;
+		key = m_nTrapKey;
+		buttons = m_nTrapButtons;
 		return true;
 	}
 	else

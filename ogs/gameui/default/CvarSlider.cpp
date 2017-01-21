@@ -46,7 +46,7 @@ void CCvarSlider::SetupSlider(float minValue, float maxValue, const char *cvarna
 
 	Q_strncpy(m_szCvarName, cvarname, sizeof(m_szCvarName));
 
-	m_bModifiedOnce    = false;
+	m_bModifiedOnce = false;
 	m_bAllowOutOfRange = bAllowOutOfRange;
 
 	Reset();
@@ -62,10 +62,10 @@ void CCvarSlider::ApplySettings(KeyValues *inResourceData)
 
 	if(!m_bCreatedInCode)
 	{
-		float       minValue         = inResourceData->GetFloat("minvalue", 0);
-		float       maxValue         = inResourceData->GetFloat("maxvalue", 1);
-		const char *cvarname         = inResourceData->GetString("cvar_name", "");
-		bool        bAllowOutOfRange = inResourceData->GetInt("allowoutofrange", 0) != 0;
+		float minValue = inResourceData->GetFloat("minvalue", 0);
+		float maxValue = inResourceData->GetFloat("maxvalue", 1);
+		const char *cvarname = inResourceData->GetString("cvar_name", "");
+		bool bAllowOutOfRange = inResourceData->GetInt("allowoutofrange", 0) != 0;
 		SetupSlider(minValue, maxValue, cvarname, bAllowOutOfRange);
 
 		if(GetParent())
@@ -129,8 +129,8 @@ void CCvarSlider::Paint(void)
 
 	if(curvalue != m_fStartValue)
 	{
-		int val         = (int)(CVARSLIDER_SCALE_FACTOR * curvalue);
-		m_fStartValue   = curvalue;
+		int val = (int)(CVARSLIDER_SCALE_FACTOR * curvalue);
+		m_fStartValue = curvalue;
 		m_fCurrentValue = curvalue;
 
 		SetValue(val);
@@ -181,13 +181,13 @@ void CCvarSlider::SetSliderValue(float fValue)
 
 void CCvarSlider::Reset(void)
 {
-	m_fStartValue   = engine->pfnGetCvarFloat(m_szCvarName);
+	m_fStartValue = engine->pfnGetCvarFloat(m_szCvarName);
 	m_fCurrentValue = m_fStartValue;
 
 	int value = (int)(CVARSLIDER_SCALE_FACTOR * m_fStartValue);
 	SetValue(value);
 
-	m_iStartValue      = GetValue();
+	m_iStartValue = GetValue();
 	m_iLastSliderValue = m_iStartValue;
 }
 
@@ -206,7 +206,7 @@ void CCvarSlider::OnSliderMoved(void)
 		if(m_iLastSliderValue != GetValue())
 		{
 			m_iLastSliderValue = GetValue();
-			m_fCurrentValue    = ((float)m_iLastSliderValue) / CVARSLIDER_SCALE_FACTOR;
+			m_fCurrentValue = ((float)m_iLastSliderValue) / CVARSLIDER_SCALE_FACTOR;
 		}
 
 		PostActionSignal(new KeyValues("ControlModified"));

@@ -30,30 +30,30 @@
 
 #pragma once
 
-#include "maintypes.h"
-#include "server/servertypes.hpp"
-#include "engine/custom.h"
 #include "common/crc.h"
-#include "console/cvar.hpp"
 #include "common/dll_state.h"
-#include "resources/consistency.hpp"
-#include "world/event.hpp"
 #include "common/entity_state.h"
+#include "console/cvar.hpp"
+#include "engine/custom.h"
+#include "engine/progs.h"
+#include "maintypes.h"
 #include "network/delta.hpp"
 #include "network/delta_packet.hpp"
-#include "rehlds/model.h"
+#include "network/filter.hpp"
 #include "network/net.hpp"
 #include "network/net_chan.hpp"
 #include "network/net_ws.hpp"
-#include "engine/progs.h"
-#include "network/filter.hpp"
-#include "server/server_static.hpp"
 #include "network/usermsg.hpp"
-#include "userid.h"
 #include "pm_shared/pm_defs.h"
-#include "world/inst_baseline.hpp"
-#include "system/info.hpp"
 #include "qlimits.h"
+#include "rehlds/model.h"
+#include "resources/consistency.hpp"
+#include "server/server_static.hpp"
+#include "server/servertypes.hpp"
+#include "system/info.hpp"
+#include "userid.h"
+#include "world/event.hpp"
+#include "world/inst_baseline.hpp"
 
 class IGameClient;
 
@@ -68,7 +68,7 @@ typedef struct server_s
 	double time;
 	double oldtime;
 
-	int    lastcheck;
+	int lastcheck;
 	double lastchecktime;
 
 	char name[64];
@@ -77,56 +77,59 @@ typedef struct server_s
 	char modelname[64];
 
 	struct model_s *worldmodel;
-	CRC32_t         worldmapCRC;
+	CRC32_t worldmapCRC;
 
 	unsigned char clientdllmd5[16];
 
-	resource_t             resourcelist[MAX_RESOURCE_LIST];
-	int                    num_resources;
-	consistency_t          consistency_list[MAX_CONSISTENCY_LIST];
-	int                    num_consistency;
-	const char *           model_precache[HL_MODEL_MAX];
-	struct model_s *       models[HL_MODEL_MAX];
-	unsigned char          model_precache_flags[HL_MODEL_MAX];
-	struct event_s         event_precache[HL_EVENT_MAX];
-	const char *           sound_precache[HL_SOUND_MAX];
-	short int              sound_precache_hashedlookup[HL_SOUND_HASHLOOKUP_SIZE];
-	qboolean               sound_precache_hashedlookup_built;
-	const char *           generic_precache[HL_GENERIC_MAX];
-	char                   generic_precache_names[HL_GENERIC_MAX][64];
-	int                    num_generic_names;
-	char *                 lightstyles[MAX_LIGHTSTYLES];
-	int                    num_edicts;
-	int                    max_edicts;
-	edict_t *              edicts;
+	resource_t resourcelist[MAX_RESOURCE_LIST];
+	int num_resources;
+	consistency_t consistency_list[MAX_CONSISTENCY_LIST];
+	int num_consistency;
+	const char *model_precache[HL_MODEL_MAX];
+	struct model_s *models[HL_MODEL_MAX];
+	unsigned char model_precache_flags[HL_MODEL_MAX];
+	struct event_s event_precache[HL_EVENT_MAX];
+	const char *sound_precache[HL_SOUND_MAX];
+	short int sound_precache_hashedlookup[HL_SOUND_HASHLOOKUP_SIZE];
+	qboolean sound_precache_hashedlookup_built;
+	const char *generic_precache[HL_GENERIC_MAX];
+	char generic_precache_names[HL_GENERIC_MAX][64];
+	int num_generic_names;
+	char *lightstyles[MAX_LIGHTSTYLES];
+	int num_edicts;
+	int max_edicts;
+	edict_t *edicts;
 	struct entity_state_s *baselines;
-	extra_baselines_t *    instance_baselines;
+	extra_baselines_t *instance_baselines;
 
 	server_state_t state;
 
-	sizebuf_t     datagram;
+	sizebuf_t datagram;
 	unsigned char datagram_buf[MAX_DATAGRAM];
 
-	sizebuf_t     reliable_datagram;
+	sizebuf_t reliable_datagram;
 	unsigned char reliable_datagram_buf[MAX_DATAGRAM];
 
-	sizebuf_t     multicast;
+	sizebuf_t multicast;
 	unsigned char multicast_buf[1024];
 
-	sizebuf_t     spectator;
+	sizebuf_t spectator;
 	unsigned char spectator_buf[1024];
 
-	sizebuf_t     signon;
+	sizebuf_t signon;
 	unsigned char signon_data[32768];
 } server_t;
 
 struct rehlds_server_t
 {
-//map for sv.model_precache (for faster resolving of model index by its name)
+// map for sv.model_precache (for faster resolving of model index by its name)
 #if defined(REHLDS_FIXES)
-	CStringKeyStaticMap<int, 7, HL_MODEL_MAX * 2> modelsMap; //case-sensitive keys for better performance
+	CStringKeyStaticMap<int, 7, HL_MODEL_MAX * 2>
+	modelsMap; // case-sensitive keys for better performance
 #elif defined(REHLDS_OPT_PEDANTIC)
-	CICaseStringKeyStaticMap<int, 7, HL_MODEL_MAX * 2> modelsMap; //use case-insensitive keys to conform original engine's behavior
+	CICaseStringKeyStaticMap<int, 7, HL_MODEL_MAX * 2>
+	modelsMap; // use case-insensitive keys to conform original engine's
+// behavior
 #endif
 
 #ifdef REHLDS_FIXES
@@ -136,17 +139,17 @@ struct rehlds_server_t
 
 	// Extended resource list
 	resource_t resources[RESOURCE_MAX_COUNT];
-	char       precachedGenericResourceNames[RESOURCE_MAX_COUNT][MAX_QPATH];
-	size_t     precachedGenericResourceCount;
+	char precachedGenericResourceNames[RESOURCE_MAX_COUNT][MAX_QPATH];
+	size_t precachedGenericResourceCount;
 #endif
 };
 
 typedef struct client_frame_s
 {
-	double            senttime;
-	float             ping_time;
-	clientdata_t      clientdata;
-	weapon_data_t     weapondata[64];
+	double senttime;
+	float ping_time;
+	clientdata_t clientdata;
+	weapon_data_t weapondata[64];
 	packet_entities_t entities;
 } client_frame_t;
 
@@ -182,7 +185,7 @@ typedef struct client_s
 	double svtimebase;
 
 	sizebuf_t datagram;
-	byte      datagram_buf[MAX_DATAGRAM];
+	byte datagram_buf[MAX_DATAGRAM];
 
 	double connection_started;
 
@@ -193,19 +196,19 @@ typedef struct client_s
 	qboolean skip_message;
 
 	client_frame_t *frames;
-	event_state_t   events;
-	edict_t *       edict;
-	const edict_t * pViewEntity;
-	int             userid;
-	USERID_t        network_userid;
-	char            userinfo[MAX_INFO_STRING];
-	qboolean        sendinfo;
-	float           sendinfo_time;
-	char            hashedcdkey[64];
-	char            name[32];
-	int             topcolor;
-	int             bottomcolor;
-	int             entityId;
+	event_state_t events;
+	edict_t *edict;
+	const edict_t *pViewEntity;
+	int userid;
+	USERID_t network_userid;
+	char userinfo[MAX_INFO_STRING];
+	qboolean sendinfo;
+	float sendinfo_time;
+	char hashedcdkey[64];
+	char name[32];
+	int topcolor;
+	int bottomcolor;
+	int entityId;
 
 	resource_t resourcesonhand;
 	resource_t resourcesneeded;
@@ -221,26 +224,26 @@ typedef struct client_s
 	int lw;
 	int lc;
 
-	char     physinfo[MAX_INFO_STRING];
+	char physinfo[MAX_INFO_STRING];
 	qboolean m_bLoopback;
-	uint32   m_VoiceStreams[2];
-	double   m_lastvoicetime;
-	int      m_sendrescount;
+	uint32 m_VoiceStreams[2];
+	double m_lastvoicetime;
+	int m_sendrescount;
 } client_t;
 
 typedef struct rcon_failure_s rcon_failure_t;
-typedef struct challenge_s    challenge_t;
+typedef struct challenge_s challenge_t;
 
 typedef struct deltacallback_s
 {
-	int *    numbase;
-	int      num;
+	int *numbase;
+	int num;
 	qboolean remove;
 	qboolean custom;
 	qboolean newbl;
-	int      newblindex;
+	int newblindex;
 	qboolean full;
-	int      offset;
+	int offset;
 } deltacallback_t;
 
 #ifdef HOOK_ENGINE
@@ -394,18 +397,18 @@ typedef struct deltacallback_s
 
 #endif // HOOK_ENGINE
 
-extern char *   pr_strings;
-extern char *   gNullString;
+extern char *pr_strings;
+extern char *gNullString;
 extern qboolean scr_skipupdate;
-extern float    scr_centertime_off;
-extern float    g_LastScreenUpdateTime;
+extern float scr_centertime_off;
+extern float g_LastScreenUpdateTime;
 
 extern int SV_UPDATE_BACKUP;
 extern int SV_UPDATE_MASK;
 
-extern globalvars_t    gGlobalVariables;
+extern globalvars_t gGlobalVariables;
 extern server_static_t g_psvs;
-extern server_t        g_psv;
+extern server_t g_psv;
 
 extern rehlds_server_t g_rehlds_sv;
 
@@ -439,19 +442,19 @@ extern cvar_t syserror_logfile;
 #endif
 
 extern decalname_t sv_decalnames[MAX_BASE_DECALS];
-extern int         sv_decalnamecount;
+extern int sv_decalnamecount;
 
-extern UserMsg *    sv_gpNewUserMsgs;
-extern UserMsg *    sv_gpUserMsgs;
+extern UserMsg *sv_gpNewUserMsgs;
+extern UserMsg *sv_gpUserMsgs;
 extern playermove_t g_svmove;
 
-extern int               sv_lastnum;
+extern int sv_lastnum;
 extern extra_baselines_t g_sv_instance_baselines;
-extern qboolean          g_bOutOfDateRestart;
-extern int               g_userid;
+extern qboolean g_bOutOfDateRestart;
+extern int g_userid;
 
 extern delta_info_t *g_sv_delta;
-extern delta_t *     g_peventdelta;
+extern delta_t *g_peventdelta;
 
 extern cvar_t rcon_password;
 extern cvar_t sv_enableoldqueries;
@@ -479,26 +482,26 @@ extern cvar_t sv_outofdatetime;
 extern cvar_t mapchangecfgfile;
 
 extern qboolean allow_cheats;
-extern cvar_t   mp_logecho;
-extern cvar_t   mp_logfile;
-extern cvar_t   sv_allow_download;
-extern cvar_t   sv_send_logos;
-extern cvar_t   sv_send_resources;
-extern cvar_t   sv_log_singleplayer;
-extern cvar_t   sv_logsecret;
-extern cvar_t   sv_log_onefile;
-extern cvar_t   sv_logbans;
-extern cvar_t   sv_allow_upload;
-extern cvar_t   sv_max_upload;
-extern cvar_t   hpk_maxsize;
-extern cvar_t   sv_visiblemaxplayers;
-extern cvar_t   max_queries_sec;
-extern cvar_t   max_queries_sec_global;
-extern cvar_t   max_queries_window;
-extern cvar_t   sv_logblocks;
-extern cvar_t   sv_downloadurl;
-extern cvar_t   sv_allow_dlfile;
-extern cvar_t   sv_version;
+extern cvar_t mp_logecho;
+extern cvar_t mp_logfile;
+extern cvar_t sv_allow_download;
+extern cvar_t sv_send_logos;
+extern cvar_t sv_send_resources;
+extern cvar_t sv_log_singleplayer;
+extern cvar_t sv_logsecret;
+extern cvar_t sv_log_onefile;
+extern cvar_t sv_logbans;
+extern cvar_t sv_allow_upload;
+extern cvar_t sv_max_upload;
+extern cvar_t hpk_maxsize;
+extern cvar_t sv_visiblemaxplayers;
+extern cvar_t max_queries_sec;
+extern cvar_t max_queries_sec_global;
+extern cvar_t max_queries_window;
+extern cvar_t sv_logblocks;
+extern cvar_t sv_downloadurl;
+extern cvar_t sv_allow_dlfile;
+extern cvar_t sv_version;
 #ifdef REHLDS_FIXES
 extern cvar_t sv_echo_unknown_cmd;
 extern cvar_t sv_auto_precache_sounds_in_models;
@@ -510,9 +513,9 @@ extern cvar_t sv_rehlds_userinfo_transmitted_fields;
 #endif
 extern int sv_playermodel;
 
-extern char       outputbuf[MAX_ROUTEABLE_PACKET];
+extern char outputbuf[MAX_ROUTEABLE_PACKET];
 extern redirect_t sv_redirected;
-extern netadr_t   sv_redirectto;
+extern netadr_t sv_redirectto;
 
 extern cvar_t sv_rcon_minfailures;
 extern cvar_t sv_rcon_maxfailures;
@@ -543,7 +546,7 @@ extern delta_t *g_pusercmddelta;
 #endif
 
 extern unsigned char fatpvs[1024];
-extern int           fatpasbytes;
+extern int fatpasbytes;
 extern unsigned char fatpas[1024];
 
 extern int gPacketSuppressed;
@@ -551,10 +554,10 @@ extern int gPacketSuppressed;
 extern char localinfo[MAX_LOCALINFO];
 extern char localmodels[MAX_MODELS][5];
 
-extern ipfilter_t   ipfilters[MAX_IPFILTERS];
-extern int          numipfilters;
+extern ipfilter_t ipfilters[MAX_IPFILTERS];
+extern int numipfilters;
 extern userfilter_t userfilters[MAX_USERFILTERS];
-extern int          numuserfilters;
+extern int numuserfilters;
 
 extern challenge_t g_rg_sv_challenges[MAX_CHALLENGES];
 
@@ -562,15 +565,15 @@ extern challenge_t g_rg_sv_challenges[MAX_CHALLENGES];
 #define g_rgRconFailures (*pg_rgRconFailures)
 #endif // HOOK_ENGINE
 
-extern rcon_failure_t  g_rgRconFailures[32];
+extern rcon_failure_t g_rgRconFailures[32];
 extern deltacallback_t g_svdeltacallback;
 
 delta_t *SV_LookupDelta(char *name);
 NOXREF void SV_DownloadingModules();
-void        SV_GatherStatistics();
-void        SV_DeallocateDynamicData();
-void        SV_ReallocateDynamicData();
-void        SV_AllocClientFrames();
+void SV_GatherStatistics();
+void SV_DeallocateDynamicData();
+void SV_ReallocateDynamicData();
+void SV_AllocClientFrames();
 qboolean SV_IsPlayerIndex(int index);
 qboolean SV_IsPlayerIndex_wrapped(int index);
 void SV_ClearPacketEntities(client_frame_t *frame);
@@ -631,10 +634,10 @@ void SV_ConnectClient();
 void SV_ConnectClient_internal();
 void SVC_Ping();
 int SV_GetChallenge(const netadr_t &adr);
-void   SVC_GetChallenge();
-void   SVC_ServiceChallenge();
-void   SV_ResetModInfo();
-int    SV_GetFakeClientCount();
+void SVC_GetChallenge();
+void SVC_ServiceChallenge();
+void SV_ResetModInfo();
+int SV_GetFakeClientCount();
 NOXREF qboolean SV_GetModInfo(char *pszInfo, char *pszDL, int *version, int *size, qboolean *svonly, qboolean *cldll, char *pszHLVersion);
 NOXREF qboolean RequireValidChallenge(netadr_t *adr);
 NOXREF qboolean ValidInfoChallenge(netadr_t *adr, const char *nugget);
@@ -653,16 +656,16 @@ void SV_BeginRedirect(redirect_t rd, netadr_t *addr);
 void SV_ResetRcon_f();
 void SV_AddFailedRcon(netadr_t *adr);
 qboolean SV_CheckRconFailure(netadr_t *adr);
-int  SV_Rcon_Validate();
+int SV_Rcon_Validate();
 void SV_Rcon(netadr_t *net_from_);
 void SV_ConnectionlessPacket();
 void SV_CheckRate(client_t *cl);
 void SV_ProcessFile(client_t *cl, char *filename);
 qboolean SV_FilterPacket();
-void     SV_SendBan();
-void     SV_ReadPackets();
-//NOBODY int ntohl();
-//NOBODY int htons();
+void SV_SendBan();
+void SV_ReadPackets();
+// NOBODY int ntohl();
+// NOBODY int htons();
 void SV_CheckTimeouts();
 int SV_CalcPing(client_t *cl);
 void SV_SendFullClientUpdateForAll(client_t *client);
@@ -689,7 +692,7 @@ void SV_GetNetInfo(client_t *client, int *ping, int *packet_loss);
 int SV_CheckVisibility(edict_t *entity, unsigned char *pset);
 void SV_EmitPings(client_t *client, sizebuf_t *msg);
 void SV_WriteEntitiesToClient(client_t *client, sizebuf_t *msg);
-void     SV_CleanupEnts();
+void SV_CleanupEnts();
 qboolean SV_SendClientDatagram(client_t *client);
 void SV_UpdateUserInfo(client_t *client);
 void SV_UpdateToReliableMessages();
@@ -708,7 +711,7 @@ void SV_CreateBaseline();
 void SV_BroadcastCommand(char *fmt, ...);
 void SV_BuildReconnect(sizebuf_t *msg);
 NOXREF void SV_ReconnectAllClients();
-void        SetCStrikeFlags();
+void SetCStrikeFlags();
 void SV_ActivateServer(int runPhysics);
 void SV_ActivateServer_internal(int runPhysics);
 void SV_ServerShutdown();
@@ -732,20 +735,20 @@ void SV_InactivateClients();
 void SV_FailDownload(const char *filename);
 const char *Q_stristr(const char *pStr, const char *pSearch);
 qboolean IsSafeFileToDownload(const char *filename);
-void     SV_BeginFileDownload_f();
-void     SV_SetMaxclients();
-void     SV_HandleRconPacket();
-void     SV_CheckCmdTimes();
-void     SV_CheckForRcon();
+void SV_BeginFileDownload_f();
+void SV_SetMaxclients();
+void SV_HandleRconPacket();
+void SV_CheckCmdTimes();
+void SV_CheckForRcon();
 qboolean SV_IsSimulating();
-void     SV_CheckMapDifferences();
-void     SV_Frame();
-void     SV_Drop_f();
+void SV_CheckMapDifferences();
+void SV_Frame();
+void SV_Drop_f();
 void SV_RegisterDelta(char *name, char *loadfile);
-void     SV_InitDeltas();
-void     SV_InitEncoders();
-void     SV_Init();
-void     SV_Shutdown();
+void SV_InitDeltas();
+void SV_InitEncoders();
+void SV_Init();
+void SV_Shutdown();
 qboolean SV_CompareUserID(USERID_t *id1, USERID_t *id2);
 qboolean SV_CompareUserID_internal(USERID_t *id1, USERID_t *id2);
 char *SV_GetIDString(USERID_t *id);
@@ -762,4 +765,4 @@ void SV_ClientPrintf(const char *fmt, ...);
 void SV_BroadcastPrintf(const char *fmt, ...);
 
 qboolean Master_IsLanGame();
-void     Master_Heartbeat_f();
+void Master_Heartbeat_f();

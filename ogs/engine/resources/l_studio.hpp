@@ -37,10 +37,10 @@
 
 #ifdef HOOK_ENGINE
 //#define giTextureSize (*pgiTextureSize)
-#endif //HOOK_ENGINE
+#endif // HOOK_ENGINE
 
 typedef struct model_s model_t;
 
-//extern int giTextureSize;
+// extern int giTextureSize;
 
 void Mod_LoadStudioModel(model_t *mod, void *buffer);

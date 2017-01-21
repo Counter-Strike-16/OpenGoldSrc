@@ -43,8 +43,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define WARP_WIDTH 320
 #define WARP_HEIGHT 200
 
-static Display *  dpy = NULL;
-static Window     win;
+static Display *dpy = NULL;
+static Window win;
 static GLXContext ctx = NULL;
 
 static float old_windowed_mouse = 0;
@@ -56,16 +56,16 @@ static float old_windowed_mouse = 0;
 #define X_MASK (KEY_MASK | MOUSE_MASK | VisibilityChangeMask)
 
 unsigned short d_8to16table[256];
-unsigned       d_8to24table[256];
-unsigned char  d_15to8table[65536];
+unsigned d_8to24table[256];
+unsigned char d_15to8table[65536];
 
-cvar_t _windowed_mouse = {"_windowed_mouse", "0", true};
-cvar_t vid_mode        = {"vid_mode", "0", false};
+cvar_t _windowed_mouse = { "_windowed_mouse", "0", true };
+cvar_t vid_mode = { "vid_mode", "0", false };
 
 static float mouse_x, mouse_y;
 static float old_mouse_x, old_mouse_y;
 
-cvar_t m_filter = {"m_filter", "0"};
+cvar_t m_filter = { "m_filter", "0" };
 
 static int scr_width, scr_height;
 
@@ -82,15 +82,15 @@ int texture_extension_number = 1;
 
 float gldepthmin, gldepthmax;
 
-cvar_t gl_ztrick = {"gl_ztrick", "1"};
+cvar_t gl_ztrick = { "gl_ztrick", "1" };
 
 const char *gl_vendor;
 const char *gl_renderer;
 const char *gl_version;
 const char *gl_extensions;
 
-qboolean is8bit      = false;
-qboolean isPermedia  = false;
+qboolean is8bit = false;
+qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 /*-----------------------------------------------------------------------*/
@@ -104,8 +104,8 @@ void D_EndDirectRect(int x, int y, int width, int height)
 
 static int XLateKey(XKeyEvent *ev)
 {
-	int    key;
-	char   buf[64];
+	int key;
+	char buf[64];
 	KeySym keysym;
 
 	key = 0;
@@ -344,7 +344,7 @@ static void uninstall_grabs(void)
 static void GetEvent(void)
 {
 	XEvent event;
-	int    b;
+	int b;
 
 	if(!dpy)
 		return;
@@ -460,16 +460,16 @@ void VID_ShiftPalette(unsigned char *p)
 
 void VID_SetPalette(unsigned char *palette)
 {
-	byte *          pal;
-	unsigned        r, g, b;
-	unsigned        v;
-	int             r1, g1, b1;
-	int             k;
-	unsigned short  i;
-	unsigned *      table;
-	FILE *          f;
-	char            s[255];
-	float           dist, bestdist;
+	byte *pal;
+	unsigned r, g, b;
+	unsigned v;
+	int r1, g1, b1;
+	int k;
+	unsigned short i;
+	unsigned *table;
+	FILE *f;
+	char s[255];
+	float dist, bestdist;
 	static qboolean palflag = false;
 
 	//
@@ -477,7 +477,7 @@ void VID_SetPalette(unsigned char *palette)
 	//
 	Con_Printf("Converting 8to24\n");
 
-	pal   = palette;
+	pal = palette;
 	table = d_8to24table;
 	for(i = 0; i < 256; i++)
 	{
@@ -488,7 +488,7 @@ void VID_SetPalette(unsigned char *palette)
 
 		//		v = (255<<24) + (r<<16) + (g<<8) + (b<<0);
 		//		v = (255<<0) + (r<<8) + (g<<16) + (b<<24);
-		v        = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
+		v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
 		*table++ = v;
 	}
 	d_8to24table[255] &= 0xffffff; // 255 is transparent
@@ -515,19 +515,19 @@ void VID_SetPalette(unsigned char *palette)
  			000001111100000 = Blue = 0x03E0
  			111110000000000 = Grn  = 0x7C00
  			*/
-			r   = ((i & 0x1F) << 3) + 4;
-			g   = ((i & 0x03E0) >> 2) + 4;
-			b   = ((i & 0x7C00) >> 7) + 4;
+			r = ((i & 0x1F) << 3) + 4;
+			g = ((i & 0x03E0) >> 2) + 4;
+			b = ((i & 0x7C00) >> 7) + 4;
 			pal = (unsigned char *)d_8to24table;
 			for(v = 0, k = 0, bestdist = 10000.0; v < 256; v++, pal += 4)
 			{
-				r1   = (int)r - (int)pal[0];
-				g1   = (int)g - (int)pal[1];
-				b1   = (int)b - (int)pal[2];
+				r1 = (int)r - (int)pal[0];
+				g1 = (int)g - (int)pal[1];
+				b1 = (int)b - (int)pal[2];
 				dist = sqrt(((r1 * r1) + (g1 * g1) + (b1 * b1)));
 				if(dist < bestdist)
 				{
-					k        = v;
+					k = v;
 					bestdist = dist;
 				}
 			}
@@ -595,7 +595,7 @@ void GL_BeginRendering(int *x, int *y, int *width, int *height)
 	extern cvar_t gl_clear;
 
 	*x = *y = 0;
-	*width  = scr_width;
+	*width = scr_width;
 	*height = scr_height;
 
 	//    if (!wglMakeCurrent( maindc, baseRC ))
@@ -619,8 +619,8 @@ qboolean VID_Is8bit(void)
 void VID_Init8bitPalette()
 {
 	// Check for 8bit Extensions and initialize them.
-	int   i;
-	char  thePalette[256 * 3];
+	int i;
+	char thePalette[256 * 3];
 	char *oldPalette, *newPalette;
 
 	if(strstr(gl_extensions, "GL_EXT_shared_texture_palette") == NULL)
@@ -647,9 +647,9 @@ extern void gl3DfxSetPaletteEXT(GLuint *pal);
 void VID_Init8bitPalette(void)
 {
 	// Check for 8bit Extensions and initialize them.
-	int     i;
+	int i;
 	GLubyte table[256][4];
-	char *  oldpal;
+	char *oldpal;
 
 	if(strstr(gl_extensions, "3DFX_set_global_palette") == NULL)
 		return;
@@ -674,20 +674,21 @@ void VID_Init(unsigned char *palette)
 {
 	int i;
 	int attrib[] = {
-	    GLX_RGBA,
-	    GLX_RED_SIZE, 1,
-	    GLX_GREEN_SIZE, 1,
-	    GLX_BLUE_SIZE, 1,
-	    GLX_DOUBLEBUFFER,
-	    GLX_DEPTH_SIZE, 1,
-	    None};
-	char                 gldir[MAX_OSPATH];
-	int                  width = 640, height = 480;
-	int                  scrnum;
+		GLX_RGBA,
+		GLX_RED_SIZE, 1,
+		GLX_GREEN_SIZE, 1,
+		GLX_BLUE_SIZE, 1,
+		GLX_DOUBLEBUFFER,
+		GLX_DEPTH_SIZE, 1,
+		None
+	};
+	char gldir[MAX_OSPATH];
+	int width = 640, height = 480;
+	int scrnum;
 	XSetWindowAttributes attr;
-	unsigned long        mask;
-	Window               root;
-	XVisualInfo *        visinfo;
+	unsigned long mask;
+	Window root;
+	XVisualInfo *visinfo;
 
 	S_Init();
 
@@ -695,10 +696,10 @@ void VID_Init(unsigned char *palette)
 	Cvar_RegisterVariable(&gl_ztrick);
 	Cvar_RegisterVariable(&_windowed_mouse);
 
-	vid.maxwarpwidth  = WARP_WIDTH;
+	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
-	vid.colormap      = host_colormap;
-	vid.fullbright    = 256 - LittleLong(*((int *)vid.colormap + 2048));
+	vid.colormap = host_colormap;
+	vid.fullbright = 256 - LittleLong(*((int *)vid.colormap + 2048));
 
 	// interpret command-line params
 
@@ -733,7 +734,7 @@ void VID_Init(unsigned char *palette)
 	}
 
 	scrnum = DefaultScreen(dpy);
-	root   = RootWindow(dpy, scrnum);
+	root = RootWindow(dpy, scrnum);
 
 	visinfo = glXChooseVisual(dpy, scrnum, attrib);
 	if(!visinfo)
@@ -743,10 +744,10 @@ void VID_Init(unsigned char *palette)
 	}
 	/* window attributes */
 	attr.background_pixel = 0;
-	attr.border_pixel     = 0;
-	attr.colormap         = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
-	attr.event_mask       = X_MASK;
-	mask                  = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
+	attr.border_pixel = 0;
+	attr.colormap = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
+	attr.event_mask = X_MASK;
+	mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 
 	win = XCreateWindow(dpy, root, 0, 0, width, height,
 	                    0, visinfo->depth, InputOutput,
@@ -761,17 +762,17 @@ void VID_Init(unsigned char *palette)
 
 	glXMakeCurrent(dpy, win, ctx);
 
-	scr_width  = width;
+	scr_width = width;
 	scr_height = height;
 
 	if(vid.conheight > height)
 		vid.conheight = height;
 	if(vid.conwidth > width)
 		vid.conwidth = width;
-	vid.width        = vid.conwidth;
-	vid.height       = vid.conheight;
+	vid.width = vid.conwidth;
+	vid.height = vid.conheight;
 
-	vid.aspect   = ((float)vid.height / (float)vid.width) * (320.0 / 240.0);
+	vid.aspect = ((float)vid.height / (float)vid.width) * (320.0 / 240.0);
 	vid.numpages = 2;
 
 	InitSig(); // trap evil signals

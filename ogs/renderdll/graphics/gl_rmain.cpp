@@ -27,7 +27,7 @@ cl_entity_t r_worldentity;
 
 qboolean r_cache_thrash; // compatability
 
-vec3_t       modelorg, r_entorigin;
+vec3_t modelorg, r_entorigin;
 cl_entity_t *currententity;
 
 int r_visframecount; // bumped when going to a new PVS
@@ -41,13 +41,13 @@ qboolean envmap; // true during envmap command capture
 
 int currenttexture = -1; // to avoid unnecessary texture sets
 
-int cnttextures[2] = {-1, -1}; // cached
+int cnttextures[2] = { -1, -1 }; // cached
 
 int particletexture; // little dot for particles
 int playertextures;  // up to 16 color translated skins
 
-int       mirrortexturenum; // quake texturenum, not gltexturenum
-qboolean  mirror;
+int mirrortexturenum; // quake texturenum, not gltexturenum
+qboolean mirror;
 mplane_t *mirror_plane;
 
 //
@@ -74,32 +74,32 @@ int d_lightstylevalue[256]; // 8.8 fraction of base light value
 
 void R_MarkLeaves();
 
-cvar_t r_norefresh     = {"r_norefresh", "0"};
-cvar_t r_drawentities  = {"r_drawentities", "1"};
-cvar_t r_drawviewmodel = {"r_drawviewmodel", "1"};
-cvar_t r_speeds        = {"r_speeds", "0"};
-cvar_t r_fullbright    = {"r_fullbright", "0"};
-cvar_t r_lightmap      = {"r_lightmap", "0"};
-cvar_t r_shadows       = {"r_shadows", "0"};
-cvar_t r_mirroralpha   = {"r_mirroralpha", "1"};
-cvar_t r_wateralpha    = {"r_wateralpha", "1"};
-cvar_t r_dynamic       = {"r_dynamic", "1"};
-cvar_t r_novis         = {"r_novis", "0"};
+cvar_t r_norefresh = { "r_norefresh", "0" };
+cvar_t r_drawentities = { "r_drawentities", "1" };
+cvar_t r_drawviewmodel = { "r_drawviewmodel", "1" };
+cvar_t r_speeds = { "r_speeds", "0" };
+cvar_t r_fullbright = { "r_fullbright", "0" };
+cvar_t r_lightmap = { "r_lightmap", "0" };
+cvar_t r_shadows = { "r_shadows", "0" };
+cvar_t r_mirroralpha = { "r_mirroralpha", "1" };
+cvar_t r_wateralpha = { "r_wateralpha", "1" };
+cvar_t r_dynamic = { "r_dynamic", "1" };
+cvar_t r_novis = { "r_novis", "0" };
 
-cvar_t r_netgraph = {"net_graph", "0"};
+cvar_t r_netgraph = { "net_graph", "0" };
 
-cvar_t gl_clear            = {"gl_clear", "0"};
-cvar_t gl_cull             = {"gl_cull", "1"};
-cvar_t gl_texsort          = {"gl_texsort", "1"};
-cvar_t gl_smoothmodels     = {"gl_smoothmodels", "1"};
-cvar_t gl_affinemodels     = {"gl_affinemodels", "0"};
-cvar_t gl_polyblend        = {"gl_polyblend", "1"};
-cvar_t gl_flashblend       = {"gl_flashblend", "1"};
-cvar_t gl_playermip        = {"gl_playermip", "0"};
-cvar_t gl_nocolors         = {"gl_nocolors", "0"};
-cvar_t gl_keeptjunctions   = {"gl_keeptjunctions", "1"};
-cvar_t gl_reporttjunctions = {"gl_reporttjunctions", "0"};
-cvar_t gl_finish           = {"gl_finish", "0"};
+cvar_t gl_clear = { "gl_clear", "0" };
+cvar_t gl_cull = { "gl_cull", "1" };
+cvar_t gl_texsort = { "gl_texsort", "1" };
+cvar_t gl_smoothmodels = { "gl_smoothmodels", "1" };
+cvar_t gl_affinemodels = { "gl_affinemodels", "0" };
+cvar_t gl_polyblend = { "gl_polyblend", "1" };
+cvar_t gl_flashblend = { "gl_flashblend", "1" };
+cvar_t gl_playermip = { "gl_playermip", "0" };
+cvar_t gl_nocolors = { "gl_nocolors", "0" };
+cvar_t gl_keeptjunctions = { "gl_keeptjunctions", "1" };
+cvar_t gl_reporttjunctions = { "gl_reporttjunctions", "0" };
+cvar_t gl_finish = { "gl_finish", "0" };
 
 extern cvar_t gl_ztrick;
 extern cvar_t scr_fov;
@@ -145,14 +145,14 @@ R_GetSpriteFrame
 */
 mspriteframe_t *R_GetSpriteFrame(cl_entity_t *currententity)
 {
-	msprite_t *     psprite;
+	msprite_t *psprite;
 	mspritegroup_t *pspritegroup;
 	mspriteframe_t *pspriteframe;
-	int             i, numframes, frame;
-	float *         pintervals, fullinterval, targettime, time;
+	int i, numframes, frame;
+	float *pintervals, fullinterval, targettime, time;
 
 	psprite = currententity->model->cache.data;
-	frame   = currententity->frame;
+	frame = currententity->frame;
 
 	if((frame >= psprite->numframes) || (frame < 0))
 	{
@@ -167,8 +167,8 @@ mspriteframe_t *R_GetSpriteFrame(cl_entity_t *currententity)
 	else
 	{
 		pspritegroup = (mspritegroup_t *)psprite->frames[frame].frameptr;
-		pintervals   = pspritegroup->intervals;
-		numframes    = pspritegroup->numframes;
+		pintervals = pspritegroup->intervals;
+		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes - 1];
 
 		time = cl.time + currententity->syncbase;
@@ -197,26 +197,26 @@ R_DrawSpriteModel
 */
 void R_DrawSpriteModel(cl_entity_t *e)
 {
-	vec3_t          point;
+	vec3_t point;
 	mspriteframe_t *frame;
-	float *         up, *right;
-	vec3_t          v_forward, v_right, v_up;
-	msprite_t *     psprite;
+	float *up, *right;
+	vec3_t v_forward, v_right, v_up;
+	msprite_t *psprite;
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
-	frame   = R_GetSpriteFrame(e);
+	frame = R_GetSpriteFrame(e);
 	psprite = currententity->model->cache.data;
 
 	if(psprite->type == SPR_ORIENTED)
 	{ // bullet marks on walls
 		AngleVectors(currententity->angles, v_forward, v_right, v_up);
-		up    = v_up;
+		up = v_up;
 		right = v_right;
 	}
 	else
 	{ // normal sprite
-		up    = vup;
+		up = vup;
 		right = vright;
 	}
 
@@ -272,13 +272,13 @@ float r_avertexnormals[NUMVERTEXNORMALS][3] = {
 };
 
 vec3_t shadevector;
-float  shadelight, ambientlight;
+float shadelight, ambientlight;
 
 // precalculated dot products for quantized angles
 #define SHADEDOT_QUANT 16
 float r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 #include "anorm_dots.h"
-    ;
+;
 
 float *shadedots = r_avertexnormal_dots[0];
 
@@ -291,10 +291,10 @@ GL_DrawAliasFrame
 */
 void GL_DrawAliasFrame(aliashdr_t *paliashdr, int posenum)
 {
-	float       l;
+	float l;
 	trivertx_t *verts;
-	int *       order;
-	int         count;
+	int *order;
+	int count;
 
 	lastposenum = posenum;
 
@@ -343,15 +343,15 @@ extern vec3_t lightspot;
 void GL_DrawAliasShadow(aliashdr_t *paliashdr, int posenum)
 {
 	trivertx_t *verts;
-	int *       order;
-	vec3_t      point;
-	float       height, lheight;
-	int         count;
+	int *order;
+	vec3_t point;
+	float height, lheight;
+	int count;
 
 	lheight = currententity->origin[2] - lightspot[2];
 
 	height = 0;
-	verts  = (trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
+	verts = (trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
 	verts += posenum * paliashdr->poseverts;
 	order = (int *)((byte *)paliashdr + paliashdr->commands);
 
@@ -403,7 +403,7 @@ R_SetupAliasFrame
 */
 void R_SetupAliasFrame(int frame, aliashdr_t *paliashdr)
 {
-	int   pose, numposes;
+	int pose, numposes;
 	float interval;
 
 	if((frame >= paliashdr->numframes) || (frame < 0))
@@ -412,7 +412,7 @@ void R_SetupAliasFrame(int frame, aliashdr_t *paliashdr)
 		frame = 0;
 	}
 
-	pose     = paliashdr->frames[frame].firstpose;
+	pose = paliashdr->frames[frame].firstpose;
 	numposes = paliashdr->frames[frame].numposes;
 
 	if(numposes > 1)
@@ -432,15 +432,15 @@ R_DrawAliasModel
 */
 void R_DrawAliasModel(cl_entity_t *e)
 {
-	int         i;
-	int         lnum;
-	vec3_t      dist;
-	float       add;
-	model_t *   clmodel;
-	vec3_t      mins, maxs;
+	int i;
+	int lnum;
+	vec3_t dist;
+	float add;
+	model_t *clmodel;
+	vec3_t mins, maxs;
 	aliashdr_t *paliashdr;
-	float       an;
-	int         anim;
+	float an;
+	int anim;
 
 	clmodel = currententity->model;
 
@@ -497,10 +497,10 @@ void R_DrawAliasModel(cl_entity_t *e)
 		// HACK HACK HACK -- no fullbright colors, so make torches full light
 		ambientlight = shadelight = 256;
 
-	shadedots  = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
+	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	shadelight = shadelight / 200.0;
 
-	an             = e->angles[1] / 180 * M_PI;
+	an = e->angles[1] / 180 * M_PI;
 	shadevector[0] = cos(-an);
 	shadevector[1] = sin(-an);
 	shadevector[2] = 1;
@@ -640,13 +640,13 @@ R_DrawViewModel
 */
 void R_DrawViewModel()
 {
-	float     ambient[4], diffuse[4];
-	int       j;
-	int       lnum;
-	vec3_t    dist;
-	float     add;
+	float ambient[4], diffuse[4];
+	int j;
+	int lnum;
+	vec3_t dist;
+	float add;
 	dlight_t *dl;
-	int       ambientlight, shadelight;
+	int ambientlight, shadelight;
 
 	if(!r_drawviewmodel.value || !Cam_DrawViewModel())
 		return;
@@ -670,9 +670,9 @@ void R_DrawViewModel()
 	j = R_LightPoint(currententity->origin);
 
 	if(j < 24)
-		j        = 24; // allways give some light on gun
+		j = 24; // allways give some light on gun
 	ambientlight = j;
-	shadelight   = j;
+	shadelight = j;
 
 	// add dynamic lights
 	for(lnum = 0; lnum < MAX_DLIGHTS; lnum++)
@@ -787,8 +787,8 @@ void R_SetFrustum()
 
 	for(i = 0; i < 4; i++)
 	{
-		frustum[i].type     = PLANE_ANYZ;
-		frustum[i].dist     = DotProduct(r_origin, frustum[i].normal);
+		frustum[i].type = PLANE_ANYZ;
+		frustum[i].dist = DotProduct(r_origin, frustum[i].normal);
 		frustum[i].signbits = SignbitsForPlane(&frustum[i]);
 	}
 }
@@ -802,7 +802,7 @@ void R_SetupFrame()
 {
 	// don't allow cheats in multiplayer
 	r_fullbright.value = 0;
-	r_lightmap.value   = 0;
+	r_lightmap.value = 0;
 	if(!atoi(Info_ValueForKey(cl.serverinfo, "watervis")))
 		r_wateralpha.value = 1;
 
@@ -817,7 +817,7 @@ void R_SetupFrame()
 
 	// current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf    = Mod_PointInLeaf(r_origin, cl.worldmodel);
+	r_viewleaf = Mod_PointInLeaf(r_origin, cl.worldmodel);
 
 	V_SetContentsColor(r_viewleaf->contents);
 	V_CalcBlend();
@@ -848,18 +848,18 @@ R_SetupGL
 */
 void R_SetupGL()
 {
-	float      screenaspect;
+	float screenaspect;
 	extern int glwidth, glheight;
-	int        x, x2, y2, y, w, h;
+	int x, x2, y2, y, w, h;
 
 	//
 	// set up viewpoint
 	//
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	x  = r_refdef.vrect.x * glwidth / vid.width;
+	x = r_refdef.vrect.x * glwidth / vid.width;
 	x2 = (r_refdef.vrect.x + r_refdef.vrect.width) * glwidth / vid.width;
-	y  = (vid.height - r_refdef.vrect.y) * glheight / vid.height;
+	y = (vid.height - r_refdef.vrect.y) * glheight / vid.height;
 	y2 = (vid.height - (r_refdef.vrect.y + r_refdef.vrect.height)) * glheight / vid.height;
 
 	// fudge around because of frac screen scale
@@ -1101,7 +1101,7 @@ void R_RenderView()
 	if(r_speeds.value)
 	{
 		glFinish();
-		time1         = Sys_DoubleTime();
+		time1 = Sys_DoubleTime();
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}

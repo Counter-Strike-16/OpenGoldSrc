@@ -70,12 +70,12 @@ typedef enum {
 
 typedef struct image_s
 {
-	char        name[MAX_QPATH]; // game path, including extension
+	char name[MAX_QPATH]; // game path, including extension
 	imagetype_t type;
-	int         width, height;
-	qboolean    transparent;           // true if any 255 pixels in image
-	int         registration_sequence; // 0 = free
-	byte *      pixels[4];             // mip levels
+	int width, height;
+	qboolean transparent;      // true if any 255 pixels in image
+	int registration_sequence; // 0 = free
+	byte *pixels[4];           // mip levels
 } image_t;
 
 //===================================================================
@@ -84,7 +84,7 @@ typedef unsigned char pixel_t;
 
 typedef struct vrect_s
 {
-	int             x, y, width, height;
+	int x, y, width, height;
 	struct vrect_s *pnext;
 } vrect_t;
 
@@ -93,7 +93,7 @@ typedef struct
 	pixel_t *buffer;   // invisible buffer
 	pixel_t *colormap; // 256 * VID_GRADES size
 	pixel_t *alphamap; // 256 * 256 translucency map
-	int      rowbytes; // may be > width if displayed in a window
+	int rowbytes;      // may be > width if displayed in a window
 	                   // can be negative for stupid dibs
 	int width;
 	int height;
@@ -113,17 +113,17 @@ extern viddef_t vid;
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct
 {
-	vrect_t vrect;                             // subwindow in video for refresh
-	                                           // FIXME: not need vrect next field here?
-	vrect_t aliasvrect;                        // scaled Alias version
-	int     vrectright, vrectbottom;           // right & bottom screen coords
-	int     aliasvrectright, aliasvrectbottom; // scaled Alias versions
-	float   vrectrightedge;                    // rightmost right edge we care about,
-	                                           //  for use in edge list
-	float fvrectx, fvrecty;                    // for floating-point compares
-	float fvrectx_adj, fvrecty_adj;            // left and top edges, for clamping
-	int   vrect_x_adj_shift20;                 // (vrect.x + 0.5 - epsilon) << 20
-	int   vrectright_adj_shift20;              // (vrectright + 0.5 - epsilon) << 20
+	vrect_t vrect;                         // subwindow in video for refresh
+	                                       // FIXME: not need vrect next field here?
+	vrect_t aliasvrect;                    // scaled Alias version
+	int vrectright, vrectbottom;           // right & bottom screen coords
+	int aliasvrectright, aliasvrectbottom; // scaled Alias versions
+	float vrectrightedge;                  // rightmost right edge we care about,
+	                                       //  for use in edge list
+	float fvrectx, fvrecty;                // for floating-point compares
+	float fvrectx_adj, fvrecty_adj;        // left and top edges, for clamping
+	int vrect_x_adj_shift20;               // (vrect.x + 0.5 - epsilon) << 20
+	int vrectright_adj_shift20;            // (vrectright + 0.5 - epsilon) << 20
 	float fvrectright_adj, fvrectbottom_adj;
 	// right and bottom edges, for clamping
 	float fvrectright;           // rightmost edge, for Alias clamping
@@ -256,9 +256,9 @@ typedef struct
 typedef struct finalvert_s
 {
 	short u, v, s, t;
-	int   l;
-	int   zi;
-	int   flags;
+	int l;
+	int zi;
+	int flags;
 	float xyz[3]; // eye space
 } finalvert_t;
 
@@ -278,10 +278,10 @@ typedef struct finalvert_s
 
 typedef struct finalvert_s
 {
-	int   u, v, s, t;
-	int   l;
-	int   zi;
-	int   flags;
+	int u, v, s, t;
+	int l;
+	int zi;
+	int flags;
 	float xyz[3]; // eye space
 } finalvert_t;
 
@@ -301,36 +301,36 @@ typedef struct finalvert_s
 
 typedef struct
 {
-	void *       pskin;
-	int          pskindesc;
-	int          skinwidth;
-	int          skinheight;
+	void *pskin;
+	int pskindesc;
+	int skinwidth;
+	int skinheight;
 	dtriangle_t *ptriangles;
 	finalvert_t *pfinalverts;
-	int          numtriangles;
-	int          drawtype;
-	int          seamfixupX16;
-	qboolean     do_vis_thresh;
-	int          vis_thresh;
+	int numtriangles;
+	int drawtype;
+	int seamfixupX16;
+	qboolean do_vis_thresh;
+	int vis_thresh;
 } affinetridesc_t;
 
 typedef struct
 {
-	byte *      surfdat;  // destination for generated surface
-	int         rowbytes; // destination logical width in bytes
-	msurface_t *surf;     // description for surface to generate
-	fixed8_t    lightadj[MAXLIGHTMAPS];
+	byte *surfdat;    // destination for generated surface
+	int rowbytes;     // destination logical width in bytes
+	msurface_t *surf; // description for surface to generate
+	fixed8_t lightadj[MAXLIGHTMAPS];
 	// adjust for lightmap levels for dynamic lighting
 	image_t *image;
-	int      surfmip;    // mipmapped ratio of surface texels / world pixels
-	int      surfwidth;  // in mipmapped texels
-	int      surfheight; // in mipmapped texels
+	int surfmip;    // mipmapped ratio of surface texels / world pixels
+	int surfwidth;  // in mipmapped texels
+	int surfheight; // in mipmapped texels
 } drawsurf_t;
 
 typedef struct
 {
-	int    ambientlight;
-	int    shadelight;
+	int ambientlight;
+	int shadelight;
 	float *plightvec;
 } alight_t;
 
@@ -338,54 +338,54 @@ typedef struct
 
 typedef struct bedge_s
 {
-	mvertex_t *     v[2];
+	mvertex_t *v[2];
 	struct bedge_s *pnext;
 } bedge_t;
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct clipplane_s
 {
-	vec3_t              normal;
-	float               dist;
+	vec3_t normal;
+	float dist;
 	struct clipplane_s *next;
-	byte                leftedge;
-	byte                rightedge;
-	byte                reserved[2];
+	byte leftedge;
+	byte rightedge;
+	byte reserved[2];
 } clipplane_t;
 
 typedef struct surfcache_s
 {
-	struct surfcache_s * next;
-	struct surfcache_s **owner;                  // NULL is an empty chunk of memory
-	int                  lightadj[MAXLIGHTMAPS]; // checked for strobe flush
-	int                  dlight;
-	int                  size; // including header
-	unsigned             width;
-	unsigned             height; // DEBUG only needed for debug
-	float                mipscale;
-	image_t *            image;
-	byte                 data[4]; // width*height elements
+	struct surfcache_s *next;
+	struct surfcache_s **owner; // NULL is an empty chunk of memory
+	int lightadj[MAXLIGHTMAPS]; // checked for strobe flush
+	int dlight;
+	int size; // including header
+	unsigned width;
+	unsigned height; // DEBUG only needed for debug
+	float mipscale;
+	image_t *image;
+	byte data[4]; // width*height elements
 } surfcache_t;
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct espan_s
 {
-	int             u, v, count;
+	int u, v, count;
 	struct espan_s *pnext;
 } espan_t;
 
 // used by the polygon drawer (R_POLY.C) and sprite setup code (R_SPRITE.C)
 typedef struct
 {
-	int          nump;
+	int nump;
 	emitpoint_t *pverts;
-	byte *       pixels;           // image
-	int          pixel_width;      // image width
-	int          pixel_height;     // image height
-	vec3_t       vup, vright, vpn; // in worldspace, for plane eq
-	float        dist;
-	float        s_offset, t_offset;
-	float        viewer_position[3];
+	byte *pixels;            // image
+	int pixel_width;         // image width
+	int pixel_height;        // image height
+	vec3_t vup, vright, vpn; // in worldspace, for plane eq
+	float dist;
+	float s_offset, t_offset;
+	float viewer_position[3];
 	void (*drawspanlet)();
 	int stipple_parity;
 } polydesc_t;
@@ -394,21 +394,21 @@ typedef struct
 // insubmodel is only 1, flags is fewer than 32, spanstate could be a byte
 typedef struct surf_s
 {
-	struct surf_s * next;      // active surface stack in r_edge.c
-	struct surf_s * prev;      // used in r_edge.c for active surf stack
-	struct espan_s *spans;     // pointer to linked list of spans to draw
-	int             key;       // sorting key (BSP order)
-	int             last_u;    // set during tracing
-	int             spanstate; // 0 = not in span
-	                           // 1 = in span
-	                           // -1 = in inverted span (end before
-	                           //  start)
-	int         flags;         // currentface flags
+	struct surf_s *next;   // active surface stack in r_edge.c
+	struct surf_s *prev;   // used in r_edge.c for active surf stack
+	struct espan_s *spans; // pointer to linked list of spans to draw
+	int key;               // sorting key (BSP order)
+	int last_u;            // set during tracing
+	int spanstate;         // 0 = not in span
+	                       // 1 = in span
+	                       // -1 = in inverted span (end before
+	                       //  start)
+	int flags;             // currentface flags
 	msurface_t *msurf;
-	entity_t *  entity;
-	float       nearzi; // nearest 1/z on surface, for mipmapping
-	qboolean    insubmodel;
-	float       d_ziorigin, d_zistepu, d_zistepv;
+	entity_t *entity;
+	float nearzi; // nearest 1/z on surface, for mipmapping
+	qboolean insubmodel;
+	float d_ziorigin, d_zistepu, d_zistepv;
 
 	int pad[2]; // to 64 bytes
 } surf_t;
@@ -416,13 +416,13 @@ typedef struct surf_s
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct edge_s
 {
-	fixed16_t      u;
-	fixed16_t      u_step;
+	fixed16_t u;
+	fixed16_t u_step;
 	struct edge_s *prev, *next;
 	unsigned short surfs[2];
 	struct edge_s *nextremove;
-	float          nearzi;
-	medge_t *      owner;
+	float nearzi;
+	medge_t *owner;
 } edge_t;
 
 /*
@@ -466,7 +466,7 @@ extern byte r_warpbuffer[WARP_WIDTH * WARP_HEIGHT];
 
 extern float scale_for_mip;
 
-extern qboolean     d_roverwrapped;
+extern qboolean d_roverwrapped;
 extern surfcache_t *sc_rover;
 extern surfcache_t *d_initial_rover;
 
@@ -488,20 +488,20 @@ extern int d_vrectx, d_vrecty, d_vrectright_particle, d_vrectbottom_particle;
 
 extern int d_pix_min, d_pix_max, d_pix_shift;
 
-extern pixel_t *    d_viewbuffer;
-extern short *      d_pzbuffer;
+extern pixel_t *d_viewbuffer;
+extern short *d_pzbuffer;
 extern unsigned int d_zrowbytes, d_zwidth;
-extern short *      zspantable[MAXHEIGHT];
-extern int          d_scantable[MAXHEIGHT];
+extern short *zspantable[MAXHEIGHT];
+extern int d_scantable[MAXHEIGHT];
 
-extern int   d_minmip;
+extern int d_minmip;
 extern float d_scalemip[3];
 
 //===================================================================
 
-extern int      cachewidth;
+extern int cachewidth;
 extern pixel_t *cacheblock;
-extern int      r_screenwidth;
+extern int r_screenwidth;
 
 extern int r_drawnpolycount;
 
@@ -569,7 +569,7 @@ extern cvar_t *vid_fullscreen;
 extern cvar_t *vid_gamma;
 
 extern clipplane_t view_clipplanes[4];
-extern int *       pfrustum_indexes[4];
+extern int *pfrustum_indexes[4];
 
 //=============================================================================
 
@@ -581,11 +581,11 @@ extern mplane_t screenedge[4];
 
 extern vec3_t r_origin;
 
-extern entity_t  r_worldentity;
-extern model_t * currentmodel;
+extern entity_t r_worldentity;
+extern model_t *currentmodel;
 extern entity_t *currententity;
-extern vec3_t    modelorg;
-extern vec3_t    r_entorigin;
+extern vec3_t modelorg;
+extern vec3_t r_entorigin;
 
 extern float verticalFieldOfView;
 extern float xOrigin, yOrigin;
@@ -634,10 +634,10 @@ void R_DrawSolidClippedSubmodelPolygons(model_t *pmodel, mnode_t *topnode);
 
 void R_AddPolygonEdges(emitpoint_t *pverts, int numverts, int miplevel);
 surf_t *R_GetSurf();
-void    R_AliasDrawModel();
-void    R_BeginEdgeFrame();
-void    R_ScanEdges();
-void    D_DrawSurfaces();
+void R_AliasDrawModel();
+void R_BeginEdgeFrame();
+void R_ScanEdges();
+void D_DrawSurfaces();
 void R_InsertNewEdges(edge_t *edgestoadd, edge_t *edgelist);
 void R_StepActiveU(edge_t *pedge);
 void R_RemoveEdges(edge_t *pedge);
@@ -673,9 +673,9 @@ void R_InitTurb();
 void R_DrawParticles();
 void R_SurfacePatch();
 
-extern int     r_amodels_drawn;
+extern int r_amodels_drawn;
 extern edge_t *auxedges;
-extern int     r_numallocatededges;
+extern int r_numallocatededges;
 extern edge_t *r_edges, *edge_p, *edge_max;
 
 extern edge_t *newedges[MAXHEIGHT];
@@ -694,7 +694,7 @@ extern int r_outofsurfaces;
 extern int r_outofedges;
 
 extern mvertex_t *r_pcurrentvertbase;
-extern int        r_maxvalidedgeoffset;
+extern int r_maxvalidedgeoffset;
 
 typedef struct
 {
@@ -707,19 +707,19 @@ void R_DrawTriangle();
 //void R_DrawTriangle (finalvert_t *index0, finalvert_t *index1, finalvert_t *index2);
 void R_AliasClipTriangle(finalvert_t *index0, finalvert_t *index1, finalvert_t *index2);
 
-extern float    r_time1;
-extern float    da_time1, da_time2;
-extern float    dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
-extern float    se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
-extern int      r_frustum_indexes[4 * 6];
-extern int      r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
+extern float r_time1;
+extern float da_time1, da_time2;
+extern float dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
+extern float se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
+extern int r_frustum_indexes[4 * 6];
+extern int r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
 extern qboolean r_surfsonstack;
 
 extern mleaf_t *r_viewleaf;
-extern int      r_viewcluster, r_oldviewcluster;
+extern int r_viewcluster, r_oldviewcluster;
 
-extern int      r_clipflags;
-extern int      r_dlightframecount;
+extern int r_clipflags;
+extern int r_dlightframecount;
 extern qboolean r_fov_greater_than_90;
 
 extern image_t *r_notexture_mip;
@@ -746,10 +746,10 @@ extern void *colormap;
 
 float R_DLightPoint(vec3_t p);
 
-void     R_NewMap();
-void     R_Register();
-void     R_UnRegister();
-void     Draw_InitLocal();
+void R_NewMap();
+void R_Register();
+void R_UnRegister();
+void Draw_InitLocal();
 qboolean R_Init(void *hInstance, void *wndProc);
 void R_Shutdown();
 void R_InitCaches();
@@ -786,8 +786,8 @@ void Sys_SetFPCW();
 
 void LoadPCX(char *filename, byte **pic, byte **palette, int *width, int *height);
 
-void     R_InitImages();
-void     R_ShutdownImages();
+void R_InitImages();
+void R_ShutdownImages();
 image_t *R_FindImage(char *name, imagetype_t type);
 void R_FreeUnusedImages();
 
@@ -800,7 +800,7 @@ void R_InitSkyBox();
 typedef struct swstate_s
 {
 	qboolean fullscreen;
-	int      prev_mode; // last valid SW mode
+	int prev_mode; // last valid SW mode
 
 	byte gammatable[256];
 	byte currentpalette[1024];
@@ -833,6 +833,6 @@ void SWimp_BeginFrame(float camera_separation);
 void SWimp_EndFrame();
 int SWimp_Init(void *hInstance, void *wndProc);
 void SWimp_SetPalette(const unsigned char *palette);
-void    SWimp_Shutdown();
+void SWimp_Shutdown();
 rserr_t SWimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen);
 void SWimp_AppActivate(qboolean active);

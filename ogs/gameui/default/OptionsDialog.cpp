@@ -35,20 +35,20 @@ COptionsDialog::COptionsDialog(vgui::Panel *parent)
 	SetTitle("#GameUI_Options", true);
 
 	m_pOptionsSubMultiplayer = NULL;
-	m_pOptionsSubKeyboard    = NULL;
-	m_pOptionsSubMouse       = NULL;
-	m_pOptionsSubAudio       = NULL;
-	m_pOptionsSubVideo       = NULL;
-	m_pOptionsSubVoice       = NULL;
-	m_pOptionsSubAdvanced    = NULL;
+	m_pOptionsSubKeyboard = NULL;
+	m_pOptionsSubMouse = NULL;
+	m_pOptionsSubAudio = NULL;
+	m_pOptionsSubVideo = NULL;
+	m_pOptionsSubVoice = NULL;
+	m_pOptionsSubAdvanced = NULL;
 
 	if((ModInfo().IsMultiplayerOnly() && !ModInfo().IsSinglePlayerOnly()) || (!ModInfo().IsMultiplayerOnly() && !ModInfo().IsSinglePlayerOnly()))
 		m_pOptionsSubMultiplayer = new COptionsSubMultiplayer(this);
 
 	m_pOptionsSubKeyboard = new COptionsSubKeyboard(this);
-	m_pOptionsSubMouse    = new COptionsSubMouse(this);
-	m_pOptionsSubAudio    = new COptionsSubAudio(this);
-	m_pOptionsSubVideo    = new COptionsSubVideo(this);
+	m_pOptionsSubMouse = new COptionsSubMouse(this);
+	m_pOptionsSubAudio = new COptionsSubAudio(this);
+	m_pOptionsSubVideo = new COptionsSubVideo(this);
 
 	if(!ModInfo().IsSinglePlayerOnly())
 		m_pOptionsSubVoice = new COptionsSubVoice(this);

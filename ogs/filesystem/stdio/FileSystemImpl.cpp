@@ -28,8 +28,8 @@
 
 /// @file
 
-#include <stdio.h>
 #include "FileSystemImpl.hpp"
+#include <stdio.h>
 
 static CFileSystemImpl gFileSystemNull;
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CFileSystemImpl, IFileSystem, FILESYSTEM_INTERFACE_VERSION, gFileSystemNull);
@@ -51,9 +51,11 @@ bool CFileSystemImpl::RemoveSearchPath(const char *pPath)
 	return false;
 };
 
-void CFileSystemImpl::RemoveFile(const char *pRelativePath, const char *pathID){};
+void CFileSystemImpl::RemoveFile(const char *pRelativePath,
+                                 const char *pathID){};
 
-void CFileSystemImpl::CreateDirHierarchy(const char *path, const char *pathID){};
+void CFileSystemImpl::CreateDirHierarchy(const char *path,
+                                         const char *pathID){};
 
 bool CFileSystemImpl::FileExists(const char *pFileName)
 {
@@ -112,7 +114,9 @@ long CFileSystemImpl::GetFileTime(const char *pFileName)
 	return buf.st_mtime;
 };
 
-void CFileSystemImpl::FileTimeToString(char *pStrip, int maxCharsIncludingTerminator, long fileTime){};
+void CFileSystemImpl::FileTimeToString(char *pStrip,
+                                       int maxCharsIncludingTerminator,
+                                       long fileTime){};
 
 bool CFileSystemImpl::IsOk(FileHandle_t file)
 {
@@ -153,7 +157,9 @@ void *CFileSystemImpl::GetReadBuffer(FileHandle_t file, int *outBufferSize, bool
 
 void CFileSystemImpl::ReleaseReadBuffer(FileHandle_t file, void *readBuffer){};
 
-const char *CFileSystemImpl::FindFirst(const char *pWildCard, FileFindHandle_t *pHandle, const char *pathID)
+const char *CFileSystemImpl::FindFirst(const char *pWildCard,
+                                       FileFindHandle_t *pHandle,
+                                       const char *pathID)
 {
 	return "";
 };
@@ -172,7 +178,9 @@ void CFileSystemImpl::FindClose(FileFindHandle_t handle){};
 
 void CFileSystemImpl::GetLocalCopy(const char *pFileName){};
 
-const char *CFileSystemImpl::GetLocalPath(const char *pFileName, char *pLocalPath, int localPathBufferSize)
+const char *CFileSystemImpl::GetLocalPath(const char *pFileName,
+                                          char *pLocalPath,
+                                          int localPathBufferSize)
 {
 	return "";
 };
@@ -182,7 +190,8 @@ char *CFileSystemImpl::ParseFile(char *pFileBytes, char *pToken, bool *pWasQuote
 	return NULL;
 };
 
-bool CFileSystemImpl::FullPathToRelativePath(const char *pFullpath, char *pRelative)
+bool CFileSystemImpl::FullPathToRelativePath(const char *pFullpath,
+                                             char *pRelative)
 {
 	return false;
 };
@@ -194,7 +203,8 @@ bool CFileSystemImpl::GetCurrentDirectory(char *pDirectory, int maxlen)
 
 void CFileSystemImpl::PrintOpenedFiles(){};
 
-void CFileSystemImpl::SetWarningFunc(void (*pfnWarning)(const char *fmt, ...)){};
+void CFileSystemImpl::SetWarningFunc(void (*pfnWarning)(const char *fmt,
+                                                        ...)){};
 
 void CFileSystemImpl::SetWarningLevel(FileWarningLevel_t level){};
 
@@ -202,7 +212,8 @@ void CFileSystemImpl::LogLevelLoadStarted(const char *name){};
 
 void CFileSystemImpl::LogLevelLoadFinished(const char *name){};
 
-int CFileSystemImpl::HintResourceNeed(const char *hintlist, int forgetEverything)
+int CFileSystemImpl::HintResourceNeed(const char *hintlist,
+                                      int forgetEverything)
 {
 	return 0;
 };
@@ -229,12 +240,14 @@ bool CFileSystemImpl::IsFileImmediatelyAvailable(const char *pFileName)
 	return false;
 };
 
-WaitForResourcesHandle_t CFileSystemImpl::WaitForResources(const char *resourcelist)
+WaitForResourcesHandle_t
+CFileSystemImpl::WaitForResources(const char *resourcelist)
 {
 	return 0;
 };
 
-bool CFileSystemImpl::GetWaitForResourcesProgress(WaitForResourcesHandle_t handle, float *progress /* out */, bool *complete /* out */)
+bool CFileSystemImpl::GetWaitForResourcesProgress(
+WaitForResourcesHandle_t handle, float *progress /* out */, bool *complete /* out */)
 {
 	return false;
 };
@@ -251,9 +264,12 @@ bool CFileSystemImpl::AddPackFile(const char *fullpath, const char *pathID)
 	return false;
 };
 
-FileHandle_t CFileSystemImpl::OpenFromCacheForRead(const char *pFileName, const char *pOptions, const char *pathID)
+FileHandle_t CFileSystemImpl::OpenFromCacheForRead(const char *pFileName,
+                                                   const char *pOptions,
+                                                   const char *pathID)
 {
 	return NULL;
 };
 
-void CFileSystemImpl::AddSearchPathNoWrite(const char *pPath, const char *pathID){};
+void CFileSystemImpl::AddSearchPathNoWrite(const char *pPath,
+                                           const char *pathID){};

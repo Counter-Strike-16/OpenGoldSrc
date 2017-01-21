@@ -38,18 +38,18 @@ void (*Launcher_MP3subsys_Resume_Audio)();
 
 void (*VID_FlipScreen)();
 
-//double curtime;
-//double lastcurtime;
-//qboolean sc_return_on_enter;
+// double curtime;
+// double lastcurtime;
+// qboolean sc_return_on_enter;
 
-//char findbase[260];
-//char findname[260];
-//char findpath[260];
-//char findpattern[260];
+// char findbase[260];
+// char findname[260];
+// char findpath[260];
+// char findpattern[260];
 
-//const char g_szExtensionDllSubDir;
-//const char g_szHalfLifeDllName;
-//const char g_szBaseDllName;
+// const char g_szExtensionDllSubDir;
+// const char g_szHalfLifeDllName;
+// const char g_szBaseDllName;
 
 char gszDisconnectReason[MAX_DISCONNECT_REASON];
 char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON];
@@ -60,25 +60,25 @@ int giSubState;
 int giActive;
 int giStateInfo;
 
-DLL_FUNCTIONS     gEntityInterface;
+DLL_FUNCTIONS gEntityInterface;
 NEW_DLL_FUNCTIONS gNewDLLFunctions;
 
 extensiondll_t g_rgextdll[50];
 
-int       g_iextdllMac;
+int g_iextdllMac;
 modinfo_t gmodinfo;
-qboolean  gfBackground;
-//int starttime;
-//qboolean Win32AtLeastV4;
-//int lowshift;
-//double pfreq;
+qboolean gfBackground;
+// int starttime;
+// qboolean Win32AtLeastV4;
+// int lowshift;
+// double pfreq;
 qboolean g_bPrintingKeepAliveDots;
-//DWORD gProcessorSpeed;
+// DWORD gProcessorSpeed;
 #ifndef _WIN32
 qboolean gHasMMXTechnology;
 #endif // _WIN32
-//volatile int sys_checksum;
-//char *argv[MAX_NUM_ARGVS];
+// volatile int sys_checksum;
+// char *argv[MAX_NUM_ARGVS];
 qboolean con_debuglog;
 
 #ifdef REHLDS_FIXES
@@ -86,10 +86,10 @@ char g_szFindFirstFileName[MAX_PATH];
 #endif
 
 #ifdef _WIN32
-int              g_PerfCounterInitialized;
+int g_PerfCounterInitialized;
 CRITICAL_SECTION g_PerfCounterMutex;
 
-int    g_PerfCounterShiftRightAmount;
+int g_PerfCounterShiftRightAmount;
 double g_PerfCounterSlice;
 double g_CurrentTime;
 double g_StartTime;
@@ -102,102 +102,171 @@ int g_WinNTOrHigher;
 */
 #ifndef HOOK_ENGINE
 
-int g_FPUCW_Mask_Prec_64Bit   = 0;
+int g_FPUCW_Mask_Prec_64Bit = 0;
 int g_FPUCW_Mask_Prec_64Bit_2 = 0;
-int g_FPUCW_Mask_Round_Trunc  = 0;
-int g_FPUCW_Mask_Round_Up     = 0;
+int g_FPUCW_Mask_Round_Trunc = 0;
+int g_FPUCW_Mask_Round_Up = 0;
 
 FileFindHandle_t g_hfind = FILESYSTEM_INVALID_FIND_HANDLE;
 
-enginefuncs_t g_engfuncsExportedToDlls = {
-    PF_precache_model_I, PF_precache_sound_I,
-    PF_setmodel_I, PF_modelindex,
-    ModelFrames, PF_setsize_I,
-    PF_changelevel_I, PF_setspawnparms_I,
-    SaveSpawnParms, PF_vectoyaw_I,
-    PF_vectoangles_I, SV_MoveToOrigin_I,
-    PF_changeyaw_I, PF_changepitch_I,
-    FindEntityByString, GetEntityIllum,
-    FindEntityInSphere, PF_checkclient_I,
-    PVSFindEntities, PF_makevectors_I,
-    AngleVectors_ext, PF_Spawn_I,
-    PF_Remove_I, CreateNamedEntity,
-    PF_makestatic_I, PF_checkbottom_I,
-    PF_droptofloor_I, PF_walkmove_I,
-    PF_setorigin_I, PF_sound_I,
-    PF_ambientsound_I, PF_traceline_DLL,
-    PF_TraceToss_DLL, TraceMonsterHull,
-    TraceHull, TraceModel,
-    TraceTexture, TraceSphere,
-    PF_aim_I, PF_localcmd_I,
-    PF_localexec_I, PF_stuffcmd_I,
-    PF_particle_I, PF_lightstyle_I,
-    PF_DecalIndex, PF_pointcontents_I,
-    PF_MessageBegin_I, PF_MessageEnd_I,
-    PF_WriteByte_I, PF_WriteChar_I,
-    PF_WriteShort_I, PF_WriteLong_I,
-    PF_WriteAngle_I, PF_WriteCoord_I,
-    PF_WriteString_I, PF_WriteEntity_I,
-    CVarRegister, CVarGetFloat,
-    CVarGetString, CVarSetFloat,
-    CVarSetString, AlertMessage,
-    EngineFprintf, PvAllocEntPrivateData,
-    PvEntPrivateData, FreeEntPrivateData,
-    SzFromIndex, AllocEngineString,
-    GetVarsOfEnt, PEntityOfEntOffset,
-    EntOffsetOfPEntity, IndexOfEdict,
-    PEntityOfEntIndex, FindEntityByVars,
-    GetModelPtr, RegUserMsg,
-    AnimationAutomove, GetBonePosition,
-    FunctionFromName, NameForFunction,
-    ClientPrintf, ServerPrint,
-    Cmd_Args, Cmd_Argv, Cmd_Argc,
-    GetAttachment, CRC32_Init,
-    CRC32_ProcessBuffer, CRC32_ProcessByte,
-    CRC32_Final, RandomLong,
-    RandomFloat, PF_setview_I,
-    PF_Time, PF_crosshairangle_I,
-    COM_LoadFileForMe, COM_FreeFile,
-    Host_EndSection, COM_CompareFileTime,
-    COM_GetGameDir, Cvar_RegisterVariable,
-    PF_FadeVolume, PF_SetClientMaxspeed,
-    PF_CreateFakeClient_I,
-    PF_RunPlayerMove_I,
-    PF_NumberOfEntities_I,
-    PF_GetInfoKeyBuffer_I, PF_InfoKeyValue_I,
-    PF_SetKeyValue_I, PF_SetClientKeyValue_I,
-    PF_IsMapValid_I, PF_StaticDecal,
-    PF_precache_generic_I,
-    PF_GetPlayerUserId, PF_BuildSoundMsg_I,
-    PF_IsDedicatedServer, CVarGetPointer,
-    PF_GetPlayerWONId, PF_RemoveKey_I,
-    PF_GetPhysicsKeyValue,
-    PF_SetPhysicsKeyValue,
-    PF_GetPhysicsInfoString, EV_Precache,
-    EV_Playback, SV_FatPVS, SV_FatPAS,
-    SV_CheckVisibility, DELTA_SetField,
-    DELTA_UnsetField, DELTA_AddEncoder,
-    PF_GetCurrentPlayer, PF_CanSkipPlayer,
-    DELTA_FindFieldIndex,
-    DELTA_SetFieldByIndex,
-    DELTA_UnsetFieldByIndex, PF_SetGroupMask,
-    PF_CreateInstancedBaseline,
-    PF_Cvar_DirectSet, PF_ForceUnmodified,
-    PF_GetPlayerStats, Cmd_AddGameCommand,
-    Voice_GetClientListening,
-    Voice_SetClientListening,
-    PF_GetPlayerAuthId, NULL,
-    NULL, COM_FileSize,
-    COM_GetApproxWavePlayLength,
-    VGuiWrap2_IsInCareerMatch,
-    VGuiWrap2_GetLocalizedStringLength,
-    RegisterTutorMessageShown,
-    GetTimesTutorMessageShown,
-    ProcessTutorMessageDecayBuffer,
-    ConstructTutorMessageDecayBuffer,
-    ResetTutorMessageDecayData,
-    QueryClientCvarValue, QueryClientCvarValue2,
-    EngCheckParm};
+enginefuncs_t g_engfuncsExportedToDlls = { PF_precache_model_I,
+	                                       PF_precache_sound_I,
+	                                       PF_setmodel_I,
+	                                       PF_modelindex,
+	                                       ModelFrames,
+	                                       PF_setsize_I,
+	                                       PF_changelevel_I,
+	                                       PF_setspawnparms_I,
+	                                       SaveSpawnParms,
+	                                       PF_vectoyaw_I,
+	                                       PF_vectoangles_I,
+	                                       SV_MoveToOrigin_I,
+	                                       PF_changeyaw_I,
+	                                       PF_changepitch_I,
+	                                       FindEntityByString,
+	                                       GetEntityIllum,
+	                                       FindEntityInSphere,
+	                                       PF_checkclient_I,
+	                                       PVSFindEntities,
+	                                       PF_makevectors_I,
+	                                       AngleVectors_ext,
+	                                       PF_Spawn_I,
+	                                       PF_Remove_I,
+	                                       CreateNamedEntity,
+	                                       PF_makestatic_I,
+	                                       PF_checkbottom_I,
+	                                       PF_droptofloor_I,
+	                                       PF_walkmove_I,
+	                                       PF_setorigin_I,
+	                                       PF_sound_I,
+	                                       PF_ambientsound_I,
+	                                       PF_traceline_DLL,
+	                                       PF_TraceToss_DLL,
+	                                       TraceMonsterHull,
+	                                       TraceHull,
+	                                       TraceModel,
+	                                       TraceTexture,
+	                                       TraceSphere,
+	                                       PF_aim_I,
+	                                       PF_localcmd_I,
+	                                       PF_localexec_I,
+	                                       PF_stuffcmd_I,
+	                                       PF_particle_I,
+	                                       PF_lightstyle_I,
+	                                       PF_DecalIndex,
+	                                       PF_pointcontents_I,
+	                                       PF_MessageBegin_I,
+	                                       PF_MessageEnd_I,
+	                                       PF_WriteByte_I,
+	                                       PF_WriteChar_I,
+	                                       PF_WriteShort_I,
+	                                       PF_WriteLong_I,
+	                                       PF_WriteAngle_I,
+	                                       PF_WriteCoord_I,
+	                                       PF_WriteString_I,
+	                                       PF_WriteEntity_I,
+	                                       CVarRegister,
+	                                       CVarGetFloat,
+	                                       CVarGetString,
+	                                       CVarSetFloat,
+	                                       CVarSetString,
+	                                       AlertMessage,
+	                                       EngineFprintf,
+	                                       PvAllocEntPrivateData,
+	                                       PvEntPrivateData,
+	                                       FreeEntPrivateData,
+	                                       SzFromIndex,
+	                                       AllocEngineString,
+	                                       GetVarsOfEnt,
+	                                       PEntityOfEntOffset,
+	                                       EntOffsetOfPEntity,
+	                                       IndexOfEdict,
+	                                       PEntityOfEntIndex,
+	                                       FindEntityByVars,
+	                                       GetModelPtr,
+	                                       RegUserMsg,
+	                                       AnimationAutomove,
+	                                       GetBonePosition,
+	                                       FunctionFromName,
+	                                       NameForFunction,
+	                                       ClientPrintf,
+	                                       ServerPrint,
+	                                       Cmd_Args,
+	                                       Cmd_Argv,
+	                                       Cmd_Argc,
+	                                       GetAttachment,
+	                                       CRC32_Init,
+	                                       CRC32_ProcessBuffer,
+	                                       CRC32_ProcessByte,
+	                                       CRC32_Final,
+	                                       RandomLong,
+	                                       RandomFloat,
+	                                       PF_setview_I,
+	                                       PF_Time,
+	                                       PF_crosshairangle_I,
+	                                       COM_LoadFileForMe,
+	                                       COM_FreeFile,
+	                                       Host_EndSection,
+	                                       COM_CompareFileTime,
+	                                       COM_GetGameDir,
+	                                       Cvar_RegisterVariable,
+	                                       PF_FadeVolume,
+	                                       PF_SetClientMaxspeed,
+	                                       PF_CreateFakeClient_I,
+	                                       PF_RunPlayerMove_I,
+	                                       PF_NumberOfEntities_I,
+	                                       PF_GetInfoKeyBuffer_I,
+	                                       PF_InfoKeyValue_I,
+	                                       PF_SetKeyValue_I,
+	                                       PF_SetClientKeyValue_I,
+	                                       PF_IsMapValid_I,
+	                                       PF_StaticDecal,
+	                                       PF_precache_generic_I,
+	                                       PF_GetPlayerUserId,
+	                                       PF_BuildSoundMsg_I,
+	                                       PF_IsDedicatedServer,
+	                                       CVarGetPointer,
+	                                       PF_GetPlayerWONId,
+	                                       PF_RemoveKey_I,
+	                                       PF_GetPhysicsKeyValue,
+	                                       PF_SetPhysicsKeyValue,
+	                                       PF_GetPhysicsInfoString,
+	                                       EV_Precache,
+	                                       EV_Playback,
+	                                       SV_FatPVS,
+	                                       SV_FatPAS,
+	                                       SV_CheckVisibility,
+	                                       DELTA_SetField,
+	                                       DELTA_UnsetField,
+	                                       DELTA_AddEncoder,
+	                                       PF_GetCurrentPlayer,
+	                                       PF_CanSkipPlayer,
+	                                       DELTA_FindFieldIndex,
+	                                       DELTA_SetFieldByIndex,
+	                                       DELTA_UnsetFieldByIndex,
+	                                       PF_SetGroupMask,
+	                                       PF_CreateInstancedBaseline,
+	                                       PF_Cvar_DirectSet,
+	                                       PF_ForceUnmodified,
+	                                       PF_GetPlayerStats,
+	                                       Cmd_AddGameCommand,
+	                                       Voice_GetClientListening,
+	                                       Voice_SetClientListening,
+	                                       PF_GetPlayerAuthId,
+	                                       NULL,
+	                                       NULL,
+	                                       COM_FileSize,
+	                                       COM_GetApproxWavePlayLength,
+	                                       VGuiWrap2_IsInCareerMatch,
+	                                       VGuiWrap2_GetLocalizedStringLength,
+	                                       RegisterTutorMessageShown,
+	                                       GetTimesTutorMessageShown,
+	                                       ProcessTutorMessageDecayBuffer,
+	                                       ConstructTutorMessageDecayBuffer,
+	                                       ResetTutorMessageDecayData,
+	                                       QueryClientCvarValue,
+	                                       QueryClientCvarValue2,
+	                                       EngCheckParm };
 
 #else // HOOK_ENGINE
 
@@ -227,10 +296,10 @@ NOINLINE void Sys_InitFPUControlWords()
 	int fpucw = 0;
 	__asm { fnstcw fpucw }
 
-	g_FPUCW_Mask_Prec_64Bit   = (fpucw & 0xF0FF) | 0x300;
+	g_FPUCW_Mask_Prec_64Bit = (fpucw & 0xF0FF) | 0x300;
 	g_FPUCW_Mask_Prec_64Bit_2 = (fpucw & 0xF0FF) | 0x300;
-	g_FPUCW_Mask_Round_Trunc  = (fpucw & 0xF0FF) | 0xC00;
-	g_FPUCW_Mask_Round_Up     = (fpucw & 0xF0FF) | 0x800;
+	g_FPUCW_Mask_Round_Trunc = (fpucw & 0xF0FF) | 0xC00;
+	g_FPUCW_Mask_Round_Up = (fpucw & 0xF0FF) | 0x800;
 }
 
 void __cdecl Sys_SetStartTime()
@@ -249,8 +318,8 @@ void __cdecl Sys_SetStartTime()
 
 void __cdecl Sys_InitHardwareTimer()
 {
-	unsigned int  perfHighPart;
-	unsigned int  perfLowPart;
+	unsigned int perfHighPart;
+	unsigned int perfLowPart;
 	LARGE_INTEGER perfFreq;
 
 	if(!g_PerfCounterInitialized)
@@ -264,8 +333,8 @@ void __cdecl Sys_InitHardwareTimer()
 	if(!CRehldsPlatformHolder::get()->QueryPerfFreq(&perfFreq))
 		Sys_Error("No hardware timer available");
 
-	perfHighPart                  = perfFreq.HighPart;
-	perfLowPart                   = perfFreq.LowPart;
+	perfHighPart = perfFreq.HighPart;
+	perfLowPart = perfFreq.LowPart;
 	g_PerfCounterShiftRightAmount = 0;
 	while(perfHighPart || perfLowPart > 2000000.0)
 	{
@@ -279,12 +348,15 @@ void __cdecl Sys_InitHardwareTimer()
 	Sys_SetStartTime();
 }
 
-int           g_SavedFPUCW1 = 0;
+int g_SavedFPUCW1 = 0;
 NOINLINE void Sys_FPUCW_Push_Prec64()
 {
 	uint16 tmp = g_FPUCW_Mask_Prec_64Bit;
 	__asm { fnstcw  g_SavedFPUCW1 }
-	__asm { fldcw tmp }
+	__asm
+	{
+		fldcw tmp
+	}
 }
 
 NOINLINE void Sys_FPUCW_Pop_Prec64()
@@ -308,7 +380,8 @@ const char *Sys_FindFirst(const char *path, char *basename)
 	const char *psz = FS_FindFirst(path, &g_hfind, 0);
 
 #ifdef REHLDS_FIXES
-	// Hack: store first file name to fix multiple enumeration of files in the filesystem module
+	// Hack: store first file name to fix multiple enumeration of files in the
+	// filesystem module
 	if(psz != NULL)
 	{
 		Q_strncpy(g_szFindFirstFileName, psz, MAX_PATH - 1);
@@ -325,7 +398,7 @@ const char *Sys_FindFirst(const char *path, char *basename)
 
 const char *Sys_FindFirstPathID(const char *path, char *pathid)
 {
-	//const char *psz;//unused?
+	// const char *psz;//unused?
 	if(g_hfind != -1)
 		Sys_Error("Sys_FindFirst without close");
 	return FS_FindFirst(path, &g_hfind, pathid);
@@ -379,7 +452,8 @@ NOBODY int glob_match(char *pattern, char *text);
 //	char *t;                                                     //   325
 //	char c;                                                       //   326
 //
-//match :                                                                //   386;
+// match :                                                                //
+// 386;
 //	{
 //		char c1;                                              //   347
 //		int invert;                                           //   348
@@ -433,8 +507,8 @@ NOBODY void Sys_DebugOutStraight(const char *pStr);
 
 void __declspec(noreturn) Sys_Error(const char *error, ...)
 {
-	va_list         argptr;
-	char            text[1024];
+	va_list argptr;
+	char text[1024];
 	static qboolean bReentry;
 
 	va_start(argptr, error);
@@ -463,9 +537,9 @@ void __declspec(noreturn) Sys_Error(const char *error, ...)
 		auto pFile = FS_Open(syserror_logfile.string, "a");
 		if(pFile)
 		{
-			tm *   today;
+			tm *today;
 			time_t ltime;
-			char   szDate[32];
+			char szDate[32];
 
 			time(&ltime);
 			today = localtime(&ltime);
@@ -497,15 +571,15 @@ void __declspec(noreturn) Sys_Error(const char *error, ...)
 	}
 #endif // SWDS
 
-	//exit(-1);
-	//Allahu akbar!
+	// exit(-1);
+	// Allahu akbar!
 	*(int *)NULL = NULL;
 }
 
 NOXREF void Sys_Warning(const char *pszWarning, ...)
 {
 	va_list argptr;
-	char    text[1024];
+	char text[1024];
 
 	va_start(argptr, pszWarning);
 	Q_vsnprintf(text, sizeof(text), pszWarning, argptr);
@@ -516,7 +590,7 @@ NOXREF void Sys_Warning(const char *pszWarning, ...)
 
 void Sys_Printf(const char *fmt, ...)
 {
-	char    Dest[1024];
+	char Dest[1024];
 	va_list va;
 
 	va_start(va, fmt);
@@ -543,13 +617,13 @@ void Sys_Quit()
 
 double EXT_FUNC Sys_FloatTime()
 {
-	unsigned int  currentTime;
-	int           savedOldTime;
+	unsigned int currentTime;
+	int savedOldTime;
 	LARGE_INTEGER PerformanceCount;
 
-	static bool         s_NeedInit              = true;
-	static unsigned int s_oldTime               = 0;
-	static int          s_timeNotChangedCounter = 0;
+	static bool s_NeedInit = true;
+	static unsigned int s_oldTime = 0;
+	static int s_timeNotChangedCounter = 0;
 
 	if(!g_PerfCounterInitialized)
 		return 1.0;
@@ -559,7 +633,9 @@ double EXT_FUNC Sys_FloatTime()
 
 	CRehldsPlatformHolder::get()->QueryPerfCounter(&PerformanceCount);
 	if(g_PerfCounterShiftRightAmount)
-		currentTime = (PerformanceCount.LowPart >> g_PerfCounterShiftRightAmount) | (PerformanceCount.HighPart << (32 - g_PerfCounterShiftRightAmount));
+		currentTime =
+		(PerformanceCount.LowPart >> g_PerfCounterShiftRightAmount) |
+		(PerformanceCount.HighPart << (32 - g_PerfCounterShiftRightAmount));
 	else
 		currentTime = PerformanceCount.LowPart;
 
@@ -572,13 +648,14 @@ double EXT_FUNC Sys_FloatTime()
 		}
 		else
 		{
-			s_oldTime     = currentTime;
-			g_CurrentTime = g_CurrentTime + (double)(currentTime - savedOldTime) * g_PerfCounterSlice;
+			s_oldTime = currentTime;
+			g_CurrentTime = g_CurrentTime +
+			(double)(currentTime - savedOldTime) * g_PerfCounterSlice;
 			if(g_CurrentTime == g_StartTime)
 			{
 				if(s_timeNotChangedCounter >= 100000)
 				{
-					g_CurrentTime           = g_CurrentTime + 1.0;
+					g_CurrentTime = g_CurrentTime + 1.0;
 					s_timeNotChangedCounter = 0;
 				}
 			}
@@ -591,7 +668,7 @@ double EXT_FUNC Sys_FloatTime()
 	}
 	else
 	{
-		s_oldTime  = currentTime;
+		s_oldTime = currentTime;
 		s_NeedInit = false;
 	}
 
@@ -605,8 +682,8 @@ double EXT_FUNC Sys_FloatTime()
 double Sys_FloatTime()
 {
 	static struct timespec start_time;
-	static bool            bInitialized;
-	struct timespec        now;
+	static bool bInitialized;
+	struct timespec now;
 
 	if(!bInitialized)
 	{
@@ -647,7 +724,8 @@ DISPATCHFUNCTION GetDispatch(char *pname)
 
 	for(int i = 0; i < g_iextdllMac; i++)
 	{
-		pDispatch = (DISPATCHFUNCTION)GetProcAddress((HMODULE)g_rgextdll[i].lDLLHandle, pname);
+		pDispatch = (DISPATCHFUNCTION)GetProcAddress(
+		(HMODULE)g_rgextdll[i].lDLLHandle, pname);
 		if(pDispatch)
 			return pDispatch;
 	};
@@ -711,12 +789,12 @@ NOBODY const char *ConvertNameToLocalPlatform(const char *pchInName);
 
 uint32 EXT_FUNC FunctionFromName(const char *pName)
 {
-	return 0; //TODO: do we really need to reverse it?
+	return 0; // TODO: do we really need to reverse it?
 }
 
 const char *EXT_FUNC NameForFunction(uint32 function)
 {
-	int         i;
+	int i;
 	const char *pName;
 
 	for(i = 0; i < g_iextdllMac; i++)
@@ -744,23 +822,23 @@ FIELDIOFUNCTION GetIOFunction(char *pName)
 
 void LoadEntityDLLs(const char *szBaseDir)
 {
-	FileHandle_t         hLibListFile;
-	unsigned int         nFileSize;
-	unsigned int         nFileSize2;
-	char *               pszInputStream;
-	int                  nBytesRead;
-	char *               pStreamPos;
-	const char *         findfn;
+	FileHandle_t hLibListFile;
+	unsigned int nFileSize;
+	unsigned int nFileSize2;
+	char *pszInputStream;
+	int nBytesRead;
+	char *pStreamPos;
+	const char *findfn;
 	NEW_DLL_FUNCTIONS_FN pNewAPI;
-	APIFUNCTION2         pfnGetAPI2;
-	APIFUNCTION          pfnGetAPI;
-	char                 szDllFilename[8192];
-	char                 szDllWildcard[260];
-	char                 szDllListFile[260];
-	char                 szValue[256];
-	char                 szKey[64];
-	char                 szGameDir[64];
-	int                  interface_version;
+	APIFUNCTION2 pfnGetAPI2;
+	APIFUNCTION pfnGetAPI;
+	char szDllFilename[8192];
+	char szDllWildcard[260];
+	char szDllListFile[260];
+	char szValue[256];
+	char szKey[64];
+	char szGameDir[64];
+	int interface_version;
 
 	SV_ResetModInfo();
 	g_iextdllMac = 0;
@@ -774,22 +852,26 @@ void LoadEntityDLLs(const char *szBaseDir)
 	hLibListFile = FS_Open(szDllListFile, "rb");
 	if(hLibListFile)
 	{
-		nFileSize  = FS_Size(hLibListFile);
+		nFileSize = FS_Size(hLibListFile);
 		nFileSize2 = nFileSize;
 		if(!nFileSize || (signed int)nFileSize > 262144)
 			Sys_Error("Game listing file size is bogus [%s: size %i]", "liblist.gam", nFileSize);
 
 		pszInputStream = (char *)Mem_Malloc(nFileSize + 1);
 		if(!pszInputStream)
-			Sys_Error("Could not allocate space for game listing file of %i bytes", nFileSize2 + 1);
+			Sys_Error("Could not allocate space for game listing file of %i bytes",
+			          nFileSize2 + 1);
 
 		nBytesRead = FS_Read(pszInputStream, nFileSize2, 1, hLibListFile);
 		if(nBytesRead != nFileSize2)
-			Sys_Error("Error reading in game listing file, expected %i bytes, read %i", nFileSize2, nBytesRead);
+			Sys_Error(
+			"Error reading in game listing file, expected %i bytes, read %i",
+			nFileSize2,
+			nBytesRead);
 
 		pszInputStream[nFileSize2] = 0;
-		pStreamPos                 = pszInputStream;
-		com_ignorecolons           = 1;
+		pStreamPos = pszInputStream;
+		com_ignorecolons = 1;
 		while(1)
 		{
 			pStreamPos = COM_Parse(pStreamPos);
@@ -798,7 +880,7 @@ void LoadEntityDLLs(const char *szBaseDir)
 
 			Q_strncpy(szKey, com_token, sizeof(szKey) - 1);
 			szKey[sizeof(szKey) - 1] = 0;
-			pStreamPos               = COM_Parse(pStreamPos);
+			pStreamPos = COM_Parse(pStreamPos);
 			Q_strncpy(szValue, com_token, sizeof(szValue) - 1);
 			szValue[sizeof(szValue) - 1] = 0;
 #ifdef _WIN32
@@ -845,7 +927,8 @@ void LoadEntityDLLs(const char *szBaseDir)
 #else  // _WIN32
 		Q_snprintf(szDllWildcard, sizeof(szDllWildcard), "%s\\*.so", "valve\\dlls");
 #endif // _WIN32
-		for(findfn = Sys_FindFirst(szDllWildcard, 0); findfn; findfn = Sys_FindNext(0))
+		for(findfn = Sys_FindFirst(szDllWildcard, 0); findfn;
+		    findfn = Sys_FindNext(0))
 		{
 			Q_snprintf(szDllFilename, sizeof(szDllWildcard), "%s/%s/%s", szBaseDir, "valve\\dlls", findfn);
 			LoadThisDll(szDllFilename);
@@ -854,10 +937,10 @@ void LoadEntityDLLs(const char *szBaseDir)
 	}
 
 	gNewDLLFunctions.pfnOnFreeEntPrivateData = NULL;
-	gNewDLLFunctions.pfnGameShutdown         = NULL;
-	gNewDLLFunctions.pfnShouldCollide        = NULL;
-	gNewDLLFunctions.pfnCvarValue            = NULL;
-	gNewDLLFunctions.pfnCvarValue2           = NULL;
+	gNewDLLFunctions.pfnGameShutdown = NULL;
+	gNewDLLFunctions.pfnShouldCollide = NULL;
+	gNewDLLFunctions.pfnCvarValue = NULL;
+	gNewDLLFunctions.pfnCvarValue2 = NULL;
 
 	pNewAPI = (NEW_DLL_FUNCTIONS_FN)GetDispatch("GetNewDLLFunctions");
 	if(pNewAPI)
@@ -876,7 +959,9 @@ void LoadEntityDLLs(const char *szBaseDir)
 			Con_Printf("Game DLL version mismatch\n");
 			Con_Printf("DLL version is %i, engine version is %i\n", interface_version, INTERFACE_VERSION);
 			if(interface_version <= INTERFACE_VERSION)
-				Con_Printf("The game DLL for %s appears to be outdated, check for updates\n", szGameDir);
+				Con_Printf(
+				"The game DLL for %s appears to be outdated, check for updates\n",
+				szGameDir);
 			else
 				Con_Printf("Engine appears to be outdated, check for updates\n");
 			Con_Printf("==================\n");
@@ -893,7 +978,9 @@ void LoadEntityDLLs(const char *szBaseDir)
 		{
 			Con_Printf("==================\n");
 			Con_Printf("Game DLL version mismatch\n");
-			Con_Printf("The game DLL for %s appears to be outdated, check for updates\n", szGameDir);
+			Con_Printf(
+			"The game DLL for %s appears to be outdated, check for updates\n",
+			szGameDir);
 			Con_Printf("==================\n");
 			Host_Error("\n");
 		}
@@ -916,12 +1003,13 @@ HMODULE LoadWindowsDLL(LPCSTR lpLibFileName)
 void LoadThisDll(const char *szDllFilename)
 {
 #ifdef _WIN32
-	typedef void(__stdcall * PFN_GiveFnptrsToDll)(enginefuncs_t *, globalvars_t *);
+	typedef void(__stdcall * PFN_GiveFnptrsToDll)(enginefuncs_t *,
+	                                              globalvars_t *);
 #else
 	typedef void(__cdecl * PFN_GiveFnptrsToDll)(enginefuncs_t *, globalvars_t *);
 #endif // _WIN32
 	PFN_GiveFnptrsToDll pfnGiveFnptrsToDll;
-	extensiondll_t *    pextdll;
+	extensiondll_t *pextdll;
 
 #ifdef _WIN32
 	HMODULE hDLL = LoadWindowsDLL(szDllFilename);
@@ -940,7 +1028,8 @@ void LoadThisDll(const char *szDllFilename)
 #endif
 
 #ifdef _WIN32
-	pfnGiveFnptrsToDll = (PFN_GiveFnptrsToDll)GetProcAddress(hDLL, "GiveFnptrsToDll");
+	pfnGiveFnptrsToDll =
+	(PFN_GiveFnptrsToDll)GetProcAddress(hDLL, "GiveFnptrsToDll");
 #else
 	pfnGiveFnptrsToDll = (PFN_GiveFnptrsToDll)dlsym(hDLL, "GiveFnptrsToDll");
 #endif // _WIN32
@@ -989,7 +1078,7 @@ void ReleaseEntityDlls()
 
 	Cvar_UnlinkExternals();
 
-	pextdll    = &g_rgextdll[0];
+	pextdll = &g_rgextdll[0];
 	pextdllMac = &g_rgextdll[g_iextdllMac];
 
 	while(pextdll < pextdllMac)
@@ -1018,7 +1107,7 @@ void EXT_FUNC EngineFprintf(void *pfile, const char *szFmt, ...)
 
 void EXT_FUNC AlertMessage(ALERT_TYPE atype, const char *szFmt, ...)
 {
-	va_list     argptr;
+	va_list argptr;
 	static char szOut[1024];
 
 	va_start(argptr, szFmt);
@@ -1066,9 +1155,9 @@ NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname,
 	_splitpath(path, drive, dir, fname, ext);
 #else // _WIN32
 
-	char *       p;
-	char *       last_slash = NULL;
-	char *       dot        = NULL;
+	char *p;
+	char *last_slash = NULL;
+	char *dot = NULL;
 	unsigned int len;
 
 	if(path[0] && path[1] == ':')

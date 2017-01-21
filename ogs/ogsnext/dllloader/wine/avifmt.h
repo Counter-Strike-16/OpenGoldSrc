@@ -147,9 +147,9 @@ typedef WORD TWOCC;
 ** from 0-255.
 */
 #define ToHex(n) ((BYTE)(((n) > 9) ? ((n)-10 + 'A') : ((n) + '0')))
-#define MAKEAVICKID(tcc, stream)                \
-	MAKELONG((ToHex((stream)&0x0f) << 8) |      \
-	             (ToHex(((stream)&0xf0) >> 4)), \
+#define MAKEAVICKID(tcc, stream)            \
+	MAKELONG((ToHex((stream)&0x0f) << 8) |  \
+	         (ToHex(((stream)&0xf0) >> 4)), \
 	         tcc)
 
 /*
@@ -197,18 +197,18 @@ typedef struct
 {
 	FOURCC fccType;
 	FOURCC fccHandler;
-	DWORD  dwFlags; /* Contains AVITF_* flags */
-	WORD   wPriority;
-	WORD   wLanguage;
-	DWORD  dwInitialFrames;
-	DWORD  dwScale;
-	DWORD  dwRate; /* dwRate / dwScale == samples/second */
-	DWORD  dwStart;
-	DWORD  dwLength; /* In units above... */
-	DWORD  dwSuggestedBufferSize;
-	DWORD  dwQuality;
-	DWORD  dwSampleSize;
-	RECT   rcFrame;
+	DWORD dwFlags; /* Contains AVITF_* flags */
+	WORD wPriority;
+	WORD wLanguage;
+	DWORD dwInitialFrames;
+	DWORD dwScale;
+	DWORD dwRate; /* dwRate / dwScale == samples/second */
+	DWORD dwStart;
+	DWORD dwLength; /* In units above... */
+	DWORD dwSuggestedBufferSize;
+	DWORD dwQuality;
+	DWORD dwSampleSize;
+	RECT rcFrame;
 } AVIStreamHeader;
 
 /* Flags for index */

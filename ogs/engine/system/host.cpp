@@ -30,57 +30,57 @@
 
 //#include "precompiled.hpp"
 #include "system/host.hpp"
-#include "system/host_cmd.hpp"
-#include "system/system.hpp"
-#include "memory/zone.hpp"
 #include "client/client.hpp"
-#include "console/console.hpp"
 #include "console/cmd.hpp"
+#include "console/console.hpp"
 #include "filesystem/hashpak.hpp"
 #include "filesystem/wad.hpp"
+#include "memory/zone.hpp"
+#include "system/host_cmd.hpp"
+#include "system/system.hpp"
 
-double       realtime; // // without any filtering or bounding
-double       rolling_fps;
+double realtime; // // without any filtering or bounding
+double rolling_fps;
 quakeparms_t host_parms;
-qboolean     host_initialized; // true if into command execution
-double       host_frametime;
-//unsigned short *host_basepal;
+qboolean host_initialized; // true if into command execution
+double host_frametime;
+// unsigned short *host_basepal;
 int host_framecount;
-//int minimum_memory;
+// int minimum_memory;
 client_t *host_client;
-qboolean  gfNoMasterServer;
-//qboolean g_bUsingInGameAdvertisements;
-double          oldrealtime; // last frame run
-int             host_hunklevel;
-jmp_buf         host_abortserver;
-jmp_buf         host_enddemo;
+qboolean gfNoMasterServer;
+// qboolean g_bUsingInGameAdvertisements;
+double oldrealtime; // last frame run
+int host_hunklevel;
+jmp_buf host_abortserver;
+jmp_buf host_enddemo;
 unsigned short *host_basepal;
-//unsigned char *host_colormap;
-//const char *g_InGameAdsAllowed[3];
+// unsigned char *host_colormap;
+// const char *g_InGameAdsAllowed[3];
 
 /*
 * Globals initialization
 */
 #ifndef HOOK_ENGINE
 
-cvar_t host_name       = {"hostname", "Half-Life", 0, 0.0f, NULL};
-cvar_t host_speeds     = {"host_speeds", "0", 0, 0.0f, NULL};
-cvar_t host_profile    = {"host_profile", "0", 0, 0.0f, NULL};
-cvar_t developer       = {"developer", "0", 0, 0.0f, NULL};
-cvar_t host_limitlocal = {"host_limitlocal", "0", 0, 0.0f, NULL};
-cvar_t skill           = {"skill", "1", 0, 0.0f, NULL};
-cvar_t deathmatch      = {"deathmatch", "0", FCVAR_SERVER, 0.0f, NULL};
-cvar_t coop            = {"coop", "0", FCVAR_SERVER, 0.0f, NULL};
+cvar_t host_name = { "hostname", "Half-Life", 0, 0.0f, NULL };
+cvar_t host_speeds = { "host_speeds", "0", 0, 0.0f, NULL };
+cvar_t host_profile = { "host_profile", "0", 0, 0.0f, NULL };
+cvar_t developer = { "developer", "0", 0, 0.0f, NULL };
+cvar_t host_limitlocal = { "host_limitlocal", "0", 0, 0.0f, NULL };
+cvar_t skill = { "skill", "1", 0, 0.0f, NULL };
+cvar_t deathmatch = { "deathmatch", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t coop = { "coop", "0", FCVAR_SERVER, 0.0f, NULL };
 
-cvar_t sys_ticrate    = {"sys_ticrate", "100.0", 0, 0.0f, NULL};
-cvar_t sys_timescale  = {"sys_timescale", "1.0", 0, 0.0f, NULL};
-cvar_t fps_max        = {"fps_max", "100.0", FCVAR_ARCHIVE, 0.0f, NULL};
-cvar_t host_killtime  = {"host_killtime", "0.0", 0, 0.0f, NULL};
-cvar_t sv_stats       = {"sv_stats", "1", 0, 0.0f, NULL};
-cvar_t fps_override   = {"fps_override", "0", 0, 0.0f, NULL};
-cvar_t host_framerate = {"host_framerate", "0", 0, 0.0f, NULL};
-cvar_t pausable       = {"pausable", "1", FCVAR_SERVER, 0.0f, NULL};
-cvar_t suitvolume     = {"suitvolume", "0.25", FCVAR_ARCHIVE, 0.0f, NULL};
+cvar_t sys_ticrate = { "sys_ticrate", "100.0", 0, 0.0f, NULL };
+cvar_t sys_timescale = { "sys_timescale", "1.0", 0, 0.0f, NULL };
+cvar_t fps_max = { "fps_max", "100.0", FCVAR_ARCHIVE, 0.0f, NULL };
+cvar_t host_killtime = { "host_killtime", "0.0", 0, 0.0f, NULL };
+cvar_t sv_stats = { "sv_stats", "1", 0, 0.0f, NULL };
+cvar_t fps_override = { "fps_override", "0", 0, 0.0f, NULL };
+cvar_t host_framerate = { "host_framerate", "0", 0, 0.0f, NULL };
+cvar_t pausable = { "pausable", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t suitvolume = { "suitvolume", "0.25", FCVAR_ARCHIVE, 0.0f, NULL };
 
 #else // HOOK_ENGINE
 
@@ -107,9 +107,9 @@ cvar_t suitvolume;
 
 NOXREF void Host_EndGame(const char *message, ...)
 {
-	int     oldn;
+	int oldn;
 	va_list argptr;
-	char    string[1024];
+	char string[1024];
 
 	va_start(argptr, message);
 	Q_vsnprintf(string, sizeof(string), message, argptr);
@@ -143,8 +143,8 @@ NOXREF void Host_EndGame(const char *message, ...)
 
 void __declspec(noreturn) Host_Error(const char *error, ...)
 {
-	va_list         argptr;
-	char            string[1024];
+	va_list argptr;
+	char string[1024];
 	static qboolean inerror = FALSE;
 
 	va_start(argptr, error);
@@ -168,7 +168,7 @@ void __declspec(noreturn) Host_Error(const char *error, ...)
 	{
 		CL_Disconnect();
 		cls.demonum = -1;
-		inerror     = FALSE;
+		inerror = FALSE;
 		longjmp(host_abortserver, 1);
 	}
 	Sys_Error("%s: %s\n", __FUNCTION__, string);
@@ -208,16 +208,16 @@ void Host_InitLocal()
 NOXREF void Info_WriteVars(FileHandle_t fp)
 {
 	cvar_t *pcvar;
-	char *  s;
-	char    pkey[512];
+	char *s;
+	char pkey[512];
 
 	static char value[4][512];
-	static int  valueindex;
+	static int valueindex;
 
 	char *o;
 
 	valueindex = (valueindex + 1) % 4;
-	s          = &cls.userinfo[0];
+	s = &cls.userinfo[0];
 
 	if(*s == '\\')
 		s++;
@@ -258,18 +258,19 @@ NOXREF void Info_WriteVars(FileHandle_t fp)
 void Host_WriteConfiguration()
 {
 #ifndef SWDS
-	FILE *     f;
+	FILE *f;
 	kbutton_t *ml;
 	kbutton_t *jl;
-	qboolean   bSetFileToReadOnly;
-	char       nameBuf[4096];
+	qboolean bSetFileToReadOnly;
+	char nameBuf[4096];
 
 	if(!host_initialized || cls.state == ca_dedicated)
 		return;
 
 #ifdef _WIN32
 	Sys_GetRegKeyValue("Software\\Valve\\Steam", "rate", rate_.string);
-	if(cl_name.string && Q_stricmp(cl_name.string, "unnamed") && Q_stricmp(cl_name.string, "player") && Q_strlen(cl_name.string))
+	if(cl_name.string && Q_stricmp(cl_name.string, "unnamed") &&
+	   Q_stricmp(cl_name.string, "player") && Q_strlen(cl_name.string))
 		Sys_GetRegKeyValue("Software\\Valve\\Steam", "LastGameNameUsed", cl_name.string);
 #else
 	SetRateRegistrySetting(rate_.string);
@@ -281,7 +282,7 @@ void Host_WriteConfiguration()
 	}
 
 	bSetFileToReadOnly = FALSE;
-	f                  = FS_OpenPathID("config.cfg", "w", "GAMECONFIG");
+	f = FS_OpenPathID("config.cfg", "w", "GAMECONFIG");
 	if(!f)
 	{
 		if(!developer.value || !FS_FileExists("../goldsrc/dev_build_all.bat"))
@@ -300,8 +301,10 @@ void Host_WriteConfiguration()
 		}
 	}
 
-	FS_FPrintf(f, "// This file is overwritten whenever you change your user settings in the game.\n");
-	FS_FPrintf(f, "// Add custom configurations to the file \"userconfig.cfg\".\n\n");
+	FS_FPrintf(f, "// This file is overwritten whenever you change your user "
+	              "settings in the game.\n");
+	FS_FPrintf(
+	f, "// Add custom configurations to the file \"userconfig.cfg\".\n\n");
 	FS_FPrintf(f, "unbindall\n");
 
 	Key_WriteBindings(f);
@@ -331,13 +334,17 @@ void Host_WriteConfiguration()
 void Host_WriteCustomConfig()
 {
 #ifndef SWDS
-	FILE *     f;
+	FILE *f;
 	kbutton_t *ml;
 	kbutton_t *jl;
 #endif
 	char configname[261];
 	Q_snprintf(configname, 257, "%s", Cmd_Args());
-	if(Q_strstr(configname, "..") || !Q_stricmp(configname, "config") || !Q_stricmp(configname, "autoexec") || !Q_stricmp(configname, "listenserver") || !Q_stricmp(configname, "server") || !Q_stricmp(configname, "userconfig"))
+	if(Q_strstr(configname, "..") || !Q_stricmp(configname, "config") ||
+	   !Q_stricmp(configname, "autoexec") ||
+	   !Q_stricmp(configname, "listenserver") ||
+	   !Q_stricmp(configname, "server") ||
+	   !Q_stricmp(configname, "userconfig"))
 	{
 		Con_Printf("skipping writecfg output, invalid filename given\n");
 	}
@@ -383,7 +390,7 @@ void Host_WriteCustomConfig()
 void SV_ClientPrintf(const char *fmt, ...)
 {
 	va_list va;
-	char    string[1024];
+	char string[1024];
 
 	if(!host_client->fakeclient)
 	{
@@ -401,7 +408,7 @@ void SV_ClientPrintf(const char *fmt, ...)
 void SV_BroadcastPrintf(const char *fmt, ...)
 {
 	va_list argptr;
-	char    string[1024];
+	char string[1024];
 
 	va_start(argptr, fmt);
 	Q_vsnprintf(string, ARRAYSIZE(string) - 1, fmt, argptr);
@@ -424,7 +431,7 @@ void SV_BroadcastPrintf(const char *fmt, ...)
 void Host_ClientCommands(const char *fmt, ...)
 {
 	va_list argptr;
-	char    string[1024];
+	char string[1024];
 
 	va_start(argptr, fmt);
 	if(!host_client->fakeclient)
@@ -445,7 +452,7 @@ void EXT_FUNC SV_DropClient_hook(IGameClient *cl, bool crash, const char *string
 
 void EXT_FUNC SV_DropClient_api(IGameClient *cl, bool crash, const char *fmt, ...)
 {
-	char    buf[1024];
+	char buf[1024];
 	va_list argptr;
 
 	va_start(argptr, fmt);
@@ -457,21 +464,22 @@ void EXT_FUNC SV_DropClient_api(IGameClient *cl, bool crash, const char *fmt, ..
 
 void SV_DropClient(client_t *cl, qboolean crash, const char *fmt, ...)
 {
-	char    buf[1024];
+	char buf[1024];
 	va_list argptr;
 
 	va_start(argptr, fmt);
 	Q_vsnprintf(buf, ARRAYSIZE(buf) - 1, fmt, argptr);
 	va_end(argptr);
 
-	g_RehldsHookchains.m_SV_DropClient.callChain(SV_DropClient_hook, GetRehldsApiClient(cl), crash != FALSE, buf);
+	g_RehldsHookchains.m_SV_DropClient.callChain(
+	SV_DropClient_hook, GetRehldsApiClient(cl), crash != FALSE, buf);
 }
 
 void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 {
-	int           i;
+	int i;
 	unsigned char final[512];
-	float         connection_time;
+	float connection_time;
 
 	i = 0;
 
@@ -484,7 +492,7 @@ void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 			final[0] = svc_disconnect;
 			Q_strncpy((char *)& final[1], string, min(sizeof(final) - 1, Q_strlen(string) + 1));
 			final[sizeof(final) - 1] = 0;
-			i                        = 1 + min(sizeof(final) - 1, Q_strlen(string) + 1);
+			i = 1 + min(sizeof(final) - 1, Q_strlen(string) + 1);
 		}
 		if(cl->edict && cl->spawned)
 			gEntityInterface.pfnClientDisconnect(cl->edict);
@@ -499,7 +507,8 @@ void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 	if(connection_time > 60.0)
 	{
 		++g_psvs.stats.num_sessions;
-		g_psvs.stats.cumulative_sessiontime = g_psvs.stats.cumulative_sessiontime + connection_time;
+		g_psvs.stats.cumulative_sessiontime =
+		g_psvs.stats.cumulative_sessiontime + connection_time;
 	}
 
 #ifdef REHLDS_FIXES
@@ -512,15 +521,15 @@ void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 
 	Steam_NotifyClientDisconnect(cl);
 
-	cl->active             = FALSE;
-	cl->connected          = FALSE;
-	cl->hasusrmsgs         = FALSE;
-	cl->fakeclient         = FALSE;
-	cl->spawned            = FALSE;
-	cl->fully_connected    = FALSE;
-	cl->name[0]            = 0;
+	cl->active = FALSE;
+	cl->connected = FALSE;
+	cl->hasusrmsgs = FALSE;
+	cl->fakeclient = FALSE;
+	cl->spawned = FALSE;
+	cl->fully_connected = FALSE;
+	cl->name[0] = 0;
 	cl->connection_started = realtime;
-	cl->proxy              = FALSE;
+	cl->proxy = FALSE;
 	COM_ClearCustomizationList(&cl->customdata, FALSE);
 	cl->edict = NULL;
 	Q_memset(cl->userinfo, 0, sizeof(cl->userinfo));
@@ -537,10 +546,10 @@ void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 
 void Host_ClearClients(qboolean bFramesOnly)
 {
-	int             i;
-	int             j;
+	int i;
+	int j;
 	client_frame_t *frame;
-	netadr_t        save;
+	netadr_t save;
 
 	host_client = g_psvs.clients;
 	for(i = 0; i < g_psvs.maxclients; i++, host_client++)
@@ -551,7 +560,7 @@ void Host_ClearClients(qboolean bFramesOnly)
 			{
 				frame = &(host_client->frames[j]);
 				SV_ClearPacketEntities(frame);
-				frame->senttime  = 0;
+				frame->senttime = 0;
 				frame->ping_time = -1;
 			}
 		}
@@ -615,7 +624,8 @@ void Host_ShutdownServer(qboolean crash)
 
 void SV_ClearClientStates()
 {
-	for(int i = 0, client_t *pcl = g_psvs.clients; i < g_psvs.maxclients; i++, pcl++)
+	for(int i = 0, client_t *pcl = g_psvs.clients; i < g_psvs.maxclients;
+	    i++, pcl++)
 	{
 		COM_ClearCustomizationList(&pcl->customdata, FALSE);
 		SV_ClearResourceLists(pcl);
@@ -635,10 +645,10 @@ void Host_CheckDyanmicStructures()
 
 void Host_ClearMemory(qboolean bQuiet)
 {
-//Engine string pooling
+// Engine string pooling
 #ifdef REHLDS_FIXES
 	Ed_StrPool_Reset();
-#endif //REHLDS_FIXES
+#endif // REHLDS_FIXES
 
 	CM_FreePAS();
 	SV_ClearEntities();
@@ -663,7 +673,7 @@ void Host_ClearMemory(qboolean bQuiet)
 
 qboolean Host_FilterTime(float time)
 {
-	float      fps;
+	float fps;
 	static int command_line_ticrate = -1;
 
 	if(host_framerate.value > 0.0f)
@@ -696,7 +706,8 @@ qboolean Host_FilterTime(float time)
 	else
 	{
 		fps = 31.0f;
-		if(g_psv.active || cls.state == ca_disconnected || cls.state == ca_active)
+		if(g_psv.active || cls.state == ca_disconnected ||
+		   cls.state == ca_active)
 		{
 			fps = 0.5f;
 			if(fps_max.value >= 0.5f)
@@ -725,7 +736,7 @@ qboolean Host_FilterTime(float time)
 	}
 
 	host_frametime = realtime - oldrealtime;
-	oldrealtime    = realtime;
+	oldrealtime = realtime;
 
 	if(host_frametime > 0.25f)
 		host_frametime = 0.25f;
@@ -740,7 +751,7 @@ qboolean Master_IsLanGame()
 
 void Master_Heartbeat_f()
 {
-	//Steam_ForceHeartbeat in move?
+	// Steam_ForceHeartbeat in move?
 	CRehldsPlatformHolder::get()->SteamGameServer()->ForceHeartbeat();
 }
 
@@ -758,7 +769,7 @@ void Host_GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, c
 	else
 	{
 		rolling_fps = 0;
-		*fps        = 0;
+		*fps = 0;
 	}
 
 	int clients = 0;
@@ -781,12 +792,13 @@ void Host_GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, c
 
 void Host_Speeds(double *time)
 {
-	float  pass1, pass2, pass3, pass4, pass5;
+	float pass1, pass2, pass3, pass4, pass5;
 	double frameTime;
 	double fps;
 
 #ifdef REHLDS_FIXES
-	if(host_speeds.value != 0.0f) // FIXED: do calculations only if host_speeds is enabled
+	if(host_speeds.value !=
+	   0.0f) // FIXED: do calculations only if host_speeds is enabled
 	{
 #endif // REHLDS_FIXES
 		pass1 = (float)((time[1] - time[0]) * 1000.0);
@@ -813,13 +825,21 @@ void Host_Speeds(double *time)
 				if(!g_psv.edicts[i].free)
 					++ent_count;
 			}
-			Con_Printf("%3i fps -- host(%3.0f) sv(%3.0f) cl(%3.0f) gfx(%3.0f) snd(%3.0f) ents(%d)\n", (int)fps, pass1, pass2, pass3, pass4, pass5, ent_count);
+			Con_Printf("%3i fps -- host(%3.0f) sv(%3.0f) cl(%3.0f) gfx(%3.0f) "
+			           "snd(%3.0f) ents(%d)\n",
+			           (int)fps,
+			           pass1,
+			           pass2,
+			           pass3,
+			           pass4,
+			           pass5,
+			           ent_count);
 		}
 
 #ifndef SWDS
 		if(cl_gg.value != 0.0f)
 		{
-			//sub_1D10B2D
+			// sub_1D10B2D
 			CL_GGSpeeds(time[3]);
 		}
 #endif // SWDS
@@ -857,34 +877,35 @@ void Host_UpdateSounds()
 {
 	if(!gfBackground)
 	{
-		//S_PrintStats();
+		// S_PrintStats();
 	}
 
 	/*
-		#if defined( _WIN32 ) && !defined( SWDS )
-		// update audio
-		if ( cl.IsActive() )
-		{
-			S_Update( &s_AudioState );	
-		}
-		else
-		{
-			S_Update( NULL );
-		}
-		#endif
-	*/
+          #if defined( _WIN32 ) && !defined( SWDS )
+          // update audio
+          if ( cl.IsActive() )
+          {
+                  S_Update( &s_AudioState );
+          }
+          else
+          {
+                  S_Update( NULL );
+          }
+          #endif
+  */
 }
 
 void Host_CheckConnectionFailure()
 {
 	static int frames = 5;
-	if(cls.state == ca_disconnected && (giSubState & 4 || console.value == 0.0f))
+	if(cls.state == ca_disconnected &&
+	   (giSubState & 4 || console.value == 0.0f))
 	{
 		if(frames-- > 0)
 			return;
 
 		giActive = DLL_PAUSED;
-		frames   = 5;
+		frames = 5;
 	}
 }
 
@@ -902,7 +923,7 @@ void _Host_Frame(float time)
 	if(setjmp(host_enddemo))
 		return;
 
-	//Unknown_windows_func_01D37CD0();
+	// Unknown_windows_func_01D37CD0();
 	if(!Host_FilterTime(time))
 		return;
 
@@ -910,9 +931,9 @@ void _Host_Frame(float time)
 	static long frameCounter = 0;
 	if(rehlds_flrec_frame.string[0] != '0')
 		FR_StartFrame(frameCounter);
-#endif //REHLDS_FLIGHT_REC
+#endif // REHLDS_FLIGHT_REC
 
-	//SystemWrapper_RunFrame(host_frametime);
+	// SystemWrapper_RunFrame(host_frametime);
 
 	if(g_modfuncs.m_pfnFrameBegin)
 		g_modfuncs.m_pfnFrameBegin();
@@ -954,7 +975,7 @@ void _Host_Frame(float time)
 
 	CL_UpdateSoundFade();
 	Host_CheckConnectionFailure();
-	//CL_HTTPUpdate();
+	// CL_HTTPUpdate();
 	Steam_ClientRunFrame();
 	ClientDLL_CAM_Think();
 	CL_MoveSpectatorCamera();
@@ -984,7 +1005,7 @@ void _Host_Frame(float time)
 	if(host_killtime.value != 0.0 && host_killtime.value < g_psv.time)
 		Host_Quit_f();
 
-	//Rehlds Security
+	// Rehlds Security
 	Rehlds_Security_Frame();
 
 #ifdef REHLDS_FLIGHT_REC
@@ -992,7 +1013,7 @@ void _Host_Frame(float time)
 		FR_EndFrame(frameCounter);
 
 	frameCounter++;
-#endif //REHLDS_FLIGHT_REC
+#endif // REHLDS_FLIGHT_REC
 }
 
 int Host_Frame(float time, int iState, int *stateInfo)
@@ -1018,7 +1039,7 @@ int Host_Frame(float time, int iState, int *stateInfo)
 
 	if(giStateInfo)
 	{
-		*stateInfo  = giStateInfo;
+		*stateInfo = giStateInfo;
 		giStateInfo = 0;
 		Cbuf_Execute();
 	}
@@ -1026,14 +1047,14 @@ int Host_Frame(float time, int iState, int *stateInfo)
 	if(host_profile.value != 0.0)
 	{
 		static double timetotal;
-		static int    timecount;
+		static int timecount;
 
 		timecount++;
 		timetotal += time2 - time1;
 		if(++timecount >= 1000)
 		{
-			int m     = (timetotal * 1000.0 / (double)timecount);
-			int c     = 0;
+			int m = (timetotal * 1000.0 / (double)timecount);
+			int c = 0;
 			timecount = 0;
 			timetotal = 0.0;
 			for(int i = 0; i < g_psvs.maxclients; i++)
@@ -1090,13 +1111,13 @@ void Host_Version()
 	FileHandle_t fp = FS_Open(szFileName, "r");
 	if(fp)
 	{
-		int   bufsize = FS_Size(fp);
-		char *buffer  = (char *)Mem_Malloc(bufsize + 1);
+		int bufsize = FS_Size(fp);
+		char *buffer = (char *)Mem_Malloc(bufsize + 1);
 		FS_Read(buffer, bufsize, 1, fp);
 		char *pbuf = buffer;
 		FS_Close(fp);
 		buffer[bufsize] = 0;
-		int gotKeys     = 0;
+		int gotKeys = 0;
 
 		pbuf = COM_Parse(pbuf);
 		if(pbuf)
@@ -1110,7 +1131,8 @@ void Host_Version()
 					if(COM_CheckParm("-steam"))
 					{
 						char szSteamVersionId[32];
-						FS_GetInterfaceVersion(szSteamVersionId, sizeof(szSteamVersionId) - 1);
+						FS_GetInterfaceVersion(szSteamVersionId,
+						                       sizeof(szSteamVersionId) - 1);
 						Q_snprintf(gpszVersionString, sizeof(gpszVersionString), "%s/%s", &com_token[Q_strlen("PatchVersion=")], szSteamVersionId);
 						gpszVersionString[sizeof(gpszVersionString) - 1] = 0;
 					}
@@ -1135,12 +1157,14 @@ void Host_Version()
 	if(cls.state != ca_dedicated)
 	{
 		Con_DPrintf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
-		Con_DPrintf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
+		Con_DPrintf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n",
+		            build_number());
 	}
 	else
 	{
 		Con_Printf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
-		Con_Printf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
+		Con_Printf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n",
+		           build_number());
 	}
 }
 
@@ -1165,7 +1189,8 @@ int Host_Init(quakeparms_t *parms)
 	Voice_RegisterCvars();
 	Cvar_RegisterVariable(&console);
 
-	if(COM_CheckParm("-console") || COM_CheckParm("-toconsole") || COM_CheckParm("-dev"))
+	if(COM_CheckParm("-console") || COM_CheckParm("-toconsole") ||
+	   COM_CheckParm("-dev"))
 		Cvar_DirectSet(&console, "1.0");
 
 	Host_InitLocal();
@@ -1173,12 +1198,13 @@ int Host_Init(quakeparms_t *parms)
 	if(COM_CheckParm("-dev"))
 		Cvar_SetValue("developer", 1.0);
 
-//Engine string pooling
+// Engine string pooling
 #ifdef REHLDS_FIXES
 	Ed_StrPool_Init();
-#endif //REHLDS_FIXES
+#endif // REHLDS_FIXES
 
-	FR_Init(); //don't put it under REHLDS_FLIGHT_REC to allow recording via Rehlds API
+	FR_Init(); // don't put it under REHLDS_FLIGHT_REC to allow recording via
+	           // Rehlds API
 
 	Cbuf_Init();
 	Cmd_Init();
@@ -1187,7 +1213,7 @@ int Host_Init(quakeparms_t *parms)
 
 #ifdef REHLDS_FLIGHT_REC
 	FR_Rehlds_Init();
-#endif //REHLDS_FLIGHT_REC
+#endif // REHLDS_FLIGHT_REC
 
 	V_Init();
 	Chase_Init();
@@ -1200,18 +1226,18 @@ int Host_Init(quakeparms_t *parms)
 	Con_Init();
 	Decal_Init();
 	Mod_Init();
-	
+
 	NET_Init();
 	Netchan_Init();
-	
+
 	DELTA_Init();
-	
+
 	SV_Init();
-	
-	//SystemWrapper_Init();
+
+	// SystemWrapper_Init();
 	Host_Version();
 
-	//Rehlds Security
+	// Rehlds Security
 	Rehlds_Security_Init();
 
 	Q_snprintf(versionString, sizeof(versionString), "%s,%i,%i", gpszVersionString, PROTOCOL_VERSION, build_number());
@@ -1222,13 +1248,14 @@ int Host_Init(quakeparms_t *parms)
 	Q_memset(&g_module, 0, sizeof(g_module));
 	if(cls.state != ca_dedicated)
 	{
-		//Sys_Error("Only dedicated server mode is supported");
+		// Sys_Error("Only dedicated server mode is supported");
 
 		color24 *disk_basepal = (color24 *)COM_LoadHunkFile("gfx/palette.lmp");
 		if(!disk_basepal)
 			Sys_Error("Host_Init: Couldn't load gfx/palette.lmp");
 
-		host_basepal = (unsigned short *)Hunk_AllocName(sizeof(PackedColorVec) * 256, "palette.lmp");
+		host_basepal = (unsigned short *)Hunk_AllocName(
+		sizeof(PackedColorVec) * 256, "palette.lmp");
 		for(int i = 0; i < 256; i++)
 		{
 			PackedColorVec *basepal = (PackedColorVec *)&host_basepal[i];
@@ -1236,7 +1263,7 @@ int Host_Init(quakeparms_t *parms)
 			basepal->b = disk_basepal->r;
 			basepal->g = disk_basepal->g;
 			basepal->r = disk_basepal->b;
-			basepal->a = 0; //alpha
+			basepal->a = 0; // alpha
 
 			disk_basepal++;
 		}
@@ -1245,24 +1272,24 @@ int Host_Init(quakeparms_t *parms)
 		PM_Init(&g_clmove);
 		CL_InitEventSystem();
 		ClientDLL_Init();
-		//VGui_Startup();
+		// VGui_Startup();
 
 		if(!VID_Init(host_basepal))
 		{
-			//VGui_Shutdown();
+			// VGui_Shutdown();
 			return 0;
 		}
 
-		//IN_Init ();
+		// IN_Init ();
 		Draw_Init();
 		SCR_Init();
 		R_Init();
 		S_Init();
-		//CDAudio_Init();
-		//Voice_Init("voice_speex", 1);
-		//DemoPlayer_Init();
-		//cls.state = ca_disconnected;
-		//Sbar_Init ();
+		// CDAudio_Init();
+		// Voice_Init("voice_speex", 1);
+		// DemoPlayer_Init();
+		// cls.state = ca_disconnected;
+		// Sbar_Init ();
 		CL_Init();
 	}
 	else
@@ -1271,7 +1298,7 @@ int Host_Init(quakeparms_t *parms)
 	Cbuf_InsertText("exec valve.rc\n");
 	Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark();
-	giActive       = DLL_ACTIVE;
+	giActive = DLL_ACTIVE;
 	scr_skipupdate = FALSE;
 
 	CheckGore();
@@ -1284,7 +1311,7 @@ void Host_Shutdown()
 {
 	static qboolean isdown = FALSE;
 
-	int       i;
+	int i;
 	client_t *pclient;
 
 	if(isdown)
@@ -1301,12 +1328,12 @@ void Host_Shutdown()
 	Voice_Deinit();
 	host_initialized = FALSE;
 
-	//CDAudio_Shutdown();
-	//VGui_Shutdown();
+	// CDAudio_Shutdown();
+	// VGui_Shutdown();
 	if(cls.state != ca_dedicated)
 		ClientDLL_Shutdown();
 
-	//Rehlds Security
+	// Rehlds Security
 	Rehlds_Security_Shutdown();
 
 	Cmd_RemoveGameCmds();
@@ -1320,7 +1347,7 @@ void Host_Shutdown()
 		SV_ClearFrames(&pclient->frames);
 
 	SV_Shutdown();
-	//SystemWrapper_ShutDown();
+	// SystemWrapper_ShutDown();
 	NET_Shutdown();
 	S_Shutdown();
 	Con_Shutdown();
@@ -1345,7 +1372,7 @@ void Host_Shutdown()
 	CL_Shutdown();
 	DELTA_Shutdown();
 	Key_Shutdown();
-	realtime   = 0.0f;
+	realtime = 0.0f;
 	g_psv.time = 0.0f;
-	cl.time    = 0.0f;
+	cl.time = 0.0f;
 };
