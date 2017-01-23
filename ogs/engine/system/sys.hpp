@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// non-portable functions
 
 #pragma once
 
@@ -69,3 +70,5 @@ void Sys_Sleep(void);
 void Sys_LowFPPrecision(void);
 void Sys_HighFPPrecision(void);
 void Sys_SetFPCW(void);
+
+char *Sys_ConsoleInput (void);

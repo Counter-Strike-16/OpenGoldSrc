@@ -234,15 +234,19 @@ void Cmd_Exec_f()
 	Mem_Free(pszFileData);
 }
 
+/*
+===============
+Cmd_Echo_f
+
+Just prints the rest of the line to the console
+===============
+*/
 void Cmd_Echo_f()
 {
-	int i;
 	int c = Cmd_Argc();
 
-	for(i = 1; i < c; i++)
-	{
+	for(int i = 1; i < c; ++i)
 		Con_Printf("%s ", Cmd_Argv(i));
-	}
 
 	Con_Printf("\n");
 }
@@ -254,6 +258,13 @@ char *CopyString(char *in)
 	return out;
 }
 
+/*
+===============
+Cmd_Alias_f
+
+Creates a new command that executes a command string (possibly ; seperated)
+===============
+*/
 void Cmd_Alias_f()
 {
 	cmdalias_t *a;
@@ -372,15 +383,13 @@ void Cmd_Init()
 void Cmd_Shutdown()
 {
 	for(int i = 0; i < cmd_argc; i++)
-	{
 		Z_Free(cmd_argv[i]);
-	}
+	
 	Q_memset(cmd_argv, 0, sizeof(cmd_argv));
 	cmd_argc = 0;
 	cmd_args = NULL;
 
-	cmd_functions =
-	NULL; // TODO: Check that memory from functions is released too
+	cmd_functions = NULL; // TODO: Check that memory from functions is released too
 }
 
 int EXT_FUNC Cmd_Argc()
@@ -406,6 +415,13 @@ const char *EXT_FUNC Cmd_Argv(int arg)
 	           // all usages
 }
 
+/*
+============
+Cmd_Args
+
+Returns a single string containing argv(1) to argv(argc()-1)
+============
+*/
 const char *EXT_FUNC Cmd_Args()
 {
 #ifndef SWDS
@@ -430,7 +446,8 @@ void EXT_FUNC Cmd_TokenizeString(char *text)
 	{
 		Z_Free(cmd_argv[i]);
 		cmd_argv[i] = NULL;
-	}
+	};
+	
 	cmd_argc = 0;
 	cmd_args = NULL;
 

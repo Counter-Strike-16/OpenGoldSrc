@@ -686,7 +686,12 @@ void CL_ParseTempEntity()
 
 		short nEntIndex = MSG_ReadShort();
 
-		int (decal???) = MSG_ReadByte();
+		int nDecalIndex = MSG_ReadByte();
+		
+		pEnt = CL_GetEntityByIndex( entityIndex );
+		CL_DecalShoot( CL_DecalIndex( decalIndex ), entityIndex, 0, pos, 0 );
+		CL_BulletImpactParticles( pos );
+		CL_RicochetSound( pos );
 		break;
 	case TE_SPRITE_SPRAY:
 		float fPos[3] = { 0 };
@@ -827,8 +832,7 @@ void CL_ParseTempEntity()
 		int nRenderMode = MSG_ReadByte();
 		break;
 	case TE_PLAYERSPRITES:
-		int nPlayerNum = MSG_ReadByte();
-
+		short nPlayerNum = MSG_ReadShort();
 		short nSprModelIndex = MSG_ReadShort();
 
 		int nCount = MSG_ReadByte();

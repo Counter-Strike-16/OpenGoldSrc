@@ -54,20 +54,21 @@ const int MINFRAGMENT = 64;
 
 typedef struct memblock_s
 {
-	int size;
-	int tag;
-	int id;
+	int size;	// including the header and possibly tiny fragments
+	int tag;	// a tag of 0 is a free block
+	int id;		// should be ZONEID
 
 	struct memblock_s *next;
 	struct memblock_s *prev;
 
-	int pad;
+	int pad; // pad to 64 bit boundary
 } memblock_t;
 
 typedef struct memzone_s
 {
-	int size;
-	memblock_t blocklist;
+	int size; // total bytes malloced, including header
+	
+	memblock_t blocklist; // start / end cap for linked list
 	memblock_t *rover;
 } memzone_t;
 
@@ -194,7 +195,7 @@ void Z_Free(void *ptr)
 	if(!block->tag)
 		Sys_Error("%s: freed a freed pointer", __FUNCTION__);
 
-	block->tag = 0;
+	block->tag = 0; // mark as free
 
 	memblock_t *otherblock = block->prev;
 
@@ -214,6 +215,8 @@ void Z_Free(void *ptr)
 
 	if(!otherblock->tag)
 	{
+		// merge the next free block onto the end
+		
 		block->size += otherblock->size;
 		block->next = otherblock->next;
 		otherblock->next->prev = block;

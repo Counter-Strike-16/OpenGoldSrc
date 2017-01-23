@@ -69,7 +69,7 @@ typedef struct
 	                 //  NULL
 } viddef_t;
 
-extern viddef_t vid; // global video state
+extern viddef_t vid; // viddef; global video state
 
 extern unsigned short d_8to16table[256];
 extern unsigned d_8to24table[256];
@@ -83,6 +83,7 @@ void VID_SetPalette(unsigned char *palette);
 void VID_ShiftPalette(unsigned char *palette);
 // called for bonus and pain flashes, and for underwater color changes
 
+// Video module initialization, etc
 NOBODY int VID_Init(unsigned short *palette); // was void (uchar)
 // Called at startup to set up translation tables, takes 256 8 bit RGB values
 // the palette data will go away after the call, so it must be copied off if

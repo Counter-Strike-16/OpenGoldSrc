@@ -63,7 +63,7 @@ typedef struct server_s
 {
 	qboolean active;
 	qboolean paused;
-	qboolean loadgame;
+	qboolean loadgame; // client begins should reuse existing entity
 
 	double time;
 	double oldtime;
@@ -71,7 +71,7 @@ typedef struct server_s
 	int lastcheck;
 	double lastchecktime;
 
-	char name[64];
+	char name[64]; // MAX_QPATH // map name, or cinematic name
 	char oldname[64];
 	char startspot[64];
 	char modelname[64];
@@ -83,22 +83,30 @@ typedef struct server_s
 
 	resource_t resourcelist[MAX_RESOURCE_LIST];
 	int num_resources;
+	
 	consistency_t consistency_list[MAX_CONSISTENCY_LIST];
 	int num_consistency;
+	
 	const char *model_precache[HL_MODEL_MAX];
 	struct model_s *models[HL_MODEL_MAX];
 	unsigned char model_precache_flags[HL_MODEL_MAX];
+	
 	struct event_s event_precache[HL_EVENT_MAX];
+	
 	const char *sound_precache[HL_SOUND_MAX];
 	short int sound_precache_hashedlookup[HL_SOUND_HASHLOOKUP_SIZE];
 	qboolean sound_precache_hashedlookup_built;
+	
 	const char *generic_precache[HL_GENERIC_MAX];
 	char generic_precache_names[HL_GENERIC_MAX][64];
 	int num_generic_names;
+	
 	char *lightstyles[MAX_LIGHTSTYLES];
+	
 	int num_edicts;
 	int max_edicts;
 	edict_t *edicts;
+	
 	struct entity_state_s *baselines;
 	extra_baselines_t *instance_baselines;
 
@@ -109,7 +117,9 @@ typedef struct server_s
 
 	sizebuf_t reliable_datagram;
 	unsigned char reliable_datagram_buf[MAX_DATAGRAM];
-
+	
+	// the multicast buffer is used to send a message to a set of clients
+	// it is only used to marshall data until SV_Multicast is called
 	sizebuf_t multicast;
 	unsigned char multicast_buf[1024];
 
@@ -407,8 +417,9 @@ extern int SV_UPDATE_BACKUP;
 extern int SV_UPDATE_MASK;
 
 extern globalvars_t gGlobalVariables;
-extern server_static_t g_psvs;
-extern server_t g_psv;
+
+extern server_static_t g_psvs;	// persistant server info
+extern server_t g_psv;			// local server
 
 extern rehlds_server_t g_rehlds_sv;
 
@@ -446,6 +457,7 @@ extern int sv_decalnamecount;
 
 extern UserMsg *sv_gpNewUserMsgs;
 extern UserMsg *sv_gpUserMsgs;
+
 extern playermove_t g_svmove;
 
 extern int sv_lastnum;
@@ -552,10 +564,11 @@ extern unsigned char fatpas[1024];
 extern int gPacketSuppressed;
 
 extern char localinfo[MAX_LOCALINFO];
-extern char localmodels[MAX_MODELS][5];
+extern char localmodels[MAX_MODELS][5]; // inline model names for precache
 
 extern ipfilter_t ipfilters[MAX_IPFILTERS];
 extern int numipfilters;
+
 extern userfilter_t userfilters[MAX_USERFILTERS];
 extern int numuserfilters;
 
@@ -579,12 +592,15 @@ qboolean SV_IsPlayerIndex_wrapped(int index);
 void SV_ClearPacketEntities(client_frame_t *frame);
 void SV_AllocPacketEntities(client_frame_t *frame, int numents);
 void SV_ClearFrames(client_frame_t **frames);
+
 void SV_Serverinfo_f();
 void SV_Localinfo_f();
 void SV_User_f();
 void SV_Users_f();
+
 void SV_CountPlayers(int *clients);
 void SV_CountProxies(int *proxies);
+
 void SV_FindModelNumbers();
 void SV_StartParticle(const vec_t *org, const vec_t *dir, int color, int count);
 void SV_StartSound(int recipients, edict_t *entity, int channel, const char *sample, int volume, float attenuation, int fFlags, int pitch);
@@ -606,22 +622,32 @@ void SV_SendResources(sizebuf_t *msg);
 void SV_WriteClientdataToMessage(client_t *client, sizebuf_t *msg);
 void SV_WriteSpawn(sizebuf_t *msg);
 void SV_SendUserReg(sizebuf_t *msg);
+
 void SV_New_f();
 void SV_SendRes_f();
 void SV_Spawn_f();
 void SV_Spawn_f_internal();
+
 void SV_CheckUpdateRate(double *rate);
+
 void SV_RejectConnection(netadr_t *adr, char *fmt, ...);
 void SV_RejectConnectionForPassword(netadr_t *adr);
+
 int SV_GetFragmentSize(void *state);
+
 qboolean SV_FilterUser(USERID_t *userid);
+
 int SV_CheckProtocol(netadr_t *adr, int nProtocol);
 int SV_CheckProtocol_internal(netadr_t *adr, int nProtocol);
+
 bool SV_CheckChallenge_api(const netadr_t &adr, int nChallengeValue);
 int SV_CheckChallenge(netadr_t *adr, int nChallengeValue);
+
 int SV_CheckIPRestrictions(netadr_t *adr, int nAuthProtocol);
 int SV_CheckIPRestrictions_internal(netadr_t *adr, int nAuthProtocol);
+
 int SV_CheckIPConnectionReuse(netadr_t *adr);
+
 int SV_FinishCertificateCheck(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);
 int SV_FinishCertificateCheck_internal(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);
 int SV_CheckKeyInfo(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey);
@@ -721,6 +747,7 @@ void SV_ClearEntities();
 int RegUserMsg(const char *pszName, int iSize);
 qboolean StringToFilter(const char *s, ipfilter_t *f);
 USERID_t *SV_StringToUserID(const char *str);
+
 void SV_BanId_f();
 void Host_Kick_f();
 void SV_RemoveId_f();
@@ -730,6 +757,7 @@ void SV_AddIP_f();
 void SV_RemoveIP_f();
 void SV_ListIP_f();
 void SV_WriteIP_f();
+
 void SV_KickPlayer(int nPlayerSlot, int nReason);
 void SV_InactivateClients();
 void SV_FailDownload(const char *filename);
@@ -745,14 +773,19 @@ void SV_CheckMapDifferences();
 void SV_Frame();
 void SV_Drop_f();
 void SV_RegisterDelta(char *name, char *loadfile);
+
 void SV_InitDeltas();
 void SV_InitEncoders();
 void SV_Init();
+
 void SV_Shutdown();
+
 qboolean SV_CompareUserID(USERID_t *id1, USERID_t *id2);
 qboolean SV_CompareUserID_internal(USERID_t *id1, USERID_t *id2);
+
 char *SV_GetIDString(USERID_t *id);
 char *SV_GetIDString_internal(USERID_t *id);
+
 char *SV_GetClientIDString(client_t *client);
 
 void SV_ClearClientStates();

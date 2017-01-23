@@ -196,7 +196,9 @@ NOBODY void Sys_Init();
 NOXREF void Sys_Sleep(int msec);
 NOBODY void Sys_DebugOutStraight(const char *pStr);
 
+// An error will cause the entire program to exit
 NOBODY void __declspec(noreturn) Sys_Error(const char *error, ...);
+
 NOXREF void Sys_Warning(const char *pszWarning, ...);
 
 void Sys_Printf(const char *fmt, ...);

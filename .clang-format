@@ -77,7 +77,7 @@ PenaltyBreakComment:					200
 PenaltyBreakFirstLessLess:				120
 PenaltyBreakString:						170
 PenaltyExcessCharacter:					1000000
-PenaltyReturnTypeOnItsOwnLine:			60
+PenaltyReturnTypeOnItsOwnLine:			100
 
 PointerAlignment: Right
 ReflowComments:  false

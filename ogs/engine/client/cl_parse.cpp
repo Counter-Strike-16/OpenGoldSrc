@@ -752,7 +752,8 @@ void CL_ParseEventData(bool bReliable)
 	};
 };
 
-void CL_ParseVersion(){
+void CL_ParseVersion()
+{
 	// Seems to be unused
 
 	// long nServerProtocol = MSG_ReadLong();
@@ -1200,12 +1201,14 @@ add the view angle yaw
 */
 void CL_ParseAddAngle()
 {
-	/*
+/*
   Note: When pev->fixangle is set to 2, this message is called with
   pev->avelocity[1] as a value.
   Note: The value needs to be scaled by (65536 / 360).
 */
-
+	//float add_angle = BF_ReadBitAngle( msg, 16 );
+	//cl.refdef.cl_viewangles[1] += add_angle;
+	
 	short nAngle = MSG_ReadShort();
 };
 
@@ -1234,7 +1237,8 @@ void CL_ParsePacketEntities(bool bDelta)
 	};
 };
 
-void CL_HandleChoke(){
+void CL_HandleChoke()
+{
 	// Notify the client that some outgoing datagrams were not transmitted due
 	// to exceeding bandwidth rate limits
 
@@ -1252,8 +1256,17 @@ void CL_ParseResourceList()
 
 void CL_ParseNewMoveVars()
 {
-	movevars.maxspeed = MSG_ReadFloat();
-	movevars.entgravity = MSG_ReadFloat();
+	Delta_InitClient ();	// finalize client delta's
+
+	MSG_ReadDeltaMovevars( msg, &clgame.oldmovevars, &clgame.movevars );
+
+	// update sky if changed
+	if( Q_strcmp( clgame.oldmovevars.skyName, clgame.movevars.skyName ) && cl.video_prepped )
+		R_SetupSky( clgame.movevars.skyName );
+
+	Q_memcpy( &clgame.oldmovevars, &clgame.movevars, sizeof( movevars_t ));
+	// keep features an actual!
+	clgame.oldmovevars.features = clgame.movevars.features = host.features;
 };
 
 void CL_ParseResourceRequest(){};
@@ -1263,13 +1276,37 @@ void CL_ParseResourceRequest(){};
 CL_ParseCustomization
 ==================
 */
-void CL_ParseCustomization(){
+void CL_ParseCustomization()
+{
 	// TODO
 };
 
-void CL_ParseCrosshairAngle(){};
+/*
+================
+CL_ParseCrosshairAngle
 
-void CL_ParseSoundFade(){};
+offset crosshair angles
+================
+*/
+void CL_ParseCrosshairAngle()
+{
+	cl.refdef.crosshairangle[0] = BF_ReadChar( msg ) * 0.2f;
+	cl.refdef.crosshairangle[1] = BF_ReadChar( msg ) * 0.2f;
+	cl.refdef.crosshairangle[2] = 0.0f; // not used for screen space
+};
+
+void CL_ParseSoundFade()
+{
+	float	fadePercent, fadeOutSeconds;
+	float	holdTime, fadeInSeconds;
+
+	fadePercent = (float)BF_ReadByte( msg );
+	holdTime = (float)BF_ReadByte( msg );
+	fadeOutSeconds = (float)BF_ReadByte( msg );
+	fadeInSeconds = (float)BF_ReadByte( msg );
+
+	S_FadeClientVolume( fadePercent, fadeOutSeconds, holdTime, fadeInSeconds );
+};
 
 void CL_HandleFileTransferFailed(){};
 
