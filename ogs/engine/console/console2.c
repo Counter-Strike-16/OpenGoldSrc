@@ -105,73 +105,6 @@ void Con_Clear_f (void)
 	memset (con.text, ' ', CON_TEXTSIZE);
 }
 
-						
-/*
-================
-Con_Dump_f
-
-Save the console contents out to a file
-================
-*/
-void Con_Dump_f (void)
-{
-	int		l, x;
-	char	*line;
-	FILE	*f;
-	char	buffer[1024];
-	char	name[MAX_OSPATH];
-
-	if (Cmd_Argc() != 2)
-	{
-		Com_Printf ("usage: condump <filename>\n");
-		return;
-	}
-
-	Com_sprintf (name, sizeof(name), "%s/%s.txt", FS_Gamedir(), Cmd_Argv(1));
-
-	Com_Printf ("Dumped console text to %s.\n", name);
-	FS_CreatePath (name);
-	f = fopen (name, "w");
-	if (!f)
-	{
-		Com_Printf ("ERROR: couldn't open.\n");
-		return;
-	}
-
-	// skip empty lines
-	for (l = con.current - con.totallines + 1 ; l <= con.current ; l++)
-	{
-		line = con.text + (l%con.totallines)*con.linewidth;
-		for (x=0 ; x<con.linewidth ; x++)
-			if (line[x] != ' ')
-				break;
-		if (x != con.linewidth)
-			break;
-	}
-
-	// write the remaining lines
-	buffer[con.linewidth] = 0;
-	for ( ; l <= con.current ; l++)
-	{
-		line = con.text + (l%con.totallines)*con.linewidth;
-		strncpy (buffer, line, con.linewidth);
-		for (x=con.linewidth-1 ; x>=0 ; x--)
-		{
-			if (buffer[x] == ' ')
-				buffer[x] = 0;
-			else
-				break;
-		}
-		for (x=0; buffer[x]; x++)
-			buffer[x] &= 0x7f;
-
-		fprintf (f, "%s\n", buffer);
-	}
-
-	fclose (f);
-}
-
-						
 /*
 ================
 Con_ClearNotify
@@ -274,12 +207,8 @@ void Con_Init (void)
 	
 	Com_Printf ("Console initialized.\n");
 
-//
-// register our commands
-//
 	con_notifytime = Cvar_Get ("con_notifytime", "3", 0);
 
-	Cmd_AddCommand ("condump", Con_Dump_f);
 	con.initialized = true;
 }
 

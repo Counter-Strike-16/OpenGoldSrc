@@ -90,8 +90,7 @@ dem_start
 dem_speed       
 dem_pause       
 dem_forcehltv   
-dem_jump        
-condump         
+dem_jump               
 +voicerecord    
 -voicerecord    
 _careeraudio    
@@ -110,11 +109,9 @@ bind
 career          
 cd              
 changelevel     
-changelevel2    
-clear           
+changelevel2             
 cmd             
-cmdlist         
-condebug        
+cmdlist           
 contimes        
 cvarlist        
 delta_clear     
@@ -154,9 +151,7 @@ logaddress_del
 map             
 maps            
 maxplayers      
-mcache          
-messagemode     
-messagemode2    
+mcache           
 motd            
 motd_write      
 mp3             
@@ -203,10 +198,7 @@ stopdemo
 stopsound       
 stuffcmds       
 tell            
-timerefresh     
-toggleconsole   
-unbind          
-unbindall       
+timerefresh          
 unpause         
 user            
 users           

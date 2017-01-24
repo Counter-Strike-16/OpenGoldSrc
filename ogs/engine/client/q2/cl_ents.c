@@ -1,8 +1,4 @@
 
-// cl_ents.c -- entity parsing and management
-
-#include "client.h"
-
 
 extern	struct model_s	*cl_mod_powerscreen;
 

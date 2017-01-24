@@ -70,7 +70,8 @@ typedef struct
 	int keynum;
 } keyname_t;
 
-keyname_t keynames[] = {
+keyname_t keynames[] =
+{
 	{ "TAB", K_TAB },
 	{ "ENTER", K_ENTER },
 	{ "ESCAPE", K_ESCAPE },
@@ -146,6 +147,22 @@ keyname_t keynames[] = {
 	{ "AUX30", K_AUX30 },
 	{ "AUX31", K_AUX31 },
 	{ "AUX32", K_AUX32 },
+	
+	{"KP_HOME",			K_KP_HOME },
+	{"KP_UPARROW",		K_KP_UPARROW },
+	{"KP_PGUP",			K_KP_PGUP },
+	{"KP_LEFTARROW",	K_KP_LEFTARROW },
+	{"KP_5",			K_KP_5 },
+	{"KP_RIGHTARROW",	K_KP_RIGHTARROW },
+	{"KP_END",			K_KP_END },
+	{"KP_DOWNARROW",	K_KP_DOWNARROW },
+	{"KP_PGDN",			K_KP_PGDN },
+	{"KP_ENTER",		K_KP_ENTER },
+	{"KP_INS",			K_KP_INS },
+	{"KP_DEL",			K_KP_DEL },
+	{"KP_SLASH",		K_KP_SLASH },
+	{"KP_MINUS",		K_KP_MINUS },
+	{"KP_PLUS",			K_KP_PLUS },
 
 	{ "PAUSE", K_PAUSE },
 
@@ -379,7 +396,7 @@ int chat_bufferlen = 0;
 
 void Key_Message(int key)
 {
-	if(key == K_ENTER)
+	if(key == K_ENTER || key == K_KP_ENTER)
 	{
 		if(chat_team)
 			Cbuf_AddText("say_team \"");
@@ -487,7 +504,7 @@ Key_SetBinding
 */
 void Key_SetBinding(int keynum, char *binding)
 {
-	char *new;
+	char *pnew;
 	int l;
 
 	if(keynum == -1)
@@ -502,10 +519,10 @@ void Key_SetBinding(int keynum, char *binding)
 
 	// allocate memory for new binding
 	l = Q_strlen(binding);
-	new = Z_Malloc(l + 1);
-	Q_strcpy(new, binding);
-	new[l] = 0;
-	keybindings[keynum] = new;
+	pnew = Z_Malloc(l + 1);
+	Q_strcpy(pnew, binding);
+	pnew[l] = 0;
+	keybindings[keynum] = pnew;
 }
 
 /*
@@ -515,15 +532,13 @@ Key_Unbind_f
 */
 void Key_Unbind_f()
 {
-	int b;
-
 	if(Cmd_Argc() != 2)
 	{
 		Con_Printf("unbind <key> : remove commands from a key\n");
 		return;
 	}
 
-	b = Key_StringToKeynum(Cmd_Argv(1));
+	int b = Key_StringToKeynum(Cmd_Argv(1));
 	if(b == -1)
 	{
 		Con_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
@@ -535,9 +550,7 @@ void Key_Unbind_f()
 
 void Key_Unbindall_f()
 {
-	int i;
-
-	for(i = 0; i < 256; i++)
+	for(int i = 0; i < 256; i++)
 		if(keybindings[i])
 			Key_SetBinding(i, "");
 }
@@ -554,12 +567,14 @@ void Key_Bind_f()
 
 	c = Cmd_Argc();
 
-	if(c != 2 && c != 3)
+	if(c < 2)
 	{
 		Con_Printf("bind <key> [command] : attach a command to a key\n");
 		return;
-	}
+	};
+	
 	b = Key_StringToKeynum(Cmd_Argv(1));
+	
 	if(b == -1)
 	{
 		Con_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
@@ -589,6 +604,19 @@ void Key_Bind_f()
 
 /*
 ============
+Key_Bindlist_f
+
+============
+*/
+void Key_Bindlist_f()
+{
+	for(int i = 0; i < 256; ++i)
+		if(keybindings[i] && keybindings[i][0])
+			Com_Printf("%s \"%s\"\n", Key_KeynumToString(i), keybindings[i]);
+};
+
+/*
+============
 Key_WriteBindings
 
 Writes lines containing "bind key value"
@@ -596,10 +624,8 @@ Writes lines containing "bind key value"
 */
 void Key_WriteBindings(FILE *f)
 {
-	int i;
-
-	for(i = 0; i < 256; i++)
-		if(keybindings[i])
+	for(int i = 0; i < 256; i++)
+		if(keybindings[i]) // if (keybindings[i] && keybindings[i][0])
 			fprintf(f, "bind %s \"%s\"\n", Key_KeynumToString(i), keybindings[i]);
 }
 
@@ -624,6 +650,7 @@ void Key_Init()
 	//
 	for(i = 32; i < 128; i++)
 		consolekeys[i] = true;
+	
 	consolekeys[K_ENTER] = true;
 	consolekeys[K_TAB] = true;
 	consolekeys[K_LEFTARROW] = true;
@@ -636,15 +663,37 @@ void Key_Init()
 	consolekeys[K_PGUP] = true;
 	consolekeys[K_PGDN] = true;
 	consolekeys[K_SHIFT] = true;
+	
+	consolekeys[K_INS] = true;
+	
 	consolekeys[K_MWHEELUP] = true;
 	consolekeys[K_MWHEELDOWN] = true;
+	
+	consolekeys[K_KP_ENTER] = true;
+	consolekeys[K_KP_LEFTARROW] = true;
+	consolekeys[K_KP_RIGHTARROW] = true;
+	consolekeys[K_KP_UPARROW] = true;
+	consolekeys[K_KP_DOWNARROW] = true;
+	consolekeys[K_KP_HOME] = true;
+	consolekeys[K_KP_END] = true;
+	consolekeys[K_KP_PGUP] = true;
+	consolekeys[K_KP_PGDN] = true;
+	consolekeys[K_KP_INS] = true;
+	consolekeys[K_KP_DEL] = true;
+	consolekeys[K_KP_SLASH] = true;
+	consolekeys[K_KP_PLUS] = true;
+	consolekeys[K_KP_MINUS] = true;
+	consolekeys[K_KP_5] = true;
+	
 	consolekeys['`'] = false;
 	consolekeys['~'] = false;
 
 	for(i = 0; i < 256; i++)
 		keyshift[i] = i;
+	
 	for(i = 'a'; i <= 'z'; i++)
 		keyshift[i] = i - 'a' + 'A';
+	
 	keyshift['1'] = '!';
 	keyshift['2'] = '@';
 	keyshift['3'] = '#';
@@ -655,6 +704,7 @@ void Key_Init()
 	keyshift['8'] = '*';
 	keyshift['9'] = '(';
 	keyshift['0'] = ')';
+	
 	keyshift['-'] = '_';
 	keyshift['='] = '+';
 	keyshift[','] = '<';
@@ -677,6 +727,7 @@ void Key_Init()
 	Cmd_AddCommand("bind", Key_Bind_f);
 	Cmd_AddCommand("unbind", Key_Unbind_f);
 	Cmd_AddCommand("unbindall", Key_Unbindall_f);
+	//Cmd_AddCommand("bindlist", Key_Bindlist_f);
 }
 
 /*
@@ -834,10 +885,15 @@ Key_ClearStates
 */
 void Key_ClearStates()
 {
+	//anykeydown = false;
+	
 	for(int i = 0; i < 256; ++i)
 	{
-		keydown[i] = false;
-		key_repeats[i] = false;
+		//if(keydown[i] || key_repeats[i])
+			//Key_Event(i, false, 0);
+		
+		keydown[i] = 0;
+		key_repeats[i] = 0;
 	};
 };
 

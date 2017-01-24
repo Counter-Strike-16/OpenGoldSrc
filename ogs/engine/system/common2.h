@@ -421,61 +421,22 @@ then searches for a command or variable that matches the first token.
 
 */
 
-void	Cmd_AddCommand (char *cmd_name, xcommand_t function);
-// called by the init functions of other parts of the program to
-// register commands and functions to call for them.
-// The cmd_name is referenced later, so it should not be in temp memory
-// if function is NULL, the command will be forwarded to the server
-// as a clc_stringcmd instead of executed locally
 void	Cmd_RemoveCommand (char *cmd_name);
 
 char 	*Cmd_CompleteCommand (char *partial);
 // attempts to match a partial command for automatic command line completion
 // returns NULL if nothing fits
 
-int		Cmd_Argc (void);
-char	*Cmd_Argv (int arg);
-char	*Cmd_Args (void);
-// The functions that execute commands get their parameters with these
-// functions. Cmd_Argv () will return an empty string, not a NULL
-// if arg > argc, so string operations are always safe.
 
 void	Cmd_TokenizeString (char *text, qboolean macroExpand);
-// Takes a null terminated string.  Does not need to be /n terminated.
-// breaks the string up into arg tokens.
 
-void	Cmd_ExecuteString (char *text);
-// Parses a single line of text into arguments and tries to execute it
-// as if it was typed at the console
 
 void	Cmd_ForwardToServer (void);
 // adds the current command line as a clc_stringcmd to the client message.
 // things like godmode, noclip, etc, are commands directed to the server,
 // so when they are typed in at the console, they will need to be forwarded.
 
-
-/*
-==============================================================
-
-CVAR
-
-==============================================================
-*/
-
-/*
-
-cvar_t variables are used to hold scalar or string variables that can be changed or displayed at the console or prog code as well as accessed directly
-in C code.
-
-The user can access cvars from the console in three ways:
-r_draworder			prints the current value
-r_draworder 0		sets the current value to 0
-set r_draworder 0	as above, but creates the cvar if not present
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
-*/
-
-extern	cvar_t	*cvar_vars;
+/////////////////////
 
 cvar_t *Cvar_Get (char *var_name, char *value, int flags);
 // creates the variable if it doesn't exist, or returns the existing one
@@ -490,23 +451,8 @@ cvar_t *Cvar_ForceSet (char *var_name, char *value);
 
 cvar_t 	*Cvar_FullSet (char *var_name, char *value, int flags);
 
-char 	*Cvar_CompleteVariable (char *partial);
-// attempts to match a partial variable name for command line completion
-// returns NULL if nothing fits
-
 void	Cvar_GetLatchedVars (void);
 // any CVAR_LATCHED variables that have been set will now take effect
-
-qboolean Cvar_Command (void);
-// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
-// command.  Returns true if the command was a variable reference that
-// was handled. (print or change)
-
-void 	Cvar_WriteVariables (char *path);
-// appends lines containing "set variable value" for all variables
-// with the archive flag set to true.
-
-void	Cvar_Init (void);
 
 char	*Cvar_Userinfo (void);
 // returns an info string containing all the CVAR_USERINFO cvars

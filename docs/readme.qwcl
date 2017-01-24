@@ -1,12 +1,6 @@
 README for Linux QWCL
 ---------------------
 
-Please refer to
-
-http://www.quakeworld.net/
-
-for documentation on the client that is not operating system specific.
-
 This README covers all versions of QWCL for Linux:
 
 Requirements for SVGALib qwcl:
@@ -126,7 +120,7 @@ No other video modes are supported (just runs windowed).  Mouse is read, but
 not "grabbed" by default.  Go to the Options menu and turn on Use Mouse to grab
 the mouse and use it in the game (or type "_windowed_mouse 1" at the console).
 
-New Command Line Options for Linux Quake
+New Command Line Options
 ----------------------------------------
 
 -mem <mb>
@@ -163,55 +157,3 @@ Set mono sound
 
 -sndstereo
 Set stereo sound (default if supported)
-
-Installation
-------------
-
-Boot DOS (I know, but you need it to run the Quake install program) and
-install Quake from your Quake CD to a DOS parition.
-
-Boot Linux and make a directory for Quake.  Copy everything from the DOS Quake
-directory into it.  i.e.:
-	(cd /dos/quake; tar cf - .) | (cd ~/quake; tar xf -)
-
-Place qwcl into your Quake directory.  You must make it setuid root (since
-Quake access stuff like direct video writes, the raw keyboard mode, CD, etc).
-Quake will setuid back to the normal user as soon as it opens these files.
-Make Quake suid root as follows:
-	chown root qwcl
-	chmod 4755 qwcl
-
-Run qwcl.  I don't recommend running it as root, since all the saved
-config.cfg files will be then owned as root.  Use your normal account, unless
-you do everything as root, then your mileage will vary.
-
-qwcl may segfault if it tries to initialize your sound card and their isn't
-one.  Same with the CDROM.  If it dies, try it with -nosound and/or
--nocdaudio.  If you have a sound card it died on and you know it is
-supported by USSLite (the driver that comes with the Linux kernel), let me
-know and I'll take a look at it.
-
-It should work with SCSI CDROMs, but is untested.
-
-End Notes
----------
-
-Linux QuakeWorld is *NOT* an officially supported product.  Mail about it
-will be deleted.  Do not email id about this product.  If you are having
-technical difficultly, you can email me, but make sure you have the correct
-kernel, libc, svgalib and other software versions before you email me.
-
-/// Dave 'Zoid' Kirsch
-zoid@idsoftware.com
-Official Quake Unix Port Administrator
-
-Acks
-----
-
-Greg Alexander <galexand@sietch.bloomington.in.us> for initial work in SVGALib
-support.
-Dave Taylor <ddt@crack.com> for basic Linux support.
-id Software for Quake and making me port it. :)
-
-Lots of people on #linux, #quake for testing.
-

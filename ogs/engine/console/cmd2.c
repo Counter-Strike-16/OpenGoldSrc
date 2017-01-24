@@ -1,8 +1,4 @@
 
-
-
-#include "quakedef.h"
-
 void Cmd_ForwardToServer (void);
 
 cvar_t cl_warncmd = {"cl_warncmd", "0"};
@@ -901,24 +897,11 @@ char *Cmd_CompleteCommand (char *partial)
 }
 
 
-/*
-============
-Cmd_ExecuteString
 
-A complete command line has been parsed, so try to execute it
-FIXME: lookupnoadd the token to speed search?
-============
-*/
 void	Cmd_ExecuteString (char *text)
-{	
-	cmd_function_t	*cmd;
-	cmdalias_t		*a;
+{
 
-	Cmd_TokenizeString (text, true);
-			
-	// execute the command line
-	if (!Cmd_Argc())
-		return;		// no tokens
+	Cmd_TokenizeString (text, true);	
 
 	// check functions
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)

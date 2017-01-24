@@ -110,17 +110,27 @@ struct cmd_function_s *Cmd_GetFirstCmd();
 void Cmd_Init();
 void Cmd_Shutdown();
 
+// The functions that execute commands get their parameters with these
+// functions. Cmd_Argv () will return an empty string, not a NULL
+// if arg > argc, so string operations are always safe.
 int Cmd_Argc();
-
 const char *Cmd_Argv(int arg);
 const char *Cmd_Args();
 
+// Takes a null terminated string.  Does not need to be /n terminated.
+// breaks the string up into arg tokens.
 void Cmd_TokenizeString(char *text);
 
 NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name);
 NOXREF cmd_function_t *Cmd_FindCmdPrev(char *cmd_name);
 
+// called by the init functions of other parts of the program to
+// register commands and functions to call for them.
+// The cmd_name is referenced later, so it should not be in temp memory
+// if function is NULL, the command will be forwarded to the server
+// as a clc_stringcmd instead of executed locally
 void Cmd_AddCommand(char *cmd_name, xcommand_t function);
+
 void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag);
 NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function);
 NOXREF void Cmd_AddWrapperCommand(char *cmd_name, xcommand_t function);
@@ -135,6 +145,8 @@ qboolean Cmd_Exists(const char *cmd_name);
 
 NOXREF char *Cmd_CompleteCommand(char *search, int forward);
 
+// Parses a single line of text into arguments and tries to execute it
+// as if it was typed at the console
 void Cmd_ExecuteString(char *text, cmd_source_t src);
 
 qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf);

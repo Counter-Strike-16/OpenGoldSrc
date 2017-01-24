@@ -37,6 +37,17 @@
 
 wadlist_t wads[NUM_WADS];
 
+/*
+==================
+W_CleanupName
+
+Lowercases name and pads with spaces and a terminating 0 to the length of
+lumpinfo_t->name.
+Used so lumpname lookups can proceed rapidly by comparing 4 chars at a time
+Space padding is so names can be printed nicely in tables.
+Can safely be performed in place.
+==================
+*/
 void W_CleanupName(char *in, char *out)
 {
 	int i;
@@ -48,7 +59,7 @@ void W_CleanupName(char *in, char *out)
 		if(!c)
 			break;
 		if(c >= 'A' && c <= 'Z')
-			c += 'a' - 'A';
+			c += ('a' - 'A');
 		out[i] = c;
 	}
 	if(i < 16)
@@ -154,6 +165,14 @@ void W_Shutdown()
 		Q_memset(wad, 0, sizeof(wadlist_t));
 	}
 }
+
+/*
+=============================================================================
+
+automatic byte swapping
+
+=============================================================================
+*/
 
 void SwapPic(qpic_t *pic)
 {

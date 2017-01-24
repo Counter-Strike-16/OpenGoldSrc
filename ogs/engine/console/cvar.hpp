@@ -35,6 +35,26 @@
 #include "maintypes.h"
 #include "public/FileSystem.h"
 
+/*
+==============================================================
+
+CVAR
+
+==============================================================
+
+cvar_t variables are used to hold scalar or string variables that can be changed or displayed at the console or prog code as well as accessed directly
+in C code.
+
+The user can access cvars from the console in three ways:
+r_draworder			prints the current value
+r_draworder 0		sets the current value to 0
+set r_draworder 0	as above, but creates the cvar if not present
+Cvars are restricted from having the same names as commands to keep this
+interface from being ambiguous.
+
+==============================================================
+*/
+
 #ifdef HOOK_ENGINE
 #define cvar_vars (*pcvar_vars)
 #endif
@@ -55,6 +75,8 @@ float Cvar_VariableValue(const char *var_name);
 NOXREF int Cvar_VariableInt(const char *var_name);
 char *Cvar_VariableString(const char *var_name);
 
+// attempts to match a partial variable name for command line completion
+// returns NULL if nothing fits
 NOXREF const char *Cvar_CompleteVariable(const char *search, int forward);
 
 void Cvar_DirectSet(struct cvar_s *var, const char *value);
@@ -66,8 +88,17 @@ void Cvar_RegisterVariable(cvar_t *variable);
 
 NOXREF void Cvar_RemoveHudCvars();
 const char *Cvar_IsMultipleTokens(const char *varname);
+
+// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
+// command.  Returns true if the command was a variable reference that
+// was handled. (print or change)
 qboolean Cvar_Command();
+
+// appends lines containing "set variable value" for all variables
+// with the archive flag set to true.
+//void Cvar_WriteVariables (char *path);
 NOXREF void Cvar_WriteVariables(FileHandle_t f);
+
 void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f);
 void Cmd_CvarList_f();
 NOXREF int Cvar_CountServerVariables();

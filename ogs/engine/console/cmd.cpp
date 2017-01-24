@@ -773,6 +773,7 @@ void EXT_FUNC Cmd_ExecuteString_internal(const char *cmdName, cmd_source_t src, 
 {
 	// Search in functions
 	cmd_function_t *cmd = cmd_functions;
+	
 	while(cmd)
 	{
 		if(!Q_stricmp(cmdName, cmd->name))
@@ -817,15 +818,24 @@ void EXT_FUNC Cmd_ExecuteString_internal(const char *cmdName, cmd_source_t src, 
 	}
 }
 
+/*
+============
+Cmd_ExecuteString
+
+A complete command line has been parsed, so try to execute it
+FIXME: lookupnoadd the token to speed search?
+============
+*/
 void Cmd_ExecuteString(char *text, cmd_source_t src)
 {
 	cmd_source = src;
 	Cmd_TokenizeString(text);
-
+	
+	// execute the command line
+	
+	// no tokens
 	if(!Cmd_Argc())
-	{
 		return;
-	}
 
 	IGameClient *cl =
 	(src == src_client) ? GetRehldsApiClient(host_client) : NULL;
