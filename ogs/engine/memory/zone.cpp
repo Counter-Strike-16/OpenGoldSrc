@@ -137,10 +137,14 @@ void *Z_TagMalloc(int size, int tag)
 
 	if(tag == 0)
 		Sys_Error("%s: tried to use a 0 tag", __FUNCTION__);
-
-	size += sizeof(memblock_t);
-	size += 4;
-	size = (size + 7) & ~7;
+	
+	//
+	// scan through the block list looking for the first free block
+	// of sufficient size
+	//
+	size += sizeof(memblock_t);	// account for size of block header
+	size += 4;					// space for memory trash tester
+	size = (size + 7) & ~7;		// align to 8-byte boundary
 
 	base = rover = mainzone->rover;
 
@@ -148,22 +152,30 @@ void *Z_TagMalloc(int size, int tag)
 
 	do
 	{
+		// scaned all the way around the list
 		if(rover == start)
-			return (NULL);
+			return NULL;
 
 		if(rover->tag)
 			base = rover = rover->next;
 		else
 			rover = rover->next;
-	} while(base->tag || base->size < size);
-
+	}
+	while(base->tag || base->size < size);
+	
+	//
+	// found a block big enough
+	//
+	
 	extra = base->size - size;
 
 	if(extra > MINFRAGMENT)
 	{
+		// there will be a free fragment after the allocated block
+		
 		newz = (memblock_t *)((byte *)base + size);
 		newz->size = extra;
-		newz->tag = 0;
+		newz->tag = 0; // free block
 		newz->prev = base;
 		newz->id = ZONEID;
 		newz->next = base->next;
@@ -172,8 +184,8 @@ void *Z_TagMalloc(int size, int tag)
 		base->size = size;
 	};
 
-	base->tag = tag;
-	mainzone->rover = base->next;
+	base->tag = tag; 				// no longer a free block
+	mainzone->rover = base->next;	// next allocation will start looking here
 	base->id = ZONEID;
 
 	// marker for memory trash testing
@@ -236,15 +248,16 @@ void Z_ClearZone(memzone_t *zone, int size)
 
 	block->prev = block->next = &zone->blocklist;
 
-	block->tag = 0;
+	block->tag = 0; // free block
 	block->id = ZONEID;
 	block->size = size - sizeof(memzone_t);
 };
 
 void Z_CheckHeap()
 {
-	for(memblock_t *block = mainzone->blocklist.next;; block = block->next)
+	for(memblock_t *block = mainzone->blocklist.next; ; block = block->next)
 	{
+		// all blocks have been hit	
 		if(block->next == &mainzone->blocklist)
 			break;
 
@@ -265,7 +278,7 @@ NOXREF void Z_Print(memzone_t *zone)
 
 	Con_Printf("zone size: %i  location: %p\n", mainzone->size, mainzone);
 
-	for(memblock_t *block = zone->blocklist.next;; block = block->next)
+	for(memblock_t *block = zone->blocklist.next; ; block = block->next)
 	{
 		Con_Printf("block:%p    size:%7i    tag:%3i\n", block, block->size, block->tag);
 

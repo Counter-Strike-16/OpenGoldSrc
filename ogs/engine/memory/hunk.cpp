@@ -48,8 +48,10 @@ typedef struct hunk_s
 byte *hunk_base;
 
 int hunk_size;
+
 int hunk_low_used;
 int hunk_high_used;
+
 int hunk_tempmark;
 
 qboolean hunk_tempactive;
@@ -71,14 +73,14 @@ void *Hunk_TempAlloc(int size)
 	if(hunk_tempactive)
 	{
 		Hunk_FreeToHighMark(hunk_tempmark);
-		hunk_tempactive = 0;
+		hunk_tempactive = false;
 	};
 
 	hunk_tempmark = Hunk_HighMark();
 
 	void *buf = Hunk_HighAllocName((size + 15) & ~15, "temp");
 
-	hunk_tempactive = 1;
+	hunk_tempactive = true;
 	return buf;
 };
 
