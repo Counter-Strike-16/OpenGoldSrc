@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief null video driver to aid porting efforts
 
 //#include "precompiled.hpp"
 

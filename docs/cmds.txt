@@ -4,23 +4,6 @@ Client
 Commands:
 
 cd
-+moveup -moveup
-+movedown -movedown
-+left -left
-+right -right
-+forward -forward
-+back -back
-+lookup -lookup
-+lookdown -lookdown
-+strafe -strafe
-+moveleft -moveleft
-+moveright -moveright
-+speed -speed
-+attack -attack
-+use -use
-+jump -jump
-+klook -klook
-+mlook -mlook
 impulse
 version", CL_Version_f
 changing", CL_Changing_f
@@ -405,8 +388,7 @@ Cvars:
 rcon_password
 password
 spectator_password
-sv_mintic
-sv_maxtic
+sv_ticrate
 fraglimit
 timelimit
 teamplay

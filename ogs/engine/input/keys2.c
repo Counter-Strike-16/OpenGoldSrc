@@ -1,53 +1,7 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-#include "client.h"
-
-/*
-
-key up events are sent even if in console mode
-
-*/
-
-
-#define		MAXCMDLINE	256
-char	key_lines[32][MAXCMDLINE];
-int		key_linepos;
-int		shift_down=false;
 int	anykeydown;
 
-int		edit_line=0;
-int		history_line=0;
-
 int		key_waiting;
-char	*keybindings[256];
-qboolean	consolekeys[256];	// if true, can't be rebound while in console
-qboolean	menubound[256];	// if true, can't be rebound while in menu
-int		keyshift[256];		// key to map to if shift held down in console
-int		key_repeats[256];	// if > 1, it is autorepeating
-qboolean	keydown[256];
-
-typedef struct
-{
-	char	*name;
-	int		keynum;
-} keyname_t;
 
 keyname_t keynames[] =
 {
@@ -60,39 +14,6 @@ keyname_t keynames[] =
 	{"DOWNARROW", K_DOWNARROW},
 	{"LEFTARROW", K_LEFTARROW},
 	{"RIGHTARROW", K_RIGHTARROW},
-
-	{"ALT", K_ALT},
-	{"CTRL", K_CTRL},
-	{"SHIFT", K_SHIFT},
-	
-	{"F1", K_F1},
-	{"F2", K_F2},
-	{"F3", K_F3},
-	{"F4", K_F4},
-	{"F5", K_F5},
-	{"F6", K_F6},
-	{"F7", K_F7},
-	{"F8", K_F8},
-	{"F9", K_F9},
-	{"F10", K_F10},
-	{"F11", K_F11},
-	{"F12", K_F12},
-
-	{"INS", K_INS},
-	{"DEL", K_DEL},
-	{"PGDN", K_PGDN},
-	{"PGUP", K_PGUP},
-	{"HOME", K_HOME},
-	{"END", K_END},
-
-	{"MOUSE1", K_MOUSE1},
-	{"MOUSE2", K_MOUSE2},
-	{"MOUSE3", K_MOUSE3},
-
-	{"JOY1", K_JOY1},
-	{"JOY2", K_JOY2},
-	{"JOY3", K_JOY3},
-	{"JOY4", K_JOY4},
 
 	{"AUX1", K_AUX1},
 	{"AUX2", K_AUX2},
@@ -153,14 +74,6 @@ keyname_t keynames[] =
 	{NULL,0}
 };
 
-/*
-==============================================================================
-
-			LINE TYPING INTO THE CONSOLE
-
-==============================================================================
-*/
-
 void CompleteCommand (void)
 {
 	char	*cmd, *s;
@@ -184,13 +97,6 @@ void CompleteCommand (void)
 	}
 }
 
-/*
-====================
-Key_Console
-
-Interactive line editing and console scrollback
-====================
-*/
 void Key_Console (int key)
 {
 
@@ -434,35 +340,6 @@ void Key_Message (int key)
 
 	chat_buffer[chat_bufferlen++] = key;
 	chat_buffer[chat_bufferlen] = 0;
-}
-
-//============================================================================
-
-
-/*
-===================
-Key_StringToKeynum
-
-Returns a key number to be used to index keybindings[] by looking at
-the given string.  Single ascii characters return themselves, while
-the K_* names are matched up.
-===================
-*/
-int Key_StringToKeynum (char *str)
-{
-	keyname_t	*kn;
-	
-	if (!str || !str[0])
-		return -1;
-	if (!str[1])
-		return str[0];
-
-	for (kn=keynames ; kn->name ; kn++)
-	{
-		if (!Q_strcasecmp(str,kn->name))
-			return kn->keynum;
-	}
-	return -1;
 }
 
 /*

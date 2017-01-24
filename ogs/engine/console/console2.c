@@ -1,35 +1,8 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// console.c
-
-#include "client.h"
 
 console_t	con;
 
 cvar_t		*con_notifytime;
-
-
-#define		MAXCMDLINE	256
-extern	char	key_lines[32][MAXCMDLINE];
-extern	int		edit_line;
-extern	int		key_linepos;
 		
 
 void DrawString (int x, int y, char *s)
@@ -295,17 +268,9 @@ void Con_CheckResize (void)
 	con.display = con.current;
 }
 
-
-/*
-================
-Con_Init
-================
-*/
 void Con_Init (void)
 {
 	con.linewidth = -1;
-
-	Con_CheckResize ();
 	
 	Com_Printf ("Console initialized.\n");
 
@@ -314,11 +279,6 @@ void Con_Init (void)
 //
 	con_notifytime = Cvar_Get ("con_notifytime", "3", 0);
 
-	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
-	Cmd_AddCommand ("togglechat", Con_ToggleChat_f);
-	Cmd_AddCommand ("messagemode", Con_MessageMode_f);
-	Cmd_AddCommand ("messagemode2", Con_MessageMode2_f);
-	Cmd_AddCommand ("clear", Con_Clear_f);
 	Cmd_AddCommand ("condump", Con_Dump_f);
 	con.initialized = true;
 }

@@ -63,22 +63,20 @@ void EXT_FUNC CRC32_ProcessBuffer(CRC32_t *pulCRC, void *pBuffer, int nBuffer)
 	uint8 *pb = (uint8 *)pBuffer;
 
 	for(int i = 0; i < nBuffer; i++)
-	{
 		ulCrc = pulCRCTable[(ulCrc & 0xFF) ^ pb[i]] ^ (ulCrc >> 8);
-	}
 
 	*pulCRC = ulCrc;
 }
 
 byte COM_BlockSequenceCRCByte(byte *base, int length, int sequence)
 {
-	byte *p;
 	char chkb[64];
 	CRC32_t crc;
 
 	if(sequence < 0)
 		Sys_Error("sequence < 0, in COM_BlockSequenceCRCByte\n");
-	p = (byte *)pulCRCTable + sequence % 0x3FC;
+	
+	byte *p = (byte *)pulCRCTable + sequence % 0x3FC;
 	if(length > 60)
 		length = 60;
 
@@ -96,17 +94,15 @@ byte COM_BlockSequenceCRCByte(byte *base, int length, int sequence)
 
 NOXREF BOOL CRC_File(CRC32_t *crcvalue, char *pszFileName)
 {
-	FileHandle_t fp;
 	byte chunk[1024];
 	int nBytesRead;
-	int nSize;
 
-	fp = FS_Open(pszFileName, "rb");
+	FileHandle_t fp = FS_Open(pszFileName, "rb");
 
 	if(!fp)
 		return 0;
 
-	nSize = FS_Size(fp);
+	int nSize = FS_Size(fp);
 	if(nSize == -1)
 		return 0;
 
@@ -490,16 +486,15 @@ BOOL MD5_Hash_File(unsigned char digest[16], char *pszFileName, BOOL bUsefopen, 
 char *MD5_Print(unsigned char hash[16])
 {
 	static char szReturn[64];
-	char szChunk[10];
-	int i;
-
 	Q_memset(szReturn, 0, sizeof(szReturn));
+	
+	char szChunk[10];
 
-	for(i = 0; i < 16; i++)
+	for(int i = 0; i < 16; i++)
 	{
 		Q_snprintf(szChunk, sizeof(szChunk), "%02x", hash[i]);
 		Q_strncat(szReturn, szChunk, sizeof(szReturn) - Q_strlen(szReturn) - 1);
 	}
 
 	return szReturn;
-}
+};

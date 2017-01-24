@@ -1,15 +1,9 @@
 
-2.1
-release build
-
 2.02
 client
 - fixed prediction bug in spectator/camera view, camera will no longer
   try to view under plats and stuff
 - new crosshair, enabled with "crosshair 2"
-
-server
-- another security hole
 
 2.01
 server

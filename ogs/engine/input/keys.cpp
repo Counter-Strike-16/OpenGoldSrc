@@ -44,7 +44,7 @@ const int MAXCMDLINE = 256;
 
 char key_lines[32][MAXCMDLINE];
 int key_linepos;
-int shift_down = false;
+int shift_down = 0;
 int key_lastpress;
 
 int edit_line = 0;
@@ -160,7 +160,7 @@ keyname_t keynames[] = {
 /*
 ==============================================================================
 
-                        LINE TYPING INTO THE CONSOLE
+            LINE TYPING INTO THE CONSOLE
 
 ==============================================================================
 */

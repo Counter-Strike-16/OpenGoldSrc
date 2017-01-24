@@ -400,12 +400,13 @@ void CL_WriteSetDemoMessage()
 ====================
 CL_Record_f
 
-record <demoname> <server>
+record <demoname>
+
+Begins recording a demo from the current position
 ====================
 */
 void CL_Record_f()
 {
-	int c;
 	char name[MAX_OSPATH];
 	sizebuf_t buf;
 	char buf_data[MAX_MSGLEN];
@@ -416,9 +417,8 @@ void CL_Record_f()
 	player_info_t *player;
 	extern char gamedirfile[];
 	int seq = 1;
-
-	c = Cmd_Argc();
-	if(c != 2)
+	
+	if(Cmd_Argc() != 2)
 	{
 		Con_Printf("record <demoname>\n");
 		return;

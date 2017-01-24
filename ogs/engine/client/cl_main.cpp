@@ -209,7 +209,7 @@ void CL_CheckForResend()
 
 	double t2 = Sys_DoubleTime();
 
-	connect_time = realtime + t2 - t1; // for retransmit requests
+	cls.connect_time = realtime + t2 - t1; // for retransmit requests
 
 	Con_Printf("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
@@ -218,7 +218,7 @@ void CL_CheckForResend()
 
 void CL_BeginServerConnect()
 {
-	connect_time = 0;
+	cls.connect_time = 0;
 	CL_CheckForResend();
 };
 
