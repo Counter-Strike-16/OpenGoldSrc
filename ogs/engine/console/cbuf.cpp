@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief script command processing component
 
 //#include "precompiled.hpp"
 #include "console/cbuf.hpp"
@@ -36,6 +37,14 @@
 #include "system/common.hpp"
 #include "system/sizebuf.hpp"
 
+/*
+=============================================================================
+
+						COMMAND BUFFER
+
+=============================================================================
+*/
+
 sizebuf_t cmd_text;
 
 void Cbuf_Init()
@@ -43,8 +52,16 @@ void Cbuf_Init()
 	SZ_Alloc("cmd_text", &cmd_text, MAX_CMD_BUFFER);
 }
 
-// As new commands are generated from the console or keybindings,
-// the text is added to the end of the command buffer.
+/*
+============
+Cbuf_AddText
+
+Adds command text at the end of the buffer
+As new commands are generated from the console or keybindings,
+the text is added to the end of the command buffer.
+============
+*/
+
 void Cbuf_AddText(char *text)
 {
 	int len = Q_strlen(text);
@@ -144,10 +161,16 @@ void Cbuf_InsertTextLines(char *text)
 #endif // REHLDS_FIXES
 }
 
-// Pulls off \n terminated lines of text from the command buffer and sends
-// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Normally called once per frame, but may be explicitly invoked.
-// Do not call inside a command function!
+/*
+============
+Cbuf_Execute
+
+Pulls off \n terminated lines of text from the command buffer and sends
+them through Cmd_ExecuteString.  Stops when the buffer is empty.
+Normally called once per frame, but may be explicitly invoked.
+Do not call inside a command function!
+============
+*/
 void Cbuf_Execute()
 {
 	int i;
