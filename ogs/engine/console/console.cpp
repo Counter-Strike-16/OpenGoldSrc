@@ -161,7 +161,7 @@ Con_Dump_f
 Save the console contents out to a file
 ================
 */
-void Con_Dump_f (void)
+void Con_Dump_f ()
 {
 	int		l, x;
 	char	*line;

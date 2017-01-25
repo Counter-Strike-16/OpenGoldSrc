@@ -419,20 +419,8 @@ void CL_Connect_f (void)
 	cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
 }
 
-
-/*
-=====================
-CL_Rcon_f
-
-  Send the rest of the command line over as
-  an unconnected command.
-=====================
-*/
 void CL_Rcon_f (void)
 {
-	char	message[1024];
-	int		i;
-	netadr_t	to;
 
 	if (!rcon_client_password->string)
 	{
@@ -447,21 +435,10 @@ void CL_Rcon_f (void)
 	message[3] = (char)255;
 	message[4] = 0;
 
-	NET_Config (true);		// allow remote
-
-	strcat (message, "rcon ");
+	
 
 	strcat (message, rcon_client_password->string);
-	strcat (message, " ");
 
-	for (i=1 ; i<Cmd_Argc() ; i++)
-	{
-		strcat (message, Cmd_Argv(i));
-		strcat (message, " ");
-	}
-
-	if (cls.state >= ca_connected)
-		to = cls.netchan.remote_address;
 	else
 	{
 		if (!strlen(rcon_address->string))

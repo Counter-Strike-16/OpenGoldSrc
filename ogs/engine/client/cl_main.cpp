@@ -270,6 +270,8 @@ void CL_Rcon_f()
 	message[2] = 255;
 	message[3] = 255;
 	message[4] = 0;
+	
+	//NET_Config(true); // allow remote
 
 	strcat(message, "rcon ");
 

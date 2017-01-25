@@ -49,7 +49,15 @@ const int PORT_SERVER = 27015;
 
 //=========================================
 
-typedef enum svc_commands_e {
+//==================
+// the svc_strings[] array in cl_parse.c should mirror this
+//==================
+
+//
+// server to client
+//
+typedef enum svc_commands_e
+{
 	svc_bad,
 	svc_nop,
 	svc_disconnect,
@@ -115,11 +123,17 @@ typedef enum svc_commands_e {
 	svc_endoflist = 255,
 } svc_commands_t;
 
-typedef enum clc_commands_e {
+//==============================================
+
+//
+// client to server
+//
+typedef enum clc_commands_e
+{
 	clc_bad,
 	clc_nop,
-	clc_move,
-	clc_stringcmd,
+	clc_move,		// [[usercmd_t]
+	clc_stringcmd,	// [string] message
 	clc_delta,
 	clc_resourcelist,
 	clc_tmove,

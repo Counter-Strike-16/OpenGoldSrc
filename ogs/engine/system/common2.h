@@ -221,29 +221,12 @@ char *CopyString (char *in);
 
 //============================================================================
 
-
-/* crc.h */
-
-void CRC_Init(unsigned short *crcvalue);
-void CRC_ProcessByte(unsigned short *crcvalue, byte data);
-unsigned short CRC_Value(unsigned short crcvalue);
-unsigned short CRC_Block (byte *start, int count);
-
 //=========================================
 
 #define	UPDATE_BACKUP	16	// copies of entity_state_t to keep buffered
 							// must be power of two
 #define	UPDATE_MASK		(UPDATE_BACKUP-1)
 
-
-
-//==================
-// the svc_strings[] array in cl_parse.c should mirror this
-//==================
-
-//
-// server to client
-//
 enum svc_ops_e
 {
 	svc_bad,
@@ -271,20 +254,6 @@ enum svc_ops_e
 	svc_packetentities,			// [...]
 	svc_deltapacketentities,	// [...]
 	svc_frame
-};
-
-//==============================================
-
-//
-// client to server
-//
-enum clc_ops_e
-{
-	clc_bad,
-	clc_nop, 		
-	clc_move,				// [[usercmd_t]
-	clc_userinfo,			// [[userinfo string]
-	clc_stringcmd			// [string] message
 };
 
 //==============================================

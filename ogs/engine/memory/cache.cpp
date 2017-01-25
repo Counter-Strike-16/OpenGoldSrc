@@ -92,7 +92,8 @@ void *Cache_Alloc(cache_user_t *c, int size, char *name)
 
 	if(size <= 0)
 		Sys_Error("%s: size %i", __FUNCTION__, size);
-
+	
+	// find memory for it
 	while(true)
 	{
 		cs = Cache_TryAlloc((size + sizeof(cache_system_t) + 15) & ~15, 0);
@@ -106,9 +107,10 @@ void *Cache_Alloc(cache_user_t *c, int size, char *name)
 
 			break;
 		};
-
+		
+		// free the least recently used cahedata
 		if(cache_head.lru_prev == &cache_head)
-			Sys_Error("%s: out of memory", __FUNCTION__);
+			Sys_Error("%s: out of memory", __FUNCTION__); // not enough memory at all
 
 		Cache_Free(cache_head.lru_prev->user);
 	};

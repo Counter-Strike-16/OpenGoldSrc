@@ -516,29 +516,13 @@ void Cache_Init (void)
 	Cmd_AddCommand ("flush", Cache_Flush);
 }
 
-/*
-==============
-Cache_Free
-
-Frees the memory and removes it from the LRU list
-==============
-*/
 void Cache_Free (cache_user_t *c)
 {
-	cache_system_t	*cs;
-
-	if (!c->data)
-		Sys_Error ("Cache_Free: not allocated");
-
 	cs = ((cache_system_t *)c->data) - 1;
 
-	cs->prev->next = cs->next;
-	cs->next->prev = cs->prev;
 	cs->next = cs->prev = NULL;
 
 	c->data = NULL;
-
-	Cache_UnlinkLRU (cs);
 }
 
 
@@ -564,25 +548,11 @@ void *Cache_Check (cache_user_t *c)
 	return c->data;
 }
 
-
-/*
-==============
-Cache_Alloc
-==============
-*/
 void *Cache_Alloc (cache_user_t *c, int size, char *name)
 {
-	cache_system_t	*cs;
-
-	if (c->data)
-		Sys_Error ("Cache_Alloc: allready allocated");
-	
-	if (size <= 0)
-		Sys_Error ("Cache_Alloc: size %i", size);
-
 	size = (size + sizeof(cache_system_t) + 15) & ~15;
 
-// find memory for it	
+
 	while (1)
 	{
 		cs = Cache_TryAlloc (size, false);
@@ -590,18 +560,10 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 		{
 			strncpy (cs->name, name, sizeof(cs->name)-1);
 			c->data = (void *)(cs+1);
-			cs->user = c;
-			break;
 		}
-	
-	// free the least recently used cahedat
-		if (cache_head.lru_prev == &cache_head)
-			Sys_Error ("Cache_Alloc: out of memory");
-													// not enough memory at all
-		Cache_Free ( cache_head.lru_prev->user );
+													
+		
 	} 
-	
-	return Cache_Check (c);
 }
 
 void Memory_Init (void *buf, int size)
