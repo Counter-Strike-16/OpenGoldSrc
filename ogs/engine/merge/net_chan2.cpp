@@ -1,32 +1,4 @@
-/*
- *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
- *
- *	OGS Engine is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, either version 3 of the License, or
- *	(at your option) any later version.
- *
- *	OGS Engine is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
- *
- *	In addition, as a special exception, the author gives permission to
- *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
- *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
- *	L.L.C ("Valve").  You must obey the GNU General Public License in all
- *	respects for all of the code used other than the GoldSrc Engine and MODs
- *	from Valve.  If you modify this file, you may extend this exception
- *	to your version of the file, but you are not obligated to do so.  If
- *	you do not wish to do so, delete this exception statement from your
- *	version.
- */
 
-/// @file
 
 #include "quakedef.h"
 
@@ -85,9 +57,6 @@ to the new value before sending out any replies.
 
 */
 
-int net_drop;
-cvar_t showpackets = { "showpackets", "0" };
-cvar_t showdrop = { "showdrop", "0" };
 cvar_t qport = { "qport", "0" };
 
 /*
@@ -160,36 +129,17 @@ void Netchan_OutOfBandPrint(netadr_t adr, char *format, ...)
 	Netchan_OutOfBand(adr, strlen(string), (byte *)string);
 }
 
-/*
-==============
-Netchan_Setup
 
-called to open a channel to a remote system
-==============
-*/
 void Netchan_Setup(netchan_t *chan, netadr_t adr, int qport)
 {
-	memset(chan, 0, sizeof(*chan));
-
-	chan->remote_address = adr;
-	chan->last_received = realtime;
-
-	chan->message.data = chan->message_buf;
 	chan->message.allowoverflow = true;
-	chan->message.maxsize = sizeof(chan->message_buf);
 
 	chan->qport = qport;
 
 	chan->rate = 1.0 / 2500;
 }
 
-/*
-===============
-Netchan_CanPacket
 
-Returns true if the bandwidth choke isn't active
-================
-*/
 #define MAX_BACKUP 200
 qboolean Netchan_CanPacket(netchan_t *chan)
 {

@@ -80,76 +80,22 @@ void Hunk_Check (void)
 	}
 }
 
-/*
-==============
-Hunk_Print
-
-If "all" is specified, every single allocation is printed.
-Otherwise, allocations with the same name will be totaled up before printing.
-==============
-*/
 void Hunk_Print (qboolean all)
 {
-	hunk_t	*h, *next, *endlow, *starthigh, *endhigh;
-	int		count, sum;
-	int		totalblocks;
 	char	name[9];
 
 	name[8] = 0;
-	count = 0;
-	sum = 0;
-	totalblocks = 0;
-	
-	h = (hunk_t *)hunk_base;
-	endlow = (hunk_t *)(hunk_base + hunk_low_used);
-	starthigh = (hunk_t *)(hunk_base + hunk_size - hunk_high_used);
-	endhigh = (hunk_t *)(hunk_base + hunk_size);
-
-	Con_Printf ("          :%8i total hunk size\n", hunk_size);
-	Con_Printf ("-------------------------\n");
 
 	while (1)
 	{
-	//
-	// skip to the high hunk if done with low hunk
-	//
-		if ( h == endlow )
-		{
-			Con_Printf ("-------------------------\n");
-			Con_Printf ("          :%8i REMAINING\n", hunk_size - hunk_low_used - hunk_high_used);
-			Con_Printf ("-------------------------\n");
-			h = starthigh;
-		}
-		
-	//
-	// if totally done, break
-	//
-		if ( h == endhigh )
-			break;
 
-	//
-	// run consistancy checks
-	//
 		if (h->sentinal != HUNK_SENTINAL)
 			Sys_Error ("Hunk_Check: trahsed sentinal");
 		if (h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
 			Sys_Error ("Hunk_Check: bad size");
-			
-		next = (hunk_t *)((byte *)h+h->size);
-		count++;
-		totalblocks++;
-		sum += h->size;
-
-	//
-	// print the single block
-	//
+		
 		memcpy (name, h->name, 8);
-		if (all)
-			Con_Printf ("%8p :%8i %8s\n",h, h->size, name);
 			
-	//
-	// print the total
-	//
 		if (next == endlow || next == endhigh || 
 		strncmp (h->name, next->name, 8) )
 		{

@@ -43,6 +43,14 @@
 		*a     = 0
 #endif
 
+#ifndef REHLDS_FIXES
+	#define __BUILD_TIME__ __TIME__
+	#define __BUILD_DATE__ __DATE__
+#else // REHLDS_FIXES
+	#define __BUILD_TIME__ APP_COMMIT_TIME
+	#define __BUILD_DATE__ APP_COMMIT_DATE
+#endif // REHLDS_FIXES
+
 // clang-format on
 
 const int MAX_DISCONNECT_REASON = 256;

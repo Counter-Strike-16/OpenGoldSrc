@@ -202,6 +202,13 @@ void Netchan_Clear(netchan_t *chan)
 	chan->tempbuffersize = 0;
 }
 
+/*
+==============
+Netchan_Setup
+
+called to open a channel to a remote system
+==============
+*/
 void Netchan_Setup(netsrc_t socketnumber, netchan_t *chan, netadr_t adr, int player_slot, void *connection_status, qboolean (*pfnNetchan_Blocksize)(void *))
 {
 	Netchan_Clear(chan);
@@ -241,6 +248,13 @@ void Netchan_Setup(netsrc_t socketnumber, netchan_t *chan, netadr_t adr, int pla
 	chan->pfnNetchan_Blocksize = pfnNetchan_Blocksize;
 }
 
+/*
+===============
+Netchan_CanPacket
+
+Returns true if the bandwidth choke isn't active
+================
+*/
 qboolean Netchan_CanPacket(netchan_t *chan)
 {
 	// Never choke loopback packets.
@@ -728,6 +742,14 @@ qboolean Netchan_Validate(netchan_t *chan, qboolean *frag_message, unsigned int 
 	return TRUE;
 }
 
+/*
+=================
+Netchan_Process
+
+called when the current net_message is from remote_address
+modifies net_message so that it points to the packet payload
+=================
+*/
 qboolean Netchan_Process(netchan_t *chan)
 {
 	int i;
@@ -766,6 +788,7 @@ qboolean Netchan_Process(netchan_t *chan)
 
 	reliable_message = sequence >> 31;
 	reliable_ack = sequence_ack >> 31;
+	
 	message_contains_fragments = sequence & (1 << 30) ? true : false;
 
 	COM_UnMunge2(&net_message.data[8], net_message.cursize - 8, sequence & 0xFF);

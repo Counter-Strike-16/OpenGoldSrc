@@ -13,6 +13,6 @@ ipch/
 [Bb]uild/
 [Dd]ebug/
 [Rr]elease/
-[Mm]erge/
+/[Mm]erge/
 [Pp]rojects/
 *.tmp

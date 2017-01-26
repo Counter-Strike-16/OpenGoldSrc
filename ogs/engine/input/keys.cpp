@@ -236,6 +236,7 @@ Key_Console
 Interactive line editing and console scrollback
 ====================
 */
+// TODO: switch here
 void Key_Console(int key)
 {
 #ifdef _WIN32

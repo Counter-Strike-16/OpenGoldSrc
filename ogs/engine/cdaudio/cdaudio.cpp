@@ -262,7 +262,7 @@ static int RedBookToSector(int rb)
 	return minute * 60 * 75 + second * 75 + frame;
 }
 
-static void CDAudio_Reset(void)
+static void CDAudio_Reset()
 {
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
@@ -285,7 +285,7 @@ static void CDAudio_Reset(void)
 	dos_int86(0x2f);
 }
 
-static void CDAudio_Eject(void)
+static void CDAudio_Eject()
 {
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
@@ -344,7 +344,7 @@ static int CDAudio_GetAudioTrackInfo(byte track, int *start)
 	return (control & AUDIO_CONTROL_DATA_TRACK);
 }
 
-static int CDAudio_GetAudioDiskInfo(void)
+static int CDAudio_GetAudioDiskInfo()
 {
 	int n;
 
@@ -395,7 +395,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 	return 0;
 }
 
-static int CDAudio_GetAudioStatus(void)
+static int CDAudio_GetAudioStatus()
 {
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
@@ -422,7 +422,7 @@ static int CDAudio_GetAudioStatus(void)
 	return 0;
 }
 
-static int CDAudio_MediaChange(void)
+static int CDAudio_MediaChange()
 {
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
@@ -447,7 +447,7 @@ static int CDAudio_MediaChange(void)
 	return readInfo->mediaChange.status;
 }
 
-byte CDAudio_GetVolume(void)
+byte CDAudio_GetVolume()
 {
 	return cdvolume;
 }
@@ -558,7 +558,7 @@ void CDAudio_Play(byte track, qboolean looping)
 	playing = true;
 }
 
-void CDAudio_Stop(void)
+void CDAudio_Stop()
 {
 	if(!initialized || !enabled)
 		return;
@@ -578,7 +578,7 @@ void CDAudio_Stop(void)
 	playing = false;
 }
 
-void CDAudio_Resume(void)
+void CDAudio_Resume()
 {
 	if(!initialized || !enabled)
 		return;
@@ -603,7 +603,7 @@ void CDAudio_Resume(void)
 	playing = true;
 }
 
-static void CD_f(void)
+static void CD_f()
 {
 	char *command;
 	int ret;
@@ -712,7 +712,7 @@ static void CD_f(void)
 	}
 }
 
-void CDAudio_Update(void)
+void CDAudio_Update()
 {
 	int ret;
 	int newVolume;
@@ -771,12 +771,12 @@ void CDAudio_Update(void)
 	}
 }
 
-qboolean CDAudio_Playing(void)
+qboolean CDAudio_Playing()
 {
 	return playing;
 }
 
-int CDAudio_Init(void)
+int CDAudio_Init()
 {
 	char *memory;
 	int n;
@@ -850,7 +850,7 @@ int CDAudio_Init(void)
 	return 0;
 }
 
-void CDAudio_Shutdown(void)
+void CDAudio_Shutdown()
 {
 	if(!initialized)
 		return;

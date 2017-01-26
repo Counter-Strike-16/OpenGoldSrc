@@ -33,6 +33,14 @@
 
 // Note: make a special interface ITriAPI that has impl in gl renderdll?
 
+triangleapi_t gTriAPI;
+
+EXPORT bool GetTriAPI(triangleapi_t &pTriAPI)
+{
+	pTriAPI = &gTriAPI;
+	return true;
+};
+
 /*
 =================
 
@@ -403,8 +411,6 @@ void TriAPI_FogParams(float flDensity, int iFogSkybox){};
 
 }; // namespace
 
-// clang-format off
-
 triangleapi_t gTriAPI =
 {
 	TRI_API_VERSION,
@@ -433,5 +439,3 @@ triangleapi_t gTriAPI =
 	TriAPI_Color4fRendermode,
 	TriAPI_FogParams
 };
-
-// clang-format on

@@ -101,17 +101,14 @@ void TriAPI_Color4ub(unsigned char r, unsigned char g, unsigned char b, unsigned
 
 void TriAPI_TexCoord2f(float u, float v)
 {
-	pglTexCoord2f(u, v);
 };
 
 void TriAPI_Vertex3fv(float *worldPnt)
 {
-	pglVertex3fv(worldPnt);
 };
 
 void TriAPI_Vertex3f(float x, float y, float z)
 {
-	pglVertex3f(x, y, z);
 };
 
 void TriAPI_Brightness(float brightness)
@@ -123,8 +120,6 @@ void TriAPI_Brightness(float brightness)
 	rgba[0] = clgame.ds.triColor[0] * brightness;
 	rgba[1] = clgame.ds.triColor[1] * brightness;
 	rgba[2] = clgame.ds.triColor[2] * brightness;
-
-	pglColor3ub(rgba[0], rgba[1], rgba[2]);
 };
 
 void TriAPI_CullFace(TRICULLSTYLE style)
@@ -165,8 +160,6 @@ int TriAPI_SpriteTexture(struct model_s *pSpriteModel, int frame)
 	msprite_t *psprite = pSpriteModel->cache.data;
 	if(psprite->texFormat == SPR_ALPHTEST)
 	{
-		pglEnable(GL_ALPHA_TEST);
-		pglAlphaFunc(GL_GREATER, 0.0f);
 	}
 
 	GL_Bind(GL_TEXTURE0, gl_texturenum);
@@ -208,7 +201,6 @@ void TriAPI_Fog(float flFogColor[3], float flStart, float flEnd, int bOn)
 
 	if(!bOn)
 	{
-		pglDisable(GL_FOG);
 		RI.fogCustom = false;
 		return;
 	}
@@ -223,23 +215,14 @@ void TriAPI_Fog(float flFogColor[3], float flStart, float flEnd, int bOn)
 
 	if(VectorIsNull(RI.fogColor))
 	{
-		pglDisable(GL_FOG);
 		return;
 	}
-
-	pglEnable(GL_FOG);
-	pglFogi(GL_FOG_MODE, GL_LINEAR);
-	pglFogf(GL_FOG_START, RI.fogStart);
-	pglFogf(GL_FOG_END, RI.fogEnd);
-	pglFogfv(GL_FOG_COLOR, RI.fogColor);
-	pglHint(GL_FOG_HINT, GL_NICEST);
 };
 
 void TriAPI_ScreenToWorld(float *screen, float *world){};
 
 void TriAPI_GetMatrix(const int pname, float *matrix)
 {
-	pglGetFloatv(pname, matrix);
 };
 
 /*
@@ -284,10 +267,6 @@ Heavy legacy of Quake...
 */
 void TriAPI_Color4fRendermode(float r, float g, float b, float a, int rendermode)
 {
-	if(rendermode == kRenderTransAlpha)
-		pglColor4f(r, g, b, a);
-	else
-		pglColor4f(r * a, g * a, b * a, 1.0f);
 };
 
 void TriAPI_FogParams(float flDensity, int iFogSkybox)

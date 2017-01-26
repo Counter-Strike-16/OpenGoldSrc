@@ -269,34 +269,14 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	}
 }
 
-/*
-=================
-Netchan_Process
 
-called when the current net_message is from remote_address
-modifies net_message so that it points to the packet payload
-=================
-*/
 qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg)
 {
-	unsigned	sequence, sequence_ack;
-	unsigned	reliable_ack, reliable_message;
 	int			qport;
-
-// get sequence numbers		
-	MSG_BeginReading (msg);
-	sequence = MSG_ReadLong (msg);
-	sequence_ack = MSG_ReadLong (msg);
 
 	// read the qport if we are a server
 	if (chan->sock == NS_SERVER)
 		qport = MSG_ReadShort (msg);
-
-	reliable_message = sequence >> 31;
-	reliable_ack = sequence_ack >> 31;
-
-	sequence &= ~(1<<31);
-	sequence_ack &= ~(1<<31);	
 
 	if (showpackets->value)
 	{
