@@ -1,8 +1,17 @@
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
 // keydefs.h
 #ifndef KEYDEFS_H
 #define KEYDEFS_H
 #ifdef _WIN32
+#ifndef __MINGW32__
 #pragma once
+#endif /* not __MINGW32__ */
 #endif
 
 //
@@ -59,8 +68,6 @@
 #define K_KP_MINUS		173
 #define K_KP_PLUS		174
 #define K_CAPSLOCK		175
-#define K_KP_MUL		176
-#define K_WIN			177
 
 
 //

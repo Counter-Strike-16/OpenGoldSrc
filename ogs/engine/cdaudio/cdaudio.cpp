@@ -30,9 +30,13 @@
 
 //#include "precompiled.hpp"
 #include "cdaudio/cdaudio.hpp"
-#include "dosisms.h"
-#include "quakedef.h"
-#include <dpmi.h>
+#include "system/common.hpp"
+#include "console/console.hpp"
+#include "console/cvar.hpp"
+#include "client/client.hpp"
+//#include "dosisms.h"
+//#include "quakedef.hpp"
+//#include <dpmi.h>
 
 extern cvar_t bgmvolume;
 

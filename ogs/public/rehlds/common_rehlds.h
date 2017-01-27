@@ -42,16 +42,16 @@
 #define SIZEBUF_ALLOW_OVERFLOW	BIT(0)
 #define SIZEBUF_OVERFLOWED		BIT(1)
 
-#define MAX_NUM_ARGVS	50
-#define NUM_SAFE_ARGVS	7
+const int MAX_NUM_ARGVS = 50;
+const int NUM_SAFE_ARGVS = 7;
 
-#define COM_COPY_CHUNK_SIZE 1024
-#define COM_MAX_CMD_LINE 256
+const int COM_COPY_CHUNK_SIZE = 1024;
+const int COM_MAX_CMD_LINE = 256;
 
 /* <6ae> ../common/common.h:82 */
 typedef struct sizebuf_s
 {
-	const char *buffername;
+	/*const*/ char *buffername;
 	uint16 flags;
 	byte *data;
 	int maxsize;

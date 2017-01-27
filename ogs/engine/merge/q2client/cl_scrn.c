@@ -382,11 +382,6 @@ void SCR_Sky_f (void)
 
 //============================================================================
 
-/*
-==================
-SCR_Init
-==================
-*/
 void SCR_Init (void)
 {
 	scr_viewsize = Cvar_Get ("viewsize", "100", CVAR_ARCHIVE);
@@ -403,16 +398,10 @@ void SCR_Init (void)
 	scr_graphshift = Cvar_Get ("graphshift", "0", 0);
 	scr_drawall = Cvar_Get ("scr_drawall", "0", 0);
 
-//
-// register our commands
-//
 	Cmd_AddCommand ("timerefresh",SCR_TimeRefresh_f);
 	Cmd_AddCommand ("loading",SCR_Loading_f);
-	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);
-	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
 	Cmd_AddCommand ("sky",SCR_Sky_f);
 
-	scr_initialized = true;
 }
 
 
@@ -534,43 +523,7 @@ void SCR_DrawConsole (void)
 
 //=============================================================================
 
-/*
-================
-SCR_BeginLoadingPlaque
-================
-*/
-void SCR_BeginLoadingPlaque (void)
-{
-	S_StopAllSounds ();
-	cl.sound_prepped = false;		// don't play ambients
-	CDAudio_Stop ();
-	if (cls.disable_screen)
-		return;
-	if (developer->value)
-		return;
-	if (cls.state == ca_disconnected)
-		return;	// if at console, don't bring up the plaque
-	if (cls.key_dest == key_console)
-		return;
-	if (cl.cinematictime > 0)
-		scr_draw_loading = 2;	// clear to balack first
-	else
-		scr_draw_loading = 1;
-	SCR_UpdateScreen ();
-	cls.disable_screen = Sys_Milliseconds ();
-	cls.disable_servercount = cl.servercount;
-}
 
-/*
-================
-SCR_EndLoadingPlaque
-================
-*/
-void SCR_EndLoadingPlaque (void)
-{
-	cls.disable_screen = 0;
-	Con_ClearNotify ();
-}
 
 /*
 ================

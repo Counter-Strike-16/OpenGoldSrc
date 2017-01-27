@@ -858,9 +858,9 @@ void CL_ParseSetAngle()
 	// cl.viewangles[PITCH] = cl.viewangles[ROLL] = 0;
 
 	/*
-  cl.refdef.cl_viewangles[0] = BF_ReadBitAngle( msg, 16 );
-  cl.refdef.cl_viewangles[1] = BF_ReadBitAngle( msg, 16 );
-  cl.refdef.cl_viewangles[2] = BF_ReadBitAngle( msg, 16 );
+  cl.refdef.cl_viewangles[0] = MSG_ReadBitAngle(16 );
+  cl.refdef.cl_viewangles[1] = MSG_ReadBitAngle(16 );
+  cl.refdef.cl_viewangles[2] = MSG_ReadBitAngle(16 );
   */
 };
 
@@ -1206,7 +1206,7 @@ void CL_ParseAddAngle()
   pev->avelocity[1] as a value.
   Note: The value needs to be scaled by (65536 / 360).
 */
-	//float add_angle = BF_ReadBitAngle( msg, 16 );
+	//float add_angle = MSG_ReadBitAngle(16 );
 	//cl.refdef.cl_viewangles[1] += add_angle;
 	
 	short nAngle = MSG_ReadShort();
@@ -1224,10 +1224,10 @@ void CL_ParseNewUserMsg()
 	byte nSize = MSG_ReadByte();
 	char *sName =
 	MSG_ReadString(); // 16 bits or bytes? (4 longs == 16 bytes on x86)
-	                  // MSG_ReadLong(msg, *(int *)&pMsg->szName[0]);
-	                  // MSG_ReadLong(msg, *(int *)&pMsg->szName[4]);
-	                  // MSG_ReadLong(msg, *(int *)&pMsg->szName[8]);
-	                  // MSG_ReadLong(msg, *(int *)&pMsg->szName[12]);
+	                  // MSG_ReadLong(*(int *)&pMsg->szName[0]);
+	                  // MSG_ReadLong(*(int *)&pMsg->szName[4]);
+	                  // MSG_ReadLong(*(int *)&pMsg->szName[8]);
+	                  // MSG_ReadLong(*(int *)&pMsg->szName[12]);
 };
 
 void CL_ParsePacketEntities(bool bDelta)
@@ -1250,13 +1250,54 @@ void CL_HandleChoke()
 
 void CL_ParseResourceList()
 {
-	CL_ParseModellist();
-	CL_ParseSoundlist();
+	//CL_ParseModellist();
+	//CL_ParseSoundlist();
+	
+	int	i = 0;
+
+	Q_memset( &reslist, 0, sizeof( resourcelist_t ));
+
+	reslist.rescount = MSG_ReadWord() - 1;
+
+	for( i = 0; i < reslist.rescount; i++ )
+	{
+		reslist.restype[i] = MSG_ReadWord();
+		Q_strncpy( reslist.resnames[i], MSG_ReadString(), CS_SIZE );
+	};
+
+	cls.downloadcount = 0;
+
+	HTTP_ResetProcessState();
+
+	for( i = 0; i < reslist.rescount; i++ )
+	{
+		// skip some types
+#if 0
+		if( reslist.restype[i] == t_model && !Q_strchr( download_types->latched_string, 'm' ) )
+			continue;
+		if( reslist.restype[i] == t_sound && !Q_strchr( download_types->latched_string, 's' ) )
+			continue;
+		if( reslist.restype[i] == t_eventscript && !Q_strchr( download_types->latched_string, 'e' ) )
+			continue;
+		if( reslist.restype[i] == t_generic && !Q_strchr( download_types->latched_string, 'c' ) )
+			continue;
+#endif
+		if( reslist.restype[i] == t_sound )
+			CL_CheckingSoundResFile( reslist.resnames[i] );
+		else
+			CL_CheckingResFile( reslist.resnames[i] );
+	};
+
+	if( !cls.downloadcount )
+	{
+		MSG_WriteByte( &cls.netchan.message, clc_stringcmd );
+		MSG_WriteString( &cls.netchan.message, "continueloading" );
+	};
 };
 
 void CL_ParseNewMoveVars()
 {
-	Delta_InitClient ();	// finalize client delta's
+	Delta_InitClient(); // finalize client delta's
 
 	MSG_ReadDeltaMovevars( msg, &clgame.oldmovevars, &clgame.movevars );
 
@@ -1265,6 +1306,7 @@ void CL_ParseNewMoveVars()
 		R_SetupSky( clgame.movevars.skyName );
 
 	Q_memcpy( &clgame.oldmovevars, &clgame.movevars, sizeof( movevars_t ));
+	
 	// keep features an actual!
 	clgame.oldmovevars.features = clgame.movevars.features = host.features;
 };
@@ -1290,8 +1332,8 @@ offset crosshair angles
 */
 void CL_ParseCrosshairAngle()
 {
-	cl.refdef.crosshairangle[0] = BF_ReadChar( msg ) * 0.2f;
-	cl.refdef.crosshairangle[1] = BF_ReadChar( msg ) * 0.2f;
+	cl.refdef.crosshairangle[0] = MSG_ReadChar() * 0.2f;
+	cl.refdef.crosshairangle[1] = MSG_ReadChar() * 0.2f;
 	cl.refdef.crosshairangle[2] = 0.0f; // not used for screen space
 };
 
@@ -1300,10 +1342,10 @@ void CL_ParseSoundFade()
 	float	fadePercent, fadeOutSeconds;
 	float	holdTime, fadeInSeconds;
 
-	fadePercent = (float)BF_ReadByte( msg );
-	holdTime = (float)BF_ReadByte( msg );
-	fadeOutSeconds = (float)BF_ReadByte( msg );
-	fadeInSeconds = (float)BF_ReadByte( msg );
+	fadePercent = (float)MSG_ReadByte();
+	holdTime = (float)MSG_ReadByte();
+	fadeOutSeconds = (float)MSG_ReadByte();
+	fadeInSeconds = (float)MSG_ReadByte();
 
 	S_FadeClientVolume( fadePercent, fadeOutSeconds, holdTime, fadeInSeconds );
 };

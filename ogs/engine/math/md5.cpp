@@ -28,7 +28,9 @@
 
 /// @file
 
-#include "math/crc.h"
+#include "common/crc.h"
+#include "system/common.hpp"
+#include "filesystem/filesystem_internal.hpp"
 
 /* F, G and H are basic MD5 functions: selection, majority, parity */
 #define F(x, y, z) (((x) & (y)) | ((~x) & (z)))

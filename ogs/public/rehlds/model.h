@@ -143,7 +143,6 @@ typedef struct cachepic_s
 } cachepic_t;
 
 typedef struct cachewad_s cachewad_t;
-
 typedef void (*PFNCACHE)(cachewad_t *, unsigned char *);
 
 typedef struct cachewad_s

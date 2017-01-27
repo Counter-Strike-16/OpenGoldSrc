@@ -38,9 +38,12 @@
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
 #include "network/net_msg.hpp"
+#include "network/protocol.hpp"
 #include "system/common.hpp"
 #include "system/sizebuf.hpp"
 #include "system/system.hpp"
+#include "system/host.hpp"
+//#include "rehlds_api_impl.h"
 
 const int MAX_ARGS = 80;
 
@@ -395,7 +398,7 @@ void Cmd_Shutdown()
 int EXT_FUNC Cmd_Argc()
 {
 #ifndef SWDS
-	g_engdstAddrs->Cmd_Argc();
+	g_engdstAddrs.Cmd_Argc();
 #endif
 
 	return cmd_argc;
@@ -404,7 +407,7 @@ int EXT_FUNC Cmd_Argc()
 const char *EXT_FUNC Cmd_Argv(int arg)
 {
 #ifndef SWDS
-	g_engdstAddrs->Cmd_Argv(&arg);
+	g_engdstAddrs.Cmd_Argv(&arg);
 #endif
 
 	if(arg >= 0 && arg < cmd_argc)
@@ -425,7 +428,7 @@ Returns a single string containing argv(1) to argv(argc()-1)
 const char *EXT_FUNC Cmd_Args()
 {
 #ifndef SWDS
-	g_engdstAddrs->Cmd_Args();
+	//g_engdstAddrs.Cmd_Args();
 #endif
 
 	return cmd_args;
@@ -837,16 +840,12 @@ void Cmd_ExecuteString(char *text, cmd_source_t src)
 	if(!Cmd_Argc())
 		return;
 
-	IGameClient *cl =
-	(src == src_client) ? GetRehldsApiClient(host_client) : NULL;
-	if(!g_RehldsHookchains.m_ValidateCommand.callChain(ValidateCmd_API,
-	                                                   cmd_argv[0],
-	                                                   src,
-	                                                   cl))
-		return;
+	//IGameClient *cl = (src == src_client) ? GetRehldsApiClient(host_client) : NULL;
+	
+	//if(!g_RehldsHookchains.m_ValidateCommand.callChain(ValidateCmd_API, cmd_argv[0], src, cl))
+		//return;
 
-	g_RehldsHookchains.m_ExecuteServerStringCmd.callChain(
-	Cmd_ExecuteString_internal, cmd_argv[0], src, cl);
+	//g_RehldsHookchains.m_ExecuteServerStringCmd.callChain(Cmd_ExecuteString_internal, cmd_argv[0], src, cl);
 }
 
 qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)

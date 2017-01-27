@@ -480,21 +480,58 @@ Con_DPrintf
 A Con_Printf that only shows up if the "developer" cvar is set
 ================
 */
+#if defined(REHLDS_FIXES) && defined(REHLDS_FLIGHT_REC)
+// Always print debug logs to the flight recorder
 void EXT_FUNC Con_DPrintf(const char *fmt, ...)
+{
+	char Dest[4096];
+	va_list argptr;
+	va_start(argptr, fmt);
+	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
+	va_end(argptr);
+
+	FR_Log("REHLDS_CONDBG", Dest);
+
+	if(developer.value != 0.0f)
+	{
+#ifdef _WIN32
+		OutputDebugStringA(Dest);
+		if(con_debuglog)
+			Con_DebugLog("qconsole.log", "%s", Dest);
+#else
+		vfprintf(stdout, fmt, argptr);
+		fflush(stdout);
+#endif // _WIN32
+	}
+}
+
+#else // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
+
+void Con_DPrintf(const char *fmt, ...)
 {
 	// don't confuse non-developers with techical stuff...
 	if(!developer.value)
 		return;
-
+	
 	va_list argptr;
-	char msg[MAXPRINTMSG];
-
 	va_start(argptr, fmt);
-	vsprintf(msg, fmt, argptr);
-	va_end(argptr);
+	
+#ifdef _WIN32
+	char Dest[4096];
+	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
 
-	Con_Printf("%s", msg);
+	OutputDebugStringA(Dest);
+	if(con_debuglog)
+		Con_DebugLog("qconsole.log", "%s", Dest);
+#else
+	vfprintf(stdout, fmt, argptr);
+	fflush(stdout);
+#endif // _WIN32
+	
+	va_end(argptr);
 }
+
+#endif // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
 
 /*
 ==============================================================================
@@ -761,7 +798,7 @@ Con_SafePrintf
 Okay to call even when the screen can't be updated
 ==================
 */
-void Con_SafePrintf(char *fmt, ...)
+void Con_SafePrintf(const char *fmt, ...)
 {
 	va_list argptr;
 	char msg[1024];
@@ -853,7 +890,6 @@ void EXT_FUNC Con_Printf(const char *fmt, ...)
 
 void Con_SafePrintf(const char *fmt, ...)
 {
-	va_list argptr;
 	va_start(argptr, fmt);
 
 #ifdef _WIN32
@@ -868,51 +904,13 @@ void Con_SafePrintf(const char *fmt, ...)
 #endif // _WIN32
 }
 
-#if defined(REHLDS_FIXES) && defined(REHLDS_FLIGHT_REC)
-// Always print debug logs to the flight recorder
+/*
 void EXT_FUNC Con_DPrintf(const char *fmt, ...)
 {
-	char Dest[4096];
-	va_list argptr;
-	va_start(argptr, fmt);
-	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
-	va_end(argptr);
+	char msg[MAXPRINTMSG];
 
-	FR_Log("REHLDS_CONDBG", Dest);
+	vsprintf(msg, fmt, argptr);
 
-	if(developer.value != 0.0f)
-	{
-#ifdef _WIN32
-		OutputDebugStringA(Dest);
-		if(con_debuglog)
-			Con_DebugLog("qconsole.log", "%s", Dest);
-#else
-		vfprintf(stdout, fmt, argptr);
-		fflush(stdout);
-#endif // _WIN32
-	}
+	Con_Printf("%s", msg);
 }
-
-#else // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
-
-void Con_DPrintf(const char *fmt, ...)
-{
-	va_start(argptr, fmt);
-	if(developer.value != 0.0f)
-	{
-#ifdef _WIN32
-		char Dest[4096];
-		Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
-
-		OutputDebugStringA(Dest);
-		if(con_debuglog)
-			Con_DebugLog("qconsole.log", "%s", Dest);
-#else
-		vfprintf(stdout, fmt, argptr);
-		fflush(stdout);
-#endif // _WIN32
-	}
-	va_end(argptr);
-}
-
-#endif // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
+*/

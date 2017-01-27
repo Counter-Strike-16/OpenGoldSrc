@@ -28,7 +28,7 @@
 #pragma once
 #include "maintypes.h"
 #include "rehlds/rehlds_interfaces.h"
-#include "server/server.h"
+#include "server/server.hpp"
 
 class CNetChan : public INetChan
 {

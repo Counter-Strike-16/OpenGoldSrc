@@ -33,10 +33,10 @@
 #include "common/netadr.h"
 
 #include "rehlds/common_rehlds.h"
-#include "userid_rehlds.h"
+#include "userid.h"
 
 #ifdef REHLDS_SELF
-#include "server/server.h"
+#include "server/server.hpp"
 #endif
 
 class INetChan;

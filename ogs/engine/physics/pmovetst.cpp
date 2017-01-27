@@ -30,6 +30,11 @@
 
 //#include "precompiled.hpp"
 #include "physics/pmovetst.hpp"
+#include "physics/pmove.hpp"
+#include "system/system.hpp"
+#include "system/common.hpp"
+#include "console/console.hpp"
+#include "engine/cdll_int.h"
 
 int g_contentsresult;
 hull_t box_hull_0;
