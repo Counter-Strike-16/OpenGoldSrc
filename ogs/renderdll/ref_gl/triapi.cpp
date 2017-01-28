@@ -411,6 +411,31 @@ void TriAPI_FogParams(float flDensity, int iFogSkybox){};
 
 }; // namespace
 
+// shared between client and server		
+triangleapi_t gTriApi =
+{
+	TRI_API_VERSION,	
+	TriRenderMode,
+	TriBegin,
+	TriEnd,
+	TriColor4f,
+	TriColor4ub,
+	TriTexCoord2f,
+	(void*)TriVertex3fv,
+	TriVertex3f,
+	TriBrightness,
+	TriCullFace,
+	TriSpriteTexture,
+	(void*)R_WorldToScreen,	// NOTE: XPROJECT, YPROJECT should be done in client.dll
+	TriFog,
+	(void*)R_ScreenToWorld,
+	TriGetMatrix,
+	TriBoxInPVS,
+	TriLightAtPoint,
+	TriColor4fRendermode,
+	TriFogParams,
+};
+
 triangleapi_t gTriAPI =
 {
 	TRI_API_VERSION,

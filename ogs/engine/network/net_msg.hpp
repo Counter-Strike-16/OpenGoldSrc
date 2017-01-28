@@ -39,18 +39,6 @@ typedef struct usercmd_s usercmd_t;
 
 void COM_BitOpsInit();
 
-void MSG_WriteChar(sizebuf_t *sb, int c);
-void MSG_WriteByte(sizebuf_t *sb, int c);
-void MSG_WriteShort(sizebuf_t *sb, int c);
-void MSG_WriteWord(sizebuf_t *sb, int c);
-void MSG_WriteLong(sizebuf_t *sb, int c);
-void MSG_WriteFloat(sizebuf_t *sb, float f);
-void MSG_WriteString(sizebuf_t *sb, const char *s);
-void MSG_WriteBuf(sizebuf_t *sb, int iSize, void *buf);
-void MSG_WriteAngle(sizebuf_t *sb, float f);
-void MSG_WriteHiresAngle(sizebuf_t *sb, float f);
-void MSG_WriteUsercmd(sizebuf_t *buf, usercmd_t *to, usercmd_t *from);
-
 void MSG_StartBitWriting(sizebuf_t *buf);
 void MSG_EndBitWriting(sizebuf_t *buf);
 
@@ -62,6 +50,18 @@ void MSG_WriteSBits(int data, int numbits);
 void MSG_WriteBitString(const char *p);
 void MSG_WriteBitData(void *src, int length);
 void MSG_WriteBitAngle(float fAngle, int numbits);
+
+void MSG_WriteChar(sizebuf_t *sb, int c);
+void MSG_WriteByte(sizebuf_t *sb, int c);
+void MSG_WriteShort(sizebuf_t *sb, int c);
+void MSG_WriteWord(sizebuf_t *sb, int c);
+void MSG_WriteLong(sizebuf_t *sb, int c);
+void MSG_WriteFloat(sizebuf_t *sb, float f);
+void MSG_WriteString(sizebuf_t *sb, const char *s);
+void MSG_WriteBuf(sizebuf_t *sb, int iSize, void *buf);
+void MSG_WriteAngle(sizebuf_t *sb, float f);
+void MSG_WriteHiresAngle(sizebuf_t *sb, float f);
+void MSG_WriteUsercmd(sizebuf_t *buf, usercmd_t *to, usercmd_t *from);
 
 ////////////////////////////////////////////////////////////
 

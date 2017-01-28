@@ -824,7 +824,7 @@ void CL_ParseTime()
 
 void CL_ParsePrint()
 {
-	i = MSG_ReadByte();
+	int i = MSG_ReadByte();
 
 	if(i == PRINT_CHAT)
 	{
@@ -841,6 +841,9 @@ void CL_ParseStuffText()
 	char *s = MSG_ReadString();
 	Con_DPrintf("stufftext: %s\n", s);
 	Cbuf_AddText(s);
+	
+	//if(cl_trace_stufftext->value)
+		//Msg("^3STUFFTEXT:\n^2%s\n^3END^7\n", s);
 };
 
 /*
@@ -893,13 +896,21 @@ CL_ParseLightStyle
 */
 void CL_ParseLightStyle()
 {
-	i = MSG_ReadByte();
-
-	if(i >= MAX_LIGHTSTYLES)
+	int nStyle = MSG_ReadByte();
+	
+	if(nStyle >= MAX_LIGHTSTYLES)
 		Sys_Error("svc_lightstyle > MAX_LIGHTSTYLES");
+	
+	Q_strcpy(cl_lightstyle[nStyle].map, MSG_ReadString());
+	cl_lightstyle[nStyle].length = Q_strlen(cl_lightstyle[nStyle].map);
+	
+	/*
+	int style = MSG_ReadByte();
+	const char *s = MSG_ReadString();
+	float f = MSG_ReadFloat();
 
-	Q_strcpy(cl_lightstyle[i].map, MSG_ReadString());
-	cl_lightstyle[i].length = Q_strlen(cl_lightstyle[i].map);
+	CL_SetLightstyle( style, s, f );
+	*/
 };
 
 /*
@@ -1006,17 +1017,18 @@ void CL_ParseParticle(){};
 
 /*
 =====================
-CL_ParseStatic
+CL_ParseStaticEnt
 
-Static entities are non-interactive world objects
-like torches
+Static entities are non-interactive world objects like torches
 =====================
 */
-void CL_ParseStatic()
+void CL_ParseStaticEnt()
 {
 	cl_entity_t *ent;
 	int i;
-	entity_state_t es;
+	entity_state_t es; // state
+	
+	Q_memset(&es, 0, sizeof(es));
 
 	CL_ParseBaseline(&es);
 
@@ -1024,9 +1036,41 @@ void CL_ParseStatic()
 
 	if(i >= MAX_STATIC_ENTITIES)
 		Host_EndGame("Too many static entities");
+	
+	/*
+	if(i >= MAX_STATIC_ENTITIES)
+	{
+		MsgDev(D_ERROR, "CL_ParseStaticEntity: static entities limit exceeded!\n");
+		return;
+	};
+	*/
 
 	ent = &cl_static_entities[i];
 	cl.num_statics++;
+	
+	/*
+	ent->index = 0; // ???
+	ent->baseline = state;
+	ent->curstate = state;
+	ent->prevstate = state;
+
+	// statics may be respawned in game e.g. for demo recording
+	if( cls.state == ca_connected )
+		ent->trivial_accept = INVALID_HANDLE;
+
+	// setup the new static entity
+	CL_UpdateEntityFields( ent );
+
+	if( Mod_GetType( state.modelindex ) == mod_studio )
+	{
+		CL_UpdateStudioVars( ent, &state, true );
+
+		// animate studio model
+		ent->curstate.animtime = cl.time;
+		ent->curstate.framerate = 1.0f;
+		ent->latched.prevframe = 0.0f;
+	}
+	*/
 
 	// copy it to the current state
 	ent->model = cl.model_precache[es.modelindex];
@@ -1037,7 +1081,7 @@ void CL_ParseStatic()
 	VectorCopy(es.origin, ent->origin);
 	VectorCopy(es.angles, ent->angles);
 
-	R_AddEfrags(ent);
+	R_AddEfrags(ent); // add link
 };
 
 /*
@@ -1047,15 +1091,29 @@ CL_ParseBaseline
 */
 void CL_ParseBaseline(entity_state_t *es)
 {
-	es->modelindex = MSG_ReadByte();
+	es->modelindex = MSG_ReadByte(); // MSG_ReadShort();
+	state.sequence = MSG_ReadByte();
 	es->frame = MSG_ReadByte();
-	es->colormap = MSG_ReadByte();
-	es->skinnum = MSG_ReadByte();
+	es->colormap = MSG_ReadByte(); // MSG_ReadWord();
+	es->skinnum = MSG_ReadByte(); // ->skin
 
-	for(int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; ++i)
 	{
 		es->origin[i] = MSG_ReadCoord();
-		es->angles[i] = MSG_ReadAngle();
+		es->angles[i] = MSG_ReadAngle(); // MSG_ReadBitAngle(16);
+	};
+	
+	es->rendermode = MSG_ReadByte();
+
+	if(es->rendermode != kRenderNormal)
+	{
+		es->renderamt = MSG_ReadByte();
+		
+		es->rendercolor.r = MSG_ReadByte();
+		es->rendercolor.g = MSG_ReadByte();
+		es->rendercolor.b = MSG_ReadByte();
+		
+		es->renderfx = MSG_ReadByte();
 	};
 };
 
@@ -1069,7 +1127,7 @@ void CL_ParseSignOnNum()
 	// Called just after client_putinserver
 	// Signals the client that the server has marked it as "active"
 
-	byte nSignOn = MSG_ReadByte();
+	int nSignOn = MSG_ReadByte();
 };
 
 void CL_ParseCenterPrint()
@@ -1158,7 +1216,7 @@ void CL_ParseCutscene()
 
 void CL_ParseWeaponAnim()
 {
-	/*
+/*
   Sended only if client weapon is disabled
 */
 
@@ -1169,7 +1227,7 @@ void CL_ParseWeaponAnim()
 
 void CL_ParseDecalName()
 {
-	/*
+/*
   Allows to set, into the client's decals array and at specific position index
   (0->511), a decal name.
   E.g: let's say you send a message to set a decal "{break" at index 200.
@@ -1181,7 +1239,7 @@ void CL_ParseDecalName()
   Note: It appears we can play only with decals from decals.wad.
 */
 
-	byte nPosIndex = MSG_ReadByte();
+	int nPosIndex = MSG_ReadByte();
 
 	char *sDecalName = MSG_ReadString();
 };
@@ -1212,22 +1270,37 @@ void CL_ParseAddAngle()
 	short nAngle = MSG_ReadShort();
 };
 
+/*
+================
+CL_RegisterUserMessage
+
+register new user message or update existing
+================
+*/
 void CL_ParseNewUserMsg()
 {
-	/*
+/*
   Note: Sent every time a new message is registered on the server, but most
   games do this only once on the map change or server startup.
   Note: Name can be represented as an array of 4 "longs".
 */
 
-	byte nIndex = MSG_ReadByte();
-	byte nSize = MSG_ReadByte();
-	char *sName =
-	MSG_ReadString(); // 16 bits or bytes? (4 longs == 16 bytes on x86)
+	int nIndex = MSG_ReadByte(); // svc_num
+	int nSize = MSG_ReadByte();
+	
+	char *sName = MSG_ReadString(); // 16 bits or bytes? (4 longs == 16 bytes on x86)
 	                  // MSG_ReadLong(*(int *)&pMsg->szName[0]);
 	                  // MSG_ReadLong(*(int *)&pMsg->szName[4]);
 	                  // MSG_ReadLong(*(int *)&pMsg->szName[8]);
 	                  // MSG_ReadLong(*(int *)&pMsg->szName[12]);
+	
+	// Important stuff
+	//if(nSize == 0xFF)
+		//nSize = -1;
+	
+	//nIndex = bound(0, nIndex, 255);
+	
+	//CL_LinkUserMessage(sName, nIndex, nSize);
 };
 
 void CL_ParsePacketEntities(bool bDelta)
@@ -1339,13 +1412,11 @@ void CL_ParseCrosshairAngle()
 
 void CL_ParseSoundFade()
 {
-	float	fadePercent, fadeOutSeconds;
-	float	holdTime, fadeInSeconds;
-
-	fadePercent = (float)MSG_ReadByte();
-	holdTime = (float)MSG_ReadByte();
-	fadeOutSeconds = (float)MSG_ReadByte();
-	fadeInSeconds = (float)MSG_ReadByte();
+	float fadePercent = (float)MSG_ReadByte();
+	float holdTime = (float)MSG_ReadByte();
+	
+	float fadeOutSeconds = (float)MSG_ReadByte();
+	float fadeInSeconds = (float)MSG_ReadByte();
 
 	S_FadeClientVolume( fadePercent, fadeOutSeconds, holdTime, fadeInSeconds );
 };
@@ -1354,7 +1425,7 @@ void CL_HandleFileTransferFailed(){};
 
 void CL_ParseHLTVMode()
 {
-	byte nMode = MSG_ReadByte();
+	int nMode = MSG_ReadByte();
 };
 
 /*
@@ -1525,10 +1596,9 @@ CL_UpdateUserinfo
 */
 void CL_UpdateUserinfo()
 {
-	int slot;
 	player_info_t *player;
 
-	slot = MSG_ReadByte();
+	int slot = MSG_ReadByte();
 	if(slot >= MAX_CLIENTS)
 		Host_EndGame("CL_ParseServerMessage: svc_updateuserinfo > MAX_SCOREBOARD");
 
@@ -1546,12 +1616,11 @@ CL_SetInfo
 */
 void CL_SetInfo()
 {
-	int slot;
 	player_info_t *player;
 	char key[MAX_MSGLEN];
 	char value[MAX_MSGLEN];
 
-	slot = MSG_ReadByte();
+	int slot = MSG_ReadByte();
 	if(slot >= MAX_CLIENTS)
 		Host_EndGame("CL_ParseServerMessage: svc_setinfo > MAX_SCOREBOARD");
 
@@ -1755,7 +1824,7 @@ void CL_ParseServerMessage()
 			V_ParseDamage();
 			break;
 		case svc_spawnstatic:
-			CL_ParseStatic();
+			CL_ParseStaticEnt();
 			break;
 		case svc_event_reliable:
 			CL_ParseEventData(true);
@@ -1901,24 +1970,6 @@ case svc_updateentertime:
               Host_EndGame ("CL_ParseServerMessage: svc_updateentertime >
 MAX_SCOREBOARD");
       cl.players[i].entertime = realtime - MSG_ReadFloat ();
-      break;
-
-case svc_updatestat:
-      i = MSG_ReadByte ();
-      j = MSG_ReadByte ();
-      CL_SetStat (i, j);
-      break;
-case svc_updatestatlong:
-      i = MSG_ReadByte ();
-      j = MSG_ReadLong ();
-      CL_SetStat (i, j);
-      break;
-
-case svc_smallkick:
-      cl.punchangle = -2;
-      break;
-case svc_bigkick:
-      cl.punchangle = -4;
       break;
 
 case svc_setinfo:

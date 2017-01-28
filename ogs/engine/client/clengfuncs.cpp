@@ -511,6 +511,17 @@ void EngFunc_SetScreenFade(struct screenfade_s *fade)
 		clgame.fade = *fade;
 };
 
+void *VGui_GetPanel()
+{
+	// stub
+	return nullptr;
+};
+
+void VGui_ViewportPaintBackground(int extents[4])
+{
+	// stub
+};
+
 int EngFunc_IsSpectateOnly()
 {
 	cl_entity_t *pPlayer = CL_GetLocalPlayer();

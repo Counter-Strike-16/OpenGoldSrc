@@ -147,6 +147,7 @@ V_ParseDamage
 void V_ParseDamage()
 {
 	// Deprecated
+	// Moved to client dll (CHud::MsgFunc_Damage) and unused
 
 	int armor, blood;
 	vec3_t from;

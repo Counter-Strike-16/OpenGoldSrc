@@ -1,33 +1,3 @@
-class CInputHandler
-{
-public:
-	void Update();
-
-	void HandleKey(int anKey);
-
-private:
-	std::vector<IKeyDestState *> mvKeyDestStates;
-	IKeyDestState meKeyDestState;
-};
-
-void CInputHandler::Update(){};
-
-void CInputHandler::HandleKey(int anKey)
-{
-	mvKeyDestStates[meKeyDestState]->HandleKey(anKey);
-};
-
-void CInputHandler::SetKeyDestState(IKeyDestState aeState)
-{
-	if(meKeyDestState != aeState)
-		meKeyDestState = aeState;
-};
-
-IKeyDestState CInputHandler::GetKeyDestState()
-{
-	return meKeyDestState;
-};
-
 class IKeyDestState
 {
 public:
