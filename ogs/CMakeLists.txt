@@ -7,6 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Add include directories
 include_directories(
+	${CMAKE_SOURCE_DIR}/hlsdk
 	${CMAKE_SOURCE_DIR}/../hlsdk-core
 )
 

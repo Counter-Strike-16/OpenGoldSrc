@@ -40,7 +40,7 @@ const int HUNK_SENTINEL = 0x1df001ed;
 typedef struct hunk_s
 {
 	int sentinel;
-	int size;
+	int size; // including sizeof(hunk_t), -1 = not allocated
 
 	char name[HUNK_NAME_LEN];
 } hunk_t;

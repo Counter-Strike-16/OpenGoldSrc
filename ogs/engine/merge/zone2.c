@@ -57,28 +57,11 @@ void Z_Free (void *ptr)
 //============================================================================
 
 typedef struct
-{
-	int		sentinal;
-	int		size;		// including sizeof(hunk_t), -1 = not allocated
+{	
 	char	name[8];
 } hunk_t;
 
 void R_FreeTextures (void);
-
-
-void Hunk_Check (void)
-{
-	hunk_t	*h;
-	
-	for (h = (hunk_t *)hunk_base ; (byte *)h != hunk_base + hunk_low_used ; )
-	{
-		if (h->sentinal != HUNK_SENTINAL)
-			Sys_Error ("Hunk_Check: trahsed sentinal");
-		if (h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
-			Sys_Error ("Hunk_Check: bad size");
-		h = (hunk_t *)((byte *)h+h->size);
-	}
-}
 
 void Hunk_Print (qboolean all)
 {
@@ -113,21 +96,11 @@ void Hunk_Print (qboolean all)
 	
 }
 
-/*
-===================
-Hunk_AllocName
-===================
-*/
 void *Hunk_AllocName (int size, char *name)
 {
-	hunk_t	*h;
-	
 #ifdef PARANOID
 	Hunk_Check ();
 #endif
-
-	if (size < 0)
-		Sys_Error ("Hunk_Alloc: bad size: %i", size);
 		
 	size = sizeof(hunk_t) + ((size+15)&~15);
 	
@@ -139,18 +112,13 @@ void *Hunk_AllocName (int size, char *name)
 	  	Sys_Error ("Not enough RAM allocated.  Try starting using \"-mem 16\" on the QuakeWorld command line.");
 #endif
 	
-	h = (hunk_t *)(hunk_base + hunk_low_used);
 	hunk_low_used += size;
-
-	Cache_FreeLow (hunk_low_used);
 
 	memset (h, 0, size);
 	
 	h->size = size;
-	h->sentinal = HUNK_SENTINAL;
 	Q_strncpy (h->name, name, 8);
 	
-	return (void *)(h+1);
 }
 
 void Hunk_FreeToLowMark (int mark)
