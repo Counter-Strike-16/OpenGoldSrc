@@ -49,10 +49,10 @@ image_t *r_particletexture; // little dot for particles
 cl_entity_t *currententity;
 model_t *currentmodel;
 
-cplane_t frustum[4];
-
 int r_visframecount; // bumped when going to a new PVS
 int r_framecount;    // used for dlight push checking
+
+mplane_t frustum[4];
 
 int c_brush_polys, c_alias_polys;
 
@@ -194,7 +194,7 @@ cvar_t *v_gamma = NULL;
 =================
 R_CullBox
 
-Returns true if the box is completely outside the frustom
+Returns true if the box is completely outside the frustum
 =================
 */
 qboolean R_CullBox(vec3_t mins, vec3_t maxs)
@@ -852,7 +852,7 @@ void R_Flash()
 ================
 R_RenderView
 
-r_newrefdef must be set before the first call
+r_refdef must be set before the first call
 ================
 */
 void R_RenderView(refdef_t *fd)
@@ -860,7 +860,7 @@ void R_RenderView(refdef_t *fd)
 	if(r_norefresh->value)
 		return;
 
-	r_newrefdef = *fd;
+	r_refdef = *fd;
 
 	if(!r_worldmodel && !(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
 		ri.Sys_Error(ERR_DROP, "R_RenderView: NULL worldmodel");

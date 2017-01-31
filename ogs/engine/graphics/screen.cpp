@@ -491,7 +491,7 @@ void SCR_DrawFPS()
 
 /*
 ==============
-DrawPause
+SCR_DrawPause
 ==============
 */
 void SCR_DrawPause()
@@ -501,11 +501,12 @@ void SCR_DrawPause()
 	if(!scr_showpause.value) // turn off for screenshots
 		return;
 
-	if(!cl.paused)
+	if(!cl.paused) // if (!cl_paused->value)
 		return;
-
-	pic = Draw_CachePic("gfx/pause.lmp");
-	Draw_Pic((vid.width - pic->width) / 2, (vid.height - 48 - pic->height) / 2, pic);
+	
+	//int w, h;
+	pic = Draw_CachePic("gfx/pause.lmp"); // re.DrawGetPicSize (&w, &h, "pause");
+	gpRender->DrawPic((vid.width - pic->width) / 2, (vid.height - 48 - pic->height) / 2, pic); // ((viddef.width-w)/2, viddef.height/2 + 8, "pause");
 }
 
 //=============================================================================
@@ -565,6 +566,23 @@ SCR_DrawConsole
 */
 void SCR_DrawConsole()
 {
+	/*
+	Con_CheckResize ();
+	
+	if (cls.state == ca_disconnected || cls.state == ca_connecting)
+	{	// forced full screen console
+		Con_DrawConsole (1.0);
+		return;
+	}
+
+	if (cls.state != ca_active || !cl.refresh_prepped)
+	{	// connected, but can't render
+		Con_DrawConsole (0.5);
+		re.DrawFill (0, viddef.height/2, viddef.width, viddef.height/2, 0);
+		return;
+	}
+	*/
+	
 	if(scr_con_current)
 	{
 		scr_copyeverything = 1;
@@ -666,7 +684,7 @@ void SCR_ScreenShot_f()
 	//
 	// find a file name to save it to
 	//
-	strcpy(pcxname, "quake00.pcx");
+	strcpy(pcxname, "ogs00.pcx");
 
 	for(i = 0; i <= 99; i++)
 	{
@@ -817,7 +835,7 @@ void SCR_RSShot_f()
 // 
 // find a file name to save it to 
 // 
-	strcpy(pcxname,"mquake00.pcx");
+	strcpy(pcxname,"mogs00.pcx");
 		
 	for (i=0 ; i<=99 ; i++) 
 	{ 
@@ -1193,14 +1211,16 @@ void SCR_BeginLoadingPlaque ()
 	cl.sound_prepped = false;		// don't play ambients
 	CDAudio_Stop ();
 	
+	// already set
 	if (cls.disable_screen)
 		return;
 	
 	if (developer->value)
 		return;
 	
+	// if at console, don't bring up the plaque
 	if (cls.state == ca_disconnected)
-		return;	// if at console, don't bring up the plaque
+		return;
 	
 	if (cls.key_dest == key_console)
 		return;
@@ -1210,8 +1230,9 @@ void SCR_BeginLoadingPlaque ()
 	else
 		scr_draw_loading = 1;
 	
-	SCR_UpdateScreen ();
-	cls.disable_screen = Sys_Milliseconds ();
+	SCR_UpdateScreen();
+	
+	cls.disable_screen = Sys_Milliseconds (); // host.realtime;
 	cls.disable_servercount = cl.servercount;
 };
 
@@ -1222,6 +1243,6 @@ SCR_EndLoadingPlaque
 */
 void SCR_EndLoadingPlaque()
 {
-	cls.disable_screen = 0;
+	cls.disable_screen = 0.0f;
 	Con_ClearNotify();
 };

@@ -1,37 +1,8 @@
-/*
-Copyright (C) 1996-1997 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-
-/// @file
-
-#ifndef __MODEL__
-#define __MODEL__
 
 #include "modelgen.h"
 #include "spritegn.h"
 
-/*
-
-d*_t structures are on-disk representations
-m*_t structures are in-memory
-
-*/
 
 // entity effects
 
@@ -40,22 +11,6 @@ m*_t structures are in-memory
 #define EF_BRIGHTLIGHT 4
 #define EF_DIMLIGHT 8
 
-/*
-==============================================================================
-
-BRUSH MODELS
-
-==============================================================================
-*/
-
-//
-// in memory representation
-//
-// !!! if this is changed, it must be changed in asm_draw.h too !!!
-typedef struct
-{
-	vec3_t position;
-} mvertex_t;
 
 #define SIDE_FRONT 0
 #define SIDE_BACK 1
@@ -85,20 +40,8 @@ typedef struct texture_s
 	unsigned offsets[MIPLEVELS];       // four mip maps stored
 } texture_t;
 
-#define SURF_PLANEBACK 2
-#define SURF_DRAWSKY 4
 #define SURF_DRAWSPRITE 8
-#define SURF_DRAWTURB 0x10
 #define SURF_DRAWTILED 0x20
-#define SURF_DRAWBACKGROUND 0x40
-#define SURF_UNDERWATER 0x80
-
-// !!! if this is changed, it must be changed in asm_draw.h too !!!
-typedef struct
-{
-	unsigned short v[2];
-	unsigned int cachededgeoffset;
-} medge_t;
 
 typedef struct
 {
@@ -107,17 +50,6 @@ typedef struct
 	texture_t *texture;
 	int flags;
 } mtexinfo_t;
-
-#define VERTEXSIZE 7
-
-typedef struct glpoly_s
-{
-	struct glpoly_s *next;
-	struct glpoly_s *chain;
-	int numverts;
-	int flags;                  // for SURF_UNDERWATER
-	float verts[4][VERTEXSIZE]; // variable sized (xyz s1t1 s2t2)
-} glpoly_t;
 
 typedef struct msurface_s
 {
@@ -413,15 +345,7 @@ typedef struct model_s
 
 } model_t;
 
-//============================================================================
-
-void Mod_Init(void);
-void Mod_ClearAll(void);
-model_t *Mod_ForName(char *name, qboolean crash);
 void *Mod_Extradata(model_t *mod); // handles caching
 void Mod_TouchModel(char *name);
 
-mleaf_t *Mod_PointInLeaf(float *p, model_t *model);
 byte *Mod_LeafPVS(mleaf_t *leaf, model_t *model);
-
-#endif // __MODEL__

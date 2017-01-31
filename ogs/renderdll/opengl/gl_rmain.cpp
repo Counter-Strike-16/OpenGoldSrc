@@ -1,24 +1,4 @@
-/*
-Copyright (C) 1996-1997 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-
-/// @file
 
 #include "quakedef.h"
 
@@ -27,14 +7,6 @@ entity_t r_worldentity;
 qboolean r_cache_thrash; // compatability
 
 vec3_t modelorg, r_entorigin;
-entity_t *currententity;
-
-int r_visframecount; // bumped when going to a new PVS
-int r_framecount;    // used for dlight push checking
-
-mplane_t frustum[4];
-
-int c_brush_polys, c_alias_polys;
 
 qboolean envmap; // true during envmap command capture
 
@@ -49,20 +21,6 @@ int mirrortexturenum; // quake texturenum, not gltexturenum
 qboolean mirror;
 mplane_t *mirror_plane;
 
-//
-// view origin
-//
-vec3_t vup;
-vec3_t vpn;
-vec3_t vright;
-vec3_t r_origin;
-
-float r_world_matrix[16];
-float r_base_world_matrix[16];
-
-//
-// screen size info
-//
 refdef_t r_refdef;
 
 mleaf_t *r_viewleaf, *r_oldviewleaf;
@@ -100,40 +58,6 @@ cvar_t gl_reporttjunctions = { "gl_reporttjunctions", "0" };
 cvar_t gl_doubleeyes = { "gl_doubleeys", "1" };
 
 extern cvar_t gl_ztrick;
-
-/*
-=================
-R_CullBox
-
-Returns true if the box is completely outside the frustom
-=================
-*/
-qboolean R_CullBox(vec3_t mins, vec3_t maxs)
-{
-	int i;
-
-	for(i = 0; i < 4; i++)
-		if(BoxOnPlaneSide(mins, maxs, &frustum[i]) == 2)
-			return true;
-	return false;
-}
-
-void R_RotateForEntity(entity_t *e)
-{
-	glTranslatef(e->origin[0], e->origin[1], e->origin[2]);
-
-	glRotatef(e->angles[1], 0, 0, 1);
-	glRotatef(-e->angles[0], 0, 1, 0);
-	glRotatef(e->angles[2], 1, 0, 0);
-}
-
-/*
-=============================================================
-
-  SPRITE MODELS
-
-=============================================================
-*/
 
 /*
 ================
@@ -1077,20 +1001,10 @@ void R_Mirror(void)
 	glColor4f(1, 1, 1, 1);
 }
 
-/*
-================
-R_RenderView
-
-r_refdef must be set before the first call
-================
-*/
 void R_RenderView(void)
 {
 	double time1, time2;
 	GLfloat colors[4] = { (GLfloat)0.0, (GLfloat)0.0, (GLfloat)1, (GLfloat)0.20 };
-
-	if(r_norefresh.value)
-		return;
 
 	if(!r_worldentity.model || !cl.worldmodel)
 		Sys_Error("R_RenderView: NULL worldmodel");
@@ -1104,9 +1018,6 @@ void R_RenderView(void)
 	}
 
 	mirror = false;
-
-	if(gl_finish.value)
-		glFinish();
 
 	R_Clear();
 

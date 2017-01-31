@@ -421,25 +421,6 @@ void SCR_DrawNet (void)
 
 /*
 ==============
-SCR_DrawPause
-==============
-*/
-void SCR_DrawPause (void)
-{
-	int		w, h;
-
-	if (!scr_showpause->value)		// turn off for screenshots
-		return;
-
-	if (!cl_paused->value)
-		return;
-
-	re.DrawGetPicSize (&w, &h, "pause");
-	re.DrawPic ((viddef.width-w)/2, viddef.height/2 + 8, "pause");
-}
-
-/*
-==============
 SCR_DrawLoading
 ==============
 */
@@ -488,27 +469,9 @@ void SCR_RunConsole (void)
 
 }
 
-/*
-==================
-SCR_DrawConsole
-==================
-*/
 void SCR_DrawConsole (void)
 {
-	Con_CheckResize ();
 	
-	if (cls.state == ca_disconnected || cls.state == ca_connecting)
-	{	// forced full screen console
-		Con_DrawConsole (1.0);
-		return;
-	}
-
-	if (cls.state != ca_active || !cl.refresh_prepped)
-	{	// connected, but can't render
-		Con_DrawConsole (0.5);
-		re.DrawFill (0, viddef.height/2, viddef.width, viddef.height/2, 0);
-		return;
-	}
 
 	if (scr_con_current)
 	{
@@ -1191,14 +1154,6 @@ void SCR_DrawLayout (void)
 
 //=======================================================
 
-/*
-==================
-SCR_UpdateScreen
-
-This is called every frame, and can also be called explicitly to flush
-text to the screen.
-==================
-*/
 void SCR_UpdateScreen (void)
 {
 	int numframes;
