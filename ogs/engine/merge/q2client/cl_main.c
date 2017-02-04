@@ -301,11 +301,7 @@ void CL_ForwardToServer_f (void)
 }
 
 
-/*
-==================
-CL_Pause_f
-==================
-*/
+
 void CL_Pause_f (void)
 {
 	// never pause in multiplayer
@@ -315,18 +311,7 @@ void CL_Pause_f (void)
 		return;
 	}
 
-	Cvar_SetValue ("paused", !cl_paused->value);
-}
-
-/*
-==================
-CL_Quit_f
-==================
-*/
-void CL_Quit_f (void)
-{
-	CL_Disconnect ();
-	Com_Quit ();
+	
 }
 
 /*
@@ -419,53 +404,6 @@ void CL_Connect_f (void)
 	cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
 }
 
-void CL_Rcon_f (void)
-{
-
-	if (!rcon_client_password->string)
-	{
-		Com_Printf ("You must set 'rcon_password' before\n"
-					"issuing an rcon command.\n");
-		return;
-	}
-
-	message[0] = (char)255;
-	message[1] = (char)255;
-	message[2] = (char)255;
-	message[3] = (char)255;
-	message[4] = 0;
-
-	
-
-	strcat (message, rcon_client_password->string);
-
-	else
-	{
-		if (!strlen(rcon_address->string))
-		{
-			Com_Printf ("You must either be connected,\n"
-						"or set the 'rcon_address' cvar\n"
-						"to issue rcon commands\n");
-
-			return;
-		}
-		NET_StringToAdr (rcon_address->string, &to);
-		if (to.port == 0)
-			to.port = BigShort (PORT_SERVER);
-	}
-	
-	NET_SendPacket (NS_CLIENT, strlen(message)+1, message, to);
-}
-
-void CL_ClearState (void)
-{
-	CL_ClearEffects ();
-	CL_ClearTEnts ();
-
-	memset (&cl_entities, 0, sizeof(cl_entities));
-
-}
-
 void CL_Disconnect (void)
 {
 	byte	final[32];
@@ -513,84 +451,6 @@ void CL_Disconnect (void)
 	cls.state = ca_disconnected;
 }
 
-void CL_Disconnect_f (void)
-{
-	Com_Error (ERR_DROP, "Disconnected from server");
-}
-
-
-/*
-====================
-CL_Packet_f
-
-packet <destination> <contents>
-
-Contents allows \n escape character
-====================
-*/
-void CL_Packet_f (void)
-{
-	char	send[2048];
-	int		i, l;
-	char	*in, *out;
-	netadr_t	adr;
-
-	if (Cmd_Argc() != 3)
-	{
-		Com_Printf ("packet <destination> <contents>\n");
-		return;
-	}
-
-	NET_Config (true);		// allow remote
-
-	if (!NET_StringToAdr (Cmd_Argv(1), &adr))
-	{
-		Com_Printf ("Bad address\n");
-		return;
-	}
-	if (!adr.port)
-		adr.port = BigShort (PORT_SERVER);
-
-	in = Cmd_Argv(2);
-	out = send+4;
-	send[0] = send[1] = send[2] = send[3] = (char)0xff;
-
-	l = strlen (in);
-	for (i=0 ; i<l ; i++)
-	{
-		if (in[i] == '\\' && in[i+1] == 'n')
-		{
-			*out++ = '\n';
-			i++;
-		}
-		else
-			*out++ = in[i];
-	}
-	*out = 0;
-
-	NET_SendPacket (NS_CLIENT, out-send, send, adr);
-}
-
-void CL_Reconnect_f (void)
-{
-	//ZOID
-	//if we are downloading, we don't change!  This so we don't suddenly stop downloading a map
-	if (cls.download)
-		return;
-
-	if (*cls.servername)
-	{
-		if (cls.state >= ca_connected) {
-			CL_Disconnect();
-			cls.connect_time = cls.realtime - 1500;
-		} else
-			cls.connect_time = -99999; // fire immediately
-
-		cls.state = ca_connecting;
-		Com_Printf ("reconnecting...\n");
-	}
-}
-
 /*
 =================
 CL_ParseStatusMessage
@@ -600,11 +460,9 @@ Handle a reply from a ping
 */
 void CL_ParseStatusMessage (void)
 {
-	char	*s;
+	char *s = MSG_ReadString(&net_message);
 
-	s = MSG_ReadString(&net_message);
-
-	Com_Printf ("%s\n", s);
+	Con_Printf ("%s\n", s);
 	M_AddToServerList (net_from, s);
 }
 
@@ -702,7 +560,7 @@ void CL_ConnectionlessPacket (void)
 
 	Com_Printf ("%s: %s\n", NET_AdrToString (net_from), c);
 
-	// server connection
+	
 	if (!strcmp(c, "client_connect"))
 	{
 		if (cls.state == ca_connected)
@@ -736,28 +594,6 @@ void CL_ConnectionlessPacket (void)
 		s = MSG_ReadString (&net_message);
 		Cbuf_AddText (s);
 		Cbuf_AddText ("\n");
-		return;
-	}
-	// print command from somewhere
-	if (!strcmp(c, "print"))
-	{
-		s = MSG_ReadString (&net_message);
-		Com_Printf ("%s", s);
-		return;
-	}
-
-	// ping from somewhere
-	if (!strcmp(c, "ping"))
-	{
-		Netchan_OutOfBandPrint (NS_CLIENT, net_from, "ack");
-		return;
-	}
-
-	// challenge from the server we are connecting to
-	if (!strcmp(c, "challenge"))
-	{
-		cls.challenge = atoi(Cmd_Argv(1));
-		CL_SendConnectPacket ();
 		return;
 	}
 

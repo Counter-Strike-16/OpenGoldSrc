@@ -187,7 +187,7 @@ TYPEDESCRIPTION gLightstyleDescription[2];
 
 void SV_GetPlayerHulls()
 {
-	for(int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; ++i)
 	{
 		if(!gEntityInterface.pfnGetHullBounds(i, player_mins[i], player_maxs[i]))
 			break;
@@ -517,7 +517,7 @@ void Host_Quit_f()
 			return;
 		}
 
-		if(g_pcls.state)
+		if(cls.state)
 			CL_Disconnect();
 
 		Host_ShutdownServer(FALSE);
@@ -1155,10 +1155,10 @@ void Host_Reload_f()
 void Host_Reconnect_f()
 {
 	char cmdString[128];
-	if(g_pcls.state < ca_connected)
+	if(cls.state < ca_connected)
 		return;
 
-	if(g_pcls.passive)
+	if(cls.passive)
 	{
 		Q_snprintf(cmdString, sizeof(cmdString), "listen %s\n", NET_AdrToString(g_pcls.connect_stream));
 		Cbuf_AddText(cmdString);
@@ -1166,14 +1166,14 @@ void Host_Reconnect_f()
 	}
 
 	SCR_BeginLoadingPlaque(FALSE);
-	g_pcls.signon = 0;
-	g_pcls.state = ca_connected;
+	cls.signon = 0;
+	cls.state = ca_connected;
 	sys_timescale.value = 1.0f;
 
-	Netchan_Clear(&g_pcls.netchan);
-	SZ_Clear(&g_pcls.netchan.message);
-	MSG_WriteChar(&g_pcls.netchan.message, clc_stringcmd);
-	MSG_WriteString(&g_pcls.netchan.message, "new");
+	Netchan_Clear(&cls.netchan);
+	SZ_Clear(&cls.netchan.message);
+	MSG_WriteChar(&cls.netchan.message, clc_stringcmd);
+	MSG_WriteString(&cls.netchan.message, "new");
 }
 
 char *Host_SaveGameDirectory()
@@ -1186,15 +1186,15 @@ char *Host_SaveGameDirectory()
 
 void Host_SavegameComment(char *pszBuffer, int iSizeBuffer)
 {
-	int i;
-	const char *pszName = NULL;
+	const char *pszName = "";
 	const char *pszMapName = (const char *)&pr_strings[gGlobalVariables.mapname];
 
-	for(i = 0; i < ARRAYSIZE(gTitleComments) && !pszName; i++)
+	for(int i = 0; i < ARRAYSIZE(gTitleComments) && !pszName; ++i)
 	{
 		if(!Q_strnicmp(pszMapName, gTitleComments[i].pBSPName, Q_strlen(gTitleComments[i].pBSPName)))
 			pszName = gTitleComments[i].pTitleName;
-	}
+	};
+	
 	if(!pszName)
 	{
 		if(!pszMapName || !pszMapName[0])
@@ -1247,12 +1247,12 @@ int Host_ValidSave()
 		Con_Printf("Can't save multiplayer games.\n");
 		return 0;
 	}
-	if(g_pcls.state != ca_active || g_pcls.signon != 2)
+	if(cls.state != ca_active || g_pcls.signon != 2)
 	{
 		Con_Printf("Can't save during transition.\n");
 		return 0;
 	}
-	if(g_pcl.intermission)
+	if(cl.intermission)
 	{
 		Con_Printf("Can't save in intermission.\n");
 		return 0;
@@ -2701,6 +2701,11 @@ void Host_Kill_f()
 	gEntityInterface.pfnClientKill(sv_player);
 }
 
+/*
+==================
+CL_Pause_f
+==================
+*/
 void Host_TogglePause_f()
 {
 	if(cmd_source == src_command)
@@ -2833,7 +2838,7 @@ void Host_Startdemos_f()
 	int i;
 	int c;
 
-	if(g_pcls.state == ca_dedicated)
+	if(cls.state == ca_dedicated)
 	{
 		if(!g_psv.active)
 			Con_Printf("Cannot play demos on a dedicated server.\n");
@@ -2850,23 +2855,24 @@ void Host_Startdemos_f()
 	for(i = 1; i < c + 1; i++)
 	{
 		Q_strncpy(g_pcls.demos[i - 1], Cmd_Argv(i), 15);
-		g_pcls.demos[i - 1][15] = 0;
+		cls.demos[i - 1][15] = 0;
 	}
-	if(g_psv.active || g_pcls.demonum == -1 || g_pcls.demoplayback)
-		g_pcls.demonum = -1;
+	if(g_psv.active || cls.demonum == -1 || cls.demoplayback)
+		cls.demonum = -1;
 	else
 	{
-		g_pcls.demonum = 0;
+		cls.demonum = 0;
 		Host_NextDemo();
 	}
 }
 
 void Host_Demos_f()
 {
-	if(g_pcls.state != ca_dedicated)
+	if(cls.state != ca_dedicated)
 	{
-		if(g_pcls.demonum == -1)
-			g_pcls.demonum = 0;
+		if(cls.demonum == -1)
+			cls.demonum = 0;
+		
 		CL_Disconnect_f();
 		Host_NextDemo();
 	}
@@ -2874,9 +2880,9 @@ void Host_Demos_f()
 
 void Host_Stopdemo_f()
 {
-	if(g_pcls.state != ca_dedicated)
+	if(cls.state != ca_dedicated)
 	{
-		if(g_pcls.demoplayback)
+		if(cls.demoplayback)
 		{
 			CL_StopPlayback();
 			CL_Disconnect();
@@ -2946,23 +2952,23 @@ void Host_Soundfade_f()
 		inTime = 0;
 	}
 
-	g_pcls.soundfade.nStartPercent = percent;
-	g_pcls.soundfade.soundFadeStartTime = realtime;
-	g_pcls.soundfade.soundFadeOutTime = outTime;
-	g_pcls.soundfade.soundFadeHoldTime = holdTime;
-	g_pcls.soundfade.soundFadeInTime = inTime;
+	cls.soundfade.nStartPercent = percent;
+	cls.soundfade.soundFadeStartTime = realtime;
+	cls.soundfade.soundFadeOutTime = outTime;
+	cls.soundfade.soundFadeHoldTime = holdTime;
+	cls.soundfade.soundFadeInTime = inTime;
 }
 
 void Host_KillServer_f()
 {
-	if(g_pcls.state != ca_dedicated)
+	if(cls.state != ca_dedicated)
 		CL_Disconnect_f();
 
 	else if(g_psv.active)
 	{
 		Host_ShutdownServer(FALSE);
 
-		if(g_pcls.state != ca_dedicated)
+		if(cls.state != ca_dedicated)
 			NET_Config(FALSE);
 	}
 }
@@ -2988,7 +2994,7 @@ void Host_VoiceRecordStart_f()
 
 void Host_VoiceRecordStop_f()
 {
-	if(g_pcls.state != ca_active)
+	if(cls.state != ca_active)
 		return;
 
 	if(Voice_IsRecording())

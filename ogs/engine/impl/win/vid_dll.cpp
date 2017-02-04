@@ -32,9 +32,8 @@
 
 #include <assert.h>
 #include <float.h>
-
 #include "client/client.hpp"
-#include "winquake.h"
+#include "winquake.hpp"
 //#include "zmouse.h"
 
 // Structure containing functions exported from render DLL
@@ -77,7 +76,7 @@ extern unsigned sys_msg_time;
 */
 extern qboolean s_win95;
 
-static void WIN_DisableAltTab(void)
+static void WIN_DisableAltTab()
 {
 	if(s_alttab_disabled)
 		return;
@@ -96,7 +95,7 @@ static void WIN_DisableAltTab(void)
 	s_alttab_disabled = true;
 }
 
-static void WIN_EnableAltTab(void)
+static void WIN_EnableAltTab()
 {
 	if(s_alttab_disabled)
 	{
@@ -124,7 +123,8 @@ DLL GLUE
 ==========================================================================
 */
 
-#define MAXPRINTMSG 4096
+const int MAXPRINTMSG = 4096;
+
 void VID_Printf(int print_level, char *fmt, ...)
 {
 	va_list argptr;
@@ -137,11 +137,11 @@ void VID_Printf(int print_level, char *fmt, ...)
 
 	if(print_level == PRINT_ALL)
 	{
-		Com_Printf("%s", msg);
+		Con_Printf("%s", msg);
 	}
 	else if(print_level == PRINT_DEVELOPER)
 	{
-		Com_DPrintf("%s", msg);
+		Con_DPrintf("%s", msg);
 	}
 	else if(print_level == PRINT_ALERT)
 	{
@@ -584,21 +584,19 @@ void VID_Restart_f()
 	vid_ref->modified = true;
 }
 
-void VID_Front_f(void)
+void VID_Front_f()
 {
 	SetWindowLong(cl_hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
 	SetForegroundWindow(cl_hwnd);
 }
 
-/*
-** VID_GetModeInfo
-*/
-typedef struct vidmode_s
+
+struct vidmode_t
 {
 	const char *description;
 	int width, height;
 	int mode;
-} vidmode_t;
+};
 
 vidmode_t vid_modes[] = {
 	{ "320x240", 320, 240, 0 },
@@ -612,10 +610,15 @@ vidmode_t vid_modes[] = {
 	{ "1152x864", 1152, 864, 8 },
 	{ "1280x720", 1280, 720, 9 },
 	{ "1280x960", 1280, 960, 10 },
-	{ "1600x900", 1600, 900, 11 } { "1600x1200", 1600, 1200, 12 } {
-	"1920x1080", 1600, 1200, 13 } { "1920x1200", 1600, 1200, 14 }
+	{ "1600x900", 1600, 900, 11 },
+	{ "1600x1200", 1600, 1200, 12 },
+	{"1920x1080", 1600, 1200, 13 },
+	{ "1920x1200", 1600, 1200, 14 }
 };
 
+/*
+** VID_GetModeInfo
+*/
 qboolean VID_GetModeInfo(int *width, int *height, int mode)
 {
 	if(mode < 0 || mode >= VID_NUM_MODES)
@@ -675,7 +678,6 @@ VID_LoadRefresh
 qboolean VID_LoadRefresh(char *name)
 {
 	refimport_t ri;
-	GetRefAPI_t GetRefAPI;
 
 	if(reflib_active)
 	{
@@ -692,14 +694,6 @@ qboolean VID_LoadRefresh(char *name)
 		return false;
 	}
 
-	ri.Cmd_AddCommand = Cmd_AddCommand;
-	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
-
-	ri.Cmd_Argc = Cmd_Argc;
-	ri.Cmd_Argv = Cmd_Argv;
-
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
-
 	ri.Con_Printf = VID_Printf;
 
 	ri.Sys_Error = VID_Error;
@@ -707,10 +701,6 @@ qboolean VID_LoadRefresh(char *name)
 	ri.FS_LoadFile = FS_LoadFile;
 	ri.FS_FreeFile = FS_FreeFile;
 	ri.FS_Gamedir = FS_Gamedir;
-
-	ri.Cvar_Get = Cvar_Get;
-	ri.Cvar_Set = Cvar_Set;
-	ri.Cvar_SetValue = Cvar_SetValue;
 
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
@@ -737,7 +727,7 @@ qboolean VID_LoadRefresh(char *name)
 		return false;
 	}
 
-	Com_Printf("------------------------------------\n");
+	Con_Printf("------------------------------------\n");
 	reflib_active = true;
 
 	//======
@@ -774,13 +764,10 @@ void VID_CheckChanges()
 	if(win_noalttab->modified)
 	{
 		if(win_noalttab->value)
-		{
 			WIN_DisableAltTab();
-		}
 		else
-		{
 			WIN_EnableAltTab();
-		}
+		
 		win_noalttab->modified = false;
 	}
 
@@ -788,7 +775,8 @@ void VID_CheckChanges()
 	{
 		cl.force_refdef = true; // can't use a paused refdef
 		S_StopAllSounds();
-	}
+	};
+	
 	while(vid_ref->modified)
 	{
 		/*

@@ -1,81 +1,15 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
 #include <float.h>
 
 #include "../client/client.h"
 #include "../client/snd_loc.h"
-#include "winquake.h"
 
-#define iDirectSoundCreate(a, b, c) pDirectSoundCreate(a, b, c)
-
-HRESULT(WINAPI *pDirectSoundCreate)
-(GUID FAR *lpGUID, LPDIRECTSOUND FAR *lplpDS, IUnknown FAR *pUnkOuter);
-
-// 64K is > 1 second at 16-bit, 22050 Hz
-#define WAV_BUFFERS 64
-#define WAV_MASK 0x3F
-#define WAV_BUFFER_SIZE 0x0400
-#define SECONDARY_BUFFER_SIZE 0x10000
-
-typedef enum { SIS_SUCCESS,
-	           SIS_FAILURE,
-	           SIS_NOTAVAIL } sndinitstat;
 
 cvar_t *s_wavonly;
 
-static qboolean dsound_init;
-static qboolean wav_init;
-static qboolean snd_firsttime = true, snd_isdirect, snd_iswave;
-static qboolean primary_format_set;
 
 // starts at 0 for disabled
 static int snd_buffer_count = 0;
-static int sample16;
-static int snd_sent, snd_completed;
-
-/*
- * Global variables. Must be visible to window-procedure function
- *  so it can unlock and free the data block after it has been played.
- */
-
-HANDLE hData;
-HPSTR lpData, lpData2;
-
-HGLOBAL hWaveHdr;
-LPWAVEHDR lpWaveHdr;
-
-HWAVEOUT hWaveOut;
-
-WAVEOUTCAPS wavecaps;
-
-DWORD gSndBufSize;
-
-MMTIME mmstarttime;
-
-LPDIRECTSOUND pDS;
-LPDIRECTSOUNDBUFFER pDSBuf, pDSPBuf;
-
-HINSTANCE hInstDS;
-
-qboolean SNDDMA_InitDirect(void);
-qboolean SNDDMA_InitWav(void);
 
 void FreeSound(void);
 
@@ -336,29 +270,12 @@ void FreeSound(void)
 		hInstDS = NULL;
 	}
 
-	pDS = NULL;
-	pDSBuf = NULL;
-	pDSPBuf = NULL;
-	hWaveOut = 0;
-	hData = 0;
-	hWaveHdr = 0;
-	lpData = NULL;
-	lpWaveHdr = NULL;
-	dsound_init = false;
-	wav_init = false;
+
 }
 
-/*
-==================
-SNDDMA_InitDirect
-
-Direct-Sound support
-==================
-*/
 sndinitstat SNDDMA_InitDirect(void)
 {
 	DSCAPS dscaps;
-	HRESULT hresult;
 
 	dma.channels = 2;
 	dma.samplebits = 16;
@@ -374,22 +291,14 @@ sndinitstat SNDDMA_InitDirect(void)
 
 	if(!hInstDS)
 	{
-		Com_DPrintf("...loading dsound.dll: ");
+		
 
-		hInstDS = LoadLibrary("dsound.dll");
-
-		if(hInstDS == NULL)
-		{
-			Com_Printf("failed\n");
-			return SIS_FAILURE;
-		}
-
-		Com_DPrintf("ok\n");
+		
 		pDirectSoundCreate = (void *)GetProcAddress(hInstDS, "DirectSoundCreate");
 
 		if(!pDirectSoundCreate)
 		{
-			Com_Printf("*** couldn't get DS proc addr ***\n");
+			
 			return SIS_FAILURE;
 		}
 	}
@@ -662,33 +571,10 @@ int SNDDMA_Init(void)
 	return 1;
 }
 
-/*
-==============
-SNDDMA_GetDMAPos
 
-return the current sample position (in mono samples read)
-inside the recirculating dma buffer, so the mixing code will know
-how many sample are required to fill it up.
-===============
-*/
 int SNDDMA_GetDMAPos(void)
 {
-	MMTIME mmtime;
-	int s;
-	DWORD dwWrite;
 
-	if(dsound_init)
-	{
-		mmtime.wType = TIME_SAMPLES;
-		pDSBuf->lpVtbl->GetCurrentPosition(pDSBuf, &mmtime.u.sample, &dwWrite);
-		s = mmtime.u.sample - mmstarttime.u.sample;
-	}
-	else if(wav_init)
-	{
-		s = snd_sent * WAV_BUFFER_SIZE;
-	}
-
-	s >>= sample16;
 
 	s &= (dma.samples - 1);
 
@@ -770,27 +656,10 @@ void SNDDMA_Submit(void)
 	if(pDSBuf)
 		pDSBuf->lpVtbl->Unlock(pDSBuf, dma.buffer, locksize, NULL, 0);
 
-	if(!wav_init)
-		return;
-
-	//
-	// find which sound blocks have completed
-	//
-	while(1)
-	{
-		if(snd_completed == snd_sent)
-		{
+	
 			Com_DPrintf("Sound overrun\n");
 			break;
-		}
-
-		if(!(lpWaveHdr[snd_completed & WAV_MASK].dwFlags & WHDR_DONE))
-		{
-			break;
-		}
-
-		snd_completed++; // this buffer has been played
-	}
+		
 
 	// Com_Printf ("completed %i\n", snd_completed);
 	//
@@ -802,30 +671,11 @@ void SNDDMA_Submit(void)
 		if(paintedtime / 256 <= snd_sent)
 			break; //	Com_Printf ("submit overrun\n");
 		           // Com_Printf ("send %i\n", snd_sent);
-		snd_sent++;
-		/*
-     * Now the data block can be sent to the output device. The
-     * waveOutWrite function returns immediately and waveform
-     * data is sent to the output device in the background.
-     */
-		wResult = waveOutWrite(hWaveOut, h, sizeof(WAVEHDR));
-
-		if(wResult != MMSYSERR_NOERROR)
-		{
+	
 			Com_Printf("Failed to write block to device\n");
 			FreeSound();
 			return;
 		}
-	}
-}
-
-/*
-==============
-SNDDMA_Shutdown
-
-Reset the sound device for exiting
-===============
-*/
 void SNDDMA_Shutdown(void)
 {
 	FreeSound();

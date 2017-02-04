@@ -34,7 +34,7 @@
 #include "console/cmd.hpp"
 #include "filesystem/filesystem_.hpp"
 #include "filesystem/filesystem_internal.hpp"
-#include "platform.h"
+#include "platform_rehlds.h"
 #include "system/common.hpp"
 #include "system/host.hpp"
 #include "system/system.hpp"

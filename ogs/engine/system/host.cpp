@@ -1376,3 +1376,173 @@ void Host_Shutdown()
 	g_psv.time = 0.0f;
 	cl.time = 0.0f;
 };
+
+#if 0
+/*
+==================
+Host_SimulationTime
+
+This determines if enough time has passed to run a simulation frame
+==================
+*/
+qboolean Host_SimulationTime(float time)
+{
+	float fps;
+
+	if (oldrealtime > realtime)
+		oldrealtime = 0;
+
+	if (cl_maxfps.value)
+		fps = max(30.0, min(cl_maxfps.value, 72.0));
+	else
+		fps = max(30.0, min(rate.value/80.0, 72.0));
+
+	if (!cls.timedemo && (realtime + time) - oldrealtime < 1.0/fps)
+		return false;			// framerate is too high
+	
+	return true;
+};
+#endif
+
+/*
+void Host_Frame(float time)
+{
+        static double time1 = 0;
+        static double time2 = 0;
+        static double time3 = 0;
+        int           pass1, pass2, pass3;
+        float         fps;
+        if(setjmp(host_abort))
+                return; // something bad happened, or the server disconnected
+
+        // decide the simulation time
+        realtime += time;
+        if(oldrealtime > realtime)
+                oldrealtime = 0;
+
+        if(cl_maxfps.value)
+                fps = max(30.0, min(cl_maxfps.value, 72.0));
+        else
+                fps = max(30.0, min(rate.value / 80.0, 72.0));
+
+        if(!cls.timedemo && realtime - oldrealtime < 1.0 / fps)
+                return; // framerate is too high
+
+        host_frametime = realtime - oldrealtime;
+        oldrealtime    = realtime;
+        if(host_frametime > 0.2)
+                host_frametime = 0.2;
+
+        // get new key events
+        Sys_SendKeyEvents();
+
+        // allow mice or other external controllers to add commands
+        IN_Commands();
+
+        Cbuf_Execute();
+
+        CL_ReadPackets();
+
+        // send intentions now
+        // resend a connection request if necessary
+        if(cls.state == ca_disconnected)
+                CL_CheckForResend();
+        else
+                CL_SendCmd();
+
+        // Set up prediction for other players
+        CL_SetUpPlayerPrediction(false);
+
+        // do client side motion prediction
+        CL_PredictMove();
+
+        // Set up prediction for other players
+        CL_SetUpPlayerPrediction(true);
+
+        // build a refresh entity list
+        CL_EmitEntities();
+
+        // update video
+        if(host_speeds.value)
+                time1 = Sys_DoubleTime();
+
+        SCR_UpdateScreen();
+
+        if(host_speeds.value)
+                time2 = Sys_DoubleTime();
+
+        // update audio
+        if(cls.state == ca_active)
+        {
+                S_Update(r_origin, vpn, vright, vup);
+                CL_DecayLights();
+        }
+        else
+                S_Update(vec3_origin, vec3_origin, vec3_origin, vec3_origin);
+
+        CDAudio_Update();
+
+        if(host_speeds.value)
+        {
+                pass1 = (time1 - time3) * 1000;
+                time3 = Sys_DoubleTime();
+                pass2 = (time2 - time1) * 1000;
+                pass3 = (time3 - time2) * 1000;
+                Con_Printf("%3i tot %3i server %3i gfx %3i snd\n",
+                           pass1 + pass2 + pass3, pass1, pass2, pass3);
+        }
+
+        host_framecount++;
+        fps_count++;
+}
+
+void Host_Init(quakeparms_t *parms)
+{
+        COM_InitArgv(parms->argc, parms->argv);
+        COM_AddParm("-game");
+        COM_AddParm("qw");
+
+        Sys_mkdir("qw");
+
+        if(parms->memsize < MINIMUM_MEMORY)
+                Sys_Error("Only %4.1f megs of memory reported, can't execute
+game", parms->memsize / (float)0x100000);
+
+        COM_Init();
+
+        Host_FixupModelNames();
+
+        NET_Init(PORT_CLIENT);
+        Netchan_Init();
+
+        //	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
+        Con_Printf("%4.1f megs RAM used.\n", parms->memsize / (1024 * 1024.0));
+
+        host_basepal = (byte *)COM_LoadHunkFile("gfx/palette.lmp");
+        if(!host_basepal)
+                Sys_Error("Couldn't load gfx/palette.lmp");
+        host_colormap = (byte *)COM_LoadHunkFile("gfx/colormap.lmp");
+        if(!host_colormap)
+                Sys_Error("Couldn't load gfx/colormap.lmp");
+
+        Con_Printf("\nClient Version %4.2f (Build %04d)\n\n", VERSION,
+build_number());
+}
+
+int nopacketcount;
+
+static void simple_crypt(char *buf, int len)
+{
+	while(len--)
+		*buf++ ^= 0xff;
+};
+
+void Host_FixupModelNames()
+{
+	simple_crypt(emodel_name, sizeof(emodel_name) - 1);
+	simple_crypt(pmodel_name, sizeof(pmodel_name) - 1);
+	simple_crypt(prespawn_name, sizeof(prespawn_name) - 1);
+	simple_crypt(modellist_name, sizeof(modellist_name) - 1);
+	simple_crypt(soundlist_name, sizeof(soundlist_name) - 1);
+};
+*/

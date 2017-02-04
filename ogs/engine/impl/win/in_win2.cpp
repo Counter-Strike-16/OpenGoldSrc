@@ -1,57 +1,9 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// in_win.c -- windows 95 mouse and joystick code
-// 02/21/97 JCB Added extended DirectInput code to support external controllers.
 
 #include "../client/client.h"
-#include "winquake.h"
 
 extern unsigned sys_msg_time;
 
-// joystick defines and variables
-// where should defines be moved?
-#define JOY_ABSOLUTE_AXIS 0x00000000 // control like a joystick
-#define JOY_RELATIVE_AXIS 0x00000010 // control like a mouse, spinner, trackball
-#define JOY_MAX_AXES 6               // X, Y, Z, R, U, V
-#define JOY_AXIS_X 0
-#define JOY_AXIS_Y 1
-#define JOY_AXIS_Z 2
-#define JOY_AXIS_R 3
-#define JOY_AXIS_U 4
-#define JOY_AXIS_V 5
-
-enum _ControlList
-{
-	AxisNada = 0,
-	AxisForward,
-	AxisLook,
-	AxisSide,
-	AxisTurn,
-	AxisUp
-};
-
 DWORD dwAxisFlags[JOY_MAX_AXES] = { JOY_RETURNX, JOY_RETURNY, JOY_RETURNZ, JOY_RETURNR, JOY_RETURNU, JOY_RETURNV };
-
-DWORD dwAxisMap[JOY_MAX_AXES];
-DWORD dwControlMap[JOY_MAX_AXES];
-PDWORD pdwRawValue[JOY_MAX_AXES];
 
 cvar_t *in_mouse;
 cvar_t *in_joystick;
@@ -83,18 +35,7 @@ cvar_t *joy_upsensitivity;
 qboolean joy_avail, joy_advancedinit, joy_haspov;
 DWORD joy_oldbuttonstate, joy_oldpovstate;
 
-int joy_id;
-DWORD joy_flags;
-DWORD joy_numbuttons;
-
-static JOYINFOEX ji;
-
 qboolean in_appactive;
-
-// forward-referenced functions
-void IN_StartupJoystick(void);
-void Joy_AdvancedUpdate_f(void);
-void IN_JoyMove(usercmd_t *cmd);
 
 /*
 ============================================================

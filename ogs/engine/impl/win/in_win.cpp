@@ -81,7 +81,8 @@ enum _ControlList
 	AxisForward,
 	AxisLook,
 	AxisSide,
-	AxisTurn
+	AxisTurn,
+	AxisUp
 };
 
 DWORD dwAxisFlags[JOY_MAX_AXES] = { JOY_RETURNX, JOY_RETURNY, JOY_RETURNZ, JOY_RETURNR, JOY_RETURNU, JOY_RETURNV };

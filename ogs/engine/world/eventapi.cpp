@@ -162,7 +162,28 @@ void EventAPI_KillEvents(int entnum, const char *eventname)
 
 }; // namespace
 
-// clang-format off
+/*
+static event_api_t gEventApi =
+{
+	pfnPlaySound,
+	pfnIsLocal,
+	pfnLocalPlayerDucking,
+	pfnLocalPlayerViewheight,
+	pfnLocalPlayerBounds,
+	pfnIndexFromTrace,
+	pfnGetPhysent,
+	pfnPrecacheEvent,
+	pfnTraceTexture,
+	pfnStopAllSounds,
+	pfnKillEvents,
+	
+	CL_EventIndex,
+	CL_IndexEvent,
+	CL_PlayerTraceExt,
+	CL_SoundFromIndex,
+	pfnTraceSurface,
+};
+*/
 
 event_api_t gEventAPI =
     {
@@ -200,5 +221,3 @@ event_api_t gEventAPI =
         EventAPI_TraceTexture,
         EventAPI_StopAllSounds,
         EventAPI_KillEvents};
-
-// clang-format on

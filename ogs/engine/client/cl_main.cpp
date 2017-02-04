@@ -258,24 +258,24 @@ void CL_Rcon_f()
 	int i;
 	netadr_t to;
 
-	if(!rcon_password.string)
+	if(!rcon_password.string) // if (!rcon_client_password->string)
 	{
 		Con_Printf(
 		"You must set 'rcon_password' before issuing an rcon command.\n");
 		return;
 	};
 
-	message[0] = 255;
-	message[1] = 255;
-	message[2] = 255;
-	message[3] = 255;
+	message[0] = (char)255;
+	message[1] = (char)255;
+	message[2] = (char)255;
+	message[3] = (char)255;
 	message[4] = 0;
 	
 	//NET_Config(true); // allow remote
 
 	strcat(message, "rcon ");
 
-	strcat(message, rcon_password.string);
+	strcat(message, rcon_password.string); // rcon_client_password->string
 	strcat(message, " ");
 
 	for(i = 1; i < Cmd_Argc(); ++i)
@@ -298,9 +298,12 @@ void CL_Rcon_f()
 		};
 
 		NET_StringToAdr(rcon_address.string, &to);
+		
+		//if(to.port == 0)
+			//to.port = BigShort(PORT_SERVER);
 	};
 
-	NET_SendPacket(strlen(message) + 1, message, to);
+	NET_SendPacket(/*NS_CLIENT,*/ strlen(message) + 1, message, to);
 };
 
 /*
@@ -321,7 +324,8 @@ void CL_ClearState()
 
 	if(host_hunklevel) // FIXME: check this...
 		Hunk_FreeToLowMark(host_hunklevel);
-
+	
+	//CL_ClearEffects();
 	CL_ClearTEnts();
 
 	// wipe the entire cl structure
@@ -330,6 +334,7 @@ void CL_ClearState()
 	SZ_Clear(&cls.netchan.message);
 
 	// clear other arrays
+	//memset(&cl_entities, 0, sizeof(cl_entities));
 	memset(cl_efrags, 0, sizeof(cl_efrags));
 	memset(cl_dlights, 0, sizeof(cl_dlights));
 	memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
@@ -386,7 +391,7 @@ void CL_Disconnect()
 
 void CL_Disconnect_f()
 {
-	CL_Disconnect();
+	CL_Disconnect(); // Host_Error(ERR_DROP, "Disconnected from server");
 };
 
 /*
@@ -622,16 +627,21 @@ void CL_Packet_f()
 		Con_Printf("packet <destination> <contents>\n");
 		return;
 	};
+	
+	//NET_Config(true); // allow remote
 
 	if(!NET_StringToAdr(Cmd_Argv(1), &adr))
 	{
 		Con_Printf("Bad address\n");
 		return;
 	};
+	
+	//if(!adr.port)
+		//adr.port = BigShort(PORT_SERVER);
 
 	in = Cmd_Argv(2);
 	out = send + 4;
-	send[0] = send[1] = send[2] = send[3] = 0xff;
+	send[0] = send[1] = send[2] = send[3] = (char)0xff;
 
 	l = strlen(in);
 	for(i = 0; i < l; ++i)
@@ -647,7 +657,7 @@ void CL_Packet_f()
 
 	*out = 0;
 
-	NET_SendPacket(out - send, send, adr);
+	NET_SendPacket(/*NS_CLIENT,*/ out - send, send, adr);
 };
 
 /*
@@ -715,7 +725,10 @@ The server is changing levels
 */
 void CL_Reconnect_f()
 {
-	if(cls.download) // don't change when downloading
+	// If we are downloading, we don't change!
+	// So we don't suddenly stop downloading a map
+	// Don't change when downloading
+	if(cls.download)
 		return;
 
 	S_StopAllSounds(true);
@@ -733,7 +746,23 @@ void CL_Reconnect_f()
 		Con_Printf("No server to reconnect to...\n");
 		return;
 	};
+	
+	/*
+	if (*cls.servername)
+	{
+		if (cls.state >= ca_connected)
+		{
+			CL_Disconnect();
+			cls.connect_time = cls.realtime - 1500;
+		}
+		else
+			cls.connect_time = -99999; // fire immediately
 
+		cls.state = ca_connecting;
+		Con_Printf ("reconnecting...\n");
+	}
+	*/
+	
 	CL_Disconnect();
 	CL_BeginServerConnect();
 };
@@ -748,15 +777,18 @@ Responses to broadcasts, etc
 void CL_ConnectionlessPacket()
 {
 	char *s;
-	int c;
 
 	MSG_BeginReading();
 	MSG_ReadLong(); // skip the -1
 
-	c = MSG_ReadByte();
+	int c = MSG_ReadByte();
+	
 	if(!cls.demoplayback)
 		Con_Printf("%s: ", NET_AdrToString(net_from));
+	
 	//	Con_DPrintf ("%s", net_message.data + 5);
+	
+	// server connection
 	if(c == S2C_CONNECTION)
 	{
 		Con_Printf("connection\n");
@@ -835,18 +867,22 @@ void CL_ConnectionlessPacket()
 	};
 
 	// print command from somewhere
-	if(c == A2C_PRINT)
+	if(c == A2C_PRINT) // if(!Q_strcmp(c, "print"))
 	{
 		Con_Printf("print\n");
 
 		s = MSG_ReadString();
-		Con_Print(s);
+		Con_Print(s); //Con_Printf("%s", s);
 		return;
 	};
 
 	// ping from somewhere
-	if(c == A2A_PING)
+	if(c == A2A_PING) // if(!Q_strcmp(c, "ping"))
 	{
+		//Netchan_OutOfBandPrint(NS_CLIENT, net_from, "ack");
+		
+		//
+		
 		char data[6];
 
 		Con_Printf("ping\n");
@@ -861,25 +897,32 @@ void CL_ConnectionlessPacket()
 		NET_SendPacket(6, &data, net_from);
 		return;
 	};
-
-	if(c == S2C_CHALLENGE)
+	
+	// challenge from the server we are connecting to
+	if(c == S2C_CHALLENGE) // if(!Q_strcmp(c, "challenge"))
 	{
 		Con_Printf("challenge\n");
-
+		
+		//
+		
 		s = MSG_ReadString();
 
 		cls.challenge = atoi(s);
+		
+		//
+		
+		//cls.challenge = atoi(Cmd_Argv(1));
 
 		CL_SendConnectPacket();
 		return;
 	};
 
 #if 0
-	if (c == svc_disconnect)
+	if(c == svc_disconnect)
 	{
-		Con_Printf ("disconnect\n");
+		Con_Printf("disconnect\n");
 
-		Host_EndGame ("Server disconnected");
+		Host_EndGame("Server disconnected");
 		return;
 	};
 #endif
@@ -954,7 +997,7 @@ CL_Download_f
 */
 void CL_Download_f()
 {
-	char *p, *q;
+	char *q;
 
 	if(cls.state == ca_disconnected)
 	{
@@ -970,7 +1013,7 @@ void CL_Download_f()
 
 	sprintf(cls.downloadname, "%s/%s", com_gamedir, Cmd_Argv(1));
 
-	p = cls.downloadname;
+	char *p = cls.downloadname;
 	for(;;)
 	{
 		if((q = strchr(p, '/')) != NULL)
@@ -1090,178 +1133,3 @@ void CL_Init()
 	Cmd_AddCommand("invprev", NULL);
 	Cmd_AddCommand("invnext", NULL);
 };
-
-//============================================================================
-
-#if 0
-/*
-==================
-Host_SimulationTime
-
-This determines if enough time has passed to run a simulation frame
-==================
-*/
-qboolean Host_SimulationTime(float time)
-{
-	float fps;
-
-	if (oldrealtime > realtime)
-		oldrealtime = 0;
-
-	if (cl_maxfps.value)
-		fps = max(30.0, min(cl_maxfps.value, 72.0));
-	else
-		fps = max(30.0, min(rate.value/80.0, 72.0));
-
-	if (!cls.timedemo && (realtime + time) - oldrealtime < 1.0/fps)
-		return false;			// framerate is too high
-	
-	return true;
-};
-#endif
-
-int nopacketcount;
-/*
-void Host_Frame(float time)
-{
-        static double time1 = 0;
-        static double time2 = 0;
-        static double time3 = 0;
-        int           pass1, pass2, pass3;
-        float         fps;
-        if(setjmp(host_abort))
-                return; // something bad happened, or the server disconnected
-
-        // decide the simulation time
-        realtime += time;
-        if(oldrealtime > realtime)
-                oldrealtime = 0;
-
-        if(cl_maxfps.value)
-                fps = max(30.0, min(cl_maxfps.value, 72.0));
-        else
-                fps = max(30.0, min(rate.value / 80.0, 72.0));
-
-        if(!cls.timedemo && realtime - oldrealtime < 1.0 / fps)
-                return; // framerate is too high
-
-        host_frametime = realtime - oldrealtime;
-        oldrealtime    = realtime;
-        if(host_frametime > 0.2)
-                host_frametime = 0.2;
-
-        // get new key events
-        Sys_SendKeyEvents();
-
-        // allow mice or other external controllers to add commands
-        IN_Commands();
-
-        Cbuf_Execute();
-
-        CL_ReadPackets();
-
-        // send intentions now
-        // resend a connection request if necessary
-        if(cls.state == ca_disconnected)
-                CL_CheckForResend();
-        else
-                CL_SendCmd();
-
-        // Set up prediction for other players
-        CL_SetUpPlayerPrediction(false);
-
-        // do client side motion prediction
-        CL_PredictMove();
-
-        // Set up prediction for other players
-        CL_SetUpPlayerPrediction(true);
-
-        // build a refresh entity list
-        CL_EmitEntities();
-
-        // update video
-        if(host_speeds.value)
-                time1 = Sys_DoubleTime();
-
-        SCR_UpdateScreen();
-
-        if(host_speeds.value)
-                time2 = Sys_DoubleTime();
-
-        // update audio
-        if(cls.state == ca_active)
-        {
-                S_Update(r_origin, vpn, vright, vup);
-                CL_DecayLights();
-        }
-        else
-                S_Update(vec3_origin, vec3_origin, vec3_origin, vec3_origin);
-
-        CDAudio_Update();
-
-        if(host_speeds.value)
-        {
-                pass1 = (time1 - time3) * 1000;
-                time3 = Sys_DoubleTime();
-                pass2 = (time2 - time1) * 1000;
-                pass3 = (time3 - time2) * 1000;
-                Con_Printf("%3i tot %3i server %3i gfx %3i snd\n",
-                           pass1 + pass2 + pass3, pass1, pass2, pass3);
-        }
-
-        host_framecount++;
-        fps_count++;
-}
-*/
-
-static void simple_crypt(char *buf, int len)
-{
-	while(len--)
-		*buf++ ^= 0xff;
-};
-
-void Host_FixupModelNames()
-{
-	simple_crypt(emodel_name, sizeof(emodel_name) - 1);
-	simple_crypt(pmodel_name, sizeof(pmodel_name) - 1);
-	simple_crypt(prespawn_name, sizeof(prespawn_name) - 1);
-	simple_crypt(modellist_name, sizeof(modellist_name) - 1);
-	simple_crypt(soundlist_name, sizeof(soundlist_name) - 1);
-};
-
-//============================================================================
-
-/*
-void Host_Init(quakeparms_t *parms)
-{
-        COM_InitArgv(parms->argc, parms->argv);
-        COM_AddParm("-game");
-        COM_AddParm("qw");
-
-        Sys_mkdir("qw");
-
-        if(parms->memsize < MINIMUM_MEMORY)
-                Sys_Error("Only %4.1f megs of memory reported, can't execute
-game", parms->memsize / (float)0x100000);
-
-        COM_Init();
-
-        Host_FixupModelNames();
-
-        NET_Init(PORT_CLIENT);
-        Netchan_Init();
-
-        //	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
-        Con_Printf("%4.1f megs RAM used.\n", parms->memsize / (1024 * 1024.0));
-
-        host_basepal = (byte *)COM_LoadHunkFile("gfx/palette.lmp");
-        if(!host_basepal)
-                Sys_Error("Couldn't load gfx/palette.lmp");
-        host_colormap = (byte *)COM_LoadHunkFile("gfx/colormap.lmp");
-        if(!host_colormap)
-                Sys_Error("Couldn't load gfx/colormap.lmp");
-
-        Con_Printf("\nClient Version %4.2f (Build %04d)\n\n", VERSION,
-build_number());
-}
-*/

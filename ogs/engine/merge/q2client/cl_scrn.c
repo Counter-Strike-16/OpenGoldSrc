@@ -1,6 +1,4 @@
 
-// cl_scrn.c -- master for refresh, status bar, console, chat, notify, etc
-
 /*
 
   full screen console
@@ -14,17 +12,9 @@
 
   */
 
-#include "client.h"
+#include "client.h"	
 
-float		scr_con_current;	// aproaches scr_conlines at scr_conspeed
-float		scr_conlines;		// 0.0 to 1.0 lines of console to display
-
-qboolean	scr_initialized;		// ready to draw
-
-int			scr_draw_loading;
-
-vrect_t		scr_vrect;		// position of render window on screen
-
+int			scr_draw_loading;	
 
 cvar_t		*scr_viewsize;
 cvar_t		*scr_conspeed;
@@ -153,40 +143,12 @@ void SCR_DrawDebugGraph (void)
 	}
 }
 
-/*
-===============================================================================
-
-CENTER PRINTING
-
-===============================================================================
-*/
-
-char		scr_centerstring[1024];
-float		scr_centertime_start;	// for slow victory printing
-float		scr_centertime_off;
-int			scr_center_lines;
-int			scr_erase_center;
-
-/*
-==============
-SCR_CenterPrint
-
-Called for important messages that should stay in the center of the screen
-for a few moments
-==============
-*/
 void SCR_CenterPrint (char *str)
 {
 	char	*s;
 	char	line[64];
 	int		i, j, l;
 
-	strncpy (scr_centerstring, str, sizeof(scr_centerstring)-1);
-	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.time;
-
-	// count the number of lines for centering
-	scr_center_lines = 1;
 	s = str;
 	while (*s)
 	{
@@ -232,22 +194,6 @@ void SCR_CenterPrint (char *str)
 
 void SCR_DrawCenterString (void)
 {
-	char	*start;
-	int		l;
-	int		j;
-	int		x, y;
-	int		remaining;
-
-// the finale prints the characters one at a time
-	remaining = 9999;
-
-	scr_erase_center = 0;
-	start = scr_centerstring;
-
-	if (scr_center_lines <= 4)
-		y = viddef.height*0.35;
-	else
-		y = 48;
 
 	do	
 	{
@@ -276,18 +222,6 @@ void SCR_DrawCenterString (void)
 	} while (1);
 }
 
-void SCR_CheckDrawCenterString (void)
-{
-	scr_centertime_off -= cls.frametime;
-	
-	if (scr_centertime_off <= 0)
-		return;
-
-	SCR_DrawCenterString ();
-}
-
-//=============================================================================
-
 /*
 =================
 SCR_CalcVrect
@@ -315,32 +249,6 @@ static void SCR_CalcVrect (void)
 
 	scr_vrect.x = (viddef.width - scr_vrect.width)/2;
 	scr_vrect.y = (viddef.height - scr_vrect.height)/2;
-}
-
-
-/*
-=================
-SCR_SizeUp_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeUp_f (void)
-{
-	Cvar_SetValue ("viewsize",scr_viewsize->value+10);
-}
-
-
-/*
-=================
-SCR_SizeDown_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeDown_f (void)
-{
-	Cvar_SetValue ("viewsize",scr_viewsize->value-10);
 }
 
 /*

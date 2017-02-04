@@ -17,7 +17,7 @@
 
 #include "memory.h"
 #include "engine.h"
-#include "platform.h"
+#include "platform_rehlds.h"
 #include "RehldsRuntimeConfig.h"
 #include "rehlds_debug.h"
 

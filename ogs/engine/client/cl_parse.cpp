@@ -1120,6 +1120,7 @@ void CL_ParseBaseline(entity_state_t *es)
 void CL_HandlePause()
 {
 	cl.refdef.paused = (MSG_ReadOneBit() != 0);
+	//Cvar_SetValue ("paused", !cl_paused->value);
 };
 
 void CL_ParseSignOnNum()

@@ -29,7 +29,7 @@
 /// @file
 
 //#include "precompiled.hpp"
-#include "quakedef.hpp"
+#include "commondef.hpp"
 
 void CDAudio_Play(byte track, qboolean looping) // int track
 {};

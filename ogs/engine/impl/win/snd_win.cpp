@@ -215,19 +215,22 @@ sndinitstat SNDDMA_InitDirect()
 
 	if(!hInstDS)
 	{
+		Com_DPrintf("...loading dsound.dll: ");
+		
 		hInstDS = LoadLibrary("dsound.dll");
 
 		if(hInstDS == NULL)
 		{
-			Con_SafePrintf("Couldn't load dsound.dll\n");
+			Con_SafePrintf("Couldn't load dsound.dll\n"); // Com_Printf("failed\n");
 			return SIS_FAILURE;
-		}
-
+		};
+		
+		Com_DPrintf("ok\n");
 		pDirectSoundCreate = (void *)GetProcAddress(hInstDS, "DirectSoundCreate");
 
 		if(!pDirectSoundCreate)
 		{
-			Con_SafePrintf("Couldn't get DS proc addr\n");
+			Con_SafePrintf("Couldn't get DS proc addr\n"); // Com_Printf("*** couldn't get DS proc addr ***\n");
 			return SIS_FAILURE;
 		}
 	}

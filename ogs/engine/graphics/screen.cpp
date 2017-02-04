@@ -30,9 +30,9 @@
 /// @brief master for render, status bar, console, chat, notify, etc
 
 //#include "precompiled.hpp"
-#include "graphics/render/r_local.hpp"
-#include "quakedef.hpp"
 #include <time.h>
+#include "graphics/render/r_local.hpp"
+#include "commondef.hpp"
 
 /*
 
@@ -85,8 +85,8 @@ console is:
 int scr_copytop;
 int scr_copyeverything;
 
-float scr_con_current;
-float scr_conlines; // lines of console to display
+float scr_con_current; // aproaches scr_conlines at scr_conspeed
+float scr_conlines; // lines of console to display; 0.0 to 1.0 lines of console to display
 
 float oldscreensize, oldfov;
 float oldsbar;
@@ -116,7 +116,7 @@ int sb_lines;
 viddef_t vid; // global video state
 
 vrect_t *pconupdate;
-vrect_t scr_vrect;
+vrect_t scr_vrect; // position of render window on screen
 
 qboolean scr_disabled_for_loading;
 
@@ -168,18 +168,16 @@ void SCR_CenterPrint(char *str)
 
 void SCR_EraseCenterString()
 {
-	int y;
-
 	if(scr_erase_center++ > vid.numpages)
 	{
 		scr_erase_lines = 0;
 		return;
 	}
-
+	
+	int y = 48;
+	
 	if(scr_center_lines <= 4)
 		y = vid.height * 0.35;
-	else
-		y = 48;
 
 	scr_copytop = 1;
 	Draw_TileClear(0, y, vid.width, min(8 * scr_erase_lines, vid.height - y - 1));
@@ -191,19 +189,17 @@ void SCR_DrawCenterString()
 	int l;
 	int j;
 	int x, y;
-	int remaining;
+	int remaining = 9999;
 
 	// the finale prints the characters one at a time
 	if(cl.intermission)
 		remaining = scr_printspeed.value * (cl.time - scr_centertime_start);
-	else
-		remaining = 9999;
 
 	scr_erase_center = 0;
 	start = scr_centerstring;
 
 	if(scr_center_lines <= 4)
-		y = vid.height * 0.35;
+		y = vid.height * 0.35f; // vid -> viddef
 	else
 		y = 48;
 
@@ -235,13 +231,15 @@ void SCR_DrawCenterString()
 void SCR_CheckDrawCenterString()
 {
 	scr_copytop = 1;
+	
 	if(scr_center_lines > scr_erase_lines)
 		scr_erase_lines = scr_center_lines;
 
-	scr_centertime_off -= host_frametime;
+	scr_centertime_off -= host_frametime; // cls.frametime
 
 	if(scr_centertime_off <= 0 && !cl.intermission)
 		return;
+	
 	if(key_dest != key_game)
 		return;
 
@@ -1008,11 +1006,9 @@ Brings the console down and fades the palettes back to normal
 */
 void SCR_BringDownConsole()
 {
-	int i;
-
 	scr_centertime_off = 0;
 
-	for(i = 0; i < 20 && scr_conlines != scr_con_current; i++)
+	for(int i = 0; i < 20 && scr_conlines != scr_con_current; ++i)
 		SCR_UpdateScreen();
 
 	cl.cshifts[0].percent = 0; // no area contents palette on next frame

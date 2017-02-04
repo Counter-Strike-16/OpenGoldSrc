@@ -32,6 +32,7 @@
 
 void CInputHandler::Update()
 {
+	//mvKeyDestStates[meKeyDestState]->Update();
 };
 
 void CInputHandler::HandleKey(int anKey)

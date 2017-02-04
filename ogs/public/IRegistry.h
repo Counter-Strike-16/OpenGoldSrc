@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#include <cstddef>
+
 class IRegistry
 {
 public:
