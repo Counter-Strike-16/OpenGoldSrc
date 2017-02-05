@@ -88,15 +88,49 @@ const int DEFAULT_SOUND_PACKET_PITCH = 100;
 // the second character will allways be \n if the message isn't a single
 // byte long (?? not true anymore?)
 
-const char S2C_CHALLENGE	= 'c';
-const char S2C_CONNECTION	= 'j';
+// Client connection is initiated by requesting a challenge value
+//  the server sends this value back
+const char S2C_CHALLENGE = 'A'; // + challenge value
 
-const char A2A_PING				= 'k'; // respond with an A2A_ACK
-const char A2A_ACK				= 'l'; // general acknowledgement without info
+// Send a userid, client remote address, is this server secure and engine build
+// number
+const char S2C_CONNECTION = 'B';
+
 const char A2A_NACK				= 'm'; // [+ comment] general failure
 const char A2A_ECHO				= 'e'; // for echoing
 const char A2C_PRINT			= 'n'; // print a message on client
 const char A2C_CLIENT_COMMAND	= 'B'; // + command line
+
+// HLMaster rejected a server's connection because the server needs to be
+// updated
+const char M2S_REQUESTRESTART = 'O';
+
+// send a log event as key value
+const char S2A_LOGSTRING = 'R';
+
+// Send a log string
+const char S2A_LOGKEY = 'S';
+
+// Basic information about the server
+const char A2S_INFO = 'T';
+
+// Details about each player on the server
+const char A2S_PLAYER = 'U';
+
+// The rules the server is using
+const char A2S_RULES = 'V';
+
+// Another user is requesting a challenge value from this machine
+const char A2A_GETCHALLENGE = 'W'; // Request challenge # from another machine
+
+// Generic Ping Request
+const char A2A_PING = 'i'; // respond with an A2A_ACK
+
+// Generic Ack
+const char A2A_ACK = 'j'; // general acknowledgement without info
+
+// Challenge response from master
+const char M2A_CHALLENGE = 's'; // + challenge value
 
 const char S2M_HEARTBEAT	= 'a'; // + serverinfo + userlist + fraglist
 const char S2M_SHUTDOWN		= 'C';

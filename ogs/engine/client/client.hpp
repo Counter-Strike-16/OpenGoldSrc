@@ -62,16 +62,16 @@
 #define console (*pconsole)
 #endif // HOOK_ENGINE
 
+typedef struct dlight_s dlight_t;
+typedef struct playermove_s playermove_t;
+typedef struct sfx_s sfx_t;
+
 extern playermove_t g_clmove;
 extern qboolean cl_inmovie;
 
 extern cvar_t cl_name;
 extern cvar_t rate_;
 extern cvar_t console;
-
-typedef struct dlight_s dlight_t;
-typedef struct playermove_s playermove_t;
-typedef struct sfx_s sfx_t;
 
 typedef struct cmd_s
 {
@@ -344,7 +344,7 @@ model_s *CL_GetModelByIndex(int index);
 
 void CL_AddToResourceList(resource_t *pResource, resource_t *pList);
 
-event_hook_s *CL_FindEventHook(char *name);
+//event_hook_s *CL_FindEventHook(char *name);
 
 int CL_IsThirdPerson();
 void CL_CameraOffset(float *ofs);

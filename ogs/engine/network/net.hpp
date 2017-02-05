@@ -44,45 +44,6 @@
 #define MAX_CHALLENGES 1024
 #endif // REHLDS_OPT_PEDANTIC
 
-// Client connection is initiated by requesting a challenge value
-//  the server sends this value back
-#define S2C_CHALLENGE 'A' // + challenge value
-
-// Send a userid, client remote address, is this server secure and engine build
-// number
-#define S2C_CONNECTION 'B'
-
-// HLMaster rejected a server's connection because the server needs to be
-// updated
-#define M2S_REQUESTRESTART 'O'
-
-// send a log event as key value
-#define S2A_LOGSTRING 'R'
-
-// Send a log string
-#define S2A_LOGKEY 'S'
-
-// Basic information about the server
-#define A2S_INFO 'T'
-
-// Details about each player on the server
-#define A2S_PLAYER 'U'
-
-// The rules the server is using
-#define A2S_RULES 'V'
-
-// Another user is requesting a challenge value from this machine
-#define A2A_GETCHALLENGE 'W' // Request challenge # from another machine
-
-// Generic Ping Request
-#define A2A_PING 'i' // respond with an A2A_ACK
-
-// Generic Ack
-#define A2A_ACK 'j' // general acknowledgement without info
-
-// Challenge response from master
-#define M2A_CHALLENGE 's' // + challenge value
-
 // 0 == regular, 1 == file stream
 #define MAX_STREAMS 2
 
