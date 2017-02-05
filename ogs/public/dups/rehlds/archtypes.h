@@ -24,25 +24,43 @@
 *    you do not wish to do so, delete this exception statement from your
 *    version.
 *
-*/
+*/#ifndef ARCHTYPES_H
+#define ARCHTYPES_H
 
-// IDedicatedServerAPI.h
+#ifdef __x86_64__
+#define X64BITS
+#endif
 
-#pragma once
+#if defined( _WIN32 ) && (! defined( __MINGW32__ ))
 
-#include "public/interface.h"
+typedef __int8 int8;
+typedef unsigned __int8 uint8;
+typedef __int16 int16;
+typedef unsigned __int16 uint16;
+typedef __int32 int32;
+typedef unsigned __int32 uint32;
+typedef __int64 int64;
+typedef unsigned __int64 uint64;
+typedef __int32 intp;				// intp is an integer that can accomodate a pointer
+typedef unsigned __int32 uintp;		// (ie, sizeof(intp) >= sizeof(int) && sizeof(intp) >= sizeof(void *)
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
+#else /* _WIN32 */
+typedef char int8;
+typedef unsigned char uint8;
+typedef short int16;
+typedef unsigned short uint16;
+typedef int int32;
+typedef unsigned int uint32;
+typedef long long int64;
+typedef unsigned long long uint64;
+#ifdef X64BITS
+typedef long long intp;
+typedef unsigned long long uintp;
+#else
+typedef int intp;
+typedef unsigned int uintp;
+#endif
 
-class IDedicatedServerAPI : public IBaseInterface
-{
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
-};
+#endif /* else _WIN32 */
+
+#endif /* ARCHTYPES_H */

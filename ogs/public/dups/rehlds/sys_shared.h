@@ -25,24 +25,15 @@
 *    version.
 *
 */
-
-// IDedicatedServerAPI.h
-
 #pragma once
 
-#include "public/interface.h"
+#include <archtypes.h>
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
-
-class IDedicatedServerAPI : public IBaseInterface
+typedef struct cpuinfo_s
 {
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
-};
+	uint8 sse3, ssse3, sse4_1, sse4_2, avx, avx2, popcnt;
+} cpuinfo_t;
+
+extern cpuinfo_t cpuinfo;
+
+void Sys_CheckCpuInstructionsSupport(void);

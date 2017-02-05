@@ -25,24 +25,29 @@
 *    version.
 *
 */
-
-// IDedicatedServerAPI.h
-
 #pragma once
 
-#include "public/interface.h"
+#include "archtypes.h"
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
+/* <8f1> ../engine/cmd.h:65 */
+typedef void(*xcommand_t)(void);
 
-class IDedicatedServerAPI : public IBaseInterface
+/* <904> ../engine/cmd.h:71 */
+typedef struct cmd_function_s
 {
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
-};
+	struct cmd_function_s *next;
+	char *name;
+	xcommand_t function;
+	int flags;
+} cmd_function_t;
+
+/* <95a> ../engine/cmd.h:80 */
+typedef enum cmd_source_s
+{
+	src_client = 0,		// came in over a net connection as a clc_stringcmd. host_client will be valid during this state.
+	src_command = 1,	// from the command buffer.
+} cmd_source_t;
+
+#define FCMD_HUD_COMMAND		BIT(0)
+#define FCMD_GAME_COMMAND		BIT(1)
+#define FCMD_WRAPPER_COMMAND	BIT(2)

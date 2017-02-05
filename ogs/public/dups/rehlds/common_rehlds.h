@@ -25,24 +25,57 @@
 *    version.
 *
 */
-
-// IDedicatedServerAPI.h
-
 #pragma once
 
-#include "public/interface.h"
+#include "const.h"
+#include "qlimits.h"
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
+#ifdef REHLDS_FIXES
+#define COM_TOKEN_LEN	2048
+#else
+#define COM_TOKEN_LEN	1024
+#endif
 
-class IDedicatedServerAPI : public IBaseInterface
+// Don't allow overflow
+#define SIZEBUF_CHECK_OVERFLOW	0
+#define SIZEBUF_ALLOW_OVERFLOW	BIT(0)
+#define SIZEBUF_OVERFLOWED		BIT(1)
+
+#define MAX_NUM_ARGVS	50
+#define NUM_SAFE_ARGVS	7
+
+#define COM_COPY_CHUNK_SIZE 1024
+#define COM_MAX_CMD_LINE 256
+
+/* <6ae> ../common/common.h:82 */
+typedef struct sizebuf_s
 {
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
-};
+	const char *buffername;
+	uint16 flags;
+	byte *data;
+	int maxsize;
+	int cursize;
+} sizebuf_t;
+
+/* <270aa> ../common/common.h:297 */
+typedef struct downloadtime_s
+{
+	qboolean bUsed;
+	float fTime;
+	int nBytesRemaining;
+} downloadtime_t;
+
+/* <19fa2> ../common/common.h:303 */
+typedef struct incomingtransfer_s
+{
+	qboolean doneregistering;
+	int percent;
+	qboolean downloadrequested;
+	downloadtime_t rgStats[8];
+	int nCurStat;
+	int nTotalSize;
+	int nTotalToTransfer;
+	int nRemainingToTransfer;
+	float fLastStatusUpdate;
+	qboolean custom;
+} incomingtransfer_t;

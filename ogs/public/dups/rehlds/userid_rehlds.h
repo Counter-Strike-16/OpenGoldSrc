@@ -25,24 +25,23 @@
 *    version.
 *
 */
-
-// IDedicatedServerAPI.h
-
 #pragma once
 
-#include "public/interface.h"
+#include "archtypes.h"
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
-
-class IDedicatedServerAPI : public IBaseInterface
+// Authentication types
+enum AUTH_IDTYPE
 {
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
+	AUTH_IDTYPE_UNKNOWN	= 0,
+	AUTH_IDTYPE_STEAM	= 1,
+	AUTH_IDTYPE_VALVE	= 2,
+	AUTH_IDTYPE_LOCAL	= 3
 };
+
+/* <2e915> ../engine/userid.h:22 */
+typedef struct USERID_s
+{
+	int idtype;
+	uint64 m_SteamID;
+	unsigned int clientip;
+} USERID_t;

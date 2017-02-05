@@ -25,24 +25,37 @@
 *    version.
 *
 */
-
-// IDedicatedServerAPI.h
-
 #pragma once
 
-#include "public/interface.h"
+#include "archtypes.h"
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
-
-class IDedicatedServerAPI : public IBaseInterface
+class IRehldsFlightRecorder
 {
 public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
+	virtual ~IRehldsFlightRecorder() { }
+
+	virtual uint16 RegisterMessage(const char* module, const char *message, unsigned int version, bool inOut) = 0;
 	
-	virtual bool RunFrame() = 0;
+	virtual void StartMessage(uint16 msg, bool entrance) = 0;
+	virtual void EndMessage(uint16 msg, bool entrance) = 0;
 	
-	virtual void AddConsoleText(char *text) = 0;
+	virtual void WriteInt8(int8 v) = 0;
+	virtual void WriteUInt8(uint8 v) = 0;
 	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
+	virtual void WriteInt16(int16 v) = 0;
+	virtual void WriteUInt16(uint16 v) = 0;
+
+	virtual void WriteInt32(int32 v) = 0;
+	virtual void WriteUInt32(uint32 v) = 0;
+
+	virtual void WriteInt64(int64 v) = 0;
+	virtual void WriteUInt64(uint64 v) = 0;
+
+	virtual void WriteFloat(float v) = 0;
+	virtual void WriteDouble(double v) = 0;
+
+	virtual void WriteString(const char* s) = 0;
+
+	virtual void WriteBuffer(const void* data ,unsigned int len) = 0;
+
 };

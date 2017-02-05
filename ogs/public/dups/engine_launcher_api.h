@@ -26,23 +26,22 @@
 *
 */
 
-// IDedicatedServerAPI.h
-
+#ifndef ENGINE_LAUNCHER_API_H
+#define ENGINE_LAUNCHER_API_H
+#ifdef _WIN32
 #pragma once
+#endif
 
-#include "public/interface.h"
+#include "maintypes.h"
+#include "interface.h"
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
 
-class IDedicatedServerAPI : public IBaseInterface
+/* <8f7fd> ../public/engine_launcher_api.h:17 */
+class IEngineAPI : public IBaseInterface
 {
 public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
+
+	virtual int Run(void *instance, char *basedir, char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
 };
+
+#endif // ENGINE_LAUNCHER_API_H

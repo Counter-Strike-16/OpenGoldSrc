@@ -26,23 +26,27 @@
 *
 */
 
-// IDedicatedServerAPI.h
-
+#ifndef MAINTYPES_H
+#define MAINTYPES_H
+#ifdef _WIN32
 #pragma once
+#endif
 
-#include "public/interface.h"
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
+#include "osconfig.h"
+#include "mathlib.h"
 
-class IDedicatedServerAPI : public IBaseInterface
-{
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
-};
+
+// Has no references on server side.
+#define NOXREF
+// Function body is not implemented.
+#define NOBODY
+// Function is not tested at all.
+#define UNTESTED
+
+#define BIT(n) (1<<(n))
+
+
+typedef unsigned int string_t;		// from engine's pr_comp.h;
+
+#endif // MAINTYPES_H

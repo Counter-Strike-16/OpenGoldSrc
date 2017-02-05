@@ -26,23 +26,65 @@
 *
 */
 
-// IDedicatedServerAPI.h
-
+#ifndef SPRITEGN_H
+#define SPRITEGN_H
+#ifdef _WIN32
 #pragma once
+#endif
 
-#include "public/interface.h"
+#include "modelgen.h"
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
 
-class IDedicatedServerAPI : public IBaseInterface
+#define IDSPRITEHEADER	(('P'<<24)+('S'<<16)+('D'<<8)+'I')
+#define SPRITE_VERSION	2
+
+
+typedef enum spriteframetype_e
 {
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
-};
+	SPR_SINGLE = 0,
+	SPR_GROUP,
+	SPR_ANGLED
+} spriteframetype_t;
+
+/* <4aea6> ../engine/spritegn.h:50 */
+typedef struct dsprite_s
+{
+	int				ident;
+	int				version;
+	int				type;
+	int				texFormat;
+	float			boundingradius;
+	int				width;
+	int				height;
+	int				numframes;
+	float			beamlength;
+	synctype_t		synctype;
+} dsprite_t;
+
+/* <4af46> ../engine/spritegn.h:74 */
+typedef struct dspriteframe_s
+{
+	int				origin[2];
+	int				width;
+	int				height;
+} dspriteframe_t;
+
+/* <4af84> ../engine/spritegn.h:80 */
+typedef struct dspritegroup_s
+{
+	int				numframes;
+} dspritegroup_t;
+
+/* <4afa6> ../engine/spritegn.h:84 */
+typedef struct dspriteinterval_s
+{
+	float			interval;
+} dspriteinterval_t;
+
+/* <4afe8> ../engine/spritegn.h:90 */
+typedef struct dspriteframetype_s
+{
+	spriteframetype_t type;
+} dspriteframetype_t;
+
+#endif // SPRITEGN_H

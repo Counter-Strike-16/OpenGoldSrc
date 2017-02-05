@@ -25,24 +25,48 @@
 *    version.
 *
 */
+#include "sys_shared.h"
 
-// IDedicatedServerAPI.h
+#if defined(__GNUC__)
+#include <cpuid.h>
+#endif
 
-#pragma once
+#define SSE3_FLAG		(1<<0)
+#define SSSE3_FLAG		(1<<9)
+#define SSE4_1_FLAG		(1<<19)
+#define SSE4_2_FLAG		(1<<20)
+#define POPCNT_FLAG		(1<<23)
+#define AVX_FLAG		(1<<28)
+#define AVX2_FLAG		(1<<5)
 
-#include "public/interface.h"
+cpuinfo_t cpuinfo;
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
-
-class IDedicatedServerAPI : public IBaseInterface
+void Sys_CheckCpuInstructionsSupport(void)
 {
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
-};
+	unsigned int cpuid_data[4];
+
+#if defined ASMLIB_H
+	cpuid_ex((int *)cpuid_data, 1, 0);
+#elif defined(__GNUC__)
+	__get_cpuid(0x1, &cpuid_data[0], &cpuid_data[1], &cpuid_data[2], &cpuid_data[3]);
+#else
+	__cpuidex((int *)cpuid_data, 1, 0);
+#endif
+
+	cpuinfo.sse3 = (cpuid_data[2] & SSE3_FLAG) ? 1 : 0; // ecx
+	cpuinfo.ssse3 = (cpuid_data[2] & SSSE3_FLAG) ? 1 : 0;
+	cpuinfo.sse4_1 = (cpuid_data[2] & SSE4_1_FLAG) ? 1 : 0;
+	cpuinfo.sse4_2 = (cpuid_data[2] & SSE4_2_FLAG) ? 1 : 0;
+	cpuinfo.popcnt = (cpuid_data[2] & POPCNT_FLAG) ? 1 : 0;
+	cpuinfo.avx = (cpuid_data[2] & AVX_FLAG) ? 1 : 0;
+
+#if defined ASMLIB_H
+	cpuid_ex((int *)cpuid_data, 7, 0);
+#elif defined(__GNUC__)
+	__get_cpuid(0x7, &cpuid_data[0], &cpuid_data[1], &cpuid_data[2], &cpuid_data[3]);
+#else
+	__cpuidex((int *)cpuid_data, 7, 0);
+#endif
+
+	cpuinfo.avx2 = (cpuid_data[1] & AVX2_FLAG) ? 1 : 0; // ebx
+}

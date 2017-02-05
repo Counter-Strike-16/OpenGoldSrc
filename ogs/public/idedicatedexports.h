@@ -16,7 +16,8 @@
 class IDedicatedExports : IBaseInterface
 {
 public:
-	virtual ~IDedicatedExports() { };
+	virtual ~IDedicatedExports() { }
+	
 	virtual void Sys_Printf(char *text) = 0;
 };
 

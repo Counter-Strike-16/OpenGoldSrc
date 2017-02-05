@@ -41,11 +41,19 @@ NETWORK PROTOCOL
 
 const int PROTOCOL_VERSION = 48;
 
+const char VALVE_MASTER_ADDRESS[] = "127.0.0.1:27010";
+
 //=========================================
 
 const int PORT_CLIENT = 27005;
-const int PORT_MASTER = 27010;
+const int PORT_MASTER = 27010; // 27011
 const int PORT_SERVER = 27015;
+const int PORT_RCON = 27015;
+const int PORT_HLTV = 27020;
+const int PORT_MATCHMAKING = 27025;
+const int PORT_SYSTEMLINK = 27030;
+const int PORT_RPT = 27035;
+const int PORT_RPT_LISTEN = 27036;
 
 //=========================================
 

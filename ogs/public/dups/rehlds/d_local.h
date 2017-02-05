@@ -26,23 +26,21 @@
 *
 */
 
-// IDedicatedServerAPI.h
-
 #pragma once
 
-#include "public/interface.h"
 
-#define VENGINE_HLDS_API_VERSION "VENGINE_HLDS_API_VERSION002"
 
-class IDedicatedServerAPI : public IBaseInterface
+/* <82286> ../engine/d_local.h:20 */
+typedef struct surfcache_s
 {
-public:
-	virtual bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory) = 0;
-	virtual int Shutdown() = 0;
-	
-	virtual bool RunFrame() = 0;
-	
-	virtual void AddConsoleText(char *text) = 0;
-	
-	virtual void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap) = 0;
-};
+	struct surfcache_s *next;
+	struct surfcache_s **owner;
+	int				lightadj[4];
+	int				dlight;
+	int				size;
+	unsigned		width;
+	unsigned		height;
+	float			mipscale;
+	struct texture_s *texture;
+	unsigned char	data[4];
+} surfcache_t;

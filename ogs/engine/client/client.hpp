@@ -44,10 +44,11 @@
 #include "filesystem/filesystem_internal.hpp"
 #include "network/net_chan.hpp"
 #include "resources/consistency.hpp"
-#include "server/server.hpp"
+#include "network/protocol.hpp"
 #include "sound/soundfade.hpp"
 #include "system/common.hpp"
 #include "world/event.hpp"
+//#include "engine/custom.h"
 
 #ifdef HOOK_ENGINE
 #define cls (*pcls)
@@ -339,6 +340,18 @@ void R_DecalRemoveAll(int textureIndex);
 
 qboolean CL_CheckFile(sizebuf_t *msg, char *filename);
 
+model_s *CL_GetModelByIndex(int index);
+
+void CL_AddToResourceList(resource_t *pResource, resource_t *pList);
+
+event_hook_s *CL_FindEventHook(char *name);
+
+int CL_IsThirdPerson();
+void CL_CameraOffset(float *ofs);
+void CL_CreateMove(float frametime, struct usercmd_s *cmd, int active);
+void CL_QueueHTTPDownload(const char *filename);
+int CL_ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size);
+
 void CL_DecayLights(); //+
 
 void CL_EmitEntities(); //+
@@ -368,6 +381,11 @@ void CL_WriteMessageHistory(int starting_count, int cmd);
 void CL_MoveSpectatorCamera();
 
 void CL_UpdateModuleC();
+
+//
+// cl_events.cpp
+//
+void CL_FireEvents(); //+
 
 //
 // cl_demo.cpp
@@ -410,31 +428,3 @@ void ResetTutorMessageDecayData();
 //
 //
 void SetCareerAudioState(int state);
-
-#include <custom.h>
-
-#define CL_GETMODELBYINDEX_SIG "\x83\xEC\x10\x56\x57\x8B\x7C\x24\x1C\x8B\x34\xBD\x2A\x2A\x2A\x2A\x85\xF6"
-#define CL_GETMODELBYINDEX_SIG_NEW "\x55\x8B\xEC\x83\xEC\x10\x56\x57\x8B\x7D\x08\x81\xFF\x00\x02\x00\x00\x7C\x2A\x5F\x33\xC0\x5E\x8B\xE5\x5D\xC3\x8B\x34\xBD\x2A\x2A\x2A\x2A\x85\xF6"
-#define CL_ADDTORESOURCELIST_SIG "\x8B\x44\x24\x04\x8B\x88\x84\x00\x00\x00\x85\xC9"
-#define CL_ADDTORESOURCELIST_SIG_NEW "\x55\x8B\xEC\x8B\x45\x08\x8B\x88\x84\x00\x00\x00\x85\xC9\x75\x2A\x8B\x88\x80\x00\x00\x00\x85\xC9"
-#define CL_FIREEVENTS_SIG "\x53\x56\x57\x33\xDB\xBE\x2A\x2A\x2A\x2A\x66\x8B\x0E\x66\x85\xC9\x0F\x84\x2A\x2A\x2A\x2A\xD9\x46\x08\xD8\x1D\x2A\x2A\x2A\x2A\xDF\xE0\xF6\xC4"
-#define CL_FIREEVENTS_SIG_NEW "\x53\x56\x57\x33\xDB\xBE\x2A\x2A\x2A\x2A\x66\x8B\x0E\x66\x85\xC9\x0F\x84\x2A\x2A\x2A\x2A\xD9\x46\x08\xD8\x1D\x2A\x2A\x2A\x2A\xDF\xE0\xF6\xC4"
-#define CL_FINDEVENTHOOK_SIG "\x56\x8B\x35\x2A\x2A\x2A\x2A\x85\xF6\x57\x74\x2A\x8B\x7C\x24\x0C\x8B\x46\x04\x50\x57\xE8\x2A\x2A\x2A\x2A\x83\xC4\x08\x85\xC0\x74"
-#define CL_FINDEVENTHOOK_SIG_NEW "\x55\x8B\xEC\x56\x8B\x35\x2A\x2A\x2A\x2A\x57\x8B\x7D\x08\x85\xFF\x74\x2A\x85\xF6\x74\x2A\x8B\x46\x04\x85\xC0\x74\x2A\x50\x57\xE8\x2A\x2A\x2A\x2A\x83\xC4\x08\x85\xC0\x74"
-
-extern struct model_s *(*g_pfnCL_GetModelByIndex)(int index);
-extern struct hook_s *g_phCL_GetModelByIndex;
-extern void (*g_pfnCL_AddToResourceList)(resource_t *pResource, resource_t *pList);
-extern struct hook_s *g_phCL_AddToResourceList;
-extern qboolean (*g_pfnCL_CheckFile)(struct sizebuf_s *msg, char *filename);
-extern struct hook_s *g_phCL_CheckFile;
-extern void (*g_pfnCL_FireEvents)(void);
-extern struct hook_s *g_phCL_FireEvents;
-extern struct event_hook_s *(*g_pfnCL_FindEventHook)(char *name);
-extern struct hook_s *g_phCL_FindEventHook;
-
-int CL_IsThirdPerson(void);
-void CL_CameraOffset(float *ofs);
-void CL_CreateMove(float frametime, struct usercmd_s *cmd, int active);
-void CL_QueueHTTPDownload(const char *filename);
-int CL_ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size);
