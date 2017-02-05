@@ -5,7 +5,8 @@
 // $NoKeywords: $
 //=============================================================================
 
-#include "precompiled.h"
+//#include "precompiled.hpp"
+#include "iregistry.h"
 
 #ifndef _WIN32
 typedef int HKEY;

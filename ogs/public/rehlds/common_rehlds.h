@@ -51,7 +51,7 @@ const int COM_MAX_CMD_LINE = 256;
 /* <6ae> ../common/common.h:82 */
 typedef struct sizebuf_s
 {
-	/*const*/ char *buffername;
+	const char *buffername; // shouldn't be const?
 	uint16 flags; // int
 	byte *data;
 	int maxsize;
