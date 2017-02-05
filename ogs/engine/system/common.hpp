@@ -226,27 +226,40 @@ float FloatSwap(float f);
 float FloatNoSwap(float f);
 
 NOXREF char *COM_SkipPath(char *pathname);
+
 void COM_StripExtension(char *in, char *out);
 char *COM_FileExtension(char *in);
-void COM_FileBase(const char *in, char *out);
 void COM_DefaultExtension(char *path, const char *extension);
+
+void COM_FileBase(const char *in, char *out);
+
+//char *COM_GetToken();
 void COM_UngetToken();
-char *COM_Parse(char *data);
+
+char *COM_Parse(char *data); // const char all?
 char *COM_ParseLine(char *data);
+//const char *COM_ParseFile(const char *data, char *token, int maxtoken);
+
 int COM_TokenWaiting(char *buffer);
+
 int COM_CheckParm(char *parm);
+
+void COM_Init(char *basedir); // is basedir really present as arg in gs?
 void COM_InitArgv(int argc, char *argv[]);
-void COM_Init(char *basedir);
 
 // does a varargs printf into a temp buffer
 char *va(char *format, ...);
 
 char *vstr(vec_t *v);
 NOXREF int memsearch(unsigned char *start, int count, int search);
+
 NOXREF void COM_WriteFile(char *filename, void *data, int len);
-void COM_FixSlashes(char *pname);
-void COM_CreatePath(char *path);
 NOXREF void COM_CopyFile(char *netpath, char *cachepath);
+
+void COM_FixSlashes(char *pname);
+
+void COM_CreatePath(const char *path);
+
 NOXREF int COM_ExpandFilename(char *filename);
 int COM_FileSize(char *filename);
 unsigned char *COM_LoadFile(const char *path, int usehunk, int *pLength);

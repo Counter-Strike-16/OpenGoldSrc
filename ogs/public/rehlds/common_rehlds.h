@@ -39,8 +39,8 @@
 
 // Don't allow overflow
 #define SIZEBUF_CHECK_OVERFLOW	0
-#define SIZEBUF_ALLOW_OVERFLOW	BIT(0)
-#define SIZEBUF_OVERFLOWED		BIT(1)
+#define SIZEBUF_ALLOW_OVERFLOW	BIT(0) // FSB_ALLOWOVERFLOW
+#define SIZEBUF_OVERFLOWED		BIT(1) // FSB_OVERFLOWED
 
 const int MAX_NUM_ARGVS = 50;
 const int NUM_SAFE_ARGVS = 7;
@@ -52,7 +52,7 @@ const int COM_MAX_CMD_LINE = 256;
 typedef struct sizebuf_s
 {
 	/*const*/ char *buffername;
-	uint16 flags;
+	uint16 flags; // int
 	byte *data;
 	int maxsize;
 	int cursize;

@@ -102,8 +102,10 @@ typedef struct client_static_s
 
 	sizebuf_t datagram;
 	byte datagram_buf[MAX_DATAGRAM];
-
-	double connect_time;
+	
+	// connection information
+	
+	double connect_time; // for connection retransmits
 
 	int connect_retry;
 	int challenge;
@@ -126,6 +128,9 @@ typedef struct client_static_s
 	float nextcmdtime;
 
 	int lastoutgoingcommand;
+	
+	// demo recording info must be here, so it isn't cleared on level change
+	
 	int demonum;
 
 	char demos[MAX_DEMOS][16];
@@ -142,7 +147,7 @@ typedef struct client_static_s
 	FileHandle_t demofile;
 	FileHandle_t demoheader;
 
-	qboolean demowaiting;
+	qboolean demowaiting; // don't record until a non-delta message is received
 	qboolean demoappending;
 
 	char demofilename[MAX_PATH];
@@ -291,7 +296,7 @@ typedef struct client_state_s
 
 	dlight_t *pLight;
 
-	player_info_t players[32];
+	player_info_t players[32]; // MAX_PLAYERS
 
 	entity_state_t instanced_baseline[64];
 	int instanced_baseline_number;
@@ -304,6 +309,10 @@ typedef struct client_state_s
 } client_state_t;
 
 extern client_state_t cl;
+
+//
+// cl_main.cpp
+//
 
 void CL_Init(); //+
 void CL_InitClosest();
@@ -336,8 +345,6 @@ void CL_EmitEntities(); //+
 
 void CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel);
 
-void CL_PredictMove(qboolean repredicting); //+
-
 void CL_PrintLogos();
 void CL_ReadPackets(); //+
 
@@ -345,7 +352,7 @@ qboolean CL_RequestMissingResources();
 
 void CL_Move();
 void CL_SendConnectPacket(); //+
-void CL_StopPlayback();      //+
+
 void CL_UpdateSoundFade();
 void CL_AdjustClock();
 void CL_Save(const char *name);
@@ -355,28 +362,79 @@ void Chase_Init();
 
 int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf);
 
-void CL_RedoPrediction(); //+
-
 void CL_SetLastUpdate();
 
 void CL_WriteMessageHistory(int starting_count, int cmd);
 void CL_MoveSpectatorCamera();
 
+void CL_UpdateModuleC();
+
+//
+// cl_demo.cpp
+//
+void CL_StopPlayback();      //+
+
+//
+// cl_pred.cpp
+//
+//void CL_InitPrediction();
+void CL_PredictMove(qboolean repredicting); //+
+//void CL_PredictUsercmd(player_state_t *from, player_state_t *to, usercmd_t *u, qboolean spectator);
+void CL_RedoPrediction(); //+
+
+//
+// cl_voice.cpp
+//
 void CL_AddVoiceToDatagram(qboolean bFinal);
 void CL_VoiceIdle();
 
-void CL_UpdateModuleC();
-
+//
+// vguiwrap2.cpp
+//
 int VGuiWrap2_IsInCareerMatch();
 void VguiWrap2_GetCareerUI();
 int VGuiWrap2_GetLocalizedStringLength(const char *label);
 void VGuiWrap2_LoadingStarted(const char *resourceType,
                               const char *resourceName);
 
+//
+// tutor.cpp
+//
 void ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength);
 void ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength);
 int GetTimesTutorMessageShown(int id);
 void RegisterTutorMessageShown(int mid);
 void ResetTutorMessageDecayData();
 
+//
+//
+//
 void SetCareerAudioState(int state);
+
+#include <custom.h>
+
+#define CL_GETMODELBYINDEX_SIG "\x83\xEC\x10\x56\x57\x8B\x7C\x24\x1C\x8B\x34\xBD\x2A\x2A\x2A\x2A\x85\xF6"
+#define CL_GETMODELBYINDEX_SIG_NEW "\x55\x8B\xEC\x83\xEC\x10\x56\x57\x8B\x7D\x08\x81\xFF\x00\x02\x00\x00\x7C\x2A\x5F\x33\xC0\x5E\x8B\xE5\x5D\xC3\x8B\x34\xBD\x2A\x2A\x2A\x2A\x85\xF6"
+#define CL_ADDTORESOURCELIST_SIG "\x8B\x44\x24\x04\x8B\x88\x84\x00\x00\x00\x85\xC9"
+#define CL_ADDTORESOURCELIST_SIG_NEW "\x55\x8B\xEC\x8B\x45\x08\x8B\x88\x84\x00\x00\x00\x85\xC9\x75\x2A\x8B\x88\x80\x00\x00\x00\x85\xC9"
+#define CL_FIREEVENTS_SIG "\x53\x56\x57\x33\xDB\xBE\x2A\x2A\x2A\x2A\x66\x8B\x0E\x66\x85\xC9\x0F\x84\x2A\x2A\x2A\x2A\xD9\x46\x08\xD8\x1D\x2A\x2A\x2A\x2A\xDF\xE0\xF6\xC4"
+#define CL_FIREEVENTS_SIG_NEW "\x53\x56\x57\x33\xDB\xBE\x2A\x2A\x2A\x2A\x66\x8B\x0E\x66\x85\xC9\x0F\x84\x2A\x2A\x2A\x2A\xD9\x46\x08\xD8\x1D\x2A\x2A\x2A\x2A\xDF\xE0\xF6\xC4"
+#define CL_FINDEVENTHOOK_SIG "\x56\x8B\x35\x2A\x2A\x2A\x2A\x85\xF6\x57\x74\x2A\x8B\x7C\x24\x0C\x8B\x46\x04\x50\x57\xE8\x2A\x2A\x2A\x2A\x83\xC4\x08\x85\xC0\x74"
+#define CL_FINDEVENTHOOK_SIG_NEW "\x55\x8B\xEC\x56\x8B\x35\x2A\x2A\x2A\x2A\x57\x8B\x7D\x08\x85\xFF\x74\x2A\x85\xF6\x74\x2A\x8B\x46\x04\x85\xC0\x74\x2A\x50\x57\xE8\x2A\x2A\x2A\x2A\x83\xC4\x08\x85\xC0\x74"
+
+extern struct model_s *(*g_pfnCL_GetModelByIndex)(int index);
+extern struct hook_s *g_phCL_GetModelByIndex;
+extern void (*g_pfnCL_AddToResourceList)(resource_t *pResource, resource_t *pList);
+extern struct hook_s *g_phCL_AddToResourceList;
+extern qboolean (*g_pfnCL_CheckFile)(struct sizebuf_s *msg, char *filename);
+extern struct hook_s *g_phCL_CheckFile;
+extern void (*g_pfnCL_FireEvents)(void);
+extern struct hook_s *g_phCL_FireEvents;
+extern struct event_hook_s *(*g_pfnCL_FindEventHook)(char *name);
+extern struct hook_s *g_phCL_FindEventHook;
+
+int CL_IsThirdPerson(void);
+void CL_CameraOffset(float *ofs);
+void CL_CreateMove(float frametime, struct usercmd_s *cmd, int active);
+void CL_QueueHTTPDownload(const char *filename);
+int CL_ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size);

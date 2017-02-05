@@ -33,11 +33,6 @@
 // TODO: I think this defines must be in /common/
 #define NUM_EDICTS 900
 #define MAX_NAME 32
-#define MAX_PACKET_ENTITIES 256
-
-#define DEFAULT_SOUND_PACKET_VOLUME 255
-#define DEFAULT_SOUND_PACKET_ATTENUATION 1.0f
-#define DEFAULT_SOUND_PACKET_PITCH 100
 
 // Sound flags
 #define SND_FL_VOLUME BIT(0)       // send volume
@@ -52,26 +47,15 @@
 	BIT(8) // we're spawning, used in some cases for ambients (not sent across
            // network)
 
-// Message send destination flags
-#define MSG_FL_NONE 0           // No flags
-#define MSG_FL_BROADCAST BIT(0) // Broadcast?
-#define MSG_FL_PVS BIT(1)       // Send to PVS
-#define MSG_FL_PAS BIT(2)       // Send to PAS
-#define MSG_FL_ONE BIT(7)       // Send to single client
-
-#define RESOURCE_INDEX_BITS 12
-#ifdef REHLDS_FIXES
-#define RESOURCE_MAX_COUNT (1 << RESOURCE_INDEX_BITS)
-#endif // REHLDS_FIXES
-
-#define HL_SOUND_MAX 512
-#define HL_SOUND_HASHLOOKUP_SIZE (HL_SOUND_MAX * 2 - 1)
-
-#define HL_MODEL_MAX 512
-#define HL_GENERIC_MAX 512
-#define HL_EVENT_MAX 256
-
-#define MAX_RESOURCE_LIST 1280
+/// Message send destination flags
+enum
+{
+	MSG_FL_NONE			= 0,		///< No flags
+	MSG_FL_BROADCAST	= BIT(0),	///< Broadcast?
+	MSG_FL_PVS			= BIT(1),	///< Send to PVS
+	MSG_FL_PAS			= BIT(2),	///< Send to PAS
+	MSG_FL_ONE			= BIT(7)	///< Send to single client
+};
 
 typedef enum redirect_e {
 	RD_NONE = 0,

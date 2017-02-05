@@ -49,6 +49,52 @@ const int PORT_SERVER = 27015;
 
 //=========================================
 
+const int RESOURCE_INDEX_BITS = 12;
+
+#ifdef REHLDS_FIXES
+	const int RESOURCE_MAX_COUNT = (1 << RESOURCE_INDEX_BITS);
+#endif // REHLDS_FIXES
+
+const int HL_SOUND_MAX = 512;
+const int HL_SOUND_HASHLOOKUP_SIZE = (HL_SOUND_MAX * 2 - 1);
+
+const int HL_MODEL_MAX = 512;
+const int HL_GENERIC_MAX = 512;
+const int HL_EVENT_MAX = 256;
+
+const int MAX_RESOURCE_LIST = 1280;
+
+const int MAX_PACKET_ENTITIES = 256;
+
+const int DEFAULT_SOUND_PACKET_VOLUME = 255;
+
+const float DEFAULT_SOUND_PACKET_ATTENUATION = 1.0f;
+
+const int DEFAULT_SOUND_PACKET_PITCH = 100;
+
+//=========================================
+
+// out of band message id bytes
+
+// M = master, S = server, C = client, A = any
+// the second character will allways be \n if the message isn't a single
+// byte long (?? not true anymore?)
+
+const char S2C_CHALLENGE	= 'c';
+const char S2C_CONNECTION	= 'j';
+
+const char A2A_PING				= 'k'; // respond with an A2A_ACK
+const char A2A_ACK				= 'l'; // general acknowledgement without info
+const char A2A_NACK				= 'm'; // [+ comment] general failure
+const char A2A_ECHO				= 'e'; // for echoing
+const char A2C_PRINT			= 'n'; // print a message on client
+const char A2C_CLIENT_COMMAND	= 'B'; // + command line
+
+const char S2M_HEARTBEAT	= 'a'; // + serverinfo + userlist + fraglist
+const char S2M_SHUTDOWN		= 'C';
+
+//=========================================
+
 //==================
 // the svc_strings[] array in cl_parse.c should mirror this
 //==================
@@ -132,11 +178,11 @@ typedef enum clc_commands_e
 {
 	clc_bad,
 	clc_nop,
-	clc_move,		// [[usercmd_t]
-	clc_stringcmd,	// [string] message
-	clc_delta,
+	clc_move,			// [[usercmd_t]
+	clc_stringcmd,		// [string] message
+	clc_delta,			// [byte] sequence number, requests delta compression of message
 	clc_resourcelist,
-	clc_tmove,
+	clc_tmove,			// teleport request, spectator only
 	clc_fileconsistency,
 	clc_voicedata,
 	clc_hltv,

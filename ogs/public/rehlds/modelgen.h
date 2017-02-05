@@ -26,11 +26,16 @@
 *
 */
 
-#ifndef MODELGEN_H
-#define MODELGEN_H
-#ifdef _WIN32
+/// @file
+/// @brief header file for model generation program
+
+// *********************************************************
+// * This file must be identical in the modelgen directory *
+// * and in the Quake directory, because it's used to      *
+// * pass data from one to the other via model files.      *
+// *********************************************************
+
 #pragma once
-#endif
 
 #include "common/commontypes.h"
 
@@ -38,7 +43,7 @@
 typedef enum aliasframetype_s
 {
 	ALIAS_SINGLE = 0,
-	ALIAS_GROUP = 1,
+	ALIAS_GROUP,
 } aliasframetype_t;
 
 /* 203 */
@@ -46,7 +51,7 @@ typedef enum aliasframetype_s
 typedef enum aliasskintype_s
 {
 	ALIAS_SKIN_SINGLE = 0,
-	ALIAS_SKIN_GROUP = 1,
+	ALIAS_SKIN_GROUP,
 } aliasskintype_t;
 
 /* <4abee> ../engine/modelgen.h:44 */
@@ -134,5 +139,3 @@ typedef struct daliasskintype_s
 {
 	aliasskintype_t type;
 } daliasskintype_t;
-
-#endif // MODELGEN_H

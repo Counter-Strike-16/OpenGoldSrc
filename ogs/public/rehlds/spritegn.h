@@ -26,18 +26,37 @@
 *
 */
 
-#ifndef SPRITEGN_H
-#define SPRITEGN_H
-#ifdef _WIN32
+/// @file
+/// @brief header file for sprite generation program
+
+// **********************************************************
+// * This file must be identical in the spritegen directory *
+// * and in the Quake directory, because it's used to       *
+// * pass data from one to the other via .spr files.        *
+// **********************************************************
+
+//-------------------------------------------------------
+// This program generates .spr sprite package files.
+// The format of the files is as follows:
+//
+// dsprite_t file header structure
+// <repeat dsprite_t.numframes times>
+//   <if spritegroup, repeat dspritegroup_t.numframes times>
+//     dspriteframe_t frame header structure
+//     sprite bitmap
+//   <else (single sprite frame)>
+//     dspriteframe_t frame header structure
+//     sprite bitmap
+// <endrepeat>
+//-------------------------------------------------------
+
 #pragma once
-#endif
 
 #include "modelgen.h"
 
+#define IDSPRITEHEADER	(('P'<<24)+('S'<<16)+('D'<<8)+'I') // little-endian "IDSP"
 
-#define IDSPRITEHEADER	(('P'<<24)+('S'<<16)+('D'<<8)+'I')
-#define SPRITE_VERSION	2
-
+const int SPRITE_VERSION = 2;
 
 typedef enum spriteframetype_e
 {
@@ -86,5 +105,3 @@ typedef struct dspriteframetype_s
 {
 	spriteframetype_t type;
 } dspriteframetype_t;
-
-#endif // SPRITEGN_H
