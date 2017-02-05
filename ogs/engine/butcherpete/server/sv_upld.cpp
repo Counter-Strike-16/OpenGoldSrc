@@ -28,8 +28,19 @@
 
 /// @file
 
+//#include "precompiled.hpp"
 #include "server/sv_upld.hpp"
-#include "precompiled.hpp"
+#include "server/server.hpp"
+#include "memory/mem.hpp"
+#include "system/system.hpp"
+#include "system/common.hpp"
+#include "system/host.hpp"
+#include "system/sizebuf.hpp"
+#include "filesystem/hashpak.hpp"
+#include "network/net_msg.hpp"
+#include "console/console.hpp"
+#include "common/cvardef.h"
+#include "engine/custom.h"
 
 // Checks MD5 of the resource against local cache and returns TRUE if resource
 // was found or if downloads are disabled. Otherwise, if resource was requested

@@ -28,7 +28,18 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "physics/sv_phys.hpp"
+#include "physics/sv_move.hpp"
+#include "physics/pmove.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "system/host.hpp"
+#include "server/server.hpp"
+#include "world/world.hpp"
+#include "world/pr_cmds.hpp"
+#include "console/console.hpp"
+#include "engine/edict.h"
 
 vec3_t *g_moved_from;
 edict_t **g_moved_edict;

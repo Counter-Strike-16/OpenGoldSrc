@@ -28,11 +28,13 @@
 
 /// @file
 
+//#include "precompiled.hpp"
 #include "common/event_api.h"
 #include <cstddef>
 
 namespace
 {
+
 void EventAPI_PlaySound(int ent, float *origin, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch){};
 
 void EventAPI_StopSound(int ent, int channel, const char *sample){};
@@ -95,6 +97,7 @@ const char *EventAPI_TraceTexture(int ground, float *vstart, float *vend)
 void EventAPI_StopAllSounds(int entnum, int entchannel){};
 
 void EventAPI_KillEvents(int entnum, const char *eventname){};
+
 }; // namespace
 
 event_api_t gEventAPI = { EVENT_API_VERSION,

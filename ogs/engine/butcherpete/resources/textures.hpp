@@ -61,7 +61,7 @@ typedef struct cvar_s cvar_t;
 
 extern texlumpinfo_t *lumpinfo;
 extern int nTexLumps;
-extern FILE *texfiles[128];
+extern FileHandle_t texfiles[128];
 extern int nTexFiles;
 
 extern unsigned char texgammatable[256];

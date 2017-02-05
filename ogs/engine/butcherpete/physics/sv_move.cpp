@@ -29,15 +29,19 @@
 /// @file
 
 //#include "precompiled.hpp"
+#include "physics/sv_move.hpp"
+#include "physics/sv_phys.hpp"
 #include "server/server.hpp"
+#include "world/world.hpp"
+#include "world/pr_cmds.hpp"
 
 /*
 * Local initialization
 */
 #ifndef HOOK_ENGINE
 
-static int c_yes = 0;
-static int c_no = 0;
+/*static*/ int c_yes = 0;
+/*static*/ int c_no = 0;
 
 #else // HOOK_ENGINE
 

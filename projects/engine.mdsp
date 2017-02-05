@@ -11,7 +11,7 @@ arguments=
 intermediateFilesDirectory=../build/mdsp/debug/engine
 outputFilesDirectory=../build/mdsp/debug/engine
 compilerPreprocessor=
-extraCompilerOptions=-std=c++11; -msee4.1
+extraCompilerOptions=-std=c++11 -msse4.1
 compilerIncludeDirectory=..\ogs\engine\butcherpete;..\ogs\common;..\ogs\public;..\ogs\hookers;..\ogs\rehlds;..\hlsdk
 noWarning=1
 defaultWarning=0
@@ -103,6 +103,24 @@ extraResourceOptions=
 20=..\ogs\engine\butcherpete\system\engine.cpp
 21=..\ogs\engine\butcherpete\system\engineapi.cpp
 22=..\ogs\engine\butcherpete\system\game.cpp
+23=..\ogs\engine\butcherpete\network\delta.cpp
+24=..\ogs\engine\butcherpete\network\ipratelimit.cpp
+25=..\ogs\engine\butcherpete\network\ipratelimitWrapper.cpp
+26=..\ogs\engine\butcherpete\physics\sv_move.cpp
+27=..\ogs\engine\butcherpete\physics\sv_phys.cpp
+28=..\ogs\engine\butcherpete\physics\sv_pmove.cpp
+29=..\ogs\engine\butcherpete\resources\com_custom.cpp
+30=..\ogs\engine\butcherpete\resources\czmodelcheck.cpp
+31=..\ogs\engine\butcherpete\resources\modinfo.cpp
+32=..\ogs\engine\butcherpete\resources\textures.cpp
+33=..\ogs\engine\butcherpete\server\sv_log.cpp
+34=..\ogs\engine\butcherpete\server\sv_remoteaccess.cpp
+35=..\ogs\engine\butcherpete\server\sv_upld.cpp
+36=..\ogs\engine\butcherpete\system\sizebuf.cpp
+37=..\ogs\engine\butcherpete\system\traceinit.cpp
+38=..\ogs\engine\butcherpete\meatcodestub.cpp
+39=..\ogs\engine\butcherpete\world\ed_strpool.cpp
+40=..\hlsdk\public\interface.cpp
 [Header]
 [Resource]
 [Other]

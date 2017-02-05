@@ -34,6 +34,8 @@
 #include "memory/zone.hpp"
 #include "rehlds/static_map.h"
 #include "system/common.hpp"
+#include "system/system.hpp"
+#include "network/net_msg.hpp"
 
 class CStringPoolMap : public CStaticMap<const char *, char *, 8, 2048>
 {

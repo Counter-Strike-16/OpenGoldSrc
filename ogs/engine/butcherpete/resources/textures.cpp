@@ -28,11 +28,17 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "resources/textures.hpp"
+#include "memory/mem.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "console/console.hpp"
 
 texlumpinfo_t *lumpinfo;
 int nTexLumps;
-FILE *texfiles[128];
+FileHandle_t texfiles[128];
 int nTexFiles;
 
 unsigned char texgammatable[256];

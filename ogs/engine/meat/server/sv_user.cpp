@@ -28,8 +28,22 @@
 
 /// @file
 
+//#include "precompiled.hpp"
 #include "server/sv_user.hpp"
-#include "precompiled.hpp"
+#include "server/sv_upld.hpp"
+#include "system/common.hpp"
+#include "system/info.hpp"
+#include "system/host.hpp"
+#include "physics/pmove.hpp"
+#include "world/world.hpp"
+#include "world/pr_cmds.hpp"
+#include "world/pr_edict.hpp"
+#include "network/net_msg.hpp"
+#include "console/console.hpp"
+#include "console/cmd.hpp"
+#include "input/keys.hpp"
+#include "engine/eiface.h"
+#include "rehlds_api_impl.h"
 
 typedef struct command_s
 {
