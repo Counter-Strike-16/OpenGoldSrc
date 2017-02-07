@@ -30,6 +30,7 @@
 
 //#include "precompiled.hpp"
 #include "system/common.hpp"
+#include "mathlib_local.hpp"
 
 /*
 ============================================================================
@@ -40,32 +41,35 @@ BYTE ORDER FUNCTIONS
 */
 
 qboolean bigendien;
+
 short (*BigShort)(short l);
 short (*LittleShort)(short l);
+
 int (*BigLong)(int l);
 int (*LittleLong)(int l);
+
 float (*BigFloat)(float l);
 float (*LittleFloat)(float l);
 
 int LongSwap(int l)
 {
 	return bswap(l);
-}
+};
 
 int LongNoSwap(int l)
 {
 	return l;
-}
+};
 
 short ShortSwap(short l)
 {
 	return bswap(l);
-}
+};
 
 short ShortNoSwap(short l)
 {
 	return l;
-}
+};
 
 float FloatSwap(float f)
 {
@@ -85,9 +89,9 @@ float FloatSwap(float f)
 	// unsigned long u = bswap(*(unsigned long *)&f);
 	// return *(float *)&u;
 	return bswap(f);
-}
+};
 
 float FloatNoSwap(float f)
 {
 	return f;
-}
+};

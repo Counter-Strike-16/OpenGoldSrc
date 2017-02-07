@@ -30,19 +30,21 @@
 /// @brief console command system
 
 //#include "precompiled.hpp"
-//#include "system/quakedef.hpp"
+//#include "system/commondef.hpp"
 #include "console/cmd.hpp"
-#include "client/client.hpp"
+#include "console/cvar.hpp"
 #include "console/console.hpp"
-#include "filesystem/filesystem_internal.hpp"
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
-#include "network/net_msg.hpp"
-#include "network/protocol.hpp"
 #include "system/common.hpp"
 #include "system/sizebuf.hpp"
 #include "system/system.hpp"
 #include "system/host.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "network/net_msg.hpp"
+#include "network/protocol.hpp"
+#include "client/client.hpp"
+#include "server/server.hpp"
 //#include "rehlds_api_impl.h"
 
 const int MAX_ARGS = 80;
@@ -855,22 +857,18 @@ qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
 	if(cls.state <= ca_disconnected)
 	{
 		if(Q_stricmp(cmd_name, "setinfo"))
-		{
 			Con_Printf("Can't \"%s\", not connected\n", cmd_name);
-		}
 
 		return FALSE;
 	}
 
 	if(cls.demoplayback || g_bIsDedicatedServer)
-	{
 		return FALSE;
-	}
 
 	char tempData[4096];
 	sizebuf_t tempBuf;
 
-	sprintf(tempBuf.buffername, "%s::tempBuf", __FUNCTION__);
+	sprintf((char*)tempBuf.buffername, "%s::tempBuf", __FUNCTION__);
 
 	tempBuf.data = (byte *)tempData;
 	tempBuf.maxsize = 4096;

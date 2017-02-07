@@ -121,6 +121,9 @@ extraResourceOptions=
 38=..\ogs\engine\butcherpete\meatcodestub.cpp
 39=..\ogs\engine\butcherpete\world\ed_strpool.cpp
 40=..\hlsdk\public\interface.cpp
+41=..\ogs\engine\butcherpete\system\info.cpp
+42=..\ogs\engine\butcherpete\hdrfix.cpp
+43=..\ogs\engine\butcherpete\system\byteorder.cpp
 [Header]
 [Resource]
 [Other]

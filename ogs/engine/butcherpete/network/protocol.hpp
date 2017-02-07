@@ -58,7 +58,7 @@ const int PORT_RPT_LISTEN = 27036;
 //=========================================
 
 // Max # of clients allowed in a server
-const int MAX_CLIENTS = 32;
+//const int MAX_CLIENTS = 32;
 
 // How many data slots to use when in multiplayer (must be power of 2)
 const int MULTIPLAYER_BACKUP = 64;
@@ -78,7 +78,7 @@ const int HL_SOUND_HASHLOOKUP_SIZE = (HL_SOUND_MAX * 2 - 1);
 const int MAX_EDICT_BITS = 11; // # of bits needed to represent max edicts
 
 // Max # of edicts in a level (2048)
-const int MAX_EDICTS = (1 << MAX_EDICT_BITS);
+//const int MAX_EDICTS = (1 << MAX_EDICT_BITS);
 
 const int HL_MODEL_MAX = 512;
 const int HL_GENERIC_MAX = 512;

@@ -52,26 +52,33 @@ public:
 	CEngine();
 	virtual ~CEngine();
 
-	virtual bool Load(bool dedicated, char *rootDir, char *cmdLine);
+	virtual bool Load(bool dedicated, char *rootDir, const char *cmdLine);
 	virtual void Unload();
+	
 	virtual void SetState(int iState);
 	virtual int GetState();
+	
 	virtual void SetSubState(int iSubstate);
 	virtual int GetSubState();
+	
 	virtual int Frame();
+	
 	virtual double GetFrameTime();
 	virtual double GetCurTime();
+	
 	virtual void TrapKey_Event(int key, bool down);
 	virtual void TrapMouse_Event(int buttons, bool down);
+	
 	virtual void StartTrapMode();
 	virtual bool IsTrapping();
 	virtual bool CheckDoneTrapping(int &buttons, int &keys);
+	
 	virtual int GetQuitting();
 	virtual void SetQuitting(int quittype);
 
 	// non-virtual function's of wrap for hooks a virtual
 	// Only need to HOOK_ENGINE
-	bool Load_noVirt(bool dedicated, char *rootDir, char *cmdLine);
+	bool Load_noVirt(bool dedicated, char *rootDir, const char *cmdLine);
 	void Unload_noVirt();
 	void SetState_noVirt(int iState);
 	int GetState_noVirt();

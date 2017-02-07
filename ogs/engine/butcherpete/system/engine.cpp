@@ -88,30 +88,38 @@ void ForceReloadProfile()
 	Cbuf_AddText("exec config.cfg\n");
 	Cbuf_AddText("+mlook\n");
 	Cbuf_Execute();
+	
 	if(COM_CheckParm("-nomousegrab"))
 		Cvar_Set("cl_mousegrab", "0");
 
 	// Key_SetBinding(126, "toggleconsole");
 	// Key_SetBinding(96, "toggleconsole");
 	// Key_SetBinding(27, "cancelselect");
-	// SDL_GL_SetSwapInterval((gl_vsync.value <= 0.0) - 1);
+	// SDL_GL_SetSwapInterval((gl_vsync.value <= 0.0) - 1); // definitely 6153
+	
 	if(cls.state != ca_dedicated)
 	{
-		Sys_Error("Only dedicated mode is supported");
-		/*
-    v0 = GetRateRegistrySetting(rate.string);
-    Q_strncpy(szRate, v0, 0x20u);
-    Cvar_DirectSet(&rate, szRate);
-    */
-	}
-}
+		//Sys_Error("Only dedicated mode is supported");
+		
+		char sRate[32] = {'\0'};
+		const char *sRegRate = "";
+		
+		sRegRate = GetRateRegistrySetting(rate_.string);
+		Q_strncpy(sRate, sRegRate, sizeof(sRate)); // 0x20u
+		
+		//Q_strncpy(sRate, sRegRate, charsmax(sRate)); // == sizeof(sRate) - 1
+		//sRate[sizeof(sRate) - 1] = '\0';
+		
+		Cvar_DirectSet(&rate_, sRate);
+	};
+};
 
-bool CEngine::Load(bool dedicated, char *basedir, char *cmdline)
+bool CEngine::Load(bool dedicated, char *basedir, const char *cmdline)
 {
 	return Load_noVirt(dedicated, basedir, cmdline);
 }
 
-bool CEngine::Load_noVirt(bool dedicated, char *basedir, char *cmdline)
+bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 {
 	bool success = false;
 	SetState(DLL_ACTIVE);
@@ -140,7 +148,7 @@ int CEngine::Frame_noVirt()
 		game->SleepUntilInput(m_nDLLState != DLL_PAUSED ? MINIMIZED_SLEEP
 		                                                : NOT_FOCUS_SLEEP);
 
-	m_fCurTime = Sys_DoubleTime();
+	m_fCurTime = Sys_FloatTime();
 	m_fFrameTime = m_fCurTime - m_fOldTime;
 	m_fOldTime = m_fCurTime;
 	if(m_fFrameTime < 0.0)

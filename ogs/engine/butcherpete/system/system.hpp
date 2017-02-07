@@ -276,7 +276,7 @@ NOXREF void Sys_ShutdownAuthentication();
 
 void Sys_ShowProgressTicks(char *specialProgressMsg);
 
-int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
+int Sys_InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
 void Sys_ShutdownGame();
 
 void ClearIOStates();
