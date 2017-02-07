@@ -8042,55 +8042,142 @@ char *SV_GetClientIDString(client_t *client)
 	return idstr;
 }
 
-typedef struct GameToAppIDMapItem_s
+void SV_ClientPrintf(const char *fmt, ...)
 {
-	unsigned int iAppID;
-	const char *pGameDir;
-} GameToAppIDMapItem_t;
+	/* va_list va;
+	char string[1024];
 
-GameToAppIDMapItem_t g_GameToAppIDMap[11] = {
-	0x0A, "cstrike", 0x14, "tfc", 0x1E, "dod", 0x28, "dmc", 0x32, "gearbox", 0x3C, "ricochet", 0x46, "valve", 0x50, "czero", 0x64, "czeror", 0x82, "bshift", 0x96, "cstrike_beta",
-};
-
-int GetGameAppID()
-{
-	char arg[260];
-	char gd[260];
-
-	COM_ParseDirectoryFromCmd("-game", gd, "valve");
-	COM_FileBase(gd, arg);
-	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
+	if(!host_client->fakeclient)
 	{
-		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, arg))
-			return g_GameToAppIDMap[i].iAppID;
-	}
+		va_start(va, fmt);
+		Q_vsnprintf(string, ARRAYSIZE(string) - 1, fmt, va);
+		va_end(va);
 
-	return 70;
+		string[ARRAYSIZE(string) - 1] = 0;
+
+		MSG_WriteByte(&host_client->netchan.message, svc_print);
+		MSG_WriteString(&host_client->netchan.message, string);
+	} */
 }
 
-qboolean IsGameSubscribed(const char *gameName)
+void SV_BroadcastPrintf(const char *fmt, ...)
 {
-#ifdef _WIN32
-	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
+	/* va_list argptr;
+	char string[1024];
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(string, ARRAYSIZE(string) - 1, fmt, argptr);
+	va_end(argptr);
+
+	string[ARRAYSIZE(string) - 1] = 0;
+
+	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
-		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, gameName))
+		client_t *cl = &g_psvs.clients[i];
+		if((cl->active || cl->spawned) && !cl->fakeclient)
 		{
-			return ISteamApps_BIsSubscribedApp(g_GameToAppIDMap[i].iAppID);
+			MSG_WriteByte(&cl->netchan.message, svc_print);
+			MSG_WriteString(&cl->netchan.message, string);
 		}
 	}
-
-	return ISteamApps_BIsSubscribedApp(70);
-#else //_WIN32
-	return 0;
-#endif
+	Con_DPrintf("%s", string); */
 }
 
-NOXREF qboolean BIsValveGame()
+void EXT_FUNC SV_DropClient_hook(IGameClient *cl, bool crash, const char *string)
 {
-	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
+	//SV_DropClient_internal(cl->GetClient(), crash ? TRUE : FALSE, string);
+}
+
+void EXT_FUNC SV_DropClient_api(IGameClient *cl, bool crash, const char *fmt, ...)
+{
+	/* char buf[1024];
+	va_list argptr;
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(buf, ARRAYSIZE(buf) - 1, fmt, argptr);
+	va_end(argptr);
+
+	g_RehldsHookchains.m_SV_DropClient.callChain(SV_DropClient_hook, cl, crash, buf); */
+}
+
+void SV_DropClient(client_t *cl, qboolean crash, const char *fmt, ...)
+{
+	/* char buf[1024];
+	va_list argptr;
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(buf, ARRAYSIZE(buf) - 1, fmt, argptr);
+	va_end(argptr);
+
+	g_RehldsHookchains.m_SV_DropClient.callChain(
+	SV_DropClient_hook, GetRehldsApiClient(cl), crash != FALSE, buf); */
+}
+
+void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
+{
+	/* int i;
+	unsigned char final[512];
+	float connection_time;
+
+	i = 0;
+
+	if(!crash)
 	{
-		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, com_gamedir))
-			return TRUE;
+		if(!cl->fakeclient)
+		{
+			MSG_WriteByte(&cl->netchan.message, svc_disconnect);
+			MSG_WriteString(&cl->netchan.message, string);
+			final[0] = svc_disconnect;
+			Q_strncpy((char *)& final[1], string, min(sizeof(final) - 1, Q_strlen(string) + 1));
+			final[sizeof(final) - 1] = 0;
+			i = 1 + min(sizeof(final) - 1, Q_strlen(string) + 1);
+		}
+		if(cl->edict && cl->spawned)
+			gEntityInterface.pfnClientDisconnect(cl->edict);
+
+		Sys_Printf("Dropped %s from server\nReason:  %s\n", cl->name, string);
+
+		if(!cl->fakeclient)
+			Netchan_Transmit(&cl->netchan, i, final);
 	}
-	return FALSE;
+
+	connection_time = realtime - cl->netchan.connect_time;
+	if(connection_time > 60.0)
+	{
+		++g_psvs.stats.num_sessions;
+		g_psvs.stats.cumulative_sessiontime =
+		g_psvs.stats.cumulative_sessiontime + connection_time;
+	}
+
+#ifdef REHLDS_FIXES
+	// prevent message reading after disconnect
+	if(cl == host_client)
+		msg_readcount = net_message.cursize;
+#endif // REHLDS_FIXES
+
+	Netchan_Clear(&cl->netchan);
+
+	Steam_NotifyClientDisconnect(cl);
+
+	cl->active = FALSE;
+	cl->connected = FALSE;
+	cl->hasusrmsgs = FALSE;
+	cl->fakeclient = FALSE;
+	cl->spawned = FALSE;
+	cl->fully_connected = FALSE;
+	cl->name[0] = 0;
+	cl->connection_started = realtime;
+	cl->proxy = FALSE;
+	COM_ClearCustomizationList(&cl->customdata, FALSE);
+	cl->edict = NULL;
+	Q_memset(cl->userinfo, 0, sizeof(cl->userinfo));
+	Q_memset(cl->physinfo, 0, sizeof(cl->physinfo));
+
+#ifdef REHLDS_FIXES
+	g_GameClients[cl - g_psvs.clients]->SetSpawnedOnce(false);
+#endif // REHLDS_FIXES
+
+	SV_SendFullClientUpdateForAll(cl);
+
+	NotifyDedicatedServerUI("UpdatePlayers"); */
 }

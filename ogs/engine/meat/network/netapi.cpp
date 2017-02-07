@@ -1,160 +1,173 @@
-/*
- *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
- *
- *	OGS Engine is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, either version 3 of the License, or
- *	(at your option) any later version.
- *
- *	OGS Engine is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
- *
- *	In addition, as a special exception, the author gives permission to
- *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
- *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
- *	L.L.C ("Valve").  You must obey the GNU General Public License in all
- *	respects for all of the code used other than the GoldSrc Engine and MODs
- *	from Valve.  If you modify this file, you may extend this exception
- *	to your version of the file, but you are not obligated to do so.  If
- *	you do not wish to do so, delete this exception statement from your
- *	version.
- */
+#include "inetapi.h"
+#include "winsock.h"
+#include <stdio.h>
 
-/// @file
-/// @brief export api for the network module
+#pragma warning(disable : 4706)
 
-#include "common/net_api.h"
-#include "network/network.hpp"
-
-/*
-=================
-
-NetworkApi implementation
-
-=================
-*/
-
-namespace
+class CNetAPI : public INetAPI
 {
-
-void NET_Status(struct net_status_s *status)
-{
-	ASSERT(status != NULL);
-
-	status->connected =
-	NET_IsLocalAddress(cls.netchan.remote_address) ? false : true;
-	status->connection_time = host.realtime - cls.netchan.connect_time;
-	status->remote_address = cls.netchan.remote_address;
-	status->packet_loss = cls.packet_loss / 100; // percent
-	status->latency = cl.frame.latency;
-	status->local_address = net_local;
-	status->rate = cls.netchan.rate;
+public:
+	virtual void NetAdrToSockAddr(netadr_t *a, struct sockaddr *s);
+	virtual void SockAddrToNetAdr(struct sockaddr *s, netadr_t *a);
+	virtual char *AdrToString(netadr_t *a);
+	virtual bool StringToAdr(const char *s, netadr_t *a);
+	virtual void GetSocketAddress(int socket, netadr_t *a);
+	virtual bool CompareAdr(netadr_t *a, netadr_t *b);
+	virtual void GetLocalIP(netadr_t *a);
 };
 
-void NET_SendRequest(int context, int request, int flags, double timeout, struct netadr_s *remote_address, net_api_response_func_t response)
+static CNetAPI g_NetAPI;
+INetAPI *net = (INetAPI *)&g_NetAPI;
+
+void CNetAPI::NetAdrToSockAddr(netadr_t *a, struct sockaddr *s)
 {
-	net_request_t *nr = NULL;
-	string req;
-	int i;
+	memset(s, 0, sizeof(*s));
 
-	if(!response)
+	if(a->type == NA_BROADCAST)
 	{
-		MsgDev(
-		D_ERROR,
-		"Net_SendRequest: no callbcak specified for request with context %i!\n",
-		context);
-		return;
+		((struct sockaddr_in *)s)->sin_family = AF_INET;
+		((struct sockaddr_in *)s)->sin_port = a->port;
+		((struct sockaddr_in *)s)->sin_addr.s_addr = INADDR_BROADCAST;
+	}
+	else if(a->type == NA_IP)
+	{
+		((struct sockaddr_in *)s)->sin_family = AF_INET;
+		((struct sockaddr_in *)s)->sin_addr.s_addr = *(int *)&a->ip;
+		((struct sockaddr_in *)s)->sin_port = a->port;
+	}
+}
+
+void CNetAPI::SockAddrToNetAdr(struct sockaddr *s, netadr_t *a)
+{
+	if(s->sa_family == AF_INET)
+	{
+		a->type = NA_IP;
+		*(int *)&a->ip = ((struct sockaddr_in *)s)->sin_addr.s_addr;
+		a->port = ((struct sockaddr_in *)s)->sin_port;
+	}
+}
+
+char *CNetAPI::AdrToString(netadr_t *a)
+{
+	static char s[64];
+
+	memset(s, 0, 64);
+
+	if(a)
+	{
+		if(a->type == NA_LOOPBACK)
+			sprintf(s, "loopback");
+		else if(a->type == NA_IP)
+			sprintf(s, "%i.%i.%i.%i:%i", a->ip[0], a->ip[1], a->ip[2], a->ip[3], ntohs(a->port));
 	}
 
-	// find a free request
-	for(i = 0; i < MAX_REQUESTS; i++)
-	{
-		nr = &clgame.net_requests[i];
-		if(!nr->pfnFunc || nr->timeout < host.realtime)
-			break;
-	}
+	return s;
+}
 
-	if(i == MAX_REQUESTS)
-	{
-		double max_timeout = 0;
+static bool StringToSockaddr(const char *s, struct sockaddr *sadr)
+{
+	struct hostent *h;
+	char *colon;
+	char copy[128];
+	struct sockaddr_in *p;
 
-		// no free requests? use older
-		for(i = 0, nr = NULL; i < MAX_REQUESTS; ++i)
+	memset(sadr, 0, sizeof(*sadr));
+
+	p = (struct sockaddr_in *)sadr;
+	p->sin_family = AF_INET;
+	p->sin_port = 0;
+
+	strcpy(copy, s);
+
+	for(colon = copy; *colon; colon++)
+	{
+		if(*colon == ':')
 		{
-			if((host.realtime - clgame.net_requests[i].timesend) > max_timeout)
-			{
-				max_timeout = host.realtime - clgame.net_requests[i].timesend;
-				nr = &clgame.net_requests[i];
-			}
+			*colon = 0;
+			p->sin_port = htons((short)atoi(colon + 1));
 		}
 	}
 
-	ASSERT(nr != NULL);
-
-	// clear slot
-	Q_memset(nr, 0, sizeof(*nr));
-
-	// create a new request
-	nr->timesend = host.realtime;
-	nr->timeout = nr->timesend + timeout;
-	nr->pfnFunc = response;
-	nr->resp.context = context;
-	nr->resp.type = request;
-	nr->resp.remote_address = *remote_address;
-	nr->flags = flags;
-
-	if(request == NETAPI_REQUEST_SERVERLIST)
+	if(copy[0] >= '0' && copy[0] <= '9' && strstr(copy, "."))
 	{
-		// UNDONE: build request for master-server
+		*(int *)&p->sin_addr = inet_addr(copy);
 	}
 	else
 	{
-		// send request over the net
-		Q_snprintf(req, sizeof(req), "netinfo %i %i %i", PROTOCOL_VERSION, context, request);
-		Netchan_OutOfBandPrint(NS_CLIENT, nr->resp.remote_address, req);
-	}
-};
+		if(!(h = gethostbyname(copy)))
+			return false;
 
-void NET_CancelRequest(int context)
+		*(int *)&p->sin_addr = *(int *)h->h_addr_list[0];
+	}
+
+	return true;
+}
+
+bool CNetAPI::StringToAdr(const char *s, netadr_t *a)
 {
-	// find a specified request
-	for(int i = 0; i < MAX_REQUESTS; ++i)
+	struct sockaddr sadr;
+
+	if(!strcmp(s, "localhost"))
 	{
-		if(clgame.net_requests[i].resp.context == context)
+		memset(a, 0, sizeof(*a));
+		a->type = NA_LOOPBACK;
+		return true;
+	}
+
+	if(!StringToSockaddr(s, &sadr))
+		return false;
+
+	SockAddrToNetAdr(&sadr, a);
+	return true;
+}
+
+void CNetAPI::GetSocketAddress(int socket, netadr_t *a)
+{
+	char buff[512];
+	struct sockaddr_in address;
+	int namelen;
+
+	memset(a, 0, sizeof(*a));
+
+	gethostname(buff, 512);
+	buff[512 - 1] = 0;
+
+	StringToAdr(buff, a);
+
+	namelen = sizeof(address);
+
+	if(getsockname(socket, (struct sockaddr *)&address, (int *)&namelen) == 0)
+		a->port = address.sin_port;
+}
+
+bool CNetAPI::CompareAdr(netadr_t *a, netadr_t *b)
+{
+	if(a->type != b->type)
+		return false;
+
+	if(a->type == NA_LOOPBACK)
+		return true;
+
+	if(a->type == NA_IP && a->ip[0] == b->ip[0] && a->ip[1] == b->ip[1] &&
+	   a->ip[2] == b->ip[2] && a->ip[3] == b->ip[3] && a->port == b->port)
+		return true;
+
+	return false;
+}
+
+void CNetAPI::GetLocalIP(netadr_t *a)
+{
+	char s[64];
+
+	if(!::gethostname(s, 64))
+	{
+		struct hostent *localip = ::gethostbyname(s);
+
+		if(localip)
 		{
-			MsgDev(D_NOTE, "Request with context %i cancelled\n", context);
-			Q_memset(&clgame.net_requests[i], 0, sizeof(net_request_t));
-			break;
+			a->type = NA_IP;
+			a->port = 0;
+			memcpy(a->ip, localip->h_addr_list[0], 4);
 		}
 	}
-};
-
-void NET_CancelAllRequests()
-{
-	Q_memset(clgame.net_requests, 0, sizeof(clgame.net_requests));
-};
-
-}; // namespace
-
-net_api_t gNetAPI =
-    {
-        NET_Init, // Net_Config(true)?
-        NET_Status,
-
-        NET_SendRequest,
-        NET_CancelRequest,
-        NET_CancelAllRequests,
-
-        NET_AdrToString,
-        NET_CompareAdr,
-        NET_StringToAdr,
-
-        Info_ValueForKey,
-        Info_RemoveKey,
-        Info_SetValueForKey};
+}

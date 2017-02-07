@@ -30,10 +30,13 @@
 
 //#include "precompiled/hpp"
 #include "network/net_msg.hpp"
-#include "common/usercmd.h"
+#include "network/net_ws.hpp"
+#include "network/delta.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
 #include "system/sizebuf.hpp"
-#include "system/systemtypes.hpp"
+#include "server/server.hpp"
+#include "common/usercmd.h"
 
 // MESSAGE IO FUNCTIONS
 // Handles byte ordering and avoids alignment errors

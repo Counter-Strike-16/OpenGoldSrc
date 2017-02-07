@@ -107,6 +107,7 @@ cvar_t suitvolume;
 
 NOXREF void Host_EndGame(const char *message, ...)
 {
+/*
 	int oldn;
 	va_list argptr;
 	char string[1024];
@@ -139,11 +140,12 @@ NOXREF void Host_EndGame(const char *message, ...)
 	Cbuf_AddText("cd stop\n");
 	Cbuf_Execute();
 	longjmp(host_abortserver, 1);
+*/
 }
 
 void __declspec(noreturn) Host_Error(const char *error, ...)
 {
-	va_list argptr;
+	/* va_list argptr;
 	char string[1024];
 	static qboolean inerror = FALSE;
 
@@ -171,12 +173,12 @@ void __declspec(noreturn) Host_Error(const char *error, ...)
 		inerror = FALSE;
 		longjmp(host_abortserver, 1);
 	}
-	Sys_Error("%s: %s\n", __FUNCTION__, string);
+	Sys_Error("%s: %s\n", __FUNCTION__, string); */
 }
 
 void Host_InitLocal()
 {
-	Host_InitCommands();
+	/* Host_InitCommands();
 
 	Cvar_RegisterVariable(&host_killtime);
 	Cvar_RegisterVariable(&sys_ticrate);
@@ -202,12 +204,12 @@ void Host_InitLocal()
 	Cvar_RegisterVariable(&pausable);
 	Cvar_RegisterVariable(&skill);
 
-	SV_SetMaxclients();
+	SV_SetMaxclients(); */
 }
 
 NOXREF void Info_WriteVars(FileHandle_t fp)
 {
-	cvar_t *pcvar;
+	/* cvar_t *pcvar;
 	char *s;
 	char pkey[512];
 
@@ -252,12 +254,12 @@ NOXREF void Info_WriteVars(FileHandle_t fp)
 		if(!*s)
 			return;
 		s++;
-	}
+	} */
 }
 
 void Host_WriteConfiguration()
 {
-#ifndef SWDS
+/* #ifndef SWDS
 	FILE *f;
 	kbutton_t *ml;
 	kbutton_t *jl;
@@ -328,12 +330,12 @@ void Host_WriteConfiguration()
 		FS_GetLocalPath("config.cfg", nameBuf, sizeof(nameBuf));
 		chmod(nameBuf, S_IREAD);
 	}
-#endif // SWDS
+#endif // SWDS */
 }
 
 void Host_WriteCustomConfig()
 {
-#ifndef SWDS
+/* #ifndef SWDS
 	FILE *f;
 	kbutton_t *ml;
 	kbutton_t *jl;
@@ -384,53 +386,12 @@ void Host_WriteCustomConfig()
 			}
 		}
 	}
-#endif // SWDS
-}
-
-void SV_ClientPrintf(const char *fmt, ...)
-{
-	va_list va;
-	char string[1024];
-
-	if(!host_client->fakeclient)
-	{
-		va_start(va, fmt);
-		Q_vsnprintf(string, ARRAYSIZE(string) - 1, fmt, va);
-		va_end(va);
-
-		string[ARRAYSIZE(string) - 1] = 0;
-
-		MSG_WriteByte(&host_client->netchan.message, svc_print);
-		MSG_WriteString(&host_client->netchan.message, string);
-	}
-}
-
-void SV_BroadcastPrintf(const char *fmt, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	va_start(argptr, fmt);
-	Q_vsnprintf(string, ARRAYSIZE(string) - 1, fmt, argptr);
-	va_end(argptr);
-
-	string[ARRAYSIZE(string) - 1] = 0;
-
-	for(int i = 0; i < g_psvs.maxclients; i++)
-	{
-		client_t *cl = &g_psvs.clients[i];
-		if((cl->active || cl->spawned) && !cl->fakeclient)
-		{
-			MSG_WriteByte(&cl->netchan.message, svc_print);
-			MSG_WriteString(&cl->netchan.message, string);
-		}
-	}
-	Con_DPrintf("%s", string);
+#endif // SWDS */
 }
 
 void Host_ClientCommands(const char *fmt, ...)
 {
-	va_list argptr;
+	/* va_list argptr;
 	char string[1024];
 
 	va_start(argptr, fmt);
@@ -442,111 +403,12 @@ void Host_ClientCommands(const char *fmt, ...)
 		MSG_WriteByte(&host_client->netchan.message, svc_stufftext);
 		MSG_WriteString(&host_client->netchan.message, string);
 	}
-	va_end(argptr);
-}
-
-void EXT_FUNC SV_DropClient_hook(IGameClient *cl, bool crash, const char *string)
-{
-	SV_DropClient_internal(cl->GetClient(), crash ? TRUE : FALSE, string);
-}
-
-void EXT_FUNC SV_DropClient_api(IGameClient *cl, bool crash, const char *fmt, ...)
-{
-	char buf[1024];
-	va_list argptr;
-
-	va_start(argptr, fmt);
-	Q_vsnprintf(buf, ARRAYSIZE(buf) - 1, fmt, argptr);
-	va_end(argptr);
-
-	g_RehldsHookchains.m_SV_DropClient.callChain(SV_DropClient_hook, cl, crash, buf);
-}
-
-void SV_DropClient(client_t *cl, qboolean crash, const char *fmt, ...)
-{
-	char buf[1024];
-	va_list argptr;
-
-	va_start(argptr, fmt);
-	Q_vsnprintf(buf, ARRAYSIZE(buf) - 1, fmt, argptr);
-	va_end(argptr);
-
-	g_RehldsHookchains.m_SV_DropClient.callChain(
-	SV_DropClient_hook, GetRehldsApiClient(cl), crash != FALSE, buf);
-}
-
-void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
-{
-	int i;
-	unsigned char final[512];
-	float connection_time;
-
-	i = 0;
-
-	if(!crash)
-	{
-		if(!cl->fakeclient)
-		{
-			MSG_WriteByte(&cl->netchan.message, svc_disconnect);
-			MSG_WriteString(&cl->netchan.message, string);
-			final[0] = svc_disconnect;
-			Q_strncpy((char *)& final[1], string, min(sizeof(final) - 1, Q_strlen(string) + 1));
-			final[sizeof(final) - 1] = 0;
-			i = 1 + min(sizeof(final) - 1, Q_strlen(string) + 1);
-		}
-		if(cl->edict && cl->spawned)
-			gEntityInterface.pfnClientDisconnect(cl->edict);
-
-		Sys_Printf("Dropped %s from server\nReason:  %s\n", cl->name, string);
-
-		if(!cl->fakeclient)
-			Netchan_Transmit(&cl->netchan, i, final);
-	}
-
-	connection_time = realtime - cl->netchan.connect_time;
-	if(connection_time > 60.0)
-	{
-		++g_psvs.stats.num_sessions;
-		g_psvs.stats.cumulative_sessiontime =
-		g_psvs.stats.cumulative_sessiontime + connection_time;
-	}
-
-#ifdef REHLDS_FIXES
-	// prevent message reading after disconnect
-	if(cl == host_client)
-		msg_readcount = net_message.cursize;
-#endif // REHLDS_FIXES
-
-	Netchan_Clear(&cl->netchan);
-
-	Steam_NotifyClientDisconnect(cl);
-
-	cl->active = FALSE;
-	cl->connected = FALSE;
-	cl->hasusrmsgs = FALSE;
-	cl->fakeclient = FALSE;
-	cl->spawned = FALSE;
-	cl->fully_connected = FALSE;
-	cl->name[0] = 0;
-	cl->connection_started = realtime;
-	cl->proxy = FALSE;
-	COM_ClearCustomizationList(&cl->customdata, FALSE);
-	cl->edict = NULL;
-	Q_memset(cl->userinfo, 0, sizeof(cl->userinfo));
-	Q_memset(cl->physinfo, 0, sizeof(cl->physinfo));
-
-#ifdef REHLDS_FIXES
-	g_GameClients[cl - g_psvs.clients]->SetSpawnedOnce(false);
-#endif // REHLDS_FIXES
-
-	SV_SendFullClientUpdateForAll(cl);
-
-	NotifyDedicatedServerUI("UpdatePlayers");
+	va_end(argptr); */
 }
 
 void Host_ClearClients(qboolean bFramesOnly)
 {
-	int i;
+	/* int i;
 	int j;
 	client_frame_t *frame;
 	netadr_t save;
@@ -581,12 +443,12 @@ void Host_ClearClients(qboolean bFramesOnly)
 
 		Q_memset(g_psvs.clients, 0, sizeof(client_t) * g_psvs.maxclientslimit);
 		SV_AllocClientFrames();
-	}
+	} */
 }
 
 void Host_ShutdownServer(qboolean crash)
 {
-	int i;
+	/* int i;
 	if(!g_psv.active)
 		return;
 
@@ -619,33 +481,32 @@ void Host_ShutdownServer(qboolean crash)
 	HPAK_FlushHostQueue();
 	Steam_Shutdown();
 	Log_Printf("Server shutdown\n");
-	Log_Close();
+	Log_Close(); */
 }
 
 void SV_ClearClientStates()
 {
-	for(int i = 0, client_t *pcl = g_psvs.clients; i < g_psvs.maxclients;
-	    i++, pcl++)
+	/* for(int i = 0, client_t *pcl = g_psvs.clients; i < g_psvs.maxclients; i++, pcl++)
 	{
 		COM_ClearCustomizationList(&pcl->customdata, FALSE);
 		SV_ClearResourceLists(pcl);
-	}
+	} */
 }
 
 void Host_CheckDyanmicStructures()
 {
-	client_t *cl = g_psvs.clients;
+	/* client_t *cl = g_psvs.clients;
 
 	for(int i = 0; i < g_psvs.maxclients; i++, cl++)
 	{
 		if(cl->frames)
 			SV_ClearFrames(&cl->frames);
-	}
+	} */
 }
 
 void Host_ClearMemory(qboolean bQuiet)
 {
-// Engine string pooling
+/* // Engine string pooling
 #ifdef REHLDS_FIXES
 	Ed_StrPool_Reset();
 #endif // REHLDS_FIXES
@@ -668,12 +529,12 @@ void Host_ClearMemory(qboolean bQuiet)
 	SV_ClearCaches();
 	Q_memset(&g_psv, 0, sizeof(server_t));
 	CL_ClearClientState();
-	SV_ClearClientStates();
+	SV_ClearClientStates(); */
 }
 
 qboolean Host_FilterTime(float time)
 {
-	float fps;
+	/* float fps;
 	static int command_line_ticrate = -1;
 
 	if(host_framerate.value > 0.0f)
@@ -740,29 +601,30 @@ qboolean Host_FilterTime(float time)
 
 	if(host_frametime > 0.25f)
 		host_frametime = 0.25f;
-
+*/
 	return TRUE;
 }
 
 qboolean Master_IsLanGame()
 {
-	return sv_lan.value != 0.0f;
+	//return sv_lan.value != 0.0f;
+	return false;
 }
 
 void Master_Heartbeat_f()
 {
 	// Steam_ForceHeartbeat in move?
-	CRehldsPlatformHolder::get()->SteamGameServer()->ForceHeartbeat();
+	//CRehldsPlatformHolder::get()->SteamGameServer()->ForceHeartbeat();
 }
 
 void Host_ComputeFPS(double frametime)
 {
-	rolling_fps = 0.6f * rolling_fps + 0.4f * frametime;
+	//rolling_fps = 0.6f * rolling_fps + 0.4f * frametime;
 }
 
 void Host_GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap)
 {
-	if(rolling_fps > 0.0f)
+	/* if(rolling_fps > 0.0f)
 	{
 		*fps = 1.0f / rolling_fps;
 	}
@@ -787,12 +649,12 @@ void Host_GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, c
 			*pszMap = 0;
 	}
 
-	*nMaxPlayers = g_psvs.maxclients;
+	*nMaxPlayers = g_psvs.maxclients; */
 }
 
 void Host_Speeds(double *time)
 {
-	float pass1, pass2, pass3, pass4, pass5;
+	/* float pass1, pass2, pass3, pass4, pass5;
 	double frameTime;
 	double fps;
 
@@ -843,7 +705,7 @@ void Host_Speeds(double *time)
 			CL_GGSpeeds(time[3]);
 		}
 #endif // SWDS
-	}
+	} */
 };
 
 /*
@@ -855,7 +717,7 @@ Refresh the screen
 */
 void Host_UpdateScreen()
 {
-	if(!gfBackground)
+	/* if(!gfBackground)
 	{
 		SCR_UpdateScreen();
 		if(cl_inmovie)
@@ -863,7 +725,7 @@ void Host_UpdateScreen()
 			if(*(float *)&scr_con_current == 0.0f)
 				VID_WriteBuffer(NULL);
 		}
-	}
+	} */
 }
 
 /*
@@ -875,10 +737,10 @@ Update sound subsystem and cd audio
 */
 void Host_UpdateSounds()
 {
-	if(!gfBackground)
+	/* if(!gfBackground)
 	{
 		// S_PrintStats();
-	}
+	} */
 
 	/*
           #if defined( _WIN32 ) && !defined( SWDS )
@@ -897,7 +759,7 @@ void Host_UpdateSounds()
 
 void Host_CheckConnectionFailure()
 {
-	static int frames = 5;
+	/* static int frames = 5;
 	if(cls.state == ca_disconnected &&
 	   (giSubState & 4 || console.value == 0.0f))
 	{
@@ -906,7 +768,7 @@ void Host_CheckConnectionFailure()
 
 		giActive = DLL_PAUSED;
 		frames = 5;
-	}
+	} */
 }
 
 /*
@@ -918,7 +780,7 @@ Runs all active servers
 */
 void _Host_Frame(float time)
 {
-	static double host_times[6];
+	/* static double host_times[6];
 
 	if(setjmp(host_enddemo))
 		return;
@@ -1013,12 +875,12 @@ void _Host_Frame(float time)
 		FR_EndFrame(frameCounter);
 
 	frameCounter++;
-#endif // REHLDS_FLIGHT_REC
+#endif // REHLDS_FLIGHT_REC */
 }
 
 int Host_Frame(float time, int iState, int *stateInfo)
 {
-	double time1;
+	/* double time1;
 	double time2;
 
 	if(setjmp(host_abortserver))
@@ -1065,14 +927,14 @@ int Host_Frame(float time, int iState, int *stateInfo)
 
 			Con_Printf("host_profile: %2i clients %2i msec\n", c, m);
 		}
-	}
+	} */
 
 	return giActive;
 }
 
 void CheckGore()
 {
-	if(bLowViolenceBuild)
+	/* if(bLowViolenceBuild)
 	{
 		Cvar_SetValue("violence_hblood", 0.0);
 		Cvar_SetValue("violence_hgibs", 0.0);
@@ -1085,25 +947,27 @@ void CheckGore()
 		Cvar_SetValue("violence_hgibs", 1.0);
 		Cvar_SetValue("violence_ablood", 1.0);
 		Cvar_SetValue("violence_agibs", 1.0);
-	}
+	} */
 }
 
 qboolean Host_IsSinglePlayerGame()
 {
-	if(g_psv.active)
+	/* if(g_psv.active)
 		return g_psvs.maxclients == 1;
 	else
-		return cl.maxclients == 1;
+		return cl.maxclients == 1; */
+	return false;
 }
 
 qboolean Host_IsServerActive()
 {
-	return g_psv.active;
+	//return g_psv.active;
+	return false;
 }
 
 void Host_Version()
 {
-	char szFileName[MAX_PATH];
+	/* char szFileName[MAX_PATH];
 
 	Q_strcpy(gpszVersionString, "1.0.1.4");
 	Q_strcpy(gpszProductString, "valve");
@@ -1165,7 +1029,7 @@ void Host_Version()
 		Con_Printf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
 		Con_Printf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n",
 		           build_number());
-	}
+	} */
 }
 
 /*
@@ -1175,7 +1039,7 @@ Host_Init
 */
 int Host_Init(quakeparms_t *parms)
 {
-	char versionString[256];
+	/* char versionString[256];
 
 	CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
 
@@ -1303,13 +1167,13 @@ int Host_Init(quakeparms_t *parms)
 
 	CheckGore();
 
-	host_initialized = TRUE;
+	host_initialized = TRUE; */
 	return 1;
 }
 
 void Host_Shutdown()
 {
-	static qboolean isdown = FALSE;
+	/* static qboolean isdown = FALSE;
 
 	int i;
 	client_t *pclient;
@@ -1374,8 +1238,63 @@ void Host_Shutdown()
 	Key_Shutdown();
 	realtime = 0.0f;
 	g_psv.time = 0.0f;
-	cl.time = 0.0f;
+	cl.time = 0.0f; */
 };
+
+typedef struct GameToAppIDMapItem_s
+{
+	unsigned int iAppID;
+	const char *pGameDir;
+} GameToAppIDMapItem_t;
+
+GameToAppIDMapItem_t g_GameToAppIDMap[11] = {
+	0x0A, "cstrike", 0x14, "tfc", 0x1E, "dod", 0x28, "dmc", 0x32, "gearbox", 0x3C, "ricochet", 0x46, "valve", 0x50, "czero", 0x64, "czeror", 0x82, "bshift", 0x96, "cstrike_beta",
+};
+
+int GetGameAppID()
+{
+	char arg[260];
+	char gd[260];
+
+	COM_ParseDirectoryFromCmd("-game", gd, "valve");
+	COM_FileBase(gd, arg);
+	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
+	{
+		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, arg))
+			return g_GameToAppIDMap[i].iAppID;
+	}
+
+	return 70;
+}
+
+qboolean IsGameSubscribed(const char *gameName)
+{
+#ifdef _WIN32
+	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
+	{
+		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, gameName))
+		{
+			//return ISteamApps_BIsSubscribedApp(g_GameToAppIDMap[i].iAppID);
+			return 0;
+		}
+	}
+
+	//return ISteamApps_BIsSubscribedApp(70);
+	return 0;
+#else //_WIN32
+	return 0;
+#endif
+}
+
+NOXREF qboolean BIsValveGame()
+{
+	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
+	{
+		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, com_gamedir))
+			return TRUE;
+	}
+	return FALSE;
+}
 
 #if 0
 /*

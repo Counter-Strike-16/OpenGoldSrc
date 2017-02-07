@@ -31,7 +31,7 @@
 //#include "precompiled.hpp"
 
 // TODO: Implement security module
-cl_enginefunc_dst_t *pg_engdstAddrs;
+//cl_enginefunc_dst_t *pg_engdstAddrs;
 
-modfuncs_t g_modfuncs;
-module_t g_module;
+//modfuncs_t g_modfuncs;
+//module_t g_module;
