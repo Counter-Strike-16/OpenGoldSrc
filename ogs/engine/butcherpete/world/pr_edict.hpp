@@ -37,16 +37,18 @@ typedef struct edict_s edict_t;
 typedef struct entvars_s entvars_t;
 typedef struct cvar_s cvar_t;
 
+// conflicting with progs.h
+
 void ED_ClearEdict(edict_t *e);
-edict_t *ED_Alloc(void);
-void ED_Free(edict_t *ed);
+//edict_t *ED_Alloc(void);
+//void ED_Free(edict_t *ed);
 NOXREF void ED_Count(void);
 char *ED_NewString(const char *string);
 char *ED_ParseEdict(char *data, edict_t *ent);
-void ED_LoadFromFile(char *data);
+//void ED_LoadFromFile(char *data);
 NOXREF void PR_Init(void);
-edict_t *EDICT_NUM(int n);
-int NUM_FOR_EDICT(const edict_t *e);
+//edict_t *EDICT_NUM(int n);
+//int NUM_FOR_EDICT(const edict_t *e);
 bool SuckOutClassname(char *szInputStream, edict_t *pEdict);
 void ReleaseEntityDLLFields(edict_t *pEdict);
 void InitEntityDLLFields(edict_t *pEdict);

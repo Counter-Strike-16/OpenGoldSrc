@@ -28,10 +28,10 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "server/sv_steam3.hpp"
 
-bool (CSteam3Server::*pNotifyClientConnect)(
-client_t *client, const void *pvSteam2Key, uint32 ucbSteam2Key) = &CSteam3Server::NotifyClientConnect;
+bool (CSteam3Server::*pNotifyClientConnect)(client_t *client, const void *pvSteam2Key, uint32 ucbSteam2Key) = &CSteam3Server::NotifyClientConnect;
 
 void CSteam3Server::OnGSPolicyResponse(GSPolicyResponse_t *pPolicyResponse)
 {

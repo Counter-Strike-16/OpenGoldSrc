@@ -45,6 +45,13 @@ const int MAX_NAME = 32;
 #define SND_FL_CHANGE_PITCH BIT(7) // change sound pitch
 #define SND_FL_SPAWNING BIT(8) // we're spawning, used in some cases for ambients (not sent across network)
 
+// SV_EmitSound2 flags
+#define SND_EMIT2_NOPAS (1 << 0)   // never to do check PAS
+#define SND_EMIT2_INVOKER (1 << 1) // do not send to the client invoker
+
+// Engine edict->spawnflags
+#define SF_NOTINDEATHMATCH 0x0800 // Do not spawn when deathmatch and loading entities from a file
+
 /// Message send destination flags
 enum
 {

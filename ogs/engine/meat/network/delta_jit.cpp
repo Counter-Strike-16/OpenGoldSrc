@@ -28,8 +28,9 @@
 
 /// @file
 
+//#include "precompiled.hpp"
+#include "system/common.hpp"
 #include "jitasm.h"
-#include "precompiled.hpp"
 
 CDeltaJitRegistry g_DeltaJitRegistry;
 

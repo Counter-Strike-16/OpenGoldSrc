@@ -41,7 +41,7 @@
 #include "system/unicode_strtools.h"
 
 /*
-        All cvar names are case insensitive! Values not
+	All cvar names are case insensitive! Values not
 */
 
 cvar_t *cvar_vars;

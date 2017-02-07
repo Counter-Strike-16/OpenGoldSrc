@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "common/com_model.h"
 #include "common/commontypes.h"
+#include "common/com_model.h"
 
 /// Max key/value length (with a NULL char)
 const int MAX_KV_LEN = 127;

@@ -30,13 +30,16 @@
 
 //#include "precompiled.hpp"
 #include "world/pr_edict.hpp"
-#include "console/console.hpp"
-#include "console/cvar.hpp"
 #include "memory/mem.hpp"
-#include "server/server.hpp"
+#include "memory/zone.hpp"
 #include "system/common.hpp"
 #include "system/host.hpp"
 #include "system/system.hpp"
+#include "console/console.hpp"
+#include "console/cvar.hpp"
+#include "server/server.hpp"
+#include "world/world.hpp"
+#include "resources/model_rehlds.hpp"
 
 void ED_ClearEdict(edict_t *e)
 {

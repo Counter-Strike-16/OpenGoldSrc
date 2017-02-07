@@ -18,8 +18,7 @@
 
 //#include "server/sv_steam3.hpp"
 
-// #include "system/quakedef.hpp"
-// #include "system/sys.hpp"
+// #include "system/commondef.hpp"
 
 //======================================
 // STAGE #2

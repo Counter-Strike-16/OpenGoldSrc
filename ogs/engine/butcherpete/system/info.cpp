@@ -33,6 +33,7 @@
 #include "console/console.hpp"
 #include "system/common.hpp"
 #include "system/systemtypes.hpp"
+#include "system/unicode_strtools.h"
 
 // NOTE: This file contains a lot of fixes that are not covered by REHLDS_FIXES
 // define.
