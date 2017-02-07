@@ -30,15 +30,18 @@
 
 //#include "precompiled.hpp"
 #include "console/cvar.hpp"
-#include "client/client.hpp"
 #include "console/cmd.hpp"
 #include "console/console.hpp"
-#include "filesystem/filesystem_internal.hpp"
 #include "memory/zone.hpp"
-#include "server/sv_steam3.hpp"
+#include "filesystem/filesystem_internal.hpp"
 #include "system/sizebuf.hpp"
 #include "system/system.hpp"
 #include "system/unicode_strtools.h"
+#include "network/net_msg.hpp"
+#include "client/client.hpp"
+#include "server/server.hpp"
+//#include "server/sv_steam3.hpp"
+#include "server/sv_log.hpp"
 
 /*
 	All cvar names are case insensitive! Values not
@@ -72,7 +75,7 @@ void Cvar_Shutdown()
 cvar_t *Cvar_FindVar(const char *var_name)
 {
 #ifndef SWDS
-	g_engdstAddrs->pfnGetCvarPointer(&var_name);
+	g_engdstAddrs.pfnGetCvarPointer(&var_name);
 #endif
 
 	cvar_t *var = NULL;
@@ -295,15 +298,15 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 
 		if(!(var->flags & FCVAR_PROTECTED))
 		{
-			Steam_SetCVar(var->name, pszValue);
+			//Steam_SetCVar(var->name, pszValue);
 		}
 		else if(pszValue[0] && Q_stricmp(pszValue, "none"))
 		{
-			Steam_SetCVar(var->name, "1");
+			//Steam_SetCVar(var->name, "1");
 		}
 		else
 		{
-			Steam_SetCVar(var->name, "0");
+			//Steam_SetCVar(var->name, "0");
 		}
 	}
 
@@ -315,7 +318,7 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 
 void Cvar_DirectSet(struct cvar_s *var, const char *value)
 {
-	g_RehldsHookchains.m_Cvar_DirectSet.callChain(Cvar_DirectSet_internal, var, value);
+	//g_RehldsHookchains.m_Cvar_DirectSet.callChain(Cvar_DirectSet_internal, var, value);
 }
 
 void Cvar_Set(const char *var_name, const char *value)
@@ -341,17 +344,14 @@ void Cvar_SetValue(const char *var_name, float value)
 	char val[32];
 
 #ifndef SWDS
-	g_engdstAddrs->Cvar_SetValue(&var_name, &value);
+	g_engdstAddrs.Cvar_SetValue((char**)&var_name, &value);
 #endif
 
 	if(fabs(value - (double)(signed int)value) >= 0.000001)
-	{
 		Q_snprintf(val, ARRAYSIZE(val) - 1, "%f", value);
-	}
 	else
-	{
 		Q_snprintf(val, ARRAYSIZE(val) - 1, "%d", (signed int)value);
-	}
+	
 	val[ARRAYSIZE(val) - 1] = 0;
 
 	Cvar_Set(var_name, val);

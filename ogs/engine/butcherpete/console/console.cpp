@@ -80,6 +80,7 @@ Con_ToggleConsole_f
 */
 void Con_ToggleConsole_f()
 {
+	/*
 	//Key_ClearTyping();
 
 	if(EngineVGui()->IsConsoleVisible())
@@ -93,6 +94,7 @@ void Con_ToggleConsole_f()
 		Con_ShowConsole_f();
 	
 	//Con_ClearNotify();
+	*/
 }
 
 /*
@@ -102,6 +104,7 @@ Con_ToggleChat_f
 */
 void Con_ToggleChat_f()
 {
+/*
 	Key_ClearTyping();
 
 	if(key_dest == key_console)
@@ -113,6 +116,7 @@ void Con_ToggleChat_f()
 		key_dest = key_console;
 
 	Con_ClearNotify();
+*/
 }
 
 /*
@@ -144,8 +148,8 @@ Con_MessageMode_f
 */
 void Con_MessageMode_f()
 {
-	chat_team = false;
-	key_dest = key_message;
+	//chat_team = false;
+	//key_dest = key_message;
 };
 
 /*
@@ -155,8 +159,8 @@ Con_MessageMode2_f
 */
 void Con_MessageMode2_f()
 {
-	chat_team = true;
-	key_dest = key_message;
+	//chat_team = true;
+	//key_dest = key_message;
 };
 
 /*
@@ -168,6 +172,7 @@ Save the console contents out to a file
 */
 void Con_Dump_f ()
 {
+/*
 	int		l, x;
 	char	*line;
 	FILE	*f;
@@ -236,6 +241,7 @@ void Con_Debug_f()
 		con_debuglog = TRUE;
 		Con_Printf("condebug enabled\n");
 	};
+*/
 };
 
 /*
@@ -246,6 +252,7 @@ Con_Resize
 */
 void Con_Resize(console_t *con)
 {
+/*
 	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
 	char tbuf[CON_TEXTSIZE];
 
@@ -296,6 +303,7 @@ void Con_Resize(console_t *con)
 
 	con->current = con_totallines - 1;
 	con->display = con->current;
+*/
 }
 
 /*
@@ -372,6 +380,7 @@ If no console is visible, the notify window will pop up.
 */
 void Con_Print(char *txt)
 {
+/*
 	int y;
 	int c, l;
 	static int cr;
@@ -430,6 +439,7 @@ void Con_Print(char *txt)
 			break;
 		}
 	}
+*/
 }
 
 /*
@@ -443,6 +453,7 @@ Handles cursor positioning, line wrapping, etc
 // FIXME: make a buffer size safe vsprintf?
 void Con_Printf(char *fmt, ...)
 {
+/*
 	va_list argptr;
 	char msg[MAXPRINTMSG];
 	static qboolean inupdate;
@@ -476,6 +487,7 @@ void Con_Printf(char *fmt, ...)
 			inupdate = false;
 		}
 	}
+*/
 }
 
 /*
@@ -514,6 +526,7 @@ void EXT_FUNC Con_DPrintf(const char *fmt, ...)
 
 void Con_DPrintf(const char *fmt, ...)
 {
+/*
 	// don't confuse non-developers with techical stuff...
 	if(!developer.value)
 		return;
@@ -534,6 +547,7 @@ void Con_DPrintf(const char *fmt, ...)
 #endif // _WIN32
 	
 	va_end(argptr);
+*/
 }
 
 #endif // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
@@ -553,6 +567,7 @@ Con_DrawInput
 The input line scrolls horizontally if typing goes beyond the right edge
 ================
 */
+/*
 void Con_DrawInput()
 {
 	int y;
@@ -584,6 +599,7 @@ void Con_DrawInput()
 	// remove cursor
 	key_lines[edit_line][key_linepos] = 0;
 }
+*/
 
 /*
 ================
@@ -592,6 +608,7 @@ Con_DrawNotify
 Draws the last few lines of output transparently over the game top
 ================
 */
+/*
 void Con_DrawNotify()
 {
 	int x, v;
@@ -655,6 +672,7 @@ void Con_DrawNotify()
 	if(v > con_notifylines)
 		con_notifylines = v;
 }
+*/
 
 /*
 ================
@@ -663,6 +681,7 @@ Con_DrawConsole
 Draws the console with the solid background
 ================
 */
+/*
 void Con_DrawConsole(int lines)
 {
 	int i, j, x, y, n;
@@ -759,12 +778,14 @@ void Con_DrawConsole(int lines)
 	// draw the input prompt, user text, and cursor if desired
 	Con_DrawInput();
 }
+*/
 
 /*
 ==================
 Con_NotifyBox
 ==================
 */
+/*
 void Con_NotifyBox(char *text)
 {
 	double t1, t2;
@@ -795,6 +816,7 @@ void Con_NotifyBox(char *text)
 	key_dest = key_game;
 	realtime = 0; // put the cursor back to invisible
 }
+*/
 
 /*
 ==================
@@ -805,6 +827,7 @@ Okay to call even when the screen can't be updated
 */
 void Con_SafePrintf(const char *fmt, ...)
 {
+/*
 	va_list argptr;
 	char msg[1024];
 	int temp;
@@ -817,12 +840,32 @@ void Con_SafePrintf(const char *fmt, ...)
 	scr_disabled_for_loading = true;
 	Con_Printf("%s", msg);
 	scr_disabled_for_loading = temp;
+*/
 }
+
+/*
+void Con_SafePrintf(const char *fmt, ...)
+{
+	va_start(argptr, fmt);
+
+#ifdef _WIN32
+	char Dest[1024];
+	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
+	va_end(argptr);
+	Con_Printf("%s", Dest);
+#else
+	vfprintf(stdout, fmt, argptr);
+	va_end(argptr);
+	fflush(stdout);
+#endif // _WIN32
+}
+*/
 
 ////////////////////////////////////////////////////////////////////////////
 
 void Con_DebugLog(const char *file, const char *fmt, ...)
 {
+/*
 	va_list argptr;
 	static char data[8192];
 
@@ -846,10 +889,12 @@ void Con_DebugLog(const char *file, const char *fmt, ...)
 	FS_Close(fd);
 
 #endif // _WIN32
+*/
 }
 
 void EXT_FUNC Con_Printf(const char *fmt, ...)
 {
+/*
 	char Dest[4096];
 	va_list va;
 
@@ -891,22 +936,7 @@ void EXT_FUNC Con_Printf(const char *fmt, ...)
 		}
 #endif // SWDS
 	}
-}
-
-void Con_SafePrintf(const char *fmt, ...)
-{
-	va_start(argptr, fmt);
-
-#ifdef _WIN32
-	char Dest[1024];
-	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
-	va_end(argptr);
-	Con_Printf("%s", Dest);
-#else
-	vfprintf(stdout, fmt, argptr);
-	va_end(argptr);
-	fflush(stdout);
-#endif // _WIN32
+*/
 }
 
 /*
