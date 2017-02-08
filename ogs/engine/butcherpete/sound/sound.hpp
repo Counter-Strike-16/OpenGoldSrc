@@ -83,6 +83,7 @@ typedef struct
 	int left;
 	int right;
 } portable_samplepair_t;
+*/
 
 typedef struct
 {
@@ -94,6 +95,7 @@ typedef struct
 	byte data[1]; // variable sized
 } sfxcache_t;
 
+/*
 typedef struct
 {
 	qboolean gamealive;
@@ -107,6 +109,7 @@ typedef struct
 	int speed;
 	unsigned char *buffer;
 } dma_t;
+*/
 
 typedef struct
 {
@@ -118,6 +121,7 @@ typedef struct
 	int dataofs; // chunk starts this many bytes from file start
 } wavinfo_t;
 
+/*
 // picks a channel based on priorities, empty slots, number of channels
 channel_t *SND_PickChannel(int entnum, int entchannel);
 

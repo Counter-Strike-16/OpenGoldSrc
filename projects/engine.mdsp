@@ -10,7 +10,7 @@ workingDirectory=
 arguments=
 intermediateFilesDirectory=../build/mdsp/debug/engine
 outputFilesDirectory=../build/mdsp/debug/engine
-compilerPreprocessor=
+compilerPreprocessor=REHLDS_SELF
 extraCompilerOptions=-std=c++11 -msse4.1
 compilerIncludeDirectory=..\ogs\engine\butcherpete;..\ogs\common;..\ogs\public;..\ogs\hookers;..\ogs\rehlds;..\hlsdk
 noWarning=1
@@ -124,6 +124,19 @@ extraResourceOptions=
 41=..\ogs\engine\butcherpete\system\info.cpp
 42=..\ogs\engine\butcherpete\hdrfix.cpp
 43=..\ogs\engine\butcherpete\system\byteorder.cpp
+44=..\ogs\engine\butcherpete\console\cvar.cpp
+45=..\ogs\engine\butcherpete\console\console.cpp
+46=..\ogs\engine\butcherpete\system\host.cpp
+47=..\ogs\engine\butcherpete\system\module.cpp
+48=..\ogs\engine\butcherpete\network\net_msg.cpp
+49=..\ogs\engine\butcherpete\resources\cmodel.cpp
+50=..\ogs\engine\butcherpete\resources\l_studio.cpp
+51=..\ogs\engine\butcherpete\resources\model.cpp
+52=..\ogs\engine\butcherpete\resources\decals.cpp
+53=..\ogs\engine\butcherpete\physics\pmove.cpp
+54=..\ogs\engine\butcherpete\physics\pmovetst.cpp
+55=..\ogs\engine\butcherpete\server\sv_user.cpp
+56=..\ogs\engine\butcherpete\sound\snd_mem.cpp
 [Header]
 [Resource]
 [Other]

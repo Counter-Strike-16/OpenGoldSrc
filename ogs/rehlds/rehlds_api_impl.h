@@ -30,6 +30,7 @@
 #include "public/archtypes.h"
 #include "rehlds/rehlds_api.h"
 #include "rehlds_interfaces_impl.h"
+#include "hookchains_impl.h"
 
 //Steam_NotifyClientConnect
 typedef IHookChainImpl<qboolean, IGameClient*, const void*, unsigned int> CRehldsHook_Steam_NotifyClientConnect;

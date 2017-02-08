@@ -28,6 +28,8 @@
 
 /// @file
 
+// WELCOME TO HELL
+
 //#include "precompiled.hpp"
 #include "server/server.hpp"
 #include "system/common.hpp"
@@ -102,6 +104,7 @@ char outputbuf[MAX_ROUTEABLE_PACKET];
 redirect_t sv_redirected;
 netadr_t sv_redirectto;
 
+// Why these are here?
 // TODO: make one global var with mods enum
 int g_bCS_CZ_Flags_Initialized;
 int g_bIsCZero;

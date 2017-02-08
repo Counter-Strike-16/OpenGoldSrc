@@ -29,8 +29,14 @@
 /// @file
 /// @brief sound caching
 
-#include "precompiled.hpp"
-#include "quakedef.h"
+//#include "precompiled.hpp"
+//#include "commondef.hpp"
+#include "common/commontypes.h"
+#include "sound/sound.hpp"
+#include "memory/zone.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "console/console.hpp"
 
 int cache_full_cycle;
 
@@ -48,23 +54,22 @@ void ResampleSfx(sfx_t *sfx, int inrate, int inwidth, byte *data)
 	float stepscale;
 	int i;
 	int sample, samplefrac, fracstep;
-	sfxcache_t *sc;
-
-	sc = Cache_Check(&sfx->cache);
+	sfxcache_t *sc = (sfxcache_t*)Cache_Check(&sfx->cache);
+	
 	if(!sc)
 		return;
 
-	stepscale = (float)inrate / shm->speed; // this is usually 0.5, 1, or 2
+	//stepscale = (float)inrate / shm->speed; // this is usually 0.5, 1, or 2
 
 	outcount = sc->length / stepscale;
 	sc->length = outcount;
 	if(sc->loopstart != -1)
 		sc->loopstart = sc->loopstart / stepscale;
 
-	sc->speed = shm->speed;
-	if(loadas8bit.value)
-		sc->width = 1;
-	else
+	//sc->speed = shm->speed;
+	//if(loadas8bit.value)
+		//sc->width = 1;
+	//else
 		sc->width = inwidth;
 	sc->stereo = 0;
 
@@ -115,7 +120,7 @@ sfxcache_t *S_LoadSound(sfx_t *s)
 	byte stackbuf[1 * 1024]; // avoid dirtying the cache heap
 
 	// see if still in memory
-	sc = Cache_Check(&s->cache);
+	sc = (sfxcache_t*)Cache_Check(&s->cache);
 	if(sc)
 		return sc;
 
@@ -126,7 +131,7 @@ sfxcache_t *S_LoadSound(sfx_t *s)
 
 	//	Con_Printf ("loading %s\n",namebuffer);
 
-	data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf));
+	//data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf));
 
 	if(!data)
 	{
@@ -134,19 +139,19 @@ sfxcache_t *S_LoadSound(sfx_t *s)
 		return NULL;
 	}
 
-	info = GetWavinfo(s->name, data, com_filesize);
+	//info = GetWavinfo(s->name, data, com_filesize);
 	if(info.channels != 1)
 	{
 		Con_Printf("%s is a stereo sample\n", s->name);
 		return NULL;
 	}
 
-	stepscale = (float)info.rate / shm->speed;
+	//stepscale = (float)info.rate / shm->speed;
 	len = info.samples / stepscale;
 
 	len = len * info.width * info.channels;
 
-	sc = Cache_Alloc(&s->cache, len + sizeof(sfxcache_t), s->name);
+	sc = (sfxcache_t*)Cache_Alloc(&s->cache, len + sizeof(sfxcache_t), s->name);
 	if(!sc)
 		return NULL;
 
@@ -219,7 +224,7 @@ void FindNextChunk(char *name)
 		//limit", iff_chunk_len);
 		data_p -= 8;
 		last_chunk = data_p + 8 + ((iff_chunk_len + 1) & ~1);
-		if(!Q_strncmp(data_p, name, 4))
+		if(!Q_strncmp((const char*)data_p, name, 4))
 			return;
 	}
 }
@@ -270,7 +275,7 @@ wavinfo_t GetWavinfo(char *name, byte *wav, int wavlength)
 
 	// find "RIFF" chunk
 	FindChunk("RIFF");
-	if(!(data_p && !Q_strncmp(data_p + 8, "WAVE", 4)))
+	if(!(data_p && !Q_strncmp((char*)data_p + 8, "WAVE", 4)))
 	{
 		Con_Printf("Missing RIFF/WAVE chunks\n");
 		return info;
@@ -311,8 +316,7 @@ wavinfo_t GetWavinfo(char *name, byte *wav, int wavlength)
 		FindNextChunk("LIST");
 		if(data_p)
 		{
-			if(!strncmp(
-			   data_p + 28, "mark", 4))
+			if(!strncmp((const char*)data_p + 28, "mark", 4))
 			{ // this is not a proper parse, but it works with cooledit...
 				data_p += 24;
 				i = GetLittleLong(); // samples in loop
