@@ -33,6 +33,7 @@
 #include "physics/pmove.hpp"
 #include "system/system.hpp"
 #include "system/common.hpp"
+#include "resources/studio_rehlds.hpp"
 #include "console/console.hpp"
 #include "engine/cdll_int.h"
 
@@ -629,7 +630,7 @@ struct pmtrace_s *EXT_FUNC PM_TraceLineEx(float *start, float *end, int flags, i
 }
 
 #ifndef REHLDS_OPT_PEDANTIC
-qboolean PM_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, const vec_t *p1, const vec_t *p2, pmtrace_t *trace)
+qboolean PM_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, vec_t *p1, vec_t *p2, pmtrace_t *trace)
 {
 	dclipnode_t *node;
 	mplane_t *plane;

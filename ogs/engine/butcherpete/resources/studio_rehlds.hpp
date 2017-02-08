@@ -30,13 +30,13 @@
 
 #pragma once
 
+#include "maintypes.h"
 #include "common/commontypes.h"
 #include "common/cvardef.h"
 #include "common/r_studioint.h"
-#include "maintypes.h"
 #include "public/archtypes.h"
 #include "rehlds/model.h"
-#include "rehlds/studio.h"
+#include "dups/studio.h" //"engine/studio.h"
 
 typedef struct r_studiocache_s r_studiocache_t;
 

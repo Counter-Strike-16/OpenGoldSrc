@@ -262,7 +262,7 @@ void COM_CreatePath(const char *path);
 
 NOXREF int COM_ExpandFilename(char *filename);
 int COM_FileSize(char *filename);
-unsigned char *COM_LoadFile(const char *path, int usehunk, int *pLength);
+unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
 void COM_FreeFile(void *buffer);
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize);
 NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile);

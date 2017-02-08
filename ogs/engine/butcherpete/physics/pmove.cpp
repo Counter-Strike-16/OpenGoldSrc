@@ -29,7 +29,19 @@
 /// @file
 
 //#include "precompiled.hpp"
+#include "maintypes.h"
 #include "physics/pmove.hpp"
+#include "physics/pmovetst.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "world/pr_cmds.hpp"
+#include "console/console.hpp"
+#include "client/client.hpp"
+#include "client/textmessage.hpp"
+#include "common/pmtrace.h"
+#include "common/cvardef.h"
+#include "pm_shared/pm_defs.h"
+#include "pm_shared/pm_movevars.h"
 
 playermove_t *pmove;
 movevars_t movevars;
@@ -122,15 +134,15 @@ void PM_Init(playermove_t *ppm)
 
 	for(int i = 0; i < 4; ++i)
 	{
-		ppm->_player_mins[i][0] = player_mins[i][0];
-		ppm->_player_mins[i][1] = player_mins[i][1];
-		ppm->_player_mins[i][2] = player_mins[i][2];
-		ppm->_player_maxs[i][0] = player_maxs[i][0];
-		ppm->_player_maxs[i][1] = player_maxs[i][1];
-		ppm->_player_maxs[i][2] = player_maxs[i][2];
+		ppm->player_mins[i][0] = player_mins[i][0];
+		ppm->player_mins[i][1] = player_mins[i][1];
+		ppm->player_mins[i][2] = player_mins[i][2];
+		ppm->player_maxs[i][0] = player_maxs[i][0];
+		ppm->player_maxs[i][1] = player_maxs[i][1];
+		ppm->player_maxs[i][2] = player_maxs[i][2];
 	}
 
-	ppm->_movevars = &movevars;
+	ppm->movevars = &movevars;
 
 #ifdef HOOK_ENGINE
 	*(size_t *)&ppm->PM_Info_ValueForKey = (size_t)GetOriginalFuncAddrOrDefault(
