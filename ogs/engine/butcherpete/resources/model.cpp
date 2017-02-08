@@ -28,7 +28,19 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "resources/model_rehlds.hpp"
+#include "resources/l_studio.hpp"
+#include "resources/textures.hpp"
+#include "resources/decal.hpp"
+#include "memory/mem.hpp"
+#include "memory/zone.hpp"
+#include "system/system.hpp"
+#include "system/common.hpp"
+#include "system/host.hpp"
+#include "console/console.hpp"
+#include "server/server.hpp"
+#include "client/client.hpp"
 
 model_t *loadmodel;
 char loadname[32];
@@ -274,8 +286,7 @@ model_t *Mod_LoadModel(model_t *mod, qboolean crash, qboolean trackCRC)
 				p->initialCRC = currentCRC;
 				SetCStrikeFlags();
 
-				if(!IsGameSubscribed("czero") && g_bIsCStrike &&
-				   IsCZPlayerModel(currentCRC, mod->name) && cls.state)
+				if(!IsGameSubscribed("czero") && g_bIsCStrike && IsCZPlayerModel(currentCRC, mod->name) && cls.state)
 				{
 					COM_ExplainDisconnection(
 					TRUE, "Cannot continue with altered model %s, disconnecting.", mod->name);
@@ -286,8 +297,8 @@ model_t *Mod_LoadModel(model_t *mod, qboolean crash, qboolean trackCRC)
 		}
 	}
 
-	if(developer.value > 1.0)
-		Con_DPrintf("loading %s\n", mod->name);
+	//if(developer.value > 1.0)
+		//Con_DPrintf("loading %s\n", mod->name);
 
 	// allocate a new model
 	COM_FileBase(mod->name, loadname);
@@ -298,10 +309,10 @@ model_t *Mod_LoadModel(model_t *mod, qboolean crash, qboolean trackCRC)
 	// call the apropriate loader
 	switch(LittleLong(*(uint32 *)buf))
 	{
-	case IDPOLYHEADER:
+	//case IDPOLYHEADER:
 		// old-format of the model from the quake1
-		Mod_LoadAliasModel(mod, buf);
-		break;
+		//Mod_LoadAliasModel(mod, buf);
+		//break;
 	case IDSPRITEHEADER:
 		Mod_LoadSpriteModel(mod, buf);
 		break;
@@ -797,7 +808,7 @@ void Mod_LoadTexinfo(lump_t *l)
 			out->texture = loadmodel->textures[_miptex];
 			if(!out->texture)
 			{
-				out->texture = r_notexture_mip; // texture not found
+				//out->texture = r_notexture_mip; // texture not found
 				out->flags = 0;
 			}
 		}
@@ -1206,8 +1217,7 @@ float RadiusFromBounds(vec_t *mins, vec_t *maxs)
 
 void Mod_LoadBrushModel(model_t *mod, void *buffer)
 {
-	g_RehldsHookchains.m_Mod_LoadBrushModel.callChain(
-	&Mod_LoadBrushModel_internal, mod, buffer);
+	//g_RehldsHookchains.m_Mod_LoadBrushModel.callChain(&Mod_LoadBrushModel_internal, mod, buffer);
 }
 
 void EXT_FUNC Mod_LoadBrushModel_internal(model_t *mod, void *buffer)
@@ -1395,15 +1405,15 @@ void *Mod_LoadAliasSkin(void *pin, int *pskinindex, int skinsize, aliashdr_t *ph
 	unsigned char *pskin;
 	unsigned char *pinskin;
 
-	pskin = (unsigned char *)Hunk_AllocName(skinsize * r_pixbytes, loadname);
+	//pskin = (unsigned char *)Hunk_AllocName(skinsize * r_pixbytes, loadname);
 	pinskin = (unsigned char *)pin;
 
 	*pskinindex = pskin - (unsigned char *)pheader;
 
-	if(r_pixbytes == 1)
-		Q_memcpy(pskin, pinskin, skinsize);
-	else if(r_pixbytes != 2)
-		Sys_Error("%s: driver set invalid r_pixbytes: %d\n", __FUNCTION__, r_pixbytes);
+	//if(r_pixbytes == 1)
+		//Q_memcpy(pskin, pinskin, skinsize);
+	//else if(r_pixbytes != 2)
+		//Sys_Error("%s: driver set invalid r_pixbytes: %d\n", __FUNCTION__, r_pixbytes);
 
 	return (void *)&pinskin[skinsize];
 }
@@ -1497,16 +1507,16 @@ void Mod_LoadAliasModel(model_t *mod, void *buffer)
 	pmodel->skinwidth = LittleLong(pinmodel->skinwidth);
 	pmodel->skinheight = LittleLong(pinmodel->skinheight);
 
-	if(pmodel->skinheight > MAX_LBM_HEIGHT)
-		Sys_Error("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT);
+	//if(pmodel->skinheight > MAX_LBM_HEIGHT)
+		//Sys_Error("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT);
 
 	pmodel->numverts = LittleLong(pinmodel->numverts);
 
 	if(pmodel->numverts <= 0)
 		Sys_Error("model %s has no vertices", mod->name);
 
-	if(pmodel->numverts > MAX_ALIAS_MODEL_VERTS)
-		Sys_Error("model %s has too many vertices", mod->name);
+	//if(pmodel->numverts > MAX_ALIAS_MODEL_VERTS)
+		//Sys_Error("model %s has too many vertices", mod->name);
 
 	pmodel->numtris = LittleLong(pinmodel->numtris);
 
@@ -1652,8 +1662,7 @@ void *Mod_LoadSpriteFrame(void *pin, mspriteframe_t **ppframe)
 	height = LittleLong(pinframe->height);
 	size = width * height;
 
-	pspriteframe = (mspriteframe_t *)Hunk_AllocName(
-	sizeof(mspriteframe_t) + size * r_pixbytes, loadname);
+	//pspriteframe = (mspriteframe_t *)Hunk_AllocName(sizeof(mspriteframe_t) + size * r_pixbytes, loadname);
 
 	Q_memset(pspriteframe, 0, sizeof(mspriteframe_t) + size);
 	*ppframe = pspriteframe;
@@ -1668,26 +1677,25 @@ void *Mod_LoadSpriteFrame(void *pin, mspriteframe_t **ppframe)
 	pspriteframe->left = (float)origin[0];
 	pspriteframe->right = (float)(width + origin[0]);
 
-	if(r_pixbytes == 1)
-	{
-		Q_memcpy(&pspriteframe->pixels[0], (byte *)(pinframe + 1), size);
-	}
-	else if(r_pixbytes == 2)
-	{
-		ppixin = (byte *)(pinframe + 1);
-		ppixout = (unsigned short *)&pspriteframe->pixels[0];
+	//if(r_pixbytes == 1)
+	//{
+		//Q_memcpy(&pspriteframe->pixels[0], (byte *)(pinframe + 1), size);
+	//}
+	//else if(r_pixbytes == 2)
+	//{
+		//ppixin = (byte *)(pinframe + 1);
+		//ppixout = (unsigned short *)&pspriteframe->pixels[0];
 
 		/*
     //seems to be disabled on server
     for (i = 0; i < size; i++)
             ppixout[i] = d_8to16table[ppixin[i]];
     */
-	}
-	else
-	{
-		Sys_Error("Mod_LoadSpriteFrame: driver set invalid r_pixbytes: %d\n",
-		          r_pixbytes);
-	}
+	//}
+	//else
+	//{
+		//Sys_Error("Mod_LoadSpriteFrame: driver set invalid r_pixbytes: %d\n", r_pixbytes);
+	//}
 
 	return (void *)((byte *)pinframe + sizeof(dspriteframe_t) + size);
 }
@@ -1843,7 +1851,7 @@ NOXREF void Mod_UnloadSpriteTextures(model_t *pModel)
 			for(int i = 0; i < spt->numframes; i++)
 			{
 				Q_sprintf(name, "%s_%i", pModel->name, i);
-				GL_UnloadTexture(name);
+				//GL_UnloadTexture(name);
 			}
 		}
 #endif // SWDS

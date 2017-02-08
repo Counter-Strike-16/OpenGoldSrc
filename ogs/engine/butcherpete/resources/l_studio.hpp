@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "tier0/commonmacros.h"
+
 // header
 #define STUDIO_VERSION 10
 #define IDSTUDIOHEADER MAKEID('I', 'D', 'S', 'T') // little-endian "IDST"

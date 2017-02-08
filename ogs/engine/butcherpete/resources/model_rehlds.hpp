@@ -115,3 +115,5 @@ void Mod_LoadSpriteModel(model_t *mod, void *buffer);
 NOXREF void Mod_UnloadSpriteTextures(model_t *pModel);
 void Mod_Print(void);
 NOXREF void Mod_ChangeGame(void);
+
+qboolean IsCZPlayerModel(uint32 crc, const char *filename);

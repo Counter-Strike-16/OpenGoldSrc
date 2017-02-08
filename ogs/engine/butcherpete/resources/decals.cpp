@@ -29,15 +29,19 @@
 /// @file
 
 //#include "precompiled.hpp"
-#include "client/client.hpp"
-#include "console/console.hpp"
-#include "filesystem/filesystem_internal.hpp"
-#include "filesystem/wad.hpp"
+#include "resources/decal.hpp"
+#include "resources/textures.hpp"
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
-#include "resources/decal.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "filesystem/wad.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
+#include "system/host.hpp"
+#include "console/console.hpp"
+#include "client/client.hpp"
+#include "server/server.hpp"
+#include "tier0/commonmacros.h"
 
 cachewad_t *decal_wad;
 cachewad_t *menu_wad; // NOXREF, reference of client-side code
@@ -237,19 +241,23 @@ void Draw_MiptexTexture(cachewad_t *wad, unsigned char *data)
 		pal[3 * i + 1] = texgammatable[pal[3 * i + 1] & 0xFF];
 		pal[3 * i + 2] = texgammatable[pal[3 * i + 2] & 0xFF];
 	}
+	
 	if(pal[765] || pal[766] || pal[767] != 0xFF)
 	{
 		tex->name[0] = '}';
-		if(gfCustomBuild)
-			GL_UnloadTexture(tex);
-		paloffset = GL_LoadTexture2(data, GLT_DECAL, tex->width, tex->height, v8, TRUE, 3, pal, gl_filter_max);
-		else
-		{
-			tex->name[0] = '{';
-			paloffset =
-			GL_LoadTexture2(data->name, GLT_DECAL, data->width, data->height, v8, TRUE, 1, pal, gl_filter_max);
-		}
-		tex->gl_texturenum = paloffset;
+		
+		//if(gfCustomBuild)
+			//GL_UnloadTexture(tex);
+		
+		//paloffset = GL_LoadTexture2(data, GLT_DECAL, tex->width, tex->height, v8, TRUE, 3, pal, gl_filter_max);
+	}
+	else
+	{
+		tex->name[0] = '{';
+		//paloffset = GL_LoadTexture2(data->name, GLT_DECAL, data->width, data->height, v8, TRUE, 1, pal, gl_filter_max);
+	}
+	
+	//tex->gl_texturenum = paloffset;
 #endif // SWDS
 }
 
