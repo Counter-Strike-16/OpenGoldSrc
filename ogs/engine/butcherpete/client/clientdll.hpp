@@ -42,7 +42,7 @@ public:
 	void Unload();
 
 	bool IsLoaded();
-
+/*
 	cl_exportfuncs_t &operator*()
 	{
 		return &ptrtofuncs;
@@ -55,7 +55,7 @@ public:
 	{
 		return ptrtofuncs ? true : false;
 	}
-
+*/
 private:
 };
 

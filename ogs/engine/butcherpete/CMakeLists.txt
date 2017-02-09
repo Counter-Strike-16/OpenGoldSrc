@@ -7,8 +7,11 @@ set(MODULE_OUTPUT_FILENAME engine)
 # Version config file
 #configure_file(version.h.in version.hpp)
 
-# Enable SSE4.1 support
+# Enable SSE4.1 support ([Sh1ft]: I think it should be lowered)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
+
+# We're building the engine itself
+add_definitions(-DREHLDS_SELF)
 
 # Add include directories
 include_directories(
@@ -58,4 +61,4 @@ list(REMOVE_DUPLICATES PROJECT_SOURCES)
 add_library(${MODULE_OUTPUT_FILENAME} SHARED ${PROJECT_HEADERS} ${PLATFORM_SOURCES} ${PROJECT_SOURCES})
 
 # Link with additional libraries
-target_link_libraries()
+#target_link_libraries()

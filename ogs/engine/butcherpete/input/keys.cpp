@@ -33,10 +33,10 @@
 #include "memory/zone.hpp"
 #include "system/system.hpp"
 //#include "system/common.hpp"
-#include "client/client.hpp"
 #include "console/console.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
+#include "client/client.hpp"
 #include "public/keydefs.h"
 
 #ifdef _WINDOWS
@@ -202,11 +202,14 @@ qboolean CheckForCommand()
 			command[i] = s[i];
 	command[i] = 0;
 
-	cmd = Cmd_CompleteCommand(command);
-	if(!cmd || strcmp(cmd, command))
-		cmd = Cvar_CompleteVariable(command);
+	//cmd = Cmd_CompleteCommand(command);
+	
+	//if(!cmd || strcmp(cmd, command))
+		//cmd = Cvar_CompleteVariable(command);
+	
 	if(!cmd || strcmp(cmd, command))
 		return false; // just a chat message
+	
 	return true;
 }
 
@@ -217,10 +220,10 @@ void CompleteCommand()
 	if(*s == '\\' || *s == '/')
 		s++;
 
-	char *cmd = Cmd_CompleteCommand(s);
+	char *cmd = nullptr; //Cmd_CompleteCommand(s);
 
-	if(!cmd)
-		cmd = Cvar_CompleteVariable(s);
+	//if(!cmd)
+		//cmd = Cvar_CompleteVariable(s);
 
 	if(cmd)
 	{
@@ -357,10 +360,10 @@ void Key_Console(int key)
 			th = GetClipboardData(CF_TEXT);
 			if(th)
 			{
-				clipText = GlobalLock(th);
+				//clipText = GlobalLock(th);
 				if(clipText)
 				{
-					textCopied = malloc(GlobalSize(th) + 1);
+					textCopied = (char*)malloc(GlobalSize(th) + 1);
 					strcpy(textCopied, clipText);
 					/* Substitutes a NULL for every token */ strtok(textCopied, "\n\r\b");
 					i = strlen(textCopied);
@@ -466,8 +469,8 @@ int Key_StringToKeynum(char *str)
 
 	for(keyname_t *kn = keynames; kn->name; kn++)
 	{
-		if(!Q_strcasecmp(str, kn->name))
-			return kn->keynum;
+		//if(!Q_strcasecmp(str, kn->name))
+			//return kn->keynum;
 	};
 
 	return -1;
@@ -482,7 +485,7 @@ given keynum.
 FIXME: handle quote special (general escape sequence?)
 ===================
 */
-char *Key_KeynumToString(int keynum)
+const char *Key_KeynumToString(int keynum)
 {
 	keyname_t *kn;
 	static char tinystr[2];
@@ -525,7 +528,7 @@ void Key_SetBinding(int keynum, char *binding)
 
 	// allocate memory for new binding
 	l = Q_strlen(binding);
-	pnew = Z_Malloc(l + 1);
+	pnew = (char*)Z_Malloc(l + 1);
 	Q_strcpy(pnew, binding);
 	pnew[l] = 0;
 	keybindings[keynum] = pnew;
@@ -544,7 +547,7 @@ void Key_Unbind_f()
 		return;
 	}
 
-	int b = Key_StringToKeynum(Cmd_Argv(1));
+	int b = Key_StringToKeynum((char*)Cmd_Argv(1));
 	if(b == -1)
 	{
 		Con_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
@@ -579,7 +582,7 @@ void Key_Bind_f()
 		return;
 	};
 	
-	b = Key_StringToKeynum(Cmd_Argv(1));
+	b = Key_StringToKeynum((char*)Cmd_Argv(1));
 	
 	if(b == -1)
 	{
@@ -842,7 +845,7 @@ void Key_Event(int key, qboolean down)
 	// if not a consolekey, send to the interpreter no matter what mode is
 	//
 	if((key_dest == key_menu && menubound[key]) ||
-	   (key_dest == key_console && !consolekeys[key]) ||
+	   //(key_dest == key_console && !consolekeys[key]) ||
 	   (key_dest == key_game && (cls.state == ca_active || !consolekeys[key])))
 	{
 		kb = keybindings[key];
