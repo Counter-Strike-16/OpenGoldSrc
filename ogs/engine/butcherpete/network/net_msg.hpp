@@ -102,3 +102,73 @@ NOXREF float MSG_ReadCoord();
 NOXREF float MSG_ReadBitCoord();
 NOXREF void MSG_ReadBitVec3Coord(vec3_t fa);
 NOXREF void MSG_ReadVec3Coord(sizebuf_t *sb, vec3_t fa);
+
+class CNetMsg
+{
+public:
+	void StartBitWriting();
+	void EndBitWriting();
+
+	qboolean IsBitWriting();
+
+	void WriteOneBit(int nValue);
+	void WriteBits(uint32 data, int numbits);
+	void WriteSBits(int data, int numbits);
+	void WriteBitString(const char *p);
+	void WriteBitData(void *src, int length);
+	void WriteBitAngle(float fAngle, int numbits);
+
+	void WriteChar(int c);
+	void WriteByte(int c);
+	void WriteShort(int c);
+	void WriteWord(int c);
+	void WriteLong(int c);
+	void WriteFloat(float f);
+	void WriteString(const char *s);
+	void WriteBuf(int iSize, void *buf);
+	void WriteAngle(float f);
+	void WriteHiresAngle(float f);
+	void WriteUserCmd(usercmd_t *to, usercmd_t *from);
+
+	////////////////////////////////////////////////////////////
+
+	void StartBitReading();
+	void EndBitReading();
+
+	qboolean IsBitReading();
+
+	float ReadBitAngle(int numbits);
+	int CurrentBit();
+
+	uint32 PeekBits(int numbits);
+	void WriteBitCoord(const float f);
+	void WriteBitVec3Coord(const vec3_t fa);
+	void WriteCoord(const float f);
+	void WriteVec3Coord(const vec3_t fa);
+
+	void BeginReading();
+
+	int ReadChar();
+	int ReadByte();
+	int ReadShort();
+	int ReadWord();
+	int ReadLong();
+	float ReadFloat();
+	int ReadBuf(int iSize, void *pbuf);
+	char *ReadString();
+	char *ReadStringLine();
+	float ReadAngle();
+	float ReadHiresAngle();
+	void ReadUsercmd(usercmd_t *to, usercmd_t *from);
+	int ReadOneBit();
+	uint32 ReadBits(int numbits);
+	int ReadSBits(int numbits);
+	char *ReadBitString();
+	int ReadBitData(void *dest, int length);
+	float ReadCoord();
+	float ReadBitCoord();
+	void ReadBitVec3Coord(vec3_t fa);
+	void ReadVec3Coord(vec3_t fa);
+private:
+	sizebuf_t *mpBuffer;
+};

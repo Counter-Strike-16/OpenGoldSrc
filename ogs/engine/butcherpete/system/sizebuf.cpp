@@ -28,112 +28,24 @@
 
 /// @file
 
-//#include "precompiled.hpp"
-#include "maintypes.h"
 #include "system/sizebuf.hpp"
-#include "memory/zone.hpp"
-#include "console/console.hpp"
-#include "rehlds/common_rehlds.h"
-#include "system/common.hpp"
-#include "system/system.hpp"
 
-void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize)
+void CSizeBuf::Clear()
 {
-	buf->buffername = name;
-
-	if(startsize < 256)
-		startsize = 256;
-
-	buf->data = (byte *)Hunk_AllocName(startsize, name);
-	buf->maxsize = startsize;
-	buf->cursize = 0;
-	buf->flags = SIZEBUF_CHECK_OVERFLOW;
-}
-
-void SZ_Clear(sizebuf_t *buf)
-{
-	buf->flags &= ~SIZEBUF_OVERFLOWED;
-	buf->cursize = 0;
-}
-
-void *EXT_FUNC SZ_GetSpace(sizebuf_t *buf, int length)
-{
-	void *data;
-	const char *buffername = buf->buffername ? buf->buffername : "???";
-
-	if(length < 0)
-		Sys_Error("%s: %i negative length on %s", __FUNCTION__, length, buffername);
-
-	if(buf->cursize + length > buf->maxsize)
-	{
-#ifdef REHLDS_FIXES
-		if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
-		{
-			if(!buf->maxsize)
-				Sys_Error("%s: tried to write to an uninitialized sizebuf_t: %s",
-				          __FUNCTION__,
-				          buffername);
-			else if(length > buf->maxsize)
-				Sys_Error("%s: %i is > full buffer size on %s", __FUNCTION__, length, buffername);
-			else
-				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s",
-				          __FUNCTION__,
-				          buffername);
-		};
-
-		if(length > buf->maxsize)
-			Con_DPrintf("%s: %i is > full buffer size on %s, ignoring", __FUNCTION__, length, buffername);
-#else  // REHLDS_FIXES
-
-		if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
-		{
-			if(!buf->maxsize)
-				Sys_Error("%s: Tried to write to an uninitialized sizebuf_t: %s",
-				          __FUNCTION__,
-				          buffername);
-			else
-				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s",
-				          __FUNCTION__,
-				          buffername);
-		};
-
-		if(length > buf->maxsize)
-		{
-			if(!(buf->flags & SIZEBUF_ALLOW_OVERFLOW))
-				Sys_Error("%s: %i is > full buffer size on %s", __FUNCTION__, length, buffername);
-
-			Con_DPrintf("%s: %i is > full buffer size on %s, ignoring", __FUNCTION__, length, buffername);
-		};
-#endif // REHLDS_FIXES
-
-		Con_Printf("%s: overflow on %s\n", __FUNCTION__, buffername);
-
-		SZ_Clear(buf);
-		buf->flags |= SIZEBUF_OVERFLOWED;
-	};
-
-	data = &buf->data[buf->cursize];
-	buf->cursize = length + buf->cursize;
-
-	return data;
+	SZ_Clear(mpBuffer);
 };
 
-void SZ_Write(sizebuf_t *buf, const void *data, int length)
+void *CSizeBuf::GetSpace(int length)
 {
-	byte *pData = (byte *)SZ_GetSpace(buf, length);
-
-	if(!(buf->flags & SIZEBUF_OVERFLOWED))
-		Q_memcpy(pData, data, length);
+	return SZ_GetSpace(mpBuffer, length);
 };
 
-void SZ_Print(sizebuf_t *buf, const char *data)
+void CSizeBuf::Write(const void *data, int length)
 {
-	int len = Q_strlen(data) + 1;
-	byte *pData = (byte *)SZ_GetSpace(buf, len - 1) - 1;
+	SZ_Write(mpBuffer, data, length);
+};
 
-	if(buf->data[buf->cursize - 1])
-		pData = (byte *)SZ_GetSpace(buf, len);
-
-	if(!(buf->flags & SIZEBUF_OVERFLOWED))
-		Q_memcpy(pData, data, len);
+void CSizeBuf::Print(const char *data)
+{
+	SZ_Print(mpBuffer, data);
 };

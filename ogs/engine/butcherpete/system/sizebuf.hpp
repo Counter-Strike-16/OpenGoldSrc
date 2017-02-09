@@ -39,3 +39,25 @@ void *SZ_GetSpace(sizebuf_t *buf, int length);
 
 void SZ_Write(sizebuf_t *buf, const void *data, int length);
 void SZ_Print(sizebuf_t *buf, const char *data);
+
+class CSizeBuf;
+static CSizeBuf *AllocSizeBuf(const char *name, sizebuf_t *buf, int startsize)
+{
+	//return new CSizeBuf(name, buf, startsize);
+	return nullptr;
+};
+
+class CSizeBuf
+{
+public:
+	//CSizeBuf(const char *asName, sizebuf_t *apBuffer, int anStartSize) : mpBuffer(apBuffer){}
+	
+	void Clear();
+
+	void *GetSpace(int length);
+
+	void Write(const void *data, int length);
+	void Print(const char *data);
+private:
+	sizebuf_t *mpBuffer;
+};

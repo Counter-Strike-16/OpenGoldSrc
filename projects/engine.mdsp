@@ -140,6 +140,10 @@ extraResourceOptions=
 57=..\ogs\engine\butcherpete\input\keys.cpp
 58=..\ogs\engine\butcherpete\input\cl_input.cpp
 59=..\ogs\engine\butcherpete\network\net_chan.cpp
+60=..\ogs\engine\butcherpete\console\cbuf_c.cpp
+61=..\ogs\engine\butcherpete\console\console_c.cpp
+62=..\ogs\engine\butcherpete\network\net_msg_c.cpp
+63=..\ogs\engine\butcherpete\system\sizebuf_c.cpp
 [Header]
 [Resource]
 [Other]
