@@ -27,31 +27,53 @@
  */
 
 /// @file
+/// @brief Console module interface draft
 
-#include "console/cbuf.hpp"
-#include "console/cmd.hpp"
+#pragma once
 
-void CCmdBuffer::Init()
+#include "public/interface.h"
+#include "common/cvardef.h"
+
+const char OGS_CONSOLE_INTERFACE_VERSION[] = "OGSConsole001";
+
+/// Console command callback function
+typedef void (*pfnConCmdCallback)();
+
+struct IConsole : public IBaseInterface
 {
-	Cbuf_Init();
-};
+	/// Prints a formatted message into the console
+	virtual void Printf(int anPrintLevel, const char *asMsg, ...) = 0;
 
-void CCmdBuffer::AddText(char *text)
-{
-	Cbuf_AddText(text);
-};
+	/// Execute a command text
+	virtual void ExecuteText(int anExecMode, const char *asText) = 0;
 
-void CCmdBuffer::InsertText(char *text)
-{
-	Cbuf_InsertText(text);
-};
+	///
+	virtual void AddCommand(const char *asName, pfnConCmdCallback afnCallback) = 0;
 
-void CCmdBuffer::InsertTextLines(char *text)
-{
-	Cbuf_InsertTextLines(text);
-};
+	///
+	virtual void RemoveCommand(const char *asName) = 0;
 
-void CCmdBuffer::Execute()
-{
-	Cbuf_Execute();
+	/// @return Argument count of current processing command
+	virtual int Cmd_Argc() const = 0;
+
+	///
+	virtual const char *Cmd_Argv(int i) const = 0;
+
+	///
+	virtual bool Cvar_Register(cvar_t *apCvar) const = 0;
+
+	///
+	virtual cvar_t *Cvar_Add(const char *asName, const char *asValue, int flags) const = 0;
+
+	///
+	virtual bool Cvar_Remove(const char *asName) const = 0;
+
+	///
+	virtual cvar_t *Cvar_Get(const char *asName) const = 0;
+
+	///
+	virtual cvar_t *Cvar_Set(const char *asName, const char *asValue) const = 0;
+
+	///
+	virtual void Cvar_SetValue(const char *asName, float afValue) = 0;
 };

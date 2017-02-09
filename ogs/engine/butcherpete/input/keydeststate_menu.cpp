@@ -28,30 +28,13 @@
 
 /// @file
 
-#include "console/cbuf.hpp"
-#include "console/cmd.hpp"
+#pragma once
 
-void CCmdBuffer::Init()
-{
-	Cbuf_Init();
-};
+//#include "precompiled.hpp"
+#include "input/KeyDestState.hpp"
 
-void CCmdBuffer::AddText(char *text)
+class CKeyDestState_Menu : public IKeyDestState
 {
-	Cbuf_AddText(text);
-};
-
-void CCmdBuffer::InsertText(char *text)
-{
-	Cbuf_InsertText(text);
-};
-
-void CCmdBuffer::InsertTextLines(char *text)
-{
-	Cbuf_InsertTextLines(text);
-};
-
-void CCmdBuffer::Execute()
-{
-	Cbuf_Execute();
+public:
+	void HandleKey(int anKey);
 };

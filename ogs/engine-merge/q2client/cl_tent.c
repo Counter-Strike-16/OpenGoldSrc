@@ -1,67 +1,15 @@
 
 // cl_tent.c -- client side temporary entities
 
-#include "client.h"
-
-typedef enum
-{
-	ex_free, ex_explosion, ex_misc, ex_flash, ex_mflash, ex_poly, ex_poly2
-} exptype_t;
-
-typedef struct
-{
-	exptype_t	type;
-	entity_t	ent;
-
-	int			frames;
-	float		light;
-	vec3_t		lightcolor;
-	float		start;
-	int			baseframe;
-} explosion_t;
-
-
-
-#define	MAX_EXPLOSIONS	32
-explosion_t	cl_explosions[MAX_EXPLOSIONS];
-
-
-#define	MAX_BEAMS	32
 typedef struct
 {
 	int		entity;
 	int		dest_entity;
-	struct model_s	*model;
+	
 	int		endtime;
 	vec3_t	offset;
 	vec3_t	start, end;
 } beam_t;
-beam_t		cl_beams[MAX_BEAMS];
-//PMM - added this for player-linked beams.  Currently only used by the plasma beam
-beam_t		cl_playerbeams[MAX_BEAMS];
-
-
-#define	MAX_LASERS	32
-typedef struct
-{
-	entity_t	ent;
-	int			endtime;
-} laser_t;
-laser_t		cl_lasers[MAX_LASERS];
-
-//ROGUE
-cl_sustain_t	cl_sustains[MAX_SUSTAINS];
-//ROGUE
-
-//PGM
-extern void CL_TeleportParticles (vec3_t org);
-//PGM
-
-void CL_BlasterParticles (vec3_t org, vec3_t dir);
-void CL_ExplosionParticles (vec3_t org);
-void CL_BFGExplosionParticles (vec3_t org);
-// RAFAEL
-void CL_BlueBlasterParticles (vec3_t org, vec3_t dir);
 
 struct sfx_s	*cl_sfx_ric1;
 struct sfx_s	*cl_sfx_ric2;
@@ -71,26 +19,18 @@ struct sfx_s	*cl_sfx_spark5;
 struct sfx_s	*cl_sfx_spark6;
 struct sfx_s	*cl_sfx_spark7;
 struct sfx_s	*cl_sfx_railg;
-struct sfx_s	*cl_sfx_rockexp;
-struct sfx_s	*cl_sfx_grenexp;
-struct sfx_s	*cl_sfx_watrexp;
-// RAFAEL
 struct sfx_s	*cl_sfx_plasexp;
 struct sfx_s	*cl_sfx_footsteps[4];
 
 struct model_s	*cl_mod_explode;
 struct model_s	*cl_mod_smoke;
 struct model_s	*cl_mod_flash;
-struct model_s	*cl_mod_parasite_segment;
 struct model_s	*cl_mod_grapple_cable;
 struct model_s	*cl_mod_parasite_tip;
 struct model_s	*cl_mod_explo4;
-struct model_s	*cl_mod_bfg_explo;
 struct model_s	*cl_mod_powerscreen;
-// RAFAEL
 struct model_s	*cl_mod_plasmaexplo;
 
-//ROGUE
 struct sfx_s	*cl_sfx_lightning;
 struct sfx_s	*cl_sfx_disrexp;
 struct model_s	*cl_mod_lightning;
@@ -98,7 +38,6 @@ struct model_s	*cl_mod_heatbeam;
 struct model_s	*cl_mod_monster_heatbeam;
 struct model_s	*cl_mod_explo4_big;
 
-//ROGUE
 /*
 =================
 CL_RegisterTEntSounds
@@ -120,9 +59,6 @@ void CL_RegisterTEntSounds (void)
 	cl_sfx_spark6 = S_RegisterSound ("world/spark6.wav");
 	cl_sfx_spark7 = S_RegisterSound ("world/spark7.wav");
 	cl_sfx_railg = S_RegisterSound ("weapons/railgf1a.wav");
-	cl_sfx_rockexp = S_RegisterSound ("weapons/rocklx1a.wav");
-	cl_sfx_grenexp = S_RegisterSound ("weapons/grenlx1a.wav");
-	cl_sfx_watrexp = S_RegisterSound ("weapons/xpld_wat.wav");
 	// RAFAEL
 	// cl_sfx_plasexp = S_RegisterSound ("weapons/plasexpl.wav");
 	S_RegisterSound ("player/land1.wav");
@@ -185,36 +121,10 @@ re.RegisterPic ("a_grenades");
 	cl_mod_heatbeam = re.RegisterModel ("models/proj/beam/tris.md2");
 	cl_mod_monster_heatbeam = re.RegisterModel ("models/proj/widowbeam/tris.md2");
 //ROGUE
-}	
-
-/*
-=================
-CL_ClearTEnts
-=================
-*/
-void CL_ClearTEnts (void)
-{
-	memset (cl_beams, 0, sizeof(cl_beams));
-	memset (cl_explosions, 0, sizeof(cl_explosions));
-	memset (cl_lasers, 0, sizeof(cl_lasers));
-
-//ROGUE
-	memset (cl_playerbeams, 0, sizeof(cl_playerbeams));
-	memset (cl_sustains, 0, sizeof(cl_sustains));
-//ROGUE
 }
 
-/*
-=================
-CL_AllocExplosion
-=================
-*/
 explosion_t *CL_AllocExplosion (void)
 {
-	int		i;
-	int		time;
-	int		index;
-	
 	for (i=0 ; i<MAX_EXPLOSIONS ; i++)
 	{
 		if (cl_explosions[i].type == ex_free)
@@ -223,16 +133,7 @@ explosion_t *CL_AllocExplosion (void)
 			return &cl_explosions[i];
 		}
 	}
-// find the oldest explosion
-	time = cl.time;
-	index = 0;
-
-	for (i=0 ; i<MAX_EXPLOSIONS ; i++)
-		if (cl_explosions[i].start < time)
-		{
-			time = cl_explosions[i].start;
-			index = i;
-		}
+	
 	memset (&cl_explosions[index], 0, sizeof (cl_explosions[index]));
 	return &cl_explosions[index];
 }

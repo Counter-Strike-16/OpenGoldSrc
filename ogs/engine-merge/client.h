@@ -280,13 +280,6 @@ extern	cvar_t	name;
 
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
 
-// FIXME, allocate dynamically
-extern	entity_state_t	cl_baselines[MAX_EDICTS];
-extern	efrag_t			cl_efrags[MAX_EFRAGS];
-extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
-extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
-extern	dlight_t		cl_dlights[MAX_DLIGHTS];
-
 extern	qboolean	nomaster;
 extern float	server_version;	// version of server we connected to
 
@@ -301,8 +294,6 @@ extern	entity_t		*cl_visedicts, *cl_oldvisedicts;
 extern	entity_t		cl_visedicts_list[2][MAX_VISEDICTS];
 
 extern char emodel_name[], pmodel_name[], prespawn_name[], modellist_name[], soundlist_name[];
-
-
 
 //
 // cl_parse.c

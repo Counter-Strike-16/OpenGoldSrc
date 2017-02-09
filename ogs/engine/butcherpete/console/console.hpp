@@ -31,6 +31,7 @@
 #pragma once
 
 #include "common/commontypes.h"
+#include "IConsole.hpp"
 
 const int CON_TEXTSIZE = 32768; // 16384;
 
@@ -107,3 +108,9 @@ void Con_DrawConsole (float frac);
 
 void Con_CenteredPrint (char *text);
 */
+
+class CConsole : public IConsole
+{
+public:
+	void Printf(int anPrintLevel, const char *asMsg, ...);
+};

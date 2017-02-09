@@ -49,50 +49,6 @@ static struct predicted_player
 
 /*
 ===============
-CL_AllocDlight
-
-===============
-*/
-dlight_t *CL_AllocDlight(int key)
-{
-	int i;
-	dlight_t *dl;
-
-	// first look for an exact key match
-	if(key)
-	{
-		dl = cl_dlights;
-		for(i = 0; i < MAX_DLIGHTS; i++, dl++)
-		{
-			if(dl->key == key)
-			{
-				memset(dl, 0, sizeof(*dl));
-				dl->key = key;
-				return dl;
-			}
-		}
-	}
-
-	// then look for anything else
-	dl = cl_dlights;
-	for(i = 0; i < MAX_DLIGHTS; i++, dl++)
-	{
-		if(dl->die < cl.time)
-		{
-			memset(dl, 0, sizeof(*dl));
-			dl->key = key;
-			return dl;
-		}
-	}
-
-	dl = &cl_dlights[0];
-	memset(dl, 0, sizeof(*dl));
-	dl->key = key;
-	return dl;
-}
-
-/*
-===============
 CL_NewDlight
 ===============
 */
@@ -134,26 +90,6 @@ void CL_NewDlight(int key, float x, float y, float z, float radius, float time, 
 		break;
 	};
 };
-
-/*
-===============
-CL_DecayLights
-===============
-*/
-void CL_DecayLights()
-{
-	dlight_t *dl = cl_dlights;
-
-	for(int i = 0; i < MAX_DLIGHTS; i++, dl++)
-	{
-		if(dl->die < cl.time || !dl->radius)
-			continue;
-
-		dl->radius -= host_frametime * dl->decay;
-		if(dl->radius < 0)
-			dl->radius = 0;
-	}
-}
 
 /*
 =========================================================================
@@ -578,7 +514,8 @@ typedef struct
 	vec3_t angles;
 } projectile_t;
 
-#define MAX_PROJECTILES 32
+const int MAX_PROJECTILES = 32;
+
 projectile_t cl_projectiles[MAX_PROJECTILES];
 int cl_num_projectiles;
 

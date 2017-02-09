@@ -27,31 +27,3 @@
  */
 
 /// @file
-
-#include "console/cbuf.hpp"
-#include "console/cmd.hpp"
-
-void CCmdBuffer::Init()
-{
-	Cbuf_Init();
-};
-
-void CCmdBuffer::AddText(char *text)
-{
-	Cbuf_AddText(text);
-};
-
-void CCmdBuffer::InsertText(char *text)
-{
-	Cbuf_InsertText(text);
-};
-
-void CCmdBuffer::InsertTextLines(char *text)
-{
-	Cbuf_InsertTextLines(text);
-};
-
-void CCmdBuffer::Execute()
-{
-	Cbuf_Execute();
-};

@@ -32,7 +32,6 @@
 //#include "precompiled.hpp"
 #include "client/client.hpp"
 
-#define MAX_BEAMS 8
 typedef struct
 {
 	int entity;
@@ -40,18 +39,6 @@ typedef struct
 	float endtime;
 	vec3_t start, end;
 } beam_t;
-
-beam_t cl_beams[MAX_BEAMS];
-
-#define MAX_EXPLOSIONS 8
-typedef struct
-{
-	vec3_t origin;
-	float start;
-	model_t *model;
-} explosion_t;
-
-explosion_t cl_explosions[MAX_EXPLOSIONS];
 
 sfx_t *cl_sfx_ric1;
 sfx_t *cl_sfx_ric2;
@@ -69,46 +56,6 @@ void CL_InitTEnts()
 	cl_sfx_ric3 = S_PrecacheSound("weapons/ric3.wav");
 	// ric4?
 	// ric5?
-}
-
-/*
-=================
-CL_ClearTEnts
-=================
-*/
-void CL_ClearTEnts()
-{
-	memset(&cl_beams, 0, sizeof(cl_beams));
-	memset(&cl_explosions, 0, sizeof(cl_explosions));
-}
-
-/*
-=================
-CL_AllocExplosion
-=================
-*/
-explosion_t *CL_AllocExplosion()
-{
-	int i;
-
-	for(i = 0; i < MAX_EXPLOSIONS; ++i)
-		if(!cl_explosions[i].model)
-			return &cl_explosions[i];
-
-	// find the oldest explosion
-	float time = cl.time;
-	int index = 0;
-
-	for(i = 0; i < MAX_EXPLOSIONS; i++)
-	{
-		if(cl_explosions[i].start < time)
-		{
-			time = cl_explosions[i].start;
-			index = i;
-		};
-	};
-
-	return &cl_explosions[index];
 }
 
 /*
@@ -1006,140 +953,3 @@ void CL_ParseTEnt()
         }
 }
 */
-
-/*
-=================
-CL_NewTempEntity
-=================
-*/
-cl_entity_t *CL_NewTempEntity()
-{
-	if(cl_numvisedicts == MAX_VISEDICTS)
-		return NULL;
-
-	cl_entity_t *ent = &cl_visedicts[cl_numvisedicts];
-
-	cl_numvisedicts++;
-	ent->keynum = 0;
-
-	memset(ent, 0, sizeof(*ent));
-
-	ent->colormap = vid.colormap;
-	return ent;
-}
-
-/*
-=================
-CL_UpdateBeams
-=================
-*/
-void CL_UpdateBeams()
-{
-	int i;
-	beam_t *b;
-	vec3_t dist, org;
-	float d;
-	cl_entity_t *ent;
-	float yaw, pitch;
-	float forward;
-
-	// update lightning
-	for(i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
-	{
-		if(!b->model || b->endtime < cl.time)
-			continue;
-
-		// if coming from the player, update the start position
-		if(b->entity == cl.playernum + 1) // entity 0 is the world
-		{
-			VectorCopy(cl.simorg, b->start);
-			//			b->start[2] -= 22;	// adjust for view
-			//height
-		}
-
-		// calculate pitch and yaw
-		VectorSubtract(b->end, b->start, dist);
-
-		if(dist[1] == 0 && dist[0] == 0)
-		{
-			yaw = 0;
-			if(dist[2] > 0)
-				pitch = 90;
-			else
-				pitch = 270;
-		}
-		else
-		{
-			yaw = (int)(atan2(dist[1], dist[0]) * 180 / M_PI);
-			if(yaw < 0)
-				yaw += 360;
-
-			forward = sqrt(dist[0] * dist[0] + dist[1] * dist[1]);
-			pitch = (int)(atan2(dist[2], forward) * 180 / M_PI);
-			if(pitch < 0)
-				pitch += 360;
-		}
-
-		// add new entities for the lightning
-		VectorCopy(b->start, org);
-		d = VectorNormalize(dist);
-		while(d > 0)
-		{
-			ent = CL_NewTempEntity();
-			if(!ent)
-				return;
-			VectorCopy(org, ent->origin);
-			ent->model = b->model;
-			ent->angles[0] = pitch;
-			ent->angles[1] = yaw;
-			ent->angles[2] = rand() % 360;
-
-			for(i = 0; i < 3; i++)
-				org[i] += dist[i] * 30;
-			d -= 30;
-		}
-	}
-}
-
-/*
-=================
-CL_UpdateExplosions
-=================
-*/
-void CL_UpdateExplosions()
-{
-	int i;
-	int f;
-	explosion_t *ex;
-	cl_entity_t *ent;
-
-	for(i = 0, ex = cl_explosions; i < MAX_EXPLOSIONS; i++, ex++)
-	{
-		if(!ex->model)
-			continue;
-		f = 10 * (cl.time - ex->start);
-		if(f >= ex->model->numframes)
-		{
-			ex->model = NULL;
-			continue;
-		}
-
-		ent = CL_NewTempEntity();
-		if(!ent)
-			return;
-		VectorCopy(ex->origin, ent->origin);
-		ent->model = ex->model;
-		ent->frame = f;
-	}
-}
-
-/*
-=================
-CL_UpdateTEnts
-=================
-*/
-void CL_UpdateTEnts()
-{
-	CL_UpdateBeams();
-	CL_UpdateExplosions();
-}

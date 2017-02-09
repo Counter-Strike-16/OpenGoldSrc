@@ -27,8 +27,8 @@ typedef struct
 	qboolean present;
 } projectile_t;
 
-#define	MAX_PROJECTILES	64
-projectile_t	cl_projectiles[MAX_PROJECTILES];
+const int MAX_PROJECTILES = 64;
+projectile_t cl_projectiles[MAX_PROJECTILES];
 
 void CL_ClearProjectiles (void)
 {

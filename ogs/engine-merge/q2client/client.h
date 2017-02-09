@@ -225,10 +225,7 @@ typedef struct
 	float	die;				// stop lighting after this time
 	float	decay;				// drop this each second
 	float	minlight;			// don't add when contributing less
-} cdlight_t;
-
-extern	centity_t	cl_entities[MAX_EDICTS];
-extern	cdlight_t	cl_dlights[MAX_DLIGHTS];
+} dlight_t;
 
 // the cl_parse_entities must be large enough to hold UPDATE_BACKUP frames of
 // entities, so that when a delta compressed message arives from the server
@@ -339,13 +336,6 @@ void CL_ParseTEnt ();
 void CL_ParseConfigString ();
 void CL_ParseMuzzleFlash ();
 void CL_ParseMuzzleFlash2 ();
-void SmokeAndFlash(vec3_t origin);
-
-void CL_SetLightstyle (int i);
-
-void CL_RunParticles ();
-void CL_RunDLights ();
-void CL_RunLightStyles ();
 
 void CL_AddEntities ();
 void CL_AddDLights ();
@@ -431,14 +421,6 @@ void V_AddLightStyle (int style, float r, float g, float b);
 //
 void CL_RegisterTEntSounds ();
 void CL_RegisterTEntModels ();
-
-//
-// cl_fx.c
-//
-void CL_BfgParticles (entity_t *ent);
-void CL_AddParticles ();
-void CL_EntityEvent (entity_state_t *ent);
-void CL_TrapParticles (entity_t *ent);
 
 //
 // cl_inv.c
