@@ -11,7 +11,7 @@ arguments=
 intermediateFilesDirectory=../build/mdsp/debug/engine
 outputFilesDirectory=../build/mdsp/debug/engine
 compilerPreprocessor=REHLDS_SELF
-extraCompilerOptions=-std=c++11 -msse4.1
+extraCompilerOptions=-std=c++11 -msse4.1 -fpermissive
 compilerIncludeDirectory=..\ogs\engine\butcherpete;..\ogs\common;..\ogs\public;..\ogs\hookers;..\ogs\rehlds;..\hlsdk
 noWarning=1
 defaultWarning=0
@@ -144,6 +144,8 @@ extraResourceOptions=
 61=..\ogs\engine\butcherpete\console\console_c.cpp
 62=..\ogs\engine\butcherpete\network\net_msg_c.cpp
 63=..\ogs\engine\butcherpete\system\sizebuf_c.cpp
+64=..\ogs\engine\butcherpete\system\crt_local.cpp
+65=..\ogs\engine\butcherpete\system\engfuncs.cpp
 [Header]
 [Resource]
 [Other]

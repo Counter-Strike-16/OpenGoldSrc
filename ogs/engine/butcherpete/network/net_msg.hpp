@@ -33,6 +33,8 @@
 #include "common/commontypes.h"
 #include "maintypes.h"
 #include "public/archtypes.h"
+//#include "network/readbuffer.hpp"
+//#include "network/writebuffer.hpp"
 
 typedef struct sizebuf_s sizebuf_t;
 typedef struct usercmd_s usercmd_t;
@@ -103,7 +105,7 @@ NOXREF float MSG_ReadBitCoord();
 NOXREF void MSG_ReadBitVec3Coord(vec3_t fa);
 NOXREF void MSG_ReadVec3Coord(sizebuf_t *sb, vec3_t fa);
 
-class CNetMsg
+class CNetMsg //: public CWriteBuffer, CReadBuffer
 {
 public:
 	void StartBitWriting();
@@ -117,7 +119,7 @@ public:
 	void WriteBitString(const char *p);
 	void WriteBitData(void *src, int length);
 	void WriteBitAngle(float fAngle, int numbits);
-
+	
 	void WriteChar(int c);
 	void WriteByte(int c);
 	void WriteShort(int c);
@@ -145,7 +147,7 @@ public:
 	void WriteBitVec3Coord(const vec3_t fa);
 	void WriteCoord(const float f);
 	void WriteVec3Coord(const vec3_t fa);
-
+	
 	void BeginReading();
 
 	int ReadChar();
@@ -169,6 +171,4 @@ public:
 	float ReadBitCoord();
 	void ReadBitVec3Coord(vec3_t fa);
 	void ReadVec3Coord(vec3_t fa);
-private:
-	sizebuf_t *mpBuffer;
 };

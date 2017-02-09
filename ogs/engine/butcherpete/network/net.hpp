@@ -39,35 +39,35 @@
 //  of service attack that could cycle all of them
 //  out before legitimate users connected
 #ifdef REHLDS_OPT_PEDANTIC
-#define MAX_CHALLENGES 64
+const int MAX_CHALLENGES = 64;
 #else
-#define MAX_CHALLENGES 1024
+const int MAX_CHALLENGES = 1024;
 #endif // REHLDS_OPT_PEDANTIC
 
 // 0 == regular, 1 == file stream
-#define MAX_STREAMS 2
+const int MAX_STREAMS = 2;
 
 // Flow control bytes per second limits
-#define MAX_RATE 100000.0f
-#define MIN_RATE 1000.0f
+const float MAX_RATE = 100000.0f;
+const float MIN_RATE = 1000.0f;
 
 // Default data rate
-#define DEFAULT_RATE (9999.0f)
+const float DEFAULT_RATE = 9999.0f;
 
 // NETWORKING INFO
 
 // Max size of udp packet payload
-#define MAX_UDP_PACKET 4010 // 9 bytes SPLITHEADER + 4000 payload?
+const int MAX_UDP_PACKET = 4010; // 9 bytes SPLITHEADER + 4000 payload?
 
 // Max length of a reliable message
-#define MAX_MSGLEN 3990 // 10 reserved for fragheader?
+const int MAX_MSGLEN = 3990; // 10 reserved for fragheader?
 
 // Max length of unreliable message
-#define MAX_DATAGRAM 4000
+const int MAX_DATAGRAM = 4000;
 
 // This is the packet payload without any header bytes (which are attached for
 // actual sending)
-#define NET_MAX_PAYLOAD 65536
+const int NET_MAX_PAYLOAD = 65536;
 
 // This is the payload plus any header info (excluding UDP header)
 
@@ -81,7 +81,7 @@
 //  short (startpos)
 //  short (length)
 // }
-#define HEADER_BYTES (8 + MAX_STREAMS * 9)
+const int HEADER_BYTES = (8 + MAX_STREAMS * 9);
 
 // Pad a number so it lies on an N byte boundary.
 // So PAD_NUMBER(0,4) is 0 and PAD_NUMBER(1,4) is 4
@@ -95,7 +95,7 @@
 //#define NET_MAX_MESSAGE PAD_NUMBER( ( MAX_MSGLEN + HEADER_BYTES ), 16 )
 // This is currently used value in the engine. TODO: define above gives 4016,
 // check it why.
-#define NET_MAX_MESSAGE 4037
+const int NET_MAX_MESSAGE = 4037;
 
 enum
 {
@@ -152,11 +152,14 @@ const int FRAGMENT_MAX_SIZE = 1024;
 #define MAX_FILE_FRAGMENTS (CUSTOMIZATION_MAX_SIZE / FRAGMENT_C2S_MIN_SIZE)
 #endif
 
-#define UDP_HEADER_SIZE 28
-#define MAX_RELIABLE_PAYLOAD 1200
+const int UDP_HEADER_SIZE = 28;
+const int MAX_RELIABLE_PAYLOAD = 1200;
 
-#define FRAG_NORMAL_STREAM 0
-#define FRAG_FILE_STREAM 1
+enum
+{
+	FRAG_NORMAL_STREAM = 0,
+	FRAG_FILE_STREAM
+};
 
 #define MAKE_FRAGID(id, count) (((id & 0xffff) << 16) | (count & 0xffff))
 #define FRAG_GETID(fragid) ((fragid >> 16) & 0xffff)

@@ -34,8 +34,8 @@
 #include "public/archtypes.h"
 #include "rehlds/static_map.h"
 
-#define DELTAJIT_MAX_BLOCKS 32
-#define DELTAJIT_MAX_FIELDS 56
+const int DELTAJIT_MAX_BLOCKS = 32;
+const int DELTAJIT_MAX_FIELDS = 56;
 
 typedef struct delta_s delta_t;
 

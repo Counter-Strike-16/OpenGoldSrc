@@ -81,7 +81,8 @@ public:
 		}
 
 		if(key == K_TAB)
-		{ // command completion
+		{
+			// command completion
 			CompleteCommand();
 			return;
 		}

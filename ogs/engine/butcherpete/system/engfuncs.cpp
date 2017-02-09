@@ -27,6 +27,18 @@
  */
 
 //#include "precompiled.hpp"
+#include "system/common.hpp"
+#include "system/system.hpp"
+#include "system/host_cmd.hpp"
+#include "math/mathlib_e.hpp"
+#include "world/pr_cmds.hpp"
+#include "world/pr_edict.hpp"
+#include "physics/sv_move.hpp"
+#include "network/delta.hpp"
+#include "resources/studio_rehlds.hpp"
+#include "console/cmd.hpp"
+#include "server/server.hpp"
+#include "common/crc.h"
 
 /*
 * Globals initialization
@@ -174,20 +186,20 @@ enginefuncs_t g_engfuncsExportedToDlls = { PF_precache_model_I,
 	                                       PF_ForceUnmodified,
 	                                       PF_GetPlayerStats,
 	                                       Cmd_AddGameCommand,
-	                                       Voice_GetClientListening,
-	                                       Voice_SetClientListening,
+	                                       nullptr, //Voice_GetClientListening,
+	                                       nullptr, //Voice_SetClientListening,
 	                                       PF_GetPlayerAuthId,
 	                                       NULL,
 	                                       NULL,
 	                                       COM_FileSize,
 	                                       COM_GetApproxWavePlayLength,
-	                                       VGuiWrap2_IsInCareerMatch,
-	                                       VGuiWrap2_GetLocalizedStringLength,
-	                                       RegisterTutorMessageShown,
-	                                       GetTimesTutorMessageShown,
-	                                       ProcessTutorMessageDecayBuffer,
-	                                       ConstructTutorMessageDecayBuffer,
-	                                       ResetTutorMessageDecayData,
+	                                       nullptr, //VGuiWrap2_IsInCareerMatch,
+	                                       nullptr, //VGuiWrap2_GetLocalizedStringLength,
+	                                       nullptr, //RegisterTutorMessageShown,
+	                                       nullptr, //GetTimesTutorMessageShown,
+	                                       nullptr, //ProcessTutorMessageDecayBuffer,
+	                                       nullptr, //ConstructTutorMessageDecayBuffer,
+	                                       nullptr, //ResetTutorMessageDecayData,
 	                                       QueryClientCvarValue,
 	                                       QueryClientCvarValue2,
 	                                       EngCheckParm };
