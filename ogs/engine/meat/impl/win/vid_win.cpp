@@ -155,9 +155,6 @@ static vmode_t badmode;
 
 static byte backingbuf[48 * 24];
 
-void VID_MenuDraw();
-void VID_MenuKey(int key);
-
 LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void AppActivate(BOOL fActive, BOOL minimize);
 

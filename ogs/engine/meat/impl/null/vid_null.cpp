@@ -30,6 +30,7 @@
 /// @brief null video driver to aid porting efforts
 
 //#include "precompiled.hpp"
+#include "graphics/vid.hpp"
 
 float scr_con_current;
 
@@ -63,21 +64,13 @@ void D_FlushCaches(){};
 
 void R_SetStackBase(){};
 
-void SCR_UpdateScreen(){};
-
 void V_Init(){};
 
 void Draw_Init(){};
 
-void SCR_Init(){};
-
 void R_Init(){};
 
 void R_ForceCVars(qboolean multiplayer){};
-
-void SCR_BeginLoadingPlaque(qboolean reconnect){};
-
-void SCR_EndLoadingPlaque(){};
 
 void R_InitSky(){};
 

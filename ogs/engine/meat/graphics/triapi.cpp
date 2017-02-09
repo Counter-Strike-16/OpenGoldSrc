@@ -328,8 +328,6 @@ void TriAPI_FogParams(float flDensity, int iFogSkybox){};
 
 }; // namespace
 
-// clang-format off
-
 triangleapi_t gTriAPI =
 {
 	TRI_API_VERSION,
@@ -358,5 +356,3 @@ triangleapi_t gTriAPI =
 	TriAPI_Color4fRendermode,
 	TriAPI_FogParams
 };
-
-// clang-format on

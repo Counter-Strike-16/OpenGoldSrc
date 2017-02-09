@@ -120,7 +120,7 @@ void GL_ScreenShot_f()
 	//
 	// find a file name to save it to
 	//
-	strcpy(picname, "quake00.tga");
+	strcpy(picname, "ogs00.tga");
 
 	for(i = 0; i <= 99; i++)
 	{

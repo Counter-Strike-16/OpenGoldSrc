@@ -30,8 +30,6 @@
 
 //#include "precompiled.hpp"
 
-// clang-format off
-
 efx_api_t gEfxAPI =
     {
         CL_AllocParticle,
@@ -119,5 +117,3 @@ efx_api_t gEfxAPI =
         CL_LookupColor,
         CL_DecalRemoveAll,
         CL_FireCustomDecal};
-
-// clang-format on

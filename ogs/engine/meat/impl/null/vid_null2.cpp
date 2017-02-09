@@ -2,6 +2,20 @@
 // this assumes that one of the refs is statically linked to the executable
 
 #include "../client/client.h"
+#include "d_local.hpp"
+#include "quakedef.hpp"
+
+viddef_t vid; // global video state
+
+#define BASEWIDTH 320
+#define BASEHEIGHT 200
+
+byte vid_buffer[BASEWIDTH * BASEHEIGHT];
+short zbuffer[BASEWIDTH * BASEHEIGHT];
+byte surfcache[256 * 1024];
+
+unsigned short d_8to16table[256];
+unsigned d_8to24table[256];
 
 viddef_t viddef; // global video state
 
@@ -77,7 +91,7 @@ qboolean VID_GetModeInfo(int *width, int *height, int mode)
 	return true;
 }
 
-void VID_Init(void)
+void VID_Init()
 {
 	refimport_t ri;
 
@@ -110,25 +124,62 @@ void VID_Init(void)
 		Com_Error(ERR_FATAL, "Couldn't start refresh");
 }
 
-void VID_Shutdown(void)
+void VID_Shutdown()
 {
 	if(re.Shutdown)
 		re.Shutdown();
 }
 
-void VID_CheckChanges(void)
+void VID_CheckChanges()
 {
 }
 
-void VID_MenuInit(void)
+void VID_MenuInit()
 {
 }
 
-void VID_MenuDraw(void)
+void VID_MenuDraw()
 {
 }
 
 const char *VID_MenuKey(int k)
 {
 	return NULL;
+}
+
+void VID_Init(unsigned char *palette)
+{
+	vid.maxwarpwidth = vid.width = vid.conwidth = BASEWIDTH;
+	vid.maxwarpheight = vid.height = vid.conheight = BASEHEIGHT;
+	vid.aspect = 1.0;
+	vid.numpages = 1;
+	vid.colormap = host_colormap;
+	vid.fullbright = 256 - LittleLong(*((int *)vid.colormap + 2048));
+	vid.buffer = vid.conbuffer = vid_buffer;
+	vid.rowbytes = vid.conrowbytes = BASEWIDTH;
+
+	d_pzbuffer = zbuffer;
+	D_InitCaches(surfcache, sizeof(surfcache));
+}
+
+void VID_Update(vrect_t *rects)
+{
+}
+
+/*
+================
+D_BeginDirectRect
+================
+*/
+void D_BeginDirectRect(int x, int y, byte *pbitmap, int width, int height)
+{
+}
+
+/*
+================
+D_EndDirectRect
+================
+*/
+void D_EndDirectRect(int x, int y, int width, int height)
+{
 }

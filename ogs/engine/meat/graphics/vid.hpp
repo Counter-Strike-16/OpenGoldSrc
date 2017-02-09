@@ -115,8 +115,8 @@ qboolean VID_Is8bit();
 
 void VID_WriteBuffer(const char *pFilename);
 
-//void VID_ForceLockState(int lk);
-//int VID_ForceUnlockedAndReturnState();
+void VID_ForceLockState(int lk);
+int VID_ForceUnlockedAndReturnState();
 
 /*
 void VID_WriteBuffer(const char *pFilename);
@@ -146,5 +146,5 @@ void VID_CheckChanges();
 
 void VID_MenuInit();
 void VID_MenuDraw();
-const char *VID_MenuKey(int anKey);
+const char *VID_MenuKey(int anKey); // void VID_MenuKey(int key);
 */
