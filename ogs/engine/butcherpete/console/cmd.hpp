@@ -100,10 +100,10 @@ void Cmd_Wait_f();
 void Cmd_StuffCmds_f();
 void Cmd_Exec_f();
 void Cmd_Echo_f();
+void Cmd_Alias_f();
+void Cmd_CmdList_f();
 
 char *CopyString(char *in);
-
-void Cmd_Alias_f();
 
 struct cmd_function_s *Cmd_GetFirstCmd();
 
@@ -154,5 +154,3 @@ void Cmd_ForwardToServer();
 qboolean Cmd_ForwardToServerUnreliable();
 
 NOXREF int Cmd_CheckParm(char *parm);
-
-void Cmd_CmdList_f();

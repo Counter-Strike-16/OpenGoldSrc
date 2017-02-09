@@ -35,14 +35,18 @@
 #include "common/wrect.h"
 #include "maintypes.h"
 
-#define VID_CBITS 6
-#define VID_GRADES (1 << VID_CBITS)
-
 #ifdef HOOK_ENGINE
 #define r_pixbytes (*pr_pixbytes)
 #define gl_vsync (*pgl_vsync)
 #define scr_con_current (*pscr_con_current)
-#endif // HOOK_ENGINE
+#endif
+
+const int VID_CBITS = 6;
+const int VID_GRADES = (1 << VID_CBITS);
+
+extern int r_pixbytes;
+extern cvar_t gl_vsync;
+extern float scr_con_current;
 
 // a pixel can be one, two, or four bytes
 typedef byte pixel_t;
@@ -110,3 +114,37 @@ qboolean VID_Is8bit();
 #endif
 
 void VID_WriteBuffer(const char *pFilename);
+
+//void VID_ForceLockState(int lk);
+//int VID_ForceUnlockedAndReturnState();
+
+/*
+void VID_WriteBuffer(const char *pFilename);
+NOBODY int VID_Init(unsigned short *palette);
+
+void D_FlushCaches();
+void R_SetStackBase();
+void SCR_UpdateScreen();
+void V_Init();
+void Draw_Init();
+void SCR_Init();
+void R_Init();
+void R_ForceCVars(qboolean multiplayer);
+
+void SCR_BeginLoadingPlaque(qboolean reconnect);
+void SCR_EndLoadingPlaque();
+
+void R_InitSky();
+void R_MarkLeaves();
+void R_InitTextures();
+
+void StartLoadingProgressBar(const char *loadingType, int numProgressPoints);
+void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction);
+void SetLoadingProgressBarStatusText(const char *statusText);
+
+void VID_CheckChanges();
+
+void VID_MenuInit();
+void VID_MenuDraw();
+const char *VID_MenuKey(int anKey);
+*/

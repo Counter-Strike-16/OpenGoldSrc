@@ -59,6 +59,7 @@ typedef struct netadr_s netadr_t;
 
 extern char gDownloadFile[256];
 
+// Packets dropped before this one
 extern int net_drop;
 
 extern cvar_t net_log;
@@ -155,37 +156,55 @@ typedef struct netchan_s
 } netchan_t;
 
 void Netchan_UnlinkFragment(fragbuf_t *buf, fragbuf_t **list);
+
 void Netchan_OutOfBand(netsrc_t sock, netadr_t adr, int length, byte *data);
 void Netchan_OutOfBandPrint(netsrc_t sock, netadr_t adr, char *format, ...);
+
 void Netchan_ClearFragbufs(fragbuf_t **ppbuf);
 void Netchan_ClearFragments(netchan_t *chan);
 void Netchan_Clear(netchan_t *chan);
+
 void Netchan_Setup(netsrc_t socketnumber, netchan_t *chan, netadr_t adr, int player_slot, void *connection_status, qboolean (*pfnNetchan_Blocksize)(void *));
+
 qboolean Netchan_CanPacket(netchan_t *chan);
+
 void Netchan_UpdateFlow(netchan_t *chan);
+
 void Netchan_Transmit(netchan_t *chan, int length, byte *data);
+
 fragbuf_t *Netchan_FindBufferById(fragbuf_t **pplist, int id, qboolean allocate);
 void Netchan_CheckForCompletion(netchan_t *chan, int stream, int intotalbuffers);
 qboolean Netchan_Validate(netchan_t *chan, qboolean *frag_message, unsigned int *fragid, int *frag_offset, int *frag_length);
 qboolean Netchan_Process(netchan_t *chan);
 void Netchan_FragSend(netchan_t *chan);
 void Netchan_AddBufferToList(fragbuf_t **pplist, fragbuf_t *pbuf);
+
 fragbuf_t *Netchan_AllocFragbuf(void);
 void Netchan_AddFragbufToTail(fragbufwaiting_t *wait, fragbuf_t *buf);
+
 void Netchan_CreateFragments_(qboolean server, netchan_t *chan, sizebuf_t *msg);
 void Netchan_CreateFragments(qboolean server, netchan_t *chan, sizebuf_t *msg);
+
 void Netchan_CreateFileFragmentsFromBuffer(qboolean server, netchan_t *chan, const char *filename, unsigned char *uncompressed_pbuf, int uncompressed_size);
 int Netchan_CreateFileFragments(qboolean server, netchan_t *chan, const char *filename);
+
 #ifdef REHLDS_FIXES
 int Netchan_CreateFileFragments_(qboolean server, netchan_t *chan, const char *filename);
 #endif // REHLDS_FIXES
+
 void Netchan_FlushIncoming(netchan_t *chan, int stream);
+
 qboolean Netchan_CopyNormalFragments(netchan_t *chan);
 qboolean Netchan_CopyFileFragments(netchan_t *chan);
+
 NOXREF qboolean Netchan_IsSending(netchan_t *chan);
 NOXREF qboolean Netchan_IsReceiving(netchan_t *chan);
+
 qboolean Netchan_IncomingReady(netchan_t *chan);
+
 NOXREF void Netchan_UpdateProgress(netchan_t *chan);
+
 void Netchan_Init(void);
+
 NOXREF qboolean Netchan_CompressPacket(sizebuf_t *chan);
 NOXREF qboolean Netchan_DecompressPacket(sizebuf_t *chan);

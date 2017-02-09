@@ -32,7 +32,7 @@
 
 #include "common/commontypes.h"
 
-const int CON_TEXTSIZE = 16384;
+const int CON_TEXTSIZE = 32768; // 16384;
 
 typedef struct
 {
@@ -84,7 +84,6 @@ void Con_Debug_f();
 
 #define	NUM_CON_TIMES 4
 
-#define		CON_TEXTSIZE	32768
 typedef struct
 {
 	qboolean	initialized;

@@ -30,8 +30,17 @@
 
 //#include "precompiled.hpp"
 #include "network/net_chan.hpp"
-#include "console/console.hpp"
+#include "memory/mem.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
+#include "system/host.hpp"
+#include "system/sizebuf.hpp"
+#include "network/net_msg.hpp"
+#include "console/console.hpp"
+#include "console/cmd.hpp"
+#include "console/cvar.hpp"
+#include "client/client.hpp"
+#include "server/server.hpp"
 
 int net_drop;
 char gDownloadFile[256];
@@ -1200,6 +1209,7 @@ void Netchan_CreateFileFragmentsFromBuffer(qboolean server, netchan_t *chan, con
 	size = uncompressed_size;
 
 	pbuf = (unsigned char *)Mem_Malloc(uncompressed_size);
+	/*
 	if(BZ2_bzBuffToBuffCompress((char *)pbuf, &size, (char *)uncompressed_pbuf, uncompressed_size, 9, 0, 30))
 	{
 		bCompressed = FALSE;
@@ -1209,9 +1219,10 @@ void Netchan_CreateFileFragmentsFromBuffer(qboolean server, netchan_t *chan, con
 	}
 	else
 	{
+		*/
 		bCompressed = TRUE;
 		Con_DPrintf("Compressed %s for transmission (%d -> %d)\n", filename, uncompressed_size, size);
-	}
+	//}
 
 	chunksize = chan->pfnNetchan_Blocksize(chan->connection_status);
 	send = chunksize;

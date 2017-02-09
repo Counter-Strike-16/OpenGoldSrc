@@ -337,7 +337,7 @@ A download message has been received from the server
 void CL_ParseDownload()
 {
 	int size, percent;
-	byte name[1024];
+	char name[1024]; // MAX_OSPATH
 	int r;
 
 	// read the data
@@ -353,9 +353,10 @@ void CL_ParseDownload()
 
 	if(size == -1)
 	{
-		Con_Printf("File not found.\n");
+		Con_Printf("File not found.\n"); // "Server does not have this file.\n"
 		if(cls.download)
 		{
+			// if here, we tried to resume a file but the server said no
 			Con_Printf("cls.download shouldn't have been set\n");
 			fclose(cls.download);
 			cls.download = NULL;

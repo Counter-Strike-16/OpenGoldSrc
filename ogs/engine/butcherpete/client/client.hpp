@@ -312,7 +312,7 @@ typedef struct client_state_s
 extern client_state_t cl;
 
 //
-// cl_main.cpp
+// main
 //
 
 void CL_Init(); //+
@@ -383,31 +383,33 @@ void CL_MoveSpectatorCamera();
 void CL_UpdateModuleC();
 
 //
-// cl_events.cpp
+// events
 //
 void CL_FireEvents(); //+
 
 //
-// cl_demo.cpp
+// demo
 //
-void CL_StopPlayback();      //+
+void CL_StopPlayback(); //+
 
 //
-// cl_pred.cpp
+// client side prediction
 //
 //void CL_InitPrediction();
+//void CL_PredictMovement();
 void CL_PredictMove(qboolean repredicting); //+
 //void CL_PredictUsercmd(player_state_t *from, player_state_t *to, usercmd_t *u, qboolean spectator);
 void CL_RedoPrediction(); //+
+//void CL_CheckPredictionError();
 
 //
-// cl_voice.cpp
+// voice
 //
 void CL_AddVoiceToDatagram(qboolean bFinal);
 void CL_VoiceIdle();
 
 //
-// vguiwrap2.cpp
+// vguiwrap2
 //
 int VGuiWrap2_IsInCareerMatch();
 void VguiWrap2_GetCareerUI();
@@ -416,7 +418,7 @@ void VGuiWrap2_LoadingStarted(const char *resourceType,
                               const char *resourceName);
 
 //
-// tutor.cpp
+// tutor
 //
 void ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength);
 void ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength);

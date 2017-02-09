@@ -143,16 +143,6 @@
 #define	PRINT_HIGH			2
 #define	PRINT_CHAT			3	// also go to chat buffer
 
-/*
-==========================================================
-
-  ELEMENTS COMMUNICATED ACROSS THE NET
-
-==========================================================
-*/
-
-#define	MAX_CLIENTS		32
-
 #define	UPDATE_BACKUP	64	// copies of entity_state_t to keep buffered
 							// must be power of two
 #define	UPDATE_MASK		(UPDATE_BACKUP-1)

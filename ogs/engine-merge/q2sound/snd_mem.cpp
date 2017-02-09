@@ -1,12 +1,5 @@
-
-// snd_mem.c: sound caching
-
 #include "client.h"
 #include "snd_loc.h"
-
-int			cache_full_cycle;
-
-byte *S_Alloc (int size);
 
 /*
 ================
@@ -20,9 +13,8 @@ void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 	float	stepscale;
 	int		i;
 	int		sample, samplefrac, fracstep;
-	sfxcache_t	*sc;
-	
-	sc = sfx->cache;
+	sfxcache_t *sc = sfx->cache;
+
 	if (!sc)
 		return;
 
@@ -151,8 +143,6 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	return sc;
 }
 
-
-
 /*
 ===============================================================================
 
@@ -161,13 +151,11 @@ WAV loading
 ===============================================================================
 */
 
-
 byte	*data_p;
 byte 	*iff_end;
 byte 	*last_chunk;
 byte 	*iff_data;
 int 	iff_chunk_len;
-
 
 short GetLittleShort(void)
 {
@@ -235,7 +223,7 @@ void DumpChunks(void)
 		memcpy (str, data_p, 4);
 		data_p += 4;
 		iff_chunk_len = GetLittleLong();
-		Com_Printf ("0x%x : %s (%d)\n", (int)(data_p - 4), str, iff_chunk_len);
+		Con_Printf ("0x%x : %s (%d)\n", (int)(data_p - 4), str, iff_chunk_len);
 		data_p += (iff_chunk_len + 1) & ~1;
 	} while (data_p < iff_end);
 }
@@ -264,7 +252,7 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 	FindChunk("RIFF");
 	if (!(data_p && !strncmp(data_p+8, "WAVE", 4)))
 	{
-		Com_Printf("Missing RIFF/WAVE chunks\n");
+		Con_Printf("Missing RIFF/WAVE chunks\n");
 		return info;
 	}
 
@@ -275,14 +263,14 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 	FindChunk("fmt ");
 	if (!data_p)
 	{
-		Com_Printf("Missing fmt chunk\n");
+		Con_Printf("Missing fmt chunk\n");
 		return info;
 	}
 	data_p += 8;
 	format = GetLittleShort();
 	if (format != 1)
 	{
-		Com_Printf("Microsoft PCM format only\n");
+		Con_Printf("Microsoft PCM format only\n");
 		return info;
 	}
 
@@ -319,7 +307,7 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 	FindChunk("data");
 	if (!data_p)
 	{
-		Com_Printf("Missing data chunk\n");
+		Con_Printf("Missing data chunk\n");
 		return info;
 	}
 
@@ -338,4 +326,3 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 	
 	return info;
 }
-

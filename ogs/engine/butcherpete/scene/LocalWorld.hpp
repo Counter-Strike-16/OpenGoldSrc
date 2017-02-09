@@ -29,3 +29,33 @@
 /// @file
 
 #pragma once
+
+#include <list>
+#include "IWorld.hpp"
+
+class CParicleEntity;
+class CLightEntity;
+
+typedef tParticleEntityList std::list<CParicleEntity*>;
+
+typedef tLightEntityList std::list<CLightEntity*>;
+
+typedef struct dlight_s dlight_t;
+
+class CLocalWorld : public IWorld
+{
+public:
+	void Update(float afTimeStep);
+	
+	dlight_t *AllocDlight(int anKey);
+	
+	CParicleEntity *CreateParticle();
+	CLightEntity *CreateLight();
+	
+	void SpawnSmokeAndFlash(vec3_t origin);
+	void SpawnBigTeleportParticles(vec3_t org);
+	void SpawnRocketTrail(vec3_t start, vec3_t end, cl_entity_t *old);
+	void SpawnDiminishingTrail(vec3_t start, vec3_t end, cl_entity_t *old, int flags);
+	void SpawnFlyEffect(cl_entity_t *ent, vec3_t origin);
+private:
+};

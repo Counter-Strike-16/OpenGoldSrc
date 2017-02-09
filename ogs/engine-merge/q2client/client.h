@@ -276,16 +276,10 @@ void CL_ParticleEffect3 (vec3_t org, vec3_t dir, int color, int count);
 
 //=================================================
 
-// ========
-// PGM
 typedef struct particle_s
 {
-	struct particle_s	*next;
-
 	float		time;
 
-	vec3_t		org;
-	vec3_t		vel;
 	vec3_t		accel;
 	float		color;
 	float		colorvel;
@@ -296,10 +290,8 @@ typedef struct particle_s
 
 #define	PARTICLE_GRAVITY	40
 #define BLASTER_PARTICLE_COLOR		0xe0
-// PMM
+
 #define INSTANT_PARTICLE	-10000.0
-// PGM
-// ========
 
 void CL_ClearEffects ();
 void CL_ClearTEnts ();
@@ -377,7 +369,6 @@ void CL_ParseLayout ();
 //
 extern	refexport_t	re;		// interface to refresh .dll
 
-void CL_Disconnect_f ();
 void CL_GetChallengePacket ();
 void CL_PingServers_f ();
 void CL_Snd_Restart_f ();
@@ -388,10 +379,8 @@ void CL_RequestNextDownload ();
 //
 typedef struct
 {
-	int			down[2];		// key nums holding it down
 	unsigned	downtime;		// msec timestamp
 	unsigned	msec;			// msec down this frame
-	int			state;
 } kbutton_t;
 
 extern	kbutton_t	in_mlook, in_klook;
@@ -434,8 +423,7 @@ extern	struct model_s	*gun_model;
 
 void V_RenderView( float stereo_separation );
 void V_AddEntity (entity_t *ent);
-void V_AddParticle (vec3_t org, int color, float alpha);
-void V_AddLight (vec3_t org, float intensity, float r, float g, float b);
+
 void V_AddLightStyle (int style, float r, float g, float b);
 
 //
@@ -443,38 +431,14 @@ void V_AddLightStyle (int style, float r, float g, float b);
 //
 void CL_RegisterTEntSounds ();
 void CL_RegisterTEntModels ();
-void CL_SmokeAndFlash(vec3_t origin);
-
-
-//
-// cl_pred.c
-//
-void CL_InitPrediction ();
-void CL_CheckPredictionError ();
 
 //
 // cl_fx.c
 //
-cdlight_t *CL_AllocDlight (int key);
-void CL_BigTeleportParticles (vec3_t org);
-void CL_RocketTrail (vec3_t start, vec3_t end, centity_t *old);
-void CL_DiminishingTrail (vec3_t start, vec3_t end, centity_t *old, int flags);
-void CL_FlyEffect (centity_t *ent, vec3_t origin);
 void CL_BfgParticles (entity_t *ent);
 void CL_AddParticles ();
 void CL_EntityEvent (entity_state_t *ent);
-// RAFAEL
 void CL_TrapParticles (entity_t *ent);
-
-//
-// menus
-//
-void M_Init ();
-void M_Keydown (int key);
-void M_Draw ();
-void M_Menu_Main_f ();
-void M_ForceMenuOff ();
-void M_AddToServerList (netadr_t adr, char *info);
 
 //
 // cl_inv.c
@@ -482,11 +446,6 @@ void M_AddToServerList (netadr_t adr, char *info);
 void CL_ParseInventory ();
 void CL_KeyInventory (int key);
 void CL_DrawInventory ();
-
-//
-// cl_pred.c
-//
-void CL_PredictMovement ();
 
 #if id386
 void x86_TimerStart( void );

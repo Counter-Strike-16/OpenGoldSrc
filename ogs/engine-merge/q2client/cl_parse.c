@@ -171,36 +171,8 @@ void CL_RegisterSounds (void)
 	S_EndRegistration ();
 }
 
-
-/*
-=====================
-CL_ParseDownload
-
-A download message has been received from the server
-=====================
-*/
 void CL_ParseDownload (void)
 {
-	int		size, percent;
-	char	name[MAX_OSPATH];
-	int		r;
-
-	// read the data
-	size = MSG_ReadShort (&net_message);
-	percent = MSG_ReadByte (&net_message);
-	if (size == -1)
-	{
-		Com_Printf ("Server does not have this file.\n");
-		if (cls.download)
-		{
-			// if here, we tried to resume a file but the server said no
-			fclose (cls.download);
-			cls.download = NULL;
-		}
-		CL_RequestNextDownload ();
-		return;
-	}
-
 	// open the file if not opened yet
 	if (!cls.download)
 	{

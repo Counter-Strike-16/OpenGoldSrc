@@ -57,6 +57,14 @@ const int PORT_RPT_LISTEN = 27036;
 
 //=========================================
 
+/*
+==========================================================
+
+  ELEMENTS COMMUNICATED ACROSS THE NET
+
+==========================================================
+*/
+
 // Max # of clients allowed in a server
 //const int MAX_CLIENTS = 32;
 

@@ -114,7 +114,7 @@ typedef struct flowstats_s
 	double time;
 } flowstats_t;
 
-#define MAX_LATENT 32
+const int MAX_LATENT = 32;
 
 typedef struct flow_s
 {
@@ -129,19 +129,19 @@ typedef struct flow_s
 	float avgkbytespersec;
 } flow_t;
 
-#define FRAGMENT_C2S_MIN_SIZE 16
-#define FRAGMENT_S2C_MIN_SIZE 256
-#define FRAGMENT_S2C_MAX_SIZE 1024
-#define CLIENT_FRAGMENT_SIZE_ONCONNECT 128
-#define CUSTOMIZATION_MAX_SIZE 20480
+const int FRAGMENT_C2S_MIN_SIZE = 16;
+const int FRAGMENT_S2C_MIN_SIZE = 256;
+const int FRAGMENT_S2C_MAX_SIZE = 1024;
+const int CLIENT_FRAGMENT_SIZE_ONCONNECT = 128;
+const int CUSTOMIZATION_MAX_SIZE = 20480;
 
 #ifndef REHLDS_FIXES
 // Size of fragmentation buffer internal buffers
-#define FRAGMENT_MAX_SIZE 1400
+const int FRAGMENT_MAX_SIZE = 1400;
 
-#define MAX_FRAGMENTS 25000
+const int MAX_FRAGMENTS = 25000;
 #else
-#define FRAGMENT_MAX_SIZE 1024
+const int FRAGMENT_MAX_SIZE = 1024;
 
 // Client sends normal fragments only while connecting
 #define MAX_NORMAL_FRAGMENTS (NET_MAX_PAYLOAD / CLIENT_FRAGMENT_SIZE_ONCONNECT)
