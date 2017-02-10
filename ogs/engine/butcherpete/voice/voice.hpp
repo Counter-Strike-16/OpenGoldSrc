@@ -44,6 +44,3 @@ void Voice_Deinit();
 void Voice_Idle(float frametime);
 
 qboolean Voice_RecordStop();
-
-qboolean Voice_GetClientListening(int iReceiver, int iSender);
-qboolean Voice_SetClientListening(int iReceiver, int iSender, qboolean bListen);

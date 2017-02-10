@@ -1,32 +1,10 @@
-
-// cl_parse.c  -- parse a message received from the server
-
-#include "client.h"
-
 char *svc_strings[256] =
 {
-	"svc_bad",
-
-	"svc_muzzleflash",
-	"svc_muzzlflash2",
-	"svc_temp_entity",
-	"svc_layout",
-	"svc_inventory",
-
-	"svc_nop",
-	"svc_disconnect",
 	"svc_reconnect",
-	"svc_sound",
-	"svc_print",
-	"svc_stufftext",
 	"svc_serverdata",
 	"svc_configstring",
-	"svc_spawnbaseline",	
-	"svc_centerprint",
 	"svc_download",
 	"svc_playerinfo",
-	"svc_packetentities",
-	"svc_deltapacketentities",
 	"svc_frame"
 };
 
@@ -591,36 +569,8 @@ void CL_ParseStartSoundPacket(void)
 	S_StartSound (pos, ent, channel, cl.sound_precache[sound_num], volume, attenuation, ofs);
 }       
 
-
-void SHOWNET(char *s)
-{
-	if (cl_shownet->value>=2)
-		Com_Printf ("%3i:%s\n", net_message.readcount-1, s);
-}
-
-/*
-=====================
-CL_ParseServerMessage
-=====================
-*/
 void CL_ParseServerMessage (void)
 {
-	int			cmd;
-	char		*s;
-	int			i;
-
-//
-// if recording demos, copy the message out
-//
-	if (cl_shownet->value == 1)
-		Com_Printf ("%i ",net_message.cursize);
-	else if (cl_shownet->value >= 2)
-		Com_Printf ("------------------\n");
-
-
-//
-// parse the message
-//
 	while (1)
 	{
 		if (net_message.readcount > net_message.cursize)
@@ -652,10 +602,6 @@ void CL_ParseServerMessage (void)
 			Com_Error (ERR_DROP,"CL_ParseServerMessage: Illegible server message\n");
 			break;
 			
-		case svc_nop:
-//			Com_Printf ("svc_nop\n");
-			break;
-			
 		case svc_disconnect:
 			Com_Error (ERR_DISCONNECT,"Server disconnected\n");
 			break;
@@ -670,26 +616,9 @@ void CL_ParseServerMessage (void)
 			cls.state = ca_connecting;
 			cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
 			break;
-
-		case svc_print:
-			i = MSG_ReadByte (&net_message);
-			if (i == PRINT_CHAT)
-			{
-				S_StartLocalSound ("misc/talk.wav");
-				con.ormask = 128;
-			}
-			Com_Printf ("%s", MSG_ReadString (&net_message));
-			con.ormask = 0;
-			break;
 			
 		case svc_centerprint:
 			SCR_CenterPrint (MSG_ReadString (&net_message));
-			break;
-			
-		case svc_stufftext:
-			s = MSG_ReadString (&net_message);
-			Com_DPrintf ("stufftext: %s\n", s);
-			Cbuf_AddText (s);
 			break;
 			
 		case svc_serverdata:
@@ -701,10 +630,6 @@ void CL_ParseServerMessage (void)
 			CL_ParseConfigString ();
 			break;
 			
-		case svc_sound:
-			CL_ParseStartSoundPacket();
-			break;
-			
 		case svc_spawnbaseline:
 			CL_ParseBaseline ();
 			break;
@@ -713,24 +638,12 @@ void CL_ParseServerMessage (void)
 			CL_ParseTEnt ();
 			break;
 
-		case svc_muzzleflash:
-			CL_ParseMuzzleFlash ();
-			break;
-
-		case svc_muzzleflash2:
-			CL_ParseMuzzleFlash2 ();
-			break;
-
 		case svc_download:
 			CL_ParseDownload ();
 			break;
 
 		case svc_frame:
 			CL_ParseFrame ();
-			break;
-
-		case svc_inventory:
-			CL_ParseInventory ();
 			break;
 
 		case svc_layout:

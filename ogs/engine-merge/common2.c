@@ -1292,9 +1292,6 @@ float	crand(void)
 	return (rand()&32767)* (2.0/32767) - 1;
 }
 
-void Key_Init (void);
-void SCR_EndLoadingPlaque (void);
-
 /*
 =============
 Com_Error_f

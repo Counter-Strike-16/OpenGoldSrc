@@ -33,7 +33,10 @@
 #include "client/client.hpp"
 
 char *svc_strings[] = {
-	"svc_bad", "svc_nop", "svc_disconnect", "svc_event",
+	"svc_bad",
+	"svc_nop",
+	"svc_disconnect",
+	"svc_event",
 	"svc_version",   // [long] server version
 	"svc_setview",   // [short] entity number
 	"svc_sound",     // <see code>
@@ -73,7 +76,7 @@ char *svc_strings[] = {
 	"svc_cutscene",
 	"svc_weaponanim",
 
-	"svc_decalnam",
+	"svc_decalname",
 	"svc_roomtype",
 
 	"svc_addangle",
@@ -1122,6 +1125,12 @@ void CL_HandlePause()
 {
 	cl.refdef.paused = (MSG_ReadOneBit() != 0);
 	//Cvar_SetValue ("paused", !cl_paused->value);
+	
+	//cl.paused = MSG_ReadByte();
+	//if(cl.paused)
+		//CDAudio_Pause();
+	//else
+		//CDAudio_Resume();
 };
 
 void CL_ParseSignOnNum()
@@ -1703,9 +1712,12 @@ void CL_MuzzleFlash()
 	dl->color[3] = 0.7;
 }
 
-#define SHOWNET(x)            \
-	if(cl_shownet.value == 2) \
-		Con_Printf("%3i:%s\n", msg_readcount - 1, x);
+void SHOWNET(char *s)
+{
+	if(cl_shownet.value == 2) // >=
+		Con_Printf("%3i:%s\n", msg_readcount - 1, s); // net_message.readcount
+};
+
 /*
 =====================
 CL_ParseServerMessage
@@ -1727,7 +1739,7 @@ void CL_ParseServerMessage()
 	//
 	if(cl_shownet.value == 1)
 		Con_Printf("%i ", net_message.cursize);
-	else if(cl_shownet.value == 2)
+	else if(cl_shownet.value == 2) // >=
 		Con_Printf("------------------\n");
 
 	CL_ParseClientdata();
@@ -1988,14 +2000,6 @@ case svc_playerinfo:
 
 case svc_nails:
       CL_ParseProjectiles ();
-      break;
-
-case svc_setpause:
-      cl.paused = MSG_ReadByte ();
-      if (cl.paused)
-              CDAudio_Pause ();
-      else
-              CDAudio_Resume ();
       break;
 */
 		}

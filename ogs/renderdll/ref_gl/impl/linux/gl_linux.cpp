@@ -29,7 +29,7 @@
 /*****************************************************************************/
 
 static qboolean GLimp_SwitchFullscreen(int width, int height);
-qboolean GLimp_InitGL(void);
+qboolean GLimp_InitGL();
 
 extern cvar_t *vid_fullscreen;
 extern cvar_t *vid_ref;
@@ -68,7 +68,7 @@ static void signal_handler(int sig)
 	_exit(0);
 }
 
-static void InitSig(void)
+static void InitSig()
 {
 	signal(SIGHUP, signal_handler);
 	signal(SIGQUIT, signal_handler);
@@ -137,7 +137,7 @@ int GLimp_SetMode(int *pwidth, int *pheight, int mode, qboolean fullscreen)
 ** for the window.  The state structure is also nulled out.
 **
 */
-void GLimp_Shutdown(void)
+void GLimp_Shutdown()
 {
 	if(fc)
 	{
@@ -173,7 +173,7 @@ void GLimp_BeginFrame(float camera_seperation)
 ** as yet to be determined.  Probably better not to make this a GLimp
 ** function and instead do a call to GLimp_SwapBuffers.
 */
-void GLimp_EndFrame(void)
+void GLimp_EndFrame()
 {
 	glFlush();
 	fxMesaSwapBuffers();

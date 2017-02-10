@@ -36,6 +36,7 @@
 #include "physics/sv_move.hpp"
 #include "network/delta.hpp"
 #include "resources/studio_rehlds.hpp"
+#include "voice/voiceserver.hpp"
 #include "console/cmd.hpp"
 #include "server/server.hpp"
 #include "common/crc.h"
@@ -186,8 +187,8 @@ enginefuncs_t g_engfuncsExportedToDlls = { PF_precache_model_I,
 	                                       PF_ForceUnmodified,
 	                                       PF_GetPlayerStats,
 	                                       Cmd_AddGameCommand,
-	                                       nullptr, //Voice_GetClientListening,
-	                                       nullptr, //Voice_SetClientListening,
+	                                       Voice_GetClientListening,
+	                                       Voice_SetClientListening,
 	                                       PF_GetPlayerAuthId,
 	                                       NULL,
 	                                       NULL,

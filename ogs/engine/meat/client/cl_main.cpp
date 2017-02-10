@@ -49,10 +49,10 @@
 
 qboolean noclip_anglehack; // remnant from old quake
 
-cvar_t rcon_password = { "rcon_password", "" };
+cvar_t rcon_password = { "rcon_password", "" }; // rcon_client_password
 cvar_t rcon_address = { "rcon_address", "" };
 
-cvar_t cl_timeout = { "cl_timeout", "60" };
+cvar_t cl_timeout = { "cl_timeout", "60" }; // 120
 
 cvar_t cl_shownet = { "cl_shownet", "0" }; // can be 0, 1, or 2
 
@@ -69,7 +69,7 @@ static qboolean allowremotecmd = true;
 //
 // userinfo mirrors
 //
-cvar_t password = { "password", "", FCVAR_USERINFO };
+cvar_t password = { "password", "", FCVAR_USERINFO }; // info_password
 cvar_t name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO };
 cvar_t team = { "team", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
 cvar_t model = { "model", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
@@ -100,8 +100,6 @@ dlight_t cl_dlights[MAX_DLIGHTS];
 int cl_numvisedicts, cl_oldnumvisedicts;
 cl_entity_t *cl_visedicts, *cl_oldvisedicts;
 cl_entity_t cl_visedicts_list[2][MAX_VISEDICTS];
-
-double connect_time = -1; // for connection retransmits
 
 qboolean nomaster;
 
@@ -148,21 +146,21 @@ void CL_SendConnectPacket()
 	if(cls.state != ca_disconnected)
 		return;
 
-	double t1 = Sys_DoubleTime();
+	double t1 = Sys_FloatTime();
 
 	if(!NET_StringToAdr(cls.servername, &adr))
 	{
 		Con_Printf("Bad server address\n");
-		cls.connect_time = -1; // 0
+		cls.connect_time = -1.0f; // 0
 		return;
 	};
 
 	if(adr.port == 0)
 		adr.port = BigShort(PORT_SERVER);
 
-	double t2 = Sys_DoubleTime();
+	double t2 = Sys_FloatTime();
 
-	connect_time = realtime + t2 - t1; // for retransmit requests
+	cls.connect_time = realtime + t2 - t1; // for retransmit requests
 
 	cls.qport = Cvar_VariableValue("qport");
 
@@ -186,7 +184,7 @@ void CL_CheckForResend()
 	netadr_t adr;
 	char data[2048];
 
-	if(cls.connect_time == -1)
+	if(cls.connect_time == -1.0f)
 		return;
 
 	if(cls.state != ca_disconnected)
@@ -195,19 +193,19 @@ void CL_CheckForResend()
 	if(cls.connect_time && realtime - cls.connect_time < 5.0f)
 		return;
 
-	double t1 = Sys_DoubleTime();
+	double t1 = Sys_FloatTime();
 
 	if(!NET_StringToAdr(cls.servername, &adr))
 	{
 		Con_Printf("Bad server address\n");
-		connect_time = -1;
+		cls.connect_time = -1.0f;
 		return;
 	};
 
 	if(adr.port == 0)
 		adr.port = BigShort(PORT_SERVER);
 
-	double t2 = Sys_DoubleTime();
+	double t2 = Sys_FloatTime();
 
 	cls.connect_time = realtime + t2 - t1; // for retransmit requests
 
@@ -218,7 +216,7 @@ void CL_CheckForResend()
 
 void CL_BeginServerConnect()
 {
-	cls.connect_time = 0;
+	cls.connect_time = 0.0f;
 	CL_CheckForResend();
 };
 
@@ -260,8 +258,7 @@ void CL_Rcon_f()
 
 	if(!rcon_password.string) // if (!rcon_client_password->string)
 	{
-		Con_Printf(
-		"You must set 'rcon_password' before issuing an rcon command.\n");
+		Con_Printf("You must set 'rcon_password' before issuing an rcon command.\n");
 		return;
 	};
 
@@ -361,10 +358,13 @@ This is also called on Host_Error, so it shouldn't cause any errors
 */
 void CL_Disconnect()
 {
+	if(cls.state == ca_disconnected)
+		return;
+	
 	// Stop sounds (especially looping!)
 	S_StopAllSounds(true);
 
-	cls.connect_time = -1; // 0
+	cls.connect_time = -1.0f; // 0
 
 	// bring the console down and fade the colors back to normal
 	//	SCR_BringDownConsole();
@@ -372,6 +372,16 @@ void CL_Disconnect()
 	// if running a local server, shut it down
 	if(cls.demoplayback) // TODO: demoplayback -> clientstate?
 		CL_StopPlayback();
+	
+	// send a disconnect message to the server
+	byte sFinalMsg[32];
+	sFinalMsg[0] = clc_stringcmd;
+	
+	strcpy((char *)sFinalMsg + 1, "disconnect");
+	
+	Netchan_Transmit(&cls.netchan, strlen(sFinalMsg), sFinalMsg);
+	Netchan_Transmit(&cls.netchan, strlen(sFinalMsg), sFinalMsg);
+	Netchan_Transmit(&cls.netchan, strlen(sFinalMsg), sFinalMsg);
 
 	mvStates[state]->OnDisconnect();
 
@@ -379,7 +389,10 @@ void CL_Disconnect()
 	cls.signon = 0;
 
 	Cam_Reset();
-
+	
+	CL_ClearState();
+	
+	// stop download
 	if(cls.download)
 	{
 		fclose(cls.download);
@@ -387,6 +400,8 @@ void CL_Disconnect()
 	};
 
 	CL_StopUpload();
+	
+	cls.state = ca_disconnected;
 };
 
 void CL_Disconnect_f()

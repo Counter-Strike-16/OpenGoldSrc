@@ -44,8 +44,6 @@ void Demo_WriteBuffer(int size, unsigned char *buffer)
 	CL_WriteDemoUserMessage(buffer, size);
 };
 
-// clang-format off
-
 demo_api_t gDemoAPI =
 {
 	CL_IsRecording,
@@ -54,5 +52,3 @@ demo_api_t gDemoAPI =
 	
 	Demo_WriteBuffer
 };
-
-// clang-format on

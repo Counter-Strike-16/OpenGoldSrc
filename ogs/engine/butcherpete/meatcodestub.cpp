@@ -22,7 +22,3 @@ void Sys_ShutdownGame()
 void Con_Printf(const char *, ...)
 {
 };
-
-void Cvar_Set(const char *, const char *)
-{
-};

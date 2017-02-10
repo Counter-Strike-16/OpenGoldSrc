@@ -1,21 +1,5 @@
 Glquake v0.99, Quake v1.09 release notes
 
-3dfx owners -- read the 3dfx.txt file.
-
-On a standard OpenGL system, all you should need to do to run glquake is put 
-glquake.exe in your quake directory, and run it from there.  DO NOT install 
-the opengl32.dll unless you have a 3dfx!  Glquake should change the screen 
-resolution to 640*480*32k colors and run full screen by default.
-
-If you are running win-95, your desktop must be set to 32k or 64k colors 
-before running glquake.  NT can switch automatically.
-
-Theoretically, glquake will run on any compliant OpenGL that supports the 
-texture objects extensions, but unless it is very powerfull hardware that 
-accelerates everything needed, the game play will not be acceptable.  If it 
-has to go through any software emulation paths, the performance will likely 
-by well under one frame per second.
-
 3dfx has provided an opengl32.dll that implements everything glquake needs, 
 but it is not a full opengl implementation.  Other opengl applications are 
 very unlikely to work with it, so consider it basically a "glquake driver".  

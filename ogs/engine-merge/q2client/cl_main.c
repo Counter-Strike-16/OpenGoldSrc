@@ -4,8 +4,6 @@ cvar_t	*freelook;
 cvar_t	*cl_stereo_separation;
 cvar_t	*cl_stereo;
 
-cvar_t	*rcon_client_password;
-
 cvar_t	*cl_noskins;
 cvar_t	*cl_autoskins;
 cvar_t	*cl_footsteps;
@@ -28,12 +26,9 @@ cvar_t	*cl_timedemo;
 //
 // userinfo
 //
-cvar_t	*info_password;
 cvar_t	*info_spectator;
-cvar_t	*skin;
 
-centity_t		cl_entities[MAX_EDICTS];
-
+cl_entity_t		cl_entities[MAX_EDICTS];
 entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
 
 extern	cvar_t *allow_download;
@@ -406,10 +401,7 @@ void CL_Connect_f (void)
 
 void CL_Disconnect (void)
 {
-	byte	final[32];
-
-	if (cls.state == ca_disconnected)
-		return;
+	
 
 	if (cl_timedemo && cl_timedemo->value)
 	{
@@ -426,29 +418,12 @@ void CL_Disconnect (void)
 
 	M_ForceMenuOff ();
 
-	cls.connect_time = 0;
-
 	SCR_StopCinematic ();
 
 	if (cls.demorecording)
 		CL_Stop_f ();
 
-	// send a disconnect message to the server
-	final[0] = clc_stringcmd;
-	strcpy ((char *)final+1, "disconnect");
-	Netchan_Transmit (&cls.netchan, strlen(final), final);
-	Netchan_Transmit (&cls.netchan, strlen(final), final);
-	Netchan_Transmit (&cls.netchan, strlen(final), final);
-
-	CL_ClearState ();
-
-	// stop download
-	if (cls.download) {
-		fclose(cls.download);
-		cls.download = NULL;
-	}
-
-	cls.state = ca_disconnected;
+	
 }
 
 /*
@@ -548,9 +523,6 @@ void CL_Skins_f (void)
 void CL_ConnectionlessPacket (void)
 {
 	char	*c;
-	
-	MSG_BeginReading (&net_message);
-	MSG_ReadLong (&net_message);	// skip the -1
 
 	s = MSG_ReadStringLine (&net_message);
 
@@ -1037,14 +1009,8 @@ void CL_InitLocal (void)
 	cl_shownet = Cvar_Get ("cl_shownet", "0", 0);
 	cl_showmiss = Cvar_Get ("cl_showmiss", "0", 0);
 	cl_showclamp = Cvar_Get ("showclamp", "0", 0);
-	cl_timeout = Cvar_Get ("cl_timeout", "120", 0);
 	cl_paused = Cvar_Get ("paused", "0", 0);
 	cl_timedemo = Cvar_Get ("timedemo", "0", 0);
-
-	rcon_client_password = Cvar_Get ("rcon_password", "", 0);
-	rcon_address = Cvar_Get ("rcon_address", "", 0);
-
-	info_password = Cvar_Get ("password", "", CVAR_USERINFO);
 
 
 	//

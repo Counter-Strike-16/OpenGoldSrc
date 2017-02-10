@@ -45,7 +45,7 @@
 static HANDLE hinput;
 static HANDLE houtput;
 
-static const char *g_pszengine = "swds.dll";
+static const char *g_pszengine = "engine.dll"; // engineds.dll/swds.dll
 #else
 static const char *g_pszengine = "engine_i386.so";
 static char g_szEXEName[256];
@@ -76,21 +76,16 @@ void Sys_Sleep_Old(int msec)
 }
 #if !defined(_WIN32)
 
-typedef int (*NET_Sleep_t)(void);
+typedef int (*NET_Sleep_t)();
 NET_Sleep_t NET_Sleep = NULL;
 extern long ghMod; // from engine.cpp
 
 void Sys_Sleep_Net(int msec)
 {
 	if(NET_Sleep != NULL)
-	{
 		NET_Sleep();
-	}
 	else
-	{
-		Sys_Sleep_Old(
-		msec); // NET_Sleep isn't hooked yet, fallback to the old method
-	}
+		Sys_Sleep_Old(msec); // NET_Sleep isn't hooked yet, fallback to the old method
 }
 
 volatile char paused = 0; // this checks if pause has run yet, tell the compiler
@@ -343,14 +338,12 @@ Load3rdParty
 Load support for third party .dlls ( gamehost )
 ==============
 */
-void Load3rdParty(void)
+void Load3rdParty()
 {
 	// Only do this if the server operator wants the support.
 	// ( In case of malicious code, too )
 	if(CheckParm("-usegh"))
-	{
 		hDLLThirdParty = Sys_LoadLibrary("ghostinj.dll");
-	}
 }
 
 /*
@@ -360,7 +353,7 @@ EF_VID_ForceUnlockedAndReturnState
 Dummy funcion called by engine
 ==============
 */
-int EF_VID_ForceUnlockedAndReturnState(void)
+int EF_VID_ForceUnlockedAndReturnState()
 {
 	return 0;
 }
@@ -430,7 +423,7 @@ InitInstance
 
 ==============
 */
-int InitInstance(void)
+int InitInstance()
 {
 	Load3rdParty();
 
@@ -461,7 +454,7 @@ Sys_ConsoleInput
 ================
 */
 #ifdef _WIN32
-char *Sys_ConsoleInput(void)
+char *Sys_ConsoleInput()
 {
 	INPUT_RECORD recs[1024];
 	unsigned long dummy;
@@ -471,22 +464,16 @@ char *Sys_ConsoleInput(void)
 	while(1)
 	{
 		if(!GetNumberOfConsoleInputEvents(hinput, &numevents))
-		{
 			exit(-1);
-		}
 
 		if(numevents <= 0)
 			break;
 
 		if(!ReadConsoleInput(hinput, recs, 1, &numread))
-		{
 			exit(-1);
-		}
 
 		if(numread != 1)
-		{
 			exit(-1);
-		}
 
 		if(recs[0].EventType == KEY_EVENT)
 		{
@@ -533,7 +520,7 @@ char *Sys_ConsoleInput(void)
 	return NULL;
 }
 #else
-char *Sys_ConsoleInput(void)
+char *Sys_ConsoleInput()
 {
 	struct timeval tvTimeout;
 	fd_set fdSet;
@@ -596,12 +583,8 @@ void WriteStatusText(char *szText)
 	DWORD dwWritten = 0;
 	WORD wAttrib[80];
 
-	int i;
-
-	for(i = 0; i < 80; i++)
-	{
+	for(int i = 0; i < 80; i++)
 		wAttrib[i] = FOREGROUND_RED | FOREGROUND_INTENSITY;
-	}
 
 	memset(szFullLine, 0, sizeof(szFullLine));
 	snprintf(szFullLine, sizeof(szFullLine), "%s", szText);
@@ -621,13 +604,11 @@ CreateConsoleWindow
 Create console window ( overridable? )
 ==============
 */
-int CreateConsoleWindow(void)
+int CreateConsoleWindow()
 {
 #ifdef _WIN32
 	if(!AllocConsole())
-	{
 		return 0;
-	}
 
 	hinput = GetStdHandle(STD_INPUT_HANDLE);
 	houtput = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -644,7 +625,7 @@ DestroyConsoleWindow
 
 ==============
 */
-void DestroyConsoleWindow(void)
+void DestroyConsoleWindow()
 {
 #ifdef _WIN32
 	FreeConsole();
@@ -660,7 +641,7 @@ ProcessConsoleInput
 
 ==============
 */
-void ProcessConsoleInput(void)
+void ProcessConsoleInput()
 {
 	char *s;
 
@@ -684,7 +665,7 @@ void ProcessConsoleInput(void)
 GameInit
 ================
 */
-int GameInit(void)
+int GameInit()
 {
 	char *p;
 
@@ -776,7 +757,7 @@ GameShutdown
 
 ==============
 */
-void GameShutdown(void)
+void GameShutdown()
 {
 	Eng_Unload();
 
@@ -827,25 +808,11 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	Sys_Sleep = Sys_Sleep_Old; // win32 doesn't have pingbooster options :)
 
-	if(!InitInstance())
-	{
+	if(!InitInstance() || !CreateConsoleWindow() || !GameInit())
 		goto cleanup;
-	}
-
-	if(!CreateConsoleWindow())
-	{
-		goto cleanup;
-	}
-
-	if(!GameInit())
-	{
-		goto cleanup;
-	}
 
 	if(engineapi.SetStartupMode)
-	{
 		engineapi.SetStartupMode(1);
-	}
 
 	while(1)
 	{
@@ -925,9 +892,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 cleanup:
 
 	if(gpszCmdLine)
-	{
 		free(gpszCmdLine);
-	}
 
 	return iret;
 }
@@ -959,14 +924,13 @@ void BuildCmdLine(int argc, char **argv)
 	for(i = 1; i < argc; i++)
 	{
 		if(i > 1)
-		{
 			strcat(cmdline, " ");
-		}
+		
 		strcat(cmdline, argv[i]);
 	}
 }
 
-char *GetCommandLine(void)
+char *GetCommandLine()
 {
 	return cmdline;
 }

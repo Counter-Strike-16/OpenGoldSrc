@@ -1,72 +1,3 @@
-GLQuake Drivers for Voodoo Graphics Based 3D Accelerators
-Preliminary Release 2
-
-Copyright ( 1997 3Dfx Interactive, Inc. )
-All Rights Reserved
-
-3Dfx Interactive, Inc.
-www: www.3dfx.com
-news: news.3dfx.com  
-
------------------------------------------------------------------------
-NOTE: GLQuake requires DirectX 2.0 or DirectX 3.0
-(Needed for DirectSound support)
-
-DirectX 2.0 or DirectX 3.0 can be installed from the media provided
-with your Voodoo Based 3D Accelerator.
------------------------------------------------------------------------
-
-
-
-Release Notes for GLQuake Preliminary Release 2 (Quake Version 1.07)
-
------------------------------------------------------------------------
-What's in the distribution?
------------------------------------------------------------------------
-This distribution contains GLQuake Drivers for Voodoo Graphics Based 3D
-Accelerators.  These drivers were tested on the following boards: 
-
-- Diamond Monster 3D
-- Orchid Righteous 3D
-- 3Dfx Interactive reference boards
-
-NOTE:  The enclosed drivers are not meant to replace any Direct3D or 
-Glide drivers provided by your Voodoo Graphics card manufacturer. 
-Please obtain supported drivers from:
-
-- Diamond supported drivers can be obtained from www.diamondmm.com
-- Orchid supported drivers can be obtained from www.orchid.com
-
-
-Included Files
---------------
-
-OPENGL32.DLL - QuakeGL Interface to Voodoo Graphics
-FXMEMMAP.VXD - Voodoo Graphics VXD
-GLQUAKE.EXE  - ID Software provided GLQUAKE.EXE
-README.TXT   - ID Software provided README.TXT
-READ3DFX.TXT - This File
-
-All enclosed files MUST reside in your Quake directory and not in the
-Windows\SYSTEM directory.  
-
-OEMSR2 users: Do NOT replace OPENGL32.DLL located in your
-Windows\SYSTEM directory.
-
-
-
------------------------------------------------------------------------
-Installation 
------------------------------------------------------------------------
-
-Requirements
-------------
-
-- Voodoo Graphics Based 3D Accelerator
-- Windows 95
-- A PC with a Pentium 90 or higher CPU
-- 16MB of RAM
-- 2D Video card set at 16 bit or higher color
 
 Installation
 ------------
@@ -96,44 +27,6 @@ Adding GLQuake Driver Support
 6) Start GLQuake by running the shortcut. 
 
 
-Troubleshooting and Frequently Asked Questions
-----------------------------------------------
-
-1. Will GLQuake work with shareware Quake?
-
-No, the full registered version of Quake is required.  
-
-
-
-2. Do I need any other drivers to run GLQuake on Voodoo Graphics?
-
-Just make sure that the FXMEMMAP.VXD file is in your Windows\SYSTEM 
-directory and that DirectX 2.0, DirectX 3.0 or DirectX 3.0a are
-installed as GLQuake uses DirectSound. The latest version of DirectX
-can be obtained from:
-	http://www.microsoft.com/mediadev/download/isdk.htm
-
-
-
-3. I installed GLQuake and try to run the GLQUAKE.EXE file but I get a 
-"no RGB fullscreen modes available"  How do I get GLQuake to run?
-
-Make sure that your 2D video card is set to 16bit color (65K colors,
-not 16 colors). In addition, do not start GLQuake from a full screen
-MS-DOS prompt.
-
-
-
-4. GLQuake comes up for a little while then drops me back to the
-Windows 95 desktop, what's wrong?
-
-Your Virtual Memory settings on your system should be increased.  Open
-Control Panel, System - click on the Performance tab and then click on
-Virtual Memory.  Adjust the settings so that the minimum swap file size
-is 80MB.   You may also want to delete all the mesh files - do this by
-deleting the quake\ID1\glquake directory.
-
-
 
 5. Why does GLQuake try to connect to my Internet connection whenever
 it starts?
@@ -144,18 +37,6 @@ Player users: To disable Network use in GLQuake and prevent the
 network connection screen from coming up, add "-nolan" to the
 GLQUAKE.EXE command line, example:
 	GLQUAKE.EXE -nolan
-
-
-
-
-6. I have a three button mouse, but I can't use or set the middle 
-button in GLQuake, what's wrong?
-
-To use a three button mouse with GLQuake, your Windows mouse driver
-must support three buttons.  Use the Logitech PS/2, Serial or Bus
-driver instead of the Microsoft or Standard PS/2, Serial or Bus driver.
-Also, make certain that your Mouse control panel sets the middle button
-to "middle" and not "double click".
 
 
 
@@ -207,27 +88,6 @@ example:
 
 
 
-12. Does the Activision(r) Scourge of Armagon add-on (Mission Pack 1)
-work with GLQuake?
-
-Yes, start GLQUAKE.EXE with a "-hipnotic" switch.   Example:
-	GLQUAKE.EXE -hipnotic
-
-
-
-13. Do other 3rd party quake levels work with GLQuake?
-
-Not all 3rd party levels have been tested, some may not work properly
-or optimally.
-
-
-
-14. Will GLQuake use a Voodoo Graphics accelerator under Windows NT?
-
-The 3Dfx GLQuake drivers currently only work under Windows 95.  
-
-
-
 15. After installing GLQuake the OpenGL screen savers in Windows 95
 (OEMSR2) don't work. What's wrong?
 
@@ -253,27 +113,3 @@ Microsoft provided OPENGL32.DLL, follow these steps:
 	-------------------------
 	1) Download and reinstall OpenGL for Windows 95 from the source
 	you previously used.
-		
-
-
-16. How do I get support for GLQuake
-
-GLQuake is currently unsupported.  You may however find answers to 
-questions on various Quake dedicated websites.  3Dfx provides a GLQuake
-newsgroup on news.3dfx.com (Newsgroup name is 3dfx.games.glquake ) to
-discuss GLQuake with other users.  3Dfx also provides a regularly
-updated GLQuake FAQ at: http://www.3dfx.com/game_dev/quake_faq.html
-
-
-
-16. How do I send a bug report?
-
-If your problem is not resolved in this document or our updated FAQ
-(please see #15) and your bug is related to visual quality, performance
-or stability send an email to quake_bugs@3dfx.com   - Describe your
-system configuration  (CPU Type, CPU Speed, 2D Video Card type, Amount
-of Memory, Virtual Memory Size..etc.) and how to recreate the bug.  
-
-
-Voodoo Graphics is a trademark of 3Dfx Interactive, Inc.  All other
-trademarks are the property of their respective owners.

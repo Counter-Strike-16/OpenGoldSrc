@@ -472,10 +472,7 @@ NOXREF void TextMessageInit()
 
 NOXREF client_textmessage_t *TextMessageGet(const char *pName)
 {
-	int i;
-
 #ifndef SWDS
-
 	g_engdstAddrs->pfnTextMessageGet(&pName);
 
 	if(!Q_stricmp(pName, DEMO_MESSAGE))
@@ -494,11 +491,11 @@ NOXREF client_textmessage_t *TextMessageGet(const char *pName)
 	else if(!Q_stricmp(pName, NETWORK_MESSAGE4))
 		return gNetworkTextMessage + 3;
 
-	for(i = 0; i < gMessageTableCount; i++)
+	for(int i = 0; i < gMessageTableCount; i++)
 	{
 		if(!Q_strcmp(pName, gMessageTable[i].pName))
 			return &gMessageTable[i];
 	}
 
 	return NULL;
-}
+};

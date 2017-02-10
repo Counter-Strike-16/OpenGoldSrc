@@ -410,10 +410,7 @@ void Info_SetValueForKey (char *s, char *key, char *value)
 
 void Info_Print (char *s)
 {
-	char	key[512];
-	char	value[512];
 	char	*o;
-	int		l;
 
 	if (*s == '\\')
 		s++;

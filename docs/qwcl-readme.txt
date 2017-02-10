@@ -1,60 +1,3 @@
---------------------------
-| qwcl-readme.txt        |
-| QWCL documentation     |
-| 5/11/98                |
-|                        |
-| Based on WinQuake      |
-| 3/21/97                |
---------------------------
-
-QWCL is a native Win32 version of Quake, optimized for internet
-play, and will run on either Win95 or Windows NT 4.0 or later.  It is
-designed to take advantage of whatever enhanced video, sound, and input
-capabilities (such as DirectX or VESA VBE video modes) are present,
-but has fallback functionality so it can run on any Win95 or NT 4.0
-or later system, even if neither DirectX nor VESA VBE is available.
-You may experience problems running QWCL on some systems, because driver
-and operating-system support for game functionality are not yet mature
-under Win32, and many bugs and incompatibilities remain in those
-components.  If you encounter what seems to be a bug, first please
-check through the list of known problems, below.  For other info,
-check out http://www.quakeworld.net/
-
-The material accompanying Quake is the reference for all
-non-Windows-related matters concerning QuakeWorld; in terms of gameplay,
-QuakeWorld is the same as Quake.  This file contains Windows-related
-information only.
-
-The rest of this document is organized as follows:
-
-Installing and running QWCL
-Common problems and workarounds
-A bit about how QWCL video works
-Video command-line switches
-A bit about how QWCL sound works
-Sound command-line switches
-Notes on networking
-Notes on the mouse
-Log of changes to documentation
-Special thanks
-
-
------------------------------------
-| Installing and running QWCL     |
------------------------------------
-
-In order to run QWCL, you must first have Quake installed.
-Assuming Quake is installed in the standard directory, c:\quake,
-unzip the QWCL zip file into c:\quake.  The following files
-from the zip file must be present in order for QWCL to run:
-
-qwcl.exe
-pmpro16.dll
-pmpro32.dll
-wdir16.dll
-wdir32.dll
-wdirnop.com
-wdirnop.pif
 
 Then you can run QWCL by making c:\quake the current directory,
 typing "qwcl" and pressing the Enter key.  Alternatively, you can
@@ -106,27 +49,6 @@ qwc max
 which is the same as qwc fast, but turns on DirectInput, which
 provides more responsive mouse control, but does not work properly
 on all systems.
-
-Note that DirectX is not required for QWCL to run, but QWCL will
-automatically take advantage of DirectSound and DirectDraw if they
-are present.  If DirectSound is not present, there will generally be
-considerable sound latency (sound will become audible several hundred
-milliseconds after the event that caused it).  Note also that there
-are currently no true DirectSound drivers for Windows NT, so QWCL will
-always run using wave output on NT, and will consequently have lagged
-sound.  See below for information about obtaining DirectX if you do
-not have it.
-
-Note that VESA VBE modes aren't required for QWCL to run, but QWCL will
-automatically make VESA modes available if they're present.  Your BIOS
-may already have VESA VBE 2.0 support built in, but most BIOSes
-don't. Worse, some BIOSes do have VESA VBE 2.0 built-in, but have
-buggy implementations, which may prevent you from being able to run
-the faster configurations of QWCL.  An easy way to get reliable VESA 2.0
-support is by obtaining SciTech Display Doctor; see below for
-further information. QWCL can also use VBE/AF 1.0 and greater modes;
-again, SciTech Display Doctor is the commonest way to get VBE/AF
-support.
 
 QWCL normally uses half the physical memory in your system for its
 heap, but not less than 8.5 Mb and not more than 16 Mb.  You can

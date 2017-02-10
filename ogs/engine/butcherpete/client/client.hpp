@@ -106,7 +106,7 @@ typedef struct client_static_s
 	
 	// connection information
 	
-	double connect_time; // for connection retransmits
+	double connect_time; // for connection retransmits {-1.0f}
 
 	int connect_retry;
 	int challenge;

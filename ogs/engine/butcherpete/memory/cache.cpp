@@ -49,6 +49,8 @@ CACHE MEMORY
 
 const int CACHE_NAME_LEN = 64;
 
+const int MAX_SFX = 1024;
+
 typedef struct cache_system_s
 {
 	int size;
@@ -516,8 +518,6 @@ NOXREF void Cache_Print_Models_And_Totals()
 	FS_FPrintf(file, "Total bytes in cache used by models:  %s\n", CommatizeNumber(totalbytes, buf));
 	FS_Close(file);
 };
-
-#define MAX_SFX 1024
 
 NOXREF void Cache_Print_Sounds_And_Totals()
 {

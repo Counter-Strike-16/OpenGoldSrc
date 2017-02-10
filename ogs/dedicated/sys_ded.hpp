@@ -24,6 +24,7 @@
 #endif
 
 typedef void (*SleepType)(int);
+
 long Sys_LoadLibrary(char *lib);
 void Sys_FreeLibrary(long library);
 void *Sys_GetProcAddress(long library, const char *name);

@@ -44,8 +44,7 @@
 enum client_state_t
 {
 	cs_free,   // can be reused for a new connection
-	cs_zombie, // client has been disconnected, but don't reuse
-	// connection for a couple seconds
+	cs_zombie, // client has been disconnected, but don't reuse connection for a couple seconds
 	cs_connected, // has been assigned to a client_t, but not in game yet
 	cs_spawned    // client is fully in game
 };
