@@ -30,12 +30,14 @@
 
 //#include "precompiled.hpp"
 #include "cdaudio/cdaudio.hpp"
+#include "cdaudio/dosisms.hpp"
 #include "system/common.hpp"
+#include "system/host.hpp"
 #include "console/console.hpp"
 #include "console/cvar.hpp"
+#include "console/cmd.hpp"
 #include "client/client.hpp"
-//#include "dosisms.h"
-//#include "quakedef.hpp"
+//#include "commondef.hpp"
 //#include <dpmi.h>
 
 extern cvar_t bgmvolume;
@@ -619,13 +621,13 @@ static void CD_f()
 
 	command = Cmd_Argv(1);
 
-	if(Q_strcasecmp(command, "on") == 0)
+	if(Q_stricmp(command, "on") == 0)
 	{
 		enabled = true;
 		return;
 	}
 
-	if(Q_strcasecmp(command, "off") == 0)
+	if(Q_stricmp(command, "off") == 0)
 	{
 		if(playing)
 			CDAudio_Stop();
@@ -633,7 +635,7 @@ static void CD_f()
 		return;
 	}
 
-	if(Q_strcasecmp(command, "reset") == 0)
+	if(Q_stricmp(command, "reset") == 0)
 	{
 		enabled = true;
 		if(playing)
@@ -645,7 +647,7 @@ static void CD_f()
 		return;
 	}
 
-	if(Q_strcasecmp(command, "remap") == 0)
+	if(Q_stricmp(command, "remap") == 0)
 	{
 		ret = Cmd_Argc() - 2;
 		if(ret <= 0)
@@ -666,31 +668,31 @@ static void CD_f()
 		return;
 	}
 
-	if(Q_strcasecmp(command, "play") == 0)
+	if(Q_stricmp(command, "play") == 0)
 	{
 		CDAudio_Play(Q_atoi(Cmd_Argv(2)), false);
 		return;
 	}
 
-	if(Q_strcasecmp(command, "loop") == 0)
+	if(Q_stricmp(command, "loop") == 0)
 	{
 		CDAudio_Play(Q_atoi(Cmd_Argv(2)), true);
 		return;
 	}
 
-	if(Q_strcasecmp(command, "stop") == 0)
+	if(Q_stricmp(command, "stop") == 0)
 	{
 		CDAudio_Stop();
 		return;
 	}
 
-	if(Q_strcasecmp(command, "resume") == 0)
+	if(Q_stricmp(command, "resume") == 0)
 	{
 		CDAudio_Resume();
 		return;
 	}
 
-	if(Q_strcasecmp(command, "eject") == 0)
+	if(Q_stricmp(command, "eject") == 0)
 	{
 		if(playing)
 			CDAudio_Stop();
@@ -699,7 +701,7 @@ static void CD_f()
 		return;
 	}
 
-	if(Q_strcasecmp(command, "info") == 0)
+	if(Q_stricmp(command, "info") == 0)
 	{
 		Con_Printf("%u tracks\n", cd.highTrack - cd.lowTrack + 1);
 		for(n = cd.lowTrack; n <= cd.highTrack; n++)

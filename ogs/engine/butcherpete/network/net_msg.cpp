@@ -134,53 +134,6 @@ void MSG_WriteUsercmd(sizebuf_t *buf, usercmd_t *to, usercmd_t *from)
 	MSG_EndBitWriting(buf);
 }
 
-typedef struct bf_write_s
-{
-// For enhanced and safe bits writing functions
-#if defined(REHLDS_FIXES)
-
-#pragma pack(push, 1)
-	union
-	{
-		uint64 u64;
-		uint32 u32[2];
-		uint8 u8[8];
-	} pendingData;
-	uint64 sse_highbits;
-#pragma pack(pop)
-
-	int nCurOutputBit;
-	sizebuf_t *pbuf;
-
-#else // defined(REHLDS_FIXES)
-
-	int nCurOutputBit;
-	unsigned char *pOutByte;
-	sizebuf_t *pbuf;
-
-#endif // defined(REHLDS_FIXES)
-} bf_write_t;
-
-typedef struct bf_read_s
-{
-	int nMsgReadCount; // was msg_readcount
-	sizebuf_t *pbuf;
-	int nBitFieldReadStartByte;
-	int nBytesRead;
-	int nCurInputBit;
-	unsigned char *pInByte;
-} bf_read_t;
-
-// Bit field reading/writing storage.
-bf_read_t bfread;
-ALIGN16 bf_write_t bfwrite;
-
-void COM_BitOpsInit()
-{
-	Q_memset(&bfwrite, 0, sizeof(bf_write_t));
-	Q_memset(&bfread, 0, sizeof(bf_read_t));
-}
-
 // Enhanced and safe bits writing functions
 #if defined(REHLDS_FIXES)
 

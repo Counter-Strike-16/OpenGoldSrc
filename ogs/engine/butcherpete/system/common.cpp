@@ -56,6 +56,53 @@ char *Info_Serverinfo()
 	return serverinfo;
 }
 
+typedef struct bf_write_s
+{
+// For enhanced and safe bits writing functions
+#if defined(REHLDS_FIXES)
+
+#pragma pack(push, 1)
+	union
+	{
+		uint64 u64;
+		uint32 u32[2];
+		uint8 u8[8];
+	} pendingData;
+	uint64 sse_highbits;
+#pragma pack(pop)
+
+	int nCurOutputBit;
+	sizebuf_t *pbuf;
+
+#else // defined(REHLDS_FIXES)
+
+	int nCurOutputBit;
+	unsigned char *pOutByte;
+	sizebuf_t *pbuf;
+
+#endif // defined(REHLDS_FIXES)
+} bf_write_t;
+
+typedef struct bf_read_s
+{
+	int nMsgReadCount; // was msg_readcount
+	sizebuf_t *pbuf;
+	int nBitFieldReadStartByte;
+	int nBytesRead;
+	int nCurInputBit;
+	unsigned char *pInByte;
+} bf_read_t;
+
+// Bit field reading/writing storage.
+bf_read_t bfread;
+ALIGN16 bf_write_t bfwrite;
+
+void COM_BitOpsInit()
+{
+	Q_memset(&bfwrite, 0, sizeof(bf_write_t));
+	Q_memset(&bfread, 0, sizeof(bf_read_t));
+}
+
 #ifndef COM_Functions_region
 
 unsigned char COM_Nibble(char c)
@@ -800,7 +847,7 @@ unsigned char *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength
 	unsigned char *buf = NULL;
 
 #ifndef SWDS
-	g_engdstAddrs->COM_LoadFile(&path, &usehunk, &pLength);
+	g_engdstAddrs.COM_LoadFile(&path, &usehunk, &pLength);
 #endif
 
 	if(pLength)
@@ -883,7 +930,7 @@ unsigned char *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength
 void EXT_FUNC COM_FreeFile(void *buffer)
 {
 #ifndef SWDS
-	g_engdstAddrs->COM_FreeFile();
+	g_engdstAddrs.COM_FreeFile(buffer);
 #endif
 
 	if(buffer)

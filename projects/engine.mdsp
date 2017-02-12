@@ -142,6 +142,12 @@ extraResourceOptions=
 59=..\ogs\engine\butcherpete\system\crt_local.cpp
 60=..\ogs\engine\butcherpete\system\engfuncs.cpp
 61=..\ogs\engine\butcherpete\client\cl_main.cpp
+62=..\ogs\engine\butcherpete\world\pr_edict.cpp
+63=..\ogs\engine\butcherpete\world\world.cpp
+64=..\ogs\engine\butcherpete\system\unicode_strtools.cpp
+65=..\ogs\engine\butcherpete\cdaudio\cdaudio.cpp
+66=..\ogs\engine\butcherpete\client\cl_voice.cpp
+67=..\ogs\engine\butcherpete\system\common.cpp
 [Header]
 [Resource]
 [Other]
