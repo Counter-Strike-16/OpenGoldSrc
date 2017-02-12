@@ -27,11 +27,14 @@
  */
 
 /// @file
+/// @brief sound module functions
 
 #pragma once
 
 #include "common/com_model.h"
 #include "common/commontypes.h"
+
+typedef struct cvar_s cvar_t;
 
 // max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in
 // dlls\util.h!!!
@@ -43,6 +46,16 @@ typedef struct sfx_s
 	cache_user_t cache;
 	int servercount;
 } sfx_t;
+
+/*
+typedef struct sfx_s
+{
+	char 		name[MAX_QPATH];
+	int			registration_sequence;
+	sfxcache_t	*cache;
+	char 		*truename;
+} sfx_t;
+*/
 
 void S_Init();
 void S_Shutdown();
@@ -77,25 +90,23 @@ void S_BlockSound();
 
 void S_PrintStats();
 
-/*
+// !!! if this is changed, the asm code must change !!!
 typedef struct
 {
 	int left;
 	int right;
 } portable_samplepair_t;
-*/
 
 typedef struct
 {
 	int length;
 	int loopstart;
-	int speed;
+	int speed; // not needed, because converted on load?
 	int width;
 	int stereo;
 	byte data[1]; // variable sized
 } sfxcache_t;
 
-/*
 typedef struct
 {
 	qboolean gamealive;
@@ -109,7 +120,24 @@ typedef struct
 	int speed;
 	unsigned char *buffer;
 } dma_t;
-*/
+
+// !!! if this is changed, the asm code must change !!!
+typedef struct
+{
+	sfx_t		*sfx;			// sfx number
+	int			leftvol;		// 0-255 volume
+	int			rightvol;		// 0-255 volume
+	int			end;			// end time in global paintsamples
+	int 		pos;			// sample position in sfx
+	int			looping;		// where to loop, -1 = no looping OBSOLETE?
+	int			entnum;			// to allow overriding a specific sound
+	int			entchannel;		//
+	vec3_t		origin;			// only use if fixed_origin is set
+	vec_t		dist_mult;		// distance multiplier (attenuation/clipK)
+	int			master_vol;		// 0-255 master volume
+	qboolean	fixed_origin;	// use origin instead of fetching entnum's origin
+	qboolean	autosound;		// from an entity->sound, cleared each frame
+} channel_t;
 
 typedef struct
 {
@@ -122,6 +150,13 @@ typedef struct
 } wavinfo_t;
 
 /*
+====================================================================
+
+  SYSTEM SPECIFIC FUNCTIONS
+
+====================================================================
+*/
+
 // picks a channel based on priorities, empty slots, number of channels
 channel_t *SND_PickChannel(int entnum, int entchannel);
 
@@ -129,13 +164,13 @@ channel_t *SND_PickChannel(int entnum, int entchannel);
 void SND_Spatialize(channel_t *ch);
 
 // initializes cycling through a DMA buffer and returns information on it
-qboolean SNDDMA_Init(void);
+qboolean SNDDMA_Init();
 
 // gets the current DMA position
-int SNDDMA_GetDMAPos(void);
+int SNDDMA_GetDMAPos();
 
 // shutdown the DMA xfer.
-void SNDDMA_Shutdown(void);
+void SNDDMA_Shutdown();
 
 // ====================================================================
 // User-setable variables
@@ -178,8 +213,8 @@ extern int snd_blocked;
 
 wavinfo_t GetWavinfo(char *name, byte *wav, int wavlength);
 
-void SND_InitScaletable(void);
-void SNDDMA_Submit(void);
+void SND_InitScaletable();
+void SNDDMA_Submit();
 
 // if origin is NULL, the sound will be dynamically sourced from the entity
 void S_StartSound (vec3_t origin, int entnum, int entchannel, struct sfx_s *sfx, float fvol,  float attenuation, float timeofs);
@@ -189,13 +224,12 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data);
 
 void S_Activate (qboolean active);
 
-void S_BeginRegistration (void);
+void S_BeginRegistration ();
 struct sfx_s *S_RegisterSound (char *sample);
-void S_EndRegistration (void);
+void S_EndRegistration ();
 
 struct sfx_s *S_FindName (char *name, qboolean create);
 
 // the sound code makes callbacks to the client for entitiy position
 // information, so entities can be dynamically re-spatialized
 void CL_GetEntitySoundOrigin (int ent, vec3_t org);
-*/

@@ -94,6 +94,7 @@ void S_TransferStereo16(int endtime)
 	snd_p = (int *)paintbuffer;
 	lpaintedtime = paintedtime;
 
+	/*
 #ifdef _WIN32
 	if(pDSBuf)
 	{
@@ -106,7 +107,7 @@ void S_TransferStereo16(int endtime)
 			{
 				Con_Printf("S_TransferStereo16: DS::Lock Sound Buffer Failed\n");
 				S_Shutdown();
-				S_Startup();
+				//S_Startup();
 				return;
 			}
 
@@ -114,13 +115,14 @@ void S_TransferStereo16(int endtime)
 			{
 				Con_Printf("S_TransferStereo16: DS: couldn't restore buffer\n");
 				S_Shutdown();
-				S_Startup();
+				//S_Startup();
 				return;
 			}
 		}
 	}
 	else
 #endif
+*/
 	{
 		pbuf = (DWORD *)shm->buffer;
 	}
@@ -146,8 +148,8 @@ void S_TransferStereo16(int endtime)
 	}
 
 #ifdef _WIN32
-	if(pDSBuf)
-		pDSBuf->lpVtbl->Unlock(pDSBuf, pbuf, dwSize, NULL, 0);
+	//if(pDSBuf)
+		//pDSBuf->lpVtbl->Unlock(pDSBuf, pbuf, dwSize, NULL, 0);
 #endif
 }
 
@@ -181,6 +183,7 @@ void S_TransferPaintBuffer(int endtime)
 	step = 3 - shm->channels;
 	snd_vol = volume.value * 256;
 
+	/*
 #ifdef _WIN32
 	if(pDSBuf)
 	{
@@ -193,7 +196,7 @@ void S_TransferPaintBuffer(int endtime)
 			{
 				Con_Printf("S_TransferPaintBuffer: DS::Lock Sound Buffer Failed\n");
 				S_Shutdown();
-				S_Startup();
+				//S_Startup();
 				return;
 			}
 
@@ -201,13 +204,14 @@ void S_TransferPaintBuffer(int endtime)
 			{
 				Con_Printf("S_TransferPaintBuffer: DS: couldn't restore buffer\n");
 				S_Shutdown();
-				S_Startup();
+				//S_Startup();
 				return;
 			}
 		}
 	}
 	else
 #endif
+*/
 	{
 		pbuf = (DWORD *)shm->buffer;
 	}
@@ -243,6 +247,7 @@ void S_TransferPaintBuffer(int endtime)
 		}
 	}
 
+/*
 #ifdef _WIN32
 	if(pDSBuf)
 	{
@@ -260,6 +265,7 @@ void S_TransferPaintBuffer(int endtime)
 		//			Con_Printf("%d-%d p %d c\n", il, ir, dwNewpos);
 	}
 #endif
+*/
 }
 
 /*
@@ -299,7 +305,7 @@ void S_PaintChannels(int endtime)
 				continue;
 			if(!ch->leftvol && !ch->rightvol)
 				continue;
-			sc = S_LoadSound(ch->sfx);
+			//sc = S_LoadSound(ch->sfx);
 			if(!sc)
 				continue;
 

@@ -148,6 +148,11 @@ extraResourceOptions=
 65=..\ogs\engine\butcherpete\cdaudio\cdaudio.cpp
 66=..\ogs\engine\butcherpete\client\cl_voice.cpp
 67=..\ogs\engine\butcherpete\system\common.cpp
+68=..\ogs\engine\butcherpete\sound\snd_dma.cpp
+69=..\ogs\engine\butcherpete\sound\snd_mix.cpp
+70=..\ogs\engine\butcherpete\system\gamedllloader.cpp
+71=..\ogs\engine\butcherpete\system\public_amalgamation.cpp
+72=..\ogs\engine\butcherpete\system\system.cpp
 [Header]
 [Resource]
 [Other]

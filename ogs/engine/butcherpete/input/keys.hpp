@@ -50,6 +50,8 @@ extern keydest_t key_dest;
 
 void Key_Init();
 
+void Key_ClearStates();
+
 void Key_Event(int key, int down); // void Key_Event(int key, qboolean down, unsigned time);
 
 int Key_CountBindings();

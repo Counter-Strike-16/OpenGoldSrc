@@ -30,9 +30,8 @@
 
 //#include "precompiled.hpp"
 
-// WTF?
-// AGAIN, WTF??
+// Additional files out of the engine path that should be compiled in
 
-#include "crc32c.cpp"
-#include "interface.cpp"
-#include "sys_shared.cpp"
+//#include "crc32c.cpp"
+//#include "interface.cpp"
+//#include "sys_shared.cpp"

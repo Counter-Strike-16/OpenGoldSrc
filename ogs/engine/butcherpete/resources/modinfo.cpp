@@ -35,6 +35,8 @@
 #include "system/common.hpp"
 #include "server/servertypes.hpp"
 
+modinfo_t gmodinfo;
+
 void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue)
 {
 	if(!Q_stricmp(pkey, "url_info"))

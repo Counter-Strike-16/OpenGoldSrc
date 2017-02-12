@@ -30,7 +30,19 @@
 
 //#include "precompiled.hpp"
 #include "system/system.hpp"
+#include "system/dedicatedserverapi.hpp"
+#include "system/common.hpp"
+#include "system/host.hpp"
+#include "system/host_cmd.hpp"
+#include "system/traceinit.h"
+#include "filesystem/filesystem_internal.hpp"
+#include "resources/modinfo.hpp"
+#include "console/console.hpp"
 #include "voice/voice.hpp"
+#include "input/keys.hpp"
+#include "server/server.hpp"
+#include "server/sv_log.hpp"
+#include "iregistry.h"
 
 void (*Launcher_ConsolePrintf)(char *, ...);
 char *(*Launcher_GetLocalizedString)(unsigned int);
@@ -90,7 +102,6 @@ NEW_DLL_FUNCTIONS gNewDLLFunctions;
 extensiondll_t g_rgextdll[50];
 
 int g_iextdllMac;
-modinfo_t gmodinfo;
 qboolean gfBackground;
 // int starttime;
 // qboolean Win32AtLeastV4;
@@ -149,15 +160,15 @@ void Sys_SetupFPUOptions()
 {
 	static uint8 fpuOpts[32];
 
-	__asm { fnstenv byte ptr fpuOpts }
+	//__asm { fnstenv byte ptr fpuOpts }
 	fpuOpts[0] |= 0x3Fu;
-	__asm { fldenv  byte ptr fpuOpts }
+	//__asm { fldenv  byte ptr fpuOpts }
 }
 
 NOINLINE void Sys_InitFPUControlWords()
 {
 	int fpucw = 0;
-	__asm { fnstcw fpucw }
+	//__asm { fnstcw fpucw }
 
 	g_FPUCW_Mask_Prec_64Bit = (fpucw & 0xF0FF) | 0x300;
 	g_FPUCW_Mask_Prec_64Bit_2 = (fpucw & 0xF0FF) | 0x300;
@@ -193,8 +204,8 @@ void __cdecl Sys_InitHardwareTimer()
 	Sys_SetupFPUOptions();
 	Sys_InitFPUControlWords();
 
-	if(!CRehldsPlatformHolder::get()->QueryPerfFreq(&perfFreq))
-		Sys_Error("No hardware timer available");
+	//if(!CRehldsPlatformHolder::get()->QueryPerfFreq(&perfFreq))
+		//Sys_Error("No hardware timer available");
 
 	perfHighPart = perfFreq.HighPart;
 	perfLowPart = perfFreq.LowPart;
@@ -215,17 +226,14 @@ int g_SavedFPUCW1 = 0;
 NOINLINE void Sys_FPUCW_Push_Prec64()
 {
 	uint16 tmp = g_FPUCW_Mask_Prec_64Bit;
-	__asm { fnstcw  g_SavedFPUCW1 }
-	__asm
-	{
-		fldcw tmp
-	}
+	//__asm { fnstcw  g_SavedFPUCW1 }
+	//__asm {fldcw tmp}
 }
 
 NOINLINE void Sys_FPUCW_Pop_Prec64()
 {
 	uint16 tmp = g_SavedFPUCW1;
-	__asm { fldcw tmp }
+	//__asm { fldcw tmp }
 }
 
 #endif // _WIN32
@@ -238,7 +246,7 @@ NOXREF void Sys_PageIn(void *ptr, int size)
 const char *Sys_FindFirst(const char *path, char *basename)
 {
 	if(g_hfind != -1)
-		Sys_Error(__FUNCTION__ " without close");
+		Sys_Error("%s without close", __FUNCTION__);
 
 	const char *psz = FS_FindFirst(path, &g_hfind, 0);
 
@@ -425,12 +433,12 @@ void __declspec(noreturn) Sys_Error(const char *error, ...)
 	else
 	{
 		HWND hWnd = 0;
-		if(pmainwindow)
-			hWnd = *pmainwindow;
+		//if(pmainwindow)
+			//hWnd = *pmainwindow;
 
 		Sys_Printf(text);
-		SDL_ShowSimpleMessageBox(MB_ICONERROR | MB_OK, "Fatal Error", text, hWnd);
-		VideoMode_IsWindowed();
+		//SDL_ShowSimpleMessageBox(MB_ICONERROR | MB_OK, "Fatal Error", text, hWnd);
+		//VideoMode_IsWindowed();
 	}
 #endif // SWDS
 
@@ -494,7 +502,7 @@ double EXT_FUNC Sys_FloatTime()
 	EnterCriticalSection(&g_PerfCounterMutex);
 	Sys_FPUCW_Push_Prec64();
 
-	CRehldsPlatformHolder::get()->QueryPerfCounter(&PerformanceCount);
+	//CRehldsPlatformHolder::get()->QueryPerfCounter(&PerformanceCount);
 	if(g_PerfCounterShiftRightAmount)
 		currentTime =
 		(PerformanceCount.LowPart >> g_PerfCounterShiftRightAmount) |
@@ -683,17 +691,6 @@ FIELDIOFUNCTION GetIOFunction(char *pName)
 	return (FIELDIOFUNCTION)GetDispatch(pName);
 }
 
-#ifdef _WIN32
-HMODULE LoadWindowsDLL(LPCSTR lpLibFileName)
-{
-	if(!lpLibFileName)
-		return NULL;
-
-	FS_GetLocalCopy(lpLibFileName);
-	return LoadLibraryA(lpLibFileName);
-}
-#endif //_WIN32
-
 void EXT_FUNC EngineFprintf(void *pfile, const char *szFmt, ...)
 {
 	AlertMessage(at_console, "EngineFprintf:  Obsolete API\n");
@@ -862,12 +859,12 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 	char key[65];
 	char hostname[4096];
 
-	if(CRehldsPlatformHolder::get()->gethostname(hostname, sizeof(hostname)))
-		Q_snprintf(key, sizeof(key), "%u", RandomLong(0, 0x7FFFFFFF));
-	else
+	//if(CRehldsPlatformHolder::get()->gethostname(hostname, sizeof(hostname)))
+		//Q_snprintf(key, sizeof(key), "%u", RandomLong(0, 0x7FFFFFFF));
+	//else
 	{
 		struct hostent *hostinfo;
-		hostinfo = CRehldsPlatformHolder::get()->gethostbyname(hostname);
+		//hostinfo = CRehldsPlatformHolder::get()->gethostbyname(hostname);
 		if(hostinfo && hostinfo->h_length == 4 && *hostinfo->h_addr_list != NULL)
 		{
 			Q_snprintf(key, sizeof(key), "%u.%u.%u.%u", (*hostinfo->h_addr_list)[0], (*hostinfo->h_addr_list)[1], (*hostinfo->h_addr_list)[2], (*hostinfo->h_addr_list)[3]);
@@ -920,8 +917,8 @@ NOXREF void Legacy_MP3subsys_Resume_Audio()
 void Sys_SetupLegacyAPIs()
 {
 #ifndef SWDS
-	VID_FlipScreen = Sys_VID_FlipScreen;
-	D_SurfaceCacheForRes = Sys_GetSurfaceCacheSize;
+	//VID_FlipScreen = Sys_VID_FlipScreen;
+	//D_SurfaceCacheForRes = Sys_GetSurfaceCacheSize;
 #endif // SWDS
 	Launcher_ConsolePrintf = Legacy_Sys_Printf;
 }
@@ -975,16 +972,16 @@ NOXREF void Sys_CheckOSVersion()
 void Sys_Init()
 {
 #ifndef SWDS
-	Sys_InitFloatTime();
+	//Sys_InitFloatTime();
 #endif
 }
 
 void Sys_Shutdown()
 {
 #ifndef SWDS
-	Sys_ShutdownFloatTime();
+	//Sys_ShutdownFloatTime();
 #endif // SWDS
-	Steam_ShutdownClient();
+	//Steam_ShutdownClient();
 #ifdef _WIN32
 	if(g_PerfCounterInitialized)
 	{
@@ -1188,13 +1185,13 @@ void Sys_ShowProgressTicks(char *specialProgressMsg)
 				numTics++;
 				if(g_bIsDedicatedServer)
 				{
-					if(g_bMajorMapChange)
-					{
-						g_bPrintingKeepAliveDots = TRUE;
-						Sys_Printf(".");
-						recursionGuard = false;
-						return;
-					}
+					//if(g_bMajorMapChange)
+					//{
+						//g_bPrintingKeepAliveDots = TRUE;
+						//Sys_Printf(".");
+						//recursionGuard = false;
+						//return;
+					//}
 				}
 				else
 				{
@@ -1210,7 +1207,7 @@ void Sys_ShowProgressTicks(char *specialProgressMsg)
 						Q_strncat(msg, ".", sizeof(msg) - 1);
 						msg[sizeof(msg) - 1] = '\0';
 					}
-					SetLoadingProgressBarStatusText(msg);
+					//SetLoadingProgressBarStatusText(msg);
 				}
 			}
 		}
@@ -1225,9 +1222,9 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 #ifndef SWDS
 	if(!bIsDedicated)
 	{
-		pmainwindow = (HWND *)pwnd;
+		//pmainwindow = (HWND *)pwnd;
 #ifdef _WIN32
-		videomode->UpdateWindowPosition();
+		//videomode->UpdateWindowPosition();
 #endif // _WIN32
 	}
 #endif // SWDS
@@ -1240,21 +1237,21 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 	Sys_InitHardwareTimer();
 #endif // _WIN32
 
-	Sys_CheckCpuInstructionsSupport();
+	//Sys_CheckCpuInstructionsSupport();
 
 #ifndef SWDS
-	Sys_InitFloatTime();
+	//Sys_InitFloatTime();
 #endif // SWDS
 	FS_LogLevelLoadStarted("Launcher");
-	SeedRandomNumberGenerator();
+	//SeedRandomNumberGenerator();
 	TraceInit("Sys_InitMemory()", "Sys_ShutdownMemory()", 0);
 	Sys_InitMemory();
 	TraceInit("Sys_InitLauncherInterface()", "Sys_ShutdownLauncherInterface()", 0);
 	Sys_InitLauncherInterface();
 
 #ifndef SWDS
-	if(!GL_SetMode(*pmainwindow, &maindc, &baseRC))
-		return 0;
+	//if(!GL_SetMode(*pmainwindow, &maindc, &baseRC))
+		//return 0;
 #endif // SWDS
 	TraceInit("Host_Init( &host_parms )", "Host_Shutdown()", 0);
 	Host_Init(&host_parms);
@@ -1274,10 +1271,10 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 		ClientDLL_ActivateMouse();
 
 	char MessageText[512];
-	const char en_US[12];
+	char en_US[12];
 
 	Q_strcpy(en_US, "en_US.UTF-8");
-	en_US[16] = 0;
+	//en_US[16] = 0; // nice try
 
 	char *cat = setlocale(6, NULL);
 	if(!cat)
@@ -1290,7 +1287,7 @@ int Sys_InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicate
 		           en_US,
 		           cat,
 		           en_US);
-		SDL_ShowSimpleMessageBox(0, "Warning", MessageText, *pmainwindow);
+		//SDL_ShowSimpleMessageBox(0, "Warning", MessageText, *pmainwindow);
 	}
 #endif // SWDS
 	return 1;
