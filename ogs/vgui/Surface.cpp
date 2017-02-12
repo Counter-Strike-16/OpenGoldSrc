@@ -32,6 +32,8 @@ public:
 }
 #endif
 
+namespace {
+#ifdef _WIN32
 class Texture
 {
 public:
@@ -46,6 +48,18 @@ public:
 	void   *_maskDib;
 	const char *_filename;
 };
+#else
+// from DWARF data
+class Texture
+{
+public:
+	int     _id;
+	int     _wide;
+	int     _tall;
+	void   *_dib;
+};
+#endif
+}
 
 using namespace vgui;
 
@@ -188,7 +202,9 @@ void Surface::drawPrintText(const char* text,int textLen)
 	if (textLen < 1)
 		return;
 
+#ifdef _WIN32
 	ExtTextOut(_plat->hdc,0,0,0,NULL,text,textLen,NULL);
+#endif
 }
 
 void Surface::drawSetTextureRGBA(int id,const char* rgba,int wide,int tall)
@@ -208,6 +224,9 @@ void Surface::drawTexturedRect(int x0,int y0,int x1,int y1)
 		return;
 	}
 
+#ifdef _WIN32
+
+
 	if (_plat->textureDC == null)
 	{
 		return;
@@ -219,11 +238,14 @@ void Surface::drawTexturedRect(int x0,int y0,int x1,int y1)
 
 	::SelectObject(_plat->textureDC, bitmap);
 	::StretchBlt(_plat->hdc,x0,y0,x1-x0,y1-y0,_plat->textureDC,0,0,wide,tall,SRCCOPY);
+#endif
 }
 
 void Surface::invalidate(Panel *panel)
 {
+#ifdef _WIN32
 	InvalidateRect(_plat->hwnd, NULL, false);
+#endif
 }
 
 bool Surface::createPlat()
@@ -240,10 +262,12 @@ bool Surface::recreateContext()
 
 void Surface::enableMouseCapture(bool state)
 {
+#ifdef _WIN32
 	if (state)
 		::SetCapture(_plat->hwnd);
 	else
 		::ReleaseCapture();
+#endif
 }
 
 void Surface::setCursor(Cursor* cursor)

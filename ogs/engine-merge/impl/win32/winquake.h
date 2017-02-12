@@ -4,7 +4,6 @@
 #pragma warning( disable : 4229 )  // mgraph gets this
 
 #include <windows.h>
-
 #include <dsound.h>
 
 #define	WINDOW_STYLE	(WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_VISIBLE)

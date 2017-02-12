@@ -1,22 +1,33 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+/// @file
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
 /*
 ** RW_IMP.C
 **
@@ -29,85 +40,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ** SWimp_SetPalette
 ** SWimp_Shutdown
 */
-#include "..\ref_soft\r_local.h"
-#include "rw_win.h"
-#include "winquake.h"
+
+#include "..\..\r_local.hpp"
+#include "rw_win.hpp"
+#include "winquake.hpp"
 
 // Console variables that we need to access from this module
 
 swwstate_t sww_state;
-
-/*
-** VID_CreateWindow
-*/
-#define WINDOW_CLASS_NAME "Quake 2"
-
-void VID_CreateWindow(int width, int height, int stylebits)
-{
-	WNDCLASS wc;
-	RECT r;
-	cvar_t *vid_xpos, *vid_ypos, *vid_fullscreen;
-	int x, y, w, h;
-	int exstyle;
-
-	vid_xpos = ri.Cvar_Get("vid_xpos", "0", 0);
-	vid_ypos = ri.Cvar_Get("vid_ypos", "0", 0);
-	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-
-	if(vid_fullscreen->value)
-		exstyle = WS_EX_TOPMOST;
-	else
-		exstyle = 0;
-
-	/* Register the frame class */
-	wc.style = 0;
-	wc.lpfnWndProc = (WNDPROC)sww_state.wndproc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = sww_state.hInstance;
-	wc.hIcon = 0;
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (void *)COLOR_GRAYTEXT;
-	wc.lpszMenuName = 0;
-	wc.lpszClassName = WINDOW_CLASS_NAME;
-
-	if(!RegisterClass(&wc))
-		ri.Sys_Error(ERR_FATAL, "Couldn't register window class");
-
-	r.left = 0;
-	r.top = 0;
-	r.right = width;
-	r.bottom = height;
-
-	AdjustWindowRect(&r, stylebits, FALSE);
-
-	w = r.right - r.left;
-	h = r.bottom - r.top;
-	x = vid_xpos->value;
-	y = vid_ypos->value;
-
-	sww_state.hWnd = CreateWindowEx(
-	exstyle,
-	WINDOW_CLASS_NAME,
-	"Quake 2",
-	stylebits,
-	x, y, w, h,
-	NULL,
-	NULL,
-	sww_state.hInstance,
-	NULL);
-
-	if(!sww_state.hWnd)
-		ri.Sys_Error(ERR_FATAL, "Couldn't create window");
-
-	ShowWindow(sww_state.hWnd, SW_SHOWNORMAL);
-	UpdateWindow(sww_state.hWnd);
-	SetForegroundWindow(sww_state.hWnd);
-	SetFocus(sww_state.hWnd);
-
-	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow(width, height);
-}
 
 /*
 ** SWimp_Init
@@ -173,7 +113,7 @@ static qboolean SWimp_InitGraphics(qboolean fullscreen)
 ** front buffer.  In the Win32 case it uses BitBlt or BltFast depending
 ** on whether we're using DIB sections/GDI or DDRAW.
 */
-void SWimp_EndFrame(void)
+void SWimp_EndFrame()
 {
 	if(!sw_state.fullscreen)
 	{
@@ -355,7 +295,7 @@ void SWimp_SetPalette(const unsigned char *palette)
 ** System specific graphics subsystem shutdown routine.  Destroys
 ** DIBs or DDRAW surfaces as appropriate.
 */
-void SWimp_Shutdown(void)
+void SWimp_Shutdown()
 {
 	ri.Con_Printf(PRINT_ALL, "Shutting down SW imp\n");
 	DIB_Shutdown();
@@ -432,14 +372,14 @@ void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length)
 **
 */
 #if !id386
-void Sys_SetFPCW(void)
+void Sys_SetFPCW()
 {
 }
 #else
 unsigned fpu_ceil_cw, fpu_chop_cw, fpu_full_cw, fpu_cw, fpu_pushed_cw;
 unsigned fpu_sp24_cw, fpu_sp24_ceil_cw;
 
-void Sys_SetFPCW(void)
+void Sys_SetFPCW()
 {
 	__asm xor eax, eax
 

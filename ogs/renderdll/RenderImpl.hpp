@@ -38,7 +38,7 @@ public:
 	CRenderImpl();
 	~CRenderImpl();
 
-	bool Init(CreateInterfaceFn afnEngineFactory, void *ahInstance, void *apWndProc);
+	bool Init(CreateInterfaceFn afnEngineFactory, void *ahInstance, void *apWnd, void *apWndProc);
 	void Shutdown();
 
 	void AppActivate(bool abActivate);

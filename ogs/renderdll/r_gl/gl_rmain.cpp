@@ -999,10 +999,10 @@ void R_SetLightLevel()
 }
 
 /*
-@@@@@@@@@@@@@@@@@@@@@
+====================
 R_RenderFrame
 
-@@@@@@@@@@@@@@@@@@@@@
+====================
 */
 void R_RenderFrame(refdef_t *fd)
 {
@@ -1142,7 +1142,7 @@ qboolean R_SetMode()
 R_Init
 ===============
 */
-int R_Init(void *hinstance, void *hWnd)
+int R_Init(void *hinstance, void *hWnd, void *hWndProc)
 {
 	char renderer_buffer[1000];
 	char vendor_buffer[1000];
@@ -1170,7 +1170,7 @@ int R_Init(void *hinstance, void *hWnd)
 	}
 
 	// initialize OS-specific parts of OpenGL
-	if(!GLimp_Init(hinstance, hWnd))
+	if(!GLimp_Init(hinstance, hWnd, hWndProc))
 	{
 		QGL_Shutdown();
 		return -1;

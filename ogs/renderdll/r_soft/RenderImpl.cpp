@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,125 +28,124 @@
 
 /// @file
 
-#include "RendererImpl.hpp"
-#include "gl_local.hpp"
+#include "RenderImpl.hpp"
 
-static CRendererImpl gRendererImpl;
-EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CRendererImpl, IRenderer, OGS_RENDERER_INTERFACE_VERSION, gRendererImpl);
+static CRenderImpl gRenderImpl;
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CRenderImpl, IRender, OGS_RENDER_INTERFACE_VERSION, gRenderImpl);
 
 IFileSystem *gpFileSystem = nullptr;
 
-CRendererImpl::CRendererImpl(){};
+CRenderImpl::CRenderImpl(){};
 
-CRendererImpl::~CRendererImpl(){};
+CRenderImpl::~CRenderImpl(){};
 
-bool CRendererImpl::Init(CreateInterfaceFn afnEngineFactory, void *ahInstance, void *apWndProc)
+bool CRenderImpl::Init(CreateInterfaceFn afnEngineFactory, void *ahInstance, void *apWnd, void *apWndProc)
 {
 	gpFileSystem = (IFileSystem *)afnEngineFactory(FILESYSTEM_INTERFACE_VERSION, nullptr);
 
-	if(!mpFileSystem)
+	if(!gpFileSystem)
 		return false;
 
 	R_Init();
 	return true;
 };
 
-void CRendererImpl::Shutdown()
+void CRenderImpl::Shutdown()
 {
 	R_Shutdown();
 };
 
-void CRendererImpl::AppActivate(bool abActivate)
+void CRenderImpl::AppActivate(bool abActivate)
 {
-	GLimp_AppActivate(abActivate);
+	SWimp_AppActivate(abActivate);
 };
 
-void CRendererImpl::BeginRegistration(const char *asMap)
+void CRenderImpl::BeginRegistration(const char *asMap)
 {
 	R_BeginRegistration(asMap);
 };
 
-void CRendererImpl::EndRegistration()
+void CRenderImpl::EndRegistration()
 {
 	R_EndRegistration();
 };
 
-struct model_s *CRendererImpl::RegisterModel(const char *asName)
+struct model_s *CRenderImpl::RegisterModel(const char *asName)
 {
-	return R_RegisterModel(asName);
+	R_RegisterModel(asName);
 };
 
-struct image_s *CRendererImpl::RegisterSkin(const char *asName)
+struct image_s *CRenderImpl::RegisterSkin(const char *asName)
 {
-	return R_RegisterSkin(asName);
+	R_RegisterSkin(asName);
 };
 
-struct image_s *CRendererImpl::RegisterPic(const char *asName)
+struct image_s *CRenderImpl::RegisterPic(const char *asName)
 {
-	return Draw_FindPic(asName);
+	Draw_FindPic(asName);
 };
 
-void CRendererImpl::SetSky(const char *asName, float afRotate, vec3_t avAxis)
+void CRenderImpl::SetSky(const char *asName, float afRotate, vec3_t avAxis)
 {
 	R_SetSky(asName, afRotate, avAxis);
 };
 
-void CRendererImpl::BeginFrame(float afCameraSeparation)
+void CRenderImpl::BeginFrame(float afCameraSeparation)
 {
 	R_BeginFrame(afCameraSeparation);
 };
 
-void CRendererImpl::RenderFrame(refdef_t *apRenderSettings)
+void CRenderImpl::RenderFrame(refdef_t *apRenderSettings)
 {
 	R_RenderFrame(apRenderSettings);
 };
 
-void CRendererImpl::EndFrame()
+void CRenderImpl::EndFrame()
 {
-	GLimp_EndFrame();
+	SWimp_EndFrame();
 };
 
-void CRendererImpl::DrawGetPicSize(int *w, int *h, char *name)
+void CRenderImpl::DrawGetPicSize(int *w, int *h, char *name)
 {
 	Draw_GetPicSize(w, h, name);
 };
 
-void CRendererImpl::DrawPic(int x, int y, char *name)
+void CRenderImpl::DrawPic(int x, int y, char *name)
 {
 	Draw_Pic(x, y, name);
 };
 
-void CRendererImpl::DrawStretchPic(int x, int y, int w, int h, char *name)
+void CRenderImpl::DrawStretchPic(int x, int y, int w, int h, char *name)
 {
 	Draw_StretchPic(x, y, w, h, name);
 };
 
-void CRendererImpl::DrawChar(int x, int y, int c)
+void CRenderImpl::DrawChar(int x, int y, int c)
 {
 	Draw_Char(x, y, c);
 };
 
-void CRendererImpl::DrawTileClear(int x, int y, int w, int h, char *name)
+void CRenderImpl::DrawTileClear(int x, int y, int w, int h, char *name)
 {
-	Draw_TileClear(x, y, w, h, name);
+	Draw_TileClar(x, y, w, h, name);
 };
 
-void CRendererImpl::DrawFill(int x, int y, int w, int h, int c)
+void CRenderImpl::DrawFill(int x, int y, int w, int h, int c)
 {
 	Draw_Fill(x, y, w, h, c);
 };
 
-void CRendererImpl::DrawFadeScreen()
+void CRenderImpl::DrawFadeScreen()
 {
 	Draw_FadeScreen();
 };
 
-void CRendererImpl::DrawStretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data)
+void CRenderImpl::DrawStretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data)
 {
 	Draw_StretchRaw(x, y, w, h, cols, rows, data);
 };
 
-void CRendererImpl::CinematicSetPalette(const byte *palette)
+void CRenderImpl::CinematicSetPalette(const byte *palette)
 {
-	R_SetPalette(palette);
+	R_CinematicSetPalette(palette);
 };

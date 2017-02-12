@@ -7,7 +7,7 @@
 
 #include "VGUI.h"
 #include "VGUI_Desktop.h"
-#include "VGUI_Taskbar.h"
+#include "VGUI_TaskBar.h"
 #include "VGUI_DesktopIcon.h"
 #include "VGUI_MiniApp.h"
 #include "VGUI_Frame.h"
