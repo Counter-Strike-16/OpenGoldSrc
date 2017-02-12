@@ -63,7 +63,7 @@ struct IConsole : public IBaseInterface
 	virtual bool Cvar_Register(cvar_t *apCvar) const = 0;
 
 	///
-	virtual cvar_t *Cvar_Add(const char *asName, const char *asValue, int flags) const = 0;
+	virtual cvar_t *Cvar_Add(const char *asName, const char *asValue, int flags, const char *asDesc = "") const = 0;
 
 	///
 	virtual bool Cvar_Remove(const char *asName) const = 0;

@@ -28,6 +28,7 @@
 
 //#include "precompiled.hpp"
 #include "system/unicode_strtools.h"
+#include "system/common.hpp"
 
 // Table for Q_iswprint
 static const uint32_t g_isPrintTable[2048] = {

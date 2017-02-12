@@ -30,16 +30,19 @@
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"
-#include "console/cmd.hpp"
-#include "console/console.hpp"
-#include "memory/zone.hpp"
-#include "network/net_msg.hpp"
-#include "network/protocol.hpp"
-#include "sound/sound.hpp"
-#include "system/buildinfo.hpp"
 #include "system/host.hpp"
 #include "system/sizebuf.hpp"
 #include "system/system.hpp"
+#include "system/buildinfo.hpp"
+#include "memory/zone.hpp"
+#include "network/net_ws.hpp"
+#include "network/net_msg.hpp"
+#include "network/protocol.hpp"
+#include "console/cmd.hpp"
+#include "console/cvar.hpp"
+#include "console/console.hpp"
+#include "sound/sound.hpp"
+#include "graphics/screen.hpp"
 
 #ifdef _WIN32
 #include "winsock.h"
@@ -85,25 +88,26 @@ extern cvar_t cl_hightrack;
 client_static_t cls;
 client_state_t cl;
 
-playermove_t g_clmove;
+//playermove_t g_clmove;
 qboolean cl_inmovie;
 
+/*
 entity_state_t cl_baselines[MAX_EDICTS];
 efrag_t cl_efrags[MAX_EFRAGS];
 cl_entity_t cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
 dlight_t cl_dlights[MAX_DLIGHTS];
+*/
 
 // refresh list
 // this is double buffered so the last frame
 // can be scanned for oldorigins of trailing objects
 int cl_numvisedicts, cl_oldnumvisedicts;
 cl_entity_t *cl_visedicts, *cl_oldvisedicts;
-cl_entity_t cl_visedicts_list[2][MAX_VISEDICTS];
+//cl_entity_t cl_visedicts_list[2][MAX_VISEDICTS];
 
 qboolean nomaster;
 
-byte *host_basepal;
 byte *host_colormap;
 
 netadr_t master_adr; // address of the master server
@@ -136,6 +140,7 @@ We have gotten a challenge from the server, so try and connect
 */
 void CL_SendConnectPacket()
 {
+/*
 	netadr_t adr;
 	char data[2048];
 
@@ -170,6 +175,7 @@ void CL_SendConnectPacket()
 	sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n", 255, 255, 255, 255, PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
 
 	NET_SendPacket(strlen(data), data, adr);
+*/
 };
 
 /*
@@ -211,7 +217,7 @@ void CL_CheckForResend()
 
 	Con_Printf("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
-	NET_SendPacket(strlen(data), data, adr);
+	//NET_SendPacket(strlen(data), data, adr);
 };
 
 void CL_BeginServerConnect()
@@ -300,7 +306,7 @@ void CL_Rcon_f()
 			//to.port = BigShort(PORT_SERVER);
 	};
 
-	NET_SendPacket(/*NS_CLIENT,*/ strlen(message) + 1, message, to);
+	//NET_SendPacket(/*NS_CLIENT,*/ strlen(message) + 1, message, to);
 };
 
 /*
@@ -316,14 +322,14 @@ void CL_ClearState()
 	S_StopAllSounds(true);
 
 	Con_DPrintf("Clearing memory\n");
-	D_FlushCaches();
-	Mod_ClearAll();
+	//D_FlushCaches();
+	//Mod_ClearAll();
 
 	if(host_hunklevel) // FIXME: check this...
 		Hunk_FreeToLowMark(host_hunklevel);
 	
 	//CL_ClearEffects();
-	CL_ClearTEnts();
+	//CL_ClearTEnts();
 
 	// wipe the entire cl structure
 	memset(&cl, 0, sizeof(cl));
@@ -332,19 +338,19 @@ void CL_ClearState()
 
 	// clear other arrays
 	//memset(&cl_entities, 0, sizeof(cl_entities));
-	memset(cl_efrags, 0, sizeof(cl_efrags));
-	memset(cl_dlights, 0, sizeof(cl_dlights));
-	memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
+	//memset(cl_efrags, 0, sizeof(cl_efrags));
+	//memset(cl_dlights, 0, sizeof(cl_dlights));
+	//memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
 
 	//
 	// allocate the efrags and chain together into a free list
 	//
-	cl.free_efrags = cl_efrags;
+	//cl.free_efrags = cl_efrags;
 
-	for(i = 0; i < MAX_EFRAGS - 1; ++i)
-		cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
+	//for(i = 0; i < MAX_EFRAGS - 1; ++i)
+		//cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
 
-	cl.free_efrags[i].entnext = NULL;
+	//cl.free_efrags[i].entnext = NULL;
 };
 
 /*
@@ -383,23 +389,23 @@ void CL_Disconnect()
 	Netchan_Transmit(&cls.netchan, strlen(sFinalMsg), sFinalMsg);
 	Netchan_Transmit(&cls.netchan, strlen(sFinalMsg), sFinalMsg);
 
-	mvStates[state]->OnDisconnect();
+	//mvStates[state]->OnDisconnect();
 
 	cls.demoplayback = cls.timedemo = false;
 	cls.signon = 0;
 
-	Cam_Reset();
+	//Cam_Reset();
 	
 	CL_ClearState();
 	
 	// stop download
-	if(cls.download)
-	{
-		fclose(cls.download);
-		cls.download = NULL;
-	};
+	//if(cls.download)
+	//{
+		//fclose(cls.download);
+		//cls.download = NULL;
+	//};
 
-	CL_StopUpload();
+	//CL_StopUpload();
 	
 	cls.state = ca_disconnected;
 };
@@ -462,7 +468,7 @@ void CL_Users_f()
 	{
 		if(cl.players[i].name[0])
 		{
-			Con_Printf("%6i %4i %s\n", cl.players[i].userid, cl.players[i].frags, cl.players[i].name);
+			//Con_Printf("%6i %4i %s\n", cl.players[i].userid, cl.players[i].frags, cl.players[i].name);
 			c++;
 		};
 	};
@@ -672,7 +678,7 @@ void CL_Packet_f()
 
 	*out = 0;
 
-	NET_SendPacket(/*NS_CLIENT,*/ out - send, send, adr);
+	//NET_SendPacket(/*NS_CLIENT,*/ out - send, send, adr);
 };
 
 /*
@@ -717,13 +723,13 @@ void CL_Changing_f()
 {
 	// don't change when downloading
 	// so we don't suddenly stop downloading a map
-	if(cls.download)
-		return;
+	//if(cls.download)
+		//return;
 
 	S_StopAllSounds(true);
 	cl.intermission = 0;
 
-	SCR_BeginLoadingPlaque();
+	//SCR_BeginLoadingPlaque();
 
 	// not active anymore, but not disconnected
 	cls.state = ca_connected;
@@ -743,8 +749,8 @@ void CL_Reconnect_f()
 	// If we are downloading, we don't change!
 	// So we don't suddenly stop downloading a map
 	// Don't change when downloading
-	if(cls.download)
-		return;
+	//if(cls.download)
+		//return;
 
 	S_StopAllSounds(true);
 
@@ -814,7 +820,7 @@ void CL_ConnectionlessPacket()
 			return;
 		};
 
-		Netchan_Setup(&cls.netchan, net_from, cls.qport);
+		//Netchan_Setup(&cls.netchan, net_from, cls.qport);
 		MSG_WriteChar(&cls.netchan.message, clc_stringcmd);
 		MSG_WriteString(&cls.netchan.message, "new");
 		cls.state = ca_connected;
@@ -838,8 +844,8 @@ void CL_ConnectionlessPacket()
 		};
 
 #ifdef _WIN32
-		ShowWindow(mainwindow, SW_RESTORE);
-		SetForegroundWindow(mainwindow);
+		//ShowWindow(mainwindow, SW_RESTORE);
+		//SetForegroundWindow(mainwindow);
 #endif
 
 		s = MSG_ReadString();
@@ -853,7 +859,7 @@ void CL_ConnectionlessPacket()
 			s++;
 		while(*s && isspace(s[strlen(s) - 1]))
 			s[strlen(s) - 1] = 0;
-
+/*
 		if(!allowremotecmd && (!*localid.string || strcmp(localid.string, s)))
 		{
 			if(!*localid.string)
@@ -875,6 +881,7 @@ void CL_ConnectionlessPacket()
 			Cvar_Set("localid", "");
 			return;
 		};
+		*/
 
 		Cbuf_AddText(cmdtext);
 		allowremotecmd = false;
@@ -909,7 +916,7 @@ void CL_ConnectionlessPacket()
 		data[4] = A2A_ACK;
 		data[5] = 0;
 
-		NET_SendPacket(6, &data, net_from);
+		//NET_SendPacket(6, &data, net_from);
 		return;
 	};
 	
@@ -953,7 +960,8 @@ CL_ReadPackets
 void CL_ReadPackets()
 {
 	//	while (NET_GetPacket ())
-	while(CL_GetMessage())
+	//while(CL_GetMessage())
+	while(true)
 	{
 		//
 		// remote command packet
@@ -984,7 +992,7 @@ void CL_ReadPackets()
 		if(!Netchan_Process(&cls.netchan))
 			continue; // wasn't accepted for some reason
 
-		CL_ParseServerMessage();
+		//CL_ParseServerMessage();
 
 		//		if (cls.demoplayback && cls.state >= ca_active &&
 		//!CL_DemoBehind())
@@ -1026,15 +1034,15 @@ void CL_Download_f()
 		return;
 	};
 
-	sprintf(cls.downloadname, "%s/%s", com_gamedir, Cmd_Argv(1));
+	//sprintf(cls.downloadname, "%s/%s", com_gamedir, Cmd_Argv(1));
 
-	char *p = cls.downloadname;
+	char *p = nullptr; //cls.downloadname;
 	for(;;)
 	{
 		if((q = strchr(p, '/')) != NULL)
 		{
 			*q = 0;
-			Sys_mkdir(cls.downloadname);
+			//Sys_mkdir(cls.downloadname);
 			*q = '/';
 			p = q + 1;
 		}
@@ -1042,9 +1050,9 @@ void CL_Download_f()
 			break;
 	};
 
-	strcpy(cls.downloadtempname, cls.downloadname);
-	cls.download = fopen(cls.downloadname, "wb");
-	cls.downloadtype = dl_single;
+	//strcpy(cls.downloadtempname, cls.downloadname);
+	//cls.download = fopen(cls.downloadname, "wb");
+	//cls.downloadtype = dl_single;
 
 	MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
 	SZ_Print(&cls.netchan.message, va("download %s\n", Cmd_Argv(1)));
@@ -1062,7 +1070,7 @@ void CL_Init()
 
 	char st[80];
 
-	sprintf(st, "%4.2f-%04d", VERSION, build_number());
+	//sprintf(st, "%4.2f-%04d", VERSION, build_number());
 	Info_SetValueForStarKey(cls.userinfo, "*ver", st, MAX_INFO_STRING);
 
 	//
@@ -1070,10 +1078,10 @@ void CL_Init()
 	//
 	Cvar_RegisterVariable(&show_fps);
 
-	Cvar_RegisterVariable(&cl_warncmd);
+	//Cvar_RegisterVariable(&cl_warncmd);
 	Cvar_RegisterVariable(&cl_sbar);
 	Cvar_RegisterVariable(&cl_hudswap);
-	Cvar_RegisterVariable(&cl_maxfps);
+	//Cvar_RegisterVariable(&cl_maxfps);
 	Cvar_RegisterVariable(&cl_timeout);
 
 	Cvar_RegisterVariable(&rcon_password);
@@ -1084,7 +1092,7 @@ void CL_Init()
 	Cvar_RegisterVariable(&cl_predict_players);
 	Cvar_RegisterVariable(&cl_solid_players);
 
-	Cvar_RegisterVariable(&localid);
+	//Cvar_RegisterVariable(&localid);
 
 	Cvar_RegisterVariable(&baseskin);
 	Cvar_RegisterVariable(&noskins);
@@ -1094,24 +1102,24 @@ void CL_Init()
 	//
 	Cvar_RegisterVariable(&name);
 	Cvar_RegisterVariable(&password);
-	Cvar_RegisterVariable(&spectator);
+	//Cvar_RegisterVariable(&spectator);
 	Cvar_RegisterVariable(&skin);
 	Cvar_RegisterVariable(&team);
 	Cvar_RegisterVariable(&topcolor);
 	Cvar_RegisterVariable(&bottomcolor);
 	Cvar_RegisterVariable(&rate);
-	Cvar_RegisterVariable(&msg);
-	Cvar_RegisterVariable(&noaim);
+	//Cvar_RegisterVariable(&msg);
+	//Cvar_RegisterVariable(&noaim);
 
-	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
-	Cmd_AddCommand("pause", CL_Pause_f);
-	Cmd_AddCommand("pingservers", CL_PingServers_f);
+	//Cmd_AddCommand("cmd", CL_ForwardToServer_f);
+	//Cmd_AddCommand("pause", CL_Pause_f);
+	//Cmd_AddCommand("pingservers", CL_PingServers_f);
 
 	Cmd_AddCommand("changing", CL_Changing_f);
-	Cmd_AddCommand("rerecord", CL_ReRecord_f);
+	//Cmd_AddCommand("rerecord", CL_ReRecord_f);
 
-	Cmd_AddCommand("skins", Skin_Skins_f);
-	Cmd_AddCommand("allskins", Skin_AllSkins_f);
+	//Cmd_AddCommand("skins", Skin_Skins_f);
+	//Cmd_AddCommand("allskins", Skin_AllSkins_f);
 
 	Cmd_AddCommand("connect", CL_Connect_f);
 	Cmd_AddCommand("reconnect", CL_Reconnect_f);

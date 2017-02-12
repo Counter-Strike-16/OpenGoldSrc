@@ -29,11 +29,15 @@
 /// @file
 /// @brief portable code to mix sounds for snd_dma.c
 
-#include "precompiled.hpp"
-#include "quakedef.h"
+//#include "precompiled.hpp"
+//#include "commondef.hpp"
+#include "common/commontypes.h"
+#include "sound/sound.hpp"
+#include "system/common.hpp"
+#include "console/console.hpp"
 
 #ifdef _WIN32
-#include "winquake.h"
+//#include "winquake.hpp"
 #else
 #define DWORD unsigned long
 #endif

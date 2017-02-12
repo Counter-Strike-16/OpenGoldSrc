@@ -129,7 +129,7 @@ extern int host_hunklevel;
 extern jmp_buf host_abortserver;
 extern jmp_buf host_enddemo;
 
-extern unsigned short *host_basepal;
+extern unsigned short *host_basepal; // 16 bit color palette
 
 NOXREF void Host_EndGame(const char *message, ...);
 

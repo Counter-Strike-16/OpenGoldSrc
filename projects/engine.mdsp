@@ -141,6 +141,7 @@ extraResourceOptions=
 58=..\ogs\engine\butcherpete\input\cl_input.cpp
 59=..\ogs\engine\butcherpete\system\crt_local.cpp
 60=..\ogs\engine\butcherpete\system\engfuncs.cpp
+61=..\ogs\engine\butcherpete\client\cl_main.cpp
 [Header]
 [Resource]
 [Other]

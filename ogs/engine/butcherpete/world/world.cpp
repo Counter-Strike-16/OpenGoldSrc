@@ -30,12 +30,14 @@
 
 //#include "precompiled.hpp"
 #include "world/world.hpp"
-#include "console/console.hpp"
-#include "engine/edict.h"
-#include "physics/sv_phys.hpp"
-#include "server/server.hpp"
+#include "world/pr_cmds.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
+#include "resources/studio_rehlds.hpp"
+#include "physics/sv_phys.hpp"
+#include "console/console.hpp"
+#include "server/server.hpp"
+#include "engine/edict.h"
 
 hull_t box_hull;
 hull_t beam_hull;

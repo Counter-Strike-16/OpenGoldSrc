@@ -31,8 +31,11 @@
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"
+#include "system/system.hpp"
+#include "network/net_msg.hpp"
+#include "console/console.hpp"
 
-char *svc_strings[] = {
+const char *svc_strings[] = {
 	"svc_bad",
 	"svc_nop",
 	"svc_disconnect",

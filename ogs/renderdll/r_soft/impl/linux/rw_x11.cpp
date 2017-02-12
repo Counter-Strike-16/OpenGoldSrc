@@ -109,17 +109,17 @@ static cvar_t *m_pitch;
 static cvar_t *m_forward;
 static cvar_t *freelook;
 
-static void Force_CenterView_f(void)
+static void Force_CenterView_f()
 {
 	in_state->viewangles[PITCH] = 0;
 }
 
-static void RW_IN_MLookDown(void)
+static void RW_IN_MLookDown()
 {
 	mlooking = true;
 }
 
-static void RW_IN_MLookUp(void)
+static void RW_IN_MLookUp()
 {
 	mlooking = false;
 	in_state->IN_CenterView_fp();
@@ -153,7 +153,7 @@ void RW_IN_Init(in_state_t *in_state_p)
 	mouse_avail = true;
 }
 
-void RW_IN_Shutdown(void)
+void RW_IN_Shutdown()
 {
 	mouse_avail = false;
 }
@@ -163,7 +163,7 @@ void RW_IN_Shutdown(void)
 IN_Commands
 ===========
 */
-void RW_IN_Commands(void)
+void RW_IN_Commands()
 {
 	int i;
 
@@ -230,11 +230,11 @@ void RW_IN_Move(usercmd_t *cmd)
 	mx = my = 0;
 }
 
-void RW_IN_Frame(void)
+void RW_IN_Frame()
 {
 }
 
-void RW_IN_Activate(void)
+void RW_IN_Activate()
 {
 }
 
@@ -356,7 +356,7 @@ static Cursor CreateNullCursor(Display *display, Window root)
 	return cursor;
 }
 
-void ResetFrameBuffer(void)
+void ResetFrameBuffer()
 {
 	int mem;
 	int pwidth;
@@ -389,7 +389,7 @@ void ResetFrameBuffer(void)
 	vid.buffer = (byte *)(x_framebuffer[0]);
 }
 
-void ResetSharedFrameBuffers(void)
+void ResetSharedFrameBuffers()
 {
 	int size;
 	int key;
@@ -679,7 +679,7 @@ int XLateKey(XKeyEvent *ev)
 	return key;
 }
 
-void GetEvent(void)
+void GetEvent()
 {
 	XEvent x_event;
 	int b;
@@ -1002,7 +1002,7 @@ static qboolean SWimp_InitGraphics(qboolean fullscreen)
 ** front buffer.  In the Win32 case it uses BitBlt or BltFast depending
 ** on whether we're using DIB sections/GDI or DDRAW.
 */
-void SWimp_EndFrame(void)
+void SWimp_EndFrame()
 {
 // if the window changes dimension, skip this frame
 #if 0
@@ -1122,7 +1122,7 @@ void SWimp_SetPalette(const unsigned char *palette)
 ** System specific graphics subsystem shutdown routine.  Destroys
 ** DIBs or DDRAW surfaces as appropriate.
 */
-void SWimp_Shutdown(void)
+void SWimp_Shutdown()
 {
 	int i;
 
@@ -1197,7 +1197,7 @@ void KBD_Init(Key_Event_fp_t fp)
 	Key_Event_fp = fp;
 }
 
-void KBD_Update(void)
+void KBD_Update()
 {
 	// get events from x server
 	if(x_disp)
@@ -1212,6 +1212,6 @@ void KBD_Update(void)
 	}
 }
 
-void KBD_Close(void)
+void KBD_Close()
 {
 }

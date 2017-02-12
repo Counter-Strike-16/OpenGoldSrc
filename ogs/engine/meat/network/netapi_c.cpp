@@ -29,8 +29,11 @@
 /// @file
 /// @brief export api for the network module
 
+//#include "precompiled.hpp"
 #include "common/net_api.h"
-#include "network/network.hpp"
+#include "network/net.hpp"
+#include "system/common.hpp"
+#include "system/info.hpp"
 
 /*
 =================

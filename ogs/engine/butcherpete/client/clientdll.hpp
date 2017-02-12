@@ -31,6 +31,8 @@
 
 #pragma once
 
+#include "engine/cdll_int.h"
+
 class CClientDLLRef
 {
 public:
@@ -64,15 +66,3 @@ bool ClientDLL_Reload();
 void ClientDLL_Unload();
 
 bool ClientDLL_IsLoaded();
-
-void ClientDLL_Shutdown();
-
-extern "C" void ClientDLL_Init();
-
-extern "C" void ClientDLL_Frame(double time);
-extern "C" void ClientDLL_CAM_Think();
-
-extern "C" void ClientDLL_MoveClient(struct playermove_s *ppmove);
-
-extern "C" void ClientDLL_UpdateClientData();
-extern "C" void ClientDLL_HudVidInit();
