@@ -45,6 +45,7 @@ struct IRender : public IBaseInterface
 	/// Called before the library is unloaded
 	virtual void Shutdown() = 0;
 	
+	///
 	virtual void AppActivate(bool abActivate) = 0;
 	
 	// All data that will be used in a level should be
@@ -61,24 +62,50 @@ struct IRender : public IBaseInterface
 	// an implicit "pics/" prepended to the name. (a pic name that starts with a
 	// slash will not use the "pics/" prefix or the ".pcx" postfix)
 	virtual void BeginRegistration(const char *asMap) = 0;
+	
+	///
 	virtual void EndRegistration() = 0;
 	
+	///
 	virtual struct model_s *RegisterModel(const char *asName) = 0;
+	
+	///
 	virtual struct image_s *RegisterSkin(const char *asName) = 0;
+	
+	///
 	virtual struct image_s *RegisterPic(const char *asName) = 0;
 	
+	///
 	virtual void SetSky(const char *asName, float afRotate, vec3_t avAxis) = 0;
 	
+	///
 	virtual void BeginFrame(float afCameraSeparation) = 0;
+	
+	///
 	virtual void RenderFrame(refdef_t *apRenderSettings) = 0;
+	
+	///
 	virtual void EndFrame() = 0;
 	
+	///
 	virtual void DrawGetPicSize(int *w, int *h, char *name) = 0; // will return 0 0 if not found
+	
+	///
 	virtual void DrawPic(int x, int y, char *name) = 0;
+	
+	///
 	virtual void DrawStretchPic(int x, int y, int w, int h, char *name) = 0;
+	
+	///
 	virtual void DrawChar(int x, int y, int c) = 0;
+	
+	///
 	virtual void DrawTileClear(int x, int y, int w, int h, char *name) = 0;
+	
+	///
 	virtual void DrawFill(int x, int y, int w, int h, int c) = 0;
+	
+	///
 	virtual void DrawFadeScreen() = 0;
 	
 	/// Draw images for cinematic rendering (which can have a different palette). Note that calls
@@ -88,4 +115,7 @@ struct IRender : public IBaseInterface
 	** Video mode and refresh state management entry points
 	*/
 	virtual void CinematicSetPalette(const byte *palette) = 0; // NULL = game palette
+	
+	///
+	virtual ITexture *CreateTexture() = 0;
 };

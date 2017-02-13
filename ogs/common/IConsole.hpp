@@ -33,16 +33,24 @@
 
 #include "public/interface.h"
 #include "common/cvardef.h"
+#include "common/con_nprint.h"
 
 const char OGS_CONSOLE_INTERFACE_VERSION[] = "OGSConsole001";
 
 /// Console command callback function
 typedef void (*pfnConCmdCallback)();
 
+typedef struct cmdalias_s cmdalias_t;
+
 struct IConsole : public IBaseInterface
 {
 	/// Prints a formatted message into the console
 	virtual void Printf(int anPrintLevel, const char *asMsg, ...) = 0;
+	
+	/**
+	* Similar to Con_NPrintf, but allows specifying custom text color and duration information
+	*/
+	virtual void NotifyPrintfEx(const con_nprint_t *apInfo, PRINTF_FORMAT_STRING const char *asMsg, ...) = 0;
 
 	/// Execute a command text
 	virtual void ExecuteText(int anExecMode, const char *asText) = 0;
@@ -76,4 +84,7 @@ struct IConsole : public IBaseInterface
 
 	///
 	virtual void Cvar_SetValue(const char *asName, float afValue) = 0;
+	
+	///
+	virtual cmdalias_t *GetAliasList() = 0;
 };

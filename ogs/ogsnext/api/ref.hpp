@@ -54,7 +54,7 @@
 
 #define SHELL_WHITE_COLOR 0xD7
 
-typedef struct entity_s
+typedef struct cl_entity_s
 {
 	struct model_s *model; // opaque type outside refresh
 	float           angles[3];
@@ -83,7 +83,7 @@ typedef struct entity_s
 	struct image_s *skin; // NULL for inline skin
 	int             flags;
 
-} entity_t;
+} cl_entity_t;
 
 #define ENTITY_FLAGS 68
 
