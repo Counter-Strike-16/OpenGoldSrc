@@ -28,7 +28,23 @@
 
 /// @file
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
+#include "system/host_cmd.hpp"
+#include "system/host.hpp"
+#include "system/system.hpp"
+#include "system/info.hpp"
+#include "system/sizebuf.hpp"
+#include "system/buildinfo.hpp"
+#include "memory/mem.hpp"
+#include "memory/zone.hpp"
+#include "filesystem/filesystem_.hpp"
+#include "network/net_msg.hpp"
+#include "world/world.hpp"
+#include "world/pr_cmds.hpp"
+#include "console/console.hpp"
+#include "console/cmd.hpp"
+#include "server/server.hpp"
+#include "server/sv_log.hpp"
 
 typedef int (*SV_BLENDING_INTERFACE_FUNC)(int,
                                           struct sv_blending_interface_s **,
@@ -535,15 +551,15 @@ void Host_Quit_Restart_f()
 	giActive = DLL_RESTART;
 	giStateInfo = 4;
 
-	if(g_psv.active || (g_pcls.state == ca_active && g_pcls.trueaddress[0] &&
+	if(g_psv.active || (cls.state == ca_active && cls.trueaddress[0] &&
 	                    g_pPostRestartCmdLineArgs))
 	{
 		Q_strcat(g_pPostRestartCmdLineArgs, " +connect ");
-		Q_strcat(g_pPostRestartCmdLineArgs, g_pcls.servername);
+		Q_strcat(g_pPostRestartCmdLineArgs, cls.servername);
 	}
 	else
 	{
-		if(g_psvs.maxclients == 1 && g_pcls.state == ca_active)
+		if(g_psvs.maxclients == 1 && cls.state == ca_active)
 		{
 			if(g_pPostRestartCmdLineArgs)
 			{
@@ -867,8 +883,8 @@ void Host_Map(qboolean bIsDemo, char *mapstring, char *mapName, qboolean loadGam
 		SV_InactivateClients();
 		g_psvs.serverflags = 0;
 	}
-	Q_strncpy(g_pcls.mapstring, mapstring, sizeof(g_pcls.mapstring) - 1);
-	g_pcls.mapstring[sizeof(g_pcls.mapstring) - 1] = 0;
+	Q_strncpy(cls.mapstring, mapstring, sizeof(cls.mapstring) - 1);
+	cls.mapstring[sizeof(cls.mapstring) - 1] = 0;
 	if(SV_SpawnServer(bIsDemo, mapName, NULL))
 	{
 		ContinueLoadingProgressBar("Server", 7, 0.0);
@@ -887,11 +903,11 @@ void Host_Map(qboolean bIsDemo, char *mapstring, char *mapName, qboolean loadGam
 			if(!g_psv.active)
 				return;
 
-			if(g_pcls.state != ca_dedicated)
+			if(cls.state != ca_dedicated)
 			{
-				Q_strcpy(g_pcls.spawnparms, "");
+				Q_strcpy(cls.spawnparms, "");
 				for(i = 0; i < Cmd_Argc(); i++)
-					Q_strncat(g_pcls.spawnparms, Cmd_Argv(i), sizeof(g_pcls.spawnparms) - Q_strlen(g_pcls.spawnparms) - 1);
+					Q_strncat(cls.spawnparms, Cmd_Argv(i), sizeof(cls.spawnparms) - Q_strlen(cls.spawnparms) - 1);
 			}
 		}
 		if(sv_gpNewUserMsgs)
@@ -908,7 +924,7 @@ void Host_Map(qboolean bIsDemo, char *mapstring, char *mapName, qboolean loadGam
 
 			sv_gpNewUserMsgs = NULL;
 		}
-		if(g_pcls.state)
+		if(cls.state)
 			Cmd_ExecuteString("connect local", src_command);
 	}
 }
@@ -1043,7 +1059,7 @@ void Host_Changelevel_f()
 		Con_Printf("changelevel <levelname> : continue game on a new level\n");
 		return;
 	}
-	if(!g_psv.active || g_pcls.demoplayback)
+	if(!g_psv.active || cls.demoplayback)
 	{
 		Con_Printf("Only the server may changelevel\n");
 		return;
@@ -1116,10 +1132,12 @@ const char *Host_FindRecentSave(char *pNameBuf)
 void Host_Restart_f()
 {
 	char name[MAX_PATH];
-	if(g_pcls.demoplayback || !g_psv.active || cmd_source != src_command)
+	
+	if(cls.demoplayback || !g_psv.active || cmd_source != src_command)
 		return;
-	if(g_pcls.state)
-		g_pcls.state = ca_disconnected;
+	
+	if(cls.state)
+		cls.state = ca_disconnected;
 
 	Host_ClearGameState();
 	SV_InactivateClients();
@@ -1136,7 +1154,7 @@ void Host_Reload_f()
 {
 	const char *pSaveName;
 	char name[MAX_PATH];
-	if(g_pcls.demoplayback || !g_psv.active || cmd_source != src_command)
+	if(cls.demoplayback || !g_psv.active || cmd_source != src_command)
 		return;
 
 	Host_ClearGameState();
@@ -1160,7 +1178,7 @@ void Host_Reconnect_f()
 
 	if(cls.passive)
 	{
-		Q_snprintf(cmdString, sizeof(cmdString), "listen %s\n", NET_AdrToString(g_pcls.connect_stream));
+		Q_snprintf(cmdString, sizeof(cmdString), "listen %s\n", NET_AdrToString(cls.connect_stream));
 		Cbuf_AddText(cmdString);
 		return;
 	}
@@ -1200,8 +1218,8 @@ void Host_SavegameComment(char *pszBuffer, int iSizeBuffer)
 		if(!pszMapName || !pszMapName[0])
 		{
 			pszName = pszMapName;
-			if(!Q_strlen(g_pcl.levelname))
-				pszName = g_pcl.levelname;
+			if(!Q_strlen(cl.levelname))
+				pszName = cl.levelname;
 		}
 	}
 	Q_strncpy(pszBuffer, pszName, iSizeBuffer - 1);
@@ -1247,7 +1265,7 @@ int Host_ValidSave()
 		Con_Printf("Can't save multiplayer games.\n");
 		return 0;
 	}
-	if(cls.state != ca_active || g_pcls.signon != 2)
+	if(cls.state != ca_active || cls.signon != 2)
 	{
 		Con_Printf("Can't save during transition.\n");
 		return 0;
@@ -1617,7 +1635,7 @@ int Host_Load(const char *pName)
 		return 0;
 	}
 
-	g_pcls.demonum = -1;
+	cls.demonum = -1;
 	SV_InactivateClients();
 	SCR_BeginLoadingPlaque(FALSE);
 	DirectoryExtract(pFile, gameHeader.mapCount);
@@ -2387,7 +2405,7 @@ void Host_Changelevel2_f()
 		           "unit\n");
 		return;
 	}
-	if(!g_psv.active || g_pcls.demoplayback || g_psv.paused)
+	if(!g_psv.active || cls.demoplayback || g_psv.paused)
 	{
 		Con_Printf("Only the server may changelevel\n");
 		return;
@@ -2501,7 +2519,7 @@ void Host_FullInfo_f()
 
 		if(cmd_source == src_command)
 		{
-			Info_SetValueForKey(g_pcls.userinfo, key, value, MAX_INFO_STRING);
+			Info_SetValueForKey(cls.userinfo, key, value, MAX_INFO_STRING);
 			Cmd_ForwardToServer();
 			return;
 		}
@@ -2519,7 +2537,7 @@ void Host_SetInfo_f()
 {
 	if(Cmd_Argc() == 1)
 	{
-		Info_Print(g_pcls.userinfo);
+		Info_Print(cls.userinfo);
 		return;
 	}
 	if(Cmd_Argc() != 3)
@@ -2529,7 +2547,7 @@ void Host_SetInfo_f()
 	}
 	if(cmd_source == src_command)
 	{
-		Info_SetValueForKey(g_pcls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING);
+		Info_SetValueForKey(cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING);
 		Cmd_ForwardToServer();
 		return;
 	}
@@ -2546,7 +2564,7 @@ void Host_Say(qboolean teamonly)
 	char text[128];
 	// qboolean fromServer;//unsued?
 
-	if(g_pcls.state != ca_dedicated)
+	if(cls.state != ca_dedicated)
 	{
 		if(cmd_source != src_command)
 			return;
@@ -2745,7 +2763,7 @@ void Host_TogglePause_f()
 void Host_Pause_f()
 {
 	// pause only singleplayer when console or main menu opens
-	if(!g_pcl.levelname[0])
+	if(!cl.levelname[0])
 		return;
 	if(cmd_source == src_command)
 	{
@@ -2774,7 +2792,7 @@ void Host_Pause_f()
 void Host_Unpause_f()
 {
 	// unpause only singleplayer when console or main menu opens
-	if(!g_pcl.levelname[0])
+	if(!cl.levelname[0])
 		return;
 	if(cmd_source == src_command)
 	{
@@ -2812,25 +2830,25 @@ void Host_Interp_f()
 void Host_NextDemo()
 {
 	char str[1024];
-	if(g_pcls.demonum == -1)
+	if(cls.demonum == -1)
 		return;
 
 	SCR_BeginLoadingPlaque(FALSE);
-	if(g_pcls.demos[g_pcls.demonum][0])
+	if(cls.demos[cls.demonum][0])
 	{
 #ifdef REHLDS_FIXES
-		if(g_pcls.demonum >= MAX_DEMOS)
+		if(cls.demonum >= MAX_DEMOS)
 #else
-		if(g_pcls.demonum == MAX_DEMOS)
+		if(cls.demonum == MAX_DEMOS)
 #endif // REHLDS_FIXES
-			g_pcls.demonum = 0;
+			cls.demonum = 0;
 
-		Q_snprintf(str, sizeof(str), "playdemo %s\n", g_pcls.demos[g_pcls.demonum]);
+		Q_snprintf(str, sizeof(str), "playdemo %s\n", cls.demos[cls.demonum]);
 		Cbuf_InsertText(str);
-		++g_pcls.demonum;
+		++cls.demonum;
 	}
 	Con_Printf("No demos listed with startdemos\n");
-	g_pcls.demonum = -1;
+	cls.demonum = -1;
 }
 
 void Host_Startdemos_f()
@@ -2854,7 +2872,7 @@ void Host_Startdemos_f()
 	Con_Printf("%i demo(s) in loop\n", c);
 	for(i = 1; i < c + 1; i++)
 	{
-		Q_strncpy(g_pcls.demos[i - 1], Cmd_Argv(i), 15);
+		Q_strncpy(cls.demos[i - 1], Cmd_Argv(i), 15);
 		cls.demos[i - 1][15] = 0;
 	}
 	if(g_psv.active || cls.demonum == -1 || cls.demoplayback)
@@ -2979,7 +2997,7 @@ void Host_VoiceRecordStart_f()
 	const char *pDecompressedFile = NULL;
 	const char *pInputFile = NULL;
 
-	if(g_pcls.state != ca_active)
+	if(cls.state != ca_active)
 		return;
 
 	if(voice_recordtofile.value)
