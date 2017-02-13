@@ -18,7 +18,8 @@
 
 //#include "server/sv_steam3.hpp"
 
-// #include "system/commondef.hpp"
+// #include "precompiled.hpp"
+// #include "commondef.hpp"
 
 //======================================
 // STAGE #2

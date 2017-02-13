@@ -27,14 +27,18 @@
  */
 
 /// @file
-/// @brief game dll interface
+/// @brief client dll interface
 
 #pragma once
 
 #include "public/interface.h"
 
-const char OGS_GAMEDLL_INTERFACE_VERSION[] = "OGSGameDLL001";
+const char OGS_CLIENTDLL_INTERFACE_VERSION[] = "OGSGameDLL001";
 
-struct IGameDLL : public IBaseInterface
+struct IClientDLL : public IBaseInterface
 {
+	bool Init(CreateInterfaceFn afnEngineFactory);
+	void Shutdown();
+	
+	void Frame();
 };
