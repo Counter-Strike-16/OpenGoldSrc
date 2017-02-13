@@ -30,13 +30,27 @@
 
 //#include "precompiled.hpp"
 #include "world/pr_cmds.hpp"
-#include "console/cmd.hpp"
-#include "console/console.hpp"
-#include "network/net_msg.hpp"
 #include "server/server.hpp"
 #include "system/common.hpp"
 #include "system/host.hpp"
 #include "system/system.hpp"
+#include "system/sizebuf.hpp"
+#include "filesystem/filesystem_internal.hpp"
+#include "resources/decal.hpp"
+#include "resources/cmodel.hpp"
+#include "resources/model_rehlds.hpp"
+#include "resources/studio_rehlds.hpp"
+#include "network/net_msg.hpp"
+#include "console/cmd.hpp"
+#include "console/console.hpp"
+#include "physics/pmove.hpp"
+#include "physics/sv_move.hpp"
+#include "physics/sv_phys.hpp"
+#include "world/world.hpp"
+#include "world/pr_edict.hpp"
+#include "server/sv_user.hpp"
+#include "sound/sound.hpp"
+#include "client/client.hpp"
 
 vec_t gHullMins[4][3] = {
 	{ 0.0f, 0.0f, 0.0f },
@@ -822,7 +836,7 @@ edict_t *EXT_FUNC PVSFindEntities(edict_t *pplayer)
 	if(cl.worldmodel)
 	{
 		// r_oldviewleaf = NULL; //clientside only
-		R_MarkLeaves();
+		//R_MarkLeaves();
 	}
 	return pchain;
 }
@@ -948,7 +962,7 @@ edict_t *EXT_FUNC CreateNamedEntity(int className)
 
 void EXT_FUNC PF_Remove_I(edict_t *ed)
 {
-	g_RehldsHookchains.m_PF_Remove_I.callChain(PF_Remove_I_internal, ed);
+	//g_RehldsHookchains.m_PF_Remove_I.callChain(PF_Remove_I_internal, ed);
 }
 
 void EXT_FUNC PF_Remove_I_internal(edict_t *ed)
@@ -1167,13 +1181,13 @@ unsigned short EXT_FUNC EV_Precache(int type, const char *psz)
 
 void EXT_FUNC EV_PlayReliableEvent_api(IGameClient *cl, int entindex, unsigned short eventindex, float delay, event_args_t *pargs)
 {
-	EV_PlayReliableEvent_internal(cl->GetClient(), entindex, eventindex, delay, pargs);
+	//EV_PlayReliableEvent_internal(cl->GetClient(), entindex, eventindex, delay, pargs);
 }
 
 void EV_PlayReliableEvent(client_t *cl, int entindex, unsigned short eventindex, float delay, event_args_t *pargs)
 {
-	g_RehldsHookchains.m_EV_PlayReliableEvent.callChain(
-	EV_PlayReliableEvent_api, GetRehldsApiClient(cl), entindex, eventindex, delay, pargs);
+	//g_RehldsHookchains.m_EV_PlayReliableEvent.callChain(
+	//EV_PlayReliableEvent_api, GetRehldsApiClient(cl), entindex, eventindex, delay, pargs);
 }
 
 void EV_PlayReliableEvent_internal(client_t *cl, int entindex, unsigned short eventindex, float delay, event_args_t *pargs)
@@ -2045,11 +2059,9 @@ edict_t *EXT_FUNC PF_CreateFakeClient_I(const char *netname)
 	SV_ExtractFromUserinfo(fakeclient);
 
 	fakeclient->network_userid.m_SteamID =
-	ISteamGameServer_CreateUnauthenticatedUserConnection();
+	//ISteamGameServer_CreateUnauthenticatedUserConnection();
 	fakeclient->network_userid.idtype = AUTH_IDTYPE_STEAM;
-	ISteamGameServer_BUpdateUserData(fakeclient->network_userid.m_SteamID,
-	                                 netname,
-	                                 0);
+	//ISteamGameServer_BUpdateUserData(fakeclient->network_userid.m_SteamID, netname, 0);
 
 	return ent;
 }
@@ -2420,7 +2432,7 @@ void EXT_FUNC PF_changelevel_I(const char *s1, const char *s2)
 
 void SeedRandomNumberGenerator(void)
 {
-	idum = -(int)CRehldsPlatformHolder::get()->time(NULL);
+	//idum = -(int)CRehldsPlatformHolder::get()->time(NULL);
 	if(idum > 1000)
 	{
 		idum = -idum;
@@ -2625,8 +2637,8 @@ const char *EXT_FUNC PF_GetPlayerAuthId(edict_t *e)
 
 void EXT_FUNC PF_BuildSoundMsg_I(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)
 {
-	g_RehldsHookchains.m_PF_BuildSoundMsg_I.callChain(
-	PF_BuildSoundMsg_I_internal, entity, channel, sample, volume, attenuation, fFlags, pitch, msg_dest, msg_type, pOrigin, ed);
+	//g_RehldsHookchains.m_PF_BuildSoundMsg_I.callChain(
+	//PF_BuildSoundMsg_I_internal, entity, channel, sample, volume, attenuation, fFlags, pitch, msg_dest, msg_type, pOrigin, ed);
 }
 
 void EXT_FUNC PF_BuildSoundMsg_I_internal(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)

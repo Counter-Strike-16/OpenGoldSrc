@@ -6,7 +6,7 @@
 
 //#include "graphics/gl_model.hpp"
 // #include "graphics/glquake.hpp"
-// #include "graphics/vid_null.hpp"
+// #include "graphics/vid.hpp"
 // #include "graphics/draw/d_iface.hpp"
 // #include "graphics/draw/d_ifacea.hpp"
 // #include "graphics/draw/d_local.hpp"

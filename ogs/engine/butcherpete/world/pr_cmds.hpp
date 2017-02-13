@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "common/com_model.h"
 #include "common/commontypes.h"
+#include "common/com_model.h"
 #include "engine/eiface.h"
 #include "maintypes.h"
 #include "public/archtypes.h"

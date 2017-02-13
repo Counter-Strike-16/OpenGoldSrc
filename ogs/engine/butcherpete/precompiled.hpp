@@ -1,5 +1,6 @@
 #pragma once
 
+/*
 #ifdef _MSC_VER
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
@@ -109,7 +110,6 @@
 #include "player.h"
 #include "recorder.h"
 #include "testsuite.h"
-*/
 
 //#include "bzip2/bzlib.h"
 #include "system/igame.h"
@@ -125,3 +125,4 @@
 //#include "rehlds_security.h"
 
 #include "dlls/cdll_dll.h"
+*/

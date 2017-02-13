@@ -30,6 +30,9 @@
 
 //#include "precompiled.hpp"
 #include "common/event_api.h"
+#include "physics/sv_pmove.hpp"
+#include "client/client.hpp"
+#include "pm_shared/pm_defs.h"
 #include <cstddef>
 
 namespace
@@ -55,7 +58,8 @@ int EventAPI_IsLocal /*Player*/ (int playernum)
 
 int EventAPI_LocalPlayerDucking()
 {
-	return cl.predicted.usehull == 1;
+	//return cl.predicted.usehull == 1;
+	return 0;
 };
 
 void EventAPI_LocalPlayerViewheight(float *view_ofs)
@@ -64,10 +68,10 @@ void EventAPI_LocalPlayerViewheight(float *view_ofs)
 	if(!view_ofs)
 		return;
 
-	if(CL_IsPredictionActive())
-		VectorCopy(cl.predicted.viewofs, view_ofs);
-	else
-		VectorCopy(cl.frame.client.view_ofs, view_ofs);
+	//if(CL_IsPredictionActive())
+		//VectorCopy(cl.predicted.viewofs, view_ofs);
+	//else
+		//VectorCopy(cl.frame.client.view_ofs, view_ofs);
 };
 
 void EventAPI_LocalPlayerBounds(int hull, float *mins, float *maxs)
@@ -75,19 +79,19 @@ void EventAPI_LocalPlayerBounds(int hull, float *mins, float *maxs)
 	if(hull >= 0 && hull < 4)
 	{
 		if(mins)
-			VectorCopy(g_clmove->player_mins[hull], mins);
+			VectorCopy(g_clmove.player_mins[hull], mins);
 
 		if(maxs)
-			VectorCopy(g_clmove->player_maxs[hull], maxs);
+			VectorCopy(g_clmove.player_maxs[hull], maxs);
 	};
 };
 
 int EventAPI_IndexFromTrace(struct pmtrace_s *pTrace)
 {
-	if(pTrace->ent >= 0 && pTrace->ent < g_clmove->numphysent)
+	if(pTrace->ent >= 0 && pTrace->ent < g_clmove.numphysent)
 	{
 		// return cl.entities number
-		return g_clmove->physents[pTrace->ent].info;
+		return g_clmove.physents[pTrace->ent].info;
 	};
 
 	return -1;
@@ -95,10 +99,10 @@ int EventAPI_IndexFromTrace(struct pmtrace_s *pTrace)
 
 struct physent_s *EventAPI_GetPhysent(int idx)
 {
-	if(idx >= 0 && idx < g_clmove->numphysent)
+	if(idx >= 0 && idx < g_clmove.numphysent)
 	{
 		// return physent
-		return &g_clmove->physents[idx];
+		return &g_clmove.physents[idx];
 	};
 
 	return NULL;
@@ -120,32 +124,33 @@ void EventAPI_WeaponAnimation(int sequence, int body){};
 
 unsigned short EventAPI_PrecacheEvent(int type, const char *psz)
 {
-	return CL_EventIndex(psz);
+	//return CL_EventIndex(psz);
+	return 0;
 };
 
 void EventAPI_PlaybackEvent(int flags, const struct edict_s *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2){};
 
 const char *EventAPI_TraceTexture(int ground, float *vstart, float *vend)
 {
-	if(ground < 0 || ground >= clgame.pmove->numphysent)
+	if(ground < 0 || ground >= g_clmove.numphysent)
 		return NULL; // bad ground
 
-	physent_t *pe = &clgame.pmove->physents[ground];
+	physent_t *pe = &g_clmove.physents[ground];
 
-	return PM_TraceTexture(pe, vstart, vend);
+	return PM_SV_TraceTexture(pe, vstart, vend);
 };
 
 void EventAPI_StopAllSounds(int entnum, int entchannel){};
 
 void EventAPI_KillEvents(int entnum, const char *eventname)
 {
-	int eventIndex = CL_EventIndex(eventname);
+	int eventIndex = 0; //CL_EventIndex(eventname);
 
-	if(eventIndex < 0 || eventIndex >= MAX_EVENTS)
-		return;
+	//if(eventIndex < 0 || eventIndex >= MAX_EVENTS)
+		//return;
 
-	if(entnum < 0 || entnum > clgame.maxEntities)
-		return;
+	//if(entnum < 0 || entnum > clgame.maxEntities)
+		//return;
 
 	event_state_t *es = &cl.events;
 	event_info_t *ei = nullptr;
@@ -157,7 +162,7 @@ void EventAPI_KillEvents(int entnum, const char *eventname)
 
 		if(ei->index == eventIndex && ei->entity_index == entnum)
 		{
-			CL_ResetEvent(ei);
+			//CL_ResetEvent(ei);
 			break;
 		}
 	}
