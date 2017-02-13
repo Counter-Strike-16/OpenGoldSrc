@@ -153,6 +153,7 @@ extraResourceOptions=
 70=..\ogs\engine\butcherpete\system\gamedllloader.cpp
 71=..\ogs\engine\butcherpete\system\public_amalgamation.cpp
 72=..\ogs\engine\butcherpete\system\system.cpp
+73=..\ogs\engine\butcherpete\system\host_cmd.cpp
 [Header]
 [Resource]
 [Other]

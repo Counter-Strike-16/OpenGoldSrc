@@ -28,6 +28,8 @@
 
 /// @file
 
+// TODO: NEED MAJOR REFACTORING
+
 //#include "precompiled.hpp"
 #include "system/host_cmd.hpp"
 #include "system/host.hpp"
@@ -38,13 +40,22 @@
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
 #include "filesystem/filesystem_.hpp"
+#include "resources/studio_rehlds.hpp"
 #include "network/net_msg.hpp"
+#include "physics/pmove.hpp"
 #include "world/world.hpp"
 #include "world/pr_cmds.hpp"
+#include "world/pr_edict.hpp"
 #include "console/console.hpp"
 #include "console/cmd.hpp"
 #include "server/server.hpp"
 #include "server/sv_log.hpp"
+#include "server/sv_user.hpp"
+#include "graphics/screen.hpp"
+#include "sound/sound.hpp"
+#include "input/keys.hpp"
+#include "voice/voice.hpp"
+#include "savegame_version.h"
 
 typedef int (*SV_BLENDING_INTERFACE_FUNC)(int,
                                           struct sv_blending_interface_s **,
@@ -287,7 +298,7 @@ void Host_Motd_Write_f()
 	unsigned int i;
 	FileHandle_t pFile;
 
-	if(!g_psv.active || cmd_source != src_command || g_pcls.state)
+	if(!g_psv.active || cmd_source != src_command || cls.state)
 		return;
 
 	if(!IsSafeFileToDownload(motdfile.string) ||
@@ -529,7 +540,7 @@ void Host_Quit_f()
 
 		if(1 /* key_dest != key_console */ /* && cls.state != ca_dedicated */)
 		{
-			M_Menu_Quit_f();
+			//M_Menu_Quit_f();
 			return;
 		}
 
@@ -584,7 +595,6 @@ void Host_Status_Printf(qboolean conprint, qboolean log, char *fmt, ...)
 
 	if(conprint)
 		Con_Printf("%s", string);
-
 	else
 		SV_ClientPrintf("%s", string);
 
@@ -638,9 +648,9 @@ void Host_Status_f()
 
 	Host_Status_Printf(conprint, log, "hostname:  %s\n", Cvar_VariableString("hostname"));
 
-	bIsSecure = Steam_GSBSecure();
-	bWantsToBeSecure = Steam_GSBSecurePreference();
-	bConnectedToSteam3 = Steam_GSBLoggedOn();
+	//bIsSecure = Steam_GSBSecure();
+	//bWantsToBeSecure = Steam_GSBSecurePreference();
+	//bConnectedToSteam3 = Steam_GSBLoggedOn();
 
 	if(!bIsSecure && bWantsToBeSecure)
 	{
@@ -652,7 +662,7 @@ void Host_Status_f()
 	}
 	if(g_psv.active)
 	{
-		pchSteamUniverse = Steam_GetGSUniverse();
+		//pchSteamUniverse = Steam_GetGSUniverse();
 	}
 
 	val = "insecure";
@@ -768,7 +778,7 @@ void Host_Status_Formatted_f()
 		log = TRUE;
 	}
 
-	bIsSecure = Steam_GSBSecure();
+	//bIsSecure = Steam_GSBSecure();
 	Host_Status_Printf(conprint, log, "hostname:  %s\n", Cvar_VariableString("hostname"));
 
 	char *szSecure = "insecure";
@@ -887,7 +897,7 @@ void Host_Map(qboolean bIsDemo, char *mapstring, char *mapName, qboolean loadGam
 	cls.mapstring[sizeof(cls.mapstring) - 1] = 0;
 	if(SV_SpawnServer(bIsDemo, mapName, NULL))
 	{
-		ContinueLoadingProgressBar("Server", 7, 0.0);
+		//ContinueLoadingProgressBar("Server", 7, 0.0);
 		if(loadGame)
 		{
 			if(!LoadGamestate(mapName, 1))
@@ -998,18 +1008,19 @@ void Host_Map_f()
 		return;
 	}
 
-	StartLoadingProgressBar("Server", 24);
-	SetLoadingProgressBarStatusText("#GameUI_StartingServer");
-	ContinueLoadingProgressBar("Server", 1, 0.0);
+	//StartLoadingProgressBar("Server", 24);
+	//SetLoadingProgressBarStatusText("#GameUI_StartingServer");
+	//ContinueLoadingProgressBar("Server", 1, 0.0);
 	Cvar_Set("HostMap", name);
 	Host_Map(FALSE, mapstring, name, FALSE);
 	if(COM_CheckParm("-steam") && PF_IsDedicatedServer())
 	{
 		g_bMajorMapChange = FALSE;
 		Sys_Printf("\n");
-	}
-	ContinueLoadingProgressBar("Server", 11, 0.0);
-	NotifyDedicatedServerUI("UpdateMap");
+	};
+	
+	//ContinueLoadingProgressBar("Server", 11, 0.0);
+	//NotifyDedicatedServerUI("UpdateMap");
 
 	if(g_careerState == CAREER_LOADING)
 	{
@@ -3100,9 +3111,9 @@ void Host_InitCommands()
 #else // HOOK_ENGINE
 
 #ifndef SWDS
-	Cmd_AddCommand("cd", CD_Command_f);
-	Cmd_AddCommand("mp3", MP3_Command_f);
-	Cmd_AddCommand("_careeraudio", CareerAudio_Command_f);
+	//Cmd_AddCommand("cd", CD_Command_f);
+	//Cmd_AddCommand("mp3", MP3_Command_f);
+	//Cmd_AddCommand("_careeraudio", CareerAudio_Command_f);
 #endif // SWDS
 
 	Cmd_AddCommand("shutdownserver", Host_KillServer_f);
@@ -3113,12 +3124,12 @@ void Host_InitCommands()
 	Cmd_AddCommand("_restart", Host_Quit_Restart_f);
 
 #ifndef SWDS
-	Cmd_AddCommand("_setrenderer", Host_SetRenderer_f);
-	Cmd_AddCommand("_setvideomode", Host_SetVideoMode_f);
-	Cmd_AddCommand("_setgamedir", Host_SetGameDir_f);
-	Cmd_AddCommand("_sethdmodels", Host_SetHDModels_f);
-	Cmd_AddCommand("_setaddons_folder", Host_SetAddonsFolder_f);
-	Cmd_AddCommand("_set_vid_level", Host_SetVideoLevel_f);
+	//Cmd_AddCommand("_setrenderer", Host_SetRenderer_f);
+	//Cmd_AddCommand("_setvideomode", Host_SetVideoMode_f);
+	//Cmd_AddCommand("_setgamedir", Host_SetGameDir_f);
+	//Cmd_AddCommand("_sethdmodels", Host_SetHDModels_f);
+	//Cmd_AddCommand("_setaddons_folder", Host_SetAddonsFolder_f);
+	//Cmd_AddCommand("_set_vid_level", Host_SetVideoLevel_f);
 #endif // SWDS
 
 	Cmd_AddCommand("exit", Host_Quit_f);
@@ -3151,8 +3162,8 @@ void Host_InitCommands()
 	Cmd_AddCommand("writecfg", Host_WriteCustomConfig);
 
 #ifndef SWDS
-	Cmd_AddCommand("+voicerecord", Host_VoiceRecordStart_f);
-	Cmd_AddCommand("-voicerecord", Host_VoiceRecordStop_f);
+	//Cmd_AddCommand("+voicerecord", Host_VoiceRecordStart_f);
+	//Cmd_AddCommand("-voicerecord", Host_VoiceRecordStop_f);
 #endif // SWDS
 
 	Cmd_AddCommand("startdemos", Host_Startdemos_f);
@@ -3162,19 +3173,19 @@ void Host_InitCommands()
 	Cmd_AddCommand("fullinfo", Host_FullInfo_f);
 
 #ifndef SWDS
-	Cmd_AddCommand("god", Host_God_f);
-	Cmd_AddCommand("notarget", Host_Notarget_f);
-	Cmd_AddCommand("fly", Host_Fly_f);
-	Cmd_AddCommand("noclip", Host_Noclip_f);
-	Cmd_AddCommand("viewmodel", Host_Viewmodel_f);
-	Cmd_AddCommand("viewframe", Host_Viewframe_f);
-	Cmd_AddCommand("viewnext", Host_Viewnext_f);
-	Cmd_AddCommand("viewprev", Host_Viewprev_f);
+	//Cmd_AddCommand("god", Host_God_f);
+	//Cmd_AddCommand("notarget", Host_Notarget_f);
+	//Cmd_AddCommand("fly", Host_Fly_f);
+	//Cmd_AddCommand("noclip", Host_Noclip_f);
+	//Cmd_AddCommand("viewmodel", Host_Viewmodel_f);
+	//Cmd_AddCommand("viewframe", Host_Viewframe_f);
+	//Cmd_AddCommand("viewnext", Host_Viewnext_f);
+	//Cmd_AddCommand("viewprev", Host_Viewprev_f);
 #endif // SWDS
 
-	Cmd_AddCommand("mcache", Mod_Print);
+	//Cmd_AddCommand("mcache", Mod_Print);
 	Cmd_AddCommand("interp", Host_Interp_f);
-	Cmd_AddCommand("setmaster", Master_SetMaster_f);
+	//Cmd_AddCommand("setmaster", Master_SetMaster_f);
 	Cmd_AddCommand("heartbeat", Master_Heartbeat_f);
 #endif // HOOK_ENGINE
 

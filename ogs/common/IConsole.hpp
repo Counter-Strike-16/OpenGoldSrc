@@ -50,7 +50,7 @@ struct IConsole : public IBaseInterface
 	/**
 	* Similar to Con_NPrintf, but allows specifying custom text color and duration information
 	*/
-	virtual void NotifyPrintfEx(const con_nprint_t *apInfo, PRINTF_FORMAT_STRING const char *asMsg, ...) = 0;
+	//virtual void NotifyPrintfEx(const con_nprint_t *apInfo, PRINTF_FORMAT_STRING const char *asMsg, ...) = 0;
 
 	/// Execute a command text
 	virtual void ExecuteText(int anExecMode, const char *asText) = 0;
