@@ -30,13 +30,23 @@
 
 #pragma once
 
-#include "IGameDLL.hpp"
+#include "game/server/IGameDLL.hpp"
+
+struct IMemory;
+struct IConsole;
+struct IEngineSound;
 
 class CGameDLL : public IGameDLL
 {
 public:
+	CGameDLL() : mpMemory(nullptr), mpConsole(nullptr), mpSound(nullptr){}
+	
 	bool Init(CreateInterfaceFn afnEngineFactory);
 	void Shutdown();
 	
 	void Frame();
+private:
+	IMemory *mpMemory;
+	IConsole *mpConsole;
+	IEngineSound *mpSound;
 };

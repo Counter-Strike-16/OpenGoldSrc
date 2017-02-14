@@ -29,12 +29,49 @@
 /// @file
 
 #include "memory/memory.hpp"
+#include "memory/mempool.hpp"
 
-void *CMemory::Alloc(uint anSize)
+CMemory::~CMemory()
 {
+	if(mpMainPool)
+		delete mpMainPool;
+	mpMainPool = nullptr;
+};
+
+bool CMemory::Init(size_t anMainPoolSize)
+{
+	mpMainPool = new CMemPool("Main", anMainPoolSize); // handle min/max borders?
+	
+	if(!mpMainPool)
+		return false;
+	
+	//mvPools.push_back(mpMainPool);
+	
+	return true;
+};
+
+void *CMemory::Alloc(size_t anSize, const char *asFile, int anLine) const
+{
+	mnAllocCount++;
+	
+	size_t nPrevUsedSize = mpMainPool->GetUsedSize();
+	
+	//Log("Trying to allocate %d bytes in file %s at line %d" anSize, asFile, anLine);
+	
+	mpMainPool->Alloc(anSize);
+	
+	mnUsedMemory += mpMainPool->GetUsedSize() - nPrevUsedSize;
+	
 	return nullptr;
 };
 
 void CMemory::Free(void *apData)
 {
+	mnAllocCount--;
+	
+	size_t nPrevUsedSize = mpMainPool->GetUsedSize();
+	
+	mpMainPool->Free(apData);
+	
+	mnUsedMemory -= nPrevUsedSize - mpMainPool->GetUsedSize();
 };

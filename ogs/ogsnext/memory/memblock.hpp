@@ -27,29 +27,15 @@
  */
 
 /// @file
-/// @brief memory module interface
 
 #pragma once
 
-#include "public/interface.h"
-
-const char OGS_MEMORY_INTERFACE_VERSION[] = "OGSMemory001";
-
-struct IMemory
+struct TMemBlock
 {
-	///
-	virtual void *Alloc(size_t anSizeBytes, const char *asFile, int anLine) const = 0;
+	TMemBlock() : mpNext(nullptr), mpData(nullptr){}
 	
-	/// Inlined template method
-	template<typename T>
-	inline T *Alloc(size_t anSizeBytes) const
-	{
-		return (T*)Alloc(anSizeBytes, __FILE__, __LINE__);
-	};
+	TMemBlock *mpNext;
+	void *mpData;
 	
-	///
-	virtual void Free(void *apData) = 0;
-	
-	///
-	virtual size_t GetUsedMemory() const = 0;
+	//bool mbFree; // check for data - if null then free
 };

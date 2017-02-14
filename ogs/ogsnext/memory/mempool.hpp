@@ -27,29 +27,49 @@
  */
 
 /// @file
-/// @brief memory module interface
 
 #pragma once
 
-#include "public/interface.h"
+struct TMemBlock;
 
-const char OGS_MEMORY_INTERFACE_VERSION[] = "OGSMemory001";
-
-struct IMemory
+/*
+struct IMemPool
 {
 	///
-	virtual void *Alloc(size_t anSizeBytes, const char *asFile, int anLine) const = 0;
-	
-	/// Inlined template method
-	template<typename T>
-	inline T *Alloc(size_t anSizeBytes) const
-	{
-		return (T*)Alloc(anSizeBytes, __FILE__, __LINE__);
-	};
+	virtual void *Alloc(size_t anSize) const = 0;
 	
 	///
 	virtual void Free(void *apData) = 0;
 	
 	///
-	virtual size_t GetUsedMemory() const = 0;
+	virtual size_t GetMaxSize() const = 0;
+	
+	///
+	virtual size_t GetUsedSize() const = 0;
+	
+	///
+	virtual const char *GetName() const = 0;
+};
+*/
+
+class CMemPool
+{
+public:
+	CMemPool(const char *asName, size_t anSize) : msName(asName), mnSize(anSize){}
+	~CMemPool();
+	
+	void *Alloc(size_t anSize) const;
+	void Free(void *apData);
+	
+	size_t GetMaxSize() const {return mnSize;}
+	size_t GetUsedSize() const {return mnUsedSize;}
+	
+	const char *GetName() const {return msName;}
+private:
+	size_t mnSize;
+	size_t mnUsedSize;
+	
+	const char *msName;
+	
+	TMemBlock *mpHead;
 };

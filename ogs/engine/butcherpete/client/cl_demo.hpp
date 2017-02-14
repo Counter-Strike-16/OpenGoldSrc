@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "common/commontypes.h"
 #include "common/demo_api.h"
 
 extern demo_api_t gDemoAPI;

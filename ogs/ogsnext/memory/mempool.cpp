@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,27 +28,28 @@
 
 /// @file
 
-//#include "precompiled.hpp"
-#include "client/cl_demo.hpp"
+#include "memory/mempool.hpp"
 
-/*
-=================
-
-DemoApi implementation
-
-=================
-*/
-
-void Demo_WriteBuffer(int size, unsigned char *buffer)
+CMemPool::~CMemPool()
 {
-	CL_WriteDemoUserMessage(buffer, size);
+	// TODO: free the mem
 };
 
-demo_api_t gDemoAPI =
+void *CMemPool::Alloc(size_t anSize) const
 {
-	CL_IsRecording,
-	CL_IsPlayingback,
-	CL_IsTimeDemo,
+	size_t nNewSize = mnSize + anSize;
 	
-	Demo_WriteBuffer
+	if(nNewSize > mnSize)
+		return nullptr;
+	
+	//TMemBlock *pMemBlock = mpHead;
+	//mpHead = pMemBlock->mpNext;
+	return pMemBlock;
+};
+
+void CMemPool::Free(void *apData)
+{
+	TMemBlock *pMemBlock = static_cast<TMemBlock*>(apData);
+	pMemBlock->mpNext = mpHead;
+	mpHead = pMemBlock;
 };

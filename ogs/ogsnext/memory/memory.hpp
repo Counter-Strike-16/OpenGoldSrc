@@ -32,9 +32,29 @@
 
 #include "IMemory.hpp"
 
+class CMemPool;
+
 class CMemory : public IMemory
 {
 public:
-	void *Alloc(uint anSize);
+	CMemory() : mnUsedMemory(0), mnAllocCount(0){}
+	~CMemory();
+	
+	bool Init(size_t anMainPoolSize);
+	
+	void *Alloc(size_t anSize, const char *asFile, int anLine) const;
 	void Free(void *apData);
+	
+	//IMemPool *AllocPool(const char *asName, anSize /*, const char *asFile, int anLine*/);
+	//void FreePool(IMemPool *apPool);
+	
+	//int GetPoolCount();
+	
+	size_t GetUsedMemory() const {return mnUsedMemory;}
+private:
+	CMemPool *mpMainPool;
+	
+	size_t mnUsedMemory;
+	
+	int mnAllocCount;
 };

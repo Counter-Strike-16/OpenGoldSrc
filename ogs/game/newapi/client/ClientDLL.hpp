@@ -30,16 +30,24 @@
 
 #pragma once
 
-#include "IClientDLL.hpp"
+#include "game/client/IClientDLL.hpp"
+
+struct IMemory;
+struct IConsole;
+struct IEngineSound;
 
 class CClientDLL : public IClientDLL
 {
 public:
-	CClientDLL();
+	CClientDLL() : mpMemory(nullptr), mpConsole(nullptr), mpSound(nullptr){}
 	~CClientDLL();
 	
 	bool Init(CreateInterfaceFn afnEngineFactory);
 	void Shutdown();
 	
 	void Frame();
+private:
+	IMemory *mpMemory;
+	IConsole *mpConsole;
+	IEngineSound *mpSound;
 };

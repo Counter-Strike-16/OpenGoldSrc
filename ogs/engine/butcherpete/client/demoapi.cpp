@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,29 +27,28 @@
  */
 
 /// @file
-/// @brief memory module interface
 
-#pragma once
+//#include "precompiled.hpp"
+#include "client/cl_demo.hpp"
 
-#include "public/interface.h"
+/*
+=================
 
-const char OGS_MEMORY_INTERFACE_VERSION[] = "OGSMemory001";
+DemoApi implementation
 
-struct IMemory
+=================
+*/
+
+void Demo_WriteBuffer(int size, unsigned char *buffer)
 {
-	///
-	virtual void *Alloc(size_t anSizeBytes, const char *asFile, int anLine) const = 0;
+	//CL_WriteDemoUserMessage(buffer, size);
+};
+
+demo_api_t gDemoAPI =
+{
+	CL_IsRecording,
+	CL_IsPlayingback,
+	CL_IsTimeDemo,
 	
-	/// Inlined template method
-	template<typename T>
-	inline T *Alloc(size_t anSizeBytes) const
-	{
-		return (T*)Alloc(anSizeBytes, __FILE__, __LINE__);
-	};
-	
-	///
-	virtual void Free(void *apData) = 0;
-	
-	///
-	virtual size_t GetUsedMemory() const = 0;
+	Demo_WriteBuffer
 };

@@ -33,7 +33,7 @@
 #include "system/common.hpp"
 #include "client/client.hpp"
 #include "network/net_encode.hpp"
-#include "event_flags.h"
+#include "common/event_flags.h"
 
 /*
 ===============
@@ -153,7 +153,7 @@ qboolean CL_FireEvent( event_info_t *ei )
 
 	if( cl_trace_events->value > 0.0f )
 	{
-		MsgDev( D_INFO, "^3EVENT  %s AT %.2f %.2f %.2f\n"    // event name
+		Con_DPrintf("^3EVENT  %s AT %.2f %.2f %.2f\n"    // event name
 					"     %.2f %.2f\n" // float params
 					"     %i %i\n" // int params
 					"     %s %s\n", // bool params

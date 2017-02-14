@@ -31,8 +31,8 @@
 
 //#include "precompiled.hpp"
 #include "client/client.hpp"
-#include "common/dlight.h"
 #include "network/net_msg.hpp"
+#include "common/dlight.h"
 
 extern cvar_t cl_predict_players;
 extern cvar_t cl_predict_players2;

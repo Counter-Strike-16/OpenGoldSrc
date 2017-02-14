@@ -29,11 +29,27 @@
 /// @file
 
 #include "GameDLL.hpp"
-
-#include "IGameDLL.hpp"
+#include "memory/IMemory.hpp"
+#include "console/IConsole.hpp"
+#include "engine/IEngineSound.hpp"
 
 bool CGameDLL::Init(CreateInterfaceFn afnEngineFactory)
 {
+	mpMemory = (IMemory*)afnEngineFactory(OGS_MEMORY_INTERFACE_VERSION, nullptr);
+	
+	if(!mpMemory)
+		return false;
+	
+	mpConsole = (IConsole*)afnEngineFactory(OGS_CONSOLE_INTERFACE_VERSION, nullptr);
+	
+	if(!mpConsole)
+		return false;
+	
+	mpSound = (IEngineSound*)afnEngineFactory(OGS_ENGINESOUNDSERVER_INTERFACE_VERSION, nullptr);
+	
+	if(!mpSound)
+		return false;
+	
 	return true;
 };
 

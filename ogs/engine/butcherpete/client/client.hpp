@@ -383,6 +383,11 @@ void CL_MoveSpectatorCamera();
 void CL_UpdateModuleC();
 
 //
+// message parsing
+//
+void CL_ParseServerMessage(); //+
+
+//
 // events
 //
 void CL_FireEvents(); //+
@@ -391,6 +396,7 @@ void CL_FireEvents(); //+
 // demo
 //
 void CL_StopPlayback(); //+
+qboolean CL_GetMessage(); //+
 
 //
 // client side prediction

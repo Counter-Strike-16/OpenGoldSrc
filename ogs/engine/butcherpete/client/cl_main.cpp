@@ -960,8 +960,7 @@ CL_ReadPackets
 void CL_ReadPackets()
 {
 	//	while (NET_GetPacket ())
-	//while(CL_GetMessage())
-	while(true)
+	while(CL_GetMessage())
 	{
 		//
 		// remote command packet
@@ -992,10 +991,9 @@ void CL_ReadPackets()
 		if(!Netchan_Process(&cls.netchan))
 			continue; // wasn't accepted for some reason
 
-		//CL_ParseServerMessage();
+		CL_ParseServerMessage();
 
-		//		if (cls.demoplayback && cls.state >= ca_active &&
-		//!CL_DemoBehind())
+		//if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())
 		//			return;
 	};
 
