@@ -1,9 +1,11 @@
-#include "inetapi.h"
+//#include "precompiled.hpp"
+//#include "inetapi.h"
 #include "winsock.h"
 #include <stdio.h>
 
 #pragma warning(disable : 4706)
 
+/*
 class CNetAPI : public INetAPI
 {
 public:
@@ -171,3 +173,4 @@ void CNetAPI::GetLocalIP(netadr_t *a)
 		}
 	}
 }
+*/

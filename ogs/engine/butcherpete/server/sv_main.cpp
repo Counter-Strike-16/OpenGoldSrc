@@ -28,12 +28,42 @@
 
 /// @file
 
-// WELCOME TO HELL
-
 //#include "precompiled.hpp"
 #include "server/server.hpp"
+#include "server/sv_log.hpp"
+#include "server/sv_user.hpp"
+#include "server/sv_upld.hpp"
+#include "memory/mem.hpp"
+#include "memory/zone.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
+#include "system/host.hpp"
+#include "system/host_cmd.hpp"
+#include "system/sizebuf.hpp"
+#include "system/buildinfo.hpp"
+#include "system/unicode_strtools.h"
+#include "filesystem/hashpak.hpp"
+#include "resources/modinfo.hpp"
+#include "resources/cmodel.hpp"
+#include "resources/model_rehlds.hpp"
+#include "resources/decal.hpp"
+#include "console/console.hpp"
+#include "console/cmd.hpp"
+#include "network/delta_jit.hpp"
+#include "network/net_msg.hpp"
+#include "network/ipratelimitWrapper.hpp"
+#include "physics/pmove.hpp"
+#include "physics/sv_phys.hpp"
+#include "world/world.hpp"
+#include "world/pr_cmds.hpp"
+#include "world/pr_edict.hpp"
+#include "input/keys.hpp"
+#include "sound/sound.hpp"
+#include "client/client.hpp"
+#include "client/textmessage.hpp"
+#include "pm_shared/pm_movevars.h"
+#include "rehlds_interfaces_impl.h"
+#include "mathlib_local.hpp"
 
 typedef struct full_packet_entities_s
 {
@@ -490,6 +520,8 @@ qboolean __declspec(naked) SV_IsPlayerIndex_wrapped(int index)
 	// This is not true for code produced by msvc2013 (which uses ecx even in
 	// Release config). That's why we need a wrapper here that preserves ecx and
 	// edx before call to reversed SV_IsPlayerIndex().
+	
+	/*
 	__asm
 	{
 		mov eax, dword ptr[esp + 4];
@@ -502,6 +534,7 @@ qboolean __declspec(naked) SV_IsPlayerIndex_wrapped(int index)
 		pop ecx;
 		retn;
 	}
+	*/
 }
 
 void SV_ClearPacketEntities(client_frame_t *frame)
@@ -751,8 +784,8 @@ void SV_StartParticle(const vec_t *org, const vec_t *dir, int color, int count)
 
 void SV_StartSound(int recipients, edict_t *entity, int channel, const char *sample, int volume, float attenuation, int fFlags, int pitch)
 {
-	g_RehldsHookchains.m_SV_StartSound.callChain(
-	SV_StartSound_internal, recipients, entity, channel, sample, volume, attenuation, fFlags, pitch);
+	//g_RehldsHookchains.m_SV_StartSound.callChain(
+	//SV_StartSound_internal, recipients, entity, channel, sample, volume, attenuation, fFlags, pitch);
 }
 
 void EXT_FUNC SV_StartSound_internal(int recipients, edict_t *entity, int channel, const char *sample, int volume, float attenuation, int fFlags, int pitch)
@@ -1200,7 +1233,7 @@ void EXT_FUNC SV_SendServerinfo_mod(sizebuf_t *msg, IGameClient *cl)
 
 void SV_SendServerinfo(sizebuf_t *msg, client_t *client)
 {
-	g_RehldsHookchains.m_SV_SendServerinfo.callChain(SV_SendServerinfo_mod, msg, GetRehldsApiClient(client));
+	//g_RehldsHookchains.m_SV_SendServerinfo.callChain(SV_SendServerinfo_mod, msg, GetRehldsApiClient(client));
 }
 
 void SV_SendServerinfo_internal(sizebuf_t *msg, client_t *client)
@@ -1537,7 +1570,7 @@ void SV_WriteSpawn(sizebuf_t *msg)
 	g_GameClients[host_client - g_psvs.clients]->SetSpawnedOnce(true);
 #endif // REHLDS_FIXES
 
-	NotifyDedicatedServerUI("UpdatePlayers");
+	//NotifyDedicatedServerUI("UpdatePlayers");
 }
 
 void EXT_FUNC SV_SendUserReg(sizebuf_t *msg)
@@ -1672,7 +1705,7 @@ void SV_SendRes_f()
 
 void SV_Spawn_f()
 {
-	g_RehldsHookchains.m_SV_Spawn_f.callChain(SV_Spawn_f_internal);
+	//g_RehldsHookchains.m_SV_Spawn_f.callChain(SV_Spawn_f_internal);
 }
 
 void EXT_FUNC SV_Spawn_f_internal()
@@ -1711,7 +1744,7 @@ void EXT_FUNC SV_Spawn_f_internal()
 		return;
 	}
 
-	if(g_pcls.demoplayback || Q_atoi(Cmd_Argv(1)) == g_psvs.spawncount)
+	if(cls.demoplayback || Q_atoi(Cmd_Argv(1)) == g_psvs.spawncount)
 	{
 #ifdef REHLDS_FIXES
 		if(host_client->has_force_unmodified)
@@ -1840,8 +1873,7 @@ qboolean EXT_FUNC SV_FilterUser(USERID_t *userid)
 
 int SV_CheckProtocol(netadr_t *adr, int nProtocol)
 {
-	return g_RehldsHookchains.m_SV_CheckProtocol.callChain(
-	SV_CheckProtocol_internal, adr, nProtocol);
+	return 1; //g_RehldsHookchains.m_SV_CheckProtocol.callChain(SV_CheckProtocol_internal, adr, nProtocol);
 }
 
 int EXT_FUNC SV_CheckProtocol_internal(netadr_t *adr, int nProtocol)
@@ -1926,8 +1958,7 @@ int SV_CheckChallenge(netadr_t *adr, int nChallengeValue)
 
 int SV_CheckIPRestrictions(netadr_t *adr, int nAuthProtocol)
 {
-	return g_RehldsHookchains.m_SV_CheckIPRestrictions.callChain(
-	SV_CheckIPRestrictions_internal, adr, nAuthProtocol);
+	return 1; //g_RehldsHookchains.m_SV_CheckIPRestrictions.callChain(SV_CheckIPRestrictions_internal, adr, nAuthProtocol);
 }
 
 int EXT_FUNC SV_CheckIPRestrictions_internal(netadr_t *adr, int nAuthProtocol)
@@ -1968,8 +1999,7 @@ int SV_CheckIPConnectionReuse(netadr_t *adr)
 
 int SV_FinishCertificateCheck(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo)
 {
-	return g_RehldsHookchains.m_SV_FinishCertificateCheck.callChain(
-	SV_FinishCertificateCheck_internal, adr, nAuthProtocol, szRawCertificate, userinfo);
+	return 1; //g_RehldsHookchains.m_SV_FinishCertificateCheck.callChain(SV_FinishCertificateCheck_internal, adr, nAuthProtocol, szRawCertificate, userinfo);
 }
 
 int EXT_FUNC SV_FinishCertificateCheck_internal(netadr_t *adr,
@@ -2013,8 +2043,7 @@ int EXT_FUNC SV_FinishCertificateCheck_internal(netadr_t *adr,
 
 int SV_CheckKeyInfo(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey)
 {
-	return g_RehldsHookchains.m_SV_CheckKeyInfo.callChain(
-	SV_CheckKeyInfo_internal, adr, protinfo, port, pAuthProtocol, pszRaw, cdkey);
+	return 1; //g_RehldsHookchains.m_SV_CheckKeyInfo.callChain(SV_CheckKeyInfo_internal, adr, protinfo, port, pAuthProtocol, pszRaw, cdkey);
 }
 
 int EXT_FUNC SV_CheckKeyInfo_internal(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey)
@@ -2298,7 +2327,7 @@ int SV_FindEmptySlot(netadr_t *adr, int *pslot, client_t **ppClient)
 
 void SV_ConnectClient()
 {
-	g_RehldsHookchains.m_SV_ConnectClient.callChain(SV_ConnectClient_internal);
+	//g_RehldsHookchains.m_SV_ConnectClient.callChain(SV_ConnectClient_internal);
 }
 
 void EXT_FUNC SV_ConnectClient_internal()
@@ -2406,7 +2435,7 @@ void EXT_FUNC SV_ConnectClient_internal()
 
 	if(reconnect)
 	{
-		Steam_NotifyClientDisconnect(client);
+		//Steam_NotifyClientDisconnect(client);
 		if((client->active || client->spawned) && client->edict)
 			gEntityInterface.pfnClientDisconnect(client->edict);
 
@@ -2444,6 +2473,7 @@ void EXT_FUNC SV_ConnectClient_internal()
 		}
 
 		client->netchan.remote_address.port = adr.port ? adr.port : port;
+		/*
 		if(!Steam_NotifyClientConnect(client, szSteamAuthBuf, len))
 		{
 			if(sv_lan.value == 0.0f)
@@ -2454,6 +2484,7 @@ void EXT_FUNC SV_ConnectClient_internal()
 			host_client->network_userid.idtype = AUTH_IDTYPE_STEAM;
 			host_client->network_userid.m_SteamID = 0;
 		}
+		*/
 	}
 	else
 	{
@@ -2477,7 +2508,7 @@ void EXT_FUNC SV_ConnectClient_internal()
 		host_client->network_userid.idtype = AUTH_IDTYPE_LOCAL;
 		host_client->network_userid.m_SteamID = 0;
 		host_client->network_userid.clientip = *(uint32 *)&adr.ip[0];
-		Steam_NotifyBotConnect(client);
+		//Steam_NotifyBotConnect(client);
 	}
 
 	SV_ClearResourceLists(host_client);
@@ -2521,7 +2552,7 @@ void EXT_FUNC SV_ConnectClient_internal()
 	g_GameClients[host_client - g_psvs.clients]->SetSpawnedOnce(false);
 #endif // REHLDS_FIXES
 
-	bIsSecure = Steam_GSBSecure();
+	//bIsSecure = Steam_GSBSecure();
 	Netchan_OutOfBandPrint(NS_SERVER, adr, "%c %i \"%s\" %i %i", S2C_CONNECTION, host_client->userid, NET_AdrToString(host_client->netchan.remote_address), bIsSecure, build_number());
 	Log_Printf("\"%s<%i><%s><>\" connected, address \"%s\"\n", name, host_client->userid, SV_GetClientIDString(host_client), NET_AdrToString(host_client->netchan.remote_address));
 #ifdef REHLDS_FIXES
@@ -2541,10 +2572,9 @@ void EXT_FUNC SV_ConnectClient_internal()
 	host_client->sendinfo_time = 0.0f;
 
 	// Rehlds Security
-	Rehlds_Security_ClientConnected(host_client - g_psvs.clients);
+	//Rehlds_Security_ClientConnected(host_client - g_psvs.clients);
 
-	g_RehldsHookchains.m_ClientConnected.callChain(
-	NULL, GetRehldsApiClient(host_client));
+	//g_RehldsHookchains.m_ClientConnected.callChain(NULL, GetRehldsApiClient(host_client));
 }
 
 void SVC_Ping()
@@ -2606,17 +2636,15 @@ void SVC_GetChallenge()
 	qboolean steam = (Cmd_Argc() == 2 && !Q_stricmp(Cmd_Argv(1), "steam"));
 	int challenge = SV_GetChallenge(net_from);
 
-	if(steam)
-		Q_snprintf(
-		data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 3 %lld %d\n", S2C_CHALLENGE, challenge, g_RehldsHookchains.m_Steam_GSGetSteamID.callChain(Steam_GSGetSteamID), Steam_GSBSecure());
-	else
-	{
-		Con_DPrintf("Server requiring authentication\n");
-		Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 2\n", S2C_CHALLENGE, challenge);
-	}
+	//if(steam)
+		//Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 3 %lld %d\n", S2C_CHALLENGE, challenge, g_RehldsHookchains.m_Steam_GSGetSteamID.callChain(Steam_GSGetSteamID), Steam_GSBSecure());
+	//else
+	//{
+		//Con_DPrintf("Server requiring authentication\n");Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 2\n", S2C_CHALLENGE, challenge);
+	//}
 
 	// Give 3-rd party plugins a chance to modify challenge response
-	g_RehldsHookchains.m_SVC_GetChallenge_mod.callChain(NULL, data, challenge);
+	//g_RehldsHookchains.m_SVC_GetChallenge_mod.callChain(NULL, data, challenge);
 	NET_SendPacket(NS_SERVER, Q_strlen(data) + 1, data, net_from);
 }
 
@@ -2936,15 +2964,15 @@ NOXREF void SVC_InfoString()
 	Info_SetValueForKey(info, "hostname", Cvar_VariableString("hostname"), ARRAYSIZE(info));
 	Info_SetValueForKey(info, "map", g_psv.name, ARRAYSIZE(info));
 
-	const char *type;
-	if(g_pcls.state)
+	const char *type = "d";
+	
+	if(cls.state)
 		type = "l";
-	else
-		type = "d";
+	
 	Info_SetValueForKey(info, "type", type, sizeof(info));
 	Info_SetValueForKey(info, "password", va("%i", iHasPW), sizeof(info));
 	Info_SetValueForKey(info, "os", szOS, sizeof(info));
-	Info_SetValueForKey(info, "secure", Steam_GSBSecure() ? "0" : "1", sizeof(info));
+	//Info_SetValueForKey(info, "secure", Steam_GSBSecure() ? "0" : "1", sizeof(info));
 
 	if(gmodinfo.bIsMod)
 	{
@@ -3031,7 +3059,7 @@ NOXREF void SVC_Info(qboolean bDetailed)
 
 	if(bDetailed)
 	{
-		MSG_WriteByte(&buf, g_pcls.state != ca_dedicated ? 108 : 100);
+		MSG_WriteByte(&buf, cls.state != ca_dedicated ? 108 : 100);
 
 #ifdef _WIN32
 		MSG_WriteByte(&buf, 119);
@@ -3059,7 +3087,7 @@ NOXREF void SVC_Info(qboolean bDetailed)
 		else
 			MSG_WriteByte(&buf, 0);
 
-		MSG_WriteByte(&buf, Steam_GSBSecure() != FALSE);
+		//MSG_WriteByte(&buf, Steam_GSBSecure() != FALSE);
 		MSG_WriteByte(&buf, SV_GetFakeClientCount());
 	}
 	NET_SendPacket(NS_SERVER, buf.cursize, (char *)buf.data, net_from);
@@ -3671,8 +3699,8 @@ void SV_ReadPackets()
 			continue;
 		}
 
-		bool pass = g_RehldsHookchains.m_PreprocessPacket.callChain(
-		NET_GetPacketPreprocessor, net_message.data, net_message.cursize, net_from);
+		bool pass = false; //g_RehldsHookchains.m_PreprocessPacket.callChain(
+		//NET_GetPacketPreprocessor, net_message.data, net_message.cursize, net_from);
 		if(!pass)
 			continue;
 
@@ -3681,7 +3709,7 @@ void SV_ReadPackets()
 			// Connectionless packet
 			if(CheckIP(net_from))
 			{
-				Steam_HandleIncomingPacket(net_message.data, net_message.cursize, ntohl(*(u_long *)&net_from.ip[0]), htons(net_from.port));
+				//Steam_HandleIncomingPacket(net_message.data, net_message.cursize, ntohl(*(u_long *)&net_from.ip[0]), htons(net_from.port));
 				SV_ConnectionlessPacket();
 			}
 			else if(sv_logblocks.value != 0.0f)
@@ -3860,8 +3888,8 @@ void SV_FullClientUpdate(client_t *cl, sizebuf_t *sb)
 		Info_RemovePrefixedKeys(info, '_');
 	}
 
-	g_RehldsHookchains.m_SV_WriteFullClientUpdate.callChain(
-	SV_WriteFullClientUpdate_internal, GetRehldsApiClient(cl), info, MAX_INFO_STRING, sb, GetRehldsApiClient((sb == &g_psv.reliable_datagram) ? nullptr : host_client));
+	//g_RehldsHookchains.m_SV_WriteFullClientUpdate.callChain(
+	//SV_WriteFullClientUpdate_internal, GetRehldsApiClient(cl), info, MAX_INFO_STRING, sb, GetRehldsApiClient((sb == &g_psv.reliable_datagram) ? nullptr : host_client));
 }
 
 void EXT_FUNC SV_EmitEvents_api(IGameClient *cl, packet_entities_t *pack, sizebuf_t *ms)
@@ -3871,8 +3899,7 @@ void EXT_FUNC SV_EmitEvents_api(IGameClient *cl, packet_entities_t *pack, sizebu
 
 void SV_EmitEvents(client_t *cl, packet_entities_t *pack, sizebuf_t *ms)
 {
-	g_RehldsHookchains.m_SV_EmitEvents.callChain(
-	SV_EmitEvents_api, GetRehldsApiClient(cl), pack, ms);
+	//g_RehldsHookchains.m_SV_EmitEvents.callChain(SV_EmitEvents_api, GetRehldsApiClient(cl), pack, ms);
 }
 
 void SV_EmitEvents_internal(client_t *cl, packet_entities_t *pack, sizebuf_t *msg)
@@ -4264,8 +4291,8 @@ int EXT_FUNC SV_CreatePacketEntities_api(sv_delta_t type, IGameClient *client, p
 
 int SV_CreatePacketEntities(sv_delta_t type, client_t *client, packet_entities_t *to, sizebuf_t *msg)
 {
-	return g_RehldsHookchains.m_SV_CreatePacketEntities.callChain(
-	SV_CreatePacketEntities_api, type, GetRehldsApiClient(client), to, msg);
+	return 0; //g_RehldsHookchains.m_SV_CreatePacketEntities.callChain(
+	//SV_CreatePacketEntities_api, type, GetRehldsApiClient(client), to, msg);
 }
 
 int SV_CreatePacketEntities_internal(sv_delta_t type, client_t *client, packet_entities_t *to, sizebuf_t *msg)
@@ -4982,7 +5009,7 @@ void SV_ExtractFromUserinfo(client_t *cl)
 	Q_strncpy(cl->name, val, sizeof(cl->name) - 1);
 	cl->name[sizeof(cl->name) - 1] = '\0';
 
-	ISteamGameServer_BUpdateUserData(cl->network_userid.m_SteamID, cl->name, 0);
+	//ISteamGameServer_BUpdateUserData(cl->network_userid.m_SteamID, cl->name, 0);
 
 	val = Info_ValueForKey(userinfo, "rate");
 	if(val[0] != 0)
@@ -5394,8 +5421,7 @@ void SV_PropagateCustomizations()
 
 void SV_WriteVoiceCodec(sizebuf_t *pBuf)
 {
-	g_RehldsHookchains.m_SV_WriteVoiceCodec.callChain(SV_WriteVoiceCodec_internal,
-	                                                  pBuf);
+	//g_RehldsHookchains.m_SV_WriteVoiceCodec.callChain(SV_WriteVoiceCodec_internal, pBuf);
 }
 
 void EXT_FUNC SV_WriteVoiceCodec_internal(sizebuf_t *pBuf)
@@ -5431,6 +5457,7 @@ void EXT_FUNC SV_WriteVoiceCodec_internal(sizebuf_t *pBuf)
  */
 void __invokeValvesBuggedCreateBaseline(void *func, int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, vec_t *pmins, vec_t *pmaxs)
 {
+	/*
 	__asm {
 		mov ecx, func
 		push 0
@@ -5447,6 +5474,7 @@ void __invokeValvesBuggedCreateBaseline(void *func, int player, int eindex, stru
 		call ecx
 		add esp, 0x2C
 	}
+	*/
 }
 
 void SV_CreateBaseline()
@@ -5730,8 +5758,7 @@ void MoveCheckedResourcesToFirstPositions()
 
 void SV_ActivateServer(int runPhysics)
 {
-	g_RehldsHookchains.m_SV_ActivateServer.callChain(SV_ActivateServer_internal,
-	                                                 runPhysics);
+	//g_RehldsHookchains.m_SV_ActivateServer.callChain(SV_ActivateServer_internal,runPhysics);
 }
 
 void EXT_FUNC SV_ActivateServer_internal(int runPhysics)
@@ -5753,10 +5780,10 @@ void EXT_FUNC SV_ActivateServer_internal(int runPhysics)
 	SetCStrikeFlags();
 	Cvar_Set("sv_newunit", "0");
 
-	ContinueLoadingProgressBar("Server", 8, 0.0f);
+	//ContinueLoadingProgressBar("Server", 8, 0.0f);
 	gEntityInterface.pfnServerActivate(g_psv.edicts, g_psv.num_edicts, g_psvs.maxclients);
-	Steam_Activate();
-	ContinueLoadingProgressBar("Server", 9, 0.0f);
+	//Steam_Activate();
+	//ContinueLoadingProgressBar("Server", 9, 0.0f);
 #ifdef REHLDS_FIXES
 	// Precache after all models and sounds is precached, because we use
 	// PrecacheGeneric, which checks is that resource already precached as model
@@ -5769,7 +5796,7 @@ void EXT_FUNC SV_ActivateServer_internal(int runPhysics)
 #endif
 	g_psv.active = TRUE;
 	g_psv.state = ss_active;
-	ContinueLoadingProgressBar("Server", 10, 0.0f);
+	//ContinueLoadingProgressBar("Server", 10, 0.0f);
 
 	if(!runPhysics)
 	{
@@ -5840,7 +5867,7 @@ void EXT_FUNC SV_ActivateServer_internal(int runPhysics)
 
 void SV_ServerShutdown()
 {
-	Steam_NotifyOfLevelChange();
+	//Steam_NotifyOfLevelChange();
 	gGlobalVariables.time = g_psv.time;
 
 	if(g_psvs.dll_initialized)
@@ -5915,7 +5942,7 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 		current_skill = 3;
 
 	Cvar_SetValue("skill", current_skill);
-	ContinueLoadingProgressBar("Server", 2, 0.0f);
+	//ContinueLoadingProgressBar("Server", 2, 0.0f);
 
 	HPAK_CheckSize("custom");
 	oldname[0] = 0;
@@ -6017,8 +6044,8 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 	g_psv.paused = FALSE;
 	gGlobalVariables.time = 1.0f;
 
-	R_ForceCVars((qboolean)(g_psvs.maxclients > 1));
-	ContinueLoadingProgressBar("Server", 3, 0.0f);
+	//R_ForceCVars((qboolean)(g_psvs.maxclients > 1));
+	//ContinueLoadingProgressBar("Server", 3, 0.0f);
 
 	Q_snprintf(g_psv.modelname, sizeof(g_psv.modelname), "maps/%s.bsp", server);
 	g_psv.worldmodel = Mod_ForName(g_psv.modelname, FALSE, FALSE);
@@ -6031,7 +6058,7 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 	}
 
 	Sequence_OnLevelLoad(server);
-	ContinueLoadingProgressBar("Server", 4, 0.0);
+	//ContinueLoadingProgressBar("Server", 4, 0.0);
 	if(gmodinfo.clientDllCRC)
 	{
 		char szDllName[64];
@@ -6044,7 +6071,8 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 			return 0;
 		}
 	}
-	ContinueLoadingProgressBar("Server", 6, 0.0);
+	
+	//ContinueLoadingProgressBar("Server", 6, 0.0);
 
 	if(g_psvs.maxclients <= 1)
 		g_psv.worldmapCRC = 0;
@@ -6101,9 +6129,9 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 	g_psv.edicts->v.movetype = MOVETYPE_PUSH;
 
 	if(coop.value == 0.0f)
-		gGlobalVariables.deathmatch_ = deathmatch.value;
+		gGlobalVariables.deathmatch = deathmatch.value;
 	else
-		gGlobalVariables.coop_ = coop.value;
+		gGlobalVariables.coop = coop.value;
 
 	gGlobalVariables.serverflags = g_psvs.serverflags;
 	gGlobalVariables.mapname = (size_t)g_psv.name - (size_t)pr_strings;
@@ -6374,7 +6402,8 @@ USERID_t *SV_StringToUserID(const char *str)
 		id.idtype = AUTH_IDTYPE_STEAM;
 	}
 	szTemp[127] = 0;
-	id.m_SteamID = Steam_StringToSteamID(szTemp);
+	
+	//id.m_SteamID = Steam_StringToSteamID(szTemp);
 
 	return &id;
 }
@@ -6498,7 +6527,7 @@ void SV_BanId_f()
 	(banTime == 0.0f) ? 0.0f : banTime * 60.0f + realtime;
 
 	// give 3-rd party plugins a chance to serialize ID
-	g_RehldsHookchains.m_SerializeSteamId.callChain(SV_SerializeSteamid, id, &userfilters[i].userid);
+	//g_RehldsHookchains.m_SerializeSteamId.callChain(SV_SerializeSteamid, id, &userfilters[i].userid);
 
 	if(banTime == 0.0f)
 		Q_sprintf(szreason, "permanently");
@@ -6509,7 +6538,7 @@ void SV_BanId_f()
 	if(cmd_source == src_command)
 	{
 #ifndef SWDS
-		pszCmdGiver = (g_pcls.state != ca_dedicated) ? cv_name.string : "Console";
+		pszCmdGiver = (cls.state != ca_dedicated) ? cl_name.string : "Console";
 #else
 		pszCmdGiver = "Console";
 #endif // SWDS
@@ -6703,7 +6732,7 @@ void Host_Kick_f()
 		if(cmd_source == src_command)
 		{
 #ifndef SWDS
-			who = (g_pcls.state != ca_dedicated) ? cv_name.string : "Console";
+			who = (cls.state != ca_dedicated) ? cl_name.string : "Console";
 #else
 			who = "Console";
 #endif // SWDS
@@ -7451,7 +7480,7 @@ void SV_SetMaxclients()
 			g_psvs.maxclients = 6;
 	}
 
-	g_pcls.state = (cactive_t)(g_bIsDedicatedServer == FALSE);
+	cls.state = (cactive_t)(g_bIsDedicatedServer == FALSE);
 
 	if(g_psvs.maxclients > 32)
 		g_psvs.maxclients = 32;
@@ -7550,7 +7579,7 @@ void SV_CheckCmdTimes()
 
 void SV_CheckForRcon()
 {
-	if(g_psv.active || g_pcls.state != ca_dedicated || giActive == DLL_CLOSE ||
+	if(g_psv.active || cls.state != ca_dedicated || giActive == DLL_CLOSE ||
 	   !host_initialized)
 		return;
 
@@ -7624,7 +7653,7 @@ void SV_Frame()
 	SV_SendClientMessages();
 	SV_CheckMapDifferences();
 	SV_GatherStatistics();
-	Steam_RunFrame();
+	//Steam_RunFrame();
 }
 
 void SV_Drop_f()
@@ -7930,8 +7959,8 @@ void SV_Shutdown()
 
 qboolean SV_CompareUserID(USERID_t *id1, USERID_t *id2)
 {
-	return g_RehldsHookchains.m_SV_CompareUserID.callChain(
-	SV_CompareUserID_internal, id1, id2);
+	//return g_RehldsHookchains.m_SV_CompareUserID.callChain(SV_CompareUserID_internal, id1, id2);
+	return false;
 }
 
 qboolean EXT_FUNC SV_CompareUserID_internal(USERID_t *id1, USERID_t *id2)
@@ -7959,8 +7988,8 @@ qboolean EXT_FUNC SV_CompareUserID_internal(USERID_t *id1, USERID_t *id2)
 
 char *SV_GetIDString(USERID_t *id)
 {
-	return g_RehldsHookchains.m_SV_GetIDString.callChain(SV_GetIDString_internal,
-	                                                     id);
+	//return g_RehldsHookchains.m_SV_GetIDString.callChain(SV_GetIDString_internal, id);
+	return nullptr;
 }
 
 char *EXT_FUNC SV_GetIDString_internal(USERID_t *id)
@@ -7987,8 +8016,8 @@ char *EXT_FUNC SV_GetIDString_internal(USERID_t *id)
 		}
 		else
 		{
-			TSteamGlobalUserID steam2ID = Steam_Steam3IDtoSteam2(id->m_SteamID);
-			Q_snprintf(idstr, ARRAYSIZE(idstr) - 1, "STEAM_%u:%u:%u", steam2ID.m_SteamInstanceID, steam2ID.m_SteamLocalUserID.Split.High32bits, steam2ID.m_SteamLocalUserID.Split.Low32bits);
+			//TSteamGlobalUserID steam2ID = Steam_Steam3IDtoSteam2(id->m_SteamID);
+			//Q_snprintf(idstr, ARRAYSIZE(idstr) - 1, "STEAM_%u:%u:%u", steam2ID.m_SteamInstanceID, steam2ID.m_SteamLocalUserID.Split.High32bits, steam2ID.m_SteamLocalUserID.Split.Low32bits);
 		}
 		break;
 	case AUTH_IDTYPE_VALVE:
@@ -8002,8 +8031,8 @@ char *EXT_FUNC SV_GetIDString_internal(USERID_t *id)
 		}
 		else
 		{
-			TSteamGlobalUserID steam2ID = Steam_Steam3IDtoSteam2(id->m_SteamID);
-			Q_snprintf(idstr, ARRAYSIZE(idstr) - 1, "VALVE_%u:%u:%u", steam2ID.m_SteamInstanceID, steam2ID.m_SteamLocalUserID.Split.High32bits, steam2ID.m_SteamLocalUserID.Split.Low32bits);
+			//TSteamGlobalUserID steam2ID = Steam_Steam3IDtoSteam2(id->m_SteamID);
+			//Q_snprintf(idstr, ARRAYSIZE(idstr) - 1, "VALVE_%u:%u:%u", steam2ID.m_SteamInstanceID, steam2ID.m_SteamLocalUserID.Split.High32bits, steam2ID.m_SteamLocalUserID.Split.Low32bits);
 		}
 		break;
 	case AUTH_IDTYPE_LOCAL:

@@ -35,12 +35,14 @@
 #include "system/system.hpp"
 #include "system/host.hpp"
 #include "system/sizebuf.hpp"
+#include "resources/l_studio.hpp"
 #include "network/net_msg.hpp"
 #include "console/console.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
 #include "client/client.hpp"
 #include "server/server.hpp"
+#include "mathlib_local.hpp"
 
 int net_drop;
 char gDownloadFile[256];
@@ -1122,6 +1124,8 @@ void Netchan_CreateFragments_(qboolean server, netchan_t *chan, sizebuf_t *msg)
 		unsigned int compressedSize =
 		msg->cursize - sizeof(hdr); // we should fit in same data buffer minus 4
 		                            // bytes for a header
+		
+		/*
 		if(!BZ2_bzBuffToBuffCompress((char *)compressed, &compressedSize, (char *)msg->data, msg->cursize, 9, 0, 30))
 		{
 			Con_DPrintf("Compressing split packet (%d -> %d bytes)\n", msg->cursize, compressedSize);
@@ -1129,6 +1133,7 @@ void Netchan_CreateFragments_(qboolean server, netchan_t *chan, sizebuf_t *msg)
 			Q_memcpy(msg->data + sizeof(hdr), compressed, compressedSize);
 			msg->cursize = compressedSize + sizeof(hdr);
 		}
+		*/
 	}
 
 	chunksize = chan->pfnNetchan_Blocksize(chan->connection_status);
@@ -1240,8 +1245,8 @@ void Netchan_CreateFileFragmentsFromBuffer(qboolean server, netchan_t *chan, con
 			Mem_Free(wait);
 			if(server)
 				SV_DropClient(host_client, 0, "Malloc problem");
-			else
-				rehlds_syserror("%s Reverse me: client-side code", __FUNCTION__);
+			//else
+				//rehlds_syserror("%s Reverse me: client-side code", __FUNCTION__);
 
 #ifdef REHLDS_FIXES
 			if(bCompressed)
@@ -1406,6 +1411,7 @@ int Netchan_CreateFileFragments_(qboolean server, netchan_t *chan, const char *f
 			unsigned char *compressed = (unsigned char *)Mem_Malloc(filesize);
 			unsigned int compressedSize = filesize;
 			FS_Read(uncompressed, filesize, 1, hfile);
+			/*
 			if(BZ_OK == BZ2_bzBuffToBuffCompress((char *)compressed, &compressedSize, (char *)uncompressed, filesize, 9, 0, 30))
 			{
 				FileHandle_t destFile = FS_Open(compressedfilename, "wb");
@@ -1421,6 +1427,7 @@ int Netchan_CreateFileFragments_(qboolean server, netchan_t *chan, const char *f
 					bCompressed = 1;
 				}
 			}
+			*/
 			Mem_Free(uncompressed);
 			Mem_Free(compressed);
 		}
@@ -1450,7 +1457,7 @@ int Netchan_CreateFileFragments_(qboolean server, netchan_t *chan, const char *f
 			}
 			else
 			{
-				rehlds_syserror("%s: Reverse clientside code", __FUNCTION__);
+				//rehlds_syserror("%s: Reverse clientside code", __FUNCTION__);
 				return 0;
 			}
 		}
@@ -1581,7 +1588,7 @@ qboolean Netchan_CopyNormalFragments(netchan_t *chan)
 	{
 		char uncompressed[65536];
 		unsigned int uncompressedSize = 65536;
-		BZ2_bzBuffToBuffDecompress(uncompressed, &uncompressedSize, (char *)net_message.data + 4, net_message.cursize - 4, 1, 0);
+		//BZ2_bzBuffToBuffDecompress(uncompressed, &uncompressedSize, (char *)net_message.data + 4, net_message.cursize - 4, 1, 0);
 		Q_memcpy(net_message.data, uncompressed, uncompressedSize);
 		net_message.cursize = uncompressedSize;
 	}
@@ -1730,7 +1737,7 @@ qboolean Netchan_CopyFileFragments(netchan_t *chan)
 		unsigned char *uncompressedBuffer =
 		(unsigned char *)Mem_Malloc(uncompressedSize);
 		Con_DPrintf("Decompressing file %s (%d -> %d)\n", filename, nsize, uncompressedSize);
-		BZ2_bzBuffToBuffDecompress((char *)uncompressedBuffer, &uncompressedSize, (char *)buffer, nsize, 1, 0);
+		//BZ2_bzBuffToBuffDecompress((char *)uncompressedBuffer, &uncompressedSize, (char *)buffer, nsize, 1, 0);
 		Mem_Free(buffer);
 		pos = uncompressedSize;
 		buffer = uncompressedBuffer;

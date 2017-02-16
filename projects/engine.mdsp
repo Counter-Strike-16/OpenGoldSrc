@@ -162,6 +162,9 @@ extraResourceOptions=
 79=..\ogs\engine\butcherpete\client\cl_cam.cpp
 80=..\ogs\engine\butcherpete\client\cl_demo.cpp
 81=..\ogs\engine\butcherpete\network\delta_jit.cpp
+82=..\ogs\engine\butcherpete\server\sv_main.cpp
+83=..\ogs\engine\butcherpete\network\netapi.cpp
+84=..\ogs\engine\butcherpete\network\net_chan.cpp
 [Header]
 [Resource]
 [Other]
