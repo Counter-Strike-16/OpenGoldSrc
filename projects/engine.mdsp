@@ -12,7 +12,7 @@ intermediateFilesDirectory=../build/mdsp/debug/engine
 outputFilesDirectory=../build/mdsp/debug/engine
 compilerPreprocessor=REHLDS_SELF
 extraCompilerOptions=-std=c++11 -msse4.1 -fpermissive
-compilerIncludeDirectory=..\ogs\engine\butcherpete;..\ogs\common;..\ogs\public;..\ogs\hookers;..\ogs\rehlds;..\hlsdk
+compilerIncludeDirectory=..\ogs\engine\butcherpete;..\ogs\ogsapi;..\ogs\common;..\ogs\public;..\ogs\hookers;..\ogs\rehlds;..\hlsdk
 noWarning=1
 defaultWarning=0
 allWarning=0
@@ -158,7 +158,12 @@ extraResourceOptions=
 75=..\ogs\engine\butcherpete\network\net_ws.cpp
 76=..\ogs\engine\butcherpete\world\pr_cmds.cpp
 77=..\ogs\engine\butcherpete\world\eventapi.cpp
+78=..\ogs\engine\butcherpete\client\demoapi.cpp
+79=..\ogs\engine\butcherpete\client\cl_cam.cpp
+80=..\ogs\engine\butcherpete\client\cl_demo.cpp
+81=..\ogs\engine\butcherpete\network\delta_jit.cpp
 [Header]
 [Resource]
 [Other]
 [History]
+..\ogs\engine\butcherpete\hdrfix.cpp,565

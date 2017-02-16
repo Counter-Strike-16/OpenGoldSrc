@@ -32,11 +32,11 @@
 
 #include "SteamCommon.h"
 #include "maintypes.h"
+#include "system/common.hpp"
 #include "server/server.hpp"
 #include "steam/steam_api.h"
 #include "steam/steam_gameserver.h"
 #include "steam/steamclientpublic.h"
-#include "system/common.hpp"
 
 class CSteamID;
 class CSteam3

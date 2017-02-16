@@ -31,7 +31,7 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "IConsole.hpp"
+#include "console/IConsole.hpp"
 
 const int CON_TEXTSIZE = 32768; // 16384;
 
