@@ -348,6 +348,7 @@ cvar_t sv_rehlds_hull_centering = { "sv_rehlds_hull_centering", "0", 0, 0.0f, nu
 cvar_t sv_rcon_condebug = { "sv_rcon_condebug", "1", 0, 1.0f, nullptr };
 cvar_t sv_rehlds_userinfo_transmitted_fields = {
 	"sv_rehlds_userinfo_transmitted_fields", "", 0, 0.0f, nullptr
+cvar_t sv_rehlds_attachedentities_playeranimationspeed_fix = {"sv_rehlds_attachedentities_playeranimationspeed_fix", "0", 0, 0.0f, nullptr};
 };
 #endif
 
@@ -4649,6 +4650,34 @@ void SV_WriteEntitiesToClient(client_t *client, sizebuf_t *msg)
 #endif // REHLDS_OPT_PEDANTIC
 	}
 
+#ifdef REHLDS_FIXES
+	if (sv_rehlds_attachedentities_playeranimationspeed_fix.value != 0)
+	{
+		int attachedEntCount[MAX_CLIENTS + 1] = {};
+		for (int i = curPack->num_entities - 1; i >= 0; i--)
+		{
+			auto &entityState = curPack->entities[i];
+			if (entityState.number > MAX_CLIENTS)
+			{
+				if (entityState.movetype == MOVETYPE_FOLLOW
+					&& 1 <= entityState.aiment && entityState.aiment <= MAX_CLIENTS)
+				{
+					attachedEntCount[entityState.aiment]++;
+				}
+			}
+			else
+			{
+				if (attachedEntCount[entityState.number] != 0)
+				{
+					// Each attached entity causes StudioProcessGait for player
+					// But this will slow down normal animation predicting on client
+					entityState.framerate /= (1 + attachedEntCount[entityState.number]);
+				}
+			}
+		}
+	}
+#endif
+
 // for REHLDS_FIXES: Entities are already in the frame's storage, no need to
 // copy them
 #ifndef REHLDS_OPT_PEDANTIC
@@ -7913,6 +7942,7 @@ void SV_Init()
 	Cvar_RegisterVariable(&sv_rehlds_hull_centering);
 	Cvar_RegisterVariable(&sv_rcon_condebug);
 	Cvar_RegisterVariable(&sv_rehlds_userinfo_transmitted_fields);
+	Cvar_RegisterVariable(&sv_rehlds_attachedentities_playeranimationspeed_fix);
 #endif
 
 	for(int i = 0; i < MAX_MODELS; i++)

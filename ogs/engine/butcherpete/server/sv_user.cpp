@@ -274,6 +274,7 @@ void SV_ParseConsistencyResponse(client_t *pSenderClient)
 			                                                        // printed in
 			                                                        // console if
 			                                                        // exists.
+			return;
 		}
 #else  // REHLDS_FIXES
 		if(gEntityInterface.pfnInconsistentFile(
@@ -284,12 +285,13 @@ void SV_ParseConsistencyResponse(client_t *pSenderClient)
 
 			SV_DropClient(host_client, FALSE, "Bad file %s", dropmessage);
 		}
-#endif // REHLDS_FIXES
-
+		
 		return;
+#endif // REHLDS_FIXES
 	}
-
-	host_client->has_force_unmodified = 0;
+	
+	// Reset has_force_unmodified if we have received response from the client
+	host_client->has_force_unmodified = FALSE;
 }
 
 qboolean EXT_FUNC SV_FileInConsistencyList(const char *filename,
