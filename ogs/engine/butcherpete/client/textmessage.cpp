@@ -29,9 +29,13 @@
 /// @file
 
 //#include "precompiled.hpp"
-#include "client/tmessage.hpp"
-#include "console/console.hpp"
+#include "client/textmessage.hpp"
+#include "memory/mem.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
+#include "console/console.hpp"
+#include "common/Sequence.h"
+#include "engine/cdll_int.h"
 
 char gNetworkTextMessageBuffer[MAX_NETMESSAGE][512];
 client_textmessage_t gMessageParms;
@@ -473,10 +477,10 @@ NOXREF void TextMessageInit()
 NOXREF client_textmessage_t *TextMessageGet(const char *pName)
 {
 #ifndef SWDS
-	g_engdstAddrs->pfnTextMessageGet(&pName);
+	g_engdstAddrs.pfnTextMessageGet(&pName);
 
-	if(!Q_stricmp(pName, DEMO_MESSAGE))
-		return &tm_demomessage;
+	//if(!Q_stricmp(pName, DEMO_MESSAGE))
+		//return &tm_demomessage;
 #endif // SWDS
 
 	if(!Q_stricmp(pName, NETWORK_MESSAGE1))

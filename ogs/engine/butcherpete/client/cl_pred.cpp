@@ -50,6 +50,7 @@ allow for the cut precision of the net coordinates
 */
 void CL_NudgePosition()
 {
+	/*
 	vec3_t base;
 	int x, y;
 
@@ -70,6 +71,7 @@ void CL_NudgePosition()
 	};
 
 	Con_DPrintf("CL_NudgePosition: stuck\n");
+	*/
 };
 
 /*
@@ -77,10 +79,10 @@ void CL_NudgePosition()
 CL_PredictUsercmd
 ==============
 */
-void CL_PredictUsercmd(entity_state_t *from, entity_state_t *to, usercmd_t *u,
-                       qboolean spectator) // was player_state_t, but should be
-                                           // local_state_t i think
+void CL_PredictUsercmd(entity_state_t *from, entity_state_t *to, usercmd_t *u, 
+qboolean spectator) // was player_state_t, but should be local_state_t i think
 {
+	/*
 	// split up very long moves
 	if(u->msec > 50)
 	{
@@ -120,6 +122,7 @@ void CL_PredictUsercmd(entity_state_t *from, entity_state_t *to, usercmd_t *u,
 	to->onground = onground;
 
 	to->weaponframe = from->weaponframe;
+	*/
 };
 
 /*
@@ -129,6 +132,7 @@ CL_PredictMove
 */
 void CL_PredictMove(qboolean repredicting)
 {
+	/*
 	int i;
 	float f;
 	frame_t *from, *to = NULL;
@@ -230,6 +234,7 @@ void CL_PredictMove(qboolean repredicting)
 		f * (to->playerstate[cl.playernum].velocity[i] -
 		     from->playerstate[cl.playernum].velocity[i]);
 	};
+	*/
 };
 
 /*
