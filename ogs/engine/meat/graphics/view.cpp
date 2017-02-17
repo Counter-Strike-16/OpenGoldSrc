@@ -29,7 +29,7 @@
 /// @file
 /// @brief player eye positioning
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/view.hpp"
 #include "quakedef.hpp"
 #include "r_local.hpp"

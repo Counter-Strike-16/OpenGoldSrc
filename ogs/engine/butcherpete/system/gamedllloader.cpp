@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/system.hpp"
 #include "system/common.hpp"
 #include "system/host.hpp"
@@ -120,11 +120,26 @@ void LoadEntityDLLs(const char *szBaseDir)
 					Q_strncpy(szValue, com_argv[index + 1], sizeof(szValue) - 1);
 					szValue[sizeof(szValue) - 1] = 0;
 				}
+				
+#ifdef REHLDS_FIXES
+
+				char *value_extension = Q_strrchr(szValue, '.');
+				
+#ifdef _WIN32
+				if (value_extension && Q_strcmp(value_extension, ".dll") == 0)
+#else // _WIN32
+				if (value_extension && Q_strcmp(value_extension, ".so") == 0)
+#endif // _WIN32
+
+#else // REHLDS_FIXES
+
 #ifdef _WIN32
 				if(Q_strstr(szValue, ".dll"))
 #else  // _WIN32
 				if(Q_strstr(szValue, ".so"))
 #endif // _WIN32
+
+#endif // REHLDS_FIXES
 				{
 					FS_GetLocalPath(szValue, szDllFilename, sizeof(szDllFilename));
 					Con_DPrintf("\nAdding:  %s/%s\n", szGameDir, szValue);

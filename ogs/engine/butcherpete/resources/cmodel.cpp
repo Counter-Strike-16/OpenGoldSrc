@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "resources/cmodel.hpp"
 #include "console/console.hpp"
 #include "memory/mem.hpp"
@@ -53,18 +53,19 @@ unsigned char *Mod_DecompressVis(unsigned char *in, model_t *model)
 	static unsigned char decompressed[MODEL_MAX_PVS];
 
 	if(in == NULL)
-	{
 		return mod_novis;
-	}
-
+	
+#ifdef REHLDS_FIXES
+	CM_DecompressPVS(in, decompressed, (model->numleafs + 7) / 8);
+#else
 	int row = (model->numleafs + 7) / 8;
-	// TODO: Move to model loading code
+	
 	if(row < 0 || row > MODEL_MAX_PVS)
-	{
 		Sys_Error("%s: oversized model->numleafs: %i", __FUNCTION__, model->numleafs);
-	}
 
 	CM_DecompressPVS(in, decompressed, row);
+#endif
+	
 	return decompressed;
 }
 

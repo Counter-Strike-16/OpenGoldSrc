@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "maintypes.h"
 #include "server/server.hpp"
 

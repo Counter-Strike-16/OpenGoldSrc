@@ -37,7 +37,7 @@
  * Player moves as a spectator, but the camera tracks and enemy player
  */
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/client.hpp"
 #include "console/console.hpp"
 #include "network/net_msg.hpp"

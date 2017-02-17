@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "resources/decal.hpp"
 #include "resources/textures.hpp"
 #include "memory/mem.hpp"

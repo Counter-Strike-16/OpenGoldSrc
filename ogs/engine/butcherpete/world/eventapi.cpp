@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "common/event_api.h"
 #include "physics/sv_pmove.hpp"
 #include "client/client.hpp"

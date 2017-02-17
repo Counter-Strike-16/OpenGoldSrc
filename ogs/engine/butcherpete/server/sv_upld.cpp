@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "server/sv_upld.hpp"
 #include "server/server.hpp"
 #include "memory/mem.hpp"

@@ -29,7 +29,7 @@ misrepresented as being the original software.
 (this is the zlib license)
 */
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "math/sse_mathfun.hpp"
 
 /* natural logarithm computed for 4 simultaneous float

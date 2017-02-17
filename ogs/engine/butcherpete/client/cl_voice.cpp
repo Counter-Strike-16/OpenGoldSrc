@@ -29,7 +29,7 @@
 /// @file
 /// @brief client side voice subsystem funcs
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/client.hpp"
 
 void CL_AddVoiceToDatagram(qboolean bFinal)

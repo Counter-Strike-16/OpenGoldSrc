@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "memory/zone.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"

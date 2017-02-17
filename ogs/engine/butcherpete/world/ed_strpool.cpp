@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "world/ed_strpool.hpp"
 #include "common/commontypes.h"
 #include "memory/zone.hpp"

@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "network/delta_jit.hpp"
 #include "network/delta.hpp"
 #include "system/system.hpp"

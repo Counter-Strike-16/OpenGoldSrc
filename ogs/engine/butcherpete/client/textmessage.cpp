@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/textmessage.hpp"
 #include "memory/mem.hpp"
 #include "system/common.hpp"

@@ -29,7 +29,7 @@
 /// @file
 /// @brief export api of network module for client dll
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "common/commontypes.h"
 #include "common/net_api.h"
 #include "system/common.hpp"

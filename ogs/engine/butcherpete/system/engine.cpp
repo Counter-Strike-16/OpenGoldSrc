@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/engine.hpp"
 #include "system/host.hpp"
 #include "system/system.hpp"

@@ -29,6 +29,7 @@
 /// @file
 /// @brief null implementation for export client engine funcs
 
+#include "precompiled.hpp"
 #include "engine/cdll_int.h"
 
 namespace

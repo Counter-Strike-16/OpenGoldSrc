@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "world/pr_edict.hpp"
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
@@ -643,8 +643,7 @@ void EXT_FUNC SaveSpawnParms(edict_t *pEdict)
 void *EXT_FUNC GetModelPtr(edict_t *pEdict)
 {
 	if(!pEdict)
-	{
 		return NULL;
-	}
-	return Mod_Extradata(g_psv.models[pEdict->v.modelindex]);
+	
+	return Mod_Extradata(Mod_Handle(pEdict->v.modelindex));
 }

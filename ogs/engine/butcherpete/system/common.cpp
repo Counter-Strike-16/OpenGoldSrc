@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/common.hpp"
 #include "console/console.hpp"
 #include "filesystem/filesystem_.hpp"
@@ -1216,8 +1216,12 @@ void COM_Log(char *pszFile, char *fmt, ...)
 
 	if(!pszFile)
 	{
+#ifdef REHLDS_FIXES
+		pfilename = "hllog.txt";
+#else
 		// Why so serious?
 		pfilename = "c:\\hllog.txt";
+#endif
 	}
 	else
 	{

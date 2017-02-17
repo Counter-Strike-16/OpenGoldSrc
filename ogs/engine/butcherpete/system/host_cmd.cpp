@@ -30,7 +30,7 @@
 
 // TODO: NEED MAJOR REFACTORING
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/host_cmd.hpp"
 #include "system/host.hpp"
 #include "system/system.hpp"
@@ -243,6 +243,10 @@ void Host_InitializeGameDLL()
 	SV_CheckBlendingInterface();
 	SV_CheckSaveGameCommentInterface();
 	Cbuf_Execute();
+	
+#ifdef REHLDS_FIXES // DONE: Set cstrike flags on server start
+	SetCStrikeFlags();
+#endif
 }
 
 void Host_Motd_f()
@@ -2717,12 +2721,18 @@ void Host_Kill_f()
 	{
 		Cmd_ForwardToServer();
 		return;
-	}
-	if(sv_player->v.health <= 0.0f)
+	};
+	
+	if(sv_player->v.health <= 0.0f
+#ifdef REHLDS_FIXES
+	    || sv_player->v.deadflag != DEAD_NO
+#endif
+	)
 	{
 		SV_ClientPrintf("Can't suicide -- already dead!\n");
 		return;
-	}
+	};
+	
 	gGlobalVariables.time = g_psv.time;
 	gEntityInterface.pfnClientKill(sv_player);
 }

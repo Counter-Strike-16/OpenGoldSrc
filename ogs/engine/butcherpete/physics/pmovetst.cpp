@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "physics/pmovetst.hpp"
 #include "physics/pmove.hpp"
 #include "system/system.hpp"

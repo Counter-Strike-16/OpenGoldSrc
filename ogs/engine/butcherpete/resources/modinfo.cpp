@@ -30,7 +30,7 @@
 
 #pragma once
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "resources/modinfo.hpp"
 #include "system/common.hpp"
 #include "server/servertypes.hpp"

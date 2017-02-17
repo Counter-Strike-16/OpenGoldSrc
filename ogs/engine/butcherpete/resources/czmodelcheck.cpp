@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "common/commontypes.h"
 #include "public/archtypes.h"
 #include "system/common.hpp"

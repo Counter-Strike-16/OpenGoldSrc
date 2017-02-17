@@ -26,7 +26,7 @@
  *	version.
  */
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
 #include "system/host_cmd.hpp"

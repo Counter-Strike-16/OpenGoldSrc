@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/client.hpp"
 #include "common/commontypes.h"
 #include "engine/custom.h"

@@ -29,7 +29,7 @@
 /// @file
 /// @brief script command processing component
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "console/cbuf.hpp"
 #include "console/cmd.hpp"
 #include "console/console.hpp"

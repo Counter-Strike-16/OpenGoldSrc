@@ -28,6 +28,7 @@
 
 /// @file
 
+#include "precompiled.hpp"
 #include "voice/voicetweak.hpp"
 
 /*

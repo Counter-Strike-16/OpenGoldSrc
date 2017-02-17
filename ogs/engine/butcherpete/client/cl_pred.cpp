@@ -29,7 +29,7 @@
 /// @file
 /// @brief client side prediction impl
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/client.hpp"
 #include "console/console.hpp"
 #include "console/cvar.hpp"

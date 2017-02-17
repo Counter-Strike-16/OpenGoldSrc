@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "world/pr_cmds.hpp"
 #include "server/server.hpp"
 #include "system/common.hpp"
@@ -194,7 +194,7 @@ int EXT_FUNC PF_modelindex(const char *pstr)
 
 int EXT_FUNC ModelFrames(int modelIndex)
 {
-	if(modelIndex <= 0 || modelIndex >= 512)
+	if(modelIndex <= 0 || modelIndex >= MAX_MODELS)
 	{
 		Con_DPrintf("Bad sprite index!\n");
 		return 1;
@@ -2058,7 +2058,9 @@ edict_t *EXT_FUNC PF_CreateFakeClient_I(const char *netname)
 	Info_SetValueForKey(fakeclient->userinfo, "model", "gordon", MAX_INFO_STRING);
 	Info_SetValueForKey(fakeclient->userinfo, "topcolor", "1", MAX_INFO_STRING);
 	Info_SetValueForKey(fakeclient->userinfo, "bottomcolor", "1", MAX_INFO_STRING);
-	fakeclient->sendinfo = 1;
+	
+	fakeclient->sendinfo = TRUE;
+	
 	SV_ExtractFromUserinfo(fakeclient);
 
 	fakeclient->network_userid.m_SteamID =

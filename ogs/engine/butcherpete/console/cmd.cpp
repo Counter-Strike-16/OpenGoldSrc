@@ -29,7 +29,7 @@
 /// @file
 /// @brief console command system
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 //#include "system/commondef.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
@@ -306,7 +306,9 @@ void Cmd_Alias_f()
 		return;
 	}
 
-	SetCStrikeFlags(); // TODO: Do this once somewhere at the server start
+#ifndef REHLDS_FIXES
+	SetCStrikeFlags();	// DONE: Do this once somewhere at the server start
+#endif
 
 	if((g_bIsCStrike || g_bIsCZero) &&
 	   (!Q_stricmp(s, "cl_autobuy") || !Q_stricmp(s, "cl_rebuy") ||
@@ -515,31 +517,23 @@ NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name)
 	for(cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
 		if(!Q_stricmp(cmd_name, cmd->name))
-		{
 			return cmd;
-		}
 	}
 
 	return NULL;
 }
 
-NOXREF cmd_function_t *Cmd_FindCmdPrev(char *cmd_name)
+cmd_function_t *Cmd_FindCmdPrev(char *cmd_name)
 {
-	NOXREFCHECK;
-
 	cmd_function_t *cmd = NULL;
 
 	if(cmd_functions == NULL)
-	{
 		return NULL;
-	}
 
 	for(cmd = cmd_functions; cmd->next; cmd = cmd->next)
 	{
 		if(!Q_stricmp(cmd_name, cmd->next->name))
-		{
 			return cmd;
-		}
 	}
 
 	return NULL;
@@ -651,6 +645,20 @@ NOXREF void Cmd_AddWrapperCommand(char *cmd_name, xcommand_t function)
 void EXT_FUNC Cmd_AddGameCommand(char *cmd_name, xcommand_t function)
 {
 	Cmd_AddMallocCommand(cmd_name, function, FCMD_GAME_COMMAND);
+}
+
+void EXT_FUNC Cmd_RemoveCmd(char *cmd_name)
+{
+	auto prev = Cmd_FindCmdPrev(cmd_name);
+	
+	if(prev)
+	{
+		auto cmd = prev->next;
+		prev->next = cmd->next;
+
+		Z_Free(cmd->name);
+		Mem_Free(cmd);
+	};
 }
 
 void Cmd_RemoveMallocedCmds(int flag)

@@ -29,7 +29,7 @@
 /// @file
 /// @brief entity parsing and management
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/client.hpp"
 #include "network/net_msg.hpp"
 #include "common/dlight.h"

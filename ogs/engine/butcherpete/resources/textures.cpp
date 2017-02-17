@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "resources/textures.hpp"
 #include "memory/mem.hpp"
 #include "system/common.hpp"
@@ -124,7 +124,7 @@ qboolean TEX_InitFromWad(char *path)
 			continue;
 
 #ifdef REHLDS_FIXES
-		if(g_psv.active && Q_stricmp(wadPath, "halflife.wad") &&
+		if(g_psv.state == ss_loading && Q_stricmp(wadPath, "halflife.wad") &&
 		   Q_stricmp(wadPath, "xeno.wad") && Q_stricmp(wadPath, "decals.wad"))
 			PF_precache_generic_I(wadPath);
 #endif // REHLDS_FIXES

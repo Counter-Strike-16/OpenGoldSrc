@@ -28,6 +28,7 @@
 
 /// @file
 
+#include "precompiled.hpp"
 #include "common/crc.h"
 #include "system/common.hpp"
 #include "filesystem/filesystem_internal.hpp"

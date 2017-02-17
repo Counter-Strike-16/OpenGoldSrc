@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "physics/sv_move.hpp"
 #include "physics/sv_phys.hpp"
 #include "server/server.hpp"

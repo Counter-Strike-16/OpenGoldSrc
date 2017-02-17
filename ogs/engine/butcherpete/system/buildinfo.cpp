@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/buildinfo.hpp"
 #include "system/common.hpp"
 #include "system/systemtypes.hpp"

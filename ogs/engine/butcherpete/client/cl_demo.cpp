@@ -29,7 +29,7 @@
 /// @file
 /// @brief demo recording/playback code
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/cl_demo.hpp"
 #include "client/client.hpp"
 #include "console/cmd.hpp"

@@ -29,7 +29,7 @@
 /// @file
 /// @brief main control for any streaming sound output device
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 //#include "commondef.hpp"
 #include "common/commontypes.h"
 #include "sound/sound.hpp"

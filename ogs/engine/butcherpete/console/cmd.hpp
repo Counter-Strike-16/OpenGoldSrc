@@ -122,7 +122,7 @@ const char *Cmd_Args();
 void Cmd_TokenizeString(char *text);
 
 NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name);
-NOXREF cmd_function_t *Cmd_FindCmdPrev(char *cmd_name);
+cmd_function_t *Cmd_FindCmdPrev(char *cmd_name);
 
 // called by the init functions of other parts of the program to
 // register commands and functions to call for them.
@@ -135,7 +135,7 @@ void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag);
 NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function);
 NOXREF void Cmd_AddWrapperCommand(char *cmd_name, xcommand_t function);
 void Cmd_AddGameCommand(char *cmd_name, xcommand_t function);
-
+void Cmd_RemoveCmd(char *cmd_name);
 void Cmd_RemoveMallocedCmds(int flag);
 NOXREF void Cmd_RemoveHudCmds();
 void Cmd_RemoveGameCmds();

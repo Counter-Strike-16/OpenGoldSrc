@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "server/sv_log.hpp"
 #include "memory/mem.hpp"
 #include "filesystem/filesystem_internal.hpp"

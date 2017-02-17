@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "resources/model_rehlds.hpp"
 #include "resources/l_studio.hpp"
 #include "resources/textures.hpp"
@@ -288,7 +288,10 @@ model_t *Mod_LoadModel(model_t *mod, qboolean crash, qboolean trackCRC)
 			{
 				p->firstCRCDone = 1;
 				p->initialCRC = currentCRC;
+				
+#ifndef REHLDS_FIXES
 				SetCStrikeFlags();
+#endif
 
 				if(!IsGameSubscribed("czero") && g_bIsCStrike && IsCZPlayerModel(currentCRC, mod->name) && cls.state)
 				{
@@ -1013,6 +1016,15 @@ void Mod_LoadLeafs(lump_t *l)
 
 	loadmodel->leafs = out;
 	loadmodel->numleafs = count;
+	
+#ifdef REHLDS_FIXES
+	{
+		int row = (loadmodel->numleafs + 7) / 8;
+ 
+		if (row < 0 || row > MODEL_MAX_PVS)
+			Sys_Error("%s: oversized loadmodel->numleafs: %i", __FUNCTION__, loadmodel->numleafs);
+	}
+#endif
 
 	for(i = 0; i < count; i++, in++, out++)
 	{

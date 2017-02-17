@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/info.hpp"
 #include "console/console.hpp"
 #include "system/common.hpp"

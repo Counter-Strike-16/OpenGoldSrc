@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/dedicatedserverapi.hpp"
 #include "console/cmd.hpp"
 #include "system/common.hpp"
@@ -76,6 +76,11 @@ bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn l
 		Q_snprintf(text, ARRAYSIZE(text), "exec %s\n", servercfgfile.string);
 		text[255] = 0;
 		Cbuf_InsertText(text);
+		
+#ifdef REHLDS_FIXES // DONE: Set cstrike flags on server start
+		SetCStrikeFlags();
+#endif
+		
 		return true;
 	};
 

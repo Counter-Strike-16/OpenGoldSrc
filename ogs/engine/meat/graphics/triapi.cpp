@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "common/triangleapi.h"
 
 // Note: make a special interface ITriAPI that has impl in gl renderdll?

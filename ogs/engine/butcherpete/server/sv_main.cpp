@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "server/server.hpp"
 #include "server/sv_log.hpp"
 #include "server/sv_user.hpp"
@@ -135,7 +135,10 @@ redirect_t sv_redirected;
 netadr_t sv_redirectto;
 
 // Why these are here?
-// TODO: make one global var with mods enum
+// DONE: make one global var with mods enum.
+#ifdef REHLDS_FIXES
+GameType_e g_eGameType = GT_Unitialized;
+#else
 int g_bCS_CZ_Flags_Initialized;
 int g_bIsCZero;
 int g_bIsCZeroRitual;
@@ -143,6 +146,7 @@ int g_bIsTerrorStrike;
 int g_bIsTFC;
 int g_bIsHL1;
 int g_bIsCStrike;
+#endif
 
 qboolean allow_cheats;
 
@@ -5322,6 +5326,11 @@ void SV_CreateGenericResources()
 		data = COM_Parse(data);
 		if(Q_strlen(com_token) <= 0)
 			break;
+		
+#ifdef REHLDS_FIXES
+		char *com_token_extension = Q_strrchr(com_token, '.');
+		bool successful = false;
+#endif
 
 		if(Q_strstr(com_token, ".."))
 			Con_Printf("Can't precache resource with invalid relative path %s\n",
@@ -5331,6 +5340,32 @@ void SV_CreateGenericResources()
 		else if(Q_strstr(com_token, "\\"))
 			Con_Printf("Can't precache resource with invalid relative path %s\n",
 			           com_token);
+#ifdef REHLDS_FIXES
+		else if(com_token_extension)
+		{
+			if (Q_strcmp(com_token_extension, ".cfg") == 0)
+				Con_Printf("Can't precache .cfg files:  %s\n", com_token);
+			else if (Q_strcmp(com_token_extension, ".lst") == 0)
+				Con_Printf("Can't precache .lst files:  %s\n", com_token);
+			else if (Q_strcmp(com_token_extension, ".exe") == 0)
+				Con_Printf("Can't precache .exe files:  %s\n", com_token);
+			else if (Q_strcmp(com_token_extension, ".vbs") == 0)
+				Con_Printf("Can't precache .vbs files:  %s\n", com_token);
+			else if (Q_strcmp(com_token_extension, ".com") == 0)
+				Con_Printf("Can't precache .com files:  %s\n", com_token);
+			else if (Q_strcmp(com_token_extension, ".bat") == 0)
+				Con_Printf("Can't precache .bat files:  %s\n", com_token);
+			else if (Q_strcmp(com_token_extension, ".dll") == 0)
+				Con_Printf("Can't precache .dll files:  %s\n", com_token);
+			else
+				successful = true;
+				
+		}
+		else
+			successful = true;
+
+		if(successful)
+#else
 		else if(Q_strstr(com_token, ".cfg"))
 			Con_Printf("Can't precache .cfg files:  %s\n", com_token);
 		else if(Q_strstr(com_token, ".lst"))
@@ -5346,6 +5381,7 @@ void SV_CreateGenericResources()
 		else if(Q_strstr(com_token, ".dll"))
 			Con_Printf("Can't precache .dll files:  %s\n", com_token);
 		else
+#endif
 		{
 // In fixed version of PrecacheGeneric we don't need local copy
 #ifdef REHLDS_FIXES
@@ -5716,35 +5752,65 @@ NOXREF void SV_ReconnectAllClients()
 
 void SetCStrikeFlags()
 {
-	if(!g_bCS_CZ_Flags_Initialized) // TODO: Convert these to enum
+#ifdef REHLDS_FIXES
+	if(g_eGameType == GT_Unitialized)
+#else
+	if (!g_bCS_CZ_Flags_Initialized)	// DONE: Convert these to enum
+#endif
 	{
 		if(!Q_stricmp(com_gamedir, "valve"))
 		{
+#ifdef REHLDS_FIXES
+			g_eGameType = GT_HL1;
+#else
 			g_bIsHL1 = 1;
+#endif
 		}
 		else if(!Q_stricmp(com_gamedir, "cstrike") ||
 		        !Q_stricmp(com_gamedir, "cstrike_beta"))
 		{
+#ifdef REHLDS_FIXES
+			g_eGameType = GT_CStrike;
+#else
 			g_bIsCStrike = 1;
+#endif
 		}
 		else if(!Q_stricmp(com_gamedir, "czero"))
 		{
+#ifdef REHLDS_FIXES
+			g_eGameType = GT_CZero;
+#else
 			g_bIsCZero = 1;
+#endif
 		}
 		else if(!Q_stricmp(com_gamedir, "czeror"))
 		{
+#ifdef REHLDS_FIXES
+			g_eGameType = GT_CZeroRitual;
+#else
 			g_bIsCZeroRitual = 1;
+#endif
 		}
 		else if(!Q_stricmp(com_gamedir, "terror"))
 		{
+#ifdef REHLDS_FIXES
+			g_eGameType = GT_TerrorStrike;
+#else
 			g_bIsTerrorStrike = 1;
+#endif
 		}
 		else if(!Q_stricmp(com_gamedir, "tfc"))
 		{
+#ifdef REHLDS_FIXES
+			g_eGameType = GT_TFC;
+#else
 			g_bIsTFC = 1;
+#endif
 		}
 
+#ifndef REHLDS_FIXES
 		g_bCS_CZ_Flags_Initialized = 1;
+#endif
 	}
 }
 
@@ -5755,7 +5821,8 @@ void PrecacheModelTexture(const char *s, studiohdr_t *pStudioHeader)
 		return;
 
 	size_t modelNameLength = Q_strlen(s);
-	if(modelNameLength >= MAX_QPATH - 1)
+	
+	if(modelNameLength > MAX_QPATH - 2)
 		return;
 
 	char textureModelName[MAX_QPATH];
@@ -5765,6 +5832,11 @@ void PrecacheModelTexture(const char *s, studiohdr_t *pStudioHeader)
 	char *modelExtension =
 	&textureModelName[modelNameLength - modelExtensionLength];
 	Q_strcpy(modelExtension, "T.mdl");
+	
+#ifndef _WIN32
+	if(!FS_FileExists(textureModelName))
+		modelExtension[0] = 't';
+#endif
 
 	// Use generic, because model max count is 512...
 	PF_precache_generic_I(textureModelName);
@@ -5875,7 +5947,10 @@ void EXT_FUNC SV_ActivateServer_internal(int runPhysics)
 	msg.cursize = 0;
 	msg.flags = SIZEBUF_CHECK_OVERFLOW;
 
+#ifndef REHLDS_FIXES
 	SetCStrikeFlags();
+#endif
+	
 	Cvar_Set("sv_newunit", "0");
 
 	//ContinueLoadingProgressBar("Server", 8, 0.0f);
@@ -6101,6 +6176,9 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 	g_psv.datagram.data = g_psv.datagram_buf;
 	g_psv.datagram.maxsize = sizeof(g_psv.datagram_buf);
 	g_psv.datagram.cursize = 0;
+#ifdef REHLDS_FIXES
+	g_psv.datagram.flags = SIZEBUF_ALLOW_OVERFLOW;
+#endif
 
 	g_psv.reliable_datagram.buffername = "Server Reliable Datagram";
 #ifdef REHLDS_FIXES
@@ -6113,8 +6191,14 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 	g_psv.reliable_datagram.cursize = 0;
 
 	g_psv.spectator.buffername = "Server Spectator Buffer";
+#ifdef REHLDS_FIXES
+	g_psv.spectator.data = g_rehlds_sv.spectatorBuffer;
+	g_psv.spectator.maxsize = sizeof(g_rehlds_sv.spectatorBuffer);
+	g_psv.spectator.flags = SIZEBUF_ALLOW_OVERFLOW;
+#else
 	g_psv.spectator.data = g_psv.spectator_buf;
 	g_psv.spectator.maxsize = sizeof(g_psv.spectator_buf);
+#endif
 
 	g_psv.multicast.buffername = "Server Multicast Buffer";
 	g_psv.multicast.data = g_psv.multicast_buf;
@@ -7430,6 +7514,7 @@ qboolean IsSafeFileToDownload(const char *filename)
 {
 	char *first;
 	char *last;
+	
 	char lwrfilename[MAX_PATH];
 
 	if(!filename)
@@ -7451,20 +7536,42 @@ qboolean IsSafeFileToDownload(const char *filename)
 	Q_strlwr(lwrfilename);
 
 	first = Q_strchr(lwrfilename, '.');
+	
+#ifdef REHLDS_FIXES
+	last = Q_strrchr(first, '.');
+#else
 	last = Q_strrchr(lwrfilename, '.');
+#endif
 
 	if(lwrfilename[0] == '/' || Q_strstr(lwrfilename, "\\") ||
 	   Q_strstr(lwrfilename, ":") || Q_strstr(lwrfilename, "..") ||
 	   Q_strstr(lwrfilename, "~") || first != last || !first ||
-	   Q_strlen(first) != 4 || Q_strstr(lwrfilename, ".cfg") ||
+	   Q_strlen(first) != 4
+	   	|| Q_strstr(lwrfilename, "halflife.wad")
+		|| Q_strstr(lwrfilename, "pak0.pak")
+		|| Q_strstr(lwrfilename, "xeno.wad")
+#ifdef REHLDS_FIXES
+		|| Q_strcmp(first, ".cfg") == 0
+		|| Q_strcmp(first, ".lst") == 0
+		|| Q_strcmp(first, ".exe") == 0
+		|| Q_strcmp(first, ".vbs") == 0
+		|| Q_strcmp(first, ".com") == 0
+		|| Q_strcmp(first, ".bat") == 0
+		|| Q_strcmp(first, ".dll") == 0
+		|| Q_strcmp(first, ".ini") == 0
+		|| Q_strcmp(first, ".log") == 0
+//		|| Q_strcmp(lwrfilename, ".so") == 0 // Extension length must be 4 to get here
+//		|| Q_strcmp(lwrfilename, ".dylib") == 0
+		|| Q_strcmp(first, ".sys") == 0)
+#else
+	   || Q_strstr(lwrfilename, ".cfg") ||
 	   Q_strstr(lwrfilename, ".lst") || Q_strstr(lwrfilename, ".exe") ||
 	   Q_strstr(lwrfilename, ".vbs") || Q_strstr(lwrfilename, ".com") ||
 	   Q_strstr(lwrfilename, ".bat") || Q_strstr(lwrfilename, ".dll") ||
 	   Q_strstr(lwrfilename, ".ini") || Q_strstr(lwrfilename, ".log") ||
-	   Q_strstr(lwrfilename, "halflife.wad") ||
-	   Q_strstr(lwrfilename, "pak0.pak") || Q_strstr(lwrfilename, "xeno.wad") ||
 	   Q_strstr(lwrfilename, ".so") || Q_strstr(lwrfilename, ".dylib") ||
 	   Q_strstr(lwrfilename, ".sys"))
+#endif
 	{
 		return FALSE;
 	}

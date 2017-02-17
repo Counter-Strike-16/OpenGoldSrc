@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled/hpp"
+#include "precompiled/hpp"
 #include "network/net_msg.hpp"
 #include "network/net_ws.hpp"
 #include "network/delta.hpp"

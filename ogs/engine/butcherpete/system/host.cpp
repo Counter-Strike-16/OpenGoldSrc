@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/host.hpp"
 #include "client/client.hpp"
 #include "console/cmd.hpp"
@@ -938,20 +938,14 @@ int Host_Frame(float time, int iState, int *stateInfo)
 
 void CheckGore()
 {
-	/* if(bLowViolenceBuild)
-	{
-		Cvar_SetValue("violence_hblood", 0.0);
-		Cvar_SetValue("violence_hgibs", 0.0);
-		Cvar_SetValue("violence_ablood", 0.0);
-		Cvar_SetValue("violence_agibs", 0.0);
-	}
-	else
-	{
-		Cvar_SetValue("violence_hblood", 1.0);
-		Cvar_SetValue("violence_hgibs", 1.0);
-		Cvar_SetValue("violence_ablood", 1.0);
-		Cvar_SetValue("violence_agibs", 1.0);
-	} */
+	/*
+	float fValue = bLowViolenceBuild ? 0.0f : 1.0f;
+	
+	Cvar_SetValue("violence_hblood", fValue);
+	Cvar_SetValue("violence_hgibs", fValue);
+	Cvar_SetValue("violence_ablood", fValue);
+	Cvar_SetValue("violence_agibs", fValue);
+	*/
 }
 
 qboolean Host_IsSinglePlayerGame()

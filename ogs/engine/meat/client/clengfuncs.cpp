@@ -29,6 +29,7 @@
 /// @file
 /// @brief export engine functions for client side
 
+#include "precompiled.hpp"
 #include "client/cl_demo.hpp"
 #include "engine/cdll_int.h"
 #include "graphics/spriteapi.hpp"

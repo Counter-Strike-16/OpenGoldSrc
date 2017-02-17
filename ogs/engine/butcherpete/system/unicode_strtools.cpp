@@ -26,7 +26,7 @@
 *
 */
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/unicode_strtools.h"
 #include "system/common.hpp"
 

@@ -1,3 +1,5 @@
+#if 0
+
 // Call these funcs in order to set their impl ro null for dedicated mode
 
 namespace null
@@ -19,3 +21,5 @@ void Sys_InitDedicatedMode()
 	Con_Shutdown = null::Con_Shutdown;
 	Con_NPrintf = null::Con_NPrintf;
 };
+
+#endif

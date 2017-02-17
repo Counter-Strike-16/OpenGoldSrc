@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "IRegistry.h"
 #include "client/client.hpp"
 #include "console/cmd.hpp"

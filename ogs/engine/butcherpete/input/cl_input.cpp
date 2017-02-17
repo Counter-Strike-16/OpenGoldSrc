@@ -29,7 +29,7 @@
 /// @file
 /// @brief builds an intended movement command to send to the server
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/client.hpp"
 #include "client/frame.hpp"
 #include "client/clientdll.hpp"

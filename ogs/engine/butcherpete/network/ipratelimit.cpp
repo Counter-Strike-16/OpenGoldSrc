@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "network/ipratelimit.hpp"
 #include "common/netadr.h"
 #include "maintypes.h"

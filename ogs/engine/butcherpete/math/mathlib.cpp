@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "math/mathlib_e.hpp"
 #include "rehlds/sys_shared.h"
 #include "system/common.hpp"

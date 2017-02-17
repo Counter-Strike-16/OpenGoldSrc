@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "filesystem/hashpak.hpp"
 #include "console/cmd.hpp"
 #include "console/console.hpp"

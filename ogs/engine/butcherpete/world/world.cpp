@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "world/world.hpp"
 #include "world/pr_cmds.hpp"
 #include "system/common.hpp"

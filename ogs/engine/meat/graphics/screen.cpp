@@ -29,10 +29,10 @@
 /// @file
 /// @brief master for render, status bar, console, chat, notify, etc
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include <time.h>
 #include "graphics/render/r_local.hpp"
-#include "commondef.hpp"
+//#include "commondef.hpp"
 
 /*
 

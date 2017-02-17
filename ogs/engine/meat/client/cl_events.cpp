@@ -29,7 +29,7 @@
 /// @file
 /// @brief client-side event system implementation
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/common.hpp"
 #include "client/client.hpp"
 #include "network/net_encode.hpp"

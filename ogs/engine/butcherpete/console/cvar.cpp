@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "console/cvar.hpp"
 #include "console/cmd.hpp"
 #include "console/console.hpp"

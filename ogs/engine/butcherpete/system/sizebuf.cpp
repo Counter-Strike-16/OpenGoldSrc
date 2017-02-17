@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "maintypes.h"
 #include "system/sizebuf.hpp"
 #include "memory/zone.hpp"

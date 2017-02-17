@@ -29,7 +29,7 @@
 /// @file
 /// @brief portable code to mix sounds for snd_dma.c
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 //#include "commondef.hpp"
 #include "common/commontypes.h"
 #include "sound/sound.hpp"

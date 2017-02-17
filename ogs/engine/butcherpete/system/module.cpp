@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 
 // TODO: Implement security module
 //cl_enginefunc_dst_t *pg_engdstAddrs;
