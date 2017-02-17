@@ -133,7 +133,7 @@ extern unsigned short *host_basepal; // 16 bit color palette
 
 NOXREF void Host_EndGame(const char *message, ...);
 
-void __declspec(noreturn) Host_Error(const char *error, ...);
+void NORETURN Host_Error(const char *error, ...);
 
 void Host_InitLocal();
 

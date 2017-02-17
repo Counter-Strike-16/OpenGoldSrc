@@ -562,24 +562,19 @@ void Host_Quit_Restart_f()
 	giActive = DLL_RESTART;
 	giStateInfo = 4;
 
-	if(g_psv.active || (cls.state == ca_active && cls.trueaddress[0] &&
-	                    g_pPostRestartCmdLineArgs))
+	if(g_psv.active)
+	{
+		if(g_psvs.maxclients == 1 && cls.state == ca_active && g_pPostRestartCmdLineArgs)
+		{
+			Cbuf_AddText("save quick\n");
+			Cbuf_Execute();
+			Q_strcat(g_pPostRestartCmdLineArgs, " +load quick");
+		}
+	}
+	else if (g_pcls.state == ca_active && g_pcls.trueaddress[0] && g_pPostRestartCmdLineArgs)
 	{
 		Q_strcat(g_pPostRestartCmdLineArgs, " +connect ");
-		Q_strcat(g_pPostRestartCmdLineArgs, cls.servername);
-	}
-	else
-	{
-		if(g_psvs.maxclients == 1 && cls.state == ca_active)
-		{
-			if(g_pPostRestartCmdLineArgs)
-			{
-				Cbuf_AddText("save quick\n");
-				Cbuf_Execute();
-
-				Q_strcat(g_pPostRestartCmdLineArgs, " +load quick");
-			}
-		}
+		Q_strcat(g_pPostRestartCmdLineArgs, g_pcls.servername);
 	}
 }
 
@@ -2541,6 +2536,8 @@ void Host_FullInfo_f()
 
 NOXREF void Host_KillVoice_f()
 {
+	NOXREFCHECK;
+	
 	Voice_Deinit();
 }
 
@@ -2759,7 +2756,7 @@ void Host_TogglePause_f()
 #ifdef REHLDS_FIXES
 	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
-		if(!g_psvs.clients[i].connected)
+		if(!g_psvs.clients[i].connected || g_psvs.clients[i].fakeclient)
 			continue;
 
 		MSG_WriteByte(&g_psvs.clients[i].netchan.message, svc_setpause);
@@ -2788,7 +2785,7 @@ void Host_Pause_f()
 #ifdef REHLDS_FIXES
 	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
-		if(!g_psvs.clients[i].connected)
+		if(!g_psvs.clients[i].connected || g_psvs.clients[i].fakeclient)
 			continue;
 
 		MSG_WriteByte(&g_psvs.clients[i].netchan.message, svc_setpause);
@@ -2817,7 +2814,7 @@ void Host_Unpause_f()
 #ifdef REHLDS_FIXES
 	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
-		if(!g_psvs.clients[i].connected)
+		if(!g_psvs.clients[i].connected || g_psvs.clients[i].fakeclient)
 			continue;
 
 		MSG_WriteByte(&g_psvs.clients[i].netchan.message, svc_setpause);
@@ -2921,6 +2918,8 @@ void Host_Stopdemo_f()
 
 NOXREF void Host_EndSection(const char *pszSection)
 {
+	NOXREFCHECK;
+	
 	giActive = DLL_PAUSED;
 	giSubState = 1;
 	giStateInfo = 1;

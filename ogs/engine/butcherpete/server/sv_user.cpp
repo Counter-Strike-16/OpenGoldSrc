@@ -1889,7 +1889,7 @@ void SV_SendEnts_f(void)
 		{
 			if(host_client->connected)
 			{
-				host_client->fully_connected = 1;
+				host_client->fully_connected = TRUE;
 
 #ifdef REHLDS_FIXES
 				// See SV_CheckFile function

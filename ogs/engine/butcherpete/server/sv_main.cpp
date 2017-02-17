@@ -346,10 +346,9 @@ cvar_t listipcfgfile = { "listipcfgfile", "listip.cfg", 0, 0.0f, nullptr };
 cvar_t syserror_logfile = { "syserror_logfile", "sys_error.log", 0, 0.0f, nullptr };
 cvar_t sv_rehlds_hull_centering = { "sv_rehlds_hull_centering", "0", 0, 0.0f, nullptr };
 cvar_t sv_rcon_condebug = { "sv_rcon_condebug", "1", 0, 1.0f, nullptr };
-cvar_t sv_rehlds_userinfo_transmitted_fields = {
-	"sv_rehlds_userinfo_transmitted_fields", "", 0, 0.0f, nullptr
+cvar_t sv_rehlds_userinfo_transmitted_fields = {"sv_rehlds_userinfo_transmitted_fields", "", 0, 0.0f, nullptr};
 cvar_t sv_rehlds_attachedentities_playeranimationspeed_fix = {"sv_rehlds_attachedentities_playeranimationspeed_fix", "0", 0, 0.0f, nullptr};
-};
+cvar_t sv_rehlds_local_gametime = {"sv_rehlds_local_gametime", "0", 0, 0.0f, nullptr};
 #endif
 
 delta_t *SV_LookupDelta(char *name)
@@ -748,7 +747,7 @@ void SV_FindModelNumbers()
 {
 	sv_playermodel = -1;
 
-	for(int i = 0; i < HL_MODEL_MAX; i++)
+	for(int i = 0; i < MAX_MODELS; i++)
 	{
 		if(!g_psv.model_precache[i])
 			break;
@@ -774,9 +773,7 @@ void SV_StartParticle(const vec_t *org, const vec_t *dir, int color, int count)
 		MSG_WriteCoord(&g_psv.datagram, org[2]);
 
 		for(int i = 0; i < 3; i++)
-		{
-			MSG_WriteChar(&g_psv.datagram, clamp((int)(dir[i] * 16.0f), -128, 127));
-		}
+			MSG_WriteChar(&g_psv.datagram, Q_clamp((int)(dir[i] * 16.0f), -128, 127));
 
 		MSG_WriteByte(&g_psv.datagram, count);
 		MSG_WriteByte(&g_psv.datagram, color);
@@ -927,8 +924,7 @@ int EXT_FUNC SV_LookupSoundIndex(const char *sample)
 	{
 		if(g_psv.state == ss_loading)
 		{
-			for(index = 1; index < HL_SOUND_MAX && g_psv.sound_precache[index];
-			    index++) // TODO: why from 1?
+			for(index = 1; index < MAX_SOUNDS && g_psv.sound_precache[index]; index++) // TODO: why from 1?
 			{
 				if(!Q_stricmp(sample, g_psv.sound_precache[index]))
 					return index;
@@ -948,7 +944,7 @@ int EXT_FUNC SV_LookupSoundIndex(const char *sample)
 			return g_psv.sound_precache_hashedlookup[index];
 
 		index++;
-		if(index >= HL_SOUND_HASHLOOKUP_SIZE)
+		if(index >= MAX_SOUND_HASHLOOKUP_SIZE)
 			index = 0;
 		if(index == starting_index)
 			return 0;
@@ -960,7 +956,7 @@ void SV_BuildHashedSoundLookupTable()
 {
 	Q_memset(g_psv.sound_precache_hashedlookup, 0, sizeof(g_psv.sound_precache_hashedlookup));
 
-	for(int sound_num = 0; sound_num < HL_SOUND_MAX; sound_num++)
+	for(int sound_num = 0; sound_num < MAX_SOUNDS; sound_num++)
 	{
 		if(!g_psv.sound_precache[sound_num])
 			break;
@@ -973,14 +969,14 @@ void SV_BuildHashedSoundLookupTable()
 
 void SV_AddSampleToHashedLookupTable(const char *pszSample, int iSampleIndex)
 {
-	int starting_index = SV_HashString(pszSample, HL_SOUND_HASHLOOKUP_SIZE);
+	int starting_index = SV_HashString(pszSample, MAX_SOUND_HASHLOOKUP_SIZE);
 	int index = starting_index;
 	while(g_psv.sound_precache_hashedlookup[index])
 	{
 		index++;
 		hashstrings_collisions++;
 
-		if(index >= HL_SOUND_HASHLOOKUP_SIZE)
+		if(index >= MAX_SOUND_HASHLOOKUP_SIZE)
 			index = 0;
 
 		if(index == starting_index)
@@ -1448,6 +1444,35 @@ void SV_WriteClientdataToMessage(client_t *client, sizebuf_t *msg)
 
 		for(int i = 0; i < 64; i++, tdata++)
 		{
+#ifdef REHLDS_FIXES
+			// So, HL and CS games send absolute gametime in these vars, DMC and Ricochet games don't send absolute gametime
+			// TODO: idk about other games
+			// FIXME: there is a loss of precision, because gamedll has already written float gametime in them 
+			if (sv_rehlds_local_gametime.value != 0.0f)
+			{
+				auto convertGameTimeToLocal = 
+					[](float &gameTime)
+				{
+					if (gameTime > 0.0f)
+					{
+						auto currentLocalGameTime = realtime - host_client->connection_started;
+						auto currentGameTime = g_psv.time;
+						auto difference = gameTime - currentGameTime;
+						gameTime = (float)(currentLocalGameTime + difference);
+					};
+				};
+				
+				if (g_bIsCStrike || g_bIsCZero)
+					convertGameTimeToLocal(std::ref(tdata->m_fAimedDamage));
+				
+				if (g_bIsHL1 || g_bIsCStrike || g_bIsCZero)
+				{
+					convertGameTimeToLocal(std::ref(tdata->fuser2));
+					convertGameTimeToLocal(std::ref(tdata->fuser3));
+				}
+			}
+#endif
+			
 			if(host_client->delta_sequence == -1)
 				fdata = &wbaseline;
 			else
@@ -1523,7 +1548,14 @@ void SV_WriteSpawn(sizebuf_t *msg)
 #endif // REHLDS_FIXES
 
 	MSG_WriteByte(msg, svc_time);
-	MSG_WriteFloat(msg, g_psv.time);
+#ifdef REHLDS_FIXES
+	if(sv_rehlds_local_gametime.value != 0.0f)
+		MSG_WriteFloat(msg, (float)(realtime - host_client->connection_started));
+	else
+#endif
+	{
+		MSG_WriteFloat(msg, g_psv.time);
+	}
 
 	host_client->sendinfo = TRUE;
 
@@ -1842,7 +1874,7 @@ int SV_GetFragmentSize(void *state)
 		if(val[0] != 0)
 		{
 			size = Q_atoi(val);
-			size = clamp(size, FRAGMENT_S2C_MIN_SIZE, FRAGMENT_S2C_MAX_SIZE);
+			size = Q_clamp(size, FRAGMENT_S2C_MIN_SIZE, FRAGMENT_S2C_MAX_SIZE);
 		}
 	}
 
@@ -2754,6 +2786,8 @@ int SV_GetFakeClientCount()
 
 NOXREF qboolean SV_GetModInfo(char *pszInfo, char *pszDL, int *version, int *size, qboolean *svonly, qboolean *cldll, char *pszHLVersion)
 {
+	NOXREFCHECK;
+	
 	if(gmodinfo.bIsMod)
 	{
 		Q_strcpy(pszInfo, gmodinfo.szInfo);
@@ -2781,11 +2815,15 @@ NOXREF qboolean SV_GetModInfo(char *pszInfo, char *pszDL, int *version, int *siz
 
 NOXREF qboolean RequireValidChallenge(netadr_t * /*adr*/)
 {
+	NOXREFCHECK;
+	
 	return sv_enableoldqueries.value == 0.0f;
 }
 
 NOXREF qboolean ValidInfoChallenge(netadr_t *adr, const char *nugget)
 {
+	NOXREFCHECK;
+	
 	if(nugget && g_psv.active && g_psvs.maxclients > 1)
 	{
 		if(RequireValidChallenge(adr))
@@ -2797,6 +2835,8 @@ NOXREF qboolean ValidInfoChallenge(netadr_t *adr, const char *nugget)
 
 NOXREF int GetChallengeNr(netadr_t *adr)
 {
+	NOXREFCHECK;
+	
 	int oldest = 0;
 	int oldestTime = 0x7FFFFFFFu;
 	int i;
@@ -2825,6 +2865,8 @@ NOXREF int GetChallengeNr(netadr_t *adr)
 
 NOXREF qboolean CheckChallengeNr(netadr_t *adr, int nChallengeValue)
 {
+	NOXREFCHECK;
+	
 	int i;
 	if(nChallengeValue == -1 || adr == NULL)
 		return FALSE;
@@ -2846,6 +2888,8 @@ NOXREF qboolean CheckChallengeNr(netadr_t *adr, int nChallengeValue)
 
 NOXREF void ReplyServerChallenge(netadr_t *adr)
 {
+	NOXREFCHECK;
+	
 	char buffer[16];
 	sizebuf_t buf;
 
@@ -2863,6 +2907,8 @@ NOXREF void ReplyServerChallenge(netadr_t *adr)
 
 NOXREF qboolean ValidChallenge(netadr_t *adr, int challengeNr)
 {
+	NOXREFCHECK;
+	
 	if(!g_psv.active)
 		return FALSE;
 
@@ -2878,6 +2924,8 @@ NOXREF qboolean ValidChallenge(netadr_t *adr, int challengeNr)
 
 NOXREF void SVC_InfoString()
 {
+	NOXREFCHECK;
+	
 	int i;
 	int count = 0;
 	int proxy = 0;
@@ -2991,6 +3039,8 @@ NOXREF void SVC_InfoString()
 
 NOXREF void SVC_Info(qboolean bDetailed)
 {
+	NOXREFCHECK;
+	
 	int i;
 	int count = 0;
 	sizebuf_t buf;
@@ -3104,6 +3154,8 @@ typedef struct entcount_s
 
 NOXREF void SVC_PlayerInfo()
 {
+	NOXREFCHECK;
+	
 	int i;
 	int count = 0;
 	client_t *client;
@@ -3152,6 +3204,8 @@ NOXREF void SVC_PlayerInfo()
 
 NOXREF void SVC_RuleInfo()
 {
+	NOXREFCHECK;
+	
 	int nNumRules;
 	cvar_t *var;
 	sizebuf_t buf;
@@ -3861,7 +3915,8 @@ void SV_SendFullClientUpdateForAll(client_t *client)
 	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
 		host_client = &g_psvs.clients[i];
-		if(!host_client->connected)
+		
+		if(!host_client->connected || host_client->fakeclient)
 			continue;
 
 		SV_FullClientUpdate(client, &host_client->netchan.message);
@@ -4084,7 +4139,12 @@ void SV_AddToFatPVS(vec_t *org, mnode_t *node)
 
 unsigned char *EXT_FUNC SV_FatPVS(float *org)
 {
+#ifdef REHLDS_FIXES
+	fatbytes = gPVSRowBytes;
+#else // REHLDS_FIXES
 	fatbytes = (g_psv.worldmodel->numleafs + 31) >> 3;
+#endif // REHLDS_FIXES
+	
 	Q_memset(fatpvs, 0, fatbytes);
 	SV_AddToFatPVS(org, g_psv.worldmodel->nodes);
 	return fatpvs;
@@ -4104,13 +4164,9 @@ void SV_AddToFatPAS(vec_t *org, mnode_t *node)
 		org[2] * plane->normal[2] - plane->dist;
 
 		if(d > 8.0f)
-		{
 			node = node->children[0];
-		}
 		else if(d < -8.0f)
-		{
 			node = node->children[1];
-		}
 		else
 		{
 			SV_AddToFatPAS(org, node->children[0]);
@@ -4119,22 +4175,23 @@ void SV_AddToFatPAS(vec_t *org, mnode_t *node)
 	}
 
 	if(node->contents == CONTENTS_SOLID)
-	{
 		return;
-	}
 
 	int leafnum = (mleaf_t *)node - g_psv.worldmodel->leafs;
 	pas = CM_LeafPAS(leafnum);
 
 	for(i = 0; i < fatpasbytes; ++i)
-	{
 		fatpas[i] |= pas[i];
-	}
 }
 
 unsigned char *EXT_FUNC SV_FatPAS(float *org)
 {
+#ifdef REHLDS_FIXES
+	fatpasbytes = gPVSRowBytes;
+#else // REHLDS_FIXES
 	fatpasbytes = (g_psv.worldmodel->numleafs + 31) >> 3;
+#endif // REHLDS_FIXES
+	
 	Q_memset(fatpas, 0, fatpasbytes);
 	SV_AddToFatPAS(org, g_psv.worldmodel->nodes);
 	return fatpas;
@@ -4478,6 +4535,8 @@ qboolean SV_ShouldUpdatePing(client_t *client)
 
 NOXREF qboolean SV_HasEventsInQueue(client_t *client)
 {
+	NOXREFCHECK;
+	
 	int i;
 	event_state_t *es;
 	event_info_t *ei;
@@ -4713,7 +4772,15 @@ qboolean SV_SendClientDatagram(client_t *client)
 	msg.flags = SIZEBUF_ALLOW_OVERFLOW;
 
 	MSG_WriteByte(&msg, svc_time);
-	MSG_WriteFloat(&msg, g_psv.time);
+	
+#ifdef REHLDS_FIXES
+	if(sv_rehlds_local_gametime.value != 0.0f)
+		MSG_WriteFloat(&msg, (float)(realtime - client->connection_started));
+	else
+#endif
+	{
+		MSG_WriteFloat(&msg, g_psv.time);
+	}
 
 	SV_WriteClientdataToMessage(client, &msg);
 	SV_WriteEntitiesToClient(client, &msg);
@@ -5044,7 +5111,7 @@ void SV_ExtractFromUserinfo(client_t *cl)
 	if(val[0] != 0)
 	{
 		i = Q_atoi(val);
-		cl->netchan.rate = clamp(float(i), MIN_RATE, MAX_RATE);
+		cl->netchan.rate = Q_clamp(float(i), MIN_RATE, MAX_RATE);
 	}
 
 	val = Info_ValueForKey(userinfo, "topcolor");
@@ -5094,7 +5161,7 @@ int SV_ModelIndex(const char *name)
 		return node->val;
 	}
 #else
-	for(int i = 0; i < HL_MODEL_MAX; i++)
+	for(int i = 0; i < MAX_MODELS; i++)
 	{
 		if(!g_psv.model_precache[i])
 			break;
@@ -5104,7 +5171,7 @@ int SV_ModelIndex(const char *name)
 	};
 #endif
 
-	Sys_Error("SV_ModelIndex: model %s not precached", name);
+	Sys_Error("%s: model %s not precached", __FUNCTION__, name);
 }
 
 void EXT_FUNC SV_AddResource(resourcetype_t type, const char *name, int size, unsigned char flags, int index)
@@ -5327,7 +5394,7 @@ void SV_CreateResourceList()
 	}
 #else // REHLDS_FIXES
 #ifdef REHLDS_CHECKS
-	for(i = 1, s = &g_psv.generic_precache[1]; i < HL_GENERIC_MAX && *s != NULL;
+	for(i = 1, s = &g_psv.generic_precache[1]; i < MAX_GENERIC && *s != NULL;
 	    i++, s++)
 #else  // REHLDS_CHECKS
 	for(i = 1, s = &g_psv.generic_precache[1]; *s != NULL; i++, s++)
@@ -5343,7 +5410,7 @@ void SV_CreateResourceList()
 #endif // REHLDS_FIXES
 
 #ifdef REHLDS_CHECKS
-	for(i = 1, s = &g_psv.sound_precache[1]; i < HL_SOUND_MAX && *s != NULL;
+	for(i = 1, s = &g_psv.sound_precache[1]; i < MAX_SOUNDS && *s != NULL;
 	    i++, s++)
 #else  // REHLDS_CHECKS
 	for(i = 1, s = &g_psv.sound_precache[1]; *s != NULL; i++, s++)
@@ -5366,7 +5433,7 @@ void SV_CreateResourceList()
 		}
 	}
 #ifdef REHLDS_CHECKS
-	for(i = 1, s = &g_psv.model_precache[1]; i < HL_MODEL_MAX && *s != NULL;
+	for(i = 1, s = &g_psv.model_precache[1]; i < MAX_MODELS && *s != NULL;
 	    i++, s++)
 #else  // REHLDS_CHECKS
 	for(i = 1, s = &g_psv.model_precache[1]; *s != NULL; i++, s++)
@@ -5382,7 +5449,7 @@ void SV_CreateResourceList()
 	for(i = 0; i < sv_decalnamecount; i++)
 		SV_AddResource(t_decal, sv_decalnames[i].name, Draw_DecalSize(i), 0, i);
 
-	for(i = 1; i < HL_EVENT_MAX; i++)
+	for(i = 1; i < MAX_EVENTS; i++)
 	{
 		ep = &g_psv.event_precache[i];
 		if(!ep->filename)
@@ -5396,7 +5463,7 @@ void SV_ClearCaches()
 {
 	int i;
 	event_t *ep;
-	for(i = 1; i < HL_EVENT_MAX; i++)
+	for(i = 1; i < MAX_EVENTS; i++)
 	{
 		ep = &g_psv.event_precache[i];
 		if(ep->filename == NULL)
@@ -5622,6 +5689,8 @@ void SV_BuildReconnect(sizebuf_t *msg)
 
 NOXREF void SV_ReconnectAllClients()
 {
+	NOXREFCHECK;
+	
 	int i;
 	char message[34];
 	Q_snprintf(message, sizeof(message), "Server updating Security Module.\n");
@@ -6964,10 +7033,10 @@ void SV_AddIP_f()
 	if(Cmd_Argc() != 3)
 	{
 #ifdef REHLDS_FIXES
-		Con_Printf("Usage: addip <minutes> <ipaddress>\n\
-       addip <minutes> <ipaddress/CIDR>\n\
-Use 0 minutes for permanent\n\
-ipaddress A.B.C.D/24 is equivalent to A.B.C.0 and A.B.C\n");
+		Con_Printf("Usage: addip <minutes> <ipaddress>\n"
+		"		addip <minutes> <ipaddress/CIDR>\n"
+		"Use 0 minutes for permanent\n"
+		"ipaddress A.B.C.D/24 is equivalent to A.B.C.0 and A.B.C\n");
 #else  // REHLDS_FIXES
 		Con_Printf(
 		"Usage: addip <minutes> <ipaddress>\nUse 0 minutes for permanent\n");
@@ -7074,9 +7143,9 @@ void SV_RemoveIP_f()
 	int argCount = Cmd_Argc();
 	if(argCount != 2 && argCount != 3)
 	{
-		Con_Printf("Usage: removeip <ipaddress> {removeAll}\n\
-       removeip <ipaddress/CIDR> {removeAll}\n\
-Use removeAll to delete all ip filters which ipaddress or ipaddress/CIDR includes\n");
+		Con_Printf("Usage: removeip <ipaddress> {removeAll}\n"
+		"removeip <ipaddress/CIDR> {removeAll}\n"
+		"Use removeAll to delete all ip filters which ipaddress or ipaddress/CIDR includes\n");
 
 		return;
 	}
@@ -7087,10 +7156,10 @@ Use removeAll to delete all ip filters which ipaddress or ipaddress/CIDR include
 	if(!StringToFilter(Cmd_Argv(1), &f))
 	{
 #ifdef REHLDS_FIXES
-		Con_Printf("Invalid IP address\n\
-Usage: removeip <ipaddress> {removeAll}\n\
-       removeip <ipaddress/CIDR> {removeAll}\n\
-Use removeAll to delete all ip filters which ipaddress or ipaddress/CIDR includes\n");
+		Con_Printf("Invalid IP address\n"
+		"Usage: removeip <ipaddress> {removeAll}\n"
+		"		removeip <ipaddress/CIDR> {removeAll}\n"
+		"Use removeAll to delete all ip filters which ipaddress or ipaddress/CIDR includes\n");
 #endif // REHLDS_FIXES
 
 		return;
@@ -7943,6 +8012,7 @@ void SV_Init()
 	Cvar_RegisterVariable(&sv_rcon_condebug);
 	Cvar_RegisterVariable(&sv_rehlds_userinfo_transmitted_fields);
 	Cvar_RegisterVariable(&sv_rehlds_attachedentities_playeranimationspeed_fix);
+	Cvar_RegisterVariable(&sv_rehlds_local_gametime);
 #endif
 
 	for(int i = 0; i < MAX_MODELS; i++)
@@ -8190,9 +8260,9 @@ void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 			MSG_WriteByte(&cl->netchan.message, svc_disconnect);
 			MSG_WriteString(&cl->netchan.message, string);
 			final[0] = svc_disconnect;
-			Q_strncpy((char *)& final[1], string, min(sizeof(final) - 1, Q_strlen(string) + 1));
+			Q_strncpy((char *)& final[1], string, Q_min(sizeof(final) - 1, Q_strlen(string) + 1));
 			final[sizeof(final) - 1] = 0;
-			i = 1 + min(sizeof(final) - 1, Q_strlen(string) + 1);
+			i = 1 + Q_min(sizeof(final) - 1, Q_strlen(string) + 1);
 		}
 		if(cl->edict && cl->spawned)
 			gEntityInterface.pfnClientDisconnect(cl->edict);

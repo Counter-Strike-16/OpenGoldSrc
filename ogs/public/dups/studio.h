@@ -310,6 +310,9 @@ typedef struct
 } mstudiotrivert_t;
 #endif
 
+#define STUDIO_DYNAMIC_LIGHT		0x0100	// dynamically get lighting from floor or ceil (flying monsters)
+#define STUDIO_TRACE_HITBOX		0x0200	// always use hitbox trace instead of bbox
+
 // lighting options
 #define STUDIO_NF_FLATSHADE		0x0001
 #define STUDIO_NF_CHROME		0x0002

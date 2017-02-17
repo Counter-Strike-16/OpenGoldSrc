@@ -193,6 +193,8 @@ model_t *Mod_FindName(qboolean trackCRC, const char *name)
 
 NOXREF qboolean Mod_ValidateCRC(const char *name, CRC32_t crc)
 {
+	NOXREFCHECK;
+	
 	model_t *mod;
 	mod_known_info_t *p;
 
@@ -209,6 +211,8 @@ NOXREF qboolean Mod_ValidateCRC(const char *name, CRC32_t crc)
 
 NOXREF void Mod_NeedCRC(const char *name, qboolean needCRC)
 {
+	NOXREFCHECK;
+	
 	model_t *mod;
 	mod_known_info_t *p;
 
@@ -333,6 +337,8 @@ model_t *Mod_LoadModel(model_t *mod, qboolean crash, qboolean trackCRC)
 
 NOXREF void Mod_MarkClient(model_t *pModel)
 {
+	NOXREFCHECK;
+	
 	pModel->needload = (NL_NEEDS_LOADED | NL_UNREFERENCED);
 }
 
@@ -380,7 +386,6 @@ void Mod_AdSwap(texture_t *src, int pixels, int entries)
 	if(!tested)
 		return;
 
-	int j;
 	uint8 *mippal;
 	uint16 *texpal;
 	texture_t *tex;
@@ -394,7 +399,7 @@ void Mod_AdSwap(texture_t *src, int pixels, int entries)
 	mippal = (uint8 *)&tex[1] + pixels + 2;
 	texpal = (uint16 *)((char *)&src[1] + pixels + 2);
 
-	for(int j = 0; j < entries; j++)
+	for(int j = 0; j < entries; ++j)
 	{
 		texpal[0] = mippal[2];
 		texpal[1] = mippal[1];
@@ -1837,6 +1842,8 @@ void Mod_LoadSpriteModel(model_t *mod, void *buffer)
 
 NOXREF void Mod_UnloadSpriteTextures(model_t *pModel)
 {
+	NOXREFCHECK;
+	
 	if(!pModel)
 		return;
 
@@ -1876,6 +1883,8 @@ void Mod_Print()
 
 NOXREF void Mod_ChangeGame()
 {
+	NOXREFCHECK;
+	
 	int i;
 	model_t *mod;
 	mod_known_info_t *p;
@@ -1895,4 +1904,24 @@ NOXREF void Mod_ChangeGame()
 		p->firstCRCDone = FALSE;
 		p->initialCRC = 0;
 	}
+}
+
+model_t *Mod_Handle(int modelindex)
+{
+#ifdef REHLDS_FIXES
+	if (modelindex < 0 || modelindex > MAX_MODELS - 1)
+		Sys_Error(__FUNCTION__ ": bad modelindex #%i\n", modelindex);
+#endif
+	
+	return g_psv.models[modelindex];
+}
+
+modtype_t Mod_GetType(int modelindex)
+{
+	model_t *mod = Mod_Handle(modelindex);
+	
+	if (!mod)
+		return mod_bad;
+
+	return mod->type;
 }

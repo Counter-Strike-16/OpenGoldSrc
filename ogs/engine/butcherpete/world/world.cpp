@@ -71,6 +71,8 @@ void InsertLinkBefore(link_t *l, link_t *before)
 
 NOXREF void InsertLinkAfter(link_t *l, link_t *after)
 {
+	NOXREFCHECK;
+	
 	l->prev = after;
 	l->next = after->next;
 
@@ -112,6 +114,8 @@ hull_t *SV_HullForBox(const vec_t *mins, const vec_t *maxs)
 
 NOXREF hull_t *SV_HullForBeam(const vec_t *start, const vec_t *end, const vec_t *size)
 {
+	NOXREFCHECK;
+	
 	vec3_t tmp = { 0, 0, 0 };
 
 	beam_planes[0].normal[0] = end[0] - start[0];
@@ -189,13 +193,11 @@ struct hull_s *SV_HullForBsp(edict_t *ent, const vec_t *mins, const vec_t *maxs,
 	model_t *model;
 	hull_t *hull;
 
-	model = g_psv.models[ent->v.modelindex];
-	if(!model)
+	model = Mod_Handle(ent->v.modelindex);
+	
+	if(!model || model->type != mod_brush)
 		Sys_Error("Hit a %s with no model (%s)", &pr_strings[ent->v.classname], &pr_strings[ent->v.model]);
-
-	if(model->type)
-		Sys_Error("Hit a %s with no model (%s)", &pr_strings[ent->v.classname], &pr_strings[ent->v.model]);
-
+	
 	float xSize = maxs[0] - mins[0];
 	if(xSize > 8.0f)
 	{
@@ -340,11 +342,9 @@ void SV_UnlinkEdict(edict_t *ent)
 void SV_TouchLinks(edict_t *ent, areanode_t *node)
 {
 	edict_t *touch;
-	model_t *pModel;
 	link_t *next;
 
-	for(link_t *l = node->trigger_edicts.next; l != &node->trigger_edicts;
-	    l = next)
+	for(link_t *l = node->trigger_edicts.next; l != &node->trigger_edicts; l = next)
 	{
 		next = l->next;
 		touch = (edict_t *)((char *)l - offsetof(edict_t, area));
@@ -379,9 +379,7 @@ void SV_TouchLinks(edict_t *ent, areanode_t *node)
 		   ent->v.absmax[1] >= touch->v.absmin[1] &&
 		   ent->v.absmax[2] >= touch->v.absmin[2])
 		{
-			pModel = g_psv.models[touch->v.modelindex];
-
-			if(pModel && pModel->type == mod_brush)
+			if(Mod_GetType(touch->v.modelindex) == mod_brush)
 			{
 				vec3_t offset;
 				hull_t *hull = SV_HullForBsp(touch, ent->v.mins, ent->v.maxs, offset);
@@ -593,41 +591,41 @@ void SV_LinkEdict(edict_t *ent, qboolean touch_triggers)
 	if(ent->v.solid == SOLID_NOT && ent->v.skin >= -1)
 		return;
 
-	if(ent->v.solid != SOLID_BSP || g_psv.models[ent->v.modelindex] ||
-	   Q_strlen(&pr_strings[ent->v.model]))
-	{
-		node = sv_areanodes;
-		while(1)
-		{
-			if(node->axis == -1)
-				break;
-
-			if(ent->v.absmin[node->axis] <= node->dist)
-			{
-				if(ent->v.absmax[node->axis] >= node->dist)
-					break;
-				node = node->children[1];
-			}
-			else
-			{
-				node = node->children[0];
-			}
-		}
-
-		InsertLinkBefore(&ent->area, (ent->v.solid == SOLID_TRIGGER) ? &node->trigger_edicts : &node->solid_edicts);
-		if(touch_triggers)
-		{
-			if(!iTouchLinkSemaphore)
-			{
-				iTouchLinkSemaphore = 1;
-				SV_TouchLinks(ent, sv_areanodes);
-				iTouchLinkSemaphore = 0;
-			}
-		}
-	}
-	else
+	if(ent->v.solid == SOLID_BSP && !Mod_Handle(ent->v.modelindex) && Q_strlen(&pr_strings[ent->v.model]) <= 0)
 	{
 		Con_DPrintf("Inserted %s with no model\n", &pr_strings[ent->v.classname]);
+		return;
+	}
+	
+	node = sv_areanodes;
+	while(1)
+	{
+		if(node->axis == -1)
+			break;
+		
+		if(ent->v.absmin[node->axis] <= node->dist)
+		{
+			if(ent->v.absmax[node->axis] >= node->dist)
+				break;
+
+			node = node->children[1];
+		}
+		else
+		{
+			node = node->children[0];
+		}
+	}
+	
+	InsertLinkBefore(&ent->area, (ent->v.solid == SOLID_TRIGGER) ? &node->trigger_edicts : &node->solid_edicts);
+	
+	if(touch_triggers)
+	{
+		if (!iTouchLinkSemaphore)
+		{
+			iTouchLinkSemaphore = 1;
+			SV_TouchLinks(ent, sv_areanodes);
+			iTouchLinkSemaphore = 0;
+		}
 	}
 }
 
@@ -659,7 +657,6 @@ int SV_LinkContents(areanode_t *node, const vec_t *pos)
 	link_t *l;
 	link_t *next;
 	edict_t *touch;
-	model_t *pModel;
 	hull_t *hull;
 	vec3_t localPosition;
 	vec3_t offset;
@@ -689,8 +686,8 @@ int SV_LinkContents(areanode_t *node, const vec_t *pos)
 							continue;
 					}
 				}
-				pModel = g_psv.models[touch->v.modelindex];
-				if(pModel && !pModel->type && pos[0] <= (double)touch->v.absmax[0] &&
+				if (Mod_GetType(touch->v.modelindex) == mod_brush &&
+					pos[0] <= (double)touch->v.absmax[0] &&
 				   pos[1] <= (double)touch->v.absmax[1] &&
 				   pos[2] <= (double)touch->v.absmax[2] &&
 				   pos[0] >= (double)touch->v.absmin[0] &&
@@ -1090,7 +1087,12 @@ void SV_SingleClipMoveToEntity(edict_t *ent, const vec_t *start, const vec_t *mi
 	trace->endpos[0] = end[0];
 	trace->endpos[1] = end[1];
 	trace->endpos[2] = end[2];
+	
+#ifdef REHLDS_FIXES
+	if (Mod_GetType(ent->v.modelindex) == mod_studio)
+#else
 	if(g_psv.models[ent->v.modelindex]->type == mod_studio)
+#endif // REHLDS_FIXES
 	{
 		hull = SV_HullForStudioModel(ent, mins, maxs, offset, &numhulls);
 	}

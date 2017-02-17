@@ -35,10 +35,8 @@
 
 IFileSystem *gpFileSystem = nullptr;
 
-NOXREF void FS_RemoveAllSearchPaths()
+void FS_RemoveAllSearchPaths()
 {
-	// NOXREFCHECK;	// We call it
-
 	gpFileSystem->RemoveAllSearchPaths();
 }
 

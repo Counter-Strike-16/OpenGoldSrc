@@ -308,7 +308,7 @@ static delta_definition_t g_ClientDataDefinition[] = {
 	DELTA_DEF(clientdata_s, vuser4[2]),
 };
 
-#endif
+#endif // Delta_definitions_region
 
 delta_description_t *DELTA_FindField(delta_t *pFields, const char *pszField)
 {

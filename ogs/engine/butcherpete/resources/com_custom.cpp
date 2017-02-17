@@ -100,8 +100,8 @@ qboolean COM_CreateCustomization(customization_t *pListHead,
                                  customization_t **pCustomization,
                                  int *nLumps)
 {
-	customization_t *pCust; //    91
-	qboolean bError;        //    92
+	customization_t *pCust;
+	qboolean bError;
 
 	bError = FALSE;
 	if(pCustomization)

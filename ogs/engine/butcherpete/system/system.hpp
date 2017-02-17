@@ -197,7 +197,7 @@ NOXREF void Sys_Sleep(int msec);
 NOBODY void Sys_DebugOutStraight(const char *pStr);
 
 // An error will cause the entire program to exit
-NOBODY void __declspec(noreturn) Sys_Error(const char *error, ...);
+NOBODY void NORETURN Sys_Error(const char *error, ...);
 
 NOXREF void Sys_Warning(const char *pszWarning, ...);
 
@@ -252,11 +252,11 @@ NOXREF void Legacy_MP3subsys_Resume_Audio();
 
 void Sys_SetupLegacyAPIs();
 
-NOXREF int Sys_IsWin95();
-NOXREF int Sys_IsWin98();
+NOXREF qboolean Sys_IsWin95();
+NOXREF qboolean Sys_IsWin98();
 
 #ifdef _WIN32
-NOXREF void Sys_CheckOSVersion();
+void Sys_CheckOSVersion();
 #endif
 
 NOXREF void Sys_Init();

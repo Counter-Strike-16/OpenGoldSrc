@@ -293,9 +293,13 @@ int _PM_TestPlayerPosition(vec_t *pos, pmtrace_t *ptrace, int (*pfnIgnore)(physe
 	for(int i = 0; i < pmove->numphysent; i++)
 	{
 		physent_t *pe = &pmove->physents[i];
-		if(pfnIgnore && pfnIgnore(pe) || pe->model && !pe->solid && pe->skin)
+		
+		if(pfnIgnore && pfnIgnore(pe))
 			continue;
-
+		
+		if (pe->model && pe->solid == SOLID_NOT && pe->skin != 0)
+			continue;
+		
 		offset[0] = pe->origin[0];
 		offset[1] = pe->origin[1];
 		offset[2] = pe->origin[2];
@@ -308,7 +312,7 @@ int _PM_TestPlayerPosition(vec_t *pos, pmtrace_t *ptrace, int (*pfnIgnore)(physe
 		else
 		{
 			if(pe->studiomodel && pe->studiomodel->type == mod_studio &&
-			   ((pe->studiomodel->flags & 0x200) || pmove->usehull == 2))
+			   ((pe->studiomodel->flags & STUDIO_TRACE_HITBOX) || pmove->usehull == 2))
 			{
 				hull = PM_HullForStudioModel(pe->studiomodel, offset, pe->frame, pe->sequence, pe->angles, pe->origin, pe->controller, pe->blending, &numhulls);
 			}
@@ -326,7 +330,7 @@ int _PM_TestPlayerPosition(vec_t *pos, pmtrace_t *ptrace, int (*pfnIgnore)(physe
 		test[0] = pos[0] - offset[0];
 		test[1] = pos[1] - offset[1];
 		test[2] = pos[2] - offset[2];
-		if(pe->solid == 4 && (pe->angles[0] != 0.0 || pe->angles[1] != 0.0 ||
+		if(pe->solid == SOLID_BSP && (pe->angles[0] != 0.0 || pe->angles[1] != 0.0 ||
 		                      pe->angles[2] != 0.0))
 		{
 			vec3_t forward, right, up;
@@ -343,14 +347,14 @@ int _PM_TestPlayerPosition(vec_t *pos, pmtrace_t *ptrace, int (*pfnIgnore)(physe
 			{
 				g_contentsresult =
 				PM_HullPointContents(&hull[j], hull[j].firstclipnode, test);
-				if(g_contentsresult == -2)
+				if(g_contentsresult == CONTENTS_SOLID)
 					return i;
 			}
 		}
 		else
 		{
 			g_contentsresult = PM_HullPointContents(hull, hull->firstclipnode, test);
-			if(g_contentsresult == -2)
+			if(g_contentsresult == CONTENTS_SOLID)
 				return i;
 		}
 	}
@@ -448,7 +452,7 @@ pmtrace_t _PM_PlayerTrace(vec_t *start, vec_t *end, int traceFlags, int numphyse
 					continue;
 
 				if(pe->studiomodel->type == mod_studio &&
-				   (pe->studiomodel->flags & 0x200 ||
+				   (pe->studiomodel->flags & STUDIO_TRACE_HITBOX ||
 				    (pmove->usehull == 2 && !(traceFlags & PM_STUDIO_BOX))))
 				{
 					hull = PM_HullForStudioModel(

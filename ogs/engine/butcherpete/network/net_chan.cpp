@@ -313,11 +313,18 @@ void Netchan_UpdateFlow(netchan_t *chan)
 
 void Netchan_Transmit(netchan_t *chan, int length, byte *data)
 {
+#ifdef REHLDS_FIXES
+	byte send_buf[MAX_UDP_PACKET];
+#else
 	byte send_buf[NET_MAX_MESSAGE];
+#endif
+	
 	qboolean send_reliable;
 	qboolean send_reliable_fragment;
 	qboolean send_resending = false;
+	
 	unsigned w1, w2;
+	
 	int i, j;
 
 	float fRate;
@@ -1806,6 +1813,8 @@ qboolean Netchan_CopyFileFragments(netchan_t *chan)
 
 NOXREF qboolean Netchan_IsSending(netchan_t *chan)
 {
+	NOXREFCHECK;
+	
 	int i;
 	for(i = 0; i < MAX_STREAMS; i++)
 	{
@@ -1817,6 +1826,8 @@ NOXREF qboolean Netchan_IsSending(netchan_t *chan)
 
 NOXREF qboolean Netchan_IsReceiving(netchan_t *chan)
 {
+	NOXREFCHECK;
+	
 	int i;
 	for(i = 0; i < MAX_STREAMS; i++)
 	{
@@ -1838,6 +1849,8 @@ qboolean Netchan_IncomingReady(netchan_t *chan)
 
 NOXREF void Netchan_UpdateProgress(netchan_t *chan)
 {
+	NOXREFCHECK;
+	
 	fragbuf_t *p;
 	int c = 0;
 	int total = 0;
@@ -1928,10 +1941,14 @@ void Netchan_Init(void)
 
 NOXREF qboolean Netchan_CompressPacket(sizebuf_t *chan)
 {
+	NOXREFCHECK;
+	
 	return FALSE;
 }
 
 NOXREF qboolean Netchan_DecompressPacket(sizebuf_t *chan)
 {
+	NOXREFCHECK;
+	
 	return FALSE;
 }

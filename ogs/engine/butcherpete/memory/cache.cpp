@@ -484,6 +484,8 @@ NOXREF int Cache_TotalUsed()
 
 NOXREF void Cache_Print_Models_And_Totals()
 {
+	NOXREFCHECK;
+	
 	char buf[50];
 	cache_system_t *cd;
 	cache_system_t *sortarray[512];
@@ -521,6 +523,8 @@ NOXREF void Cache_Print_Models_And_Totals()
 
 NOXREF void Cache_Print_Sounds_And_Totals()
 {
+	NOXREFCHECK;
+	
 	char buf[50];
 	cache_system_t *cd;
 	cache_system_t *sortarray[1024];

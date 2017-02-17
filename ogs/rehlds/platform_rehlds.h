@@ -124,4 +124,4 @@ public:
 	static void set(IReHLDSPlatform* p);
 };
 
-extern void __declspec(noreturn) rehlds_syserror(const char* fmt, ...);
+extern void NORETURN rehlds_syserror(const char* fmt, ...);

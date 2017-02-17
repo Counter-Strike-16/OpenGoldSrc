@@ -42,7 +42,7 @@ extern IFileSystem *gpFileSystem;
 
 void FS_AddSearchPath(const char *pPath, const char *pathID);
 NOXREF int FS_RemoveSearchPath(const char *pPath);
-NOXREF void FS_RemoveAllSearchPaths();
+void FS_RemoveAllSearchPaths();
 
 void FS_RemoveFile(const char *pRelativePath, const char *pathID);
 void FS_CreateDirHierarchy(const char *path, const char *pathID);

@@ -55,12 +55,16 @@ qboolean SV_CheckBottom(edict_t *ent)
 	vec3_t mins;
 	vec3_t maxs;
 	vec3_t start;
-	vec3_t stop;   //    29
-	trace_t trace; //    30
-	int x;         //    31
-	int y;         //    31
-	float mid;     //    32
-	float bottom;  //    32
+	vec3_t stop;
+	
+	trace_t trace;
+	
+	int x;
+	int y;
+	
+	float mid;
+	float bottom;
+	
 	qboolean monsterClip = (ent->v.flags & FL_MONSTERCLIP) ? 1 : 0;
 
 	_VectorAdd(ent->v.origin, ent->v.mins, mins);
@@ -351,6 +355,8 @@ void SV_FixCheckBottom(edict_t *ent)
 
 NOXREF void SV_NewChaseDir(edict_t *actor, edict_t *enemy, float dist)
 {
+	NOXREFCHECK;
+	
 	float deltax;
 	float deltay;
 	float d[3];
@@ -430,6 +436,8 @@ NOXREF void SV_NewChaseDir(edict_t *actor, edict_t *enemy, float dist)
 
 NOXREF qboolean SV_CloseEnough(edict_t *ent, edict_t *goal, float dist)
 {
+	NOXREFCHECK;
+	
 	int i;
 	for(i = 0; i < 3; i++)
 	{
@@ -443,6 +451,8 @@ NOXREF qboolean SV_CloseEnough(edict_t *ent, edict_t *goal, float dist)
 
 NOXREF qboolean SV_ReachedGoal(edict_t *ent, vec_t *vecGoal, float flDist)
 {
+	NOXREFCHECK;
+	
 	int i;
 	for(i = 0; i < 3; i++)
 	{

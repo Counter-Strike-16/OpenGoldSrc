@@ -107,6 +107,8 @@ cvar_t suitvolume;
 
 NOXREF void Host_EndGame(const char *message, ...)
 {
+	NOXREFCHECK;
+	
 /*
 	int oldn;
 	va_list argptr;
@@ -143,7 +145,7 @@ NOXREF void Host_EndGame(const char *message, ...)
 */
 }
 
-void __declspec(noreturn) Host_Error(const char *error, ...)
+void NORETURN Host_Error(const char *error, ...)
 {
 	/* va_list argptr;
 	char string[1024];
@@ -209,6 +211,8 @@ void Host_InitLocal()
 
 NOXREF void Info_WriteVars(FileHandle_t fp)
 {
+	NOXREFCHECK;
+	
 	/* cvar_t *pcvar;
 	char *s;
 	char pkey[512];
@@ -1288,6 +1292,8 @@ qboolean IsGameSubscribed(const char *gameName)
 
 NOXREF qboolean BIsValveGame()
 {
+	NOXREFCHECK;
+	
 	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
 	{
 		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, com_gamedir))
@@ -1312,9 +1318,9 @@ qboolean Host_SimulationTime(float time)
 		oldrealtime = 0;
 
 	if (cl_maxfps.value)
-		fps = max(30.0, min(cl_maxfps.value, 72.0));
+		fps = max(30.0, Q_min(cl_maxfps.value, 72.0));
 	else
-		fps = max(30.0, min(rate.value/80.0, 72.0));
+		fps = max(30.0, Q_min(rate.value/80.0, 72.0));
 
 	if (!cls.timedemo && (realtime + time) - oldrealtime < 1.0/fps)
 		return false;			// framerate is too high
@@ -1340,9 +1346,9 @@ void Host_Frame(float time)
                 oldrealtime = 0;
 
         if(cl_maxfps.value)
-                fps = max(30.0, min(cl_maxfps.value, 72.0));
+                fps = max(30.0, Q_min(cl_maxfps.value, 72.0));
         else
-                fps = max(30.0, min(rate.value / 80.0, 72.0));
+                fps = max(30.0, Q_min(rate.value / 80.0, 72.0));
 
         if(!cls.timedemo && realtime - oldrealtime < 1.0 / fps)
                 return; // framerate is too high

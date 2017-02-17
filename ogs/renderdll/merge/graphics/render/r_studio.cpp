@@ -138,6 +138,8 @@ r_studiocache_t *R_CheckStudioCache(model_t *pModel, float frame, int sequence, 
 
 NOXREF void R_AddToStudioCache(float frame, int sequence, const vec_t *angles, const vec_t *origin, const vec_t *size, const unsigned char *controller, const unsigned char *pblending, model_t *pModel, hull_t *pHulls, int numhulls)
 {
+	NOXREFCHECK;
+	
 	r_studiocache_t *p;
 	if(numhulls + nCurrentHull >= 128)
 		R_FlushStudioCache();
@@ -694,6 +696,8 @@ int SV_HitgroupForStudioHull(int index)
 
 NOXREF void R_InitStudioCache()
 {
+	NOXREFCHECK;
+	
 	Q_memset(rgStudioCache, 0, sizeof(rgStudioCache));
 
 	r_cachecurrent = 0;
@@ -703,6 +707,8 @@ NOXREF void R_InitStudioCache()
 
 NOXREF void R_FlushStudioCache()
 {
+	NOXREFCHECK;
+	
 	R_InitStudioCache();
 }
 
@@ -889,10 +895,10 @@ qboolean SV_CheckSphereIntersection(edict_t *ent, const vec_t *start, const vec_
 	studiohdr = (studiohdr_t *)Mod_Extradata(g_psv.models[ent->v.modelindex]);
 	pseqdesc = (mstudioseqdesc_t *)((char *)studiohdr + studiohdr->seqindex);
 	pseqdesc += ent->v.sequence;
+	
 	for(int i = 0; i < 3; i++)
-	{
-		maxDim[i] = max(fabs(pseqdesc->bbmax[i]), fabs(pseqdesc->bbmin[i]));
-	}
+		maxDim[i] = max(fabs(pseqdesc->bbmax[i]), fabs(pseqdesc->bbmin[i])); // TODO: use Q_max
+	
 	radiusSquared = maxDim[0] * maxDim[0] + maxDim[1] * maxDim[1] + maxDim[2] * maxDim[2];
 	return DoesSphereIntersect(ent->v.origin, radiusSquared, traceOrg, traceDir) != 0;
 }

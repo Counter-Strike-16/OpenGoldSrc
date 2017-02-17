@@ -89,18 +89,18 @@ typedef struct server_s
 	consistency_t consistency_list[MAX_CONSISTENCY_LIST];
 	int num_consistency;
 	
-	const char *model_precache[HL_MODEL_MAX];
-	struct model_s *models[HL_MODEL_MAX];
-	unsigned char model_precache_flags[HL_MODEL_MAX];
+	const char *model_precache[MAX_MODELS];
+	struct model_s *models[MAX_MODELS];
+	unsigned char model_precache_flags[MAX_MODELS];
 	
-	struct event_s event_precache[HL_EVENT_MAX];
+	struct event_s event_precache[MAX_EVENTS];
 	
-	const char *sound_precache[HL_SOUND_MAX];
-	short int sound_precache_hashedlookup[HL_SOUND_HASHLOOKUP_SIZE];
+	const char *sound_precache[MAX_SOUNDS];
+	short int sound_precache_hashedlookup[MAX_SOUND_HASHLOOKUP_SIZE];
 	qboolean sound_precache_hashedlookup_built;
 	
-	const char *generic_precache[HL_GENERIC_MAX];
-	char generic_precache_names[HL_GENERIC_MAX][64];
+	const char *generic_precache[MAX_GENERIC];
+	char generic_precache_names[MAX_GENERIC][64];
 	int num_generic_names;
 	
 	char *lightstyles[MAX_LIGHTSTYLES];
@@ -136,10 +136,10 @@ struct rehlds_server_t
 {
 // map for sv.model_precache (for faster resolving of model index by its name)
 #if defined(REHLDS_FIXES)
-	CStringKeyStaticMap<int, 7, HL_MODEL_MAX * 2>
+	CStringKeyStaticMap<int, 7, MAX_MODELS * 2>
 	modelsMap; // case-sensitive keys for better performance
 #elif defined(REHLDS_OPT_PEDANTIC)
-	CICaseStringKeyStaticMap<int, 7, HL_MODEL_MAX * 2>
+	CICaseStringKeyStaticMap<int, 7, MAX_MODELS * 2>
 	modelsMap; // use case-insensitive keys to conform original engine's
 // behavior
 #endif
@@ -525,6 +525,7 @@ extern cvar_t sv_rehlds_hull_centering;
 extern cvar_t sv_rcon_condebug;
 extern cvar_t sv_rehlds_userinfo_transmitted_fields;
 extern cvar_t sv_rehlds_attachedentities_playeranimationspeed_fix;
+extern cvar_t sv_rehlds_local_gametime;
 #endif
 extern int sv_playermodel;
 

@@ -79,8 +79,8 @@ const int RESOURCE_INDEX_BITS = 12;
 	const int RESOURCE_MAX_COUNT = (1 << RESOURCE_INDEX_BITS);
 #endif // REHLDS_FIXES
 
-const int HL_SOUND_MAX = 512;
-const int HL_SOUND_HASHLOOKUP_SIZE = (HL_SOUND_MAX * 2 - 1);
+const int MAX_SOUNDS = 512;
+const int MAX_SOUND_HASHLOOKUP_SIZE = (MAX_SOUNDS * 2 - 1);
 
 // How many bits to use to encode an edict.
 const int MAX_EDICT_BITS = 11; // # of bits needed to represent max edicts
@@ -88,13 +88,13 @@ const int MAX_EDICT_BITS = 11; // # of bits needed to represent max edicts
 // Max # of edicts in a level (2048)
 //const int MAX_EDICTS = (1 << MAX_EDICT_BITS);
 
-const int HL_MODEL_MAX = 512;
-const int HL_GENERIC_MAX = 512;
-const int HL_EVENT_MAX = 256;
+const int MAX_MODEL = 512;
+const int MAX_GENERIC = 512;
+const int MAX_EVENTS = 256;
 
 const int MAX_RESOURCE_LIST = 1280;
 
-const int MAX_PACKET_ENTITIES = 256;
+const int MAX_PACKET_ENTITIES = 256; // 256 visible entities per frame
 
 const int DEFAULT_SOUND_PACKET_VOLUME = 255;
 

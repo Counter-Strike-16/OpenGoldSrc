@@ -240,6 +240,7 @@ NOINLINE void Sys_FPUCW_Pop_Prec64()
 
 NOXREF void Sys_PageIn(void *ptr, int size)
 {
+	NOXREFCHECK;
 }
 
 // TODO: investigate filesystem_stdio problem (multiple enumeration of files).
@@ -339,6 +340,8 @@ NOBODY int glob_match(char *pattern, char *text);
 
 NOXREF void Sys_MakeCodeWriteable(uint32 startaddr, uint32 length)
 {
+	NOXREFCHECK;
+	
 #ifdef _WIN32
 	if(!VirtualProtect((LPVOID)startaddr, length, PAGE_EXECUTE_READWRITE, (PDWORD)&length))
 		Sys_Error("Protection change failed.");
@@ -365,6 +368,8 @@ NOBODY void Sys_Init();
 
 NOXREF void Sys_Sleep(int msec)
 {
+	NOXREFCHECK;
+	
 #ifdef _WIN32
 	Sleep(msec);
 #else
@@ -376,7 +381,7 @@ NOBODY void Sys_DebugOutStraight(const char *pStr);
 //{
 //}
 
-void __declspec(noreturn) Sys_Error(const char *error, ...)
+void NORETURN Sys_Error(const char *error, ...)
 {
 	va_list argptr;
 	char text[1024];
@@ -449,6 +454,8 @@ void __declspec(noreturn) Sys_Error(const char *error, ...)
 
 NOXREF void Sys_Warning(const char *pszWarning, ...)
 {
+	NOXREFCHECK;
+	
 	va_list argptr;
 	char text[1024];
 
@@ -742,6 +749,8 @@ void EXT_FUNC AlertMessage(ALERT_TYPE atype, const char *szFmt, ...)
 
 NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname, char *ext)
 {
+	NOXREFCHECK;
+	
 #ifdef _WIN32
 	_splitpath(path, drive, dir, fname, ext);
 #else // _WIN32
@@ -846,11 +855,15 @@ const char *GetCurrentSteamAppName()
 
 NOXREF void SetRateRegistrySetting(const char *pchRate)
 {
+	NOXREFCHECK;
+	
 	registry->WriteString("rate", pchRate);
 }
 
 NOXREF const char *GetRateRegistrySetting(const char *pchDef)
 {
+	NOXREFCHECK;
+	
 	return registry->ReadString("rate", pchDef);
 }
 
@@ -891,6 +904,7 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 
 NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage)
 {
+	NOXREFCHECK;
 }
 
 void Legacy_Sys_Printf(char *fmt, ...)
@@ -908,10 +922,12 @@ void Legacy_Sys_Printf(char *fmt, ...)
 
 NOXREF void Legacy_MP3subsys_Suspend_Audio()
 {
+	NOXREFCHECK;
 }
 
 NOXREF void Legacy_MP3subsys_Resume_Audio()
 {
+	NOXREFCHECK;
 }
 
 void Sys_SetupLegacyAPIs()
@@ -923,34 +939,46 @@ void Sys_SetupLegacyAPIs()
 	Launcher_ConsolePrintf = Legacy_Sys_Printf;
 }
 
-NOXREF int Sys_IsWin95()
+NOXREF qboolean Sys_IsWin95()
 {
+	NOXREFCHECK;
+	
 #ifdef _WIN32
 	return g_bIsWin95;
 #else
 	// TODO: no need to check is win
-	return 0;
+	return FALSE;
 #endif // _WIN32
 }
 
-NOXREF int Sys_IsWin98()
+NOXREF qboolean Sys_IsWin98()
 {
+	NOXREFCHECK;
+	
 #ifdef _WIN32
 	return g_bIsWin98;
 #else
 	// TODO: no need to check is win
-	return 0;
+	return FALSE;
 #endif // _WIN32
 }
 
 #ifdef _WIN32
-NOXREF void Sys_CheckOSVersion()
+
+// Hacky
+#pragma warning( push )  
+#pragma warning( disable : 4996 )
+
+// It's kinda useless to check for such old versions of Win
+// Most servers are running on Linux anyway
+
+void Sys_CheckOSVersion()
 {
-	struct _OSVERSIONINFOA verInfo;
+	OSVERSIONINFOA verInfo;
 
 	Q_memset(&verInfo, 0, sizeof(verInfo));
 	verInfo.dwOSVersionInfoSize = sizeof(verInfo);
-	if(!GetVersionExA(&verInfo))
+	if(!GetVersionEx(&verInfo))
 		Sys_Error("Couldn't get OS info");
 
 	g_WinNTOrHigher = verInfo.dwMajorVersion >= 4;
@@ -959,14 +987,15 @@ NOXREF void Sys_CheckOSVersion()
 		if(verInfo.dwMinorVersion)
 		{
 			if(verInfo.dwMinorVersion < 90)
-				g_bIsWin98 = 1;
+				g_bIsWin98 = TRUE;
 		}
 		else
-		{
-			g_bIsWin95 = 1;
-		}
+			g_bIsWin95 = TRUE;
 	}
 }
+
+#pragma warning ( pop )
+
 #endif // _WIN32
 
 void Sys_Init()
@@ -1076,6 +1105,7 @@ void Sys_InitArgv(char *lpCmdLine)
 
 NOXREF void Sys_ShutdownArgv()
 {
+	NOXREFCHECK;
 }
 
 void Sys_InitMemory()
@@ -1155,6 +1185,7 @@ void Sys_InitLauncherInterface()
 
 NOXREF void Sys_ShutdownLauncherInterface()
 {
+	NOXREFCHECK;
 }
 
 void Sys_InitAuthentication()
@@ -1164,6 +1195,7 @@ void Sys_InitAuthentication()
 
 NOXREF void Sys_ShutdownAuthentication()
 {
+	NOXREFCHECK;
 }
 
 void Sys_ShowProgressTicks(char *specialProgressMsg)
@@ -1329,6 +1361,8 @@ void ClearIOStates()
 /*
 NOXREF int BuildMapCycleListHints(char **hints)
 {
+	NOXREFCHECK;
+	
         char szMap[262];
         unsigned int length;
         char *pFileList;

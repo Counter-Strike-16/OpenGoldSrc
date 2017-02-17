@@ -157,6 +157,8 @@ int IsWhiteSpace(char space)
 
 NOXREF const char *SkipSpace(const char *pText)
 {
+	NOXREFCHECK;
+	
 	if(pText)
 	{
 		int pos = 0;
@@ -170,6 +172,8 @@ NOXREF const char *SkipSpace(const char *pText)
 
 NOXREF const char *SkipText(const char *pText)
 {
+	NOXREFCHECK;
+	
 	if(pText)
 	{
 		int pos = 0;
@@ -182,6 +186,8 @@ NOXREF const char *SkipText(const char *pText)
 
 NOXREF int ParseFloats(const char *pText, float *pFloat, int count)
 {
+	NOXREFCHECK;
+	
 	const char *pTemp = pText;
 	int index = 0;
 
@@ -236,6 +242,8 @@ void TrimSpace(const char *source, char *dest)
 
 NOXREF int IsToken(const char *pText, const char *pTokenName)
 {
+	NOXREFCHECK;
+	
 	if(!pText || !pTokenName)
 		return 0;
 
@@ -247,6 +255,8 @@ NOXREF int IsToken(const char *pText, const char *pTokenName)
 
 NOXREF int ParseDirective(const char *pText)
 {
+	NOXREFCHECK;
+	
 	if(pText && pText[0] == '$')
 	{
 		float tempFloat[8];
@@ -322,6 +332,8 @@ NOXREF int ParseDirective(const char *pText)
 
 NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize)
 {
+	NOXREFCHECK;
+	
 	char buf[512];
 	char trim[512];
 	char *pCurrentText;
@@ -450,6 +462,8 @@ NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize)
 
 NOXREF void TextMessageShutdown()
 {
+	NOXREFCHECK;
+	
 	if(gMessageTable)
 	{
 		Mem_Free(gMessageTable);
@@ -459,6 +473,8 @@ NOXREF void TextMessageShutdown()
 
 NOXREF void TextMessageInit()
 {
+	NOXREFCHECK;
+	
 	int fileSize;
 	unsigned char *pMemFile;
 
@@ -476,6 +492,8 @@ NOXREF void TextMessageInit()
 
 NOXREF client_textmessage_t *TextMessageGet(const char *pName)
 {
+	NOXREFCHECK;
+	
 #ifndef SWDS
 	g_engdstAddrs.pfnTextMessageGet(&pName);
 

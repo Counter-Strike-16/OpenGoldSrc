@@ -257,12 +257,12 @@ typedef struct client_state_s
 	int delta_sequence;
 	int playernum;
 
-	event_t event_precache[HL_EVENT_MAX];
+	event_t event_precache[MAX_EVENTS];
 
-	model_t *model_precache[HL_MODEL_MAX];
+	model_t *model_precache[MAX_MODELS];
 	int model_precache_count;
 
-	sfx_s *sound_precache[HL_SOUND_MAX];
+	sfx_s *sound_precache[MAX_SOUNDS];
 
 	consistency_t consistency_list[MAX_CONSISTENCY_LIST];
 	int num_consistency;
