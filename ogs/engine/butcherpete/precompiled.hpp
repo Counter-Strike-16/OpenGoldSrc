@@ -35,6 +35,7 @@
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
 #endif
+*/
 
 #include <direct.h>
 #include <io.h>
@@ -45,15 +46,17 @@
 #include "maintypes.h"
 
 #include "common/commontypes.h"
-#include "common/const.h"
 #include "common/mathlib.h"
+#include "common/const.h"
 
 #include "common/com_model.h"
 #include "common/usercmd.h"
 #include "engine/eiface.h"
 
+/*
 #include "rehlds/modelgen.h"
 #include "rehlds/spritegn.h"
+*/
 
 #include "engine/custom.h"
 #include "engine/customentity.h"
@@ -90,7 +93,8 @@
 #include "common/screenfade.h"
 #include "common/triangleapi.h"
 #include "common/weaponinfo.h"
-#include "rehlds/bspfile.h"
+
+//#include "rehlds/bspfile.h"
 
 #include "public/keydefs.h"
 
@@ -100,6 +104,7 @@
 
 //#include "version/appversion.h"
 
+/*
 #include "asmlib.h"
 #include "common/mathlib.h"
 #include "math/sse_mathfun.h"
@@ -111,7 +116,7 @@
 
 //#include "ed_strpool.h"
 
-#include "engine_pch.h"
+//#include "engine_pch.h"
 #include "memory.h"
 #include "platform.h"
 //#include "RehldsRuntimeConfig.h"

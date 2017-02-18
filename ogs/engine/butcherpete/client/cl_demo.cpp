@@ -32,6 +32,8 @@
 #include "precompiled.hpp"
 #include "client/cl_demo.hpp"
 #include "client/client.hpp"
+#include "system/system.hpp"
+#include "system/host.hpp"
 #include "console/cmd.hpp"
 #include "console/console.hpp"
 #include "network/net_msg.hpp"
@@ -83,7 +85,7 @@ Called when a demo file runs out, or the user starts a game
 */
 void CL_StopPlayback()
 {
-	/* if(!cls.demoplayback)
+	if(!cls.demoplayback)
 		return;
 
 	fclose(cls.demofile);
@@ -93,7 +95,7 @@ void CL_StopPlayback()
 	cls.demoplayback = 0;
 
 	if(cls.timedemo)
-		CL_FinishTimeDemo(); */
+		CL_FinishTimeDemo();
 }
 
 /*
@@ -105,12 +107,12 @@ Writes the current user cmd
 */
 void CL_WriteDemoCmd(usercmd_t *pcmd)
 {
-	/* int i;
+	int i;
 	byte c;
 	usercmd_t cmd;
 
 	// Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
-
+/*
 	float fl = LittleFloat((float)realtime);
 	fwrite(&fl, sizeof(fl), 1, cls.demofile);
 
@@ -147,13 +149,13 @@ Dumps the current net message, prefixed by the length and view angles
 */
 void CL_WriteDemoMessage(sizebuf_t *msg)
 {
-	/* int len;
+	int len;
 
 	// Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	if(!cls.demorecording)
 		return;
-
+/*
 	float fl = LittleFloat((float)realtime);
 	fwrite(&fl, sizeof(fl), 1, cls.demofile);
 
@@ -200,7 +202,7 @@ qboolean CL_GetDemoMessage()
 		}
 		if(!cls.td_starttime && cls.state == ca_active)
 		{
-			cls.td_starttime = Sys_DoubleTime();
+			cls.td_starttime = Sys_FloatTime();
 			cls.td_startframe = host_framecount;
 		}
 		realtime = demotime; // warp
@@ -299,14 +301,13 @@ Handles recording and playback of demos, on top of NET_ code
 */
 qboolean CL_GetMessage()
 {
-	/* if(cls.demoplayback)
+	if(cls.demoplayback)
 		return CL_GetDemoMessage();
 
-	if(!NET_GetPacket())
-		return false;
+	//if(!NET_GetPacket())
+		//return false;
 
-	CL_WriteDemoMessage(&net_message); */
-
+	//CL_WriteDemoMessage(&net_message);
 	return true;
 }
 
@@ -319,24 +320,24 @@ stop recording a demo
 */
 void CL_Stop_f()
 {
-	/* if(!cls.demorecording)
+	if(!cls.demorecording)
 	{
 		Con_Printf("Not recording a demo.\n");
 		return;
-	}
-
+	};
+/*
 	// write a disconnect message to the demo file
 	SZ_Clear(&net_message);
 	MSG_WriteLong(&net_message, -1); // -1 sequence means out of band
 	MSG_WriteByte(&net_message, svc_disconnect);
 	MSG_WriteString(&net_message, "EndOfDemo");
 	CL_WriteDemoMessage(&net_message);
-
+*/
 	// finish up
 	fclose(cls.demofile);
 	cls.demofile = NULL;
 	cls.demorecording = false;
-	Con_Printf("Completed demo\n"); */
+	Con_Printf("Completed demo\n");
 }
 
 /*
@@ -350,9 +351,9 @@ void CL_WriteRecordDemoMessage(sizebuf_t *msg, int seq)
 {
 	// Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
-	/* if(!cls.demorecording)
+	if(!cls.demorecording)
 		return;
-
+/*
 	float fl = LittleFloat((float)realtime);
 	fwrite(&fl, sizeof(fl), 1, cls.demofile);
 
@@ -373,7 +374,7 @@ void CL_WriteRecordDemoMessage(sizebuf_t *msg, int seq)
 
 void CL_WriteSetDemoMessage()
 {
-	/* int len;
+	int len;
 	float fl;
 	byte c;
 
@@ -381,7 +382,7 @@ void CL_WriteSetDemoMessage()
 
 	if(!cls.demorecording)
 		return;
-
+/*
 	fl = LittleFloat((float)realtime);
 	fwrite(&fl, sizeof(fl), 1, cls.demofile);
 
@@ -717,7 +718,7 @@ record <demoname>
 */
 void CL_ReRecord_f()
 {
-	/* int c;
+	int c;
 	char name[MAX_OSPATH];
 
 	c = Cmd_Argc();
@@ -735,7 +736,7 @@ void CL_ReRecord_f()
 
 	if(cls.demorecording)
 		CL_Stop_f();
-
+/*
 	sprintf(name, "%s/%s", com_gamedir, Cmd_Argv(1));
 
 	//
@@ -766,7 +767,7 @@ play [demoname]
 */
 void CL_PlayDemo_f()
 {
-	/* char name[256];
+	char name[256];
 
 	if(Cmd_Argc() != 2)
 	{
@@ -778,7 +779,7 @@ void CL_PlayDemo_f()
 	// disconnect from server
 	//
 	CL_Disconnect();
-
+/*
 	//
 	// open the demo file
 	//
@@ -793,11 +794,11 @@ void CL_PlayDemo_f()
 		cls.demonum = -1; // stop demo loop
 		return;
 	}
-
+*/
 	cls.demoplayback = true;
-	cls.state = ca_demostart;
-	Netchan_Setup(&cls.netchan, net_from, 0);
-	realtime = 0; */
+	//cls.state = ca_demostart;
+	//Netchan_Setup(&cls.netchan, net_from, 0);
+	realtime = 0;
 }
 
 /*
@@ -808,17 +809,19 @@ CL_FinishTimeDemo
 */
 void CL_FinishTimeDemo()
 {
-	/* int frames;
+	int frames;
 	float time;
 
 	cls.timedemo = false;
 
 	// the first frame didn't count
 	frames = (host_framecount - cls.td_startframe) - 1;
-	time = Sys_DoubleTime() - cls.td_starttime;
+	time = Sys_FloatTime() - cls.td_starttime;
+	
 	if(!time)
 		time = 1;
-	Con_Printf("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time); */
+	
+	Con_Printf("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time);
 }
 
 /*

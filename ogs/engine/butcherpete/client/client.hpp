@@ -49,6 +49,7 @@
 #include "system/common.hpp"
 #include "world/event.hpp"
 //#include "engine/custom.h"
+#include "qlimits.h"
 
 #ifdef HOOK_ENGINE
 #define cls (*pcls)

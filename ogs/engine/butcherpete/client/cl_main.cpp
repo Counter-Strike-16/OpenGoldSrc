@@ -140,7 +140,6 @@ We have gotten a challenge from the server, so try and connect
 */
 void CL_SendConnectPacket()
 {
-/*
 	netadr_t adr;
 	char data[2048];
 
@@ -167,15 +166,14 @@ void CL_SendConnectPacket()
 
 	cls.connect_time = realtime + t2 - t1; // for retransmit requests
 
-	cls.qport = Cvar_VariableValue("qport");
+	//cls.qport = Cvar_VariableValue("qport");
 
 	Info_SetValueForStarKey(cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING);
 
 	//	Con_Printf ("Connecting to %s...\n", cls.servername);
-	sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n", 255, 255, 255, 255, PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
+	//sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n", 255, 255, 255, 255, PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
 
-	NET_SendPacket(strlen(data), data, adr);
-*/
+	//NET_SendPacket(strlen(data), data, adr);
 };
 
 /*
