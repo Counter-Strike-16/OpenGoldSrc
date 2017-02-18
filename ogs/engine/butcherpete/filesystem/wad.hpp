@@ -33,11 +33,11 @@
 #include "common/commontypes.h"
 #include "maintypes.h"
 
-#define NUM_WADS 2
-
 #ifdef HOOK_ENGINE
 #define wads (*pwads)
 #endif
+
+const int NUM_WADS = 2;
 
 typedef struct qpic_s
 {

@@ -226,15 +226,13 @@ NOXREF void Hunk_Print(qboolean all)
 	NOXREFCHECK;
 
 	hunk_t *h, *next, *endlow, *starthigh, *endhigh;
-	int count, sum;
-	int totalblocks;
+	
+	int count = 0;
+	int sum = 0;
+	int totalblocks = 0;
+	
 	char name[HUNK_NAME_LEN];
-
 	name[HUNK_NAME_LEN - 1] = 0;
-
-	count = 0;
-	sum = 0;
-	totalblocks = 0;
 
 	h = (hunk_t *)hunk_base;
 	endlow = (hunk_t *)(hunk_base + hunk_low_used);

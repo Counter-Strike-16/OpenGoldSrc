@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,15 +28,5 @@
 
 /// @file
 
-#pragma once
+#include "physics/PhysicsEntity.hpp"
 
-#include <cstring>
-
-void *Mem_Malloc(size_t size);
-void *Mem_ZeroMalloc(size_t size);
-void *Mem_Realloc(void *memblock, size_t size);
-void *Mem_Calloc(int num, size_t size);
-
-char *Mem_Strdup(const char *strSource);
-
-void Mem_Free(void *p);

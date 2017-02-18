@@ -63,6 +63,7 @@
 #include "client/textmessage.hpp"
 #include "pm_shared/pm_movevars.h"
 #include "rehlds_interfaces_impl.h"
+#include "rehlds_api_impl.h"
 #include "mathlib_local.hpp"
 
 typedef struct full_packet_entities_s
@@ -786,8 +787,8 @@ void SV_StartParticle(const vec_t *org, const vec_t *dir, int color, int count)
 
 void SV_StartSound(int recipients, edict_t *entity, int channel, const char *sample, int volume, float attenuation, int fFlags, int pitch)
 {
-	//g_RehldsHookchains.m_SV_StartSound.callChain(
-	//SV_StartSound_internal, recipients, entity, channel, sample, volume, attenuation, fFlags, pitch);
+	g_RehldsHookchains.m_SV_StartSound.callChain(
+	SV_StartSound_internal, recipients, entity, channel, sample, volume, attenuation, fFlags, pitch);
 }
 
 void EXT_FUNC SV_StartSound_internal(int recipients, edict_t *entity, int channel, const char *sample, int volume, float attenuation, int fFlags, int pitch)
@@ -1234,7 +1235,7 @@ void EXT_FUNC SV_SendServerinfo_mod(sizebuf_t *msg, IGameClient *cl)
 
 void SV_SendServerinfo(sizebuf_t *msg, client_t *client)
 {
-	//g_RehldsHookchains.m_SV_SendServerinfo.callChain(SV_SendServerinfo_mod, msg, GetRehldsApiClient(client));
+	g_RehldsHookchains.m_SV_SendServerinfo.callChain(SV_SendServerinfo_mod, msg, GetRehldsApiClient(client));
 }
 
 void SV_SendServerinfo_internal(sizebuf_t *msg, client_t *client)
@@ -1742,7 +1743,7 @@ void SV_SendRes_f()
 
 void SV_Spawn_f()
 {
-	//g_RehldsHookchains.m_SV_Spawn_f.callChain(SV_Spawn_f_internal);
+	g_RehldsHookchains.m_SV_Spawn_f.callChain(SV_Spawn_f_internal);
 }
 
 void EXT_FUNC SV_Spawn_f_internal()
@@ -1910,7 +1911,7 @@ qboolean EXT_FUNC SV_FilterUser(USERID_t *userid)
 
 int SV_CheckProtocol(netadr_t *adr, int nProtocol)
 {
-	return 1; //g_RehldsHookchains.m_SV_CheckProtocol.callChain(SV_CheckProtocol_internal, adr, nProtocol);
+	return g_RehldsHookchains.m_SV_CheckProtocol.callChain(SV_CheckProtocol_internal, adr, nProtocol);
 }
 
 int EXT_FUNC SV_CheckProtocol_internal(netadr_t *adr, int nProtocol)
@@ -1995,7 +1996,7 @@ int SV_CheckChallenge(netadr_t *adr, int nChallengeValue)
 
 int SV_CheckIPRestrictions(netadr_t *adr, int nAuthProtocol)
 {
-	return 1; //g_RehldsHookchains.m_SV_CheckIPRestrictions.callChain(SV_CheckIPRestrictions_internal, adr, nAuthProtocol);
+	return g_RehldsHookchains.m_SV_CheckIPRestrictions.callChain(SV_CheckIPRestrictions_internal, adr, nAuthProtocol);
 }
 
 int EXT_FUNC SV_CheckIPRestrictions_internal(netadr_t *adr, int nAuthProtocol)
@@ -2036,7 +2037,7 @@ int SV_CheckIPConnectionReuse(netadr_t *adr)
 
 int SV_FinishCertificateCheck(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo)
 {
-	return 1; //g_RehldsHookchains.m_SV_FinishCertificateCheck.callChain(SV_FinishCertificateCheck_internal, adr, nAuthProtocol, szRawCertificate, userinfo);
+	return g_RehldsHookchains.m_SV_FinishCertificateCheck.callChain(SV_FinishCertificateCheck_internal, adr, nAuthProtocol, szRawCertificate, userinfo);
 }
 
 int EXT_FUNC SV_FinishCertificateCheck_internal(netadr_t *adr,
@@ -2080,7 +2081,7 @@ int EXT_FUNC SV_FinishCertificateCheck_internal(netadr_t *adr,
 
 int SV_CheckKeyInfo(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey)
 {
-	return 1; //g_RehldsHookchains.m_SV_CheckKeyInfo.callChain(SV_CheckKeyInfo_internal, adr, protinfo, port, pAuthProtocol, pszRaw, cdkey);
+	return g_RehldsHookchains.m_SV_CheckKeyInfo.callChain(SV_CheckKeyInfo_internal, adr, protinfo, port, pAuthProtocol, pszRaw, cdkey);
 }
 
 int EXT_FUNC SV_CheckKeyInfo_internal(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey)
@@ -2364,7 +2365,7 @@ int SV_FindEmptySlot(netadr_t *adr, int *pslot, client_t **ppClient)
 
 void SV_ConnectClient()
 {
-	//g_RehldsHookchains.m_SV_ConnectClient.callChain(SV_ConnectClient_internal);
+	g_RehldsHookchains.m_SV_ConnectClient.callChain(SV_ConnectClient_internal);
 }
 
 void EXT_FUNC SV_ConnectClient_internal()
@@ -2611,7 +2612,7 @@ void EXT_FUNC SV_ConnectClient_internal()
 	// Rehlds Security
 	//Rehlds_Security_ClientConnected(host_client - g_psvs.clients);
 
-	//g_RehldsHookchains.m_ClientConnected.callChain(NULL, GetRehldsApiClient(host_client));
+	g_RehldsHookchains.m_ClientConnected.callChain(NULL, GetRehldsApiClient(host_client));
 }
 
 void SVC_Ping()
@@ -2676,12 +2677,13 @@ void SVC_GetChallenge()
 	//if(steam)
 		//Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 3 %lld %d\n", S2C_CHALLENGE, challenge, g_RehldsHookchains.m_Steam_GSGetSteamID.callChain(Steam_GSGetSteamID), Steam_GSBSecure());
 	//else
-	//{
-		//Con_DPrintf("Server requiring authentication\n");Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 2\n", S2C_CHALLENGE, challenge);
-	//}
+	{
+		Con_DPrintf("Server requiring authentication\n");
+		Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 2\n", S2C_CHALLENGE, challenge);
+	}
 
 	// Give 3-rd party plugins a chance to modify challenge response
-	//g_RehldsHookchains.m_SVC_GetChallenge_mod.callChain(NULL, data, challenge);
+	g_RehldsHookchains.m_SVC_GetChallenge_mod.callChain(NULL, data, challenge);
 	NET_SendPacket(NS_SERVER, Q_strlen(data) + 1, data, net_from);
 }
 
@@ -3758,8 +3760,8 @@ void SV_ReadPackets()
 			continue;
 		}
 
-		bool pass = false; //g_RehldsHookchains.m_PreprocessPacket.callChain(
-		//NET_GetPacketPreprocessor, net_message.data, net_message.cursize, net_from);
+		bool pass = g_RehldsHookchains.m_PreprocessPacket.callChain(NET_GetPacketPreprocessor, net_message.data, net_message.cursize, net_from);
+		
 		if(!pass)
 			continue;
 
@@ -3948,8 +3950,8 @@ void SV_FullClientUpdate(client_t *cl, sizebuf_t *sb)
 		Info_RemovePrefixedKeys(info, '_');
 	}
 
-	//g_RehldsHookchains.m_SV_WriteFullClientUpdate.callChain(
-	//SV_WriteFullClientUpdate_internal, GetRehldsApiClient(cl), info, MAX_INFO_STRING, sb, GetRehldsApiClient((sb == &g_psv.reliable_datagram) ? nullptr : host_client));
+	g_RehldsHookchains.m_SV_WriteFullClientUpdate.callChain(
+	SV_WriteFullClientUpdate_internal, GetRehldsApiClient(cl), info, MAX_INFO_STRING, sb, GetRehldsApiClient((sb == &g_psv.reliable_datagram) ? nullptr : host_client));
 }
 
 void EXT_FUNC SV_EmitEvents_api(IGameClient *cl, packet_entities_t *pack, sizebuf_t *ms)
@@ -3959,7 +3961,7 @@ void EXT_FUNC SV_EmitEvents_api(IGameClient *cl, packet_entities_t *pack, sizebu
 
 void SV_EmitEvents(client_t *cl, packet_entities_t *pack, sizebuf_t *ms)
 {
-	//g_RehldsHookchains.m_SV_EmitEvents.callChain(SV_EmitEvents_api, GetRehldsApiClient(cl), pack, ms);
+	g_RehldsHookchains.m_SV_EmitEvents.callChain(SV_EmitEvents_api, GetRehldsApiClient(cl), pack, ms);
 }
 
 void SV_EmitEvents_internal(client_t *cl, packet_entities_t *pack, sizebuf_t *msg)
@@ -4353,8 +4355,8 @@ int EXT_FUNC SV_CreatePacketEntities_api(sv_delta_t type, IGameClient *client, p
 
 int SV_CreatePacketEntities(sv_delta_t type, client_t *client, packet_entities_t *to, sizebuf_t *msg)
 {
-	return 0; //g_RehldsHookchains.m_SV_CreatePacketEntities.callChain(
-	//SV_CreatePacketEntities_api, type, GetRehldsApiClient(client), to, msg);
+	return g_RehldsHookchains.m_SV_CreatePacketEntities.callChain(
+	SV_CreatePacketEntities_api, type, GetRehldsApiClient(client), to, msg);
 }
 
 int SV_CreatePacketEntities_internal(sv_delta_t type, client_t *client, packet_entities_t *to, sizebuf_t *msg)
@@ -5553,7 +5555,7 @@ void SV_PropagateCustomizations()
 
 void SV_WriteVoiceCodec(sizebuf_t *pBuf)
 {
-	//g_RehldsHookchains.m_SV_WriteVoiceCodec.callChain(SV_WriteVoiceCodec_internal, pBuf);
+	g_RehldsHookchains.m_SV_WriteVoiceCodec.callChain(SV_WriteVoiceCodec_internal, pBuf);
 }
 
 void EXT_FUNC SV_WriteVoiceCodec_internal(sizebuf_t *pBuf)
@@ -5928,7 +5930,7 @@ void MoveCheckedResourcesToFirstPositions()
 
 void SV_ActivateServer(int runPhysics)
 {
-	//g_RehldsHookchains.m_SV_ActivateServer.callChain(SV_ActivateServer_internal,runPhysics);
+	g_RehldsHookchains.m_SV_ActivateServer.callChain(SV_ActivateServer_internal,runPhysics);
 }
 
 void EXT_FUNC SV_ActivateServer_internal(int runPhysics)
@@ -6709,7 +6711,7 @@ void SV_BanId_f()
 	(banTime == 0.0f) ? 0.0f : banTime * 60.0f + realtime;
 
 	// give 3-rd party plugins a chance to serialize ID
-	//g_RehldsHookchains.m_SerializeSteamId.callChain(SV_SerializeSteamid, id, &userfilters[i].userid);
+	g_RehldsHookchains.m_SerializeSteamId.callChain(SV_SerializeSteamid, id, &userfilters[i].userid);
 
 	if(banTime == 0.0f)
 		Q_sprintf(szreason, "permanently");
@@ -8166,8 +8168,7 @@ void SV_Shutdown()
 
 qboolean SV_CompareUserID(USERID_t *id1, USERID_t *id2)
 {
-	//return g_RehldsHookchains.m_SV_CompareUserID.callChain(SV_CompareUserID_internal, id1, id2);
-	return false;
+	return g_RehldsHookchains.m_SV_CompareUserID.callChain(SV_CompareUserID_internal, id1, id2);
 }
 
 qboolean EXT_FUNC SV_CompareUserID_internal(USERID_t *id1, USERID_t *id2)
@@ -8195,8 +8196,7 @@ qboolean EXT_FUNC SV_CompareUserID_internal(USERID_t *id1, USERID_t *id2)
 
 char *SV_GetIDString(USERID_t *id)
 {
-	//return g_RehldsHookchains.m_SV_GetIDString.callChain(SV_GetIDString_internal, id);
-	return nullptr;
+	return g_RehldsHookchains.m_SV_GetIDString.callChain(SV_GetIDString_internal, id);
 }
 
 char *EXT_FUNC SV_GetIDString_internal(USERID_t *id)
@@ -8249,6 +8249,7 @@ char *EXT_FUNC SV_GetIDString_internal(USERID_t *id)
 		Q_strncpy(idstr, "UNKNOWN", ARRAYSIZE(idstr) - 1);
 		break;
 	}
+	
 	// Don't be paranoid
 	// idstr[ARRAYSIZE(idstr) - 1] = 0;
 
@@ -8283,7 +8284,7 @@ char *SV_GetClientIDString(client_t *client)
 
 void SV_ClientPrintf(const char *fmt, ...)
 {
-	/* va_list va;
+	va_list va;
 	char string[1024];
 
 	if(!host_client->fakeclient)
@@ -8296,12 +8297,12 @@ void SV_ClientPrintf(const char *fmt, ...)
 
 		MSG_WriteByte(&host_client->netchan.message, svc_print);
 		MSG_WriteString(&host_client->netchan.message, string);
-	} */
+	}
 }
 
 void SV_BroadcastPrintf(const char *fmt, ...)
 {
-	/* va_list argptr;
+	va_list argptr;
 	char string[1024];
 
 	va_start(argptr, fmt);
@@ -8319,29 +8320,30 @@ void SV_BroadcastPrintf(const char *fmt, ...)
 			MSG_WriteString(&cl->netchan.message, string);
 		}
 	}
-	Con_DPrintf("%s", string); */
+	
+	Con_DPrintf("%s", string);
 }
 
 void EXT_FUNC SV_DropClient_hook(IGameClient *cl, bool crash, const char *string)
 {
-	//SV_DropClient_internal(cl->GetClient(), crash ? TRUE : FALSE, string);
+	SV_DropClient_internal(cl->GetClient(), crash ? TRUE : FALSE, string);
 }
 
 void EXT_FUNC SV_DropClient_api(IGameClient *cl, bool crash, const char *fmt, ...)
 {
-	/* char buf[1024];
+	char buf[1024];
 	va_list argptr;
 
 	va_start(argptr, fmt);
 	Q_vsnprintf(buf, ARRAYSIZE(buf) - 1, fmt, argptr);
 	va_end(argptr);
 
-	g_RehldsHookchains.m_SV_DropClient.callChain(SV_DropClient_hook, cl, crash, buf); */
+	g_RehldsHookchains.m_SV_DropClient.callChain(SV_DropClient_hook, cl, crash, buf);
 }
 
 void SV_DropClient(client_t *cl, qboolean crash, const char *fmt, ...)
 {
-	/* char buf[1024];
+	char buf[1024];
 	va_list argptr;
 
 	va_start(argptr, fmt);
@@ -8349,12 +8351,12 @@ void SV_DropClient(client_t *cl, qboolean crash, const char *fmt, ...)
 	va_end(argptr);
 
 	g_RehldsHookchains.m_SV_DropClient.callChain(
-	SV_DropClient_hook, GetRehldsApiClient(cl), crash != FALSE, buf); */
+	SV_DropClient_hook, GetRehldsApiClient(cl), crash != FALSE, buf);
 }
 
 void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 {
-	/* int i;
+	int i;
 	unsigned char final[512];
 	float connection_time;
 
@@ -8396,7 +8398,7 @@ void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 
 	Netchan_Clear(&cl->netchan);
 
-	Steam_NotifyClientDisconnect(cl);
+	//Steam_NotifyClientDisconnect(cl);
 
 	cl->active = FALSE;
 	cl->connected = FALSE;
@@ -8418,5 +8420,5 @@ void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 
 	SV_SendFullClientUpdateForAll(cl);
 
-	NotifyDedicatedServerUI("UpdatePlayers"); */
+	//NotifyDedicatedServerUI("UpdatePlayers");
 }

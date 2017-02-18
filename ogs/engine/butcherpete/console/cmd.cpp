@@ -45,7 +45,7 @@
 #include "network/protocol.hpp"
 #include "client/client.hpp"
 #include "server/server.hpp"
-//#include "rehlds_api_impl.h"
+#include "rehlds_api_impl.h"
 
 const int MAX_ARGS = 80;
 
@@ -63,7 +63,7 @@ cmdalias_t *cmd_alias;
 // int *trashspot;
 
 cmd_function_t *cmd_functions;
-char *cmd_null_string const = "";
+char *const cmd_null_string = "";
 
 /*
 ============
@@ -850,12 +850,12 @@ void Cmd_ExecuteString(char *text, cmd_source_t src)
 	if(!Cmd_Argc())
 		return;
 
-	//IGameClient *cl = (src == src_client) ? GetRehldsApiClient(host_client) : NULL;
+	IGameClient *cl = (src == src_client) ? GetRehldsApiClient(host_client) : NULL;
 	
-	//if(!g_RehldsHookchains.m_ValidateCommand.callChain(ValidateCmd_API, cmd_argv[0], src, cl))
-		//return;
+	if(!g_RehldsHookchains.m_ValidateCommand.callChain(ValidateCmd_API, cmd_argv[0], src, cl))
+		return;
 
-	//g_RehldsHookchains.m_ExecuteServerStringCmd.callChain(Cmd_ExecuteString_internal, cmd_argv[0], src, cl);
+	g_RehldsHookchains.m_ExecuteServerStringCmd.callChain(Cmd_ExecuteString_internal, cmd_argv[0], src, cl);
 }
 
 qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)

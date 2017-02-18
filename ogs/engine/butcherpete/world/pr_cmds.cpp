@@ -51,6 +51,7 @@
 #include "server/sv_user.hpp"
 #include "sound/sound.hpp"
 #include "client/client.hpp"
+#include "rehlds_api_impl.h"
 
 vec_t gHullMins[4][3] = {
 	{ 0.0f, 0.0f, 0.0f },
@@ -102,7 +103,7 @@ void EXT_FUNC PF_makevectors_I(const float *rgflVector)
 	AngleVectors(rgflVector, gGlobalVariables.v_forward, gGlobalVariables.v_right, gGlobalVariables.v_up);
 }
 
-float EXT_FUNC PF_Time(void)
+float EXT_FUNC PF_Time()
 {
 	return Sys_FloatTime();
 }
@@ -893,7 +894,7 @@ void EXT_FUNC PF_localcmd_I(char *str)
 		Con_Printf("Error, bad server command %s\n", str);
 }
 
-void EXT_FUNC PF_localexec_I(void)
+void EXT_FUNC PF_localexec_I()
 {
 	Cbuf_Execute();
 }
@@ -931,7 +932,7 @@ edict_t *EXT_FUNC FindEntityInSphere(edict_t *pEdictStartSearchAfter,
 	return &g_psv.edicts[0];
 }
 
-edict_t *EXT_FUNC PF_Spawn_I(void)
+edict_t *EXT_FUNC PF_Spawn_I()
 {
 	return ED_Alloc();
 }
@@ -962,7 +963,7 @@ edict_t *EXT_FUNC CreateNamedEntity(int className)
 
 void EXT_FUNC PF_Remove_I(edict_t *ed)
 {
-	//g_RehldsHookchains.m_PF_Remove_I.callChain(PF_Remove_I_internal, ed);
+	g_RehldsHookchains.m_PF_Remove_I.callChain(PF_Remove_I_internal, ed);
 }
 
 void EXT_FUNC PF_Remove_I_internal(edict_t *ed)
@@ -1095,7 +1096,7 @@ int EXT_FUNC PF_precache_sound_I(const char *s)
 		Host_Error("%s: Sound '%s' failed to precache because the "
 		           "item count is over the %d limit.\nReduce the number of brush "
 		           "models and/or regular models in the map to correct this.",
-				   __FUNCTION__
+				   __FUNCTION__,
 		           s,
 		           MAX_SOUNDS);
 	}
@@ -1180,13 +1181,13 @@ unsigned short EXT_FUNC EV_Precache(int type, const char *psz)
 
 void EXT_FUNC EV_PlayReliableEvent_api(IGameClient *cl, int entindex, unsigned short eventindex, float delay, event_args_t *pargs)
 {
-	//EV_PlayReliableEvent_internal(cl->GetClient(), entindex, eventindex, delay, pargs);
+	EV_PlayReliableEvent_internal(cl->GetClient(), entindex, eventindex, delay, pargs);
 }
 
 void EV_PlayReliableEvent(client_t *cl, int entindex, unsigned short eventindex, float delay, event_args_t *pargs)
 {
-	//g_RehldsHookchains.m_EV_PlayReliableEvent.callChain(
-	//EV_PlayReliableEvent_api, GetRehldsApiClient(cl), entindex, eventindex, delay, pargs);
+	g_RehldsHookchains.m_EV_PlayReliableEvent.callChain(
+	EV_PlayReliableEvent_api, GetRehldsApiClient(cl), entindex, eventindex, delay, pargs);
 }
 
 void EV_PlayReliableEvent_internal(client_t *cl, int entindex, unsigned short eventindex, float delay, event_args_t *pargs)
@@ -1621,7 +1622,7 @@ int EXT_FUNC PF_IsMapValid_I(char *mapname)
 	return FS_FileExists(cBuf);
 }
 
-int EXT_FUNC PF_NumberOfEntities_I(void)
+int EXT_FUNC PF_NumberOfEntities_I()
 {
 	int ent_count = 0;
 	for(int i = 1; i < g_psv.num_edicts; i++)
@@ -2186,7 +2187,7 @@ void EXT_FUNC PF_MessageBegin_I(int msg_dest, int msg_type, const float *pOrigin
 	gMsgBuffer.cursize = 0;
 }
 
-void EXT_FUNC PF_MessageEnd_I(void)
+void EXT_FUNC PF_MessageEnd_I()
 {
 	qboolean MsgIsVarLength = 0;
 	if(!gMsgStarted)
@@ -2303,8 +2304,7 @@ void EXT_FUNC PF_MessageEnd_I(void)
 		break;
 
 	case MSG_PVS_R:
-		SV_Multicast((edict_t *)gMsgEntity, gMsgOrigin, MSG_FL_PAS,
-		             1); // TODO: Should be MSG_FL_PVS, investigation needed
+		SV_Multicast((edict_t *)gMsgEntity, gMsgOrigin, MSG_FL_PAS, 1); // TODO: Should be MSG_FL_PVS, investigation needed
 		break;
 
 	case MSG_PAS_R:
@@ -2436,7 +2436,7 @@ void EXT_FUNC PF_changelevel_I(const char *s1, const char *s2)
 	}
 }
 
-void SeedRandomNumberGenerator(void)
+void SeedRandomNumberGenerator()
 {
 	//idum = -(int)CRehldsPlatformHolder::get()->time(NULL);
 	if(idum > 1000)
@@ -2456,7 +2456,7 @@ void SeedRandomNumberGenerator(void)
 #define NTAB 32
 #define NDIV (1 + (IM - 1) / NTAB)
 
-int32 ran1(void)
+int32 ran1()
 {
 	int j;
 	long k;
@@ -2495,7 +2495,7 @@ int32 ran1(void)
 #define EPS 1.2e-7
 #define RNMX (1.0 - EPS)
 
-float fran1(void)
+float fran1()
 {
 	float temp = (float)AM * ran1();
 	if(temp > RNMX)
@@ -2624,8 +2624,7 @@ const char *EXT_FUNC PF_GetPlayerAuthId(edict_t *e)
 		{
 			Q_strcpy(szAuthID[count], "BOT");
 		}
-		//		AUTH_IDTYPE_LOCAL is handled inside SV_GetIDString(), no need to do it
-		//here
+		//		AUTH_IDTYPE_LOCAL is handled inside SV_GetIDString(), no need to do it here
 		//		else if (cl->network_userid.idtype == AUTH_IDTYPE_LOCAL)
 		//		{
 		//			Q_strcpy(szAuthID[count], "HLTV");
@@ -2643,8 +2642,8 @@ const char *EXT_FUNC PF_GetPlayerAuthId(edict_t *e)
 
 void EXT_FUNC PF_BuildSoundMsg_I(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)
 {
-	//g_RehldsHookchains.m_PF_BuildSoundMsg_I.callChain(
-	//PF_BuildSoundMsg_I_internal, entity, channel, sample, volume, attenuation, fFlags, pitch, msg_dest, msg_type, pOrigin, ed);
+	g_RehldsHookchains.m_PF_BuildSoundMsg_I.callChain(
+	PF_BuildSoundMsg_I_internal, entity, channel, sample, volume, attenuation, fFlags, pitch, msg_dest, msg_type, pOrigin, ed);
 }
 
 void EXT_FUNC PF_BuildSoundMsg_I_internal(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed)
@@ -2654,7 +2653,7 @@ void EXT_FUNC PF_BuildSoundMsg_I_internal(edict_t *entity, int channel, const ch
 	PF_MessageEnd_I();
 }
 
-int EXT_FUNC PF_IsDedicatedServer(void)
+int EXT_FUNC PF_IsDedicatedServer()
 {
 	return g_bIsDedicatedServer;
 }
@@ -2696,7 +2695,7 @@ void EXT_FUNC PF_SetPhysicsKeyValue(const edict_t *pClient, const char *key, con
 	Info_SetValueForKey(client->physinfo, key, value, MAX_INFO_STRING);
 }
 
-int EXT_FUNC PF_GetCurrentPlayer(void)
+int EXT_FUNC PF_GetCurrentPlayer()
 {
 	int idx = host_client - g_psvs.clients;
 	if(idx < 0 || idx >= g_psvs.maxclients)
@@ -2813,7 +2812,7 @@ void EXT_FUNC PF_GetPlayerStats(const edict_t *pClient, int *ping, int *packet_l
 	*ping = client->latency * 1000.0;
 }
 
-NOXREF void QueryClientCvarValueCmd(void)
+NOXREF void QueryClientCvarValueCmd()
 {
 	NOXREFCHECK;
 	
@@ -2838,7 +2837,7 @@ NOXREF void QueryClientCvarValueCmd(void)
 	}
 }
 
-NOXREF void QueryClientCvarValueCmd2(void)
+NOXREF void QueryClientCvarValueCmd2()
 {
 	NOXREFCHECK;
 	

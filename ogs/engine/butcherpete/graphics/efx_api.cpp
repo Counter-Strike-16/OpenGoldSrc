@@ -356,7 +356,7 @@ void R_FireCustomDecal(int textureIndex, int entity, int modelIndex, float *posi
 {
 };
 
-#else // if OGS_EFX_API_NULL_IMPL defined
+#else // if defined(OGS_EFX_API_NULL_IMPL)
 
 particle_t *R_AllocParticle(void (*callback)(struct particle_s *particle, float frametime))
 {

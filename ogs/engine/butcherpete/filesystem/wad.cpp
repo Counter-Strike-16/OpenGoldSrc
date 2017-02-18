@@ -61,43 +61,47 @@ void W_CleanupName(char *in, char *out)
 		if(c >= 'A' && c <= 'Z')
 			c += ('a' - 'A');
 		out[i] = c;
-	}
+	};
+	
 	if(i < 16)
 		Q_memset(&out[i], 0, 16 - i);
-}
+};
 
 int W_LoadWadFile(char *filename)
 {
 	int slot = 0;
+	
 	for(; slot < NUM_WADS; slot++)
 	{
 		if(!wads[slot].loaded)
 			break;
-	}
+	};
 
 	if(slot >= NUM_WADS)
 	{
 		Con_Printf("No room for wad %s\n", filename);
 		return -1;
-	}
+	};
 
 	wadlist_t *wad = &wads[slot];
-
 	wad->wad_base = (byte *)COM_LoadHunkFile(filename);
+	
 	if(!wad->wad_base)
 	{
 		if(!slot)
 			Sys_Error("W_LoadWadFile: couldn't load %s", filename);
 		Con_Printf("WARNING:  W_LoadWadFile, couldn't load %s\n", filename);
 		return -1;
-	}
+	};
 
 	Q_strncpy(wad->wadname, filename, sizeof(wad->wadname) - 1);
 	wadinfo_t *header = (wadinfo_t *)wad->wad_base;
 	wad->wadname[sizeof(wad->wadname) - 1] = 0;
 	wad->loaded = TRUE;
+	
 	if(*(uint32 *)header->identification != MAKEID('W', 'A', 'D', '3'))
 		Sys_Error("Wad file %s doesn't have WAD3 id\n", filename);
+	
 	wad->wad_numlumps = LittleLong(header->numlumps);
 
 	lumpinfo_t *lump_p =
@@ -111,10 +115,10 @@ int W_LoadWadFile(char *filename)
 		W_CleanupName(lump_p->name, lump_p->name);
 		if(lump_p->type == 66)
 			SwapPic((qpic_t *)&wad->wad_base[lump_p->filepos]);
-	}
+	};
 
 	return slot;
-}
+};
 
 lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror)
 {
@@ -128,45 +132,46 @@ lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror)
 		lump_p = wads[i].wad_lumps;
 		if(!Q_strcmp(clean, lump_p->name))
 			return lump_p;
-	}
+	};
 
 	if(doerror)
 		Sys_Error("W_GetLumpinfo: %s not found", name);
 
 	return NULL;
-}
+};
 
 void *W_GetLumpName(int wad, char *name)
 {
 	lumpinfo_t *lump = W_GetLumpinfo(wad, name, TRUE);
+	
 	if(lump != NULL)
 		return &wads[wad].wad_base[lump->filepos];
+	
 	return NULL;
-}
+};
 
 NOXREF void *W_GetLumpNum(int wad, int num)
 {
 	NOXREFCHECK;
 	
-	lumpinfo_t *lump;
 	if(num < 0 || num > wads[wad].wad_numlumps)
 		Sys_Error("W_GetLumpNum: bad number: %i", num);
 
-	lump = wads[wad].wad_lumps;
+	lumpinfo_t *lump = wads[wad].wad_lumps;
 	return (void *)&wads[wad].wad_base[lump->filepos];
-}
+};
 
 void W_Shutdown()
 {
-	for(int slot = 0; slot < NUM_WADS; slot++)
+	for(int slot = 0; slot < NUM_WADS; ++slot)
 	{
 		wadlist_t *wad = &wads[slot];
 		if(!wad->loaded)
 			break;
 
 		Q_memset(wad, 0, sizeof(wadlist_t));
-	}
-}
+	};
+};
 
 /*
 =============================================================================
@@ -180,4 +185,4 @@ void SwapPic(qpic_t *pic)
 {
 	pic->width = LittleLong(pic->width);
 	pic->height = LittleLong(pic->height);
-}
+};

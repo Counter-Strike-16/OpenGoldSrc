@@ -40,8 +40,9 @@
 #include "network/net_msg.hpp"
 #include "client/client.hpp"
 #include "server/server.hpp"
-//#include "server/sv_steam3.hpp"
+#include "server/sv_steam3.hpp"
 #include "server/sv_log.hpp"
+#include "rehlds_api_impl.h"
 
 /*
 	All cvar names are case insensitive! Values not
@@ -295,15 +296,15 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 
 		if(!(var->flags & FCVAR_PROTECTED))
 		{
-			//Steam_SetCVar(var->name, pszValue);
+			Steam_SetCVar(var->name, pszValue);
 		}
 		else if(pszValue[0] && Q_stricmp(pszValue, "none"))
 		{
-			//Steam_SetCVar(var->name, "1");
+			Steam_SetCVar(var->name, "1");
 		}
 		else
 		{
-			//Steam_SetCVar(var->name, "0");
+			Steam_SetCVar(var->name, "0");
 		};
 	};
 
@@ -315,7 +316,7 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 
 void Cvar_DirectSet(struct cvar_s *var, const char *value)
 {
-	//g_RehldsHookchains.m_Cvar_DirectSet.callChain(Cvar_DirectSet_internal, var, value);
+	g_RehldsHookchains.m_Cvar_DirectSet.callChain(Cvar_DirectSet_internal, var, value);
 };
 
 void Cvar_Set(const char *var_name, const char *value)
@@ -677,10 +678,11 @@ void Cmd_CvarList_f()
 NOXREF int Cvar_CountServerVariables()
 {
 	NOXREFCHECK;
-
+	
+	cvar_t *var = nullptr;
 	int i = 0;
 	
-	for(i, cvar_t *var = cvar_vars; var; var = var->next)
+	for(i, var = cvar_vars; var; var = var->next)
 	{
 		if(var->flags & FCVAR_SERVER)
 			++i;

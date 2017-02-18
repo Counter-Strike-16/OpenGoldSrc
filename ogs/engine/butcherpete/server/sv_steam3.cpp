@@ -38,6 +38,7 @@
 #include "client/client.hpp"
 #include "rehlds/rehlds_interfaces.h"
 #include "rehlds_interfaces_impl.h"
+#include "rehlds_api_impl.h"
 #include "common/cvardef.h"
 
 bool (CSteam3Server::*pNotifyClientConnect)(client_t *client, const void *pvSteam2Key, uint32 ucbSteam2Key) = &CSteam3Server::NotifyClientConnect;
@@ -639,19 +640,16 @@ GameServerChangeRequested_t *pGameServerChangeRequested)
 #endif
 }
 
-void CSteam3Client::OnGameOverlayActivated(
-GameOverlayActivated_t *pGameOverlayActivated)
+void CSteam3Client::OnGameOverlayActivated(GameOverlayActivated_t *pGameOverlayActivated)
 {
 #ifndef SWDS
 	if(Host_IsSinglePlayerGame())
 	{
 		if(pGameOverlayActivated->m_bActive)
-		{
 			Cbuf_AddText("setpause;");
-		}
 		else
 		{
-			//if(!(unsigned __int8)(*(int (**)())(*(_DWORD *)g_pGameUI007 + 44))())
+			//if(!(unsigned __int8)(*(int (**)())(*(_DWORD *)g_pGameUI007 + 44))()) // bool IsGameUIActive()?
 				//Cbuf_AddText("unpause;");
 		}
 	}
@@ -666,9 +664,7 @@ void CSteam3Client::RunFrame()
 uint64 ISteamGameServer_CreateUnauthenticatedUserConnection()
 {
 	if(!CRehldsPlatformHolder::get()->SteamGameServer())
-	{
 		return 0L;
-	}
 
 	return CRehldsPlatformHolder::get()
 	->SteamGameServer()
@@ -685,11 +681,9 @@ bool Steam_GSBUpdateUserData(uint64 steamIDUser, const char *pchPlayerName, uint
 bool ISteamGameServer_BUpdateUserData(uint64 steamid, const char *netname, uint32 score)
 {
 	if(!CRehldsPlatformHolder::get()->SteamGameServer())
-	{
 		return false;
-	}
 
-	return false; //g_RehldsHookchains.m_Steam_GSBUpdateUserData.callChain(Steam_GSBUpdateUserData, steamid, netname, score);
+	return g_RehldsHookchains.m_Steam_GSBUpdateUserData.callChain(Steam_GSBUpdateUserData, steamid, netname, score);
 }
 
 bool ISteamApps_BIsSubscribedApp(uint32 appid)
@@ -720,8 +714,8 @@ qboolean EXT_FUNC Steam_NotifyClientConnect_api(IGameClient *cl,
 
 qboolean Steam_NotifyClientConnect(client_t *cl, const void *pvSteam2Key, unsigned int ucbSteam2Key)
 {
-	return false; //g_RehldsHookchains.m_Steam_NotifyClientConnect.callChain(
-	//Steam_NotifyClientConnect_api, GetRehldsApiClient(cl), pvSteam2Key, ucbSteam2Key);
+	return g_RehldsHookchains.m_Steam_NotifyClientConnect.callChain(
+	Steam_NotifyClientConnect_api, GetRehldsApiClient(cl), pvSteam2Key, ucbSteam2Key);
 }
 
 qboolean Steam_NotifyClientConnect_internal(client_t *cl,
@@ -742,21 +736,20 @@ qboolean EXT_FUNC Steam_NotifyBotConnect_api(IGameClient *cl)
 
 qboolean Steam_NotifyBotConnect(client_t *cl)
 {
-	return false; //g_RehldsHookchains.m_Steam_NotifyBotConnect.callChain(Steam_NotifyBotConnect_api, GetRehldsApiClient(cl));
+	return g_RehldsHookchains.m_Steam_NotifyBotConnect.callChain(Steam_NotifyBotConnect_api, GetRehldsApiClient(cl));
 }
 
 qboolean Steam_NotifyBotConnect_internal(client_t *cl)
 {
 	if(Steam3Server())
-	{
 		return Steam3Server()->NotifyBotConnect(cl);
-	}
+	
 	return NULL;
 }
 
 void EXT_FUNC Steam_NotifyClientDisconnect_api(IGameClient *cl)
 {
-	//g_RehldsHookchains.m_Steam_NotifyClientDisconnect.callChain(Steam_NotifyClientDisconnect_internal, cl);
+	g_RehldsHookchains.m_Steam_NotifyClientDisconnect.callChain(Steam_NotifyClientDisconnect_internal, cl);
 }
 
 void Steam_NotifyClientDisconnect(client_t *cl)

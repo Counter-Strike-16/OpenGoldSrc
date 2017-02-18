@@ -33,7 +33,6 @@
 #include "system/common.hpp"
 #include "system/system.hpp"
 #include "client/client.hpp"
-#include "common/com_model.h"
 #include "console/cmd.hpp"
 #include "console/console.hpp"
 #include "filesystem/filesystem_internal.hpp"
@@ -131,8 +130,7 @@ Size should already include the header and padding
 */
 cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 {
-	cache_system_t *cs;
-	cache_system_t *newmem;
+	cache_system_t *newmem = nullptr;
 
 	if(!nobottom && cache_head.prev == &cache_head)
 	{
@@ -149,7 +147,7 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 		return newmem;
 	};
 
-	cs = cache_head.next;
+	cache_system_t *cs = cache_head.next;
 	newmem = (cache_system_t *)(hunk_base + hunk_low_used);
 
 	do
@@ -172,7 +170,8 @@ cache_system_t *Cache_TryAlloc(int size, qboolean nobottom)
 
 		newmem = (cache_system_t *)((char *)cs + cs->size);
 		cs = cs->next;
-	} while(cs != &cache_head);
+	}
+	while(cs != &cache_head);
 
 	if((int)(hunk_size + hunk_base - hunk_high_used - (byte *)newmem) < size)
 		return 0;
@@ -220,15 +219,18 @@ Throw things out until the hunk can be expanded to the given point
 */
 void Cache_FreeLow(int new_low_hunk)
 {
-	cache_system_t *c;
+	cache_system_t *c = nullptr;
 
 	while(true)
 	{
 		c = cache_head.next;
+		
 		if(c == &cache_head)
 			return; // nothing in cache at all
+		
 		if((byte *)c >= hunk_base + new_low_hunk)
 			return;    // there is space to grow the hunk
+		
 		Cache_Move(c); // reclaim the space
 	};
 };
@@ -242,15 +244,18 @@ Throw things out until the hunk can be expanded to the given point
 */
 void Cache_FreeHigh(int new_high_hunk)
 {
-	cache_system_t *c, *prev = NULL;
+	cache_system_t *c = nullptr, *prev = NULL;
 
 	while(true)
 	{
 		c = cache_head.prev;
+		
 		if(c == &cache_head)
 			return; // nothing in cache at all
+		
 		if((byte *)c + c->size <= hunk_base + hunk_size - new_high_hunk)
 			return; // there is space to grow the hunk
+		
 		if(c == prev)
 			Cache_Free(c->user); // didn't move out of the way
 		else
@@ -338,6 +343,7 @@ compares the first directory of two paths...
 NOXREF int ComparePath1(char *path1, char *path2)
 {
 	NOXREFCHECK;
+	
 	while(*path1 != '/' && *path1 != '\\' && *path1)
 	{
 		if(*path1 != *path2)
@@ -383,10 +389,8 @@ NOXREF char *CommatizeNumber(int num, char *pout)
 	NOXREFCHECK;
 
 	// this is probably more complex than it needs to be
-	int len = 0;
-	int i;
+	
 	char outbuf[50];
-
 	Q_memset(outbuf, 0, sizeof(outbuf));
 
 	while(num)
@@ -399,8 +403,9 @@ NOXREF char *CommatizeNumber(int num, char *pout)
 		Q_snprintf(outbuf, sizeof(outbuf), ",%03i%s", temp, tempbuf);
 	};
 
-	len = Q_strlen(outbuf);
-
+	int len = Q_strlen(outbuf);
+	int i;
+	
 	for(i = 0; i < len; i++) // find first significant digit
 		if(outbuf[i] != '0' && outbuf[i] != ',')
 			break;
@@ -472,11 +477,10 @@ NOXREF void Cache_Compact()
 NOXREF int Cache_TotalUsed()
 {
 	NOXREFCHECK;
-
-	cache_system_t *cd;
+	
 	int Total = 0;
 
-	for(cd = cache_head.next; cd != &cache_head; cd = cd->next)
+	for(cache_system_t *cd = cache_head.next; cd != &cache_head; cd = cd->next)
 		Total += cd->size;
 
 	return Total;
@@ -492,9 +496,9 @@ NOXREF void Cache_Print_Models_And_Totals()
 	int32 i = 0;
 	int32 j = 0;
 	int32 totalbytes = 0;
-	FileHandle_t file;
-
-	file = FS_Open(mem_dbgfile.string, "a");
+	
+	FileHandle_t file = FS_Open(mem_dbgfile.string, "a");
+	
 	if(!file)
 		return;
 

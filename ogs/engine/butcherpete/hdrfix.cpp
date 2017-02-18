@@ -14,7 +14,7 @@
 //#include "graphics/render/r_shared.hpp"
 // #include "graphics/render/render.hpp"
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 // #include "commondef.hpp"
 
 //======================================

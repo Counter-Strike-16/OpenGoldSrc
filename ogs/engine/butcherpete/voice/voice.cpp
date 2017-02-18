@@ -30,7 +30,6 @@
 
 #include "precompiled.hpp"
 #include "voice/voice.hpp"
-#include "maintypes.h"
 
 qboolean Voice_RecordStart(const char *pUncompressedFile,
                            const char *pDecompressedFile,

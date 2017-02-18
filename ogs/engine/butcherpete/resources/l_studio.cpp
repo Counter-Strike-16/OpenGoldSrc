@@ -35,6 +35,7 @@
 #include "memory/zone.hpp"
 #include "system/common.hpp"
 #include "engine/studio.h"
+#include "rehlds_api_impl.h"
 
 // int giTextureSize;
 
@@ -95,5 +96,5 @@ void EXT_FUNC Mod_LoadStudioModel_internal(model_t *mod, void *buffer)
 
 void Mod_LoadStudioModel(model_t *mod, void *buffer)
 {
-	//g_RehldsHookchains.m_Mod_LoadStudioModel.callChain(&Mod_LoadStudioModel_internal, mod, buffer);
+	g_RehldsHookchains.m_Mod_LoadStudioModel.callChain(&Mod_LoadStudioModel_internal, mod, buffer);
 }

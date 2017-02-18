@@ -41,6 +41,7 @@
 #include "console/console.hpp"
 #include "server/server.hpp"
 #include "client/client.hpp"
+#include "rehlds_api_impl.h"
 
 model_t *loadmodel;
 char loadname[32];
@@ -54,9 +55,12 @@ cachewad_t ad_wad;
 mod_known_info_t mod_known_info[MAX_KNOWN_MODELS];
 
 // values for model_t's needload
-#define NL_PRESENT 0
-#define NL_NEEDS_LOADED 1
-#define NL_UNREFERENCED 2
+enum
+{
+	NL_PRESENT = 0,
+	NL_NEEDS_LOADED,
+	NL_UNREFERENCED
+};
 
 void SW_Mod_Init()
 {
@@ -1236,7 +1240,7 @@ float RadiusFromBounds(vec_t *mins, vec_t *maxs)
 
 void Mod_LoadBrushModel(model_t *mod, void *buffer)
 {
-	//g_RehldsHookchains.m_Mod_LoadBrushModel.callChain(&Mod_LoadBrushModel_internal, mod, buffer);
+	g_RehldsHookchains.m_Mod_LoadBrushModel.callChain(&Mod_LoadBrushModel_internal, mod, buffer);
 }
 
 void EXT_FUNC Mod_LoadBrushModel_internal(model_t *mod, void *buffer)

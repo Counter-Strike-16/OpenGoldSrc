@@ -29,7 +29,6 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "maintypes.h"
 #include "server/server.hpp"
 
 qboolean EXT_FUNC Voice_GetClientListening(int iReceiver, int iSender)

@@ -37,6 +37,8 @@
 
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 	#define NOXREFCHECK		   __asm { push [ebp + 4] } Sys_Error("[NOXREFCHECK]:" __FUNCTION__ " (" __FILE__ ":"__LINE__AS_STRING") NOXREF, but called from 0x%.08x")
+#elif defined(__GNUC__)
+	#define NOXREFCHECK // temp
 #else
 	#define NOXREFCHECK			const char* noxref_msg = "[NOXREFCHECK]:" __FUNCTION__ " (" __FILE__ ":"__LINE__AS_STRING") NOXREF, but called from 0x%.08x"; \
 								asm volatile (				\
