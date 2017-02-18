@@ -1041,6 +1041,7 @@ Made up of: clients, packet_entities, nails, and tents
 */
 void CL_EmitEntities()
 {
+#ifndef SWDS
 	if(cls.state != ca_active)
 		return;
 
@@ -1057,4 +1058,5 @@ void CL_EmitEntities()
 	CL_LinkPacketEntities();
 	CL_LinkProjectiles();
 	CL_UpdateTEnts();
+#endif // SWDS
 }

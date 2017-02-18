@@ -50,6 +50,10 @@
 #include <netinet/in.h>
 #endif
 
+/*
+* Globals initialization
+*/
+
 qboolean noclip_anglehack; // remnant from old quake
 
 cvar_t rcon_password = { "rcon_password", "" }; // rcon_client_password
@@ -72,6 +76,12 @@ static qboolean allowremotecmd = true;
 //
 // userinfo mirrors
 //
+#ifndef HOOK_ENGINE
+
+cvar_t cl_name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO, 0.0f, NULL };
+cvar_t rate_ = { "rate", "2500", FCVAR_USERINFO, 0.0f, NULL };
+cvar_t console = { "console", "1.0", FCVAR_ARCHIVE, 0.0f, NULL };
+
 cvar_t password = { "password", "", FCVAR_USERINFO }; // info_password
 cvar_t name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO };
 cvar_t team = { "team", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
@@ -82,6 +92,14 @@ cvar_t bottomcolor = { "bottomcolor", "0", FCVAR_ARCHIVE | FCVAR_USERINFO };
 cvar_t rate = { "rate", "2500", FCVAR_ARCHIVE | FCVAR_USERINFO };
 
 cvar_t console = { "console", "1", FCVAR_ARCHIVE };
+
+#else // HOOK_ENGINE
+
+cvar_t cl_name;
+cvar_t rate_;
+cvar_t console;
+
+#endif // HOOK_ENGINE
 
 extern cvar_t cl_hightrack;
 
@@ -140,6 +158,7 @@ We have gotten a challenge from the server, so try and connect
 */
 void CL_SendConnectPacket()
 {
+#ifndef SWDS
 	netadr_t adr;
 	char data[2048];
 
@@ -174,6 +193,7 @@ void CL_SendConnectPacket()
 	//sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n", 255, 255, 255, 255, PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
 
 	//NET_SendPacket(strlen(data), data, adr);
+#endif // SWDS
 };
 
 /*
@@ -185,6 +205,7 @@ Resend a connect message if the last one has timed out
 */
 void CL_CheckForResend()
 {
+#ifndef SWDS
 	netadr_t adr;
 	char data[2048];
 
@@ -216,6 +237,7 @@ void CL_CheckForResend()
 	Con_Printf("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
 	//NET_SendPacket(strlen(data), data, adr);
+#endif // SWDS
 };
 
 void CL_BeginServerConnect()
@@ -232,6 +254,7 @@ CL_Connect_f
 */
 void CL_Connect_f()
 {
+#ifndef SWDS
 	if(Cmd_Argc() != 2)
 	{
 		Con_Printf("usage: connect <server>\n");
@@ -244,6 +267,7 @@ void CL_Connect_f()
 
 	strncpy(cls.servername, server, charsmax(cls.servername));
 	CL_BeginServerConnect();
+#endif // SWDS
 };
 
 /*
@@ -362,6 +386,7 @@ This is also called on Host_Error, so it shouldn't cause any errors
 */
 void CL_Disconnect()
 {
+#ifndef SWDS
 	if(cls.state == ca_disconnected)
 		return;
 	
@@ -406,11 +431,14 @@ void CL_Disconnect()
 	//CL_StopUpload();
 	
 	cls.state = ca_disconnected;
+#endif // SWDS
 };
 
 void CL_Disconnect_f()
 {
+#ifndef SWDS
 	CL_Disconnect(); // Host_Error(ERR_DROP, "Disconnected from server");
+#endif
 };
 
 /*
@@ -957,6 +985,7 @@ CL_ReadPackets
 */
 void CL_ReadPackets()
 {
+#ifndef SWDS
 	//	while (NET_GetPacket ())
 	while(CL_GetMessage())
 	{
@@ -1005,6 +1034,7 @@ void CL_ReadPackets()
 		CL_Disconnect();
 		return;
 	};
+#endif // SWDS
 };
 
 //=============================================================================
@@ -1061,6 +1091,7 @@ CL_Init
 */
 void CL_Init()
 {
+#ifndef SwDS
 	extern cvar_t baseskin;
 	extern cvar_t noskins;
 
@@ -1151,4 +1182,23 @@ void CL_Init()
 
 	Cmd_AddCommand("invprev", NULL);
 	Cmd_AddCommand("invnext", NULL);
+#endif // SWDS
+};
+
+void CL_Shutdown()
+{
+#ifndef SWDS
+#endif
+};
+
+void CL_ShutDownUsrMessages()
+{
+#ifndef SWDS
+#endif
+};
+
+void CL_ShutDownClientStatic()
+{
+#ifndef SWDS
+#endif
 };

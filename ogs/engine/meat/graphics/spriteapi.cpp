@@ -31,6 +31,8 @@
 #include "precompiled.hpp"
 #include "graphics/sprite.hpp"
 
+#ifndef OGS_SPRITEAPI_NULL_IMPL
+
 /*
 ====================
 SPR_AdjustSize
@@ -344,7 +346,8 @@ const struct model_s *EngFunc_GetSpritePointer(HSPRITE hSprite) // CL_
 	return &clgame.sprites[hSprite];
 };
 
-/*
+#else // if OGS_SPRITEAPI_NULL_IMPL defined
+
 HSPRITE_ SPR_Load(const char *szPicName){};
 
 int SPR_Frames(HSPRITE_ hPic){};
@@ -368,4 +371,5 @@ void SPR_DisableScissor(){};
 client_sprite_t *SPR_GetList(char *psz, int *piCount){};
 
 const struct model_s *EngFunc_GetSpritePointer(HSPRITE hSprite){};
-*/
+
+#endif // OGS_SPRITEAPI_NULL_IMPL

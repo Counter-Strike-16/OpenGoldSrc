@@ -85,6 +85,7 @@ Called when a demo file runs out, or the user starts a game
 */
 void CL_StopPlayback()
 {
+#ifndef SWDS
 	if(!cls.demoplayback)
 		return;
 
@@ -96,6 +97,7 @@ void CL_StopPlayback()
 
 	if(cls.timedemo)
 		CL_FinishTimeDemo();
+#endif // SWDS
 }
 
 /*

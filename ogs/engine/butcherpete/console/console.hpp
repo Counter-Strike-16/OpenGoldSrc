@@ -120,5 +120,5 @@ public:
 	
 	const char *GetConVarDesc(const char *asName);
 private:
-	tConVarDescMap; mConVarDescMap;
+	tConVarDescMap mConVarDescMap;
 };

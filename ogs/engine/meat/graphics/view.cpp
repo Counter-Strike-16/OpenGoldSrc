@@ -31,7 +31,7 @@
 
 #include "precompiled.hpp"
 #include "client/view.hpp"
-#include "quakedef.hpp"
+//#include "commondef.hpp"
 #include "r_local.hpp"
 
 /*
@@ -627,7 +627,7 @@ pfnCalcShake
 
 =============
 */
-void V_CalcShake(void)
+void V_CalcShake()
 {
 	int i;
 	float fraction, freq;

@@ -32,7 +32,7 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "common/shake.h"
+#include "engine/shake.h"
 
 extern cvar_t v_gamma;
 extern cvar_t lcd_x;

@@ -27,40 +27,12 @@
  */
 
 /// @file
-/// @brief this file can stub out the entire client system for pure dedicated
-/// servers
+/// @brief this file can stub out the entire client system for pure dedicated servers
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "client/client.hpp"
 
-client_static_t cls;
-client_state_t cl;
-
-playermove_t g_clmove;
-qboolean cl_inmovie;
-
-/*
-* Globals initialization
-*/
-#ifndef HOOK_ENGINE
-
-cvar_t cl_name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO, 0.0f, NULL };
-cvar_t rate_ = { "rate", "2500", FCVAR_USERINFO, 0.0f, NULL };
-cvar_t console = { "console", "1.0", FCVAR_ARCHIVE, 0.0f, NULL };
-
-#else // HOOK_ENGINE
-
-cvar_t cl_name;
-cvar_t rate_;
-cvar_t console;
-
-#endif // HOOK_ENGINE
-
 void CL_RecordHUDCommand(char *cmdname)
-{
-};
-
-void CL_CheckForResend()
 {
 };
 
@@ -73,23 +45,7 @@ void CL_ClearClientState()
 {
 };
 
-void CL_Connect_f()
-{
-};
-
 void CL_DecayLights()
-{
-};
-
-void CL_Disconnect()
-{
-};
-
-void CL_Disconnect_f()
-{
-};
-
-void CL_EmitEntities()
 {
 };
 
@@ -97,23 +53,11 @@ void CL_InitClosest()
 {
 };
 
-void CL_Init()
-{
-};
-
 void EXT_FUNC CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel)
 {
 };
 
-void CL_PredictMove(qboolean repredicting)
-{
-};
-
 void CL_PrintLogos()
-{
-};
-
-void CL_ReadPackets()
 {
 };
 
@@ -123,14 +67,6 @@ qboolean CL_RequestMissingResources()
 };
 
 void CL_Move()
-{
-};
-
-void CL_SendConnectPacket()
-{
-};
-
-void CL_StopPlayback()
 {
 };
 
@@ -155,17 +91,6 @@ int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf)
 	return 0;
 };
 
-void CL_ShutDownUsrMessages()
-{
-};
-void CL_ShutDownClientStatic()
-{
-};
-
-void CL_Shutdown()
-{
-};
-
 void CL_InitEventSystem()
 {
 };
@@ -173,9 +98,7 @@ void CL_InitEventSystem()
 void CL_CheckClientState()
 {
 }
-void CL_RedoPrediction()
-{
-}
+
 void CL_SetLastUpdate()
 {
 }

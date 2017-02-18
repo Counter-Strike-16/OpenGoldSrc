@@ -132,6 +132,7 @@ CL_PredictMove
 */
 void CL_PredictMove(qboolean repredicting)
 {
+#ifndef SWDS
 	/*
 	int i;
 	float f;
@@ -235,6 +236,7 @@ void CL_PredictMove(qboolean repredicting)
 		     from->playerstate[cl.playernum].velocity[i]);
 	};
 	*/
+#endif // SWDS
 };
 
 /*
@@ -248,4 +250,8 @@ void CL_InitPrediction()
 	Cvar_RegisterVariable(&cl_nopred);
 };
 
-void CL_RedoPrediction(){};
+void CL_RedoPrediction()
+{
+#ifndef SWDS
+#endif
+};
