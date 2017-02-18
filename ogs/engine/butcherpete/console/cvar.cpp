@@ -64,13 +64,13 @@ void Cvar_Init()
 #endif
 
 	Cvar_CmdInit();
-}
+};
 
 void Cvar_Shutdown()
 {
 	// TODO: Check memory releasing
 	cvar_vars = NULL;
-}
+};
 
 cvar_t *Cvar_FindVar(const char *var_name)
 {
@@ -87,7 +87,7 @@ cvar_t *Cvar_FindVar(const char *var_name)
 	};
 
 	return var;
-}
+};
 
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 {
@@ -110,7 +110,7 @@ float Cvar_VariableValue(const char *var_name)
 		return (float)Q_atof(var->string);
 
 	return 0.0f;
-}
+};
 
 NOXREF int Cvar_VariableInt(const char *var_name)
 {
@@ -122,7 +122,7 @@ NOXREF int Cvar_VariableInt(const char *var_name)
 		return Q_atoi(var->string);
 
 	return 0;
-}
+};
 
 char *Cvar_VariableString(const char *var_name)
 {
@@ -132,7 +132,7 @@ char *Cvar_VariableString(const char *var_name)
 		return var->string;
 
 	return cvar_null_string;
-}
+};
 
 NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 {
@@ -151,11 +151,8 @@ NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 	len = Q_strlen(partial);
 
 	// Trim tail spaces
-	for(pPartial = partial + len - 1; pPartial >= partial && *pPartial == ' ';
-	    pPartial--, len--)
-	{
+	for(pPartial = partial + len - 1; pPartial >= partial && *pPartial == ' '; pPartial--, len--)
 		*pPartial = 0;
-	}
 
 	if(!len)
 		return NULL;
@@ -174,9 +171,9 @@ NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 				Q_strncpy(lastpartial, cvar->name, 255);
 				lastpartial[255] = 0;
 				return cvar->name;
-			}
-		}
-	}
+			};
+		};
+	};
 
 	// Find first matching cvar
 	for(cvar = cvar_vars; cvar != NULL; cvar = cvar->next)
@@ -187,11 +184,11 @@ NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
 			Q_strncpy(lastpartial, cvar->name, 255);
 			lastpartial[255] = 0;
 			return cvar->name;
-		}
-	}
+		};
+	};
 
 	return NULL;
-}
+};
 
 void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 {
@@ -222,25 +219,25 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 				{
 					pS++;
 					continue;
-				}
+				};
+				
 				*pD++ = *pS++;
-			}
+			};
+			
 			*pD = 0;
-		}
+		};
 
 		if(!Q_UnicodeValidate(szNew))
 		{
 			// Call the artillery
 			Q_UnicodeRepair(szNew);
-		}
+		};
 
 		if(szNew[0] == 0)
-		{
 			Q_strcpy(szNew, "empty");
-		}
 
 		pszValue = szNew;
-	}
+	};
 
 	if(var->flags & FCVAR_NOEXTRAWHITEPACE)
 	{
@@ -248,12 +245,12 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 		{
 			Q_strncpy(szNew, value, ARRAYSIZE(szNew) - 1);
 			szNew[ARRAYSIZE(szNew) - 1] = 0;
-		}
+		};
 
 		Q_StripUnprintableAndSpace(szNew);
 
 		pszValue = szNew;
-	}
+	};
 
 	qboolean changed = Q_strcmp(var->string, pszValue);
 
@@ -275,10 +272,10 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 				MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
 				SZ_Print(&cls.netchan.message,
 				         va("setinfo \"%s\" \"%s\"\n", var->name, pszValue));
-			}
-		}
+			};
+		};
 #endif
-	}
+	};
 
 	if(changed && var->flags & FCVAR_SERVER)
 	{
@@ -293,8 +290,8 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 			{
 				Log_Printf("Server cvar \"%s\" = \"%s\"\n", var->name, pszValue);
 				SV_BroadcastPrintf("\"%s\" changed to \"%s\"\n", var->name, pszValue);
-			}
-		}
+			};
+		};
 
 		if(!(var->flags & FCVAR_PROTECTED))
 		{
@@ -307,19 +304,19 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 		else
 		{
 			//Steam_SetCVar(var->name, "0");
-		}
-	}
+		};
+	};
 
 	Z_Free(var->string);
 	var->string = (char *)Z_Malloc(Q_strlen(pszValue) + 1);
 	Q_strcpy(var->string, pszValue);
 	var->value = (float)Q_atof(var->string);
-}
+};
 
 void Cvar_DirectSet(struct cvar_s *var, const char *value)
 {
 	//g_RehldsHookchains.m_Cvar_DirectSet.callChain(Cvar_DirectSet_internal, var, value);
-}
+};
 
 void Cvar_Set(const char *var_name, const char *value)
 {
@@ -329,10 +326,10 @@ void Cvar_Set(const char *var_name, const char *value)
 	{
 		Con_DPrintf("%s: variable \"%s\" not found\n", __FUNCTION__, var_name);
 		return;
-	}
+	};
 
 	Cvar_DirectSet(var, value);
-}
+};
 
 /*
 ============
@@ -355,7 +352,7 @@ void Cvar_SetValue(const char *var_name, float value)
 	val[ARRAYSIZE(val) - 1] = 0;
 
 	Cvar_Set(var_name, val);
-}
+};
 
 void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 {
@@ -368,13 +365,13 @@ void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 		Con_Printf("Can't register variable \"%s\", already defined\n",
 		           variable->name);
 		return;
-	}
+	};
 
 	if(Cmd_Exists(variable->name))
 	{
 		Con_Printf("%s: \"%s\" is a command\n", __FUNCTION__, variable->name);
 		return;
-	}
+	};
 
 	oldstr = variable->string;
 
@@ -394,18 +391,16 @@ void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 	while(v)
 	{
 		if(Q_stricmp(v->name, variable->name) > 0)
-		{
 			break;
-		}
 
 		c = v;
 		v = v->next;
-	}
+	};
 
 	c->next = variable;
 	variable->next = v;
 	cvar_vars = dummyvar.next;
-}
+};
 
 NOXREF void Cvar_RemoveHudCvars()
 {
@@ -426,13 +421,11 @@ NOXREF void Cvar_RemoveHudCvars()
 			Z_Free(pVar);
 		}
 		else
-		{
 			pList = &pVar->next;
-		}
 
 		pVar = *pList;
-	}
-}
+	};
+};
 
 // Returns first token if there is more than one, else returns NULL.
 const char *Cvar_IsMultipleTokens(const char *varname)
@@ -451,11 +444,10 @@ const char *Cvar_IsMultipleTokens(const char *varname)
 	{
 		return NULL; // original function returns firstToken in this situation,
 		             // which is "", not NULL, but it should be ok this way
-	}
+	};
+	
 	if(name == NULL)
-	{
 		return NULL; // only one token
-	}
 
 	// Store first token
 	Q_strncpy(firstToken, com_token, ARRAYSIZE(firstToken) - 1);
@@ -465,12 +457,10 @@ const char *Cvar_IsMultipleTokens(const char *varname)
 	name = COM_Parse(name);
 
 	if(com_token[0] == 0)
-	{
 		return NULL; // only one token
-	}
 
 	return firstToken; // multiple tokens, return first one
-}
+};
 
 qboolean Cvar_Command()
 {
@@ -485,7 +475,7 @@ qboolean Cvar_Command()
 		{
 			Con_Printf("\"%s\" is \"%s\"\n", v->name, v->string);
 			return TRUE;
-		}
+		};
 	}
 	else
 	{
@@ -493,28 +483,21 @@ qboolean Cvar_Command()
 		if(v)
 		{
 			if(Cmd_Argc() == 1)
-			{
 				Con_Printf("\"%s\" is \"%s\"\n", v->name, v->string);
-			}
 			else
 			{
-				if(v->flags & FCVAR_SPONLY && cls.state >= ca_connecting &&
-				   cl.maxclients > 1)
-				{
+				if(v->flags & FCVAR_SPONLY && cls.state >= ca_connecting && cl.maxclients > 1)
 					Con_Printf("Can't set %s in multiplayer\n", v->name);
-				}
 				else
-				{
 					Cvar_Set(v->name, Cmd_Argv(1));
-				}
-			}
+			};
 
 			return TRUE;
-		}
-	}
+		};
+	};
 
 	return FALSE;
-}
+};
 
 /*
 ============
@@ -527,17 +510,13 @@ with the archive flag set to true.
 NOXREF void Cvar_WriteVariables(FileHandle_t f)
 {
 	NOXREFCHECK;
-
-	cvar_t *var;
-
-	for(var = cvar_vars; var; var = var->next)
+	
+	for(cvar_t *var = cvar_vars; var; var = var->next)
 	{
 		if(var->flags & FCVAR_ARCHIVE)
-		{
 			FS_FPrintf(f, "%s \"%s\"\n", var->name, var->string);
-		}
-	}
-}
+	};
+};
 
 void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
 {
@@ -548,62 +527,51 @@ void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
 	Q_snprintf(szOutstr, ARRAYSIZE(szOutstr) - 1, "%-28s : %16s", var->name, var->string);
 #else  // REHLDS_FIXES
 	if(var->value == (float)(int)var->value)
-	{
 		Q_snprintf(szOutstr, ARRAYSIZE(szOutstr) - 1, "%-15s : %8i", var->name, (int)var->value);
-	}
 	else
-	{
 		Q_snprintf(szOutstr, ARRAYSIZE(szOutstr) - 1, "%-15s : %8.3f", var->name, var->value);
-	}
 #endif // REHLDS_FIXES
 	szOutstr[ARRAYSIZE(szOutstr) - 1] = 0;
 
 	if(var->flags & FCVAR_ARCHIVE)
-	{
 		Q_strcat(szOutstr, ", a");
-	}
+	
 	if(var->flags & FCVAR_SERVER)
-	{
 		Q_strcat(szOutstr, ", sv");
-	}
+	
 	if(var->flags & FCVAR_USERINFO)
-	{
 		Q_strcat(szOutstr, ", i");
-	}
 
 	Q_strcat(szOutstr, "\n");
 
 	Con_Printf("%s", szOutstr);
 
 	if(f)
-	{
 		FS_FPrintf(f, "%s", szOutstr);
-	}
-}
+};
 
 void Cmd_CvarList_f()
 {
-	cvar_t *var;
-	int iCvars;
-	int iArgs;
-	const char *partial, *arg1;
-	int ipLen;
-	qboolean bAOnly;
-	qboolean bSOnly;
-	char szTemp[MAX_PATH];
-	FileHandle_t f;
-	FileHandle_t fp;
-	qboolean bLogging;
+	cvar_t *var = nullptr;
+	
+	int iCvars = 0;
+	int iArgs = Cmd_Argc();
 
-	iCvars = 0;
-	partial = NULL;
-	bAOnly = FALSE;
-	bSOnly = FALSE;
-	f = NULL;
-	fp = NULL;
-	bLogging = FALSE;
+	const char *partial = "";
+	const char *arg1 = "";
+	
+	int ipLen = 0;
+	
+	qboolean bAOnly = FALSE;
+	qboolean bSOnly = FALSE;
+	
+	char szTemp[MAX_PATH] = {'\0'};
+	
+	FileHandle_t f = NULL;
+	FileHandle_t fp = NULL;
+	
+	qboolean bLogging = FALSE;
 
-	iArgs = Cmd_Argc();
 	if(iArgs > 1)
 	{
 		arg1 = Cmd_Argv(1);
@@ -614,7 +582,7 @@ void Cmd_CvarList_f()
 			           "List cvars starting with 'Partial'\nCvarList log [Partial] : "
 			           "Logs cvars to file \"cvarlist.txt\" in the gamedir.\n");
 			return;
-		}
+		};
 
 		if(!Q_stricmp(arg1, "log"))
 		{
@@ -626,26 +594,28 @@ void Cmd_CvarList_f()
 				szTemp[ARRAYSIZE(szTemp) - 1] = 0;
 
 				fp = FS_Open(szTemp, "r");
+				
 				if(!fp)
-				{
 					break;
-				}
+				
 				FS_Close(fp);
-			}
+			};
 
 			if(i >= 100)
 			{
 				Con_Printf("Can't cvarlist! Too many existing cvarlist output files in "
 				           "the gamedir!\n");
 				return;
-			}
+			};
 
 			f = FS_Open(szTemp, "wt");
+			
 			if(!f)
 			{
 				Con_Printf("Couldn't open \"%s\" for writing!\n", szTemp);
 				return;
-			}
+			};
+			
 			bLogging = TRUE;
 
 			// Get next argument into partial, if present
@@ -653,22 +623,18 @@ void Cmd_CvarList_f()
 			{
 				partial = Cmd_Argv(2);
 				ipLen = Q_strlen(partial);
-			}
+			};
 		}
 		else if(!Q_stricmp(arg1, "-a"))
-		{
 			bAOnly = TRUE;
-		}
 		else if(!Q_stricmp(arg1, "-s"))
-		{
 			bSOnly = TRUE;
-		}
 		else
 		{
 			partial = arg1;
 			ipLen = Q_strlen(partial);
-		}
-	}
+		};
+	};
 
 	// Print cvars
 	Con_Printf("CVar List\n--------------\n");
@@ -676,21 +642,17 @@ void Cmd_CvarList_f()
 	for(var = cvar_vars; var; var = var->next)
 	{
 		if(bAOnly && !(var->flags & FCVAR_ARCHIVE))
-		{
 			continue;
-		}
+		
 		if(bSOnly && !(var->flags & FCVAR_SERVER))
-		{
 			continue;
-		}
+		
 		if(partial && Q_strnicmp(var->name, partial, ipLen))
-		{
 			continue;
-		}
 
 		Cmd_CvarListPrintCvar(var, f);
 		iCvars++;
-	}
+	};
 
 	if(partial && *partial)
 	{
@@ -702,55 +664,48 @@ void Cmd_CvarList_f()
 	{
 		Con_Printf("--------------\n%3i Total CVars\nCvarList ? for syntax\n",
 		           iCvars);
-	}
+	};
 
 	// Close log
 	if(bLogging)
 	{
 		FS_Close(f);
 		Con_Printf("cvarlist logged to %s\n", szTemp);
-	}
-}
+	};
+};
 
 NOXREF int Cvar_CountServerVariables()
 {
 	NOXREFCHECK;
 
-	int i;
-	cvar_t *var;
-
-	for(i = 0, var = cvar_vars; var; var = var->next)
+	int i = 0;
+	
+	for(i, cvar_t *var = cvar_vars; var; var = var->next)
 	{
 		if(var->flags & FCVAR_SERVER)
-		{
 			++i;
-		}
-	}
+	};
+	
 	return i;
-}
+};
 
 void Cvar_UnlinkExternals()
 {
-	cvar_t *pVar;
-	cvar_t **pList;
-
-	pVar = cvar_vars;
-	pList = &cvar_vars;
+	cvar_t *pVar = cvar_vars;
+	cvar_t **pList = &cvar_vars;
 
 	while(pVar)
 	{
 		if(pVar->flags & FCVAR_EXTDLL)
-		{
 			*pList = pVar->next;
-		}
 		else
 			pList = &pVar->next;
 
 		pVar = *pList;
-	}
-}
+	};
+};
 
 void Cvar_CmdInit()
 {
 	Cmd_AddCommand("cvarlist", Cmd_CvarList_f);
-}
+};

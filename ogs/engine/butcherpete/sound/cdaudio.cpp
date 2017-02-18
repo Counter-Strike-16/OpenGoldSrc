@@ -29,8 +29,8 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "cdaudio/cdaudio.hpp"
-#include "cdaudio/dosisms.hpp"
+#include "sound/cdaudio.hpp"
+#include "sound/dosisms.hpp"
 #include "system/common.hpp"
 #include "system/host.hpp"
 #include "console/console.hpp"

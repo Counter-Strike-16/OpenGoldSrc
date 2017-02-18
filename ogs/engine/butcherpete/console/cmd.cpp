@@ -63,7 +63,7 @@ cmdalias_t *cmd_alias;
 // int *trashspot;
 
 cmd_function_t *cmd_functions;
-char *const cmd_null_string = "";
+char *cmd_null_string const = "";
 
 /*
 ============

@@ -29,8 +29,7 @@
 /// @file
 /// @brief camera code
 
-/* ZOID
- *
+/*
  * Player camera tracking in Spectator mode
  *
  * This takes over player controls for spectator automatic camera.

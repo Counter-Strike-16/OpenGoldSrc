@@ -51,7 +51,8 @@ float con_cursorspeed = 4;
 
 cvar_t con_notifytime = { "con_notifytime", "3" }; // seconds
 
-#define NUM_CON_TIMES 4
+const int NUM_CON_TIMES = 4;
+
 float con_times[NUM_CON_TIMES]; // realtime time the line was generated
                                 // for transparent notify lines
 
@@ -60,7 +61,8 @@ int con_notifylines; // scan lines to clear for notify lines
 
 qboolean con_debuglog;
 
-#define MAXCMDLINE 256
+const int MAXCMDLINE = 256;
+
 extern char key_lines[32][MAXCMDLINE];
 extern int edit_line;
 extern int key_linepos;
@@ -172,7 +174,6 @@ Save the console contents out to a file
 */
 void Con_Dump_f ()
 {
-/*
 	int		l, x;
 	char	*line;
 	FILE	*f;
@@ -181,10 +182,10 @@ void Con_Dump_f ()
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf ("usage: condump <filename>\n");
+		Con_Printf("usage: condump <filename>\n");
 		return;
 	}
-
+/*
 	Q_sprintf (name, sizeof(name), "%s/%s.txt", COM_GetGameDir(), Cmd_Argv(1));
 
 	Con_Printf ("Dumped console text to %s.\n", name);
@@ -805,10 +806,10 @@ void Con_NotifyBox(char *text)
 
 	do
 	{
-		t1 = Sys_DoubleTime();
+		t1 = Sys_FloatTime();
 		SCR_UpdateScreen();
 		Sys_SendKeyEvents();
-		t2 = Sys_DoubleTime();
+		t2 = Sys_FloatTime();
 		realtime += t2 - t1; // make the cursor blink
 	} while(key_count < 0);
 

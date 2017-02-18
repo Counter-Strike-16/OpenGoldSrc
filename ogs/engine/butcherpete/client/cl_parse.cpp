@@ -32,8 +32,11 @@
 #include "precompiled.hpp"
 #include "client/client.hpp"
 #include "system/system.hpp"
+#include "system/host.hpp"
 #include "network/net_msg.hpp"
 #include "console/console.hpp"
+#include "console/cvar.hpp"
+#include "sound/cdaudio.hpp"
 
 const char *svc_strings[] = {
 	"svc_bad",
@@ -178,13 +181,13 @@ qboolean CL_CheckOrDownloadFile(char *filename)
 		return true;
 	}
 
-	// ZOID - can't download when recording
+	// Can't download when recording
 	if(cls.demorecording)
 	{
 		Con_Printf("Unable to download %s in record mode.\n", cls.downloadname);
 		return true;
 	}
-	// ZOID - can't download when playback
+	// Can't download when playback
 	if(cls.demoplayback)
 		return true;
 
@@ -302,8 +305,7 @@ void Sound_NextDownload()
 	cl_spikeindex = -1;
 	cl_flagindex = -1;
 	MSG_WriteByte(&cls.netchan.message, clc_stringcmd);
-	//	MSG_WriteString (&cls.netchan.message, va("modellist %i 0",
-	//cl.servercount));
+	//	MSG_WriteString (&cls.netchan.message, va("modellist %i 0", cl.servercount));
 	MSG_WriteString(&cls.netchan.message, va(modellist_name, cl.servercount, 0));
 }
 
@@ -1545,11 +1547,11 @@ void CL_NewTranslation(int slot)
 	if(player->skin && !stricmp(s, player->skin->name))
 		player->skin = NULL;
 
-	if(player->_topcolor != player->topcolor ||
-	   player->_bottomcolor != player->bottomcolor || !player->skin)
+	if(player->topcolor != player->topcolor ||
+	   player->bottomcolor != player->bottomcolor || !player->skin)
 	{
-		player->_topcolor = player->topcolor;
-		player->_bottomcolor = player->bottomcolor;
+		player->topcolor = player->topcolor;
+		player->bottomcolor = player->bottomcolor;
 
 		dest = player->translations;
 		source = vid.colormap;
