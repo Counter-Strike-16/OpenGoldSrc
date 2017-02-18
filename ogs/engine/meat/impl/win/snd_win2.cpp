@@ -11,7 +11,7 @@ cvar_t *s_wavonly;
 // starts at 0 for disabled
 static int snd_buffer_count = 0;
 
-void FreeSound(void);
+void FreeSound();
 
 static const char *DSoundError(int error)
 {
@@ -33,7 +33,7 @@ static const char *DSoundError(int error)
 /*
 ** DS_CreateBuffers
 */
-static qboolean DS_CreateBuffers(void)
+static qboolean DS_CreateBuffers()
 {
 	DSBUFFERDESC dsbuf;
 	DSBCAPS dsbcaps;
@@ -184,7 +184,7 @@ static qboolean DS_CreateBuffers(void)
 /*
 ** DS_DestroyBuffers
 */
-static void DS_DestroyBuffers(void)
+static void DS_DestroyBuffers()
 {
 	Com_DPrintf("Destroying DS buffers\n");
 	if(pDS)
@@ -218,7 +218,7 @@ static void DS_DestroyBuffers(void)
 FreeSound
 ==================
 */
-void FreeSound(void)
+void FreeSound()
 {
 	int i;
 
@@ -273,7 +273,7 @@ void FreeSound(void)
 
 }
 
-sndinitstat SNDDMA_InitDirect(void)
+sndinitstat SNDDMA_InitDirect()
 {
 	DSCAPS dscaps;
 
@@ -355,7 +355,7 @@ SNDDM_InitWav
 Crappy windows multimedia base
 ==================
 */
-qboolean SNDDMA_InitWav(void)
+qboolean SNDDMA_InitWav()
 {
 	WAVEFORMATEX format;
 	int i;
@@ -500,7 +500,7 @@ Try to find a sound device to mix for.
 Returns false if nothing is found.
 ==================
 */
-int SNDDMA_Init(void)
+int SNDDMA_Init()
 {
 	sndinitstat stat;
 
@@ -572,7 +572,7 @@ int SNDDMA_Init(void)
 }
 
 
-int SNDDMA_GetDMAPos(void)
+int SNDDMA_GetDMAPos()
 {
 
 
@@ -589,7 +589,7 @@ Makes sure dma.buffer is valid
 ===============
 */
 DWORD locksize;
-void SNDDMA_BeginPainting(void)
+void SNDDMA_BeginPainting()
 {
 	int reps;
 	DWORD dwSize2;
@@ -644,7 +644,7 @@ Send sound to device if buffer isn't really the dma buffer
 Also unlocks the dsound buffer
 ===============
 */
-void SNDDMA_Submit(void)
+void SNDDMA_Submit()
 {
 	LPWAVEHDR h;
 	int wResult;
@@ -676,7 +676,7 @@ void SNDDMA_Submit(void)
 			FreeSound();
 			return;
 		}
-void SNDDMA_Shutdown(void)
+void SNDDMA_Shutdown()
 {
 	FreeSound();
 }

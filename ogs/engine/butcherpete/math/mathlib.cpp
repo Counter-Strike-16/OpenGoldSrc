@@ -100,7 +100,7 @@ float anglemod(float a)
 	return (360.0 / 65536) * ((int)(a * (65536 / 360.0)) & 65535);
 }
 
-void BOPS_Error(void)
+void BOPS_Error()
 {
 	Sys_Error("BoxOnPlaneSide:  Bad signbits");
 }

@@ -28,8 +28,8 @@
 
 /// @file
 
-//#include "precompiled.hpp"
-#include "quakedef.hpp"
+#include "precompiled.hpp"
+//#include "commondef.hpp"
 #include "winquake.h"
 
 #define iDirectSoundCreate(a, b, c) pDirectSoundCreate(a, b, c)

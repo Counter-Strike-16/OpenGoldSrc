@@ -107,7 +107,7 @@ inline T M_clamp(T a, T min, T max) {
 }
 
 float anglemod(float a);
-void BOPS_Error(void);
+void BOPS_Error();
 
 int BoxOnPlaneSide(vec_t *emins, vec_t *emaxs, mplane_t *p);
 NOBODY int InvertMatrix(const float *m, float *out);

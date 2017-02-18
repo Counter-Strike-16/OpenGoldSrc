@@ -50,7 +50,7 @@ sizebuf_t cmd_text;
 void Cbuf_Init()
 {
 	SZ_Alloc("cmd_text", &cmd_text, MAX_CMD_BUFFER);
-}
+};
 
 /*
 ============
@@ -70,10 +70,10 @@ void Cbuf_AddText(char *text)
 	{
 		Con_Printf("%s: overflow\n", __FUNCTION__);
 		return;
-	}
+	};
 
 	SZ_Write(&cmd_text, text, len);
-}
+};
 
 // When a command wants to issue other commands immediately, the text is
 // inserted at the beginning of the buffer, before any remaining unexecuted
@@ -87,7 +87,7 @@ void Cbuf_InsertText(char *text)
 	{
 		Con_Printf("%s: overflow\n", __FUNCTION__);
 		return;
-	}
+	};
 
 #ifdef REHLDS_FIXES
 	if(currLen)
@@ -104,7 +104,7 @@ void Cbuf_InsertText(char *text)
 		                                  // without need for a temp buffer
 		Q_memcpy(temp, cmd_text.data, currLen);
 		SZ_Clear(&cmd_text);
-	}
+	};
 
 	Cbuf_AddText(text);
 
@@ -112,9 +112,9 @@ void Cbuf_InsertText(char *text)
 	{
 		SZ_Write(&cmd_text, temp, currLen);
 		Z_Free(temp);
-	}
+	};
 #endif // REHLDS_FIXES
-}
+};
 
 void Cbuf_InsertTextLines(char *text)
 {
@@ -125,7 +125,7 @@ void Cbuf_InsertTextLines(char *text)
 	{
 		Con_Printf("%s: overflow\n", __FUNCTION__);
 		return;
-	}
+	};
 
 #ifdef REHLDS_FIXES
 	if(currLen)
@@ -146,7 +146,7 @@ void Cbuf_InsertTextLines(char *text)
 		temp = (char *)Z_Malloc(currLen);
 		Q_memcpy(temp, cmd_text.data, currLen);
 		SZ_Clear(&cmd_text);
-	}
+	};
 
 	Cbuf_AddText("\n"); // TODO: Why we need leading \n, if there is no commands
 	                    // in the start?
@@ -157,9 +157,9 @@ void Cbuf_InsertTextLines(char *text)
 	{
 		SZ_Write(&cmd_text, temp, currLen);
 		Z_Free(temp);
-	}
+	};
 #endif // REHLDS_FIXES
-}
+};
 
 /*
 ============
@@ -192,7 +192,7 @@ void Cbuf_Execute()
 				break; // don't break if inside a quoted string
 			if(text[i] == '\n')
 				break;
-		}
+		};
 
 #ifdef REHLDS_FIXES
 		// save `i` if we truncate command
@@ -229,7 +229,7 @@ void Cbuf_Execute()
 #else  // REHLDS_FIXES
 			Q_memcpy(text, text + i, cmd_text.cursize);
 #endif // REHLDS_FIXES
-		}
+		};
 
 		// execute the command line
 		Cmd_ExecuteString(line, src_command);
@@ -240,6 +240,6 @@ void Cbuf_Execute()
 			// for next frame
 			cmd_wait = FALSE;
 			break;
-		}
-	}
-}
+		};
+	};
+};

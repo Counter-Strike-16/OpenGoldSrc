@@ -356,6 +356,12 @@ void Con_Init()
 	con_initialized = true;
 };
 
+void Con_Shutdown()
+{
+#ifndef SWDS
+#endif
+};
+
 /*
 ===============
 Con_Linefeed
@@ -490,6 +496,12 @@ void Con_Printf(char *fmt, ...)
 	}
 */
 }
+
+void EXT_FUNC Con_NPrintf(int idx, const char *fmt, ...)
+{
+#ifndef SWDS
+#endif
+};
 
 /*
 ================

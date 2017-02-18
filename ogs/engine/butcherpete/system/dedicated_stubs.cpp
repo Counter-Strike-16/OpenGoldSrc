@@ -1,6 +1,6 @@
 #if 0
 
-// Call these funcs in order to set their impl ro null for dedicated mode
+// Call these funcs in order to set their impl to null for dedicated mode
 
 namespace null
 {
