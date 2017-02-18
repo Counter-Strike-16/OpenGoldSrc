@@ -167,6 +167,7 @@ extraResourceOptions=
 84=..\ogs\engine\butcherpete\network\net_chan.cpp
 85=..\ogs\engine\butcherpete\client\cl_pred.cpp
 86=..\ogs\engine\butcherpete\client\textmessage.cpp
+87=..\ogs\engine\butcherpete\server\sv_steam3.cpp
 [Header]
 [Resource]
 [Other]

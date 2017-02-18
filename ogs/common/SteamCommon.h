@@ -625,7 +625,7 @@ const unsigned int                        STEAM_USE_LATEST_VERSION              
 
 typedef unsigned short SteamInstanceID_t; // MUST be 16 bits
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(__GNUC__)
 typedef unsigned __int64 SteamLocalUserID_t; // MUST be 64 bits
 #else
 typedef unsigned long long SteamLocalUserID_t; // MUST be 64 bits

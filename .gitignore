@@ -2,6 +2,7 @@
 ipch/
 .vs/
 *.db
+*.opendb
 *.user
 *.suo
 *.sdf

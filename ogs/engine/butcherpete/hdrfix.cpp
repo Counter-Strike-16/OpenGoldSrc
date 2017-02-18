@@ -14,8 +14,6 @@
 //#include "graphics/render/r_shared.hpp"
 // #include "graphics/render/render.hpp"
 
-//#include "server/sv_steam3.hpp"
-
 // #include "precompiled.hpp"
 // #include "commondef.hpp"
 

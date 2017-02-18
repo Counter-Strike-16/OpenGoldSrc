@@ -2,7 +2,7 @@
 
 #include "rehlds/osconfig.h"
 //#include "steam/steam_api.h"
-//#include "steam/steam_gameserver.h"
+#include "steam/steam_gameserver.h"
 
 class ISteamApps;
 

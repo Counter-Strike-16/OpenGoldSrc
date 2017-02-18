@@ -982,7 +982,7 @@ NOXREF qboolean Sys_IsWin98()
 
 void Sys_CheckOSVersion()
 {
-	OSVERSIONINFOA verInfo;
+	OSVERSIONINFO verInfo;
 
 	Q_memset(&verInfo, 0, sizeof(verInfo));
 	verInfo.dwOSVersionInfoSize = sizeof(verInfo);
