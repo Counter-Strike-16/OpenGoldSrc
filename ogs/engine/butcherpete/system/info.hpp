@@ -60,3 +60,32 @@ qboolean Info_IsValid(const char *s);
 #ifdef REHLDS_FIXES
 void Info_CollectFields(char *destInfo, const char *srcInfo, const char *collectedKeysOfFields);
 #endif
+
+NOBODY void Info_WriteVars(FileHandle_t fp);
+
+class CInfoBuffer // : public IInfoKeyBuffer
+{
+public:
+	const char *GetValueForKey(const char *key);
+	
+	void RemoveKey(const char *key);
+	void RemovePrefixedKeys(const char prefix);
+	
+	qboolean IsKeyImportant(const char *key);
+	
+	char *FindLargestKey(int maxsize);
+	
+	void SetValueForStarKey(const char *key, const char *value, int maxsize);
+	void SetValueForKey(const char *key, const char *value, int maxsize);
+	
+	void Print();
+	
+	qboolean IsValid();
+	
+	void CollectFields(char *destInfo, const char *collectedKeysOfFields);
+	
+	//void WriteVars(FileHandle_t fp);
+private:
+	char *msBuffer;
+	//key-value strings map here?
+};

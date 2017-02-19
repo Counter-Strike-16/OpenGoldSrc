@@ -137,8 +137,6 @@ void NORETURN Host_Error(const char *error, ...);
 
 void Host_InitLocal();
 
-NOBODY void Info_WriteVars(FileHandle_t fp);
-
 void Host_WriteConfiguration();
 void Host_WriteCustomConfig();
 
@@ -176,3 +174,46 @@ int GetGameAppID();
 
 qboolean IsGameSubscribed(const char *gameName);
 NOXREF qboolean BIsValveGame();
+
+class CHost
+{
+public:
+	void EndGame(const char *message, ...);
+
+	//void NORETURN Error(const char *error, ...);
+
+	void InitLocal();
+
+	void WriteConfiguration();
+	void WriteCustomConfig();
+
+	void ClientCommands(const char *fmt, ...);
+	void ClearClients(qboolean bFramesOnly);
+	void ShutdownServer(qboolean crash);
+
+	void CheckDynamicStructures();
+	void ClearMemory(qboolean bQuiet);
+	qboolean FilterTime(float time);
+
+	void ComputeFPS(double frametime);
+	void GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
+	void Speeds(double *time);
+
+	void UpdateScreen();
+	void UpdateSounds();
+
+	void CheckConnectionFailure();
+
+	void _Frame(float time);
+	int Frame(float time, int iState, int *stateInfo);
+
+	//void CheckGore();
+
+	qboolean IsSinglePlayerGame();
+	qboolean IsServerActive();
+
+	void PrintVersion();
+
+	int Init(quakeparms_t *parms);
+	void Shutdown();
+};

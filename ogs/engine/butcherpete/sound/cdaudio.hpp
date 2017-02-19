@@ -45,3 +45,20 @@ void CDAudio_Pause();
 void CDAudio_Resume();
 
 //void CDAudio_Activate(qboolean active);
+
+class CCDAudio
+{
+public:
+	int Init();
+	void Shutdown();
+
+	void Update();
+
+	void Play(byte track, qboolean looping); // int track
+	void Stop();
+
+	void Pause();
+	void Resume();
+
+	//void Activate(qboolean active);
+};

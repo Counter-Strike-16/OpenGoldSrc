@@ -1,8 +1,5 @@
-#ifndef MGT_NEWDLLFUNCSSTUB_HPP
-#define MGT_NEWDLLFUNCSSTUB_HPP
+#pragma once
 
-NEW_DLL_FUNCTIONS gNewDLLFunctionsStub[] =
+NEW_DLL_FUNCTIONS gNewDLLFunctionsStub =
 {
 };
-
-#endif // MGT_NEWDLLFUNCSSTUB_HPP

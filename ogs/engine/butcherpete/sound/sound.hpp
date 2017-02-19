@@ -36,9 +36,47 @@
 
 typedef struct cvar_s cvar_t;
 
-// max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in
-// dlls\util.h!!!
+// max number of sentences in game. NOTE: this must match CVOXFILESENTENCEMAX in dlls\util.h!!!
 const int CVOXFILESENTENCEMAX = 1536;
+
+// ====================================================================
+// User-setable variables
+// ====================================================================
+
+const int MAX_CHANNELS = 128;
+const int MAX_DYNAMIC_CHANNELS = 8;
+
+extern channel_t channels[MAX_CHANNELS];
+// 0 to MAX_DYNAMIC_CHANNELS-1	= normal entity sounds
+// MAX_DYNAMIC_CHANNELS to MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS -1 = water, etc
+// MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS to total_channels = static sounds
+
+extern int total_channels;
+
+//
+// Fake dma is a synchronous faking of the DMA progress used for
+// isolating performance in the renderer.  The fakedma_updates is
+// number of times S_Update() is called per second.
+//
+
+extern qboolean fakedma;
+extern int fakedma_updates;
+extern int paintedtime;
+extern vec3_t listener_origin;
+extern vec3_t listener_forward;
+extern vec3_t listener_right;
+extern vec3_t listener_up;
+extern volatile dma_t *shm;
+extern volatile dma_t sn;
+extern vec_t sound_nominal_clip_dist;
+
+extern cvar_t loadas8bit;
+extern cvar_t bgmvolume;
+extern cvar_t volume;
+
+extern qboolean snd_initialized;
+
+extern int snd_blocked;
 
 typedef struct sfx_s
 {
@@ -56,39 +94,6 @@ typedef struct sfx_s
 	char 		*truename;
 } sfx_t;
 */
-
-void S_Init();
-void S_Shutdown();
-
-void S_AmbientOn();
-void S_AmbientOff();
-
-void S_TouchSound(char *sample);
-
-void S_ClearBuffer();
-
-void S_StartStaticSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, float vol, float attenuation, int flags, int pitch);
-void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, float fvol, float attenuation, int flags, int pitch);
-void S_StopSound(int entnum, int entchannel);
-
-sfx_t *S_PrecacheSound(char *sample);
-
-void S_ClearPrecache();
-
-void S_Update(vec_t *origin, vec_t *v_forward, vec_t *v_right, vec_t *v_up);
-
-void S_StopAllSounds(qboolean clear);
-
-void S_BeginPrecaching();
-void S_EndPrecaching();
-
-void S_ExtraUpdate();
-
-void S_LocalSound(char *s);
-
-void S_BlockSound();
-
-void S_PrintStats();
 
 // !!! if this is changed, the asm code must change !!!
 typedef struct
@@ -149,6 +154,39 @@ typedef struct
 	int dataofs; // chunk starts this many bytes from file start
 } wavinfo_t;
 
+void S_Init();
+void S_Shutdown();
+
+void S_AmbientOn();
+void S_AmbientOff();
+
+void S_TouchSound(char *sample);
+
+void S_ClearBuffer();
+
+void S_StartStaticSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, float vol, float attenuation, int flags, int pitch);
+void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, float fvol, float attenuation, int flags, int pitch);
+void S_StopSound(int entnum, int entchannel);
+
+sfx_t *S_PrecacheSound(char *sample);
+
+void S_ClearPrecache();
+
+void S_Update(vec_t *origin, vec_t *v_forward, vec_t *v_right, vec_t *v_up);
+
+void S_StopAllSounds(qboolean clear);
+
+void S_BeginPrecaching();
+void S_EndPrecaching();
+
+void S_ExtraUpdate();
+
+void S_LocalSound(char *s);
+
+void S_BlockSound();
+
+void S_PrintStats();
+
 /*
 ====================================================================
 
@@ -171,45 +209,6 @@ int SNDDMA_GetDMAPos();
 
 // shutdown the DMA xfer.
 void SNDDMA_Shutdown();
-
-// ====================================================================
-// User-setable variables
-// ====================================================================
-
-const int MAX_CHANNELS = 128;
-const int MAX_DYNAMIC_CHANNELS = 8;
-
-extern channel_t channels[MAX_CHANNELS];
-// 0 to MAX_DYNAMIC_CHANNELS-1	= normal entity sounds
-// MAX_DYNAMIC_CHANNELS to MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS -1 = water, etc
-// MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS to total_channels = static sounds
-
-extern int total_channels;
-
-//
-// Fake dma is a synchronous faking of the DMA progress used for
-// isolating performance in the renderer.  The fakedma_updates is
-// number of times S_Update() is called per second.
-//
-
-extern qboolean fakedma;
-extern int fakedma_updates;
-extern int paintedtime;
-extern vec3_t listener_origin;
-extern vec3_t listener_forward;
-extern vec3_t listener_right;
-extern vec3_t listener_up;
-extern volatile dma_t *shm;
-extern volatile dma_t sn;
-extern vec_t sound_nominal_clip_dist;
-
-extern cvar_t loadas8bit;
-extern cvar_t bgmvolume;
-extern cvar_t volume;
-
-extern qboolean snd_initialized;
-
-extern int snd_blocked;
 
 wavinfo_t GetWavinfo(char *name, byte *wav, int wavlength);
 

@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -26,36 +26,14 @@
  *	version.
  */
 
-// HLEdictListener.hpp - header of hl-compatible entity listener class
+/// @file
+/// @brief interface that represents the client in game (on server-side; not his entity but him itself)
 
 #pragma once
 
-#include "world/IEntityListener.hpp"
-
-class CHLEntityListener : public IEntityListener
+struct IGameClient
 {
-public:
-	CHLEntityListener(DLL_FUNCTIONS *apHLGameDLL, NEW_DLL_FUNCTIONS *apHLGameDLLEx);
-	~CHLEntityListener();
+	// put rehlds methods here
 	
-	int OnEntitySpawn(IEntity *apEntity);
-	void OnEntityThink(IEntity *apEntity);
-	
-	void OnEntityUse(IEntity *apEntity, IEntity *apUsedBy);
-	void OnEntityTouch(IEntity *apEntity, IEntity *apTouchedBy);
-	void OnEntityBlocked(IEntity *apEntity, IEntity *apBlockedBy);
-	
-	void EntityKeyValue(IEntity *apEntity, KeyValueData *apKeyValueData);
-	
-	int ShouldEntityCollide(IEntity *apEntity, edict_t *apCollideWith);
-	
-	void OnEntitySave(IEntity *apEntity, SAVERESTOREDATA *apSaveData);
-	int OnEntityRestore(IEntity *apEntity, SAVERESTOREDATA *apSaveData, int anGlobalEntity);
-	
-	void SetEntityAbsBox(IEntity *apEntity);
-	
-	void OnEntityFreePrivateData(IEntity *apEntity);
-private:
-	DLL_FUNCTIONS *mpHLGameDLL{nullptr};
-	NEW_DLL_FUNCTIONS *mpHLGameDLLEx{nullptr};
+	// our methods goes here
 };

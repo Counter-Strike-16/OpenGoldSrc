@@ -30,80 +30,36 @@
 
 #pragma once
 
+#include "common/commontypes.h"
 #include "common/enums.h"
 #include "common/netadr.h"
 #include "maintypes.h"
 #include "rehlds/common_rehlds.h"
+#include "network/networktypes.hpp"
 
-// MAX_CHALLENGES is made large to prevent a denial
-//  of service attack that could cycle all of them
-//  out before legitimate users connected
-#ifdef REHLDS_OPT_PEDANTIC
-const int MAX_CHALLENGES = 64;
-#else
-const int MAX_CHALLENGES = 1024;
-#endif // REHLDS_OPT_PEDANTIC
+#ifndef _WIN32
 
-// 0 == regular, 1 == file stream
-const int MAX_STREAMS = 2;
+#define WSAEWOULDBLOCK EWOULDBLOCK     // Operation would block EAGAIN (11)
+#define WSAEMSGSIZE EMSGSIZE           // Message too long (90)
+#define WSAEADDRNOTAVAIL EADDRNOTAVAIL // Cannot assign requested address (99)
+#define WSAEAFNOSUPPORT EAFNOSUPPORT   // Address family not supported by protocol (97)
+#define WSAECONNRESET ECONNRESET     // Connection reset by peer (104)
+#define WSAECONNREFUSED ECONNREFUSED // Connection refused (111)
+#define WSAEADDRINUSE EADDRINUSE     // Address already in use (98)
+#define WSAENOBUFS ENOBUFS           // No buffer space available (105)
 
-// Flow control bytes per second limits
-const float MAX_RATE = 100000.0f;
-const float MIN_RATE = 1000.0f;
+#endif // _WIN32
 
-// Default data rate
-const float DEFAULT_RATE = 9999.0f;
+const int MAX_ROUTEABLE_PACKET = 1400;
 
-// NETWORKING INFO
+#define SPLIT_SIZE (MAX_ROUTEABLE_PACKET - sizeof(SPLITPACKET))
 
-// Max size of udp packet payload
-const int MAX_UDP_PACKET = 4010; // 9 bytes SPLITHEADER + 4000 payload?
+// Create general message queues
+const int NUM_MSG_QUEUES = 40;
+const int MSG_QUEUE_SIZE = 1536;
 
-// Max length of a reliable message
-const int MAX_MSGLEN = 3990; // 10 reserved for fragheader?
-
-// Max length of unreliable message
-const int MAX_DATAGRAM = 4000;
-
-// This is the packet payload without any header bytes (which are attached for
-// actual sending)
-const int NET_MAX_PAYLOAD = 65536;
-
-// This is the payload plus any header info (excluding UDP header)
-
-// Packet header is:
-//  4 bytes of outgoing seq
-//  4 bytes of incoming seq
-//  and for each stream
-// {
-//  byte (on/off)
-//  int (fragment id)
-//  short (startpos)
-//  short (length)
-// }
-const int HEADER_BYTES = (8 + MAX_STREAMS * 9);
-
-// Pad a number so it lies on an N byte boundary.
-// So PAD_NUMBER(0,4) is 0 and PAD_NUMBER(1,4) is 4
-#define PAD_NUMBER(number, boundary) \
-	(((number) + ((boundary)-1)) / (boundary)) * (boundary)
-
-// Pad this to next higher 16 byte boundary
-// This is the largest packet that can come in/out over the wire, before
-// processing the header
-//  bytes will be stripped by the networking channel layer
-//#define NET_MAX_MESSAGE PAD_NUMBER( ( MAX_MSGLEN + HEADER_BYTES ), 16 )
-// This is currently used value in the engine. TODO: define above gives 4016,
-// check it why.
-const int NET_MAX_MESSAGE = 4037;
-
-enum
-{
-	FLOW_OUTGOING = 0,
-	FLOW_INCOMING,
-
-	MAX_FLOWS
-};
+typedef struct sizebuf_s sizebuf_t;
+typedef struct cvar_s cvar_t;
 
 // Message data
 typedef struct flowstats_s
@@ -113,8 +69,6 @@ typedef struct flowstats_s
 	// Time that message was sent/received
 	double time;
 } flowstats_t;
-
-const int MAX_LATENT = 32;
 
 typedef struct flow_s
 {
@@ -128,42 +82,6 @@ typedef struct flow_s
 	float kbytespersec;
 	float avgkbytespersec;
 } flow_t;
-
-const int FRAGMENT_C2S_MIN_SIZE = 16;
-const int FRAGMENT_S2C_MIN_SIZE = 256;
-const int FRAGMENT_S2C_MAX_SIZE = 1024;
-const int CLIENT_FRAGMENT_SIZE_ONCONNECT = 128;
-const int CUSTOMIZATION_MAX_SIZE = 20480;
-
-#ifndef REHLDS_FIXES
-// Size of fragmentation buffer internal buffers
-const int FRAGMENT_MAX_SIZE = 1400;
-
-const int MAX_FRAGMENTS = 25000;
-#else
-const int FRAGMENT_MAX_SIZE = 1024;
-
-// Client sends normal fragments only while connecting
-#define MAX_NORMAL_FRAGMENTS (NET_MAX_PAYLOAD / CLIENT_FRAGMENT_SIZE_ONCONNECT)
-
-// While client is connecting it sending fragments with minimal size, also it
-// transfers sprays with minimal fragments...
-// But with sv_delayed_spray_upload it sends with cl_dlmax fragment size
-#define MAX_FILE_FRAGMENTS (CUSTOMIZATION_MAX_SIZE / FRAGMENT_C2S_MIN_SIZE)
-#endif
-
-const int UDP_HEADER_SIZE = 28;
-const int MAX_RELIABLE_PAYLOAD = 1200;
-
-enum
-{
-	FRAG_NORMAL_STREAM = 0,
-	FRAG_FILE_STREAM
-};
-
-#define MAKE_FRAGID(id, count) (((id & 0xffff) << 16) | (count & 0xffff))
-#define FRAG_GETID(fragid) ((fragid >> 16) & 0xffff)
-#define FRAG_GETCOUNT(fragid) (fragid & 0xffff)
 
 // Generic fragment structure
 typedef struct fragbuf_s
@@ -200,8 +118,213 @@ typedef struct fragbufwaiting_s
 	fragbuf_t *fragbufs;
 } fragbufwaiting_t;
 
-#ifdef REHLDS_FIXES
-#define Con_NetPrintf Con_DPrintf
-#else // REHLDS_FIXES
-#define Con_NetPrintf Con_Printf
-#endif // REHLDS_FIXES
+typedef struct loopmsg_s
+{
+	unsigned char data[NET_MAX_MESSAGE];
+	int datalen;
+} loopmsg_t;
+
+const int MAX_LOOPBACK = 4;
+
+typedef struct loopback_s
+{
+	loopmsg_t msgs[MAX_LOOPBACK];
+	int get;
+	int send;
+} loopback_t;
+
+typedef struct packetlag_s
+{
+	unsigned char *pPacketData; // Raw stream data is stored.
+	int nSize;
+	netadr_t net_from_;
+	float receivedTime;
+	struct packetlag_s *pNext;
+	struct packetlag_s *pPrev;
+} packetlag_t;
+
+typedef struct net_messages_s
+{
+	struct net_messages_s *next;
+	qboolean preallocated;
+	unsigned char *buffer;
+	netadr_t from;
+	int buffersize;
+} net_messages_t;
+
+// Split long packets. Anything over 1460 is failing on some routers.
+typedef struct LONGPACKET_t
+{
+	int currentSequence;
+	int splitCount;
+	int totalSize;
+	// TODO: It should be NET_MAX_MESSAGE, but value differs
+	char buffer[MAX_UDP_PACKET]; // This has to be big enough to hold the largest
+	                             // message
+} LONGPACKET;
+
+// Use this to pick apart the network stream, must be packed
+#pragma pack(push, 1)
+typedef struct SPLITPACKET_t
+{
+	int netID;
+	int sequenceNumber;
+	unsigned char packetID;
+} SPLITPACKET;
+#pragma pack(pop)
+
+const int NET_WS_MAX_FRAGMENTS = 5;
+
+#ifdef HOOK_ENGINE
+#define net_thread_initialized (*pnet_thread_initialized)
+#define net_address (*pnet_address)
+#define ipname (*pipname)
+#define defport (*pdefport)
+#define ip_clientport (*pip_clientport)
+#define clientport (*pclientport)
+#define net_sleepforever (*pnet_sleepforever)
+#define loopbacks (*ploopbacks)
+#define g_pLagData (*pg_pLagData)
+#define gFakeLag (*pgFakeLag)
+#define net_configured (*pnet_configured)
+#define net_message (*pnet_message)
+#ifdef _WIN32
+#define net_local_ipx_adr (*pnet_local_ipx_adr)
+#endif // _WIN32
+#define net_local_adr (*pnet_local_adr)
+#define net_from (*pnet_from)
+#define noip (*pnoip)
+#ifdef _WIN32
+#define noipx (*pnoipx)
+#endif // _WIN32
+#define clockwindow (*pclockwindow)
+#define use_thread (*puse_thread)
+#define iphostport (*piphostport)
+#define hostport (*phostport)
+#define multicastport (*pmulticastport)
+#ifdef _WIN32
+#define ipx_hostport (*pipx_hostport)
+#define ipx_clientport (*pipx_clientport)
+#endif // _WIN32
+#define fakelag (*pfakelag)
+#define fakeloss (*pfakeloss)
+
+#define net_graph (*pnet_graph)
+#define net_graphwidth (*pnet_graphwidth)
+#define net_scale (*pnet_scale)
+#define net_graphpos (*pnet_graphpos)
+#define net_message_buffer (*pnet_message_buffer)
+#define in_message_buf (*pin_message_buf)
+
+#define in_message (*pin_message)
+#define in_from (*pin_from)
+#define ip_sockets (*pip_sockets)
+#ifdef _WIN32
+#define ipx_sockets (*pipx_sockets)
+#endif // _WIN32
+#define gNetSplit (*pgNetSplit)
+#define messages (*pmessages)
+#define normalqueue (*pnormalqueue)
+#endif // HOOK_ENGINE
+
+extern qboolean net_thread_initialized;
+extern cvar_t net_address;
+extern cvar_t ipname;
+extern cvar_t defport;
+extern cvar_t ip_clientport;
+extern cvar_t clientport;
+extern int net_sleepforever;
+extern loopback_t loopbacks[2];
+extern packetlag_t g_pLagData[3];
+extern float gFakeLag;
+extern int net_configured;
+#ifdef _WIN32
+extern netadr_t net_local_ipx_adr;
+#endif // _WIN32
+extern netadr_t net_local_adr;
+extern netadr_t net_from;
+extern qboolean noip;
+#ifdef _WIN32
+extern qboolean noipx;
+#endif // _WIN32
+extern sizebuf_t net_message;
+extern cvar_t clockwindow;
+extern int use_thread;
+extern cvar_t iphostport;
+extern cvar_t hostport;
+#ifdef _WIN32
+extern cvar_t ipx_hostport;
+extern cvar_t ipx_clientport;
+#endif // _WIN32
+extern cvar_t multicastport;
+extern cvar_t fakelag;
+extern cvar_t fakeloss;
+extern cvar_t net_graph;
+extern cvar_t net_graphwidth;
+extern cvar_t net_scale;
+extern cvar_t net_graphpos;
+extern unsigned char net_message_buffer[NET_MAX_PAYLOAD];
+extern unsigned char in_message_buf[NET_MAX_PAYLOAD];
+extern sizebuf_t in_message;
+extern netadr_t in_from;
+extern int ip_sockets[3];
+#ifdef _WIN32
+extern int ipx_sockets[3];
+#endif // _WIN32
+extern LONGPACKET gNetSplit;
+extern net_messages_t *messages[3];
+extern net_messages_t *normalqueue;
+
+void NET_ThreadLock();
+void NET_ThreadUnlock();
+unsigned short Q_ntohs(unsigned short netshort);
+void NetadrToSockadr(const netadr_t *a, struct sockaddr *s);
+void SockadrToNetadr(const struct sockaddr *s, netadr_t *a);
+NOXREF unsigned short NET_HostToNetShort(unsigned short us_in);
+qboolean NET_CompareAdr(netadr_t &a, netadr_t &b);
+qboolean NET_CompareClassBAdr(netadr_t &a, netadr_t &b);
+qboolean NET_IsReservedAdr(netadr_t &a);
+qboolean NET_CompareBaseAdr(const netadr_t &a, const netadr_t &b);
+char *NET_AdrToString(const netadr_t &a);
+char *NET_BaseAdrToString(netadr_t &a);
+qboolean NET_StringToSockaddr(const char *s, struct sockaddr *sadr);
+qboolean NET_StringToAdr(const char *s, netadr_t *a);
+qboolean NET_IsLocalAddress(netadr_t &adr);
+char *NET_ErrorString(int code);
+void NET_TransferRawData(sizebuf_t *msg, unsigned char *pStart, int nSize);
+qboolean NET_GetLoopPacket(netsrc_t sock, netadr_t *in_from_, sizebuf_t *msg);
+void NET_SendLoopPacket(netsrc_t sock, int length, void *data, const netadr_t &to);
+void NET_RemoveFromPacketList(packetlag_t *pPacket);
+NOXREF int NET_CountLaggedList(packetlag_t *pList);
+void NET_ClearLaggedList(packetlag_t *pList);
+void NET_AddToLagged(netsrc_t sock, packetlag_t *pList, packetlag_t *pPacket, netadr_t *net_from_, sizebuf_t messagedata, float timestamp);
+void NET_AdjustLag();
+qboolean NET_LagPacket(qboolean newdata, netsrc_t sock, netadr_t *from, sizebuf_t *data);
+void NET_FlushSocket(netsrc_t sock);
+qboolean NET_GetLong(unsigned char *pData, int size, int *outSize);
+qboolean NET_QueuePacket(netsrc_t sock);
+int NET_Sleep();
+void NET_StartThread();
+void NET_StopThread();
+void *net_malloc(size_t size);
+net_messages_t *NET_AllocMsg(int size);
+void NET_FreeMsg(net_messages_t *pmsg);
+qboolean NET_GetPacket(netsrc_t sock);
+void NET_AllocateQueues();
+void NET_FlushQueues();
+int NET_SendLong(netsrc_t sock, int s, const char *buf, int len, int flags, const struct sockaddr *to, int tolen);
+void NET_SendPacket_api(unsigned int length, void *data, const netadr_t &to);
+void NET_SendPacket(netsrc_t sock, int length, void *data, const netadr_t &to);
+int NET_IPSocket(char *net_interface, int port, qboolean multicast);
+void NET_OpenIP();
+int NET_IPXSocket(int hostshort);
+void NET_OpenIPX();
+void NET_GetLocalAddress();
+int NET_IsConfigured();
+void NET_Config(qboolean multiplayer);
+void MaxPlayers_f();
+void NET_Init();
+void NET_ClearLagData(qboolean bClient, qboolean bServer);
+void NET_Shutdown();
+qboolean NET_JoinGroup(netsrc_t sock, netadr_t &addr);
+qboolean NET_LeaveGroup(netsrc_t sock, netadr_t &addr);

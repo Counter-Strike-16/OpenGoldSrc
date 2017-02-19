@@ -27,13 +27,14 @@
  */
 
 /// @file
+/// @brief network connection channel
 
 #pragma once
 
 #include "common/commontypes.h"
 #include "common/enums.h"
 #include "maintypes.h"
-#include "network/net.hpp"
+#include "network/networktypes.hpp"
 
 #ifdef HOOK_ENGINE
 
