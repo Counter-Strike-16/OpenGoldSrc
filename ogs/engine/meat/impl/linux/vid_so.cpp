@@ -35,22 +35,22 @@ qboolean reflib_active = 0;
 
 void Do_Key_Event(int key, qboolean down);
 
-void (*KBD_Update_fp)(void);
+void (*KBD_Update_fp)();
 void (*KBD_Init_fp)(Key_Event_fp_t fp);
-void (*KBD_Close_fp)(void);
+void (*KBD_Close_fp)();
 
 /** MOUSE *****************************************************************/
 
 in_state_t in_state;
 
 void (*RW_IN_Init_fp)(in_state_t *in_state_p);
-void (*RW_IN_Shutdown_fp)(void);
+void (*RW_IN_Shutdown_fp)();
 void (*RW_IN_Activate_fp)(qboolean active);
-void (*RW_IN_Commands_fp)(void);
+void (*RW_IN_Commands_fp)();
 void (*RW_IN_Move_fp)(usercmd_t *cmd);
-void (*RW_IN_Frame_fp)(void);
+void (*RW_IN_Frame_fp)();
 
-void Real_IN_Init(void);
+void Real_IN_Init();
 
 /*
 ==========================================================================
@@ -98,7 +98,7 @@ void VID_Error(int err_level, char *fmt, ...)
 
 
 
-void VID_FreeReflib(void)
+void VID_FreeReflib()
 {
 	if(reflib_library)
 	{
@@ -263,9 +263,9 @@ qboolean VID_LoadRefresh(char *name)
 		Sys_Error("No KBD functions in REF.\n");
 #else
 	{
-		void KBD_Init(void);
-		void KBD_Update(void);
-		void KBD_Close(void);
+		void KBD_Init();
+		void KBD_Update();
+		void KBD_Close();
 
 		KBD_Init_fp = KBD_Init;
 		KBD_Update_fp = KBD_Update;
@@ -294,7 +294,7 @@ have to
 update the rendering DLL and/or video mode to match.
 ============
 */
-void VID_CheckChanges(void)
+void VID_CheckChanges()
 {
 	char name[100];
 	cvar_t *sw_mode;
@@ -352,7 +352,7 @@ void VID_CheckChanges(void)
 VID_Init
 ============
 */
-void VID_Init(void)
+void VID_Init()
 {
 	/* Create the video variables so we know how to start the graphics drivers */
 	// if DISPLAY is defined, try X
@@ -380,7 +380,7 @@ void VID_Init(void)
 VID_Shutdown
 ============
 */
-void VID_Shutdown(void)
+void VID_Shutdown()
 {
 	if(reflib_active)
 	{
@@ -402,24 +402,24 @@ void VID_Shutdown(void)
 cvar_t *in_joystick;
 
 // This if fake, it's acutally done by the Refresh load
-void IN_Init(void)
+void IN_Init()
 {
 	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE);
 }
 
-void Real_IN_Init(void)
+void Real_IN_Init()
 {
 	if(RW_IN_Init_fp)
 		RW_IN_Init_fp(&in_state);
 }
 
-void IN_Shutdown(void)
+void IN_Shutdown()
 {
 	if(RW_IN_Shutdown_fp)
 		RW_IN_Shutdown_fp();
 }
 
-void IN_Commands(void)
+void IN_Commands()
 {
 	if(RW_IN_Commands_fp)
 		RW_IN_Commands_fp();
@@ -431,7 +431,7 @@ void IN_Move(usercmd_t *cmd)
 		RW_IN_Move_fp(cmd);
 }
 
-void IN_Frame(void)
+void IN_Frame()
 {
 	if(RW_IN_Frame_fp)
 		RW_IN_Frame_fp();

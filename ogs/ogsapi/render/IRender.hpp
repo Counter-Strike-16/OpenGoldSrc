@@ -109,7 +109,9 @@ struct IRender : public IBaseInterface
 	virtual void DrawFadeScreen() = 0;
 	
 	/// Draw images for cinematic rendering (which can have a different palette). Note that calls
-	virtual void DrawStretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data);
+	virtual void DrawStretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data) = 0;
+	
+	virtual void DrawLine(polyvert_t *polyvert0, polyvert_t *polyvert1) = 0;
 	
 	/*
 	** Video mode and refresh state management entry points

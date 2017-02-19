@@ -173,7 +173,7 @@ void VID_RememberWindowPos()
 		   (rect.top < GetSystemMetrics(SM_CYSCREEN)) && (rect.right > 0) &&
 		   (rect.bottom > 0))
 		{
-			// Window is now always be created at the screen center
+			// Window is now always will be created on the screen center
 			//Cvar_SetValue("vid_window_x", (float)rect.left);
 			//Cvar_SetValue("vid_window_y", (float)rect.top);
 		}

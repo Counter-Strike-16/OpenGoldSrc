@@ -27,51 +27,21 @@
  */
 
 /// @file
+/// @brief video module interface
 
-/*
-** VID_CreateWindow
-*/
-const char WINDOW_CLASS_NAME[] = "OGS"; // Valve001?
+#pragma once
 
+struct IWindow;
 
-
-// return HWND?
-// glw_state.hWnd = VID_CreateWindow(...);
-// sww_state.hWnd = VID_CreateWindow(...);
-bool VID_CreateWindow(HWND &aRetWnd, WNDPROC hWndProc, HINSTANCE hInst, TWindowProps &aWinProps /*, int stylebits*/)
+struct TWindowProps
 {
-	
-	
-	// gs doesn't have any of these cvars
-	cvar_t *vid_xpos = ri.Cvar_Get("vid_xpos", "0", 0);
-	cvar_t *vid_ypos = ri.Cvar_Get("vid_ypos", "0", 0);
-	cvar_t *vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-	
-	int stylebits = WINDOW_STYLE;
-	int x = 0;
-	int y = 0;
-	int w, h;
-	int exstyle = 0;
-	
-	if(vid_fullscreen->value) // if(aWinProps.fullscreen)
-	{
-		exstyle = WS_EX_TOPMOST;
-		stylebits = WS_POPUP | WS_VISIBLE;
-	};
-	
-	
-	
-	// init all the gl stuff for the window
-	//if(!GLimp_InitGL())
-	//{
-		//ri.Con_Printf(PRINT_ALL, "VID_CreateWindow() - GLimp_InitGL failed\n");
-		//return false;
-	//}
-	
-	
-	
-	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow(aWinProps.width, aWinProps.height);
-	
-	return true;
+	int width;
+	int height;
+	bool fullscreen;
+};
+
+struct IVideo
+{
+	virtual IWindow *OpenWindow(const TWindowProps &aWinProps) const = 0;
+	virtual void CloseWindow(IWindow *&apWindow) = 0;
 };

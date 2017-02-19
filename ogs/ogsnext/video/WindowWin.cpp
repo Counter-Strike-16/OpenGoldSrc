@@ -28,50 +28,71 @@
 
 /// @file
 
-/*
-** VID_CreateWindow
-*/
-const char WINDOW_CLASS_NAME[] = "OGS"; // Valve001?
+#include "video/WindowWin.hpp"
 
-
-
-// return HWND?
-// glw_state.hWnd = VID_CreateWindow(...);
-// sww_state.hWnd = VID_CreateWindow(...);
-bool VID_CreateWindow(HWND &aRetWnd, WNDPROC hWndProc, HINSTANCE hInst, TWindowProps &aWinProps /*, int stylebits*/)
+CWindowWin::~CWindowWin()
 {
+	Close();
+};
+
+bool CWindowWin::Open()
+{
+	WNDCLASS wc;
+	RECT r;
 	
+	// Register the frame class
+	wc.style = 0;
+	wc.lpfnWndProc = hWndProc; //(WNDPROC)glw_state.wndproc; // (WNDPROC)sww_state.wndproc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInst; //glw_state.hInstance; // sww_state.hInstance;
+	wc.hIcon = 0;
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (void *)COLOR_GRAYTEXT;
+	wc.lpszMenuName = 0;
+	wc.lpszClassName = WINDOW_CLASS_NAME;
 	
-	// gs doesn't have any of these cvars
-	cvar_t *vid_xpos = ri.Cvar_Get("vid_xpos", "0", 0);
-	cvar_t *vid_ypos = ri.Cvar_Get("vid_ypos", "0", 0);
-	cvar_t *vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
+	if(!RegisterClass(&wc))
+		return false; //ri.Sys_Error(ERR_FATAL, "Couldn't register window class");
 	
-	int stylebits = WINDOW_STYLE;
-	int x = 0;
-	int y = 0;
-	int w, h;
-	int exstyle = 0;
+	r.left = 0;
+	r.top = 0;
+	r.right = aWinProps.width;
+	r.bottom = aWinProps.height;
 	
-	if(vid_fullscreen->value) // if(aWinProps.fullscreen)
+	AdjustWindowRect(&r, stylebits, FALSE);
+	
+	w = r.right - r.left;
+	h = r.bottom - r.top;
+	
+	if(!fullscreen)
 	{
-		exstyle = WS_EX_TOPMOST;
-		stylebits = WS_POPUP | WS_VISIBLE;
+		x = (GetSystemMetrics(SM_CXSCREEN) - w) * 0.5f; //x = vid_xpos->value;
+		y = (GetSystemMetrics(SM_CYSCREEN) - h) * 0.5f; //y = vid_ypos->value;
 	};
 	
+	mhWnd = CreateWindowEx(
+	exstyle,
+	WINDOW_CLASS_NAME,
+	"OpenGoldSrc", // OGS
+	stylebits,
+	x, y, w, h,
+	NULL,
+	NULL,
+	hInst,
+	NULL);
 	
+	if(!hWnd)
+		return false; //ri.Sys_Error(ERR_FATAL, "Couldn't create window");
 	
-	// init all the gl stuff for the window
-	//if(!GLimp_InitGL())
-	//{
-		//ri.Con_Printf(PRINT_ALL, "VID_CreateWindow() - GLimp_InitGL failed\n");
-		//return false;
-	//}
-	
-	
-	
-	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow(aWinProps.width, aWinProps.height);
+	ShowWindow(hWnd, SW_SHOWNORMAL); //SW_SHOW
+	UpdateWindow(hWnd);
+	SetForegroundWindow(hWnd);
+	SetFocus(hWnd);
 	
 	return true;
+};
+
+void CWindowWin::Close()
+{
 };

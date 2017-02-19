@@ -37,30 +37,62 @@ typedef struct qpic_s qpic_t;
 
 extern qpic_t *draw_disc; // also used on sbar
 
-void Drawer_Init();
+void Draw_Init();
 
-void Drawer_DrawCharacter(int x, int y, int num);
-void Drawer_DrawDebugChar(char num);
+void Draw_Character(int x, int y, int num);
+void Draw_DebugChar(char num);
 
-void Drawer_DrawSubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height);
-void Drawer_DrawPic(int x, int y, qpic_t *pic);
-void Drawer_DrawTransPic(int x, int y, qpic_t *pic);
-void Drawer_DrawTransPicTranslate(int x, int y, qpic_t *pic, byte *translation);
+void Draw_SubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height);
+void Draw_Pic(int x, int y, qpic_t *pic);
+void Draw_TransPic(int x, int y, qpic_t *pic);
+void Draw_TransPicTranslate(int x, int y, qpic_t *pic, byte *translation);
 
-void Drawer_DrawConsoleBackground(int lines);
+void Draw_ConsoleBackground(int lines);
 
-void Drawer_DrawBeginDisc();
-void Drawer_DrawEndDisc();
+void Draw_BeginDisc();
+void Draw_EndDisc();
 
-void Drawer_DrawTileClear(int x, int y, int w, int h);
+void Draw_TileClear(int x, int y, int w, int h);
 
-void Drawer_FillScreen(int x, int y, int w, int h, int c);
-void Drawer_FadeScreen();
+void Draw_FillScreen(int x, int y, int w, int h, int c);
+void Draw_FadeScreen();
 
-void Drawer_DrawString(int x, int y, char *str);
-void Drawer_DrawAltString(int x, int y, char *str);
+void Draw_String(int x, int y, char *str);
+void Draw_AltString(int x, int y, char *str);
 
-qpic_t *Drawer_DrawPicFromWad(char *name);
-qpic_t *Drawer_DrawCachePic(char *path);
+qpic_t *Draw_PicFromWad(char *name);
+qpic_t *Draw_CachePic(char *path);
 
-void Drawer_DrawCrosshair();
+void Draw_Crosshair();
+
+class CGraphicsDrawer
+{
+public:
+	void Init();
+
+	void DrawCharacter(int x, int y, int num);
+	void DrawDebugChar(char num);
+
+	void DrawSubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height);
+	void DrawPic(int x, int y, qpic_t *pic);
+	void DrawTransPic(int x, int y, qpic_t *pic);
+	void DrawTransPicTranslate(int x, int y, qpic_t *pic, byte *translation);
+
+	void DrawConsoleBackground(int lines);
+
+	void DrawBeginDisc();
+	void DrawEndDisc();
+
+	void DrawTileClear(int x, int y, int w, int h);
+
+	void FillScreen(int x, int y, int w, int h, int c);
+	void FadeScreen();
+
+	void DrawString(int x, int y, char *str);
+	void DrawAltString(int x, int y, char *str);
+
+	qpic_t *DrawPicFromWad(char *name);
+	qpic_t *DrawCachePic(char *path);
+
+	void DrawCrosshair();
+};

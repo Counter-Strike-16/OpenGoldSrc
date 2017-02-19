@@ -27,51 +27,26 @@
  */
 
 /// @file
+/// @brief network protocol proxy class - allows to use multiple protocol impls 
+/// (and change them at runtime) using single interface
 
-/*
-** VID_CreateWindow
-*/
-const char WINDOW_CLASS_NAME[] = "OGS"; // Valve001?
+#pragma once
 
+class INetProtocol;
 
-
-// return HWND?
-// glw_state.hWnd = VID_CreateWindow(...);
-// sww_state.hWnd = VID_CreateWindow(...);
-bool VID_CreateWindow(HWND &aRetWnd, WNDPROC hWndProc, HINSTANCE hInst, TWindowProps &aWinProps /*, int stylebits*/)
+class CProtocolProxy
 {
+public:
+	CProtocolProxy() : mpProtocol(nullptr){}
+	CProtocolProxy(INetProtocol *apProtocol) : mpProtocol(apProtocol){}
 	
+	void SetProtocol(INetProtocol *apProtocol){mpProtocol = apProtocol;}
+	INetProtocol *GetProtocol() const {return mpProtocol;}
 	
-	// gs doesn't have any of these cvars
-	cvar_t *vid_xpos = ri.Cvar_Get("vid_xpos", "0", 0);
-	cvar_t *vid_ypos = ri.Cvar_Get("vid_ypos", "0", 0);
-	cvar_t *vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
+	INetProtocol *operator->() const {return mpProtocol;}
+	INetProtocol &operator*() const {return *mpProtocol;}
 	
-	int stylebits = WINDOW_STYLE;
-	int x = 0;
-	int y = 0;
-	int w, h;
-	int exstyle = 0;
-	
-	if(vid_fullscreen->value) // if(aWinProps.fullscreen)
-	{
-		exstyle = WS_EX_TOPMOST;
-		stylebits = WS_POPUP | WS_VISIBLE;
-	};
-	
-	
-	
-	// init all the gl stuff for the window
-	//if(!GLimp_InitGL())
-	//{
-		//ri.Con_Printf(PRINT_ALL, "VID_CreateWindow() - GLimp_InitGL failed\n");
-		//return false;
-	//}
-	
-	
-	
-	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow(aWinProps.width, aWinProps.height);
-	
-	return true;
+	operator bool() const {return mpProtocol ? true : false;}
+private:
+	INetProtocol *mpProtocol;
 };

@@ -27,12 +27,12 @@
  */
 
 /// @file
+/// @brief general refresh-related stuff shared between the refresh and the driver
 
 #pragma once
 
 #ifndef GLQUAKE
-// r_shared.h: general refresh-related stuff shared between the refresh and the
-// driver
+
 
 // FIXME: clean up and move into d_iface.h
 
@@ -48,8 +48,6 @@
                                   //  the scene
 
 //===================================================================
-
-extern void R_DrawLine(polyvert_t *polyvert0, polyvert_t *polyvert1);
 
 extern int cachewidth;
 extern pixel_t *cacheblock;
