@@ -176,8 +176,8 @@ void SNDDMA_Shutdown();
 // User-setable variables
 // ====================================================================
 
-#define MAX_CHANNELS 128
-#define MAX_DYNAMIC_CHANNELS 8
+const int MAX_CHANNELS = 128;
+const int MAX_DYNAMIC_CHANNELS = 8;
 
 extern channel_t channels[MAX_CHANNELS];
 // 0 to MAX_DYNAMIC_CHANNELS-1	= normal entity sounds

@@ -173,8 +173,9 @@ void VID_RememberWindowPos()
 		   (rect.top < GetSystemMetrics(SM_CYSCREEN)) && (rect.right > 0) &&
 		   (rect.bottom > 0))
 		{
-			Cvar_SetValue("vid_window_x", (float)rect.left);
-			Cvar_SetValue("vid_window_y", (float)rect.top);
+			// Window is now always be created at the screen center
+			//Cvar_SetValue("vid_window_x", (float)rect.left);
+			//Cvar_SetValue("vid_window_y", (float)rect.top);
 		}
 	}
 }
@@ -1272,7 +1273,7 @@ qboolean VID_SetWindowedMode(int modenum)
 	if(!vid_mode_set)
 	{
 		mainwindow = CreateWindowEx(
-		ExWindowStyle, "WinQuake", "WinQuake", WindowStyle, 0, 0, WindowRect.right - WindowRect.left, WindowRect.bottom - WindowRect.top, NULL, NULL, global_hInstance, NULL);
+		ExWindowStyle, "OGS", "OGS", WindowStyle, 0, 0, WindowRect.right - WindowRect.left, WindowRect.bottom - WindowRect.top, NULL, NULL, global_hInstance, NULL);
 
 		if(!mainwindow)
 			Sys_Error("Couldn't create DIB window");

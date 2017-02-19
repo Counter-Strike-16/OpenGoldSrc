@@ -45,7 +45,6 @@
 #include "graphics/screen.hpp"
 
 #ifdef _WIN32
-#include "winsock.h"
 #else
 #include <netinet/in.h>
 #endif
@@ -79,8 +78,6 @@ static qboolean allowremotecmd = true;
 #ifndef HOOK_ENGINE
 
 cvar_t cl_name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO, 0.0f, NULL };
-cvar_t rate_ = { "rate", "2500", FCVAR_USERINFO, 0.0f, NULL };
-cvar_t console = { "console", "1.0", FCVAR_ARCHIVE, 0.0f, NULL };
 
 cvar_t password = { "password", "", FCVAR_USERINFO }; // info_password
 cvar_t name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO };
@@ -89,9 +86,9 @@ cvar_t model = { "model", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
 cvar_t skin = { "skin", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
 cvar_t topcolor = { "topcolor", "0", FCVAR_ARCHIVE | FCVAR_USERINFO };
 cvar_t bottomcolor = { "bottomcolor", "0", FCVAR_ARCHIVE | FCVAR_USERINFO };
-cvar_t rate = { "rate", "2500", FCVAR_ARCHIVE | FCVAR_USERINFO };
+cvar_t rate = { "rate", "2500", FCVAR_ARCHIVE | FCVAR_USERINFO }; // cvar_t rate_ = { "rate", "2500", FCVAR_USERINFO, 0.0f, NULL };
 
-cvar_t console = { "console", "1", FCVAR_ARCHIVE };
+cvar_t console = { "console", "1", FCVAR_ARCHIVE }; // cvar_t console = { "console", "1.0", FCVAR_ARCHIVE, 0.0f, NULL };
 
 #else // HOOK_ENGINE
 
@@ -1091,7 +1088,7 @@ CL_Init
 */
 void CL_Init()
 {
-#ifndef SwDS
+#ifndef SWDS
 	extern cvar_t baseskin;
 	extern cvar_t noskins;
 

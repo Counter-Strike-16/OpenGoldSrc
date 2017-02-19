@@ -355,8 +355,6 @@ int CL_ConnectionlessPacket(const struct netadr_s *net_from, const char *args, c
 
 void CL_DecayLights(); //+
 
-void CL_EmitEntities(); //+
-
 void CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel);
 
 void CL_PrintLogos();
@@ -387,6 +385,13 @@ void CL_UpdateModuleC();
 // message parsing
 //
 void CL_ParseServerMessage(); //+
+
+//
+// entities
+//
+void CL_SetSolidPlayers(int playernum); //+
+void CL_SetSolidEntities();
+void CL_EmitEntities(); //+
 
 //
 // events

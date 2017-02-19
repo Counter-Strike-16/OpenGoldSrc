@@ -33,6 +33,7 @@
 #include "server/sv_log.hpp"
 #include "server/sv_user.hpp"
 #include "server/sv_upld.hpp"
+#include "server/sv_steam3.hpp"
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
 #include "system/common.hpp"
@@ -2473,7 +2474,7 @@ void EXT_FUNC SV_ConnectClient_internal()
 
 	if(reconnect)
 	{
-		//Steam_NotifyClientDisconnect(client);
+		Steam_NotifyClientDisconnect(client);
 		if((client->active || client->spawned) && client->edict)
 			gEntityInterface.pfnClientDisconnect(client->edict);
 
@@ -2511,18 +2512,18 @@ void EXT_FUNC SV_ConnectClient_internal()
 		}
 
 		client->netchan.remote_address.port = adr.port ? adr.port : port;
-		/*
+		
 		if(!Steam_NotifyClientConnect(client, szSteamAuthBuf, len))
 		{
 			if(sv_lan.value == 0.0f)
 			{
 				SV_RejectConnection(&adr, "STEAM validation rejected\n");
 				return;
-			}
+			};
+			
 			host_client->network_userid.idtype = AUTH_IDTYPE_STEAM;
 			host_client->network_userid.m_SteamID = 0;
-		}
-		*/
+		};
 	}
 	else
 	{
@@ -2542,11 +2543,13 @@ void EXT_FUNC SV_ConnectClient_internal()
 		{
 			SV_RejectConnection(&adr, "Invalid validation type\n");
 			return;
-		}
+		};
+		
 		host_client->network_userid.idtype = AUTH_IDTYPE_LOCAL;
 		host_client->network_userid.m_SteamID = 0;
 		host_client->network_userid.clientip = *(uint32 *)&adr.ip[0];
-		//Steam_NotifyBotConnect(client);
+		
+		Steam_NotifyBotConnect(client);
 	}
 
 	SV_ClearResourceLists(host_client);
@@ -2590,7 +2593,7 @@ void EXT_FUNC SV_ConnectClient_internal()
 	g_GameClients[host_client - g_psvs.clients]->SetSpawnedOnce(false);
 #endif // REHLDS_FIXES
 
-	//bIsSecure = Steam_GSBSecure();
+	bIsSecure = Steam_GSBSecure();
 	Netchan_OutOfBandPrint(NS_SERVER, adr, "%c %i \"%s\" %i %i", S2C_CONNECTION, host_client->userid, NET_AdrToString(host_client->netchan.remote_address), bIsSecure, build_number());
 	Log_Printf("\"%s<%i><%s><>\" connected, address \"%s\"\n", name, host_client->userid, SV_GetClientIDString(host_client), NET_AdrToString(host_client->netchan.remote_address));
 #ifdef REHLDS_FIXES
@@ -2674,9 +2677,9 @@ void SVC_GetChallenge()
 	qboolean steam = (Cmd_Argc() == 2 && !Q_stricmp(Cmd_Argv(1), "steam"));
 	int challenge = SV_GetChallenge(net_from);
 
-	//if(steam)
-		//Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 3 %lld %d\n", S2C_CHALLENGE, challenge, g_RehldsHookchains.m_Steam_GSGetSteamID.callChain(Steam_GSGetSteamID), Steam_GSBSecure());
-	//else
+	if(steam)
+		Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 3 %lld %d\n", S2C_CHALLENGE, challenge, g_RehldsHookchains.m_Steam_GSGetSteamID.callChain(Steam_GSGetSteamID), Steam_GSBSecure());
+	else
 	{
 		Con_DPrintf("Server requiring authentication\n");
 		Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 2\n", S2C_CHALLENGE, challenge);
@@ -3027,7 +3030,7 @@ NOXREF void SVC_InfoString()
 	Info_SetValueForKey(info, "type", type, sizeof(info));
 	Info_SetValueForKey(info, "password", va("%i", iHasPW), sizeof(info));
 	Info_SetValueForKey(info, "os", szOS, sizeof(info));
-	//Info_SetValueForKey(info, "secure", Steam_GSBSecure() ? "0" : "1", sizeof(info));
+	Info_SetValueForKey(info, "secure", Steam_GSBSecure() ? "0" : "1", sizeof(info));
 
 	if(gmodinfo.bIsMod)
 	{
@@ -3144,7 +3147,7 @@ NOXREF void SVC_Info(qboolean bDetailed)
 		else
 			MSG_WriteByte(&buf, 0);
 
-		//MSG_WriteByte(&buf, Steam_GSBSecure() != FALSE);
+		MSG_WriteByte(&buf, Steam_GSBSecure() != FALSE);
 		MSG_WriteByte(&buf, SV_GetFakeClientCount());
 	}
 	NET_SendPacket(NS_SERVER, buf.cursize, (char *)buf.data, net_from);
@@ -3326,8 +3329,8 @@ void SV_BeginRedirect(redirect_t rd, netadr_t *addr)
 	outputbuf[0] = 0;
 }
 
-#define MAX_RCON_FAILURES_STORAGE 32
-#define MAX_RCON_FAILURES 20
+const int MAX_RCON_FAILURES_STORAGE = 32;
+const int MAX_RCON_FAILURES = 20;
 
 typedef struct rcon_failure_s
 {
@@ -3770,7 +3773,7 @@ void SV_ReadPackets()
 			// Connectionless packet
 			if(CheckIP(net_from))
 			{
-				//Steam_HandleIncomingPacket(net_message.data, net_message.cursize, ntohl(*(u_long *)&net_from.ip[0]), htons(net_from.port));
+				Steam_HandleIncomingPacket(net_message.data, net_message.cursize, ntohl(*(u_long *)&net_from.ip[0]), htons(net_from.port));
 				SV_ConnectionlessPacket();
 			}
 			else if(sv_logblocks.value != 0.0f)
@@ -5957,7 +5960,7 @@ void EXT_FUNC SV_ActivateServer_internal(int runPhysics)
 
 	//ContinueLoadingProgressBar("Server", 8, 0.0f);
 	gEntityInterface.pfnServerActivate(g_psv.edicts, g_psv.num_edicts, g_psvs.maxclients);
-	//Steam_Activate();
+	Steam_Activate();
 	//ContinueLoadingProgressBar("Server", 9, 0.0f);
 #ifdef REHLDS_FIXES
 	// Precache after all models and sounds is precached, because we use
@@ -6042,7 +6045,7 @@ void EXT_FUNC SV_ActivateServer_internal(int runPhysics)
 
 void SV_ServerShutdown()
 {
-	//Steam_NotifyOfLevelChange();
+	Steam_NotifyOfLevelChange();
 	gGlobalVariables.time = g_psv.time;
 
 	if(g_psvs.dll_initialized)
@@ -6587,7 +6590,7 @@ USERID_t *SV_StringToUserID(const char *str)
 	}
 	szTemp[127] = 0;
 	
-	//id.m_SteamID = Steam_StringToSteamID(szTemp);
+	id.m_SteamID = Steam_StringToSteamID(szTemp);
 
 	return &id;
 }
@@ -7860,7 +7863,7 @@ void SV_Frame()
 	SV_SendClientMessages();
 	SV_CheckMapDifferences();
 	SV_GatherStatistics();
-	//Steam_RunFrame();
+	Steam_RunFrame();
 }
 
 void SV_Drop_f()
@@ -8398,7 +8401,7 @@ void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string)
 
 	Netchan_Clear(&cl->netchan);
 
-	//Steam_NotifyClientDisconnect(cl);
+	Steam_NotifyClientDisconnect(cl);
 
 	cl->active = FALSE;
 	cl->connected = FALSE;

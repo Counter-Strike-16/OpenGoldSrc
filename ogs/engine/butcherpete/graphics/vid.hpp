@@ -69,8 +69,7 @@ typedef struct
 	unsigned conheight;
 	int maxwarpwidth;
 	int maxwarpheight;
-	pixel_t *direct; // direct drawing to framebuffer, if not
-	                 //  NULL
+	pixel_t *direct; // direct drawing to framebuffer, if not NULL
 } viddef_t;
 
 extern viddef_t vid; // viddef; global video state
@@ -119,24 +118,8 @@ void VID_ForceLockState(int lk);
 int VID_ForceUnlockedAndReturnState();
 
 /*
-void VID_WriteBuffer(const char *pFilename);
-NOBODY int VID_Init(unsigned short *palette);
-
-void D_FlushCaches();
-void R_SetStackBase();
-void SCR_UpdateScreen();
-void V_Init();
 void Draw_Init();
-void SCR_Init();
-void R_Init();
-void R_ForceCVars(qboolean multiplayer);
 
-void SCR_BeginLoadingPlaque(qboolean reconnect);
-void SCR_EndLoadingPlaque();
-
-void R_InitSky();
-void R_MarkLeaves();
-void R_InitTextures();
 
 void StartLoadingProgressBar(const char *loadingType, int numProgressPoints);
 void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction);

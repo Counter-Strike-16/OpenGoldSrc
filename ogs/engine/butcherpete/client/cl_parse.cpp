@@ -1211,5 +1211,5 @@ case svc_nails:
 		}
 	}
 
-	//CL_SetSolidEntities();
+	CL_SetSolidEntities();
 };

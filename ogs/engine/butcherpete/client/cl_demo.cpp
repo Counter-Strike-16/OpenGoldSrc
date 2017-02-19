@@ -32,12 +32,12 @@
 #include "precompiled.hpp"
 #include "client/cl_demo.hpp"
 #include "client/client.hpp"
+#include "system/common.hpp"
 #include "system/system.hpp"
 #include "system/host.hpp"
 #include "console/cmd.hpp"
 #include "console/console.hpp"
 #include "network/net_msg.hpp"
-#include "system/common.hpp"
 
 enum
 {

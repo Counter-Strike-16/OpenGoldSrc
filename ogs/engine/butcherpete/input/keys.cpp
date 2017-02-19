@@ -39,10 +39,6 @@
 #include "client/client.hpp"
 #include "public/keydefs.h"
 
-#ifdef _WINDOWS
-#include <windows.h>
-#endif
-
 // key up events are sent even if in console mode
 
 const int MAXCMDLINE = 256;

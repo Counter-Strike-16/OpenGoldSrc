@@ -29,7 +29,6 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "common/crc.h"
 #include "console/console.hpp"
 #include "filesystem/filesystem_internal.hpp"
 #include "rehlds/bspfile.h"

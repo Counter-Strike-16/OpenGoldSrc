@@ -311,13 +311,11 @@ void CL_StopUpload();
 //
 // cl_ents.c
 //
-void CL_SetSolidPlayers (int playernum);
 void CL_SetUpPlayerPrediction(qboolean dopred);
-void CL_EmitEntities ();
 void CL_ClearProjectiles ();
 void CL_ParseProjectiles ();
 void CL_ParsePacketEntities (qboolean delta);
-void CL_SetSolidEntities ();
+
 void CL_ParsePlayerinfo ();
 
 

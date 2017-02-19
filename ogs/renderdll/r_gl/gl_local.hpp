@@ -28,6 +28,8 @@
 
 /// @file
 
+#pragma once
+
 // disable data conversion warnings
 #if 0
 #pragma warning(disable : 4244) // MIPS
@@ -50,10 +52,9 @@
 #endif
 
 #include "ref.hpp"
+#include "qgl.hpp"
 
-#include "qgl.h"
-
-#define REF_VERSION "GL 0.01"
+const char REF_VERSION[] = "GL 0.01";
 
 // up / down
 #define PITCH 0

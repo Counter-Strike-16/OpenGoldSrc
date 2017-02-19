@@ -797,7 +797,7 @@ void EngFunc_VguiWrap2_GetMouseDelta(int *x, int *y)
 	// TODO: implement
 };
 
-#else // if OGS_CLENGFUNCS_NULL_IMPL defined
+#else // if defined(OGS_CLENGFUNCS_NULL_IMPL)
 
 void EngFunc_FillRGBA(int x, int y, int width, int height, int r, int g, int b, int a){};
 

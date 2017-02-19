@@ -49,6 +49,7 @@ extern keydest_t key_dest;
 //extern int anykeydown;
 
 void Key_Init();
+void Key_Shutdown();
 
 void Key_ClearStates();
 

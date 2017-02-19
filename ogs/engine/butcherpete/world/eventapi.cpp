@@ -167,7 +167,9 @@ void EventAPI_KillEvents(int entnum, const char *eventname)
 		}
 	}
 };
-#else // if OGS_EVENTAPI_NULL_IMPL
+
+#else // if defined(OGS_EVENTAPI_NULL_IMPL)
+
 void EventAPI_PlaySound(int ent, float *origin, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch){};
 
 void EventAPI_StopSound(int ent, int channel, const char *sample){};

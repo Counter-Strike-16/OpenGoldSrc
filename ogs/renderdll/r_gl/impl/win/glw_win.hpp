@@ -28,68 +28,28 @@
 
 /// @file
 
+#ifndef _WIN32
+	#error "You should not be including this file on this platform!"
+#endif
+
 #pragma once
 
-void SCR_Init();
+typedef struct
+{
+	HINSTANCE hInstance;
+	void *wndproc;
 
-void SCR_UpdateScreen();
+	HDC hDC;     // handle to device context
+	HWND hWnd;   // handle to window
+	HGLRC hGLRC; // handle to GL rendering context
 
-void SCR_SizeUp();
-void SCR_SizeDown();
+	HINSTANCE hinstOpenGL; // HINSTANCE for the OpenGL library
 
-void SCR_BringDownConsole();
-void SCR_CenterPrint(char *str);
+	qboolean minidriver;
+	qboolean allowdisplaydepthchange;
+	qboolean mcd_accelerated;
 
-int SCR_ModalMessage(char *text);
+	FILE *log_fp;
+} glwstate_t;
 
-void SCR_BeginLoadingPlaque(qboolean reconnect);
-void SCR_EndLoadingPlaque();
-
-extern float scr_con_current;
-extern float scr_conlines; // lines of console to display
-
-extern int scr_fullupdate; // set to 0 to force full redraw
-extern int sb_lines;
-
-extern int clearnotify; // set to 0 whenever notify text is drawn
-extern qboolean scr_disabled_for_loading;
-
-extern cvar_t scr_viewsize;
-
-extern cvar_t scr_viewsize;
-
-// only the refresh window will be updated unless these variables are flagged
-extern int scr_copytop;
-extern int scr_copyeverything;
-
-qboolean scr_skipupdate;
-
-qboolean block_drawing;
-
-/*
-void	SCR_DebugGraph (float value, int color);
-
-void	SCR_TouchPics ();
-
-void	SCR_RunConsole ();
-
-extern	cvar_t		*scr_viewsize;
-extern	cvar_t		*crosshair;
-
-extern	vrect_t		scr_vrect;		// position of render window
-
-extern	char		crosshair_pic[MAX_QPATH];
-extern	int			crosshair_width, crosshair_height;
-
-void SCR_AddDirtyPoint (int x, int y);
-void SCR_DirtyScreen ();
-
-//
-// scr_cin.c
-//
-void SCR_PlayCinematic (char *name);
-qboolean SCR_DrawCinematic ();
-void SCR_RunCinematic ();
-void SCR_StopCinematic ();
-void SCR_FinishCinematic ();
-*/
+extern glwstate_t glw_state;
