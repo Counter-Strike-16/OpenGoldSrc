@@ -46,13 +46,6 @@ const int CVOXFILESENTENCEMAX = 1536;
 const int MAX_CHANNELS = 128;
 const int MAX_DYNAMIC_CHANNELS = 8;
 
-extern channel_t channels[MAX_CHANNELS];
-// 0 to MAX_DYNAMIC_CHANNELS-1	= normal entity sounds
-// MAX_DYNAMIC_CHANNELS to MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS -1 = water, etc
-// MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS to total_channels = static sounds
-
-extern int total_channels;
-
 //
 // Fake dma is a synchronous faking of the DMA progress used for
 // isolating performance in the renderer.  The fakedma_updates is
@@ -66,8 +59,6 @@ extern vec3_t listener_origin;
 extern vec3_t listener_forward;
 extern vec3_t listener_right;
 extern vec3_t listener_up;
-extern volatile dma_t *shm;
-extern volatile dma_t sn;
 extern vec_t sound_nominal_clip_dist;
 
 extern cvar_t loadas8bit;
@@ -153,6 +144,16 @@ typedef struct
 	int samples;
 	int dataofs; // chunk starts this many bytes from file start
 } wavinfo_t;
+
+extern volatile dma_t *shm;
+extern volatile dma_t sn;
+
+extern channel_t channels[MAX_CHANNELS];
+// 0 to MAX_DYNAMIC_CHANNELS-1	= normal entity sounds
+// MAX_DYNAMIC_CHANNELS to MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS -1 = water, etc
+// MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS to total_channels = static sounds
+
+extern int total_channels;
 
 void S_Init();
 void S_Shutdown();

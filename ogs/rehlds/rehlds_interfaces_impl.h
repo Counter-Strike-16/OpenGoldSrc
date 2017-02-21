@@ -25,19 +25,15 @@
 *    version.
 *
 */
+
 #pragma once
+
 #include "maintypes.h"
 #include "rehlds/rehlds_interfaces.h"
 #include "server/server.hpp"
 
 class CNetChan : public INetChan
 {
-private:
-	netchan_t* m_pNetChan;
-
-#ifdef REHLDS_FIXES
-	uint8_t m_messageBuffer[NET_MAX_PAYLOAD];
-#endif
 public:
 	CNetChan(netchan_t* chan);
 
@@ -50,20 +46,16 @@ public:
 #ifdef REHLDS_FIXES
 	uint8_t* GetExtendedMessageBuffer() { return m_messageBuffer; };
 #endif
-};
+private:
+	netchan_t* m_pNetChan;
 
+#ifdef REHLDS_FIXES
+	uint8_t m_messageBuffer[NET_MAX_PAYLOAD];
+#endif
+};
 
 class CGameClient : public IGameClient
 {
-private:
-	int m_Id;
-	client_t* m_pClient;
-	CNetChan m_NetChan;
-
-	// added this field to handle a bug with hanging clients in scoreboard after a map change.
-	// we would also use the field client_t:connected, but actually can't because there is a bug in CS client when server sends TeamScore
-	// and client is not yet initialized ScoreBoard which leads to memory corruption in the client.
-	bool m_bSpawnedOnce;
 public:
 	CGameClient(int id, client_t* cl);
 
@@ -101,6 +93,25 @@ public:
 	void SetSpawnedOnce(bool spawned) { m_bSpawnedOnce = spawned; }
 #ifdef REHLDS_FIXES
 	uint8_t* GetExtendedMessageBuffer() { return m_NetChan.GetExtendedMessageBuffer(); };
+#endif
+	
+#ifdef REHLDS_FIXES
+	void SetupLocalGameTime() { m_localGameTimeBase = g_psv.time; }
+	double GetLocalGameTime() const { return g_psv.time - m_localGameTimeBase; }
+	double GetLocalGameTimeBase() const { return m_localGameTimeBase; }
+#endif
+private:
+	int m_Id;
+	client_t* m_pClient;
+	CNetChan m_NetChan;
+
+	// added this field to handle a bug with hanging clients in scoreboard after a map change.
+	// we would also use the field client_t:connected, but actually can't because there is a bug in CS client when server sends TeamScore
+	// and client is not yet initialized ScoreBoard which leads to memory corruption in the client.
+	bool m_bSpawnedOnce;
+	
+#ifdef REHLDS_FIXES
+	double m_localGameTimeBase;
 #endif
 };
 

@@ -133,9 +133,7 @@ clc_func_t sv_clcfuncs[12];
 
 #endif // HOOK_ENGINE
 
-bool EXT_FUNC SV_CheckConsistencyResponse_API(IGameClient *client,
-                                              resource_t *res,
-                                              uint32 hash)
+bool EXT_FUNC SV_CheckConsistencyResponse_API(IGameClient *client, resource_t *res, uint32 hash)
 {
 	return (hash != *(uint32 *)&res->rgucMD5_hash[0]);
 }
@@ -313,13 +311,13 @@ qboolean EXT_FUNC SV_FileInConsistencyList(const char *filename,
 	return 0;
 }
 
-int SV_TransferConsistencyInfo(void)
+int SV_TransferConsistencyInfo()
 {
 	return g_RehldsHookchains.m_SV_TransferConsistencyInfo.callChain(
 	SV_TransferConsistencyInfo_internal);
 }
 
-int EXT_FUNC SV_TransferConsistencyInfo_internal(void)
+int EXT_FUNC SV_TransferConsistencyInfo_internal()
 {
 	consistency_t *pc;
 
@@ -435,7 +433,7 @@ void SV_SendConsistencyList(sizebuf_t *msg)
 	MSG_WriteBits(0, 1);
 }
 
-void SV_PreRunCmd(void)
+void SV_PreRunCmd()
 {
 }
 
@@ -774,7 +772,7 @@ void SV_ConvertPMTrace(trace_t *dest, pmtrace_t *src, edict_t *ent)
 	dest->ent = ent;
 }
 
-void SV_ForceFullClientsUpdate(void)
+void SV_ForceFullClientsUpdate()
 {
 	byte data[9216];
 	sizebuf_t msg;
@@ -1866,7 +1864,7 @@ qboolean SV_SetPlayer(int idnum)
 	return 0;
 }
 
-void SV_ShowServerinfo_f(void)
+void SV_ShowServerinfo_f()
 {
 	if(cmd_source == src_command)
 	{
@@ -1883,7 +1881,7 @@ void SV_ShowServerinfo_f(void)
 	}
 }
 
-void SV_SendEnts_f(void)
+void SV_SendEnts_f()
 {
 	if(cmd_source == src_command)
 	{
@@ -1928,7 +1926,7 @@ void SV_SendEnts_f(void)
 	}
 }
 
-void SV_FullUpdate_f(void)
+void SV_FullUpdate_f()
 {
 	int entIndex;
 	float ltime;

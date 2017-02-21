@@ -34,7 +34,7 @@
 #include "common/commontypes.h"
 #include "common/enums.h"
 #include "maintypes.h"
-#include "network/networktypes.hpp"
+#include "network/net.hpp"
 
 #ifdef HOOK_ENGINE
 

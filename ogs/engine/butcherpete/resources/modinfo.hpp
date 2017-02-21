@@ -57,7 +57,7 @@ typedef struct modinfo_s
 	MOD_GAMEPLAY_TYPE_E type;
 
 	int num_edicts;
-	int clientDllCRC;
+	qboolean clientcrccheck;
 } modinfo_t;
 
 #ifdef HOOK_ENGINE

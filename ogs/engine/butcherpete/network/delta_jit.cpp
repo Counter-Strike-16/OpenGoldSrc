@@ -29,6 +29,8 @@
 /// @file
 
 #include "precompiled.hpp"
+// dirty hack
+#undef max
 #include "network/delta_jit.hpp"
 #include "network/delta.hpp"
 #include "system/system.hpp"

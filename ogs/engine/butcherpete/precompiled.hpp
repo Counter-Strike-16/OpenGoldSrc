@@ -41,8 +41,6 @@
 #include <io.h>
 #include <sys/stat.h>
 
-#include "rehlds/osconfig.h"
-
 #include "maintypes.h"
 
 #include "common/commontypes.h"
@@ -81,9 +79,7 @@
 #include "common/event_flags.h"
 #include "common/ivoicetweak.h"
 #include "common/kbutton.h"
-#include "common/kbutton.h"
 #include "common/net_api.h"
-#include "common/netadr.h"
 #include "common/netadr.h"
 #include "common/particledef.h"
 #include "common/qfont.h"
@@ -118,10 +114,16 @@
 
 //#include "engine_pch.h"
 #include "memory.h"
-#include "platform.h"
+*/
+
+#include "SteamCommon.h"
+
+#include "platform_rehlds.h"
+
 //#include "RehldsRuntimeConfig.h"
 //#include "rehlds_debug.h"
 
+/*
 #ifdef HOOK_ENGINE
 #include "hooker.h"
 #endif

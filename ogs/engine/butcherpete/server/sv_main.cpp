@@ -89,7 +89,7 @@ delta_t *g_pusercmddelta;
 int hashstrings_collisions;
 
 char *pr_strings;
-qboolean scr_skipupdate;
+//qboolean scr_skipupdate;
 float scr_centertime_off;
 float g_LastScreenUpdateTime;
 
@@ -760,7 +760,7 @@ void SV_FindModelNumbers()
 
 // use case-sensitive names to increase performance
 #ifdef REHLDS_FIXES
-		if(!Q_stricmp(g_psv.model_precache[i], "models/player.mdl"))
+		if(!Q_strcmp(g_psv.model_precache[i], "models/player.mdl"))
 			sv_playermodel = i;
 #else
 		if(!Q_stricmp(g_psv.model_precache[i], "models/player.mdl"))
@@ -1456,25 +1456,20 @@ void SV_WriteClientdataToMessage(client_t *client, sizebuf_t *msg)
 			// FIXME: there is a loss of precision, because gamedll has already written float gametime in them 
 			if (sv_rehlds_local_gametime.value != 0.0f)
 			{
-				auto convertGameTimeToLocal = 
-					[](float &gameTime)
+				auto convertGlobalGameTimeToLocal = 
+					[](float &globalGameTime)
 				{
-					if (gameTime > 0.0f)
-					{
-						auto currentLocalGameTime = realtime - host_client->connection_started;
-						auto currentGameTime = g_psv.time;
-						auto difference = gameTime - currentGameTime;
-						gameTime = (float)(currentLocalGameTime + difference);
-					};
+					if(globalGameTime > 0.0f)
+						globalGameTime -= (float)g_GameClients[host_client - g_psvs.clients]->GetLocalGameTimeBase();
 				};
 				
 				if (g_bIsCStrike || g_bIsCZero)
-					convertGameTimeToLocal(std::ref(tdata->m_fAimedDamage));
+					convertGlobalGameTimeToLocal(std::ref(tdata->m_fAimedDamage));
 				
 				if (g_bIsHL1 || g_bIsCStrike || g_bIsCZero)
 				{
-					convertGameTimeToLocal(std::ref(tdata->fuser2));
-					convertGameTimeToLocal(std::ref(tdata->fuser3));
+					convertGlobalGameTimeToLocal(std::ref(tdata->fuser2));
+					convertGlobalGameTimeToLocal(std::ref(tdata->fuser3));
 				}
 			}
 #endif
@@ -1556,7 +1551,7 @@ void SV_WriteSpawn(sizebuf_t *msg)
 	MSG_WriteByte(msg, svc_time);
 #ifdef REHLDS_FIXES
 	if(sv_rehlds_local_gametime.value != 0.0f)
-		MSG_WriteFloat(msg, (float)(realtime - host_client->connection_started));
+		MSG_WriteFloat(msg, (float)g_GameClients[host_client - g_psvs.clients]->GetLocalGameTime());
 	else
 #endif
 	{
@@ -1646,19 +1641,20 @@ void SV_New_f()
 
 	// Not valid on the client
 	if(cmd_source == src_command)
-	{
 		return;
-	}
 
 	if(!host_client->active && host_client->spawned)
-	{
 		return;
-	}
 
 	ent = host_client->edict;
 
 	host_client->connected = TRUE;
 	host_client->connection_started = realtime;
+
+#ifdef REHLDS_FIXES
+	g_GameClients[host_client - g_psvs.clients]->SetupLocalGameTime();
+#endif
+	
 	host_client->m_sendrescount = 0;
 
 	SZ_Clear(&host_client->netchan.message);
@@ -4784,7 +4780,7 @@ qboolean SV_SendClientDatagram(client_t *client)
 	
 #ifdef REHLDS_FIXES
 	if(sv_rehlds_local_gametime.value != 0.0f)
-		MSG_WriteFloat(&msg, (float)(realtime - client->connection_started));
+		MSG_WriteFloat(&msg, (float)g_GameClients[client - g_psvs.clients]->GetLocalGameTime());
 	else
 #endif
 	{
@@ -4795,9 +4791,7 @@ qboolean SV_SendClientDatagram(client_t *client)
 	SV_WriteEntitiesToClient(client, &msg);
 
 	if(client->datagram.flags & SIZEBUF_OVERFLOWED)
-	{
 		Con_Printf("WARNING: datagram overflowed for %s\n", client->name);
-	}
 	else
 	{
 #ifdef REHLDS_FIXES
@@ -4914,43 +4908,51 @@ void SV_UpdateToReliableMessages()
 // Fix for the "server failed to transmit file 'AY&SY..." bug
 // https://github.com/dreamstalker/rehlds/issues/38
 #ifdef REHLDS_FIXES
-		if(!client->fakeclient &&
-		   (client->active || g_GameClients[i]->GetSpawnedOnce()))
+		if(!(!client->fakeclient && (client->active || g_GameClients[i]->GetSpawnedOnce())))
+			continue;
+
+		if (!svReliableCompressed && g_psv.reliable_datagram.cursize + client->netchan.message.cursize < client->netchan.message.maxsize)
 		{
-			if(!svReliableCompressed &&
-			   g_psv.reliable_datagram.cursize + client->netchan.message.cursize <
-			   client->netchan.message.maxsize)
-			{
-				SZ_Write(&client->netchan.message, g_psv.reliable_datagram.data, g_psv.reliable_datagram.cursize);
-			}
-			else
-			{
-				Netchan_CreateFragments(TRUE, &client->netchan, &g_psv.reliable_datagram);
-				svReliableCompressed = true;
-			}
+			SZ_Write(&client->netchan.message, g_psv.reliable_datagram.data, g_psv.reliable_datagram.cursize);
+		}
+		else
+		{
+			Netchan_CreateFragments(TRUE, &client->netchan, &g_psv.reliable_datagram);
+			svReliableCompressed = true;
+		}
 #else
-		if(!client->fakeclient && client->active)
+		if (!(!client->fakeclient && client->active))
+			continue;
+
+		if (g_psv.reliable_datagram.cursize + client->netchan.message.cursize < client->netchan.message.maxsize)
 		{
-			if(g_psv.reliable_datagram.cursize + client->netchan.message.cursize <
-			   client->netchan.message.maxsize)
-			{
-				SZ_Write(&client->netchan.message, g_psv.reliable_datagram.data, g_psv.reliable_datagram.cursize);
-			}
-			else
-			{
-				Netchan_CreateFragments(TRUE, &client->netchan, &g_psv.reliable_datagram);
-			}
+			SZ_Write(&client->netchan.message, g_psv.reliable_datagram.data, g_psv.reliable_datagram.cursize);
+		}
+		else
+		{
+			Netchan_CreateFragments(TRUE, &client->netchan, &g_psv.reliable_datagram);
+		}
 #endif
 
-			if(g_psv.datagram.cursize + client->datagram.cursize <
-			   client->datagram.maxsize)
+		if (g_psv.datagram.cursize + client->datagram.cursize < client->datagram.maxsize)
+		{
+			SZ_Write(&client->datagram, g_psv.datagram.data, g_psv.datagram.cursize);
+		}
+		else
+		{
+			Con_DPrintf("Warning:  Ignoring unreliable datagram for %s, would overflow\n", client->name);
+		}
+
+		if (client->proxy)
+		{
+			if (g_psv.spectator.cursize + client->datagram.cursize < client->datagram.maxsize)
 			{
-				SZ_Write(&client->datagram, g_psv.datagram.data, g_psv.datagram.cursize);
+				SZ_Write(&client->datagram, g_psv.spectator.data, g_psv.spectator.cursize);
 			}
 			else
 			{
 				Con_DPrintf(
-				"Warning:  Ignoring unreliable datagram for %s, would overflow\n",
+				"Warning:  Ignoring spectator datagram for %s, would overflow\n",
 				client->name);
 			}
 
@@ -6246,7 +6248,7 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 
 	Sequence_OnLevelLoad(server);
 	//ContinueLoadingProgressBar("Server", 4, 0.0);
-	if(gmodinfo.clientDllCRC)
+	if(gmodinfo.clientcrccheck)
 	{
 		char szDllName[64];
 		Q_snprintf(szDllName, sizeof(szDllName), "cl_dlls//client.dll");

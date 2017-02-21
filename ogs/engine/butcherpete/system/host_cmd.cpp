@@ -51,6 +51,7 @@
 #include "server/server.hpp"
 #include "server/sv_log.hpp"
 #include "server/sv_user.hpp"
+#include "server/sv_steam3.hpp"
 #include "graphics/screen.hpp"
 #include "sound/sound.hpp"
 #include "input/keys.hpp"
@@ -374,9 +375,9 @@ void Host_UpdateStats()
 		GetProcessTimes(GetCurrentProcess(), &CreationTime, &ExitTime, &KernelTime, &UserTime);
 		GetSystemTimeAsFileTime(&SystemTimeAsFileTime);
 
-		// CRehldsPlatformHolder::get()->GetProcessTimes(GetCurrentProcess(),
-		// &CreationTime, &ExitTime, &KernelTime, &UserTime);
-		// CRehldsPlatformHolder::get()->GetSystemTimeAsFileTime(&SystemTimeAsFileTime);
+		CRehldsPlatformHolder::get()->GetProcessTimes(GetCurrentProcess(),
+		&CreationTime, &ExitTime, &KernelTime, &UserTime);
+		CRehldsPlatformHolder::get()->GetSystemTimeAsFileTime(&SystemTimeAsFileTime);
 
 		if(!lastcputicks)
 		{
@@ -575,10 +576,10 @@ void Host_Quit_Restart_f()
 			Q_strcat(g_pPostRestartCmdLineArgs, " +load quick");
 		}
 	}
-	else if (g_pcls.state == ca_active && g_pcls.trueaddress[0] && g_pPostRestartCmdLineArgs)
+	else if (cls.state == ca_active && cls.trueaddress[0] && g_pPostRestartCmdLineArgs)
 	{
 		Q_strcat(g_pPostRestartCmdLineArgs, " +connect ");
-		Q_strcat(g_pPostRestartCmdLineArgs, g_pcls.servername);
+		Q_strcat(g_pPostRestartCmdLineArgs, cls.servername);
 	}
 }
 
@@ -647,22 +648,20 @@ void Host_Status_f()
 
 	Host_Status_Printf(conprint, log, "hostname:  %s\n", Cvar_VariableString("hostname"));
 
-	//bIsSecure = Steam_GSBSecure();
-	//bWantsToBeSecure = Steam_GSBSecurePreference();
-	//bConnectedToSteam3 = Steam_GSBLoggedOn();
+	bIsSecure = Steam_GSBSecure();
+	bWantsToBeSecure = Steam_GSBSecurePreference();
+	bConnectedToSteam3 = Steam_GSBLoggedOn();
 
 	if(!bIsSecure && bWantsToBeSecure)
 	{
 		pchConnectionString = "(secure mode enabled, connected to Steam3)";
+		
 		if(!bConnectedToSteam3)
-		{
 			pchConnectionString = "(secure mode enabled, disconnected from Steam3)";
-		}
-	}
+	};
+	
 	if(g_psv.active)
-	{
-		//pchSteamUniverse = Steam_GetGSUniverse();
-	}
+		pchSteamUniverse = Steam_GetGSUniverse();
 
 	val = "insecure";
 	if(bIsSecure)
@@ -777,7 +776,7 @@ void Host_Status_Formatted_f()
 		log = TRUE;
 	}
 
-	//bIsSecure = Steam_GSBSecure();
+	bIsSecure = Steam_GSBSecure();
 	Host_Status_Printf(conprint, log, "hostname:  %s\n", Cvar_VariableString("hostname"));
 
 	char *szSecure = "insecure";
@@ -3171,8 +3170,8 @@ void Host_InitCommands()
 	Cmd_AddCommand("writecfg", Host_WriteCustomConfig);
 
 #ifndef SWDS
-	//Cmd_AddCommand("+voicerecord", Host_VoiceRecordStart_f);
-	//Cmd_AddCommand("-voicerecord", Host_VoiceRecordStop_f);
+	Cmd_AddCommand("+voicerecord", Host_VoiceRecordStart_f);
+	Cmd_AddCommand("-voicerecord", Host_VoiceRecordStop_f);
 #endif // SWDS
 
 	Cmd_AddCommand("startdemos", Host_Startdemos_f);

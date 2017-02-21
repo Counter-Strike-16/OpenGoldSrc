@@ -35,9 +35,15 @@ typedef unsigned short wchar_t;
 #endif
 #endif
 
-namespace vgui
+namespace vgui // vgui2
 {
+
+// handle to an internal vgui panel
+// this is the only handle to a panel that is valid across dll boundaries
 typedef unsigned int VPANEL;
+
+// handles to vgui objects
+// NULL values signify an invalid value
 typedef unsigned long HScheme;
 typedef unsigned long HTexture;
 typedef unsigned long HCursor;
@@ -45,6 +51,29 @@ typedef unsigned long HPanel;
 const HPanel INVALID_PANEL = 0xffffffff;
 typedef unsigned long HFont;
 const HFont INVALID_FONT = 0;
-}
 
-#endif
+} // namespace vgui2
+
+#endif // VGUI_H
+
+/*
+
+
+namespace vgui2
+{
+
+
+
+
+typedef int HContext;
+
+
+
+// the value of an invalid font handle
+const VPANEL NULL_PANEL = 0;
+const HFont INVALID_FONT = 0;
+const HPanel INVALID_PANEL = 0xffffffff;
+
+} // namespace vgui
+
+*/

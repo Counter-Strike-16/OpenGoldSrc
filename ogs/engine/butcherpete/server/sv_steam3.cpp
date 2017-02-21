@@ -620,8 +620,7 @@ void CSteam3Client::InitClient()
 	m_bLogOnResult = false;
 }
 
-void CSteam3Client::OnClientGameServerDeny(
-ClientGameServerDeny_t *pClientGameServerDeny)
+void CSteam3Client::OnClientGameServerDeny(ClientGameServerDeny_t *pClientGameServerDeny)
 {
 	COM_ExplainDisconnection(TRUE, "Invalid server version, unable to connect.");
 	CL_Disconnect();
@@ -633,7 +632,7 @@ GameServerChangeRequested_t *pGameServerChangeRequested)
 #ifndef SWDS
 	char *cmd;
 
-	//Cvar_DirectSet(&password, pGameServerChangeRequested->m_rgchPassword);
+	Cvar_DirectSet(&password, pGameServerChangeRequested->m_rgchPassword);
 	Con_Printf("Connecting to %s\n", pGameServerChangeRequested->m_rgchServer);
 	cmd = va("connect %s\n", pGameServerChangeRequested->m_rgchServer);
 	Cbuf_AddText(cmd);
@@ -760,17 +759,13 @@ void Steam_NotifyClientDisconnect(client_t *cl)
 void Steam_NotifyClientDisconnect_internal(IGameClient *cl)
 {
 	if(Steam3Server())
-	{
 		Steam3Server()->NotifyClientDisconnect(cl->GetClient());
-	}
 }
 
 void Steam_NotifyOfLevelChange()
 {
 	if(Steam3Server())
-	{
 		Steam3Server()->NotifyOfLevelChange(false);
-	}
 }
 
 void Steam_Shutdown()
@@ -798,18 +793,13 @@ void Steam_Activate()
 void Steam_RunFrame()
 {
 	if(Steam3Server())
-	{
 		Steam3Server()->RunFrame();
-	}
 }
 
 void Steam_SetCVar(const char *pchKey, const char *pchValue)
 {
 	if(Steam3Server())
-	{
-		CRehldsPlatformHolder::get()->SteamGameServer()->SetKeyValue(pchKey,
-		                                                             pchValue);
-	}
+		CRehldsPlatformHolder::get()->SteamGameServer()->SetKeyValue(pchKey, pchValue);
 }
 
 void Steam_ClientRunFrame()
@@ -878,9 +868,7 @@ uint64 Steam_StringToSteamID(const char *pStr)
 		steamID.SetFromSteam2String(pStr, serverSteamId.GetEUniverse());
 	}
 	else
-	{
 		steamID.SetFromSteam2String(pStr, k_EUniversePublic);
-	}
 
 	return steamID.ConvertToUint64();
 }

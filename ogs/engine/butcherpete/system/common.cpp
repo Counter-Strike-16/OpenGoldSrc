@@ -29,15 +29,17 @@
 /// @file
 
 #include "precompiled.hpp"
+#include "memory/mem.hpp"
+#include "memory/zone.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
+#include "system/unicode_strtools.h"
 #include "console/console.hpp"
 #include "filesystem/filesystem_.hpp"
 #include "filesystem/filesystem_internal.hpp"
-#include "memory/mem.hpp"
-#include "memory/zone.hpp"
 #include "resources/modinfo.hpp"
-#include "system/system.hpp"
-#include "system/unicode_strtools.h"
+#include "network/bf_read.hpp"
+#include "network/bf_write.hpp"
 
 char serverinfo[MAX_INFO_STRING];
 
@@ -55,43 +57,6 @@ char *Info_Serverinfo()
 {
 	return serverinfo;
 }
-
-typedef struct bf_write_s
-{
-// For enhanced and safe bits writing functions
-#if defined(REHLDS_FIXES)
-
-#pragma pack(push, 1)
-	union
-	{
-		uint64 u64;
-		uint32 u32[2];
-		uint8 u8[8];
-	} pendingData;
-	uint64 sse_highbits;
-#pragma pack(pop)
-
-	int nCurOutputBit;
-	sizebuf_t *pbuf;
-
-#else // defined(REHLDS_FIXES)
-
-	int nCurOutputBit;
-	unsigned char *pOutByte;
-	sizebuf_t *pbuf;
-
-#endif // defined(REHLDS_FIXES)
-} bf_write_t;
-
-typedef struct bf_read_s
-{
-	int nMsgReadCount; // was msg_readcount
-	sizebuf_t *pbuf;
-	int nBitFieldReadStartByte;
-	int nBytesRead;
-	int nCurInputBit;
-	unsigned char *pInByte;
-} bf_read_t;
 
 // Bit field reading/writing storage.
 bf_read_t bfread;

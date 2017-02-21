@@ -31,6 +31,7 @@
 #include "precompiled.hpp"
 #include "physics/sv_move.hpp"
 #include "physics/sv_phys.hpp"
+#include "system/systemtypes.hpp"
 #include "server/server.hpp"
 #include "world/world.hpp"
 #include "world/pr_cmds.hpp"

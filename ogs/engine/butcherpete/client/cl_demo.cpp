@@ -330,9 +330,9 @@ void CL_Stop_f()
 /*
 	// write a disconnect message to the demo file
 	SZ_Clear(&net_message);
-	MSG_WriteLong(&net_message, -1); // -1 sequence means out of band
+	MSG_WriteLong(&net_message, -1); // -1 sequence means out of band (not present in q1)
 	MSG_WriteByte(&net_message, svc_disconnect);
-	MSG_WriteString(&net_message, "EndOfDemo");
+	MSG_WriteString(&net_message, "EndOfDemo"); // not present in q1
 	CL_WriteDemoMessage(&net_message);
 */
 	// finish up
@@ -410,7 +410,7 @@ Begins recording a demo from the current position
 */
 void CL_Record_f()
 {
-	/* char name[MAX_OSPATH];
+	char name[MAX_OSPATH];
 	sizebuf_t buf;
 	char buf_data[MAX_MSGLEN];
 	int n, i, j;
@@ -435,7 +435,7 @@ void CL_Record_f()
 
 	if(cls.demorecording)
 		CL_Stop_f();
-
+/*
 	sprintf(name, "%s/%s", com_gamedir, Cmd_Argv(1));
 
 	//
@@ -818,7 +818,7 @@ void CL_FinishTimeDemo()
 
 	// the first frame didn't count
 	frames = (host_framecount - cls.td_startframe) - 1;
-	time = Sys_FloatTime() - cls.td_starttime;
+	time = Sys_FloatTime() - cls.td_starttime; // Sys_FloatTime was realtime in q1
 	
 	if(!time)
 		time = 1;

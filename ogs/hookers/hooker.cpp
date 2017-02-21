@@ -28,7 +28,6 @@
 
 #include "precompiled.h"
 
-
 HIDDEN Module g_EngineModule = { NULL, NULL, NULL, NULL };
 
 extern const size_t g_BaseOffset;

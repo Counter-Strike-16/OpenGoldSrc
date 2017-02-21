@@ -57,8 +57,8 @@ bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn l
 
 	Q_strncpy(m_OrigCmd, cmdline, charsmax(m_OrigCmd));
 
-	//if(!Q_strstr(cmdline, "-nobreakpad"))
-		//CRehldsPlatformHolder::get()->SteamAPI_UseBreakpadCrashHandler(va("%d", build_number()), __BUILD_DATE__, __BUILD_TIME__, 0, 0, 0);
+	if(!Q_strstr(cmdline, "-nobreakpad"))
+		CRehldsPlatformHolder::get()->SteamAPI_UseBreakpadCrashHandler(va("%d", build_number()), __BUILD_DATE__, __BUILD_TIME__, 0, 0, 0);
 
 	TraceInit("Sys_InitArgv( m_OrigCmd )", "Sys_ShutdownArgv()", 0);
 	Sys_InitArgv(m_OrigCmd);

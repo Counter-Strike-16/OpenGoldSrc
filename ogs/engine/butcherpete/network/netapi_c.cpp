@@ -35,7 +35,6 @@
 #include "system/common.hpp"
 #include "system/info.hpp"
 #include "network/net.hpp"
-#include "network/net_ws.hpp"
 #include "console/console.hpp"
 #include "client/client.hpp"
 

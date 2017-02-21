@@ -90,7 +90,7 @@ typedef struct
 //
 // client_state_t should hold all pieces of the client state
 //
-#define	MAX_DLIGHTS		32
+
 typedef struct
 {
 	int		key;				// so entities can reuse same entry
@@ -101,18 +101,6 @@ typedef struct
 	float	minlight;			// don't add when contributing less
 	float   color[4];
 } dlight_t;
-
-typedef struct
-{
-	int		length;
-	char	map[MAX_STYLESTRING];
-} lightstyle_t;
-
-
-
-#define	MAX_EFRAGS		512
-
-#define	MAX_DEMONAME	16
 
 typedef enum
 {
@@ -125,17 +113,6 @@ typedef enum
 
 typedef struct
 {
-// connection information
-	cactive_t	state;
-	
-// network stuff
-	netchan_t	netchan;
-
-// private userinfo for sending to masterless servers
-	char		userinfo[MAX_INFO_STRING];
-
-	char		servername[MAX_OSPATH];	// name of server from original connect
-
 	int			qport;
 
 	FILE		*download;		// file transfer from server
@@ -145,33 +122,16 @@ typedef struct
 	dltype_t	downloadtype;
 	int			downloadpercent;
 
-// demo loop control
-	int			demonum;		// -1 = don't play demos
-	char		demos[MAX_DEMOS][MAX_DEMONAME];		// when not playing
-
 // demo recording info must be here, because record is started before
 // entering a map (and clearing client_state_t)
 	qboolean	demorecording;
-	qboolean	demoplayback;
-	qboolean	timedemo;
-	FILE		*demofile;
-	float		td_lastframe;		// to meter out one message a frame
-	int			td_startframe;		// host_framecount at start
-	float		td_starttime;		// realtime at second frame of timedemo
-
-	int			challenge;
 
 	float		latency;		// rolling average
 } client_static_t;
 
 
 typedef struct
-{
-
-	int			parsecount;		
-	int			validsequence;	// this is the sequence number of the last good
-								// packetentity_t we got.  If this is 0, we can't
-								// render a frame yet
+{	
 	int			movemessages;	// since connecting to this server
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the 
@@ -181,39 +141,21 @@ typedef struct
 
 	double		last_ping_request;	// while showing scoreboard
 	double		last_servermessage;
-
-// sentcmds[cl.netchan.outgoing_sequence & UPDATE_MASK] = cmd
-	frame_t		frames[UPDATE_BACKUP];
-
-// information for local display
-	int			stats[MAX_CL_STATS];	// health, etc
+	
 	float		item_gettime[32];	// cl.time of aquiring item, for blinking
 	float		faceanimtime;		// use anim frame if cl.time < this
 
 	cshift_t	cshifts[NUM_CSHIFTS];	// color shifts for damage, powerups
 	cshift_t	prev_cshifts[NUM_CSHIFTS];	// and content types
-
-// the client maintains its own idea of view angles, which are
-// sent to the server each frame.  And only reset at level change
-// and teleport times
-	vec3_t		viewangles;
-
-// the client simulates or interpolates movement to get these values
-	double		time;			// this is the time value that the client
-								// is rendering at.  allways <= realtime
-
+		
 // pitch drifting vars
 	float		pitchvel;
 	qboolean	nodrift;
 	float		driftmove;
 	double		laststop;
 
-
 	float		crouch;			// local amount for smoothing stepups		
-
-	float		punchangle;		// temporar yview kick from weapon firing
-	
-	int			intermission;	// don't change view angle, full screen, etc
+		
 	int			completed_time;	// latched ffrom time at intermission start
 	
 //
@@ -223,23 +165,9 @@ typedef struct
 	char		sound_name[MAX_SOUNDS][MAX_QPATH];
 
 	struct model_s		*model_precache[MAX_MODELS];
-	struct sfx_s		*sound_precache[MAX_SOUNDS];
-
-	char		levelname[40];	// for display on solo scoreboard
-	int			playernum;
-
-// refresh related state
-	struct model_s	*worldmodel;	// cl_entitites[0].model
-	struct efrag_s	*free_efrags;
-	int			num_entities;	// stored bottom up in cl_entities array
-	int			num_statics;	// stored top down in cl_entitiers
+	struct sfx_s		*sound_precache[MAX_SOUNDS];	
 
 	int			cdtrack;		// cd audio
-
-	entity_t	viewent;		// weapon model
-
-// all player information
-	player_info_t	players[MAX_CLIENTS];
 } client_state_t;
 
 
@@ -278,7 +206,7 @@ extern cvar_t		_windowed_mouse;
 extern	cvar_t	name;
 
 
-#define	MAX_STATIC_ENTITIES	128			// torches, etc
+
 
 extern	qboolean	nomaster;
 extern float	server_version;	// version of server we connected to
@@ -288,10 +216,7 @@ extern float	server_version;	// version of server we connected to
 void CL_NextDemo ();
 qboolean CL_DemoBehind();
 
-#define			MAX_VISEDICTS	256
-extern	int				cl_numvisedicts, cl_oldnumvisedicts;
-extern	entity_t		*cl_visedicts, *cl_oldvisedicts;
-extern	entity_t		cl_visedicts_list[2][MAX_VISEDICTS];
+
 
 extern char emodel_name[], pmodel_name[], prespawn_name[], modellist_name[], soundlist_name[];
 

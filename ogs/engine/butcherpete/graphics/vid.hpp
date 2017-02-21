@@ -44,6 +44,8 @@
 const int VID_CBITS = 6;
 const int VID_GRADES = (1 << VID_CBITS);
 
+typedef struct cvar_s cvar_t;
+
 extern int r_pixbytes;
 extern cvar_t gl_vsync;
 extern float scr_con_current;

@@ -58,57 +58,23 @@ void CL_WriteDemoMessage (void)
 	fwrite (net_message.data+8,	len, 1, cls.demofile);
 }
 
-
-/*
-====================
-CL_Stop_f
-
-stop recording a demo
-====================
-*/
 void CL_Stop_f (void)
 {
 	int		len;
 
-	if (!cls.demorecording)
-	{
-		Com_Printf ("Not recording a demo.\n");
-		return;
-	}
-
 // finish up
 	len = -1;
 	fwrite (&len, 4, 1, cls.demofile);
-	fclose (cls.demofile);
-	cls.demofile = NULL;
-	cls.demorecording = false;
+	
 	Com_Printf ("Stopped demo.\n");
 }
 
-/*
-====================
-CL_Record_f
-
-record <demoname>
-
-Begins recording a demo from the current position
-====================
-*/
 void CL_Record_f (void)
 {
-	char	name[MAX_OSPATH];
-	char	buf_data[MAX_MSGLEN];
-	sizebuf_t	buf;
 	int		i;
 	int		len;
 	entity_state_t	*ent;
 	entity_state_t	nullstate;
-
-	if (Cmd_Argc() != 2)
-	{
-		Com_Printf ("record <demoname>\n");
-		return;
-	}
 
 	if (cls.demorecording)
 	{
@@ -1260,8 +1226,7 @@ CL_Init
 */
 void CL_Init (void)
 {
-	if (dedicated->value)
-		return;		// nothing running on the client
+	
 
 	// all archived variables will now be loaded
 

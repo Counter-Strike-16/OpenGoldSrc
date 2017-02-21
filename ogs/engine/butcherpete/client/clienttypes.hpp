@@ -38,8 +38,18 @@ enum
 	CAM_TRACK
 };
 
+const int MAX_BEAMS = 64;
+const int MAX_STYLESTRING = 32;
+const int MAX_TEMP_ENTITIES = 64; ///< lightning bolts, etc
+const int MAX_STATIC_ENTITIES = 128; ///< torches, etc
+const int MAX_DLIGHTS = 32;
+const int MAX_EFRAGS = 512;
+
 /// Maximum number of recorded demo files
 const int MAX_DEMOS = 32;
+
+/// Maximum length of demo file name
+const int MAX_DEMONAME = 16;
 
 /// Local client states
 typedef enum cactive_e {

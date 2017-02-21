@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,39 +28,16 @@
 
 /// @file
 
-#include "dbg/dbg.hpp"
+#pragma once
 
-void Error(const char *sMsg, ...)
+typedef struct sizebuf_s sizebuf_t;
+
+typedef struct bf_read_s
 {
-};
-
-void ClearErrorLogs()
-{
-};
-
-void _LogFunctionTrace(const char *asMsg, ...)
-{
-	static FILE *hLogFile = fopen("trace.log", "w+");
-	
-	if(!hLogFile)
-		return;
-
-	va_list ArgList;
-	char sMsg[512];
-
-	va_start(ArgList, asMsg);
-	vsnprintf(sMsg, sizeof(sMsg), asMsg, ArgList);
-	va_end(ArgList);
-
-	sprintf(sMsg, "%s\n", sMsg);
-	fputs(sMsg, hLogFile);
-	fflush(hLogFile);
-};
-
-void _LogFunctionTraceMaxTime()
-{
-};
-
-void _StartFunctionTimer()
-{
-};
+	int nMsgReadCount; // was msg_readcount
+	sizebuf_t *pbuf;
+	int nBitFieldReadStartByte;
+	int nBytesRead;
+	int nCurInputBit;
+	unsigned char *pInByte;
+} bf_read_t;

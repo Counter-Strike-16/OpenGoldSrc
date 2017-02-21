@@ -32,6 +32,9 @@ CGameClient** g_GameClients;
 
 CGameClient::CGameClient(int id, client_t* cl)
 	: m_NetChan(&cl->netchan)
+#ifdef REHLDS_FIXES
+	, m_localGameTimeBase(0)
+#endif
 {
 	m_Id = id;
 	m_pClient = cl;

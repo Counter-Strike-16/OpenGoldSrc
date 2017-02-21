@@ -33,15 +33,15 @@
 	#pragma warning(disable : 4005)
 #endif // _WIN32
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstdarg>
+#include <cstddef>
+#include <cstring>
 #include <time.h>
-#include <math.h>
-#include <setjmp.h>
-#include <assert.h>
+#include <cmath>
+#include <csetjmp>
+#include <cassert>
 
 #include <algorithm>
 #include <deque>

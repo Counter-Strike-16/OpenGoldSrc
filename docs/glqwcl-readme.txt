@@ -1,36 +1,3 @@
-GLQWCL v2.20
-
-3dfx owners -- read the 3dfx.txt file.
-
-On a standard OpenGL system, all you should need to do to run glqwcl is put 
-glqwcl.exe in your quake directory, and run it from there.  DO NOT install 
-the opengl32.dll unless you have a 3dfx!  Glquake should change the screen 
-resolution to 640*480*32k colors and run full screen by default.
-
-If you are running win-95, your desktop must be set to 32k or 64k colors 
-before running glqwcl.  NT can switch automatically.
-
-Theoretically, glqwcl will run on any compliant OpenGL that supports the 
-texture objects extensions, but unless it is very powerfull hardware that 
-accelerates everything needed, the game play will not be acceptable.  If it 
-has to go through any software emulation paths, the performance will likely 
-by well under one frame per second.
-
-At this time (march '97), the only standard opengl hardware that can play 
-glqwcl reasonably is an intergraph realizm, which is a VERY expensive card.  
-3dlabs has been improving their performance significantly, but with the 
-available drivers it still isn't good enough to play.  Some of the current 
-3dlabs drivers for glint and permedia baords can also crash NT when exiting 
-from a full screen run, so I don't recommend running glqwcl on 3dlabs 
-hardware.
-
-3dfx has provided an opengl32.dll that implements everything glqwcl needs, 
-but it is not a full opengl implementation.  Other opengl applications are 
-very unlikely to work with it, so consider it basically a "glqwcl driver".  
-See the encluded 3dfx.txt for specific instalation notes.  3dfx can only run 
-full screen, but you must still have your desktop set to a 16 bit color mode 
-for glqwcl to start.
-
 resolution options
 ------------------
 We had dynamic resolution changing in glqwcl for a while, but every single 
@@ -48,9 +15,6 @@ resolution.
 
 texture options
 ---------------
-The amount of textures used in the game can have a large impact on performance.  
-There are several options that let you trade off visual quality for better 
-performance.
 
 There is no way to flush already loaded textures, so it is best to change 
 these options on the command line, or they will only take effect on some of 
@@ -139,6 +103,3 @@ for this.
 r_mirroralpha 0.3
 This changes one particular texture (the stained glass texture in the EASY 
 start hall) into a mirror.  The value is the opacity of the mirror surface.
-
-
-

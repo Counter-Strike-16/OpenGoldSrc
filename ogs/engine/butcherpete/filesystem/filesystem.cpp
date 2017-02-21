@@ -34,10 +34,11 @@
 #include "console/cmd.hpp"
 #include "filesystem/filesystem_.hpp"
 #include "filesystem/filesystem_internal.hpp"
-//#include "platform_rehlds.h" // BROKEN!
 #include "system/common.hpp"
 #include "system/host.hpp"
 #include "system/system.hpp"
+#include "steam/isteamclient.h"
+#include "steam/isteamapps.h"
 
 CUtlVector<char *> g_fallbackLocalizationFiles;
 char s_pBaseDir[512];
@@ -306,11 +307,11 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 
 	if(!bLowViolenceBuild)
 	{
-		//if(CRehldsPlatformHolder::get()->SteamApps() && GetGameAppID() == 70)
-			//bLowViolenceBuild = CRehldsPlatformHolder::get()->SteamApps()->BIsLowViolence();
+		if(CRehldsPlatformHolder::get()->SteamApps() && GetGameAppID() == 70)
+			bLowViolenceBuild = CRehldsPlatformHolder::get()->SteamApps()->BIsLowViolence();
 	}
 
-	//pchLang = CRehldsPlatformHolder::get()->SteamApps() ? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage() : NULL;
+	pchLang = CRehldsPlatformHolder::get()->SteamApps() ? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage() : NULL;
 	Q_strncpy(language, pchLang ? pchLang : "english", ARRAYSIZE(language));
 #ifdef REHLDS_CHECKS
 	language[ARRAYSIZE(language) - 1] = 0;
@@ -319,7 +320,7 @@ int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 	if(!g_bIsDedicatedServer && !IsGameSubscribed(pGameDir))
 		return 0;
 
-	//CRehldsPlatformHolder::get()->SteamAPI_SetBreakpadAppID(GetGameAppID());
+	CRehldsPlatformHolder::get()->SteamAPI_SetBreakpadAppID(GetGameAppID());
 
 	bool bEnableHDPack = BEnabledHDAddon();
 	bool bLanguage = (Q_strlen(language) != 0 && Q_stricmp(language, "english")) ? true : false;
@@ -456,7 +457,7 @@ int FileSystem_AddFallbackGameDir(const char *pGameDir)
 {
 	char language[128];
 
-	const char *pchLang = ""; //CRehldsPlatformHolder::get()->SteamApps() ? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage() : NULL;
+	const char *pchLang = CRehldsPlatformHolder::get()->SteamApps() ? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage() : NULL;
 	Q_strncpy(language, pchLang ? pchLang : "english", ARRAYSIZE(language));
 #ifdef REHLDS_CHECKS
 	language[ARRAYSIZE(language) - 1] = 0;

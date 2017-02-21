@@ -43,7 +43,6 @@
 #include "network/filter.hpp"
 #include "network/net.hpp"
 #include "network/net_chan.hpp"
-#include "network/net_ws.hpp"
 #include "network/usermsg.hpp"
 #include "network/protocol.hpp"
 #include "pm_shared/pm_defs.h"

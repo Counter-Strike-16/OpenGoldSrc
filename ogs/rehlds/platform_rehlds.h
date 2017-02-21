@@ -1,10 +1,15 @@
 #pragma once
 
 #include "rehlds/osconfig.h"
+#include "public/archtypes.h"
+#include "steam/steamclientpublic.h"
+#include "steam/steamtypes_local.h"
 //#include "steam/steam_api.h"
-#include "steam/steam_gameserver.h"
+//#include "steam/steam_gameserver.h"
 
 class ISteamApps;
+class ISteamGameServer;
+class CCallbackBase;
 
 #ifdef _WIN32
 typedef int(__stdcall *setsockopt_proto)(SOCKET s, int level, int optname, const char *optval, int optlen);

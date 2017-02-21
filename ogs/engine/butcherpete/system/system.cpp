@@ -38,6 +38,7 @@
 #include "filesystem/filesystem_internal.hpp"
 #include "resources/modinfo.hpp"
 #include "console/console.hpp"
+#include "world/pr_cmds.hpp"
 #include "voice/voice.hpp"
 #include "input/keys.hpp"
 #include "server/server.hpp"
@@ -114,7 +115,6 @@ qboolean gHasMMXTechnology;
 #endif // _WIN32
 // volatile int sys_checksum;
 // char *argv[MAX_NUM_ARGVS];
-qboolean con_debuglog;
 
 #ifdef REHLDS_FIXES
 char g_szFindFirstFileName[MAX_PATH];
@@ -208,8 +208,8 @@ void __cdecl Sys_InitHardwareTimer()
 	Sys_SetupFPUOptions();
 	Sys_InitFPUControlWords();
 
-	//if(!CRehldsPlatformHolder::get()->QueryPerfFreq(&perfFreq))
-		//Sys_Error("No hardware timer available");
+	if(!CRehldsPlatformHolder::get()->QueryPerfFreq(&perfFreq))
+		Sys_Error("No hardware timer available");
 
 	perfHighPart = perfFreq.HighPart;
 	perfLowPart = perfFreq.LowPart;
@@ -517,7 +517,7 @@ double EXT_FUNC Sys_FloatTime()
 	EnterCriticalSection(&g_PerfCounterMutex);
 	Sys_FPUCW_Push_Prec64();
 
-	//CRehldsPlatformHolder::get()->QueryPerfCounter(&PerformanceCount);
+	CRehldsPlatformHolder::get()->QueryPerfCounter(&PerformanceCount);
 	if(g_PerfCounterShiftRightAmount)
 		currentTime =
 		(PerformanceCount.LowPart >> g_PerfCounterShiftRightAmount) |
@@ -880,12 +880,12 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 	char key[65];
 	char hostname[4096];
 
-	//if(CRehldsPlatformHolder::get()->gethostname(hostname, sizeof(hostname)))
-		//Q_snprintf(key, sizeof(key), "%u", RandomLong(0, 0x7FFFFFFF));
-	//else
+	if(CRehldsPlatformHolder::get()->gethostname(hostname, sizeof(hostname)))
+		Q_snprintf(key, sizeof(key), "%u", RandomLong(0, 0x7FFFFFFF));
+	else
 	{
 		struct hostent *hostinfo;
-		//hostinfo = CRehldsPlatformHolder::get()->gethostbyname(hostname);
+		hostinfo = CRehldsPlatformHolder::get()->gethostbyname(hostname);
 		if(hostinfo && hostinfo->h_length == 4 && *hostinfo->h_addr_list != NULL)
 		{
 			Q_snprintf(key, sizeof(key), "%u.%u.%u.%u", (*hostinfo->h_addr_list)[0], (*hostinfo->h_addr_list)[1], (*hostinfo->h_addr_list)[2], (*hostinfo->h_addr_list)[3]);

@@ -31,8 +31,6 @@
 #include "precompiled.hpp"
 #include "network/ipratelimitWrapper.hpp"
 #include "network/ipratelimit.hpp"
-#include "common/commontypes.h"
-#include "common/netadr.h"
 
 #ifdef HOOK_ENGINE
 int (*pCheckIP)(netadr_t adr);
@@ -48,7 +46,7 @@ int CheckIP(netadr_t adr)
 		rehlds_syserror("CheckIP() is expected to return 1");
 	return res;
 #else
-	//CRehldsPlatformHolder::get()->time(NULL); // time() is called inside IpRateLimiter
+	CRehldsPlatformHolder::get()->time(NULL); // time() is called inside IpRateLimiter
 	return 1;
 #endif
-}
+};

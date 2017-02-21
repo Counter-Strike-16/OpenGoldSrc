@@ -39,7 +39,6 @@
 #include "voice/voiceserver.hpp"
 #include "console/cmd.hpp"
 #include "server/server.hpp"
-#include "common/crc.h"
 
 /*
 * Globals initialization
@@ -190,8 +189,8 @@ enginefuncs_t g_engfuncsExportedToDlls = { PF_precache_model_I,
 	                                       Voice_GetClientListening,
 	                                       Voice_SetClientListening,
 	                                       PF_GetPlayerAuthId,
-	                                       NULL,
-	                                       NULL,
+	                                       NULL, // sequenceEntry_s *(*pfnSequenceGet)(const char *fileName, const char *entryName);
+	                                       NULL, // sentenceEntry_s *(*pfnSequencePickSentence)(const char *groupName, int pickMethod, int *picked);
 	                                       COM_FileSize,
 	                                       COM_GetApproxWavePlayLength,
 	                                       nullptr, //VGuiWrap2_IsInCareerMatch,

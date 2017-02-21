@@ -34,6 +34,7 @@
 #include "system/common.hpp"
 #include "system/system.hpp"
 #include "resources/studio_rehlds.hpp"
+#include "resources/model_rehlds.hpp"
 #include "physics/sv_phys.hpp"
 #include "console/console.hpp"
 #include "server/server.hpp"

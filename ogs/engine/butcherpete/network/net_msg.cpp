@@ -28,15 +28,16 @@
 
 /// @file
 
-#include "precompiled/hpp"
+#include "precompiled.hpp"
 #include "network/net_msg.hpp"
-#include "network/net_ws.hpp"
+#include "network/net.hpp"
 #include "network/delta.hpp"
+#include "network/bf_read.hpp"
+#include "network/bf_write.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
 #include "system/sizebuf.hpp"
 #include "server/server.hpp"
-#include "common/usercmd.h"
 
 // MESSAGE IO FUNCTIONS
 // Handles byte ordering and avoids alignment errors

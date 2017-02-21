@@ -35,7 +35,7 @@
 #include "system/system.hpp"
 #include "system/buildinfo.hpp"
 #include "memory/zone.hpp"
-#include "network/net_ws.hpp"
+#include "network/net.hpp"
 #include "network/net_msg.hpp"
 #include "network/protocol.hpp"
 #include "console/cmd.hpp"
@@ -70,6 +70,8 @@ cvar_t cl_predict_players = { "cl_predict_players", "1" };
 cvar_t cl_predict_players2 = { "cl_predict_players2", "1" };
 cvar_t cl_solid_players = { "cl_solid_players", "1" };
 
+cvar_t cl_fixtimerate = { "cl_fixtimerate", "7.5" }; // client clock drift fixer (applied to every received frame from server)
+
 static qboolean allowremotecmd = true;
 
 //
@@ -77,10 +79,8 @@ static qboolean allowremotecmd = true;
 //
 #ifndef HOOK_ENGINE
 
-cvar_t cl_name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO, 0.0f, NULL };
-
 cvar_t password = { "password", "", FCVAR_USERINFO }; // info_password
-cvar_t name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO };
+cvar_t name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO }; // cvar_t cl_name = { "name", "unnamed", FCVAR_ARCHIVE | FCVAR_USERINFO, 0.0f, NULL };
 cvar_t team = { "team", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
 cvar_t model = { "model", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
 cvar_t skin = { "skin", "", FCVAR_ARCHIVE | FCVAR_USERINFO };
@@ -103,23 +103,23 @@ extern cvar_t cl_hightrack;
 client_static_t cls;
 client_state_t cl;
 
-//playermove_t g_clmove;
+playermove_t g_clmove;
 qboolean cl_inmovie;
 
-/*
+// FIXME: put these on hunk?
 entity_state_t cl_baselines[MAX_EDICTS];
 efrag_t cl_efrags[MAX_EFRAGS];
+//cl_entity_t cl_entities[MAX_EDICTS]; // NetQuake is using this instead of cl_baselines
 cl_entity_t cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
 dlight_t cl_dlights[MAX_DLIGHTS];
-*/
 
 // refresh list
 // this is double buffered so the last frame
 // can be scanned for oldorigins of trailing objects
 int cl_numvisedicts, cl_oldnumvisedicts;
 cl_entity_t *cl_visedicts, *cl_oldvisedicts;
-//cl_entity_t cl_visedicts_list[2][MAX_VISEDICTS];
+cl_entity_t cl_visedicts_list[2][MAX_VISEDICTS];
 
 qboolean nomaster;
 
@@ -186,8 +186,8 @@ void CL_SendConnectPacket()
 
 	Info_SetValueForStarKey(cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING);
 
-	//	Con_Printf ("Connecting to %s...\n", cls.servername);
-	//sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n", 255, 255, 255, 255, PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
+	Con_Printf ("Connecting to %s...\n", cls.servername);
+	sprintf(data, "%c%c%c%cconnect %i "/*%i*/" %i \"%s\"\n", 255, 255, 255, 255, PROTOCOL_VERSION, /*cls.qport, */cls.challenge, cls.userinfo);
 
 	//NET_SendPacket(strlen(data), data, adr);
 #endif // SWDS
@@ -321,8 +321,8 @@ void CL_Rcon_f()
 
 		NET_StringToAdr(rcon_address.string, &to);
 		
-		//if(to.port == 0)
-			//to.port = BigShort(PORT_SERVER);
+		if(to.port == 0)
+			to.port = BigShort(PORT_SERVER);
 	};
 
 	//NET_SendPacket(/*NS_CLIENT,*/ strlen(message) + 1, message, to);
@@ -356,20 +356,20 @@ void CL_ClearState()
 	SZ_Clear(&cls.netchan.message);
 
 	// clear other arrays
-	//memset(&cl_entities, 0, sizeof(cl_entities));
-	//memset(cl_efrags, 0, sizeof(cl_efrags));
-	//memset(cl_dlights, 0, sizeof(cl_dlights));
-	//memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
+	memset(&cl_entities, 0, sizeof(cl_entities));
+	memset(cl_efrags, 0, sizeof(cl_efrags));
+	memset(cl_dlights, 0, sizeof(cl_dlights));
+	memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
 
 	//
 	// allocate the efrags and chain together into a free list
 	//
-	//cl.free_efrags = cl_efrags;
+	cl.free_efrags = cl_efrags;
 
-	//for(i = 0; i < MAX_EFRAGS - 1; ++i)
-		//cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
+	for(i = 0; i < MAX_EFRAGS - 1; ++i)
+		cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
 
-	//cl.free_efrags[i].entnext = NULL;
+	cl.free_efrags[i].entnext = NULL;
 };
 
 /*
@@ -680,8 +680,8 @@ void CL_Packet_f()
 		return;
 	};
 	
-	//if(!adr.port)
-		//adr.port = BigShort(PORT_SERVER);
+	if(!adr.port)
+		adr.port = BigShort(PORT_SERVER);
 
 	in = Cmd_Argv(2);
 	out = send + 4;
@@ -897,7 +897,7 @@ void CL_ConnectionlessPacket()
 			Con_Printf("===========================\n");
 			Con_Printf("Invalid localid on command packet received from local host. "
 			           "\n|%s| != |%s|\n"
-			           "You may need to reload your server browser and QuakeWorld.\n",
+			           "You may need to reload your server browser and game.\n",
 			           s,
 			           localid.string);
 			Con_Printf("===========================\n");
@@ -1011,9 +1011,10 @@ void CL_ReadPackets()
 			            NET_AdrToString(net_from));
 			continue;
 		};
-
+		
+		// wasn't accepted for some reason
 		if(!Netchan_Process(&cls.netchan))
-			continue; // wasn't accepted for some reason
+			continue;
 
 		CL_ParseServerMessage();
 
@@ -1089,6 +1090,10 @@ CL_Init
 void CL_Init()
 {
 #ifndef SWDS
+	// nothing running on the client
+	//if(dedicated->value) // cl.state == ca_dedicated
+		//return;
+	
 	extern cvar_t baseskin;
 	extern cvar_t noskins;
 
@@ -1197,5 +1202,7 @@ void CL_ShutDownUsrMessages()
 void CL_ShutDownClientStatic()
 {
 #ifndef SWDS
+	// wipe the entire cls structure
+	memset(&cls, 0, sizeof(cls));
 #endif
 };

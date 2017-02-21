@@ -635,7 +635,7 @@ qboolean Master_IsLanGame()
 void Master_Heartbeat_f()
 {
 	// Steam_ForceHeartbeat in move?
-	//CRehldsPlatformHolder::get()->SteamGameServer()->ForceHeartbeat();
+	CRehldsPlatformHolder::get()->SteamGameServer()->ForceHeartbeat();
 }
 
 void Host_ComputeFPS(double frametime)
@@ -693,9 +693,10 @@ void Host_Speeds(double *time)
 			fps = 1.0 / frameTime;
 		else
 			fps = 999.0;
-
-// FIXED: do calculations only if host_speeds is enabled
+		
 #ifndef REHLDS_FIXES
+	};
+	
 		if(host_speeds.value != 0.0f)
 #endif // REHLDS_FIXES
 		{
@@ -725,7 +726,6 @@ void Host_Speeds(double *time)
 		}
 		*/
 #endif // SWDS
-	}
 };
 
 /*
@@ -1051,7 +1051,7 @@ int Host_Init(quakeparms_t *parms)
 {
 	char versionString[256];
 
-	//CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
+	CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
 
 	Q_memcpy(&host_parms, parms, sizeof(host_parms));
 	com_argc = parms->argc;

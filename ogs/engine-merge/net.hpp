@@ -1,10 +1,4 @@
 
-typedef struct
-{
-	byte ip[4];
-	unsigned short port;
-	unsigned short pad;
-} netadr_t;
 
 extern netadr_t net_local_adr;
 extern netadr_t net_from; // address of who sent the packet

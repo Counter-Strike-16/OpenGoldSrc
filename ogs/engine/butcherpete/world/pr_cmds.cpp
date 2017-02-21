@@ -2438,7 +2438,7 @@ void EXT_FUNC PF_changelevel_I(const char *s1, const char *s2)
 
 void SeedRandomNumberGenerator()
 {
-	//idum = -(int)CRehldsPlatformHolder::get()->time(NULL);
+	idum = -(int)CRehldsPlatformHolder::get()->time(NULL);
 	if(idum > 1000)
 	{
 		idum = -idum;

@@ -37,6 +37,7 @@
 #include "common/com_model.h"
 #include "common/commontypes.h"
 #include "common/cvardef.h"
+#include "common/beamdef.h"
 #include "common/entity_state.h"
 #include "common/netadr.h"
 #include "common/screenfade.h"
@@ -70,7 +71,11 @@ typedef struct sfx_s sfx_t;
 extern playermove_t g_clmove;
 extern qboolean cl_inmovie;
 
+//
+// cvars
+//
 extern cvar_t cl_name;
+extern cvar_t password;
 extern cvar_t rate_;
 extern cvar_t console;
 
@@ -98,8 +103,10 @@ of server connections
 */
 typedef struct client_static_s
 {
+	// local state
 	cactive_t state;
-
+	
+	// network stuff
 	netchan_t netchan;
 
 	sizebuf_t datagram;
@@ -122,21 +129,23 @@ typedef struct client_static_s
 
 	int signon;
 
-	char servername[MAX_PATH];
+	char servername[MAX_PATH]; // MAX_OSPATH; name of server from original connect
 	char mapstring[64];
 	char spawnparms[2048];
-	char userinfo[256];
+	
+	// private userinfo for sending to masterless servers
+	char userinfo[256]; // MAX_INFO_STRING
 
 	float nextcmdtime;
 
 	int lastoutgoingcommand;
 	
+	// demo loop control
+	int demonum; // -1 = don't play demos
+	char demos[MAX_DEMOS][MAX_DEMONAME]; // when not playing
+	
 	// demo recording info must be here, so it isn't cleared on level change
 	
-	int demonum;
-
-	char demos[MAX_DEMOS][16];
-
 	qboolean demorecording;
 	qboolean demoplayback;
 	qboolean timedemo;
@@ -155,9 +164,9 @@ typedef struct client_static_s
 	char demofilename[MAX_PATH];
 	int demoframecount;
 
-	int td_lastframe;
-	int td_startframe;
-	float td_starttime;
+	int td_lastframe; // to meter out one message a frame
+	int td_startframe; // host_framecount at start
+	float td_starttime; // realtime at second frame of timedemo
 
 	incomingtransfer_t dl;
 
@@ -207,18 +216,26 @@ typedef struct client_state_s
 	char serverinfo[512]; // MAX_SERVERINFO_STRING
 
 	int servercount; ///< server identification for prespawns
-	int validsequence;
+	int validsequence;	///< this is the sequence number of the last good
+						///< packetentity_t we got.  If this is 0, we can't
+						///< render a frame yet
 
 	int parsecount; ///< server message counter
 	int parsecountmod;
-
-	int stats[32];
+	
+	// information for local display
+	int stats[32]; ///< MAX_CL_STATS; health, etc (unused quake legacy)
+	
 	int weapons;
 
 	usercmd_t cmd;
-
+	
+	// the client maintains its own idea of view angles, which are
+	// sent to the server each frame.  And only reset at level change
+	// and teleport times
 	vec3_t viewangles;
-	vec3_t punchangle;
+	
+	vec3_t punchangle; // temporary view kick from weapon firing
 	vec3_t crosshairangle;
 
 	vec3_t simorg;
@@ -241,19 +258,25 @@ typedef struct client_state_s
 	int waterlevel;
 	int usehull;
 
-	float maxspeed;
+	float maxspeed; // local value for maximum movement speed (for prediction)
 
 	int pushmsec;
 	int light_level;
-	int intermission;
+	int intermission; // don't change view angle, full screen, etc
 
 	double mtime[2];
-	double time;
+	
+	// the client simulates or interpolates movement to get these values
+	double time; ///< this is the time value that the client
+				 ///< is rendering at.  allways <= realtime
+	
 	double oldtime;
-
-	frame_t frames[64];
-	cmd_t commands[64];
-	local_state_t predicted_frames[64];
+	
+	// sentcmds[cl.netchan.outgoing_sequence & UPDATE_MASK] = cmd
+	frame_t frames[64]; // UPDATE_BACKUP
+	
+	cmd_t commands[64]; // UPDATE_BACKUP
+	local_state_t predicted_frames[64]; // UPDATE_BACKUP
 
 	int delta_sequence;
 	int playernum;
@@ -270,19 +293,20 @@ typedef struct client_state_s
 
 	int highentity;
 
-	char levelname[40];
+	char levelname[40]; ///< for display on solo scoreboard
 
 	int maxclients;
 	int gametype;
 	int viewentity;
-
-	model_t *worldmodel;
+	
+	// refresh related state
+	model_t *worldmodel; ///< cl_entitites[0].model
 	efrag_t *free_efrags;
 
-	int num_entities;
-	int num_statics;
+	int num_entities; ///< stored bottom up in cl_entities array
+	int num_statics; ///< stored top down in cl_entitiers
 
-	cl_entity_t viewent;
+	cl_entity_t viewent; ///< weapon viewmodel
 
 	int cdtrack;
 	int looptrack;
@@ -297,7 +321,8 @@ typedef struct client_state_s
 	int fPrecaching;
 
 	dlight_t *pLight;
-
+	
+	// all player information
 	player_info_t players[32]; // MAX_PLAYERS
 
 	entity_state_t instanced_baseline[64];
@@ -311,6 +336,28 @@ typedef struct client_state_s
 } client_state_t;
 
 extern client_state_t cl;
+
+typedef struct
+{
+	int length;
+	char map[MAX_STYLESTRING];
+} lightstyle_t;
+
+// FIXME, allocate dynamically
+extern	efrag_t			cl_efrags[MAX_EFRAGS];
+extern	cl_entity_t		cl_entities[MAX_EDICTS];
+extern	cl_entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
+extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
+extern	dlight_t		cl_dlights[MAX_DLIGHTS];
+extern	cl_entity_t		cl_temp_entities[MAX_TEMP_ENTITIES];
+extern	BEAM			cl_beams[MAX_BEAMS];
+
+const int MAX_VISEDICTS = 256;
+
+// Visible entities double-buffer
+extern	int				cl_numvisedicts, cl_oldnumvisedicts;
+extern	cl_entity_t		*cl_visedicts, *cl_oldvisedicts;
+extern	cl_entity_t		cl_visedicts_list[2][MAX_VISEDICTS];
 
 //
 // main
