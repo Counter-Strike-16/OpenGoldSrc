@@ -36,194 +36,181 @@ const char OGS_ENGINESERVER_INTERFACE_VERSION[] = "OGSEngineServer001";
 
 struct IEngineServer : public IBaseInterface
 {
-	int (*pfnPrecacheModel)(char *s);
-	int (*pfnPrecacheSound)(char *s);
+	virtual int PrecacheModel(const char *s) const = 0;
+	virtual int PrecacheSound(const char *s) const = 0;
 	
-	int (*pfnModelIndex)(const char *m);
-	int (*pfnModelFrames)(int modelIndex);
+	virtual int GetModelIndex(const char *m) const = 0;
+	virtual int GetModelFrames(int modelIndex) const = 0;
 	
-	void (*pfnChangeLevel)(char *s1, char *s2);
+	virtual void ChangeLevel(const char *s1, const char *s2) = 0;
 	
-	float (*pfnVecToYaw)(const float *rgflVector);
-	void (*pfnVecToAngles)(const float *rgflVectorIn, float *rgflVectorOut);
+	virtual float VecToYaw(const float *rgflVector) const = 0;
+	virtual void VecToAngles(const float *rgflVectorIn, float *rgflVectorOut) = 0;
 	
-	edict_t *(*pfnFindEntityByString)(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue);
+	virtual edict_t *FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue) const = 0;
 	
-	edict_t *(*pfnFindEntityInSphere)(edict_t *pEdictStartSearchAfter, const float *org, float rad);
-	edict_t *(*pfnFindClientInPVS)(edict_t *pEdict);
-	edict_t *(*pfnEntitiesInPVS)(edict_t *pplayer);
+	virtual edict_t *FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *org, float rad) const = 0;
+	virtual edict_t *FindClientInPVS(edict_t *pEdict) const = 0;
+	virtual edict_t *EntitiesInPVS(edict_t *pplayer) const = 0;
 	
-	void (*pfnMakeVectors)(const float *rgflVector);
-	void (*pfnAngleVectors)(const float *rgflVector, float *forward, float *right, float *up);
+	virtual void MakeVectors(const float *rgflVector) = 0;
+	virtual void AngleVectors(const float *rgflVector, float *forward, float *right, float *up) = 0;
 	
-	edict_t *(*pfnCreateEntity)();
-	void (*pfnRemoveEntity)(edict_t *e);
-	edict_t *(*pfnCreateNamedEntity)(int className);
+	virtual edict_t *CreateEntity() const = 0;
+	virtual void RemoveEntity(edict_t *e) = 0;
+	virtual edict_t *CreateNamedEntity(int className) const = 0;
 	
-	void (*pfnMakeStatic)(edict_t *ent);
-	int (*pfnEntIsOnFloor)(edict_t *e);
-	int (*pfnDropToFloor)(edict_t *e);
-	int (*pfnWalkMove)(edict_t *ent, float yaw, float dist, int iMode);
-	void (*pfnSetOrigin)(edict_t *e, const float *rgflOrigin);
-	void (*pfnEmitSound)(edict_t *entity, int channel, const char *sample, /*int*/ float volume, float attenuation, int fFlags, int pitch);
-	void (*pfnEmitAmbientSound)(edict_t *entity, float *pos, const char *samp, float vol, float attenuation, int fFlags, int pitch);
+	virtual void EmitSound(edict_t *entity, int channel, const char *sample, /*int*/ float volume, float attenuation, int fFlags, int pitch) = 0;
+	virtual void EmitAmbientSound(edict_t *entity, float *pos, const char *samp, float vol, float attenuation, int fFlags, int pitch) = 0;
 	
-	void (*pfnTraceLine)(const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr);
-	void (*pfnTraceToss)(edict_t *pent, edict_t *pentToIgnore, TraceResult *ptr);
-	int (*pfnTraceMonsterHull)(edict_t *pEdict, const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr);
-	void (*pfnTraceHull)(const float *v1, const float *v2, int fNoMonsters, int hullNumber, edict_t *pentToSkip, TraceResult *ptr);
-	void (*pfnTraceModel)(const float *v1, const float *v2, int hullNumber, edict_t *pent, TraceResult *ptr);
-	const char *(*pfnTraceTexture)(edict_t *pTextureEntity, const float *v1, const float *v2);
-	void (*pfnTraceSphere)(const float *v1, const float *v2, int fNoMonsters, float radius, edict_t *pentToSkip, TraceResult *ptr);
+	virtual void TraceLine(const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr) = 0;
+	virtual void TraceToss(edict_t *pent, edict_t *pentToIgnore, TraceResult *ptr) = 0;
+	virtual int TraceMonsterHull(edict_t *pEdict, const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr) = 0;
+	virtual void TraceHull(const float *v1, const float *v2, int fNoMonsters, int hullNumber, edict_t *pentToSkip, TraceResult *ptr) = 0;
+	virtual void TraceModel(const float *v1, const float *v2, int hullNumber, edict_t *pent, TraceResult *ptr) = 0;
+	virtual const char *TraceTexture(edict_t *pTextureEntity, const float *v1, const float *v2) = 0;
+	virtual void TraceSphere(const float *v1, const float *v2, int fNoMonsters, float radius, edict_t *pentToSkip, TraceResult *ptr) = 0;
 	
-	void (*pfnGetAimVector)(edict_t *ent, float speed, float *rgflReturn);
+	virtual void GetAimVector(edict_t *ent, float speed, float *rgflReturn) = 0;
 	
-	void (*pfnServerCommand)(char *str);
-	void (*pfnServerExecute)();
+	virtual void ServerCommand(char *str) = 0;
+	virtual void ServerExecute() = 0;
 	
-	void (*pfnClientCommand)(edict_t *pEdict, char *szFmt, ...);
+	virtual void ClientCommand(edict_t *pEdict, char *szFmt, ...) = 0;
 	
-	void (*pfnParticleEffect)(const float *org, const float *dir, float color, float count);
-	void (*pfnLightStyle)(int style, char *val);
-	int (*pfnDecalIndex)(const char *name);
-	int (*pfnPointContents)(const float *rgflVector);
+	virtual void SpawnParticleEffect(const float *org, const float *dir, float color, float count) = 0;
+	virtual void SetLightStyle(int style, char *val) = 0;
+	
+	virtual int GetDecalIndex(const char *name) const = 0;
+	virtual int GetPointContents(const float *rgflVector) const = 0;
 	
 	virtual INetMsg &MessageBegin(int msg_dest, int msg_type, const float *pOrigin, edict_t *ed) = 0;
 	virtual void MessageEnd(INetMsg &apMsg) = 0;
 	
-	void (*pfnCVarRegister)(cvar_t *pCvar);
-	float (*pfnCVarGetFloat)(const char *szVarName);
-	const char *(*pfnCVarGetString)(const char *szVarName);
-	void (*pfnCVarSetFloat)(const char *szVarName, float flValue);
-	void (*pfnCVarSetString)(const char *szVarName, const char *szValue);
+	virtual void AlertMessage(ALERT_TYPE atype, char *szFmt, ...) = 0;
 	
-	void (*pfnAlertMessage)(ALERT_TYPE atype, char *szFmt, ...);
+	virtual void EngineFprintf(void *pfile, char *szFmt, ...) = 0;
 	
-	void (*pfnEngineFprintf)(void *pfile, char *szFmt, ...);
+	virtual void *PvAllocEntPrivateData(edict_t *pEdict, int32 cb) = 0;
+	virtual void *PvEntPrivateData(edict_t *pEdict) = 0;
+	virtual void FreeEntPrivateData(edict_t *pEdict) = 0;
 	
-	void *(*pfnPvAllocEntPrivateData)(edict_t *pEdict, int32 cb);
-	void *(*pfnPvEntPrivateData)(edict_t *pEdict);
-	void (*pfnFreeEntPrivateData)(edict_t *pEdict);
+	virtual const char *SzFromIndex(int iString) = 0;
+	virtual int AllocString(const char *szValue) = 0;
 	
-	const char *(*pfnSzFromIndex)(int iString);
-	int (*pfnAllocString)(const char *szValue);
+	virtual edict_t *PEntityOfEntOffset(int iEntOffset) = 0;
+	virtual int EntOffsetOfPEntity(const edict_t *pEdict) = 0;
 	
-	struct entvars_s *(*pfnGetVarsOfEnt)(edict_t *pEdict);
-	edict_t *(*pfnPEntityOfEntOffset)(int iEntOffset);
-	int (*pfnEntOffsetOfPEntity)(const edict_t *pEdict);
-	int (*pfnIndexOfEdict)(const edict_t *pEdict);
-	edict_t *(*pfnPEntityOfEntIndex)(int iEntIndex);
-	edict_t *(*pfnFindEntityByVars)(struct entvars_s *pvars);
-	void *(*pfnGetModelPtr)(edict_t *pEdict);
-	int (*pfnRegUserMsg)(const char *pszName, int iSize);
-	void (*pfnAnimationAutomove)(const edict_t *pEdict, float flTime);
-	void (*pfnGetBonePosition)(const edict_t *pEdict, int iBone, float *rgflOrigin, float *rgflAngles);
-	uint32 (*pfnFunctionFromName)(const char *pName);
-	const char *(*pfnNameForFunction)(uint32 function);
-	void (*pfnClientPrintf)(edict_t *pEdict, PRINT_TYPE ptype, const char *szMsg); // JOHN: engine callbacks so game DLL can print messages to individual clients
-	void (*pfnServerPrint)(const char *szMsg);
-	const char *(*pfnCmd_Args)();     // these 3 added
-	const char *(*pfnCmd_Argv)(int argc); // so game DLL can easily
-	int (*pfnCmd_Argc)();             // access client 'cmd' strings
-	void (*pfnGetAttachment)(const edict_t *pEdict, int iAttachment, float *rgflOrigin, float *rgflAngles);
+	virtual edict_t *PEntityOfEntIndex(int iEntIndex) const = 0;
+	virtual edict_t *FindEntityByVars(struct entvars_s *pvars) const = 0;
+	virtual void *GetModelPtr(edict_t *pEdict) const = 0;
+	virtual int RegUserMsg(const char *pszName, int iSize) const = 0;
+	virtual void AnimationAutomove(const edict_t *pEdict, float flTime) = 0;
+	virtual void GetBonePosition(const edict_t *pEdict, int iBone, float *rgflOrigin, float *rgflAngles) = 0;
+	virtual uint32 FunctionFromName(const char *pName) = 0;
+	virtual const char *NameForFunction(uint32 function) = 0;
+	virtual void ClientPrintf(edict_t *pEdict, PRINT_TYPE ptype, const char *szMsg) = 0; // JOHN: engine callbacks so game DLL can print messages to individual clients
+	virtual void ServerPrint(const char *szMsg) = 0;
+	virtual const char *Cmd_Args() = 0;     // these 3 added
+	virtual const char *Cmd_Argv(int argc) = 0; // so game DLL can easily
+	virtual int Cmd_Argc() = 0;             // access client 'cmd' strings
+	virtual void GetAttachment(const edict_t *pEdict, int iAttachment, float *rgflOrigin, float *rgflAngles) = 0;
 	
-	void (*pfnCRC32_Init)(CRC32_t *pulCRC);
-	void (*pfnCRC32_ProcessBuffer)(CRC32_t *pulCRC, void *p, int len);
-	void (*pfnCRC32_ProcessByte)(CRC32_t *pulCRC, unsigned char ch);
-	CRC32_t (*pfnCRC32_Final)(CRC32_t pulCRC);
+	virtual void CRC32_Init(CRC32_t *pulCRC) = 0;
+	virtual void CRC32_ProcessBuffer(CRC32_t *pulCRC, void *p, int len) = 0;
+	virtual void CRC32_ProcessByte(CRC32_t *pulCRC, unsigned char ch) = 0;
+	virtual CRC32_t CRC32_Final(CRC32_t pulCRC) = 0;
 	
-	int32 (*pfnRandomLong)(int32 lLow, int32 lHigh);
-	float (*pfnRandomFloat)(float flLow, float flHigh);
+	virtual int32 GetRandomLong(int32 lLow, int32 lHigh) const = 0;
+	virtual float GetRandomFloat(float flLow, float flHigh) const = 0;
 	
-	void (*pfnSetView)(const edict_t *pClient, const edict_t *pViewent);
-	float (*pfnTime)();
-	void (*pfnCrosshairAngle)(const edict_t *pClient, float pitch, float yaw);
-	byte *(*pfnLoadFileForMe)(char *filename, int *pLength);
-	void (*pfnFreeFile)(void *buffer);
-	void (*pfnEndSection)(const char *pszSectionName); // trigger_endsection
-	int (*pfnCompareFileTime)(char *filename1, char *filename2, int *iCompare);
-	void (*pfnGetGameDir)(char *szGetGameDir);
-	void (*pfnCvar_RegisterVariable)(cvar_t *variable);
-	void (*pfnFadeClientVolume)(const edict_t *pEdict, int fadePercent, int fadeOutSeconds, int holdTime, int fadeInSeconds);
-	void (*pfnSetClientMaxspeed)(const edict_t *pEdict, float fNewMaxspeed);
-	edict_t *(*pfnCreateFakeClient)(const char *netname); // returns NULL if fake client can't be created
-	void (*pfnRunPlayerMove)(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, byte msec);
-	int (*pfnNumberOfEntities)();
-	char *(*pfnGetInfoKeyBuffer)(edict_t *e); // passing in NULL gets the serverinfo
-	char *(*pfnInfoKeyValue)(char *infobuffer, char *key);
-	void (*pfnSetKeyValue)(char *infobuffer, char *key, char *value);
-	void (*pfnSetClientKeyValue)(int clientIndex, char *infobuffer, char *key, char *value);
-	int (*pfnIsMapValid)(char *filename);
-	void (*pfnStaticDecal)(const float *origin, int decalIndex, int entityIndex, int modelIndex);
-	int (*pfnPrecacheGeneric)(char *s);
-	int (*pfnGetPlayerUserId)(edict_t *e); // returns the server assigned userid for this player.  useful for logging frags, etc.  returns -1 if the edict couldn't be found in the list of clients
-	void (*pfnBuildSoundMsg)(edict_t *entity, int channel, const char *sample, /*int*/ float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed);
-	int (*pfnIsDedicatedServer)(); // is this a dedicated server?
-	cvar_t *(*pfnCVarGetPointer)(const char *szVarName);
-	unsigned int (*pfnGetPlayerWONId)(edict_t *e); // returns the server assigned WONid for this player.  useful for logging frags, etc.  returns -1 if the edict couldn't be found in the list of clients
+	virtual void SetView(const edict_t *pClient, const edict_t *pViewent) = 0;
+	
+	virtual float GetTime() const = 0;
+	
+	virtual void SetCrosshairAngle(const edict_t *pClient, float pitch, float yaw) = 0;
+	
+	virtual byte *LoadFileForMe(char *filename, int *pLength) const = 0;
+	virtual void FreeFile(void *buffer) = 0;
+	
+	virtual void EndSection(const char *pszSectionName) = 0; // trigger_endsection
+	
+	virtual int CompareFileTime(char *filename1, char *filename2, int *iCompare) = 0;
+	
+	virtual void GetGameDir(char *szGetGameDir) = 0;
+	
+	virtual void FadeClientVolume(const edict_t *pEdict, int fadePercent, int fadeOutSeconds, int holdTime, int fadeInSeconds) = 0;
+	virtual void SetClientMaxspeed(const edict_t *pEdict, float fNewMaxspeed) = 0;
+	virtual edict_t *CreateFakeClient(const char *netname) const = 0; // returns NULL if fake client can't be created
+	virtual void RunPlayerMove(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, byte msec) = 0;
+	virtual int GetNumberOfEntities() const = 0;
+	virtual char *GetInfoKeyBuffer(edict_t *e) const = 0; // passing in NULL gets the serverinfo
+	virtual char *InfoKeyValue(char *infobuffer, char *key) const = 0;
+	virtual void SetKeyValue(char *infobuffer, char *key, char *value) = 0;
+	virtual void SetClientKeyValue(int clientIndex, char *infobuffer, char *key, char *value) = 0;
+	virtual int IsMapValid(char *filename) const = 0;
+	virtual void StaticDecal(const float *origin, int decalIndex, int entityIndex, int modelIndex) = 0;
+	virtual int PrecacheGeneric(char *s) const = 0;
+	virtual int GetPlayerUserId(edict_t *e) const = 0; // returns the server assigned userid for this player.  useful for logging frags, etc.  returns -1 if the edict couldn't be found in the list of clients
+	virtual void BuildSoundMsg(edict_t *entity, int channel, const char *sample, /*int*/ float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed) = 0;
+	virtual int IsDedicatedServer() const = 0;
+	
+	virtual unsigned int GetPlayerWONId(edict_t *e) = 0; // returns the server assigned WONid for this player.  useful for logging frags, etc.  returns -1 if the edict couldn't be found in the list of clients
 
-	void (*pfnInfo_RemoveKey)(char *s, const char *key);
-	const char *(*pfnGetPhysicsKeyValue)(const edict_t *pClient, const char *key);
-	void (*pfnSetPhysicsKeyValue)(const edict_t *pClient, const char *key, const char *value);
-	const char *(*pfnGetPhysicsInfoString)(const edict_t *pClient);
-	unsigned short (*pfnPrecacheEvent)(int type, const char *psz);
-	void (*pfnPlaybackEvent)(int flags, const edict_t *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2);
+	virtual void Info_RemoveKey(char *s, const char *key) = 0;
+	virtual const char *GetPhysicsKeyValue(const edict_t *pClient, const char *key) = 0;
+	virtual void SetPhysicsKeyValue(const edict_t *pClient, const char *key, const char *value) = 0;
+	virtual const char *GetPhysicsInfoString(const edict_t *pClient) = 0;
+	virtual unsigned short PrecacheEvent(int type, const char *psz) = 0;
+	virtual void PlaybackEvent(int flags, const edict_t *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2) = 0;
 
-	unsigned char *(*pfnSetFatPVS)(float *org);
-	unsigned char *(*pfnSetFatPAS)(float *org);
+	virtual unsigned char *SetFatPVS(float *org) const = 0;
+	virtual unsigned char *SetFatPAS(float *org) const = 0;
 
-	int (*pfnCheckVisibility)(const edict_t *entity, unsigned char *pset);
+	virtual int CheckVisibility(const edict_t *entity, unsigned char *pset) = 0;
 
-	void (*pfnDeltaSetField)(struct delta_s *pFields, const char *fieldname);
-	void (*pfnDeltaUnsetField)(struct delta_s *pFields, const char *fieldname);
-	void (*pfnDeltaAddEncoder)(char *name, void (*conditionalencode)(struct delta_s *pFields, const unsigned char *from, const unsigned char *to));
-	int (*pfnGetCurrentPlayer)();
-	int (*pfnCanSkipPlayer)(const edict_t *player);
-	int (*pfnDeltaFindField)(struct delta_s *pFields, const char *fieldname);
-	void (*pfnDeltaSetFieldByIndex)(struct delta_s *pFields, int fieldNumber);
-	void (*pfnDeltaUnsetFieldByIndex)(struct delta_s *pFields, int fieldNumber);
+	virtual void DeltaSetField(struct delta_s *pFields, const char *fieldname) = 0;
+	virtual void DeltaUnsetField(struct delta_s *pFields, const char *fieldname) = 0;
+	virtual void DeltaAddEncoder(char *name, void (*conditionalencode)(struct delta_s *pFields, const unsigned char *from, const unsigned char *to)) = 0;
+	virtual int GetCurrentPlayer() = 0;
+	virtual int CanSkipPlayer(const edict_t *player) = 0;
+	virtual int DeltaFindField(struct delta_s *pFields, const char *fieldname) = 0;
+	virtual void DeltaSetFieldByIndex(struct delta_s *pFields, int fieldNumber) = 0;
+	virtual void DeltaUnsetFieldByIndex(struct delta_s *pFields, int fieldNumber) = 0;
 
-	void (*pfnSetGroupMask)(int mask, int op);
+	virtual void SetGroupMask(int mask, int op) = 0;
 
-	int (*pfnCreateInstancedBaseline)(int classname, struct entity_state_s *baseline);
-	void (*pfnCvar_DirectSet)(struct cvar_s *var, char *value);
+	virtual int CreateInstancedBaseline(int classname, struct entity_state_s *baseline) = 0;
+	virtual void Cvar_DirectSet(struct cvar_s *var, char *value) = 0;
 
-	void (*pfnForceUnmodified)(FORCE_TYPE type, float *mins, float *maxs, const char *filename);
+	virtual void ForceUnmodified(FORCE_TYPE type, float *mins, float *maxs, const char *filename) = 0;
 
-	void (*pfnGetPlayerStats)(const edict_t *pClient, int *ping, int *packet_loss);
+	virtual void GetPlayerStats(const edict_t *pClient, int *ping, int *packet_loss) = 0;
 
-	void (*pfnAddServerCommand)(char *cmd_name, void (*function)());
+	virtual void AddServerCommand(char *cmd_name, void (*function)()) = 0;
 
-	// For voice communications, set which clients hear eachother.
-	// NOTE: these functions take player entity indices (starting at 1).
-	qboolean (*pfnVoice_GetClientListening)(int iReceiver, int iSender);
-	qboolean (*pfnVoice_SetClientListening)(int iReceiver, int iSender, qboolean bListen);
-
-	const char *(*pfnGetPlayerAuthId)(edict_t *e);
+	virtual const char *GetPlayerAuthId(edict_t *e) const = 0;
 
 	// PSV: Added for CZ training map
-	//	const char *(*pfnKeyNameForBinding)		( const char* pBinding );
+	//	const char *KeyNameForBinding)		( const char* pBinding );
 
-	/*void*/ sequenceEntry_s *(*pfnSequenceGet)(const char *fileName, const char *entryName);
-	/*void*/ sentenceEntry_s *(*pfnSequencePickSentence)(const char *groupName, int pickMethod, int *picked);
+	virtual /*void*/ sequenceEntry_s *SequenceGet(const char *fileName, const char *entryName) = 0;
+	virtual /*void*/ sentenceEntry_s *SequencePickSentence(const char *groupName, int pickMethod, int *picked) = 0;
 
-	// LH: Give access to filesize via filesystem
-	int (*pfnGetFileSize)(char *filename);
-
-	unsigned int (*pfnGetApproxWavePlayLen)(const char *filepath);
+	virtual unsigned int GetApproxWavePlayLen(const char *filepath) const = 0;
 	
-	int (*pfnIsCareerMatch)();
+	virtual int IsCareerMatch() const = 0;
 
-	int (*pfnGetLocalizedStringLength)(const char *label);
+	virtual int GetLocalizedStringLength(const char *label) const = 0;
 
-	void (*pfnRegisterTutorMessageShown)(int mid);
-	int (*pfnGetTimesTutorMessageShown)(int mid);
-	void (*pfnProcessTutorMessageDecayBuffer)(int *buffer, int bufferLength);
-	void (*pfnConstructTutorMessageDecayBuffer)(int *buffer, int bufferLength);
-	void (*pfnResetTutorMessageDecayData)();
+	virtual void RegisterTutorMessageShown(int mid) = 0;
+	virtual int GetTimesTutorMessageShown(int mid) const = 0;
+	virtual void ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength) = 0;
+	virtual void ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength) = 0;
+	virtual void ResetTutorMessageDecayData() = 0;
 
-	void (*pfnQueryClientCvarValue)(const edict_t *player, const char *cvarName);
-	void (*pfnQueryClientCvarValue2)(const edict_t *player, const char *cvarName, int requestID);
+	virtual void QueryClientCvarValue(const edict_t *player, const char *cvarName) = 0;
+	virtual void QueryClientCvarValue2(const edict_t *player, const char *cvarName, int requestID) = 0;
 
-	int (*pfnCheckParm)(const char *pchCmdLineToken, char **ppnext);
+	virtual int CheckParm(const char *pchCmdLineToken, char **ppnext) = 0;
 };

@@ -27,32 +27,17 @@
  */
 
 /// @file
+/// @brief voice server interface
 
 #pragma once
 
-struct IEdict
+#include "public/interface.h"
+
+const char OGS_VOICESERVER_INTERFACE_VERSION[] = "OGSVoiceServer001";
+
+// IVoiceHandler/IVoiceController?
+struct IVoiceServer : public IBaseInterface
 {
-	virtual void SetModel(const char *m) = 0;
-	virtual void SetSize(const float *rgflMin, const float *rgflMax) = 0;
-	
-	virtual void MakeStatic() = 0;
-	
-	virtual int EntIsOnFloor() const = 0;
-	virtual int DropToFloor() const = 0;
-	
-	virtual int WalkMove(float yaw, float dist, int iMode) const = 0;
-	virtual void SetOrigin(const float *rgflOrigin) = 0;
-	
-	virtual void GetSpawnParms() = 0;
-	virtual void SaveSpawnParms() = 0;
-	
-	virtual void MoveToOrigin(const float *pflGoal, float dist, int iMoveType) = 0;
-	
-	virtual void ChangeYaw() = 0;
-	virtual void ChangePitch() = 0;
-	
-	virtual int GetEntityIllum() const = 0;
-	
-	virtual int GetIndex() const = 0;
-	virtual struct entvars_s *GetVars() const = 0;
+	virtual qboolean SetClientListening(int iReceiver, int iSender, qboolean bListen) = 0;
+	virtual qboolean GetClientListening(int iReceiver, int iSender) = 0;
 };

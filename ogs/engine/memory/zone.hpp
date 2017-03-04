@@ -104,11 +104,6 @@ NOXREF void Z_Print(memzone_t *zone);
 void Z_Init(int zonesize);
 void Z_DumpHeap();
 int Z_FreeMemory();
-
-typedef struct cache_user_s
-{
-	void *data;
-} cache_user_t;
 */
 
 ////////////////////////////////////////

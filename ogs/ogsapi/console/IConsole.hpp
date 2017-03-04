@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief Console module interface draft
+/// @brief console module interface
 
 #pragma once
 
@@ -62,13 +62,18 @@ struct IConsole : public IBaseInterface
 	virtual void RemoveCommand(const char *asName) = 0;
 
 	/// @return Argument count of current processing command
-	virtual int Cmd_Argc() const = 0;
+	virtual int Cmd_GetArgCount() const = 0;
 
 	///
-	virtual const char *Cmd_Argv(int i) const = 0;
+	virtual const char *Cmd_GetArgVal(int i) const = 0;
 
-	///
-	virtual bool Cvar_Register(cvar_t *apCvar) const = 0;
+	/**
+	* Register a new console variable from old cvar_t struct data (that already has the name, value, and optionally the archive elements set)
+	*
+	* @param apVar - reference to cvar_t struct
+	* @return true if the cvar was successfully registered
+	*/
+	virtual bool Cvar_Register(const cvar_t &apCvar) const = 0;
 
 	///
 	virtual cvar_t *Cvar_Add(const char *asName, const char *asValue, int flags, const char *asDesc = "") const = 0;
@@ -80,10 +85,16 @@ struct IConsole : public IBaseInterface
 	virtual cvar_t *Cvar_Get(const char *asName) const = 0;
 
 	///
-	virtual cvar_t *Cvar_Set(const char *asName, const char *asValue) const = 0;
+	virtual void Cvar_SetString(const char *asName, const char *asValue) = 0;
 
 	///
-	virtual void Cvar_SetValue(const char *asName, float afValue) = 0;
+	virtual void Cvar_SetFloat(const char *asName, float afValue) = 0;
+	
+	///
+	virtual const char *Cvar_GetString(const char *asName) const = 0;
+	
+	///
+	virtual float Cvar_GetFloat(const char *asName) const = 0;
 	
 	///
 	virtual cmdalias_t *GetAliasList() = 0;
