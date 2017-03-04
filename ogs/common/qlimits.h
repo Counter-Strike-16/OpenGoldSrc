@@ -7,40 +7,33 @@
 
 // TODO: merge with procotol.hpp
 
-#ifndef QLIMITS_H
-#define QLIMITS_H
-
-#if defined(_WIN32)
 #pragma once
-#endif
 
 // DATA STRUCTURE INFO
 
 // SYSTEM INFO
-#define MAX_QPATH 64   // max length of a game pathname
-#define MAX_OSPATH 260 // max length of a filesystem pathname
+const int MAX_QPATH = 64;   // max length of a game pathname
+const int MAX_OSPATH = 260; // max length of a filesystem pathname
 
-#define ON_EPSILON 0.1 // point on plane side epsilon
+const float ON_EPSILON = 0.1f; // point on plane side epsilon
 
-#define MAX_LIGHTSTYLE_INDEX_BITS 6
-#define MAX_LIGHTSTYLES (1 << MAX_LIGHTSTYLE_INDEX_BITS)
+const int MAX_LIGHTSTYLE_INDEX_BITS = 6;
+const int MAX_LIGHTSTYLES = (1 << MAX_LIGHTSTYLE_INDEX_BITS);
 
 // Resource counts
-#define MAX_MODEL_INDEX_BITS 9 // sent as a short
-#define MAX_MODELS (1 << MAX_MODEL_INDEX_BITS)
+const int MAX_MODEL_INDEX_BITS = 9; // sent as a short
+const int MAX_MODELS = (1 << MAX_MODEL_INDEX_BITS);
 
-#define MAX_SOUND_INDEX_BITS 9
-#define MAX_SOUNDS (1 << MAX_SOUND_INDEX_BITS)
+const int MAX_SOUND_INDEX_BITS = 9;
+const int MAX_SOUNDS = (1 << MAX_SOUND_INDEX_BITS);
 
-#define MAX_SOUNDS_HASHLOOKUP_SIZE	(MAX_SOUNDS * 2 - 1)
+const int MAX_SOUNDS_HASHLOOKUP_SIZE = (MAX_SOUNDS * 2 - 1);
 
-#define MAX_GENERIC_INDEX_BITS 9
-#define MAX_GENERIC (1 << MAX_GENERIC_INDEX_BITS)
+const int MAX_GENERIC_INDEX_BITS = 9;
+const int MAX_GENERIC = (1 << MAX_GENERIC_INDEX_BITS);
 
-#define MAX_DECAL_INDEX_BITS 9
-#define MAX_BASE_DECALS (1 << MAX_DECAL_INDEX_BITS)
+const int MAX_DECAL_INDEX_BITS = 9;
+const int MAX_BASE_DECALS = (1 << MAX_DECAL_INDEX_BITS);
 
-#define MAX_EVENTS 256
-#define MAX_PACKET_ENTITIES 256 // 256 visible entities per frame
-
-#endif // QLIMITS_H
+const int MAX_EVENTS = 256;
+const int MAX_PACKET_ENTITIES = 256; // 256 visible entities per frame

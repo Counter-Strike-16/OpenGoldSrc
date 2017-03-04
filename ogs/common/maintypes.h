@@ -26,11 +26,7 @@
 *
 */
 
-#ifndef MAINTYPES_H
-#define MAINTYPES_H
-#ifdef _WIN32
 #pragma once
-#endif
 
 #include "rehlds/osconfig.h"
 #include "common/mathlib.h"
@@ -45,5 +41,3 @@
 #define UNTESTED
 
 typedef unsigned int string_t;		// from engine's pr_comp.h;
-
-#endif // MAINTYPES_H

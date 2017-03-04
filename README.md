@@ -1,4 +1,9 @@
 # OpenGoldSource
+>Gold Source is a version of Quake and Quake is open source so maybe that is an option for you.
+>
+>Kind regards,
+>
+>Mike
 
 ![OGS Logo](docs/OGSLogo1280x512.png?raw=true "OGS Logo")
 

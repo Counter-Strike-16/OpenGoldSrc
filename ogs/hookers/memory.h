@@ -26,14 +26,11 @@
 *
 */
 
-#ifndef _MEMORY_H
-#define _MEMORY_H
+#pragma once
 
 #include "rehlds/osconfig.h"
 
-
-#define MAX_PATTERN 128
-
+const int MAX_PATTERN = 128;
 
 struct Section;
 struct Section
@@ -135,5 +132,3 @@ bool HIDDEN FindDataRef(Module *module, AddressRef *ref);
 #ifdef _WIN32
 void FindAllCalls(Section* section, CFuncAddr** calls, uint32 findRefsTo);
 #endif // _WIN32
-
-#endif // _MEMORY_H

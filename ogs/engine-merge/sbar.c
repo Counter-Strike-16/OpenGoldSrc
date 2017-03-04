@@ -32,8 +32,8 @@ qboolean	sb_showteamscores;
 int			sb_lines;			// scan lines to draw
 
 void Sbar_DeathmatchOverlay (int start);
-void Sbar_TeamOverlay (void);
-void Sbar_MiniDeathmatchOverlay (void);
+void Sbar_TeamOverlay ();
+void Sbar_MiniDeathmatchOverlay ();
 
 static qboolean largegame = false;
 
@@ -44,7 +44,7 @@ Sbar_ShowTeamScores
 Tab key down
 ===============
 */
-void Sbar_ShowTeamScores (void)
+void Sbar_ShowTeamScores ()
 {
 	if (sb_showteamscores)
 		return;
@@ -60,7 +60,7 @@ Sbar_DontShowTeamScores
 Tab key up
 ===============
 */
-void Sbar_DontShowTeamScores (void)
+void Sbar_DontShowTeamScores ()
 {
 	sb_showteamscores = false;
 	sb_updates = 0;
@@ -73,7 +73,7 @@ Sbar_ShowScores
 Tab key down
 ===============
 */
-void Sbar_ShowScores (void)
+void Sbar_ShowScores ()
 {
 	if (sb_showscores)
 		return;
@@ -89,7 +89,7 @@ Sbar_DontShowScores
 Tab key up
 ===============
 */
-void Sbar_DontShowScores (void)
+void Sbar_DontShowScores ()
 {
 	sb_showscores = false;
 	sb_updates = 0;
@@ -100,7 +100,7 @@ void Sbar_DontShowScores (void)
 Sbar_Changed
 ===============
 */
-void Sbar_Changed (void)
+void Sbar_Changed ()
 {
 	sb_updates = 0;	// update next frame
 }
@@ -110,7 +110,7 @@ void Sbar_Changed (void)
 Sbar_Init
 ===============
 */
-void Sbar_Init (void)
+void Sbar_Init ()
 {
 	int		i;
 
@@ -377,7 +377,7 @@ void Sbar_SortFrags (qboolean includespec)
 			}
 }
 
-void Sbar_SortTeams (void)
+void Sbar_SortTeams ()
 {
 	int				i, j, k;
 	player_info_t	*s;
@@ -456,7 +456,7 @@ int	Sbar_ColorForMap (int m)
 Sbar_SoloScoreboard
 ===============
 */
-void Sbar_SoloScoreboard (void)
+void Sbar_SoloScoreboard ()
 {
 	char	str[80];
 	int		minutes, seconds, tens, units;
@@ -479,7 +479,7 @@ void Sbar_SoloScoreboard (void)
 Sbar_DrawInventory
 ===============
 */
-void Sbar_DrawInventory (void)
+void Sbar_DrawInventory ()
 {	
 	int		i;
 	char	num[6];
@@ -587,7 +587,7 @@ void Sbar_DrawInventory (void)
 Sbar_DrawFrags
 ===============
 */
-void Sbar_DrawFrags (void)
+void Sbar_DrawFrags ()
 {	
 	int				i, k, l;
 	int				top, bottom;
@@ -652,7 +652,7 @@ void Sbar_DrawFrags (void)
 Sbar_DrawFace
 ===============
 */
-void Sbar_DrawFace (void)
+void Sbar_DrawFace ()
 {
 	int		f, anim;
 
@@ -698,7 +698,7 @@ void Sbar_DrawFace (void)
 Sbar_DrawNormal
 =============
 */
-void Sbar_DrawNormal (void)
+void Sbar_DrawNormal ()
 {
 	if (cl_sbar.value || scr_viewsize.value<100)
 	Sbar_DrawPic (0, 0, sb_sbar);
@@ -747,7 +747,7 @@ void Sbar_DrawNormal (void)
 Sbar_Draw
 ===============
 */
-void Sbar_Draw (void)
+void Sbar_Draw ()
 {
 	qboolean headsup;
 	char st[512];
@@ -877,7 +877,7 @@ team frags
 added by Zoid
 ==================
 */
-void Sbar_TeamOverlay (void)
+void Sbar_TeamOverlay ()
 {
 	qpic_t			*pic;
 	int				i, k, l;
@@ -1137,7 +1137,7 @@ frags team name
 displayed to right of status bar if there's room
 ==================
 */
-void Sbar_MiniDeathmatchOverlay (void)
+void Sbar_MiniDeathmatchOverlay ()
 {
 	int				i, k;
 	int				top, bottom;
@@ -1281,7 +1281,7 @@ Sbar_IntermissionOverlay
 
 ==================
 */
-void Sbar_IntermissionOverlay (void)
+void Sbar_IntermissionOverlay ()
 {
 	scr_copyeverything = 1;
 	scr_fullupdate = 0;
@@ -1299,7 +1299,7 @@ Sbar_FinaleOverlay
 
 ==================
 */
-void Sbar_FinaleOverlay (void)
+void Sbar_FinaleOverlay ()
 {
 	qpic_t	*pic;
 

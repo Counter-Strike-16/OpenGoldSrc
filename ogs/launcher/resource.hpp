@@ -11,7 +11,7 @@
 // Microsoft Developer Studio generated include file.
 // Used by Dedicated.rc
 //
-#define IDI_HALFLIFE 101
+#define IDI_HALFLIFE 101 // IDI_ICON1
 #define IDD_CDKEY 102
 #define IDC_KEY 1000
 

@@ -29,7 +29,7 @@ else
 	CLANG_FORMAT="$PROGRAMFILES\LLVM\bin\clang-format"
 fi
 
-for DIRECTORY in ogs/core ogs/dedicated ogs/demoplayer ogs/engine ogs/filesystem ogs/game ogs/gameui ogs/launcher ogs/ogsnext ogs/renderdll
+for DIRECTORY in ogs/core ogs/dedicated ogs/demoplayer ogs/engine ogs/filesystem ogs/game ogs/gameui ogs/launcher ogs/ogsnext ogs/rehlds ogs/renderdll
 do
     echo "Formatting code under $DIRECTORY/"
     find "$DIRECTORY" \( -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp' \) -print0 | xargs -0 "$CLANG_FORMAT" -i -style=file

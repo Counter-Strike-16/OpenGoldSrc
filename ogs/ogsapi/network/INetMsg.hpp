@@ -33,4 +33,12 @@
 
 struct INetMsg
 {
+	virtual void WriteByte(int iValue) = 0;
+	virtual void WriteChar(int iValue) = 0;
+	virtual void WriteShort(int iValue) = 0;
+	virtual void WriteLong(int iValue) = 0;
+	virtual void WriteAngle(float flValue) = 0;
+	virtual void WriteCoord(float flValue) = 0;
+	virtual void WriteString(const char *sz) = 0;
+	virtual void WriteEntity(int iValue) = 0;
 };

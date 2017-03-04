@@ -161,12 +161,12 @@ const char *CFileSystemImpl::FindFirst(const char *pWildCard,
                                        FileFindHandle_t *pHandle,
                                        const char *pathID)
 {
-	return "";
+	return Sys_FindFirst(pathID, 0, 0);
 };
 
 const char *CFileSystemImpl::FindNext(FileFindHandle_t handle)
 {
-	return "";
+	return Sys_FindNext(handle, 0, 0);
 };
 
 bool CFileSystemImpl::FindIsDirectory(FileFindHandle_t handle)
@@ -174,7 +174,10 @@ bool CFileSystemImpl::FindIsDirectory(FileFindHandle_t handle)
 	return false;
 };
 
-void CFileSystemImpl::FindClose(FileFindHandle_t handle){};
+void CFileSystemImpl::FindClose(FileFindHandle_t handle)
+{
+	Sys_FindClose(handle);
+};
 
 void CFileSystemImpl::GetLocalCopy(const char *pFileName){};
 

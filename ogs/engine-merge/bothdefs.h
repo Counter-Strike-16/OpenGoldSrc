@@ -42,11 +42,7 @@
 
 #define	SOUND_CHANNELS		8
 
-
-#define	MAX_QPATH		64			// max length of a quake game pathname
 #define	MAX_OSPATH		128			// max length of a filesystem pathname
-
-#define	ON_EPSILON		0.1			// point on plane side epsilon
 
 #define	MAX_MSGLEN		1450		// max length of a reliable message
 #define	MAX_DATAGRAM	1450		// max length of unreliable message
@@ -104,14 +100,9 @@
 #define	IT_ARMOR2				16384
 #define	IT_ARMOR3				32768
 
-#define	IT_SUPERHEALTH			65536
-
 #define	IT_KEY1					131072
 #define	IT_KEY2					262144
 
-#define	IT_INVISIBILITY			524288
-
-#define	IT_INVULNERABILITY		1048576
 #define	IT_SUIT					2097152
 #define	IT_QUAD					4194304
 
