@@ -31,7 +31,6 @@
 #include "precompiled.hpp"
 #include "system/engineapi.hpp"
 #include "system/iengine.hpp"
-#include <cstddef>
 
 static CEngineAPI g_CEngineAPI;
 

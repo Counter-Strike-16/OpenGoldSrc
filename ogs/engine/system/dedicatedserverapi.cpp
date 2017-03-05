@@ -38,7 +38,7 @@
 #include "system/traceinit.h"
 #include "system/buildinfo.hpp"
 #include "filesystem/filesystem_.hpp"
-#include "server/server.hpp"
+#include "system/server.hpp"
 #include "iregistry.h"
 
 IDedicatedExports *dedicated_;
@@ -50,8 +50,13 @@ EXPOSE_SINGLE_INTERFACE(CDedicatedServerAPI, IDedicatedServerAPI, VENGINE_HLDS_A
 
 bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
 {
-	dedicated_ = (IDedicatedExports *)launcherFactory(
-	VENGINE_DEDICATEDEXPORTS_API_VERSION, NULL);
+	return Init_noVirt(basedir, cmdline, launcherFactory, filesystemFactory);
+};
+
+bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
+{
+	dedicated_ = (IDedicatedExports *)launcherFactory(VENGINE_DEDICATEDEXPORTS_API_VERSION, NULL);
+	
 	if(!dedicated_)
 		return false;
 
@@ -89,6 +94,11 @@ bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn l
 
 int CDedicatedServerAPI::Shutdown()
 {
+	return Shutdown_noVirt();
+};
+
+int CDedicatedServerAPI::Shutdown_noVirt()
+{
 	eng->Unload();
 	game->Shutdown();
 
@@ -104,6 +114,11 @@ int CDedicatedServerAPI::Shutdown()
 
 bool CDedicatedServerAPI::RunFrame()
 {
+	return RunFrame_noVirt();
+};
+
+bool CDedicatedServerAPI::RunFrame_noVirt()
+{
 	if(eng->GetQuitting())
 		return false;
 
@@ -113,10 +128,20 @@ bool CDedicatedServerAPI::RunFrame()
 
 void CDedicatedServerAPI::AddConsoleText(char *text)
 {
+	AddConsoleText_noVirt(text);
+};
+
+void CDedicatedServerAPI::AddConsoleText_noVirt(char *text)
+{
 	Cbuf_AddText(text);
 };
 
 void CDedicatedServerAPI::UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
+{
+	UpdateStatus_noVirt(fps, nActive, nMaxPlayers, pszMap);
+};
+
+void CDedicatedServerAPI::UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
 {
 	Host_GetHostInfo(fps, nActive, NULL, nMaxPlayers, pszMap);
 };

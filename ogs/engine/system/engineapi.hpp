@@ -27,38 +27,24 @@
  */
 
 /// @file
+/// @brief engine launcher for both client+server mode (localhost)
 
 #pragma once
 
 #include "common/commontypes.h"
-#include "engine_hlds_api.h"
-#include "idedicatedexports.h"
+#include "engine_launcher_api.h"
 
-extern IDedicatedExports *dedicated_;
+void EXPORT F(IEngineAPI **api);
 
-class CDedicatedServerAPI : public IDedicatedServerAPI
+class CEngineAPI : public IEngineAPI
 {
 public:
-	bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown();
+	int Run(void *instance,
 
-	bool RunFrame();
+	        char *basedir,
+	        const char *cmdline,
+	        char *postRestartCmdLineArgs,
 
-	void AddConsoleText(char *text);
-
-	void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
-
-	// non-virtual function's of wrap for hooks a virtual
-	// Only need to HOOK_ENGINE
-	/*
-  bool Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn
-  launcherFactory, CreateInterfaceFn filesystemFactory);
-  int Shutdown_noVirt();
-  bool RunFrame_noVirt();
-  void AddConsoleText_noVirt(char *text);
-  void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char
-  *pszMap);
-  */
-private:
-	char m_OrigCmd[1024];
+	        CreateInterfaceFn launcherFactory,
+	        CreateInterfaceFn filesystemFactory);
 };

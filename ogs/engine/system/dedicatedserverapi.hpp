@@ -27,29 +27,35 @@
  */
 
 /// @file
-
-// Same interface as in Source, used to start the engine as local host (server +
-// client)
-// Older versions of GoldSrc are using C interfaces for these purposes (?) (look
-// at dedicated
-// server launcher in 2.3 SDK)
+/// @brief engine launcher for dedicated mode
 
 #pragma once
 
 #include "common/commontypes.h"
-#include "engine_launcher_api.h"
+#include "engine_hlds_api.h"
+#include "idedicatedexports.h"
 
-class CEngineAPI : public IEngineAPI
+extern IDedicatedExports *dedicated_;
+
+class CDedicatedServerAPI : public IDedicatedServerAPI
 {
 public:
-	int Run(void *instance,
+	bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
+	int Shutdown();
 
-	        char *basedir,
-	        const char *cmdline,
-	        char *postRestartCmdLineArgs,
+	bool RunFrame();
 
-	        CreateInterfaceFn launcherFactory,
-	        CreateInterfaceFn filesystemFactory);
+	void AddConsoleText(char *text);
+
+	void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
+
+	// non-virtual function's of wrap for hooks a virtual
+	// Only need to HOOK_ENGINE
+	bool Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
+	int Shutdown_noVirt();
+	bool RunFrame_noVirt();
+	void AddConsoleText_noVirt(char *text);
+	void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char*pszMap);
+private:
+	char m_OrigCmd[1024];
 };
-
-void EXPORT F(IEngineAPI **api);

@@ -27,9 +27,10 @@
  */
 
 /// @file
+/// @brief client dll loader code
 
 #include "precompiled.hpp"
-#include "client/clientdll.hpp"
+#include "system/clientdll.hpp"
 #include "system/common.hpp"
 
 static dllfunc_t cdll_exports[] =
@@ -74,28 +75,30 @@ static dllfunc_t cdll_exports[] =
 { NULL, NULL }
 };
 
-// Client DLL Loader
+void *gpClientDLL = nullptr;
 
 bool ClientDLL_Load(const char *asPath)
 {
 	if(clgame.hInstance)
 		ClientDLL_Unload();
-
-	CL_EXPORT_FUNCS F; // export 'F'
-	const dllfunc_t *func;
-
-	clgame.hInstance = Com_LoadLibrary(asPath, false);
-	if(!clgame.hInstance)
+	
+	gpClientDLL = Com_LoadLibrary(asPath, false);
+	
+	if(!gpClientDLL)
 		return false;
-
+	
+	const dllfunc_t *func;
+	
 	// clear exports
 	for(func = cdll_exports; func && func->name; func++)
 		*func->func = NULL;
-
+	
+	CL_EXPORT_FUNCS F; // export 'F'
+	
 	// trying to get single export named 'F'
-	if((F = (void *)Com_GetProcAddress(clgame.hInstance, "F")) != NULL)
+	if((F = (void *)Com_GetProcAddress(gpClientDLL, "F")) != NULL)
 	{
-		MsgDev(D_NOTE, "CL_LoadProgs: found single callback export\n");
+		Con_Printf("%s: found single callback export\n", __FUNCTION__);
 
 		// trying to fill interface now
 		F(&clgame.dllFuncs);
@@ -110,7 +113,27 @@ bool ClientDLL_Load(const char *asPath)
 		// because all the exports are loaded through function 'F"
 		if(!func || !func->name)
 			critical_exports = false;
-	}
+	};
+	
+	for( func = cdll_exports; func && func->name != NULL; func++ )
+	{
+		// already get through 'F'
+		if( *func->func != NULL )
+			continue;
+
+		// functions are cleared before all the extensions are evaluated
+		if(!( *func->func = (void *)Com_GetProcAddress( gpClientDLL, func->name )))
+		{
+          	Con_Printf("%s: failed to get address of %s proc\n", __FUNCTION__, func->name );
+
+			if( critical_exports )
+			{
+				Com_FreeLibrary( gpClientDLL );
+				gpClientDLL = NULL;
+				return false;
+			};
+		};
+	};
 
 	return true;
 };
@@ -138,12 +161,12 @@ void ClientDLL_Unload()
 	if(!ClientDLL_IsLoaded())
 		return;
 	
-	Com_FreeLibrary(clgame.hInstance);
+	Com_FreeLibrary(gpClientDLL);
 };
 
 bool ClientDLL_IsLoaded()
 {
-	if(!clgame.hInstance)
+	if(!gpClientDLL)
 		return false;
 	
 	return true;
