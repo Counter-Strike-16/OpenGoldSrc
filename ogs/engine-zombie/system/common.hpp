@@ -83,8 +83,7 @@ typedef struct bf_write_s bf_write_t;
 extern bf_read_t bfread;
 extern bf_write_t bfwrite;
 
-extern int msg_badread;
-extern int msg_readcount;
+//============================================================================
 
 extern qboolean bigendien;
 
@@ -97,16 +96,18 @@ extern int (*LittleLong)(int l);
 extern float (*BigFloat)(float l);
 extern float (*LittleFloat)(float l);
 
+//============================================================================
+
 extern int com_argc;
 extern char **com_argv;
 
-extern char com_token[COM_TOKEN_LEN];
+extern char com_token[COM_TOKEN_LEN]; // 1024
 
 extern qboolean com_ignorecolons;
 extern qboolean s_com_token_unget;
 
 extern char com_clientfallback[MAX_PATH];
-extern char com_gamedir[MAX_PATH];
+extern char com_gamedir[MAX_PATH]; // MAX_OSPATH
 extern char com_cmdline[COM_MAX_CMD_LINE];
 
 typedef struct cache_user_s cache_user_t;
@@ -114,6 +115,8 @@ typedef struct cache_user_s cache_user_t;
 extern cache_user_t *loadcache;
 extern unsigned char *loadbuf;
 extern int loadsize;
+
+//============================================================================
 
 //#define Q_functions
 #ifndef Q_functions

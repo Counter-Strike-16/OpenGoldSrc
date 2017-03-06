@@ -32,6 +32,10 @@
 
 #include <cstring>
 
+////////////////////////////////////////
+
+void Memory_Init(void *buf, int size);
+
 void *Mem_Malloc(size_t size);
 void *Mem_ZeroMalloc(size_t size);
 void *Mem_Realloc(void *memblock, size_t size);

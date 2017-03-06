@@ -297,6 +297,13 @@ void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean a
 int GL_LoadTexture (char *identifier, int width, int height, byte *data, int mipmap, int alpha, int modulate);
 int GL_FindTexture (char *identifier);
 
+typedef struct
+{
+	float	x, y, z;
+	float	s, t;
+	float	r, g, b;
+} glvert_t;
+
 extern glvert_t glv;
 
 extern	int glx, gly, glwidth, glheight;
@@ -357,6 +364,24 @@ typedef struct
 	int			surfheight;	// in mipmapped texels
 } drawsurf_t;
 
+
+typedef enum {
+	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
+} ptype_t;
+
+// !!! if this is changed, it must be changed in d_ifacea.h too !!!
+typedef struct particle_s
+{
+// driver-usable fields
+	vec3_t		org;
+	float		color;
+// drivers never touch the following fields
+	struct particle_s	*next;
+	vec3_t		vel;
+	float		ramp;
+	float		die;
+	ptype_t		type;
+} particle_t;
 
 
 //====================================================

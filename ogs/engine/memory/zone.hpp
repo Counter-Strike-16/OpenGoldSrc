@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief zone, hunk and cache allocators
 
 #pragma once
 
@@ -80,10 +81,6 @@ extern int hunk_tempmark;
 extern qboolean hunk_tempactive;
 
 extern cache_system_t cache_head;
-
-////////////////////////////////////////
-
-void Memory_Init(void *buf, int size);
 
 ////////////////////////////////////////
 

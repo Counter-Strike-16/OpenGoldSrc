@@ -14,3 +14,7 @@
 #define	TYP_QPIC		66
 #define	TYP_SOUND		67
 #define	TYP_MIPTEX		68
+
+lumpinfo_t	*W_GetLumpinfo (char *name);
+void	*W_GetLumpName (char *name);
+void	*W_GetLumpNum (int num);

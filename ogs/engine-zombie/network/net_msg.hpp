@@ -39,6 +39,11 @@
 typedef struct sizebuf_s sizebuf_t;
 typedef struct usercmd_s usercmd_t;
 
+extern int msg_badread; // qboolean; set if a read goes beyond end of message
+extern int msg_readcount;
+
+//============================================================================
+
 void COM_BitOpsInit();
 
 void MSG_StartBitWriting(sizebuf_t *buf);
@@ -104,6 +109,8 @@ NOXREF float MSG_ReadCoord();
 NOXREF float MSG_ReadBitCoord();
 NOXREF void MSG_ReadBitVec3Coord(vec3_t fa);
 NOXREF void MSG_ReadVec3Coord(sizebuf_t *sb, vec3_t fa);
+
+//============================================================================
 
 class CNetMsg //: public CWriteBuffer, CReadBuffer
 {

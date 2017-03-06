@@ -30,7 +30,39 @@
 
 #include "precompiled.hpp"
 #include "memory/mem.hpp"
+#include "memory/zone.hpp"
 #include "system/common.hpp"
+#include "system/system.hpp"
+
+/*
+========================
+Memory_Init
+========================
+*/
+void Memory_Init(void *buf, int size)
+{
+	int zonesize = ZONE_DYNAMIC_SIZE;
+
+	hunk_base = (byte *)buf;
+	hunk_size = size;
+	hunk_low_used = 0;
+	hunk_high_used = 0;
+
+	Cache_Init();
+
+	int p = COM_CheckParm("-zone");
+
+	if(p)
+	{
+		if(p < com_argc - 1)
+			zonesize = Q_atoi(com_argv[p + 1]) * 1024;
+		else
+			Sys_Error("%s: you must specify a size in KB after -zone", __FUNCTION__);
+	};
+
+	mainzone = ((memzone_t *)Hunk_AllocName(zonesize, "zone"));
+	Z_ClearZone(mainzone, zonesize);
+};
 
 void *Mem_Malloc(size_t size)
 {

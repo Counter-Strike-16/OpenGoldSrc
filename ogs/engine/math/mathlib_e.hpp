@@ -33,19 +33,19 @@
 #include "maintypes.h"
 #include "rehlds/model.h"
 
-// up / down
-#define PITCH 0
-// left / right
-#define YAW 1
-// fall over
-#define ROLL 2
-
 #define RAD2DEG(x) ((float)(x) * (float)(180.f / M_PI))
 #define DEG2RAD(x) ((float)(x) * (float)(M_PI / 180.f))
 
 #ifdef HOOK_ENGINE
 #define vec3_origin (*pvec3_origin)
-#endif // HOOK_ENGINE
+#endif
+
+enum
+{
+	PITCH = 0,	///< up / down
+	YAW,		///< left / right
+	ROLL		///< fall over
+};
 
 extern vec3_t vec3_origin;
 

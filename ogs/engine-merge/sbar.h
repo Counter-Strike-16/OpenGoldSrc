@@ -1,5 +1,3 @@
-
-
 // the status bar is only redrawn if something has changed, but if anything
 // does, the entire thing will be redrawn for the next vid.numpages frames.
 
