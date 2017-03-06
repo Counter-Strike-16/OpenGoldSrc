@@ -75,16 +75,14 @@ static dllfunc_t cdll_exports[] =
 { NULL, NULL }
 };
 
-void *gpClientDLL = nullptr;
-
 bool ClientDLL_Load(const char *asPath)
 {
-	if(clgame.hInstance)
-		ClientDLL_Unload();
+	if(IsLoaded())
+		Unload();
 	
-	gpClientDLL = Com_LoadLibrary(asPath, false);
+	mpClientDLL = Com_LoadLibrary(asPath, false);
 	
-	if(!gpClientDLL)
+	if(!mpClientDLL)
 		return false;
 	
 	const dllfunc_t *func;
@@ -96,9 +94,9 @@ bool ClientDLL_Load(const char *asPath)
 	CL_EXPORT_FUNCS F; // export 'F'
 	
 	// trying to get single export named 'F'
-	if((F = (void *)Com_GetProcAddress(gpClientDLL, "F")) != NULL)
+	if((F = (void *)mpClientDLL->GetExportFunc("F")) != NULL)
 	{
-		Con_Printf("%s: found single callback export\n", __FUNCTION__);
+		Con_Printf("%s: found a single callback export\n", __FUNCTION__);
 
 		// trying to fill interface now
 		F(&clgame.dllFuncs);
@@ -122,14 +120,14 @@ bool ClientDLL_Load(const char *asPath)
 			continue;
 
 		// functions are cleared before all the extensions are evaluated
-		if(!( *func->func = (void *)Com_GetProcAddress( gpClientDLL, func->name )))
+		if(!( *func->func = (void *)mpClientDLL->GetExportFunc(func->name)))
 		{
           	Con_Printf("%s: failed to get address of %s proc\n", __FUNCTION__, func->name );
 
 			if( critical_exports )
 			{
-				Com_FreeLibrary( gpClientDLL );
-				gpClientDLL = NULL;
+				Com_FreeLibrary( mpClientDLL );
+				mpClientDLL = NULL;
 				return false;
 			};
 		};
@@ -138,9 +136,9 @@ bool ClientDLL_Load(const char *asPath)
 	return true;
 };
 
-bool ClientDLL_Reload()
+bool ClientDLL::Reload()
 {
-	if(!ClientDLL_IsLoaded())
+	if(!IsLoaded())
 		return false;
 
 	char sPrevPath[MAX_PATH];
@@ -148,25 +146,25 @@ bool ClientDLL_Reload()
 
 	Q_strncpy(sPrevPath, ClientDLL_GetPath(), charsmax(MAX_PATH));
 
-	ClientDLL_Unload();
+	Unload();
 
-	if(!ClientDLL_Load(sPrevPath))
+	if(!Load(sPrevPath))
 		return false;
 
 	return true;
 };
 
-void ClientDLL_Unload()
+void ClientDLL::Unload()
 {
-	if(!ClientDLL_IsLoaded())
+	if(!IsLoaded())
 		return;
 	
-	Com_FreeLibrary(gpClientDLL);
+	Com_FreeLibrary(mpClientDLL);
 };
 
-bool ClientDLL_IsLoaded()
+bool ClientDLL::IsLoaded()
 {
-	if(!gpClientDLL)
+	if(!mpClientDLL)
 		return false;
 	
 	return true;

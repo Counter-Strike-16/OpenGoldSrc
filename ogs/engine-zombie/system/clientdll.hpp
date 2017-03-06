@@ -33,11 +33,13 @@
 
 #include "engine/cdll_int.h"
 
-class CClientDLLRef
+class CSharedLib;
+
+class CClientDLL
 {
 public:
-	CClientDLLRef();
-	~CClientDLLRef();
+	CClientDLL();
+	~CClientDLL();
 
 	bool Load(const char *asPath);
 	bool Reload();
@@ -48,21 +50,18 @@ public:
 	cl_exportfuncs_t &operator*()
 	{
 		return &ptrtofuncs;
-	}
+	};
+	
 	cl_exportfuncs_t *operator->()
 	{
 		return ptrtofuncs;
-	}
+	};
+	
 	operator bool()
 	{
 		return ptrtofuncs ? true : false;
-	}
+	};
 */
 private:
+	CSharedLib *mpClientDLL;
 };
-
-bool ClientDLL_Load(const char *asPath);
-bool ClientDLL_Reload();
-void ClientDLL_Unload();
-
-bool ClientDLL_IsLoaded();
