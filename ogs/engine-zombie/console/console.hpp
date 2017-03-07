@@ -31,13 +31,14 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <list>
 #include "common/commontypes.h"
 #include "console/IConsole.hpp"
 
 const int CON_TEXTSIZE = 32768; // 16384;
 
-typedef std::map<cvar_t*, std::string> tConVarDescMap;
+class CConVar;
+typedef std::list<CConVar*> tConVarList;
 
 typedef struct
 {
@@ -119,6 +120,8 @@ public:
 	void Printf(int anPrintLevel, const char *asMsg, ...);
 	
 	const char *GetConVarDesc(const char *asName);
+	
+	CConVar *GetConVar(const char *asName);
 private:
-	tConVarDescMap mConVarDescMap;
+	tConVarList mlstConVars;
 };

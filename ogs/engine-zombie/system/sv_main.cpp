@@ -89,8 +89,7 @@ delta_t *g_pusercmddelta;
 int hashstrings_collisions;
 
 char *pr_strings;
-//qboolean scr_skipupdate;
-float scr_centertime_off;
+
 float g_LastScreenUpdateTime;
 
 globalvars_t gGlobalVariables;
@@ -246,8 +245,6 @@ cvar_t sv_rcon_maxfailures = { "sv_rcon_maxfailures", "10", 0, 0.0f, NULL };
 cvar_t sv_rcon_minfailuretime = { "sv_rcon_minfailuretime", "30", 0, 0.0f, NULL };
 cvar_t sv_rcon_banpenalty = { "sv_rcon_banpenalty", "0", 0, 0.0f, NULL };
 
-cvar_t scr_downloading = { "scr_downloading", "0", 0, 0.0f, NULL };
-
 #else // HOOK_ENGINE
 
 char *gNullString;
@@ -299,6 +296,7 @@ cvar_t violence_hblood;
 cvar_t violence_ablood;
 cvar_t violence_hgibs;
 cvar_t violence_agibs;
+
 cvar_t sv_newunit;
 
 cvar_t sv_clienttrace;
@@ -308,6 +306,7 @@ cvar_t sv_cheats;
 cvar_t sv_password;
 cvar_t sv_proxies;
 cvar_t sv_outofdatetime;
+
 cvar_t mapchangecfgfile;
 
 cvar_t sv_allow_download;
@@ -319,12 +318,15 @@ cvar_t sv_log_onefile;
 cvar_t sv_logbans;
 cvar_t sv_allow_upload;
 cvar_t sv_max_upload;
+
 cvar_t hpk_maxsize;
+
 cvar_t sv_visiblemaxplayers;
 
 cvar_t max_queries_sec;
 cvar_t max_queries_sec_global;
 cvar_t max_queries_window;
+
 cvar_t sv_logblocks;
 cvar_t sv_downloadurl;
 cvar_t sv_allow_dlfile;
@@ -334,8 +336,6 @@ cvar_t sv_rcon_minfailures;
 cvar_t sv_rcon_maxfailures;
 cvar_t sv_rcon_minfailuretime;
 cvar_t sv_rcon_banpenalty;
-
-cvar_t scr_downloading;
 
 #endif // HOOK_ENGINE
 
@@ -6103,7 +6103,8 @@ int SV_SpawnServer(qboolean bIsDemo, char *server, char *startspot)
 			Cvar_Set("hostname", "Half-Life");
 	}
 
-	scr_centertime_off = 0.0f;
+	scr_centertime_off = 0.0f; // why here?
+	
 	if(startspot)
 		Con_DPrintf("Spawn Server %s: [%s]\n", server, startspot);
 	else

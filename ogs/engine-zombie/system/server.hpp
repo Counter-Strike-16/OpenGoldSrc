@@ -538,8 +538,6 @@ extern cvar_t sv_rcon_maxfailures;
 extern cvar_t sv_rcon_minfailuretime;
 extern cvar_t sv_rcon_banpenalty;
 
-extern cvar_t scr_downloading;
-
 #ifdef REHLDS_FIXES
 enum GameType_e
 {

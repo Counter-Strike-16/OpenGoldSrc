@@ -219,8 +219,6 @@ NOBODY uint64 Q_strtoull(char *str);
 // strcpy that works correctly with overlapping src and dst buffers
 char *strcpy_safe(char *dst, char *src);
 
-char *Info_Serverinfo();
-
 unsigned char COM_Nibble(char c);
 void COM_HexConvert(const char *pszInput, int nInputLength, unsigned char *pOutput);
 NOXREF char *COM_BinPrintf(unsigned char *buf, int nLen);

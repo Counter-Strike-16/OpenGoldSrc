@@ -100,39 +100,6 @@ void Toggle_AuxLook_f (void)
 		Cvar_Set ("auxlook","1");
 }
 
-
-void Force_CenterView_f (void)
-{
-	cl.viewangles[PITCH] = 0;
-}
-
-
-/*
-===========
-IN_StartupMouse
-===========
-*/
-void IN_StartupMouse (void)
-{
-	if ( COM_CheckParm ("-nomouse") ) 
-		return; 
- 
-// check for mouse
-	regs.x.ax = 0;
-	dos_int86(0x33);
-	mouse_avail = regs.x.ax;
-	if (!mouse_avail)
-	{
-		Con_Printf ("No mouse found\n");
-		return;
-	}
-	
-	mouse_buttons = regs.x.bx;
-	if (mouse_buttons > 3)
-		mouse_buttons = 3;
-	Con_Printf("%d-button mouse available\n", mouse_buttons);
-}
-
 /*
 ===========
 IN_Init
@@ -147,10 +114,6 @@ void IN_Init (void)
 	Cvar_RegisterVariable (&joy_numbuttons);
 	Cvar_RegisterVariable (&aux_look);
 	Cmd_AddCommand ("toggle_auxlook", Toggle_AuxLook_f);
-	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
-
-	IN_StartupMouse ();
-	IN_StartupJoystick ();
 
 	i = COM_CheckParm ("-control");
 	if (i)
@@ -158,16 +121,6 @@ void IN_Init (void)
 		extern_control = real2ptr(Q_atoi (com_argv[i+1]));
 		IN_StartupExternal ();
 	}
-}
-
-/*
-===========
-IN_Shutdown
-===========
-*/
-void IN_Shutdown (void)
-{
-
 }
 
 

@@ -1,185 +1,136 @@
-// vid_null.c -- null video driver to aid porting efforts
-// this assumes that one of the refs is statically linked to the executable
-
-#include "../client/client.h"
-#include "d_local.hpp"
-#include "quakedef.hpp"
-
-viddef_t vid; // global video state
-
-#define BASEWIDTH 320
-#define BASEHEIGHT 200
-
-byte vid_buffer[BASEWIDTH * BASEHEIGHT];
-short zbuffer[BASEWIDTH * BASEHEIGHT];
-byte surfcache[256 * 1024];
-
-unsigned short d_8to16table[256];
-unsigned d_8to24table[256];
-
-viddef_t viddef; // global video state
-
-refexport_t re;
-
-refexport_t GetRefAPI(refimport_t rimp);
-
 /*
-==========================================================================
-
-DIRECT LINK GLUE
-
-==========================================================================
+*
+*    This program is free software; you can redistribute it and/or modify it
+*    under the terms of the GNU General Public License as published by the
+*    Free Software Foundation; either version 2 of the License, or (at
+*    your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful, but
+*    WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software Foundation,
+*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*    In addition, as a special exception, the author gives permission to
+*    link the code of this program with the Half-Life Game Engine ("HL
+*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*    L.L.C ("Valve").  You must obey the GNU General Public License in all
+*    respects for all of the code used other than the HL Engine and MODs
+*    from Valve.  If you modify this file, you may extend this exception
+*    to your version of the file, but you are not obligated to do so.  If
+*    you do not wish to do so, delete this exception statement from your
+*    version.
+*
 */
 
-#define MAXPRINTMSG 4096
-void VID_Printf(int print_level, char *fmt, ...)
-{
-	va_list argptr;
-	char msg[MAXPRINTMSG];
+/// @file
 
-	va_start(argptr, fmt);
-	vsprintf(msg, fmt, argptr);
-	va_end(argptr);
+#include "precompiled.h"
 
-	if(print_level == PRINT_ALL)
-		Com_Printf("%s", msg);
-	else
-		Com_DPrintf("%s", msg);
-}
-
-void VID_Error(int err_level, char *fmt, ...)
-{
-	va_list argptr;
-	char msg[MAXPRINTMSG];
-
-	va_start(argptr, fmt);
-	vsprintf(msg, fmt, argptr);
-	va_end(argptr);
-
-	Com_Error(err_level, "%s", msg);
-}
-
-void VID_NewWindow(int width, int height)
-{
-	viddef.width = width;
-	viddef.height = height;
-}
+float scr_con_current;
 
 /*
-** VID_GetModeInfo
+* Globals initialization
 */
-typedef struct vidmode_s
+#ifndef HOOK_ENGINE
+
+int r_pixbytes = 1;
+cvar_t gl_vsync = { "gl_vsync", "1", 0, 0.0f, NULL };
+
+#else // HOOK_ENGINE
+
+int r_pixbytes;
+cvar_t gl_vsync;
+
+#endif // HOOK_ENGINE
+
+void VID_SetPalette(unsigned char *palette)
 {
-	const char *description;
-	int width, height;
-	int mode;
-} vidmode_t;
-
-vidmode_t vid_modes[] = {
-	{ "Mode 0: 320x240", 320, 240, 0 }, { "Mode 1: 400x300", 400, 300, 1 }, { "Mode 2: 512x384", 512, 384, 2 }, { "Mode 3: 640x480", 640, 480, 3 }, { "Mode 4: 800x600", 800, 600, 4 }, { "Mode 5: 960x720", 960, 720, 5 }, { "Mode 6: 1024x768", 1024, 768, 6 }, { "Mode 7: 1152x864", 1152, 864, 7 }, { "Mode 8: 1280x960", 1280, 960, 8 }, { "Mode 9: 1600x1200", 1600, 1200, 9 }
-};
-#define VID_NUM_MODES (sizeof(vid_modes) / sizeof(vid_modes[0]))
-
-qboolean VID_GetModeInfo(int *width, int *height, int mode)
-{
-	if(mode < 0 || mode >= VID_NUM_MODES)
-		return false;
-
-	*width = vid_modes[mode].width;
-	*height = vid_modes[mode].height;
-
-	return true;
 }
-
-void VID_Init()
+void VID_ShiftPalette(unsigned char *palette)
 {
-	refimport_t ri;
-
-	viddef.width = 320;
-	viddef.height = 240;
-
-	ri.Cmd_AddCommand = Cmd_AddCommand;
-	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
-	ri.Cmd_Argc = Cmd_Argc;
-	ri.Cmd_Argv = Cmd_Argv;
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
-	ri.Con_Printf = VID_Printf;
-	ri.Sys_Error = VID_Error;
-	ri.FS_LoadFile = FS_LoadFile;
-	ri.FS_FreeFile = FS_FreeFile;
-	ri.FS_Gamedir = FS_Gamedir;
-	ri.Vid_NewWindow = VID_NewWindow;
-	ri.Cvar_Get = Cvar_Get;
-	ri.Cvar_Set = Cvar_Set;
-	ri.Cvar_SetValue = Cvar_SetValue;
-	ri.Vid_GetModeInfo = VID_GetModeInfo;
-
-	re = GetRefAPI(ri);
-
-	if(re.api_version != API_VERSION)
-		Com_Error(ERR_FATAL, "Re has incompatible api_version");
-
-	// call the init function
-	if(re.Init(NULL, NULL) == -1)
-		Com_Error(ERR_FATAL, "Couldn't start refresh");
 }
-
-void VID_Shutdown()
+void VID_WriteBuffer(const char *pFilename)
 {
-	if(re.Shutdown)
-		re.Shutdown();
 }
-
-void VID_CheckChanges()
+int VID_Init(unsigned short *palette)
+{
+	return 1;
+}
+void D_FlushCaches()
+{
+}
+void R_SetStackBase()
+{
+}
+void SCR_UpdateScreen()
+{
+}
+void V_Init()
+{
+}
+void Draw_Init()
+{
+}
+void SCR_Init()
+{
+}
+void R_Init()
+{
+}
+void R_ForceCVars(qboolean multiplayer)
+{
+}
+void SCR_BeginLoadingPlaque(qboolean reconnect)
+{
+}
+void SCR_EndLoadingPlaque()
+{
+}
+void R_InitSky()
+{
+}
+void R_MarkLeaves()
 {
 }
 
-void VID_MenuInit()
+void R_InitTextures()
 {
+	r_notexture_mip = (texture_t *)Hunk_AllocName(404, "notexture");
+	r_notexture_mip->height = 16;
+	r_notexture_mip->width = 16;
+	r_notexture_mip->offsets[0] = 64;
+	r_notexture_mip->offsets[1] = 320;
+	r_notexture_mip->offsets[2] = 384;
+	r_notexture_mip->offsets[3] = 400;
+
+	for(int m = 0; m < 4; m++)
+	{
+		int texSize = 16 >> m;
+		unsigned char *dest = (unsigned char *)r_notexture_mip + r_notexture_mip->offsets[m];
+
+		for(int x = 0; x < texSize; x++)
+		{
+			for(int y = 0; y < texSize; y++, dest++)
+			{
+				if(x < (texSize / 2) == y < (texSize / 2))
+					*dest = -1;
+				else
+					*dest = 0;
+			}
+		}
+	}
 }
 
-void VID_MenuDraw()
+void StartLoadingProgressBar(const char *loadingType, int numProgressPoints)
 {
 }
-
-const char *VID_MenuKey(int k)
-{
-	return NULL;
-}
-
-void VID_Init(unsigned char *palette)
-{
-	vid.maxwarpwidth = vid.width = vid.conwidth = BASEWIDTH;
-	vid.maxwarpheight = vid.height = vid.conheight = BASEHEIGHT;
-	vid.aspect = 1.0;
-	vid.numpages = 1;
-	vid.colormap = host_colormap;
-	vid.fullbright = 256 - LittleLong(*((int *)vid.colormap + 2048));
-	vid.buffer = vid.conbuffer = vid_buffer;
-	vid.rowbytes = vid.conrowbytes = BASEWIDTH;
-
-	d_pzbuffer = zbuffer;
-	D_InitCaches(surfcache, sizeof(surfcache));
-}
-
-void VID_Update(vrect_t *rects)
+void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction)
 {
 }
-
-/*
-================
-D_BeginDirectRect
-================
-*/
-void D_BeginDirectRect(int x, int y, byte *pbitmap, int width, int height)
-{
-}
-
-/*
-================
-D_EndDirectRect
-================
-*/
-void D_EndDirectRect(int x, int y, int width, int height)
+void SetLoadingProgressBarStatusText(const char *statusText)
 {
 }

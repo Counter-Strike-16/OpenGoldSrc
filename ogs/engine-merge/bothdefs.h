@@ -28,15 +28,6 @@
 
 #define	MINIMUM_MEMORY	0x550000
 
-// up / down
-#define	PITCH	0
-
-// left / right
-#define	YAW		1
-
-// fall over
-#define	ROLL	2
-
 
 #define	MAX_SCOREBOARD		16		// max numbers of players
 
@@ -86,8 +77,6 @@
 // item flags
 //
 
-#define	IT_GRENADE_LAUNCHER		16
-#define	IT_ROCKET_LAUNCHER		32
 #define	IT_LIGHTNING			64
 #define	IT_SUPER_LIGHTNING		128
 

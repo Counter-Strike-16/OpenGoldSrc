@@ -48,6 +48,7 @@ void Log_Printf(const char *fmt, ...);
 void Log_PrintServerVars();
 void Log_Close();
 void Log_Open();
+
 void SV_SetLogAddress_f();
 void SV_AddLogAddress_f();
 void SV_DelLogAddress_f();

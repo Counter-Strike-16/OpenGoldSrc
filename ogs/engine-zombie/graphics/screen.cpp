@@ -91,6 +91,8 @@ float scr_conlines; // lines of console to display; 0.0 to 1.0 lines of console 
 float oldscreensize, oldfov;
 float oldsbar;
 
+float scr_centertime_off;
+
 cvar_t scr_viewsize = { "viewsize", "100", true };
 cvar_t scr_fov = { "fov", "90" }; // 10 - 170
 cvar_t scr_conspeed = { "scr_conspeed", "300" };
@@ -100,6 +102,19 @@ cvar_t scr_showturtle = { "showturtle", "0" };
 cvar_t scr_showpause = { "showpause", "1" };
 cvar_t scr_printspeed = { "scr_printspeed", "8" };
 cvar_t scr_allowsnap = { "scr_allowsnap", "1" };
+
+/*
+ * Globals initialization
+ */
+#ifndef HOOK_ENGINE
+
+cvar_t scr_downloading = { "scr_downloading", "0", 0, 0.0f, NULL };
+
+#else // HOOK_ENGINE
+
+cvar_t scr_downloading;
+
+#endif // HOOK_ENGINE
 
 qboolean scr_initialized; // ready to draw
 

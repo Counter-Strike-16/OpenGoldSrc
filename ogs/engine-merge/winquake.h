@@ -15,6 +15,8 @@
 #endif
 #endif
 
+#define	WINDOW_STYLE	(WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_VISIBLE)
+
 extern	HINSTANCE	global_hInstance;
 extern	int			global_nCmdShow;
 
@@ -41,7 +43,7 @@ typedef enum {MS_WINDOWED, MS_FULLSCREEN, MS_FULLDIB, MS_UNINIT} modestate_t;
 
 extern modestate_t	modestate;
 
-extern HWND			mainwindow;
+extern HWND			mainwindow; // cl_hwnd in q2 but gs still uses that
 extern qboolean		ActiveApp, Minimized;
 
 extern qboolean	WinNT;

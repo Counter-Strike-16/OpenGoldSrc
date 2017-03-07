@@ -39,15 +39,18 @@ extern int sb_lines;
 extern int clearnotify; // set to 0 whenever notify text is drawn
 extern qboolean scr_disabled_for_loading;
 
-extern cvar_t scr_viewsize;
+extern cvar_t scr_viewsize; // cvar_t *
+extern cvar_t *crosshair;
+
+extern cvar_t scr_downloading;
 
 // only the render window will be updated unless these variables are flagged
 extern int scr_copytop;
 extern int scr_copyeverything;
 
-qboolean scr_skipupdate;
+extern qboolean scr_skipupdate; // wasn't extern
 
-qboolean block_drawing;
+extern qboolean block_drawing; // wasn't extern
 
 void SCR_Init();
 
@@ -71,9 +74,6 @@ void	SCR_DebugGraph (float value, int color);
 void	SCR_TouchPics ();
 
 void	SCR_RunConsole ();
-
-extern	cvar_t		*scr_viewsize;
-extern	cvar_t		*crosshair;
 
 extern	vrect_t		scr_vrect;		// position of render window
 

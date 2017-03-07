@@ -90,9 +90,6 @@ void Com_BlockFullChecksum (void *buffer, int len, unsigned char *outbuf);
 byte	COM_BlockSequenceCheckByte (byte *base, int length, int sequence, unsigned mapchecksum);
 byte	COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
-#include "../game/q_shared.h"
-
-
 #define	VERSION		3.19
 
 #define	BASEDIRNAME	"baseq2"
@@ -154,15 +151,8 @@ void SZ_Init (sizebuf_t *buf, byte *data, int length);
 struct usercmd_s;
 struct entity_state_s;
 
-void MSG_WriteChar (sizebuf_t *sb, int c);
-void MSG_WriteByte (sizebuf_t *sb, int c);
-void MSG_WriteShort (sizebuf_t *sb, int c);
-void MSG_WriteLong (sizebuf_t *sb, int c);
-void MSG_WriteFloat (sizebuf_t *sb, float f);
-void MSG_WriteString (sizebuf_t *sb, char *s);
 void MSG_WriteCoord (sizebuf_t *sb, float f);
 void MSG_WritePos (sizebuf_t *sb, vec3_t pos);
-void MSG_WriteAngle (sizebuf_t *sb, float f);
 void MSG_WriteAngle16 (sizebuf_t *sb, float f);
 void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
 void MSG_WriteDeltaEntity (struct entity_state_s *from, struct entity_state_s *to, sizebuf_t *msg, qboolean force, qboolean newentity);
@@ -204,11 +194,9 @@ extern	float	LittleFloat (float l);
 int	COM_Argc (void);
 char *COM_Argv (int arg);	// range and null checked
 void COM_ClearArgv (int arg);
-int COM_CheckParm (char *parm);
 void COM_AddParm (char *parm);
 
 void COM_Init (void);
-void COM_InitArgv (int argc, char **argv);
 
 char *CopyString (char *in);
 
@@ -385,18 +373,8 @@ then searches for a command or variable that matches the first token.
 
 void	Cmd_RemoveCommand (char *cmd_name);
 
-char 	*Cmd_CompleteCommand (char *partial);
-// attempts to match a partial command for automatic command line completion
-// returns NULL if nothing fits
-
 
 void	Cmd_TokenizeString (char *text, qboolean macroExpand);
-
-
-void	Cmd_ForwardToServer (void);
-// adds the current command line as a clc_stringcmd to the client message.
-// things like godmode, noclip, etc, are commands directed to the server,
-// so when they are typed in at the console, they will need to be forwarded.
 
 /////////////////////
 
@@ -404,9 +382,6 @@ cvar_t *Cvar_Get (char *var_name, char *value, int flags);
 // creates the variable if it doesn't exist, or returns the existing one
 // if it exists, the value will not be changed, but flags will be ORed in
 // that allows variables to be unarchived without needing bitflags
-
-cvar_t 	*Cvar_Set (char *var_name, char *value);
-// will create the variable if it doesn't exist
 
 cvar_t *Cvar_ForceSet (char *var_name, char *value);
 // will set the variable even if NOSET or LATCH
@@ -418,9 +393,6 @@ void	Cvar_GetLatchedVars (void);
 
 char	*Cvar_Userinfo (void);
 // returns an info string containing all the CVAR_USERINFO cvars
-
-char	*Cvar_Serverinfo (void);
-// returns an info string containing all the CVAR_SERVERINFO cvars
 
 extern	qboolean	userinfo_modified;
 // this is set each time a CVAR_USERINFO variable is changed
@@ -481,17 +453,6 @@ qboolean Netchan_NeedReliable (netchan_t *chan);
 void Netchan_Transmit (netchan_t *chan, int length, byte *data);
 void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data);
 void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...);
-
-
-
-/*
-==============================================================
-
-CMODEL
-
-==============================================================
-*/
-
 
 #include "../qcommon/qfiles.h"
 
@@ -620,9 +581,7 @@ byte		COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 float	frand(void);	// 0 ti 1
 float	crand(void);	// -1 to 1
 
-extern	cvar_t	*developer;
 extern	cvar_t	*dedicated;
-extern	cvar_t	*host_speeds;
 extern	cvar_t	*log_stats;
 
 extern	FILE *log_stats_file;

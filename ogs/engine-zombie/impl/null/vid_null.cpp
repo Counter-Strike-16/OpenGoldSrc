@@ -29,7 +29,7 @@
 /// @file
 /// @brief null video driver to aid porting efforts
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "graphics/vid.hpp"
 
 float scr_con_current;

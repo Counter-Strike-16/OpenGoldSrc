@@ -32,7 +32,6 @@ cvar_t *joy_yawsensitivity;
 cvar_t *joy_upthreshold;
 cvar_t *joy_upsensitivity;
 
-qboolean joy_avail, joy_advancedinit, joy_haspov;
 DWORD joy_oldbuttonstate, joy_oldpovstate;
 
 qboolean in_appactive;
@@ -156,11 +155,6 @@ void IN_DeactivateMouse(void)
 		;
 }
 
-/*
-===========
-IN_StartupMouse
-===========
-*/
 void IN_StartupMouse(void)
 {
 	cvar_t *cv;
@@ -168,11 +162,6 @@ void IN_StartupMouse(void)
 	cv = Cvar_Get("in_initmouse", "1", CVAR_NOSET);
 	if(!cv->value)
 		return;
-
-	mouseinitialized = true;
-	mouseparmsvalid =
-	SystemParametersInfo(SPI_GETMOUSE, 0, originalmouseparms, 0);
-	mouse_buttons = 3;
 }
 
 /*
@@ -200,8 +189,6 @@ void IN_MouseEvent(int mstate)
 			Key_Event(K_MOUSE1 + i, false, sys_msg_time);
 		}
 	}
-
-	mouse_oldbuttonstate = mstate;
 }
 
 /*

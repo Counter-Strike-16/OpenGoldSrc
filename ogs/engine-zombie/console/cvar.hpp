@@ -104,3 +104,6 @@ void Cmd_CvarList_f();
 NOXREF int Cvar_CountServerVariables();
 void Cvar_UnlinkExternals();
 void Cvar_CmdInit();
+
+// returns an info string containing all the CVAR_SERVERINFO cvars
+char *Cvar_Serverinfo();

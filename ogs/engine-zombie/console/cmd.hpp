@@ -143,12 +143,17 @@ void Cmd_RemoveWrapperCmds();
 
 qboolean Cmd_Exists(const char *cmd_name);
 
-NOXREF char *Cmd_CompleteCommand(char *search, int forward);
+// attempts to match a partial command for automatic command line completion
+// returns NULL if nothing fits
+NOXREF char *Cmd_CompleteCommand(char *partial, int forward);
 
 // Parses a single line of text into arguments and tries to execute it
 // as if it was typed at the console
 void Cmd_ExecuteString(char *text, cmd_source_t src);
 
+// adds the current command line as a clc_stringcmd to the client message.
+// things like godmode, noclip, etc, are commands directed to the server,
+// so when they are typed in at the console, they will need to be forwarded.
 qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf);
 void Cmd_ForwardToServer();
 qboolean Cmd_ForwardToServerUnreliable();

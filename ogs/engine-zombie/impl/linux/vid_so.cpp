@@ -11,25 +11,16 @@
 #include <unistd.h>
 
 #include "../client/client.hpp"
-
 #include "../linux/rw_linux.hpp"
 
 // Structure containing functions exported from refresh DLL
 refexport_t re;
-
-// Console variables that we need to access from this module
-cvar_t *vid_gamma;
-cvar_t *vid_ref;  // Name of Refresh DLL loaded
-cvar_t *vid_xpos; // X coordinate of window position
-cvar_t *vid_ypos; // Y coordinate of window position
-cvar_t *vid_fullscreen;
 
 // Global variables used internally by this module
 viddef_t viddef;      // global video state; used by other modules
 void *reflib_library; // Handle to refresh DLL
 qboolean reflib_active = 0;
 
-#define VID_NUM_MODES (sizeof(vid_modes) / sizeof(vid_modes[0]))
 
 /** KEYBOARD **************************************************************/
 
@@ -51,52 +42,6 @@ void (*RW_IN_Move_fp)(usercmd_t *cmd);
 void (*RW_IN_Frame_fp)();
 
 void Real_IN_Init();
-
-/*
-==========================================================================
-
-DLL GLUE
-
-==========================================================================
-*/
-
-#define MAXPRINTMSG 4096
-void VID_Printf(int print_level, char *fmt, ...)
-{
-	va_list argptr;
-	char msg[MAXPRINTMSG];
-	static qboolean inupdate;
-
-	va_start(argptr, fmt);
-	vsprintf(msg, fmt, argptr);
-	va_end(argptr);
-
-	if(print_level == PRINT_ALL)
-		Com_Printf("%s", msg);
-	else
-		Com_DPrintf("%s", msg);
-}
-
-void VID_Error(int err_level, char *fmt, ...)
-{
-	va_list argptr;
-	char msg[MAXPRINTMSG];
-	static qboolean inupdate;
-
-	va_start(argptr, fmt);
-	vsprintf(msg, fmt, argptr);
-	va_end(argptr);
-
-	Com_Error(err_level, "%s", msg);
-}
-
-//==========================================================================
-
-
-
-
-
-
 
 void VID_FreeReflib()
 {
@@ -314,7 +259,7 @@ void VID_CheckChanges()
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
-		sprintf(name, "ref_%s.so", vid_ref->string);
+		sprintf(name, "r_%s.so", vid_ref->string);
 		if(!VID_LoadRefresh(name))
 		{
 			if(strcmp(vid_ref->string, "soft") == 0 ||
@@ -367,9 +312,6 @@ void VID_Init()
 
 	/* Add some console commands that we want to handle */
 	Cmd_AddCommand("vid_restart", VID_Restart_f);
-
-	/* Disable the 3Dfx splash screen */
-	putenv("FX_GLIDE_NO_SPLASH=0");
 
 	/* Start the graphics mode and load refresh DLL */
 	VID_CheckChanges();

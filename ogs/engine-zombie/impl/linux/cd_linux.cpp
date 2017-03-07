@@ -41,7 +41,7 @@
 
 #include <linux/cdrom.h>
 
-#include "quakedef.h"
+#include "commondef.hpp"
 
 static qboolean cdValid = false;
 static qboolean playing = false;
@@ -57,7 +57,7 @@ static byte maxTrack;
 static int cdfile = -1;
 static char cd_dev[64] = "/dev/cdrom";
 
-static void CDAudio_Eject(void)
+static void CDAudio_Eject()
 {
 	if(cdfile == -1 || !enabled)
 		return; // no cd init'd
@@ -66,7 +66,7 @@ static void CDAudio_Eject(void)
 		Con_DPrintf("ioctl cdromeject failed\n");
 }
 
-static void CDAudio_CloseDoor(void)
+static void CDAudio_CloseDoor()
 {
 	if(cdfile == -1 || !enabled)
 		return; // no cd init'd
@@ -75,7 +75,7 @@ static void CDAudio_CloseDoor(void)
 		Con_DPrintf("ioctl cdromclosetray failed\n");
 }
 
-static int CDAudio_GetAudioDiskInfo(void)
+static int CDAudio_GetAudioDiskInfo()
 {
 	struct cdrom_tochdr tochdr;
 
@@ -165,7 +165,7 @@ void CDAudio_Play(byte track, qboolean looping)
 		CDAudio_Pause();
 }
 
-void CDAudio_Stop(void)
+void CDAudio_Stop()
 {
 	if(cdfile == -1 || !enabled)
 		return;
@@ -180,7 +180,7 @@ void CDAudio_Stop(void)
 	playing = false;
 }
 
-void CDAudio_Pause(void)
+void CDAudio_Pause()
 {
 	if(cdfile == -1 || !enabled)
 		return;
@@ -195,7 +195,7 @@ void CDAudio_Pause(void)
 	playing = false;
 }
 
-void CDAudio_Resume(void)
+void CDAudio_Resume()
 {
 	if(cdfile == -1 || !enabled)
 		return;
@@ -211,7 +211,7 @@ void CDAudio_Resume(void)
 	playing = true;
 }
 
-static void CD_f(void)
+static void CD_f()
 {
 	char *command;
 	int ret;
@@ -329,7 +329,7 @@ static void CD_f(void)
 	}
 }
 
-void CDAudio_Update(void)
+void CDAudio_Update()
 {
 	struct cdrom_subchnl subchnl;
 	static time_t lastchk;
@@ -373,7 +373,7 @@ void CDAudio_Update(void)
 	}
 }
 
-int CDAudio_Init(void)
+int CDAudio_Init()
 {
 	int i;
 
@@ -416,7 +416,7 @@ int CDAudio_Init(void)
 	return 0;
 }
 
-void CDAudio_Shutdown(void)
+void CDAudio_Shutdown()
 {
 	if(!initialized)
 		return;

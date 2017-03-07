@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,101 +27,15 @@
  */
 
 /// @file
-/// @brief this file can stub out the entire client system for pure dedicated servers
 
-#include "precompiled.hpp"
-#include "client/client.hpp"
+#pragma once
 
-void CL_RecordHUDCommand(char *cmdname)
+class CConVar
 {
+public:
+	const char *GetName(){return mpWrapped->name;}
+	const char *GetDesc(){return msDesc;}
+private:
+	cvar_t *mpWrapped;
+	const char *msDesc;
 };
-
-qboolean CL_CheckFile(sizebuf_t *msg, char *filename)
-{
-	return 1;
-};
-
-void EXT_FUNC CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel)
-{
-};
-
-void CL_PrintLogos()
-{
-};
-
-qboolean CL_RequestMissingResources()
-{
-	return 0;
-};
-
-void CL_Move()
-{
-};
-
-void CL_HudMessage(const char *pMessage)
-{
-};
-
-void Chase_Init()
-{
-};
-
-int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf)
-{
-	return 0;
-};
-
-
-
-void CL_SetLastUpdate()
-{
-}
-
-void CL_WriteMessageHistory(int starting_count, int cmd)
-{
-};
-
-void CL_MoveSpectatorCamera()
-{
-};
-
-
-
-void CL_UpdateModuleC()
-{
-}
-
-
-
-
-void SetCareerAudioState(int state)
-{
-};
-
-
-void Key_Bind_Null_f()
-{
-}
-
-void CL_Drop()
-{
-}
-
-void CL_Frame(int msec)
-{
-}
-
-void Con_Print(char *text)
-{
-}
-
-void Cmd_ForwardToServer()
-{
-	char *cmd = Cmd_Argv(0);
-	Com_Printf("Unknown command \"%s\"\n", cmd);
-}
-
-void Key_Init()
-{
-	Cmd_AddCommand("bind", Key_Bind_Null_f);
-}

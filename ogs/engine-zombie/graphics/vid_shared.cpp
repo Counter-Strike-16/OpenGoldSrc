@@ -1,25 +1,11 @@
-/*
-============
-VID_Restart_f
+#define VID_NUM_MODES (sizeof(vid_modes) / sizeof(vid_modes[0]))
 
-Console command to re-start the video mode and refresh DLL. We do this
-simply by setting the modified flag for the vid_ref variable, which will
-cause the entire video mode and refresh DLL to be reset on the next frame.
-============
-*/
-/*
-============
-VID_Restart_f
-
-Console command to re-start the video mode and refresh DLL. We do this
-simply by setting the modified flag for the vid_ref variable, which will
-cause the entire video mode and refresh DLL to be reset on the next frame.
-============
-*/
-void VID_Restart_f()
-{
-	vid_ref->modified = true;
-};
+// Console variables that we need to access from this module
+cvar_t *vid_gamma;
+cvar_t *vid_ref;  // Name of Render DLL loaded
+cvar_t *vid_xpos; // X coordinate of window position
+cvar_t *vid_ypos; // Y coordinate of window position
+cvar_t *vid_fullscreen;
 
 typedef struct vidmode_s
 {
@@ -85,3 +71,51 @@ void VID_NewWindow(int width, int height)
 	
 	//cl.force_refdef = true; // can't use a paused refdef
 };
+
+/*
+==========================================================================
+
+DLL GLUE
+
+==========================================================================
+*/
+
+const int MAXPRINTMSG = 4096;
+
+void VID_Printf(int print_level, char *fmt, ...)
+{
+	va_list argptr;
+	char msg[MAXPRINTMSG];
+	static qboolean inupdate;
+
+	va_start(argptr, fmt);
+	vsprintf(msg, fmt, argptr);
+	va_end(argptr);
+
+	if(print_level == PRINT_ALL)
+		Con_Printf("%s", msg);
+	else if(print_level == PRINT_DEVELOPER)
+		Con_DPrintf("%s", msg);
+#ifdef WIN32
+	else if(print_level == PRINT_ALERT)
+	{
+		MessageBox(0, msg, "PRINT_ALERT", MB_ICONWARNING);
+		OutputDebugString(msg);
+	}
+#endif
+}
+
+void VID_Error(int err_level, char *fmt, ...)
+{
+	va_list argptr;
+	char msg[MAXPRINTMSG];
+	static qboolean inupdate;
+
+	va_start(argptr, fmt);
+	vsprintf(msg, fmt, argptr);
+	va_end(argptr);
+
+	Com_Error(err_level, "%s", msg);
+}
+
+//==========================================================================

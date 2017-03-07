@@ -1,6 +1,3 @@
-
-
-
 // upper design bounds
 
 #define	MAX_MAP_HULLS		4

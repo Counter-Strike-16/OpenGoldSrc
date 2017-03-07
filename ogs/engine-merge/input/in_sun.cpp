@@ -143,15 +143,6 @@ void IN_Shutdown (void)
 }
 
 //
-// IN_Commands - process buttons
-//
-
-void IN_Commands (void)
-{
-	// done in X event handler
-}
-
-//
 // IN_Move - process mouse moves
 //
 
