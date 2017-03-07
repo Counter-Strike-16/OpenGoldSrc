@@ -36,10 +36,6 @@
 #include "winquake.hpp"
 //#include "zmouse.h"
 
-// Structure containing functions exported from render DLL
-// refexport_t	re;
-IRender *gpRender = nullptr;
-
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL \
 	(WM_MOUSELAST + 1) // message that will be supported by the OS
@@ -47,21 +43,10 @@ IRender *gpRender = nullptr;
 
 static UINT MSH_MOUSEWHEEL;
 
-// Global variables used internally by this module
-viddef_t viddef;          // global video state; used by other modules
-HINSTANCE reflib_library; // Handle to refresh DLL
-qboolean reflib_active = 0;
-
-HWND mainwindow; // Main window handle for life of program; Hello sweety
 
 LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 extern unsigned sys_msg_time;
-
-/*
-** WIN32 helper functions
-*/
-extern qboolean s_win95;
 
 //==========================================================================
 

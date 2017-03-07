@@ -13,15 +13,6 @@
 #include "../client/client.hpp"
 #include "../linux/rw_linux.hpp"
 
-// Structure containing functions exported from refresh DLL
-refexport_t re;
-
-// Global variables used internally by this module
-viddef_t viddef;      // global video state; used by other modules
-void *reflib_library; // Handle to refresh DLL
-qboolean reflib_active = 0;
-
-
 /** KEYBOARD **************************************************************/
 
 void Do_Key_Event(int key, qboolean down);

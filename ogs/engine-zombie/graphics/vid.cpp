@@ -31,6 +31,11 @@
 #include "precompiled.hpp"
 #include "graphics/vid.hpp"
 
+// Global variables used internally by this module
+viddef_t viddef; // global video state; used by other modules
+
+HWND mainwindow; // Main window handle for life of program
+
 cvar_t vid_ref = {"vid_ref", "soft", FCVAR_ARCHIVE};
 cvar_t vid_xpos = {"vid_xpos", "3", FCVAR_ARCHIVE};
 cvar_t vid_ypos = {"vid_ypos", "22", FCVAR_ARCHIVE};

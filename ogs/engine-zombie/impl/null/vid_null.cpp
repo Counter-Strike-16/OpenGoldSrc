@@ -28,9 +28,13 @@
 
 /// @file
 /// @brief null video driver to aid porting efforts
+/// this assumes that one of the refs is statically linked to the executable (not)
 
 #include "precompiled.hpp"
 #include "graphics/vid.hpp"
+#include "system/client.hpp"
+#include "commondef.hpp"
+#include "d_local.hpp"
 
 float scr_con_current;
 
@@ -49,15 +53,122 @@ cvar_t gl_vsync;
 
 #endif // HOOK_ENGINE
 
+viddef_t	vid; // viddef // global video state
+
+const int BASEWIDTH = 640; // 800
+const int BASEHEIGHT = 480; // 600
+
+byte	vid_buffer[BASEWIDTH*BASEHEIGHT];
+short	zbuffer[BASEWIDTH*BASEHEIGHT];
+byte	surfcache[256*1024];
+
+unsigned short	d_8to16table[256];
+unsigned	d_8to24table[256];
+
+refexport_t re;
+
+refexport_t GetRefAPI(refimport_t rimp);
+
 void VID_SetPalette(unsigned char *palette){};
 
 void VID_ShiftPalette(unsigned char *palette){};
 
 void VID_WriteBuffer(const char *pFilename){};
 
-int VID_Init(unsigned short *palette)
+int VID_Init(unsigned short *palette) // was uchar* in qw
 {
+	/*
+	vid.maxwarpwidth = vid.width = vid.conwidth = BASEWIDTH;
+	vid.maxwarpheight = vid.height = vid.conheight = BASEHEIGHT;
+	vid.aspect = 1.0;
+	vid.numpages = 1;
+	vid.colormap = host_colormap;
+	vid.fullbright = 256 - LittleLong(*((int *)vid.colormap + 2048));
+	vid.buffer = vid.conbuffer = vid_buffer;
+	vid.rowbytes = vid.conrowbytes = BASEWIDTH;
+
+	d_pzbuffer = zbuffer;
+	D_InitCaches(surfcache, sizeof(surfcache));
+	*/
 	return 1;
+};
+
+void VID_Init()
+{
+	refimport_t ri;
+
+	viddef.width = 320;
+	viddef.height = 240;
+
+	ri.Cmd_AddCommand = Cmd_AddCommand;
+	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
+	ri.Cmd_Argc = Cmd_Argc;
+	ri.Cmd_Argv = Cmd_Argv;
+	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
+	ri.Con_Printf = VID_Printf;
+	ri.Sys_Error = VID_Error;
+	ri.FS_LoadFile = FS_LoadFile;
+	ri.FS_FreeFile = FS_FreeFile;
+	ri.FS_Gamedir = FS_Gamedir;
+	ri.Vid_NewWindow = VID_NewWindow;
+	ri.Cvar_Get = Cvar_Get;
+	ri.Cvar_Set = Cvar_Set;
+	ri.Cvar_SetValue = Cvar_SetValue;
+	ri.Vid_GetModeInfo = VID_GetModeInfo;
+
+	re = GetRefAPI(ri);
+
+	if(re.api_version != API_VERSION)
+		Com_Error(ERR_FATAL, "Re has incompatible api_version");
+
+	// call the init function
+	if(re.Init(NULL, NULL) == -1)
+		Com_Error(ERR_FATAL, "Couldn't start refresh");
+}
+
+void VID_Shutdown()
+{
+	//if(re.Shutdown)
+		//re.Shutdown();
+};
+
+void VID_Update(vrect_t *rects)
+{
+};
+
+/*
+================
+D_BeginDirectRect
+================
+*/
+void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
+{
+};
+
+/*
+================
+D_EndDirectRect
+================
+*/
+void D_EndDirectRect (int x, int y, int width, int height)
+{
+};
+
+void VID_CheckChanges()
+{
+};
+
+void VID_MenuInit()
+{
+};
+
+void VID_MenuDraw()
+{
+};
+
+const char *VID_MenuKey(int k)
+{
+	return "";
 };
 
 void D_FlushCaches(){};

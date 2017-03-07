@@ -91,4 +91,6 @@ qboolean SCR_DrawCinematic ();
 void SCR_RunCinematic ();
 void SCR_StopCinematic ();
 void SCR_FinishCinematic ();
+
+void SCR_UpdateWholeScreen();
 */

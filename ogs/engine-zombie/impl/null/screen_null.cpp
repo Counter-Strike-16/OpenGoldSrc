@@ -27,8 +27,9 @@
  */
 
 /// @file
+/// @brief null impl for screen
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "graphics/screen.hpp"
 
 void SCR_Init()

@@ -89,10 +89,10 @@ void VID_SetPalette(unsigned char *palette);
 void VID_ShiftPalette(unsigned char *palette);
 
 // Video module initialization, etc
-NOBODY int VID_Init(unsigned short *palette); // was void (uchar)
 // Called at startup to set up translation tables, takes 256 8 bit RGB values
 // the palette data will go away after the call, so it must be copied off if
 // the video driver will need it again
+NOBODY int VID_Init(unsigned short *palette); // was void (uchar)
 
 // Called at shutdown
 void VID_Shutdown();
@@ -122,7 +122,6 @@ int VID_ForceUnlockedAndReturnState();
 void VID_CheckChanges();
 
 /*
-void Draw_Init();
 
 void StartLoadingProgressBar(const char *loadingType, int numProgressPoints);
 void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction);

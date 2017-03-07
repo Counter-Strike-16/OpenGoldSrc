@@ -30,10 +30,16 @@
 
 #pragma once
 
+struct IRender;
+
+extern IRender *gpRender; // temp
+
 class CRendererManager
 {
 public:
 	
 private:
-	CSharedLib *mpRendererLib;
+	CSharedLib *mpRendererLib; // Handle to render dll
+	
+	bool reflib_active;
 };

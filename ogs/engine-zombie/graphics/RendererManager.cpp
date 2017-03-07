@@ -29,7 +29,13 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "graphics/RendererManager.cpp"
+#include "graphics/RendererManager.hpp"
+
+// Structure containing functions exported from render DLL
+// refexport_t	re;
+
+// Global accessor to rendering module interface
+IRender *gpRender = nullptr;
 
 /*
 ==============
@@ -37,11 +43,6 @@ VID_LoadRefresh
 ==============
 */
 //qboolean VID_LoadRefresh(char *name)
-//bool VID_LoadRenderer(const char *asName)
-
-// load dll
-// get CreateInterfaceFn export
-// Get render interface (OGS_RENDERER_INTERFACE_VERSION or something?) impl from there
 
 bool CRendererManager::LoadRenderer(const char *asName)
 {
@@ -51,16 +52,29 @@ bool CRendererManager::LoadRenderer(const char *asName)
 	{
 		gpRender->Shutdown();
 		VID_FreeReflib();
-	}
+	};
 
 	Con_Printf("------- Loading %s -------\n", name);
-
-	if((fnRenderFactory = Sys_LoadModule(name)) == 0)
+	
+	CreateInterfaceFn fnRenderFactory;
+	
+	if(!(fnRenderFactory = Sys_GetFactory(name)))
 	{
 		Con_Printf("LoadLibrary(\"%s\") failed\n", name);
-
 		return false;
-	}
+	};
+	
+	gpRender = (IRender*)afnRenderFactory(OGS_RENDER_INTERFACE_VERSION, nullptr);
+	
+	// Interface didn't exported or has an incompatible version
+	if(!gpRender)
+	{
+		Sys_Error(ERR_FATAL, "Failed to load render dll %s", name);
+		//Sys_Error(ERR_FATAL, "%s has incompatible api_version", name);
+		//Sys_FreeModule();
+		VID_FreeReflib();
+		return false;
+	};
 
 	ri.Con_Printf = VID_Printf;
 
@@ -73,27 +87,15 @@ bool CRendererManager::LoadRenderer(const char *asName)
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
-
-	gpRender = afnRenderFactory(OGS_RENDER_INTERFACE_VERSION, nullptr);
-
-	if(!gpRender)
-	{
-		Sys_Error(ERR_FATAL, "Failed to load render dll %s", name);
-		return false;
-	};
-
-	if(re.api_version != API_VERSION)
-	{
-		VID_FreeReflib();
-		Sys_Error(ERR_FATAL, "%s has incompatible api_version", name);
-	}
+	
+	CreateInterfaceFn fnEngineFactory = Sys_GetFactoryThis();
 
 	if(gpRender->Init(fnEngineFactory, global_hInstance, MainWndProc) == -1)
 	{
 		gpRender->Shutdown();
 		VID_FreeReflib();
 		return false;
-	}
+	};
 
 	Con_Printf("------------------------------------\n");
 	reflib_active = true;
@@ -111,7 +113,6 @@ bool CRendererManager::LoadRenderer(const char *asName)
 	return true;
 };
 
-//void VID_FreeRenderer()
 //void VID_FreeReflib()
 void CRendererManager::UnloadRenderer()
 {
