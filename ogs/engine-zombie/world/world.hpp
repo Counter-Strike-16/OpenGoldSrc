@@ -96,20 +96,36 @@ void ClearLink(link_t *l);
 void RemoveLink(link_t *l);
 void InsertLinkBefore(link_t *l, link_t *before);
 NOXREF void InsertLinkAfter(link_t *l, link_t *after);
+
 void SV_InitBoxHull(void);
 hull_t *SV_HullForBox(const vec_t *mins, const vec_t *maxs);
 NOXREF hull_t *SV_HullForBeam(const vec_t *start, const vec_t *end, const vec_t *size);
 struct hull_s *SV_HullForBsp(edict_t *ent, const vec_t *mins, const vec_t *maxs, vec_t *offset);
 hull_t *SV_HullForEntity(edict_t *ent, const vec_t *mins, const vec_t *maxs, vec_t *offset);
+
 areanode_t *SV_CreateAreaNode(int depth, vec_t *mins, vec_t *maxs);
+
+// called after the world model has been loaded, before linking any entities
 void SV_ClearWorld(void);
+
+// call before removing an entity, and before trying to move one,
+// so it doesn't clip against itself
+// flags ent->v.modified
 void SV_UnlinkEdict(edict_t *ent);
+
 void SV_TouchLinks(edict_t *ent, areanode_t *node);
 void SV_FindTouchedLeafs(edict_t *ent, mnode_t *node, int *topnode);
+
+// Needs to be called any time an entity changes origin, mins, maxs, or solid
+// flags ent->v.modified
+// sets ent->v.absmin and ent->v.absmax
+// if touchtriggers, calls prog functions for the intersected triggers
 void SV_LinkEdict(edict_t *ent, qboolean touch_triggers);
+
 int SV_HullPointContents(hull_t *hull, int num, const vec_t *p);
 int SV_LinkContents(areanode_t *node, const vec_t *pos);
 int SV_PointContents(const vec_t *p);
+
 edict_t *SV_TestEntityPosition(edict_t *ent);
 qboolean SV_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, const vec_t *p1, const vec_t *p2, trace_t *trace);
 void SV_SingleClipMoveToEntity(edict_t *ent, const vec_t *start, const vec_t *mins, const vec_t *maxs, const vec_t *end, trace_t *trace);

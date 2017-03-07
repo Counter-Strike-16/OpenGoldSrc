@@ -49,8 +49,8 @@ qboolean r_leftclipped, r_rightclipped;
 static qboolean makeleftedge, makerightedge;
 qboolean r_nearzionly;
 
-int sintable[1280];
-int intsintable[1280];
+int sintable[1280]; // SIN_BUFFER_SIZE
+int intsintable[1280]; // SIN_BUFFER_SIZE
 
 mvertex_t r_leftenter, r_leftexit;
 mvertex_t r_rightenter, r_rightexit;

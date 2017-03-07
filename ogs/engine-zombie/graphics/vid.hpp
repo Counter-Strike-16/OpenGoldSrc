@@ -53,6 +53,12 @@ extern float scr_con_current;
 // a pixel can be one, two, or four bytes
 typedef byte pixel_t;
 
+typedef struct vrect_s
+{
+	int				x,y,width,height;
+	struct vrect_s	*pnext;
+} vrect_t;
+
 typedef struct
 {
 	pixel_t *buffer;            // invisible buffer
@@ -92,7 +98,7 @@ void VID_ShiftPalette(unsigned char *palette);
 // Called at startup to set up translation tables, takes 256 8 bit RGB values
 // the palette data will go away after the call, so it must be copied off if
 // the video driver will need it again
-NOBODY int VID_Init(unsigned short *palette); // was void (uchar)
+NOBODY int VID_Init(unsigned short *palette); // was void (uchar*)
 
 // Called at shutdown
 void VID_Shutdown();

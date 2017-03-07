@@ -26,7 +26,8 @@
  *	version.
  */
 
-// ServerEngineFuncs.cpp - source of engine functions set for exposing to game dll
+/// @file
+/// @brief source of engine functions set for exposing to game dll
 
 #include "game/ServerEngineFuncs.hpp"
 #include "resources/IModelManager.hpp"

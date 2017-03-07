@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief non-portable functions (platform-specific)
 
 #pragma once
 
@@ -184,6 +185,9 @@ void Sys_FindClose();
 NOBODY int glob_match_after_star(char *pattern, char *text);
 NOBODY int glob_match(char *pattern, char *text);
 
+//
+// memory protection
+//
 NOXREF void Sys_MakeCodeWriteable(uint32 startaddr, uint32 length);
 
 NOBODY void Sys_SetFPCW();
@@ -193,7 +197,11 @@ NOBODY void Sys_PopFPCW();
 NOBODY void MaskExceptions();
 
 NOBODY void Sys_Init();
+
+// called to yield for a little bit so as
+// not to hog cpu when paused or debugging
 NOXREF void Sys_Sleep(int msec);
+
 NOBODY void Sys_DebugOutStraight(const char *pStr);
 
 // An error will cause the entire program to exit
@@ -201,6 +209,7 @@ NOBODY void NORETURN Sys_Error(const char *error, ...);
 
 NOXREF void Sys_Warning(const char *pszWarning, ...);
 
+// send text to the console
 void Sys_Printf(const char *fmt, ...);
 
 void Sys_Quit();

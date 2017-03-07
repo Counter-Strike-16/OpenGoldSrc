@@ -216,7 +216,7 @@ void R_SetupAndDrawSprite()
 		scale = yscale * pout->zi;
 		pout->v = (ycenter - scale * transformed[1]);
 
-		pv += sizeof(vec5_t) / sizeof(pv);
+		pv += sizeof(vec5_t) / sizeof(pv); // sizeof(*pv)
 	}
 
 	// draw it

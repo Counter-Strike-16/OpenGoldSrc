@@ -61,6 +61,9 @@ extern qboolean con_initialized;
 extern byte *con_chars;
 extern int con_notifylines; // scan lines to clear for notify lines
 
+//extern int con_backscroll;
+//extern qboolean con_forcedup; // because no entities to refresh
+
 void Con_DrawCharacter(int cx, int line, int num);
 
 void Con_CheckResize();
@@ -68,7 +71,7 @@ void Con_CheckResize();
 void Con_Init();
 void Con_Shutdown();
 
-void Con_DrawConsole(int lines);
+void Con_DrawConsole(int lines /*, qboolean drawinput*/);
 
 void Con_Print(const char *txt);
 void Con_Printf(const char *fmt, ...);
