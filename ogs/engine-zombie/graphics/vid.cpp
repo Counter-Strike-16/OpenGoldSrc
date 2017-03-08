@@ -34,7 +34,16 @@
 // Global variables used internally by this module
 viddef_t viddef; // global video state; used by other modules
 
-HWND mainwindow; // Main window handle for life of program
+// I think it's pointless because HWND is a typedef for void*
+/*
+#ifdef WIN32
+	typedef HWND tWinHandle;
+#else
+	typedef void* tWinHandle;
+#endif
+*/
+
+void *mainwindow; // Main window handle for life of program
 
 cvar_t vid_ref = {"vid_ref", "soft", FCVAR_ARCHIVE};
 cvar_t vid_xpos = {"vid_xpos", "3", FCVAR_ARCHIVE};
@@ -56,18 +65,25 @@ void VID_Restart_f()
 	vid_ref->modified = true;
 };
 
-void VID_Front_f()
+void *VID_OpenWindow(/*some initial window settings*/)
 {
-	SetWindowLong(mainwindow, GWL_EXSTYLE, WS_EX_TOPMOST);
-	SetForegroundWindow(mainwindow);
+	// Black magic here
+	
+	// This func should create a new window and return it's ptr
+	// We don't hardcode an assignment to mainwindow here
+	// Mostly because hardcoding is bad and it's more universal in use
 };
 
 /*
 ============
 VID_Init
+
+Init the video subsystem
+An external window can be provided here (e.g. from the editor app)
+Otherwise the default one will be created
 ============
 */
-void VID_Init()
+void VID_Init(void *apWinHandle)
 {
 	// Create the video variables so we know how to start the graphics drivers
 	Cvar_RegisterVariable(&vid_ref);
@@ -78,24 +94,15 @@ void VID_Init()
 
 	// Add some console commands that we want to handle
 	Cmd_AddCommand("vid_restart", VID_Restart_f);
-	Cmd_AddCommand("vid_front", VID_Front_f);
+	
+	mainwindow = apWinHandle;
+	
+	// If mainwindow here is invalid then apWinHandle is invalid too
+	// and we need to create our own window
+	if(!mainwindow)
+		mainwindow = VID_OpenWindow();
 
-	// this is a gross hack but necessary to clamp the mode for 3Dfx
-#if 0
-	{
-		cvar_t *gl_driver = Cvar_Get( "gl_driver", "opengl32", 0 );
-		cvar_t *gl_mode = Cvar_Get( "gl_mode", "3", 0 );
-
-		if ( stricmp( gl_driver->string, "3dfxgl" ) == 0 )
-		{
-			Cvar_SetValue( "gl_mode", 3 );
-			viddef.width  = 640;
-			viddef.height = 480;
-		}
-	}
-#endif
-
-	// Start the graphics mode and load render DLL
+	// Start the graphics mode and load render dll
 	VID_CheckChanges();
 };
 

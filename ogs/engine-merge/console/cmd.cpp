@@ -1,8 +1,6 @@
 
 // cmd.c -- Quake script command processing module
 
-#include "quakedef.h"
-
 int trashtest;
 int *trashspot;
 
@@ -16,16 +14,7 @@ int *trashspot;
 ==============================================================================
 */
 
-/*
-===============
-Cmd_StuffCmds_f
 
-Adds command line parameters as script statements
-Commands lead with a +, and continue until a - or another +
-quake +prog jctest.qp +cmd amlev1
-quake -nosound +cmd amlev1
-===============
-*/
 void Cmd_StuffCmds_f (void)
 {
 	int		i, j;
@@ -91,21 +80,11 @@ void Cmd_StuffCmds_f (void)
 }
 
 
-/*
-===============
-Cmd_Exec_f
-===============
-*/
+
 void Cmd_Exec_f (void)
 {
 	char	*f;
 	int		mark;
-
-	if (Cmd_Argc () != 2)
-	{
-		Con_Printf ("exec <filename> : execute a script file\n");
-		return;
-	}
 
 	mark = Hunk_LowMark ();
 	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
@@ -120,56 +99,11 @@ void Cmd_Exec_f (void)
 	Hunk_FreeToLowMark (mark);
 }
 
-
-/*
-===============
-Cmd_Echo_f
-
-Just prints the rest of the line to the console
-===============
-*/
-void Cmd_Echo_f (void)
-{
-	int		i;
-	
-	for (i=1 ; i<Cmd_Argc() ; i++)
-		Con_Printf ("%s ",Cmd_Argv(i));
-	Con_Printf ("\n");
-}
-
-/*
-===============
-Cmd_Alias_f
-
-Creates a new command that executes a command string (possibly ; seperated)
-===============
-*/
-
-char *CopyString (char *in)
-{
-	char	*out;
-	
-	out = Z_Malloc (strlen(in)+1);
-	strcpy (out, in);
-	return out;
-}
-
 void Cmd_Alias_f (void)
 {
-	cmdalias_t	*a;
 	char		cmd[1024];
-	int			i, c;
 	char		*s;
 
-	if (Cmd_Argc() == 1)
-	{
-		Con_Printf ("Current alias commands:\n");
-		for (a = cmd_alias ; a ; a=a->next)
-			Con_Printf ("%s : %s\n", a->name, a->value);
-		return;
-	}
-
-	s = Cmd_Argv(1);
 	if (strlen(s) >= MAX_ALIAS_NAME)
 	{
 		Con_Printf ("Alias name is too long\n");
@@ -220,11 +154,7 @@ void Cmd_Init (void)
 	Cmd_AddCommand ("cmd", Cmd_ForwardToServer);
 }
 
-/*
-============
-Cmd_Argv
-============
-*/
+
 char	*Cmd_Argv (int arg)
 {
 	if ( (unsigned)arg >= cmd_argc )

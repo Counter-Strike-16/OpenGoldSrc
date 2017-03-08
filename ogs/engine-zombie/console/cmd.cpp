@@ -30,7 +30,7 @@
 /// @brief console command system
 
 #include "precompiled.hpp"
-//#include "system/commondef.hpp"
+//#include "commondef.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
 #include "console/console.hpp"
@@ -79,6 +79,16 @@ void Cmd_Wait_f()
 	cmd_wait = true;
 }
 
+/*
+===============
+Cmd_StuffCmds_f
+
+Adds command line parameters as script statements
+Commands lead with a +, and continue until a - or another +
+quake +prog jctest.qp +cmd amlev1
+quake -nosound +cmd amlev1
+===============
+*/
 void Cmd_StuffCmds_f()
 {
 	int i;
@@ -138,6 +148,11 @@ void Cmd_StuffCmds_f()
 	Z_Free(build);
 }
 
+/*
+===============
+Cmd_Exec_f
+===============
+*/
 void Cmd_Exec_f()
 {
 	const char *pszFileName;
@@ -153,10 +168,9 @@ void Cmd_Exec_f()
 	}
 
 	pszFileName = Cmd_Argv(1);
+	
 	if(!pszFileName || pszFileName[0] == 0)
-	{
 		return;
-	}
 
 	if(Q_strstr(pszFileName, "\\") || Q_strstr(pszFileName, ":") ||
 	   Q_strstr(pszFileName, "~") || Q_strstr(pszFileName, "..") ||
@@ -408,6 +422,11 @@ int EXT_FUNC Cmd_Argc()
 	return cmd_argc;
 }
 
+/*
+============
+Cmd_Argv
+============
+*/
 const char *EXT_FUNC Cmd_Argv(int arg)
 {
 #ifndef SWDS
@@ -415,9 +434,8 @@ const char *EXT_FUNC Cmd_Argv(int arg)
 #endif
 
 	if(arg >= 0 && arg < cmd_argc)
-	{
 		return cmd_argv[arg];
-	}
+	
 	return ""; // TODO: Possibly better to return NULL here, but require to check
 	           // all usages
 }

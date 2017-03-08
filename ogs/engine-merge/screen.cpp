@@ -1,54 +1,10 @@
-/*
-Copyright (C) 1996-1997 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
 // screen.c -- master for refresh, status bar, console, chat, notify, etc
-
-#include "quakedef.h"
-#include "r_local.h"
 
 // only the refresh window will be updated unless these variables are flagged 
 int			scr_copytop;
-int			scr_copyeverything;
-
-float		scr_con_current;
-float		scr_conlines;		// lines of console to display
 
 float		oldscreensize, oldfov;
-cvar_t		scr_viewsize = {"viewsize","100", true};
-cvar_t		scr_fov = {"fov","90"};	// 10 - 170
-cvar_t		scr_conspeed = {"scr_conspeed","300"};
-cvar_t		scr_centertime = {"scr_centertime","2"};
-cvar_t		scr_showram = {"showram","1"};
-cvar_t		scr_showturtle = {"showturtle","0"};
-cvar_t		scr_showpause = {"showpause","1"};
-cvar_t		scr_printspeed = {"scr_printspeed","8"};
-
-qboolean	scr_initialized;		// ready to draw
-
-qpic_t		*scr_ram;
-qpic_t		*scr_net;
-qpic_t		*scr_turtle;
-
-int			scr_fullupdate;
-
-int			clearconsole;
-int			clearnotify;
 
 viddef_t	vid;				// global video state
 
@@ -59,18 +15,6 @@ qboolean	scr_disabled_for_loading;
 qboolean	scr_drawloading;
 float		scr_disabled_time;
 qboolean	scr_skipupdate;
-
-qboolean	block_drawing;
-
-void SCR_ScreenShot_f (void);
-
-/*
-===============================================================================
-
-CENTER PRINTING
-
-===============================================================================
-*/
 
 char		scr_centerstring[1024];
 float		scr_centertime_start;	// for slow victory printing
