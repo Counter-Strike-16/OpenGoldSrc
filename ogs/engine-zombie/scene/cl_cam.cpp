@@ -42,12 +42,12 @@
 #include "network/net_msg.hpp"
 #include "common/pmtrace.h"
 
-#define PM_SPECTATORMAXSPEED 500
-#define PM_STOPSPEED 100
-#define PM_MAXSPEED 320
-#define BUTTON_JUMP 2
-#define BUTTON_ATTACK 1
-#define MAX_ANGLE_TURN 10
+const int PM_SPECTATORMAXSPEED = 500;
+const int PM_STOPSPEED = 100;
+const int PM_MAXSPEED = 320;
+const int BUTTON_JUMP = 2;
+const int BUTTON_ATTACK = 1;
+const int MAX_ANGLE_TURN = 10;
 
 static vec3_t desired_position; // where the camera wants to be
 static qboolean locked = false;

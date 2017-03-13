@@ -47,9 +47,9 @@ void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercm
 extern	int			msg_readcount;
 extern	qboolean	msg_badread;		// set if a read goes beyond end of message
 
-int MSG_GetReadCount(void);
+int MSG_GetReadCount();
 
-float MSG_ReadAngle16 (void);
+float MSG_ReadAngle16 ();
 void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 
 #ifdef _WIN32
@@ -92,7 +92,7 @@ byte	COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
 #define	VERSION		3.19
 
-#define	BASEDIRNAME	"baseq2"
+#define	BASEDIRNAME	"valve"
 
 #ifdef WIN32
 
@@ -191,12 +191,12 @@ extern	float	LittleFloat (float l);
 //============================================================================
 
 
-int	COM_Argc (void);
+int	COM_Argc ();
 char *COM_Argv (int arg);	// range and null checked
 void COM_ClearArgv (int arg);
 void COM_AddParm (char *parm);
 
-void COM_Init (void);
+void COM_Init ();
 
 char *CopyString (char *in);
 
@@ -352,13 +352,13 @@ void Cbuf_ExecuteText (int exec_when, char *text);
 void Cbuf_AddEarlyCommands (qboolean clear);
 // adds all the +set commands from the command line
 
-qboolean Cbuf_AddLateCommands (void);
+qboolean Cbuf_AddLateCommands ();
 // adds all the remaining + commands from the command line
 // Returns true if any late commands were added, which
 // will keep the demoloop from immediately starting
 
-void Cbuf_CopyToDefer (void);
-void Cbuf_InsertFromDefer (void);
+void Cbuf_CopyToDefer ();
+void Cbuf_InsertFromDefer ();
 // These two functions are used to defer any pending commands while a map
 // is being loaded
 
@@ -388,10 +388,10 @@ cvar_t *Cvar_ForceSet (char *var_name, char *value);
 
 cvar_t 	*Cvar_FullSet (char *var_name, char *value, int flags);
 
-void	Cvar_GetLatchedVars (void);
+void	Cvar_GetLatchedVars ();
 // any CVAR_LATCHED variables that have been set will now take effect
 
-char	*Cvar_Userinfo (void);
+char	*Cvar_Userinfo ();
 // returns an info string containing all the CVAR_USERINFO cvars
 
 extern	qboolean	userinfo_modified;
@@ -459,9 +459,9 @@ void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...);
 cmodel_t	*CM_LoadMap (char *name, qboolean clientload, unsigned *checksum);
 cmodel_t	*CM_InlineModel (char *name);	// *1, *2, etc
 
-int			CM_NumClusters (void);
-int			CM_NumInlineModels (void);
-char		*CM_EntityString (void);
+int			CM_NumClusters ();
+int			CM_NumInlineModels ();
+char		*CM_EntityString ();
 
 // creates a clipping hull for an arbitrary box
 int			CM_HeadnodeForBox (vec3_t mins, vec3_t maxs);
@@ -524,11 +524,11 @@ FILESYSTEM
 ==============================================================
 */
 
-void	FS_InitFilesystem (void);
+void	FS_InitFilesystem ();
 void	FS_SetGamedir (char *dir);
-char	*FS_Gamedir (void);
+char	*FS_Gamedir ();
 char	*FS_NextPath (char *prevpath);
-void	FS_ExecAutoexec (void);
+void	FS_ExecAutoexec ();
 
 int		FS_FOpenFile (char *filename, FILE **file);
 // note: this can't be called from another DLL, due to MS libc issues
@@ -566,20 +566,20 @@ MISC
 #define PRINT_DEVELOPER	1	// only print when "developer 1"
 
 void		Com_BeginRedirect (int target, char *buffer, int buffersize, void (*flush));
-void		Com_EndRedirect (void);
+void		Com_EndRedirect ();
 void 		Com_Printf (char *fmt, ...);
 void 		Com_DPrintf (char *fmt, ...);
 void 		Com_Error (int code, char *fmt, ...);
-void 		Com_Quit (void);
+void 		Com_Quit ();
 
-int			Com_ServerState (void);		// this should have just been a cvar...
+int			Com_ServerState ();		// this should have just been a cvar...
 void		Com_SetServerState (int state);
 
 unsigned	Com_BlockChecksum (void *buffer, int length);
 byte		COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
-float	frand(void);	// 0 ti 1
-float	crand(void);	// -1 to 1
+float	frand();	// 0 ti 1
+float	crand();	// -1 to 1
 
 extern	cvar_t	*dedicated;
 extern	cvar_t	*log_stats;
@@ -596,7 +596,7 @@ void Z_FreeTags (int tag);
 
 void Qcommon_Init (int argc, char **argv);
 void Qcommon_Frame (int msec);
-void Qcommon_Shutdown (void);
+void Qcommon_Shutdown ();
 
 #define NUMVERTEXNORMALS	162
 extern	vec3_t	bytedirs[NUMVERTEXNORMALS];

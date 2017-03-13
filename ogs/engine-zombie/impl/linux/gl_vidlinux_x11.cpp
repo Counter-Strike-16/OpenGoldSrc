@@ -61,8 +61,11 @@ static qboolean usedga = false;
 
 cvar_t vid_mode = { "vid_mode", "0", false };
 
-cvar_t mouse_button_commands[3] = {
-	{ "mouse1", "+attack" }, { "mouse2", "+strafe" }, { "mouse3", "+forward" },
+cvar_t mouse_button_commands[3] =
+{
+	{ "mouse1", "+attack" },
+	{ "mouse2", "+strafe" },
+	{ "mouse3", "+forward" },
 };
 
 static int mouse_buttons = 3;
@@ -79,8 +82,8 @@ static float old_windowed_mouse;
 static int scr_width, scr_height;
 
 #define KEY_MASK (KeyPressMask | KeyReleaseMask)
-#define MOUSE_MASK \
-	(ButtonPressMask | ButtonReleaseMask | PointerMotionMask | ButtonMotionMask)
+#define MOUSE_MASK (ButtonPressMask | ButtonReleaseMask | \
+					 PointerMotionMask | ButtonMotionMask)
 
 /*-----------------------------------------------------------------------*/
 
@@ -358,8 +361,7 @@ int XLateKey(XKeyEvent *ev)
 		key = *(unsigned char *)buf;
 		if(key >= 'A' && key <= 'Z')
 			key = key - 'A' + 'a';
-		//			fprintf(stdout, "case 0x0%x: key = ___;break;/* [%c] */\n",
-		//keysym);
+		//			fprintf(stdout, "case 0x0%x: key = ___;break;/* [%c] */\n", keysym);
 		break;
 	}
 
@@ -729,17 +731,15 @@ void VID_Init(unsigned char *palette)
 	int i;
 	char gldir[MAX_OSPATH];
 	int width = 640, height = 480;
-	int attrib[] = { GLX_RGBA,
-		             GLX_RED_SIZE,
-		             1,
-		             GLX_GREEN_SIZE,
-		             1,
-		             GLX_BLUE_SIZE,
-		             1,
+	int attrib[] = { 
+					 GLX_RGBA,
+		             GLX_RED_SIZE, 1,
+		             GLX_GREEN_SIZE, 1,
+		             GLX_BLUE_SIZE, 1,
 		             GLX_DOUBLEBUFFER,
-		             GLX_DEPTH_SIZE,
-		             1,
-		             None };
+		             GLX_DEPTH_SIZE, 1,
+					 None
+	};
 	int scrnum;
 	XSetWindowAttributes attr;
 	unsigned long mask;
@@ -795,8 +795,7 @@ void VID_Init(unsigned char *palette)
 	visinfo = glXChooseVisual(dpy, scrnum, attrib);
 	if(!visinfo)
 	{
-		fprintf(stderr,
-		        "Error couldn't get an RGB, Double-buffered, Depth visual\n");
+		fprintf(stderr, "Error couldn't get an RGB, Double-buffered, Depth visual\n");
 		exit(1);
 	}
 

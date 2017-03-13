@@ -4,9 +4,6 @@
 
 #define REF_SOFT	0
 #define REF_OPENGL	1
-#define REF_3DFX	2
-#define REF_POWERVR	3
-#define REF_VERITE	4
 
 extern cvar_t *vid_ref;
 extern cvar_t *vid_fullscreen;
@@ -130,18 +127,6 @@ static void ApplyChanges( void *unused )
 	case REF_OPENGL:
 		Cvar_Set( "vid_ref", "gl" );
 		Cvar_Set( "gl_driver", "opengl32" );
-		break;
-	case REF_3DFX:
-		Cvar_Set( "vid_ref", "gl" );
-		Cvar_Set( "gl_driver", "3dfxgl" );
-		break;
-	case REF_POWERVR:
-		Cvar_Set( "vid_ref", "gl" );
-		Cvar_Set( "gl_driver", "pvrgl" );
-		break;
-	case REF_VERITE:
-		Cvar_Set( "vid_ref", "gl" );
-		Cvar_Set( "gl_driver", "veritegl" );
 		break;
 	}
 

@@ -26,8 +26,9 @@
 *
 */
 
-#ifndef _OSCONFIG_H
-#define _OSCONFIG_H
+/// @file
+
+#pragma once
 
 #ifdef _WIN32 // WINDOWS
 	#pragma warning(disable : 4005)
@@ -191,5 +192,3 @@
 #endif
 
 #define EXT_FUNC FORCE_STACK_ALIGN
-
-#endif // _OSCONFIG_H

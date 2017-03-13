@@ -26,6 +26,8 @@
 *
 */
 
+/// @file
+
 #pragma once
 
 #include "public/archtypes.h"
@@ -36,8 +38,8 @@
 #include "public/interface.h"
 #include "rehlds/model.h"
 
-#define REHLDS_API_VERSION_MAJOR 3
-#define REHLDS_API_VERSION_MINOR 1
+const int REHLDS_API_VERSION_MAJOR = 3;
+const int REHLDS_API_VERSION_MINOR = 1;
 
 //Steam_NotifyClientConnect hook
 typedef IHookChain<qboolean, IGameClient*, const void*, unsigned int> IRehldsHook_Steam_NotifyClientConnect;
@@ -293,11 +295,13 @@ public:
 
 	virtual int GetMajorVersion() = 0;
 	virtual int GetMinorVersion() = 0;
+	
 	virtual const RehldsFuncs_t* GetFuncs() = 0;
+	
 	virtual IRehldsHookchains* GetHookchains() = 0;
 	virtual IRehldsServerStatic* GetServerStatic() = 0;
 	virtual IRehldsServerData* GetServerData() = 0;
 	virtual IRehldsFlightRecorder* GetFlightRecorder() = 0;
 };
 
-#define VREHLDS_HLDS_API_VERSION "VREHLDS_HLDS_API_VERSION001"
+const char VREHLDS_HLDS_API_VERSION[] = "VREHLDS_HLDS_API_VERSION001";

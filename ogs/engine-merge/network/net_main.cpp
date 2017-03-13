@@ -76,10 +76,6 @@ cvar_t	config_modem_clear = {"_config_modem_clear", "ATZ", true};
 cvar_t	config_modem_init = {"_config_modem_init", "", true};
 cvar_t	config_modem_hangup = {"_config_modem_hangup", "AT H", true};
 
-#ifdef IDGODS
-cvar_t	idgods = {"idgods", "0"};
-#endif
-
 int	vcrFile = -1;
 qboolean recording = false;
 

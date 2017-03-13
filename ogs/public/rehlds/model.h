@@ -25,6 +25,9 @@
 *    version.
 *
 */
+
+/// @file
+
 #pragma once
 
 #include "common/const.h"

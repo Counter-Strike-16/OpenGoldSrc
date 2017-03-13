@@ -28,9 +28,15 @@
 
 /// @file
 /// @brief null implementation for sound module
+/// include this instead of all the other snd_* files to have
+/// no sound code whatsoever
 
 //#include "precompiled.hpp"
+//#include "commondef.hpp"
 #include "sound/sound.hpp"
+
+cvar_t bgmvolume = {"bgmvolume", "1", true};
+cvar_t volume = {"volume", "0.7", true};
 
 void S_Init(){};
 
@@ -48,6 +54,14 @@ void S_StartStaticSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, f
 
 void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, float fvol, float attenuation, int flags, int pitch){};
 
+void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation)
+{
+};
+
+void S_StartSound (int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol,  float attenuation)
+{
+};
+
 void S_StopSound(int entnum, int entchannel){};
 
 sfx_t *S_PrecacheSound(char *sample)
@@ -57,6 +71,7 @@ sfx_t *S_PrecacheSound(char *sample)
 
 void S_ClearPrecache(){};
 
+//void S_Update (vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up)
 void S_Update(vec_t *origin, vec_t *v_forward, vec_t *v_right, vec_t *v_up){};
 
 void S_StopAllSounds(qboolean clear){};

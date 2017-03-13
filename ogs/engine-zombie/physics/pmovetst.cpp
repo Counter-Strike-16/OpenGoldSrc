@@ -81,6 +81,14 @@ int EXT_FUNC PM_GetModelType(struct model_s *mod)
 	return mod->type;
 }
 
+/*
+===================
+PM_InitBoxHull
+
+Set up the planes and clipnodes so that the six floats of a bounding box
+can just be stored out and get a proper hull_t structure.
+===================
+*/
 void PM_InitBoxHull(void)
 {
 	box_hull_0.clipnodes = &box_clipnodes_0[0];
@@ -99,6 +107,14 @@ void PM_InitBoxHull(void)
 	}
 }
 
+/*
+===================
+PM_HullForBox
+
+To keep everything totally uniform, bounding boxes are turned into small
+BSP trees instead of being compared directly.
+===================
+*/
 hull_t *PM_HullForBox(vec_t *mins, vec_t *maxs)
 {
 	box_planes_0[0].dist = maxs[0];
@@ -110,6 +126,12 @@ hull_t *PM_HullForBox(vec_t *mins, vec_t *maxs)
 	return &box_hull_0;
 }
 
+/*
+==================
+PM_HullPointContents
+
+==================
+*/
 int EXT_FUNC PM_HullPointContents(hull_t *hull, int num, vec_t *p)
 {
 	float d;
@@ -166,6 +188,12 @@ int PM_LinkContents(vec_t *p, int *pIndex)
 	return -1;
 }
 
+/*
+==================
+PM_PointContents
+
+==================
+*/
 int EXT_FUNC PM_PointContents(vec_t *p, int *truecontents)
 {
 #ifndef SWDS

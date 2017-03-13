@@ -33,7 +33,7 @@
 
 #include "engine/cdll_int.h"
 
-class CSharedLib;
+class shiftutil::CSharedLib;
 
 class CClientDLL
 {
@@ -63,5 +63,5 @@ public:
 	};
 */
 private:
-	CSharedLib *mpClientDLL;
+	shiftutil::CSharedLib *mpClientDLL;
 };

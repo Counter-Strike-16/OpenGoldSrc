@@ -39,8 +39,8 @@
 qboolean QGL_Init(const char *dllname);
 void QGL_Shutdown();
 
-#ifndef APIENTRY
-#define APIENTRY
+#ifndef APIENTRY // _WIN32
+#define APIENTRY /* */
 #endif
 
 extern void (APIENTRY *qglAccum)(GLenum op, GLfloat value);
@@ -442,5 +442,6 @@ extern BOOL (WINAPI *qwglSetDeviceGammaRampEXT)(const unsigned char *pRed, const
 #define GL_SHARED_TEXTURE_PALETTE_EXT 0x81FB
 #endif
 
+// Multitexture
 #define GL_TEXTURE0_SGIS 0x835E
 #define GL_TEXTURE1_SGIS 0x835F

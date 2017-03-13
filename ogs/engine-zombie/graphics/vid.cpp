@@ -69,6 +69,8 @@ void *VID_OpenWindow(/*some initial window settings*/)
 {
 	// Black magic here
 	
+	// This thing is plat-specific and should be implemented in plat-specific source file
+	
 	// This func should create a new window and return it's ptr
 	// We don't hardcode an assignment to mainwindow here
 	// Mostly because hardcoding is bad and it's more universal in use
@@ -127,17 +129,14 @@ VID_CheckChanges
 This function gets called once just before drawing each frame, and it's sole
 purpose in life
 is to check to see if any of the video mode parameters have changed, and if they
-have to
-update the rendering DLL and/or video mode to match.
+have to update the rendering dll and/or video mode to match
 ============
 */
 void VID_CheckChanges()
 {
-	char name[100];
-
 	if(vid_ref->modified)
 	{
-		cl.force_refdef = true; // can't use a paused refdef
+		cl.force_refdef = true; // can't use a paused refdef; not present in linux
 		S_StopAllSounds();
 	};
 	
@@ -148,15 +147,18 @@ void VID_CheckChanges()
 		*/
 		vid_ref->modified = false;
 		vid_fullscreen->modified = true;
+		
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
-
-		Q_sprintf(name, sizeof(name), "r_%s", vid_ref->string);
+		
+		char name[32];
+		Q_sprintf(name, charsmax(name), "r_%s", vid_ref->string);
 
 		if(!VID_LoadRefresh(name))
 		{
-			if(strcmp(vid_ref->string, "soft") == 0)
-				Com_Error(ERR_FATAL, "Couldn't fall back to software refresh!");
+			if(!Q_strcmp(vid_ref->string, "soft"))
+				Sys_Error(ERR_FATAL, "Couldn't fall back to software refresh!");
+			
 			Cvar_Set("vid_ref", "soft");
 
 			/*

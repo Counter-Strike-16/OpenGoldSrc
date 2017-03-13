@@ -277,20 +277,31 @@ extern net_messages_t *normalqueue;
 
 void NET_ThreadLock();
 void NET_ThreadUnlock();
+
 unsigned short Q_ntohs(unsigned short netshort);
+
 void NetadrToSockadr(const netadr_t *a, struct sockaddr *s);
 void SockadrToNetadr(const struct sockaddr *s, netadr_t *a);
+
 NOXREF unsigned short NET_HostToNetShort(unsigned short us_in);
+
 qboolean NET_CompareAdr(netadr_t &a, netadr_t &b);
 qboolean NET_CompareClassBAdr(netadr_t &a, netadr_t &b);
+
 qboolean NET_IsReservedAdr(netadr_t &a);
+
 qboolean NET_CompareBaseAdr(const netadr_t &a, const netadr_t &b);
+
 char *NET_AdrToString(const netadr_t &a);
 char *NET_BaseAdrToString(netadr_t &a);
+
 qboolean NET_StringToSockaddr(const char *s, struct sockaddr *sadr);
 qboolean NET_StringToAdr(const char *s, netadr_t *a);
+
 qboolean NET_IsLocalAddress(netadr_t &adr);
+
 char *NET_ErrorString(int code);
+
 void NET_TransferRawData(sizebuf_t *msg, unsigned char *pStart, int nSize);
 qboolean NET_GetLoopPacket(netsrc_t sock, netadr_t *in_from_, sizebuf_t *msg);
 void NET_SendLoopPacket(netsrc_t sock, int length, void *data, const netadr_t &to);
@@ -303,28 +314,43 @@ qboolean NET_LagPacket(qboolean newdata, netsrc_t sock, netadr_t *from, sizebuf_
 void NET_FlushSocket(netsrc_t sock);
 qboolean NET_GetLong(unsigned char *pData, int size, int *outSize);
 qboolean NET_QueuePacket(netsrc_t sock);
+
 int NET_Sleep();
+
 void NET_StartThread();
 void NET_StopThread();
+
 void *net_malloc(size_t size);
+
 net_messages_t *NET_AllocMsg(int size);
 void NET_FreeMsg(net_messages_t *pmsg);
+
 qboolean NET_GetPacket(netsrc_t sock);
+
 void NET_AllocateQueues();
 void NET_FlushQueues();
+
 int NET_SendLong(netsrc_t sock, int s, const char *buf, int len, int flags, const struct sockaddr *to, int tolen);
+
 void NET_SendPacket_api(unsigned int length, void *data, const netadr_t &to);
 void NET_SendPacket(netsrc_t sock, int length, void *data, const netadr_t &to);
+
 int NET_IPSocket(char *net_interface, int port, qboolean multicast);
 void NET_OpenIP();
+
 int NET_IPXSocket(int hostshort);
 void NET_OpenIPX();
+
 void NET_GetLocalAddress();
+
 int NET_IsConfigured();
 void NET_Config(qboolean multiplayer);
+
 void MaxPlayers_f();
+
 void NET_Init();
 void NET_ClearLagData(qboolean bClient, qboolean bServer);
 void NET_Shutdown();
+
 qboolean NET_JoinGroup(netsrc_t sock, netadr_t &addr);
 qboolean NET_LeaveGroup(netsrc_t sock, netadr_t &addr);

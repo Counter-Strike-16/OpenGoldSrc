@@ -32,12 +32,13 @@
 
 struct IRender;
 
-extern IRender *gpRender; // temp
+extern IRender *gpRender; // temp; interface to render dll
 
 class CRendererManager
 {
 public:
-	
+	bool LoadRenderer(const char *asName);
+	void UnloadRenderer();
 private:
 	CSharedLib *mpRendererLib; // Handle to render dll
 	

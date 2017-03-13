@@ -43,7 +43,6 @@
 
 static UINT MSH_MOUSEWHEEL;
 
-
 LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 extern unsigned sys_msg_time;
@@ -187,7 +186,9 @@ byte scantokey[128] = {
 =======
 MapKey
 
-Map from windows to quake keynums
+Map from windows to internal keynums
+
+Note: std::map<int, int> for that
 =======
 */
 int MapKey(int key)
@@ -260,28 +261,10 @@ void AppActivate(BOOL fActive, BOOL minimize)
 		ActiveApp = false;
 
 	// minimize/restore mouse-capture on demand
-	if(!ActiveApp)
-	{
-		IN_Activate(false);
-		CDAudio_Activate(false);
-		S_Activate(false);
-
-		if(win_noalttab->value)
-		{
-			WIN_EnableAltTab();
-		}
-	}
-	else
-	{
-		IN_Activate(true);
-		CDAudio_Activate(true);
-		S_Activate(true);
-		if(win_noalttab->value)
-		{
-			WIN_DisableAltTab();
-		}
-	}
-}
+	IN_Activate(ActiveApp);
+	CDAudio_Activate(ActiveApp);
+	S_Activate(ActiveApp);
+};
 
 /*
 ====================
@@ -305,9 +288,10 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			Key_Event(K_MWHEELDOWN, true, sys_msg_time);
 			Key_Event(K_MWHEELDOWN, false, sys_msg_time);
-		}
+		};
+		
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
+	};
 
 	switch(uMsg)
 	{
@@ -325,7 +309,7 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			Key_Event(K_MWHEELDOWN, true, sys_msg_time);
 			Key_Event(K_MWHEELDOWN, false, sys_msg_time);
-		}
+		};
 		break;
 
 	case WM_HOTKEY:
@@ -347,7 +331,7 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 	case WM_ACTIVATE:
-	{
+	
 		int fActive, fMinimized;
 
 		// KJB: Watch this for problems in fullscreen modes with Alt-tabbing.
@@ -358,11 +342,10 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		if(reflib_active)
 			gpRender->AppActivate(!(fActive == WA_INACTIVE));
-	}
+		
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 	case WM_MOVE:
-	{
 		int xPos, yPos;
 		RECT r;
 		int style;
@@ -387,7 +370,7 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if(ActiveApp)
 				IN_Activate(true);
 		}
-	}
+		
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 	// this is complicated because Win32 seems to pack multiple mouse events into
@@ -399,7 +382,6 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONUP:
 	case WM_MOUSEMOVE:
-	{
 		int temp;
 
 		temp = 0;
@@ -414,8 +396,7 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			temp |= 4;
 
 		IN_MouseEvent(temp);
-	}
-	break;
+		break;
 
 	case WM_SYSCOMMAND:
 		if(wParam == SC_SCREENSAVE)
@@ -425,11 +406,9 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if(wParam == 13)
 		{
 			if(vid_fullscreen)
-			{
 				Cvar_SetValue("vid_fullscreen", !vid_fullscreen->value);
-			}
 			return 0;
-		}
+		};
 	// fall through
 	case WM_KEYDOWN:
 		Key_Event(MapKey(lParam), true, sys_msg_time);

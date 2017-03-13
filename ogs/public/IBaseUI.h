@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "interface.h"
+#include "public/interface.h"
 
 struct cl_enginefuncs_s;
 class IBaseSystem;

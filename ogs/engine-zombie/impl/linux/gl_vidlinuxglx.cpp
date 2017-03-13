@@ -660,17 +660,15 @@ void VID_Init8bitPalette(void)
 void VID_Init(unsigned char *palette)
 {
 	int i;
-	int attrib[] = { GLX_RGBA,
-		             GLX_RED_SIZE,
-		             1,
-		             GLX_GREEN_SIZE,
-		             1,
-		             GLX_BLUE_SIZE,
-		             1,
+	int attrib[] = {
+					 GLX_RGBA,
+		             GLX_RED_SIZE, 1,
+		             GLX_GREEN_SIZE, 1,
+		             GLX_BLUE_SIZE, 1,
 		             GLX_DOUBLEBUFFER,
-		             GLX_DEPTH_SIZE,
-		             1,
-		             None };
+		             GLX_DEPTH_SIZE, 1,
+		        	 None
+	};
 	char gldir[MAX_OSPATH];
 	int width = 640, height = 480;
 	int scrnum;
@@ -728,9 +726,7 @@ void VID_Init(unsigned char *palette)
 	visinfo = glXChooseVisual(dpy, scrnum, attrib);
 	if(!visinfo)
 	{
-		fprintf(
-		stderr,
-		"qkHack: Error couldn't get an RGB, Double-buffered, Depth visual\n");
+		fprintf(stderr, "qkHack: Error couldn't get an RGB, Double-buffered, Depth visual\n");
 		exit(1);
 	}
 	/* window attributes */

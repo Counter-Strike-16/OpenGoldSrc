@@ -112,10 +112,15 @@
 #include "rehlds/static_map.h"
 
 //#include "ed_strpool.h"
-
-//#include "engine_pch.h"
-#include "memory.h"
 */
+
+// All headers of engine module
+// Needed for external code
+#ifndef REHLDS_SELF
+	#include "engine_pch.h"
+#endif
+
+//#include "memory.h"
 
 #include "SteamCommon.h"
 
@@ -134,8 +139,11 @@
 #include "tier0/platform.h"
 
 #include "iregistry.h"
+*/
+
 #include "public/interface.h"
 
+/*
 #include "tier1/utlbuffer.h"
 #include "tier1/utlrbtree.h"
 
@@ -164,3 +172,5 @@
 
 #include "dlls/cdll_dll.h"
 */
+
+#include "shiftutil/SharedLib.hpp"

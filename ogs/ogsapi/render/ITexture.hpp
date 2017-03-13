@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief texture interface draft
+/// @brief texture interface
 
 #pragma once
 

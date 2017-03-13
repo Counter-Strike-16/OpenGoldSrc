@@ -28,6 +28,8 @@
 
 /// @file
 
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,7 +38,7 @@
 
 #include "ref.hpp"
 
-#define REF_VERSION "SOFT 0.01"
+const char REF_VERSION[] = "SOFT 0.01";
 
 // up / down
 #define PITCH 0
@@ -99,7 +101,10 @@ typedef struct
 	int height;
 } viddef_t;
 
-typedef enum {
+extern viddef_t vid;
+
+typedef enum
+{
 	rserr_ok,
 
 	rserr_invalid_fullscreen,
@@ -107,8 +112,6 @@ typedef enum {
 
 	rserr_unknown
 } rserr_t;
-
-extern viddef_t vid;
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct
@@ -135,13 +138,15 @@ typedef struct
 
 	vec3_t vieworg;
 	vec3_t viewangles;
+	
+	//float fov_x, fov_y;
 
 	int ambientlight;
 } oldrefdef_t;
 
 extern oldrefdef_t r_refdef;
 
-#include "r_model.h"
+#include "r_model.hpp"
 
 #define CACHE_SIZE 32
 
@@ -188,6 +193,10 @@ extern oldrefdef_t r_refdef;
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
 #define CYCLE 128 // turbulent cycle size
 
+//
+// TODO: fine-tune this; it's based on providing some overage even if there
+// is a 2k-wide scan, with subdivision every 8, for 256 spans of 12 bytes each
+//
 #define SCANBUFFERPAD 0x1000
 
 #define DS_SPAN_LIST_END -128
@@ -222,7 +231,7 @@ extern oldrefdef_t r_refdef;
 #define NEAR_CLIP 0.01
 
 #define MAXALIASVERTS 2000 // TODO: tune this
-#define ALIAS_Z_CLIP_PLANE 4
+#define ALIAS_Z_CLIP_PLANE 4 // 5
 
 // turbulence stuff
 
@@ -316,16 +325,17 @@ typedef struct
 
 typedef struct
 {
-	byte *surfdat;    // destination for generated surface
+	byte *surfdat;    // was pixel_t*; destination for generated surface
 	int rowbytes;     // destination logical width in bytes
 	msurface_t *surf; // description for surface to generate
-	fixed8_t lightadj[MAXLIGHTMAPS];
-	// adjust for lightmap levels for dynamic lighting
-	image_t *image;
+	fixed8_t lightadj[MAXLIGHTMAPS]; // adjust for lightmap levels for dynamic lighting
+	image_t *image; // texture_t *texture;	// corrected for animating textures
 	int surfmip;    // mipmapped ratio of surface texels / world pixels
 	int surfwidth;  // in mipmapped texels
 	int surfheight; // in mipmapped texels
 } drawsurf_t;
+
+// viewmodel lighting
 
 typedef struct
 {
@@ -363,7 +373,7 @@ typedef struct surfcache_s
 	unsigned width;
 	unsigned height; // DEBUG only needed for debug
 	float mipscale;
-	image_t *image;
+	image_t *image; // struct texture_s *texture; // checked for animating textures
 	byte data[4]; // width*height elements
 } surfcache_t;
 
@@ -405,7 +415,7 @@ typedef struct surf_s
 	                       //  start)
 	int flags;             // currentface flags
 	msurface_t *msurf;
-	entity_t *entity;
+	cl_entity_t *entity;
 	float nearzi; // nearest 1/z on surface, for mipmapping
 	qboolean insubmodel;
 	float d_ziorigin, d_zistepu, d_zistepv;
@@ -434,10 +444,8 @@ VARS
 */
 
 extern int d_spanpixcount;
-extern int r_framecount;     // sequence # of current frame since Quake
-                             //  started
-extern float r_aliasuvscale; // scale-up factor for screen u and v
-                             //  on Alias vertices passed to driver
+extern int r_framecount;     // sequence # of current frame since engine started
+extern float r_aliasuvscale; // scale-up factor for screen u and v on Alias vertices passed to driver
 extern qboolean r_dowarp;
 
 extern affinetridesc_t r_affinetridesc;
@@ -454,7 +462,7 @@ extern void *acolormap; // FIXME: should go away
 
 //=======================================================================//
 
-// callbacks to Quake
+// callbacks to engine
 
 extern drawsurf_t r_drawsurf;
 
@@ -509,6 +517,9 @@ extern int sintable[1280];
 extern int intsintable[1280];
 extern int blanktable[1280]; // PGM
 
+//
+// view origin
+//
 extern vec3_t vup, base_vup;
 extern vec3_t vpn, base_vpn;
 extern vec3_t vright, base_vright;
@@ -524,7 +535,7 @@ extern surf_t *surfaces, *surface_p, *surf_max;
 //===================================================================
 
 extern vec3_t sxformaxis[4]; // s axis transformed into viewspace
-extern vec3_t txformaxis[4]; // t axis transformed into viewspac
+extern vec3_t txformaxis[4]; // t axis transformed into viewspace
 
 extern float xcenter, ycenter;
 extern float xscale, yscale;
@@ -581,9 +592,9 @@ extern mplane_t screenedge[4];
 
 extern vec3_t r_origin;
 
-extern entity_t r_worldentity;
+extern cl_entity_t r_worldentity;
 extern model_t *currentmodel;
-extern entity_t *currententity;
+extern cl_entity_t *currententity;
 extern vec3_t modelorg;
 extern vec3_t r_entorigin;
 
@@ -607,7 +618,7 @@ extern qboolean insubmodel;
 void R_DrawAlphaSurfaces();
 
 void R_DrawSprite();
-void R_DrawBeam(entity_t *e);
+void R_DrawBeam(cl_entity_t *e);
 
 void R_RenderFace(msurface_t *fa, int clipflags);
 void R_RenderBmodelFace(bedge_t *pedges, msurface_t *psurf);
@@ -637,7 +648,6 @@ surf_t *R_GetSurf();
 void R_AliasDrawModel();
 void R_BeginEdgeFrame();
 void R_ScanEdges();
-void D_DrawSurfaces();
 void R_InsertNewEdges(edge_t *edgestoadd, edge_t *edgelist);
 void R_StepActiveU(edge_t *pedge);
 void R_RemoveEdges(edge_t *pedge);
@@ -655,8 +665,6 @@ extern void R_RotateBmodel();
 extern int c_faceclip;
 extern int r_polycount;
 extern int r_wholepolycount;
-
-extern int ubasestep, errorterm, erroradjustup, erroradjustdown;
 
 extern fixed16_t sadjust, tadjust;
 extern fixed16_t bbextents, bbextentt;

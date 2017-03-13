@@ -42,6 +42,9 @@ struct TWindowProps
 
 struct IVideo
 {
+	virtual bool Init() = 0;
+	virtual void Shutdown() = 0;
+	
 	virtual IWindow *OpenWindow(const TWindowProps &aWinProps) const = 0;
 	virtual void CloseWindow(IWindow *&apWindow) = 0;
 };

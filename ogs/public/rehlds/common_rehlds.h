@@ -26,6 +26,8 @@
 *
 */
 
+/// @file
+
 #pragma once
 
 #include "common/commontypes.h"

@@ -26,6 +26,8 @@
 *
 */
 
+/// @file
+
 #pragma once
 
 #include "public/archtypes.h"

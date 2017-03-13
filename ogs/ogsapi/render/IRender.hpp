@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief Render module interface
+/// @brief render module interface
 
 #pragma once
 
@@ -36,11 +36,13 @@
 // If requested version is different, the dll cannot be used
 const char OGS_RENDER_INTERFACE_VERSION[] = "OGSRender001";
 
+struct ITexture;
+
 // These are the methods exported by the render module
 struct IRender : public IBaseInterface
 {
 	/// Called when the library is loaded
-	virtual bool Init(CreateInterfaceFn afnEngineFactory, void *ahInstance, void *apWndProc) = 0;
+	virtual bool Init(CreateInterfaceFn afnEngineFactory, void *ahInstance, void *apWndProc /*, refimport_t aImportFuncs*/) = 0;
 	
 	/// Called before the library is unloaded
 	virtual void Shutdown() = 0;
@@ -59,8 +61,8 @@ struct IRender : public IBaseInterface
 	//
 	// Skins and images need to be differentiated, because skins
 	// are flood filled to eliminate mip map edge errors, and pics have
-	// an implicit "pics/" prepended to the name. (a pic name that starts with a
-	// slash will not use the "pics/" prefix or the ".pcx" postfix)
+	// an implicit "gfx/" prepended to the name. (a pic name that starts with a
+	// slash will not use the "gfx/" prefix or the ".pcx" postfix)
 	virtual void BeginRegistration(const char *asMap) = 0;
 	
 	///

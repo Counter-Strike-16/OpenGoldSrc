@@ -26,6 +26,8 @@
 *
 */
 
+/// @file
+
 #pragma once
 
 /* <82286> ../engine/d_local.h:20 */

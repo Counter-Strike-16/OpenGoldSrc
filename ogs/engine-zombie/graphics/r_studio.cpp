@@ -609,7 +609,7 @@ hull_t *R_StudioHull(model_t *pModel, float frame, int sequence, const vec_t *an
 	if(r_cachestudio.value != 0)
 	{
 #ifdef SWDS
-		Sys_Error(__FUNCTION__ ": Studio state caching is not used on server");
+		Sys_Error("%s: Studio state caching is not used on server", __FUNCTION__);
 #endif
 		// TODO: Reverse for client-side
 	}
@@ -643,7 +643,7 @@ hull_t *R_StudioHull(model_t *pModel, float frame, int sequence, const vec_t *an
 	if(r_cachestudio.value != 0)
 	{
 #ifdef SWDS
-		Sys_Error(__FUNCTION__ ": Studio state caching is not used on server");
+		Sys_Error("%s: Studio state caching is not used on server", __FUNCTION__);
 #endif
 		// TODO: Reverse for client-side
 		//	R_AddToStudioCache(float frame,

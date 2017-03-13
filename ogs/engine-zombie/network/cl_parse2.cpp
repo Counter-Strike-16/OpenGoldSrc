@@ -637,13 +637,14 @@ void CL_NewTranslation(int slot)
 	player_info_t *player;
 	char s[512];
 
-	if(slot > MAX_CLIENTS)
-		Sys_Error("CL_NewTranslation: slot > MAX_CLIENTS");
+	if(slot > MAX_CLIENTS) // cl.maxclients
+		Sys_Error("CL_NewTranslation: slot > MAX_CLIENTS"); // cl.maxclients
 
 	player = &cl.players[slot];
 
 	strcpy(s, Info_ValueForKey(player->userinfo, "skin"));
 	COM_StripExtension(s, s);
+	
 	if(player->skin && !stricmp(s, player->skin->name))
 		player->skin = NULL;
 

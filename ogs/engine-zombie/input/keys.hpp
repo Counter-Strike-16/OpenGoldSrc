@@ -63,3 +63,9 @@ const char *Key_LookupBinding(const char *pBinding);
 const char *Key_KeynumToString(int nKey);
 
 int Key_GetKey(const char *sBinding); // int Key_GetKey();
+
+class CKeyboard
+{
+public:
+	bool IsKeyDown(int key);
+};

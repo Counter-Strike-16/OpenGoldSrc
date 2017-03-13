@@ -163,7 +163,7 @@ void GL_ScreenShot_f()
 	fclose(f);
 
 	free(buffer);
-	ri.Con_Printf(PRINT_ALL, "Wrote %s\n", picname);
+	gpConsole->Printf(PRINT_ALL, "Wrote %s\n", picname);
 }
 
 /*
@@ -171,10 +171,10 @@ void GL_ScreenShot_f()
 */
 void GL_Strings_f()
 {
-	ri.Con_Printf(PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string);
-	ri.Con_Printf(PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string);
-	ri.Con_Printf(PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string);
-	ri.Con_Printf(PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string);
+	gpConsole->Printf(PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string);
+	gpConsole->Printf(PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string);
+	gpConsole->Printf(PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string);
+	gpConsole->Printf(PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string);
 }
 
 /*

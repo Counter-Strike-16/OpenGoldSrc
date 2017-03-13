@@ -82,7 +82,7 @@ const int RESOURCE_INDEX_BITS = 12;
 const int MAX_SOUNDS = 512;
 const int MAX_SOUND_HASHLOOKUP_SIZE = (MAX_SOUNDS * 2 - 1);
 
-// How many bits to use to encode an edict.
+// How many bits to use to encode an edict
 const int MAX_EDICT_BITS = 11; // # of bits needed to represent max edicts
 
 // Max # of edicts in a level (2048)

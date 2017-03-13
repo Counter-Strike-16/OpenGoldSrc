@@ -2,7 +2,8 @@
 /// @brief chase camera code
 
 #include "precompiled.hpp"
-#include "commondef.hpp"
+//#include "commondef.hpp"
+#include "console/cvar.hpp"
 
 cvar_t	chase_back = {"chase_back", "100"};
 cvar_t	chase_up = {"chase_up", "16"};
@@ -21,13 +22,13 @@ void Chase_Init ()
 	Cvar_RegisterVariable (&chase_up);
 	Cvar_RegisterVariable (&chase_right);
 	Cvar_RegisterVariable (&chase_active);
-}
+};
 
 void Chase_Reset ()
 {
 	// for respawning and teleporting
 //	start position 12 units behind head
-}
+};
 
 void TraceLine (vec3_t start, vec3_t end, vec3_t impact)
 {
@@ -37,7 +38,7 @@ void TraceLine (vec3_t start, vec3_t end, vec3_t impact)
 	SV_RecursiveHullCheck (cl.worldmodel->hulls, 0, 0, 1, start, end, &trace);
 
 	VectorCopy (trace.endpos, impact);
-}
+};
 
 void Chase_Update ()
 {
@@ -45,7 +46,6 @@ void Chase_Update ()
 	float	dist;
 	vec3_t	forward, up, right;
 	vec3_t	dest, stop;
-
 
 	// if can't see player, reset
 	AngleVectors (cl.viewangles, forward, right, up);
@@ -70,4 +70,4 @@ void Chase_Update ()
 
 	// move towards destination
 	VectorCopy (chase_dest, r_refdef.vieworg);
-}
+};

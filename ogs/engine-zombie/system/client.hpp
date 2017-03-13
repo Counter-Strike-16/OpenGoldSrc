@@ -365,7 +365,6 @@ extern	cl_entity_t		cl_visedicts_list[2][MAX_VISEDICTS];
 
 void CL_Init(); //+
 void CL_InitClosest();
-void CL_InitEventSystem();
 
 void CL_Shutdown(); //+
 void CL_ShutDownUsrMessages();
@@ -384,8 +383,6 @@ void CL_Disconnect_f(); //+
 
 void CL_RecordHUDCommand(char *cmdname);
 
-void R_DecalRemoveAll(int textureIndex);
-
 qboolean CL_CheckFile(sizebuf_t *msg, char *filename);
 
 model_s *CL_GetModelByIndex(int index);
@@ -400,10 +397,6 @@ void CL_CreateMove(float frametime, struct usercmd_s *cmd, int active);
 void CL_QueueHTTPDownload(const char *filename);
 int CL_ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size);
 
-void CL_DecayLights(); //+
-
-void CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel);
-
 void CL_PrintLogos();
 void CL_ReadPackets(); //+
 
@@ -412,12 +405,9 @@ qboolean CL_RequestMissingResources();
 void CL_Move();
 void CL_SendConnectPacket(); //+
 
-void CL_UpdateSoundFade();
 void CL_AdjustClock();
 void CL_Save(const char *name);
 void CL_HudMessage(const char *pMessage);
-
-void Chase_Init();
 
 int DispatchDirectUserMsg(const char *pszName, int iSize, void *pBuf);
 
@@ -427,6 +417,27 @@ void CL_WriteMessageHistory(int starting_count, int cmd);
 void CL_MoveSpectatorCamera();
 
 void CL_UpdateModuleC();
+
+//
+// sound
+//
+void CL_UpdateSoundFade();
+
+//
+// scene
+//
+void CL_DecayLights(); //+
+void CL_Particle(vec_t *origin, int color, float life, int zpos, int zvel);
+
+//
+// render
+//
+void R_DecalRemoveAll(int textureIndex);
+
+//
+// chase camera
+//
+void Chase_Init();
 
 //
 // message parsing
@@ -443,6 +454,7 @@ void CL_EmitEntities(); //+
 //
 // events
 //
+void CL_InitEventSystem();
 void CL_FireEvents(); //+
 
 //

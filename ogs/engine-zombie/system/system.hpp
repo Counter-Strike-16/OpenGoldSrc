@@ -138,6 +138,7 @@ extern qboolean con_debuglog;
 extern void (*Launcher_ConsolePrintf)(char *, ...);
 
 #ifdef _WIN32
+
 #ifdef HOOK_ENGINE
 #define g_PerfCounterInitialized (*pg_PerfCounterInitialized)
 #define g_PerfCounterMutex (*pg_PerfCounterMutex)
@@ -195,8 +196,6 @@ NOBODY void Sys_PushFPCW_SetHigh();
 NOBODY void Sys_PopFPCW();
 
 NOBODY void MaskExceptions();
-
-NOBODY void Sys_Init();
 
 // called to yield for a little bit so as
 // not to hog cpu when paused or debugging
@@ -268,6 +267,7 @@ NOXREF qboolean Sys_IsWin98();
 void Sys_CheckOSVersion();
 #endif
 
+NOBODY void Sys_Init();
 NOXREF void Sys_Init();
 NOXREF void Sys_Shutdown();
 

@@ -317,13 +317,8 @@ typedef struct model_s
 }
 model_t;
 
-void Mod_Init(void);
-void Mod_ClearAll(void);
-model_t *Mod_ForName(char *name, qboolean crash);
-void *Mod_Extradata(model_t *mod);
 void Mod_TouchModel(char *name);
 
-mleaf_t *Mod_PointInLeaf(float *p, model_t *model);
 byte *Mod_LeafPVS(mleaf_t *leaf, model_t *model);
 
 #endif

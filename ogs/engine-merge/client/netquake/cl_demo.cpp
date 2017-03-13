@@ -1,32 +1,6 @@
 
-
-#include "quakedef.h"
-
-void CL_FinishTimeDemo (void);
-
-/*
-==============================================================================
-
-DEMO CODE
-
-When a demo is playing back, all NET_SendMessages are skipped, and
-NET_GetMessages are read from the demo file.
-
-Whenever cl.time gets past the last received message, another message is
-read from the demo file.
-==============================================================================
-*/
-
-/*
-====================
-CL_WriteDemoMessage
-
-Dumps the current net message, prefixed by the length and view angles
-====================
-*/
 void CL_WriteDemoMessage (void)
 {
-	int		len;
 	int		i;
 	float	f;
 
@@ -38,7 +12,6 @@ void CL_WriteDemoMessage (void)
 		fwrite (&f, 4, 1, cls.demofile);
 	}
 	fwrite (net_message.data, net_message.cursize, 1, cls.demofile);
-	fflush (cls.demofile);
 }
 
 void CL_Stop_f (void)
@@ -142,17 +115,3 @@ void CL_PlayDemo_f (void)
 // ZOID, fscanf is evil
 //	fscanf (cls.demofile, "%i\n", &cls.forcetrack);
 }
-
-
-void CL_TimeDemo_f (void)
-{
-	if (cmd_source != src_command)
-		return;
-	
-// cls.td_starttime will be grabbed at the second frame of the demo, so
-// all the loading time doesn't get counted
-	
-	cls.td_startframe = host_framecount;
-	cls.td_lastframe = -1;		// get a new message this frame
-}
-

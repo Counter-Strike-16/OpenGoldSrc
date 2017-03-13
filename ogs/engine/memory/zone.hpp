@@ -123,6 +123,13 @@ void Hunk_Check();
 
 NOXREF void Hunk_Print(qboolean all);
 
+/*
+void *Hunk_Begin(int maxsize);
+
+int Hunk_End();
+void Hunk_Free(void *base);
+*/
+
 ////////////////////////////////////////
 
 void Cache_Init();

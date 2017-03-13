@@ -136,7 +136,6 @@ redirect_t sv_redirected;
 netadr_t sv_redirectto;
 
 // Why these are here?
-// DONE: make one global var with mods enum.
 #ifdef REHLDS_FIXES
 GameType_e g_eGameType = GT_Unitialized;
 #else
@@ -234,6 +233,7 @@ cvar_t max_queries_window = { "max_queries_window", "60", FCVAR_SERVER | FCVAR_P
 cvar_t sv_logblocks = { "sv_logblocks", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t sv_downloadurl = { "sv_downloadurl", "", FCVAR_PROTECTED, 0.0f, NULL };
 cvar_t sv_allow_dlfile = { "sv_allow_dlfile", "1", 0, 0.0f, NULL };
+
 #ifdef REHLDS_FIXES
 cvar_t sv_version = { "sv_version", "", FCVAR_SERVER, 0.0f, NULL };
 #else

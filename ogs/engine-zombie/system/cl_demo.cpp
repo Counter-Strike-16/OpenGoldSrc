@@ -30,6 +30,7 @@
 /// @brief demo recording/playback code
 
 #include "precompiled.hpp"
+//#include "commondef.hpp"
 #include "client/cl_demo.hpp"
 #include "client/client.hpp"
 #include "system/common.hpp"
@@ -841,6 +842,9 @@ timedemo [demoname]
 */
 void CL_TimeDemo_f()
 {
+	//if(cmd_source != src_command)
+		//return;
+	
 	if(Cmd_Argc() != 2)
 	{
 		Con_Printf("timedemo <demoname> : gets demo speeds\n");

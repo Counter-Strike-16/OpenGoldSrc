@@ -73,6 +73,11 @@ void Cvar_Shutdown()
 	cvar_vars = NULL;
 };
 
+/*
+============
+Cvar_FindVar
+============
+*/
 cvar_t *Cvar_FindVar(const char *var_name)
 {
 #ifndef SWDS
@@ -103,6 +108,11 @@ NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 	return NULL;
 };
 
+/*
+============
+Cvar_VariableValue
+============
+*/
 float Cvar_VariableValue(const char *var_name)
 {
 	cvar_t *var = Cvar_FindVar(var_name);
@@ -113,6 +123,11 @@ float Cvar_VariableValue(const char *var_name)
 	return 0.0f;
 };
 
+/*
+============
+Cvar_VariableInteger
+============
+*/
 NOXREF int Cvar_VariableInt(const char *var_name)
 {
 	NOXREFCHECK;

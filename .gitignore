@@ -12,7 +12,7 @@ ipch/
 # Local environment
 [Bb]in/
 [Bb]uild/
-[Dd]ebug/
-[Rr]elease/
+[Dd]ebug*/
+[Rr]elease*/
 /[Mm]erge/
 *.tmp

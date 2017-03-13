@@ -66,6 +66,7 @@ typedef enum spriteframetype_e
 } spriteframetype_t;
 
 /* <4aea6> ../engine/spritegn.h:50 */
+// TODO: shorten these?
 typedef struct dsprite_s
 {
 	int				ident;

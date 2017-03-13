@@ -210,145 +210,10 @@ void CL_ParseMuzzleFlash ()
 		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;
 		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/blastf1a.wav"), volume, ATTN_NORM, 0);
 		break;
-	case MZ_BLUEHYPERBLASTER:
-		dl->color[0] = 0;dl->color[1] = 0;dl->color[2] = 1;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/hyprbf1a.wav"), volume, ATTN_NORM, 0);
-		break;
-	case MZ_HYPERBLASTER:
-		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/hyprbf1a.wav"), volume, ATTN_NORM, 0);
-		break;
-	case MZ_MACHINEGUN:
-		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;
-		Com_sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0);
-		break;
-	case MZ_SHOTGUN:
-		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/shotgf1b.wav"), volume, ATTN_NORM, 0);
-		S_StartSound (NULL, i, CHAN_AUTO,   S_RegisterSound("weapons/shotgr1b.wav"), volume, ATTN_NORM, 0.1);
-		break;
-	case MZ_SSHOTGUN:
-		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/sshotf1b.wav"), volume, ATTN_NORM, 0);
-		break;
-	case MZ_CHAINGUN1:
-		dl->radius = 200 + (rand()&31);
-		dl->color[0] = 1;dl->color[1] = 0.25;dl->color[2] = 0;
-		Com_sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0);
-		break;
-	case MZ_CHAINGUN2:
-		dl->radius = 225 + (rand()&31);
-		dl->color[0] = 1;dl->color[1] = 0.5;dl->color[2] = 0;
-		dl->die = cl.time  + 0.1;	// long delay
-		Com_sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0);
-		Com_sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0.05);
-		break;
-	case MZ_CHAINGUN3:
-		dl->radius = 250 + (rand()&31);
-		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;
-		dl->die = cl.time  + 0.1;	// long delay
-		Com_sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0);
-		Com_sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0.033);
-		Com_sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0.066);
-		break;
-	case MZ_RAILGUN:
-		dl->color[0] = 0.5;dl->color[1] = 0.5;dl->color[2] = 1.0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/railgf1a.wav"), volume, ATTN_NORM, 0);
-		break;
-	case MZ_ROCKET:
-		dl->color[0] = 1;dl->color[1] = 0.5;dl->color[2] = 0.2;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/rocklf1a.wav"), volume, ATTN_NORM, 0);
-		S_StartSound (NULL, i, CHAN_AUTO,   S_RegisterSound("weapons/rocklr1b.wav"), volume, ATTN_NORM, 0.1);
-		break;
-	case MZ_GRENADE:
-		dl->color[0] = 1;dl->color[1] = 0.5;dl->color[2] = 0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/grenlf1a.wav"), volume, ATTN_NORM, 0);
-		S_StartSound (NULL, i, CHAN_AUTO,   S_RegisterSound("weapons/grenlr1b.wav"), volume, ATTN_NORM, 0.1);
-		break;
-	case MZ_BFG:
-		dl->color[0] = 0;dl->color[1] = 1;dl->color[2] = 0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/bfg__f1y.wav"), volume, ATTN_NORM, 0);
-		break;
-
-	case MZ_LOGIN:
-		dl->color[0] = 0;dl->color[1] = 1; dl->color[2] = 0;
-		dl->die = cl.time + 1.0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/grenlf1a.wav"), 1, ATTN_NORM, 0);
-		CL_LogoutEffect (pl->current.origin, weapon);
-		break;
-	case MZ_LOGOUT:
-		dl->color[0] = 1;dl->color[1] = 0; dl->color[2] = 0;
-		dl->die = cl.time + 1.0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/grenlf1a.wav"), 1, ATTN_NORM, 0);
-		CL_LogoutEffect (pl->current.origin, weapon);
-		break;
-	case MZ_RESPAWN:
-		dl->color[0] = 1;dl->color[1] = 1; dl->color[2] = 0;
-		dl->die = cl.time + 1.0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/grenlf1a.wav"), 1, ATTN_NORM, 0);
-		CL_LogoutEffect (pl->current.origin, weapon);
-		break;
-	// RAFAEL
-	case MZ_PHALANX:
-		dl->color[0] = 1;dl->color[1] = 0.5; dl->color[2] = 0.5;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/plasshot.wav"), volume, ATTN_NORM, 0);
-		break;
-	// RAFAEL
-	case MZ_IONRIPPER:	
-		dl->color[0] = 1;dl->color[1] = 0.5; dl->color[2] = 0.5;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/rippfire.wav"), volume, ATTN_NORM, 0);
-		break;
-
-// ======================
-// PGM
-	case MZ_ETF_RIFLE:
-		dl->color[0] = 0.9;dl->color[1] = 0.7;dl->color[2] = 0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/nail1.wav"), volume, ATTN_NORM, 0);
-		break;
-	case MZ_SHOTGUN2:
-		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/shotg2.wav"), volume, ATTN_NORM, 0);
-		break;
-	case MZ_HEATBEAM:
-		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;
-		dl->die = cl.time + 100;
-//		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/bfg__l1a.wav"), volume, ATTN_NORM, 0);
-		break;
-	case MZ_BLASTER2:
-		dl->color[0] = 0;dl->color[1] = 1;dl->color[2] = 0;
-		// FIXME - different sound for blaster2 ??
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/blastf1a.wav"), volume, ATTN_NORM, 0);
-		break;
-	case MZ_TRACKER:
-		// negative flashes handled the same in gl/soft until CL_AddDLights
-		dl->color[0] = -1;dl->color[1] = -1;dl->color[2] = -1;
-		S_StartSound (NULL, i, CHAN_WEAPON, S_RegisterSound("weapons/disint2.wav"), volume, ATTN_NORM, 0);
-		break;		
-	case MZ_NUKE1:
-		dl->color[0] = 1;dl->color[1] = 0;dl->color[2] = 0;
-		dl->die = cl.time + 100;
-		break;
-	case MZ_NUKE2:
-		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;
-		dl->die = cl.time + 100;
-		break;
-	case MZ_NUKE4:
-		dl->color[0] = 0;dl->color[1] = 0;dl->color[2] = 1;
-		dl->die = cl.time + 100;
-		break;
 	case MZ_NUKE8:
 		dl->color[0] = 0;dl->color[1] = 1;dl->color[2] = 1;
 		dl->die = cl.time + 100;
 		break;
-// PGM
-// ======================
 	}
 }
 
@@ -654,47 +519,7 @@ void CL_ParseMuzzleFlash2 ()
 		CL_ParticleEffect (origin, vec3_origin, 0, 40);
 		CL_SmokeAndFlash(origin);
 		break;
-
-// ======
-// ROGUE
-	case MZ2_STALKER_BLASTER:
-	case MZ2_DAEDALUS_BLASTER:
-	case MZ2_MEDIC_BLASTER_2:
-	case MZ2_WIDOW_BLASTER:
-	case MZ2_WIDOW_BLASTER_SWEEP1:
-	case MZ2_WIDOW_BLASTER_SWEEP2:
-	case MZ2_WIDOW_BLASTER_SWEEP3:
-	case MZ2_WIDOW_BLASTER_SWEEP4:
-	case MZ2_WIDOW_BLASTER_SWEEP5:
-	case MZ2_WIDOW_BLASTER_SWEEP6:
-	case MZ2_WIDOW_BLASTER_SWEEP7:
-	case MZ2_WIDOW_BLASTER_SWEEP8:
-	case MZ2_WIDOW_BLASTER_SWEEP9:
-	case MZ2_WIDOW_BLASTER_100:
-	case MZ2_WIDOW_BLASTER_90:
-	case MZ2_WIDOW_BLASTER_80:
-	case MZ2_WIDOW_BLASTER_70:
-	case MZ2_WIDOW_BLASTER_60:
-	case MZ2_WIDOW_BLASTER_50:
-	case MZ2_WIDOW_BLASTER_40:
-	case MZ2_WIDOW_BLASTER_30:
-	case MZ2_WIDOW_BLASTER_20:
-	case MZ2_WIDOW_BLASTER_10:
-	case MZ2_WIDOW_BLASTER_0:
-	case MZ2_WIDOW_BLASTER_10L:
-	case MZ2_WIDOW_BLASTER_20L:
-	case MZ2_WIDOW_BLASTER_30L:
-	case MZ2_WIDOW_BLASTER_40L:
-	case MZ2_WIDOW_BLASTER_50L:
-	case MZ2_WIDOW_BLASTER_60L:
-	case MZ2_WIDOW_BLASTER_70L:
-	case MZ2_WIDOW_RUN_1:
-	case MZ2_WIDOW_RUN_2:
-	case MZ2_WIDOW_RUN_3:
-	case MZ2_WIDOW_RUN_4:
-	case MZ2_WIDOW_RUN_5:
-	case MZ2_WIDOW_RUN_6:
-	case MZ2_WIDOW_RUN_7:
+		
 	case MZ2_WIDOW_RUN_8:
 		dl->color[0] = 0;dl->color[1] = 1;dl->color[2] = 0;
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound("tank/tnkatck3.wav"), 1, ATTN_NORM, 0);
@@ -705,22 +530,6 @@ void CL_ParseMuzzleFlash2 ()
 		S_StartSound (NULL, ent, CHAN_WEAPON, S_RegisterSound("weapons/disint2.wav"), 1, ATTN_NORM, 0);
 		break;
 
-	case MZ2_WIDOW_PLASMABEAM:
-	case MZ2_WIDOW2_BEAMER_1:
-	case MZ2_WIDOW2_BEAMER_2:
-	case MZ2_WIDOW2_BEAMER_3:
-	case MZ2_WIDOW2_BEAMER_4:
-	case MZ2_WIDOW2_BEAMER_5:
-	case MZ2_WIDOW2_BEAM_SWEEP_1:
-	case MZ2_WIDOW2_BEAM_SWEEP_2:
-	case MZ2_WIDOW2_BEAM_SWEEP_3:
-	case MZ2_WIDOW2_BEAM_SWEEP_4:
-	case MZ2_WIDOW2_BEAM_SWEEP_5:
-	case MZ2_WIDOW2_BEAM_SWEEP_6:
-	case MZ2_WIDOW2_BEAM_SWEEP_7:
-	case MZ2_WIDOW2_BEAM_SWEEP_8:
-	case MZ2_WIDOW2_BEAM_SWEEP_9:
-	case MZ2_WIDOW2_BEAM_SWEEP_10:
 	case MZ2_WIDOW2_BEAM_SWEEP_11:
 		dl->radius = 300 + (rand()&100);
 		dl->color[0] = 1;dl->color[1] = 1;dl->color[2] = 0;

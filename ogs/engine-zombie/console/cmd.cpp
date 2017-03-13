@@ -912,9 +912,7 @@ qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
 	SZ_Print(&tempBuf, Cmd_Argc() <= 1 ? "\n" : Cmd_Args());
 
 	if(tempBuf.flags & SIZEBUF_OVERFLOWED)
-	{
 		return FALSE;
-	}
 
 	if(tempBuf.cursize + pBuf->cursize <= pBuf->maxsize)
 	{
@@ -928,9 +926,7 @@ qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf)
 void Cmd_ForwardToServer()
 {
 	if(Q_stricmp(Cmd_Argv(0), "cmd") || Q_stricmp(Cmd_Argv(1), "dlfile"))
-	{
 		Cmd_ForwardToServerInternal(&cls.netchan.message);
-	}
 }
 
 qboolean Cmd_ForwardToServerUnreliable()
@@ -938,8 +934,14 @@ qboolean Cmd_ForwardToServerUnreliable()
 	return Cmd_ForwardToServerInternal(&cls.datagram);
 }
 
-// Returns the position (1 to argc-1) in the command's argument list
-// where the given parameter apears, or 0 if not present.
+/*
+================
+Cmd_CheckParm
+
+Returns the position (1 to argc-1) in the command's argument list
+where the given parameter apears, or 0 if not present
+================
+*/
 NOXREF int Cmd_CheckParm(char *parm)
 {
 	NOXREFCHECK;
@@ -951,9 +953,9 @@ NOXREF int Cmd_CheckParm(char *parm)
 
 	for(int i = 1; i < c; ++i)
 	{
-		if(!Q_stricmp(Cmd_Argv(i), parm))
+		if(!Q_stricmp(Cmd_Argv(i), parm)) // Q_strcasecmp
 			return i;
-	}
+	};
 
 	return 0;
 }

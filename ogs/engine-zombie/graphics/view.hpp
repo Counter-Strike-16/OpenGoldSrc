@@ -36,6 +36,10 @@
 
 extern cvar_t v_gamma;
 extern cvar_t lcd_x;
+
+//extern byte gammatable[256]; // palette is sent through this
+//extern byte ramps[3][256];
+
 #ifdef GLQUAKE
 extern float v_blend[4];
 #endif
@@ -53,3 +57,5 @@ void V_ParseDamage();
 void V_SetContentsColor(int contents);
 
 void V_CalcBlend();
+
+//float V_CalcRoll (vec3_t angles, vec3_t velocity);

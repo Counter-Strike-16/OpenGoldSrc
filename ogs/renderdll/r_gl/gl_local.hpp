@@ -45,6 +45,7 @@
 
 #include <GL/gl.h>
 #include <GL/glu.h>
+
 #include <math.h>
 
 #ifndef GL_COLOR_INDEX8_EXT
@@ -126,7 +127,7 @@ typedef enum {
 	rserr_unknown
 } rserr_t;
 
-#include "gl_model.h"
+#include "gl_model.hpp"
 
 void GL_BeginRendering(int *x, int *y, int *width, int *height);
 void GL_EndRendering();
@@ -143,9 +144,11 @@ typedef struct
 	float r, g, b;
 } glvert_t;
 
-#define MAX_LBM_HEIGHT 480
+//extern glvert_t glv;
 
-#define BACKFACE_EPSILON 0.01
+const int MAX_LBM_HEIGHT = 480;
+
+const float BACKFACE_EPSILON = 0.01f;
 
 //====================================================
 
@@ -154,11 +157,11 @@ extern int numgltextures;
 
 extern image_t *r_notexture;
 extern image_t *r_particletexture;
-extern entity_t *currententity;
+extern cl_entity_t *currententity;
 extern model_t *currentmodel;
 extern int r_visframecount;
 extern int r_framecount;
-extern cplane_t frustum[4];
+extern mplane_t frustum[4];
 extern int c_brush_polys, c_alias_polys;
 
 extern int gl_filter_min, gl_filter_max;
@@ -174,18 +177,32 @@ extern vec3_t r_origin;
 //
 // screen size info
 //
-extern refdef_t r_newrefdef;
+extern refdef_t r_newrefdef; // r_refdef
 extern int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 extern cvar_t *r_norefresh;
-extern cvar_t *r_lefthand;
+//extern cvar_t *r_lefthand;
 extern cvar_t *r_drawentities;
+extern cvar_t *r_drawviewmodel;
 extern cvar_t *r_drawworld;
 extern cvar_t *r_speeds;
 extern cvar_t *r_fullbright;
 extern cvar_t *r_novis;
 extern cvar_t *r_nocull;
 extern cvar_t *r_lerpmodels;
+extern cvar_t *r_lightmap;
+extern cvar_t *r_shadows;
+extern cvar_t *r_mirroralpha;
+extern cvar_t *r_wateralpha;
+extern cvar_t *r_dynamic;
+//extern cvar_t *r_netgraph;
+extern cvar_t *r_bmodelinterp;
+extern cvar_t *r_bmodelhighfrac;
+extern cvar_t *r_decals;
+extern cvar_t *r_mmx;
+extern cvar_t *r_traceglow;
+extern cvar_t *r_wadtextures;
+extern cvar_t *r_glowshellfreq;
 
 extern cvar_t *r_lightlevel; // FIXME: This is a HACK to get the client's light level
 
@@ -204,6 +221,7 @@ extern cvar_t *gl_particle_att_a;
 extern cvar_t *gl_particle_att_b;
 extern cvar_t *gl_particle_att_c;
 
+extern cvar_t *gl_vsync;
 extern cvar_t *gl_nosubimage;
 extern cvar_t *gl_bitdepth;
 extern cvar_t *gl_mode;
@@ -212,6 +230,7 @@ extern cvar_t *gl_lightmap;
 extern cvar_t *gl_shadows;
 extern cvar_t *gl_dynamic;
 extern cvar_t *gl_monolightmap;
+extern cvar_t *gl_monolights;
 extern cvar_t *gl_nobind;
 extern cvar_t *gl_round_down;
 extern cvar_t *gl_picmip;
@@ -237,6 +256,13 @@ extern cvar_t *gl_texturealphamode;
 extern cvar_t *gl_texturesolidmode;
 extern cvar_t *gl_saturatelighting;
 extern cvar_t *gl_lockpvs;
+//extern	cvar_t	gl_smoothmodels;
+//extern	cvar_t	gl_affinemodels;
+//extern	cvar_t	gl_fogblend;
+//extern	cvar_t	gl_keeptjunctions;
+//extern	cvar_t	gl_reporttjunctions;
+//extern	cvar_t	gl_nocolors;
+//extern	cvar_t	gl_doubleeyes;
 
 extern cvar_t *vid_fullscreen;
 extern cvar_t *vid_gamma;
@@ -246,6 +272,7 @@ extern cvar_t *intensity;
 extern int gl_lightmap_format;
 extern int gl_solid_format;
 extern int gl_alpha_format;
+
 extern int gl_tex_solid_format;
 extern int gl_tex_alpha_format;
 
@@ -255,6 +282,7 @@ extern int c_visible_textures;
 extern float r_world_matrix[16];
 
 void R_TranslatePlayerSkin(int playernum);
+
 void GL_Bind(int texnum);
 void GL_MBind(GLenum target, int texnum);
 void GL_TexEnv(GLenum value);
@@ -279,10 +307,10 @@ void R_Shutdown();
 
 void R_RenderView(refdef_t *fd);
 void GL_ScreenShot_f();
-void R_DrawAliasModel(entity_t *e);
-void R_DrawBrushModel(entity_t *e);
-void R_DrawSpriteModel(entity_t *e);
-void R_DrawBeam(entity_t *e);
+void R_DrawAliasModel(cl_entity_t *e);
+void R_DrawBrushModel(cl_entity_t *e);
+void R_DrawSpriteModel(cl_entity_t *e);
+void R_DrawBeam(cl_entity_t *e);
 void R_DrawWorld();
 void R_RenderDlights();
 void R_DrawAlphaSurfaces();
@@ -291,7 +319,7 @@ void R_InitParticleTexture();
 void Draw_InitLocal();
 void GL_SubdivideSurface(msurface_t *fa);
 qboolean R_CullBox(vec3_t mins, vec3_t maxs);
-void R_RotateForEntity(entity_t *e);
+void R_RotateForEntity(cl_entity_t *e);
 void R_MarkLeaves();
 
 glpoly_t *WaterWarpPolyVerts(glpoly_t *p);

@@ -50,6 +50,17 @@ extern int r_pixbytes;
 extern cvar_t gl_vsync;
 extern float scr_con_current;
 
+#ifndef _WIN32
+	typedef void* HWND;
+#endif
+
+extern HWND mainwindow; // cl_hwnd for q2 code
+
+//void CenterWindow(HWND hWnd, int width, int height, bool lefttopjustify);
+
+extern int window_center_x, window_center_y;
+extern RECT window_rect;
+
 // a pixel can be one, two, or four bytes
 typedef byte pixel_t;
 
@@ -106,7 +117,7 @@ void VID_Shutdown();
 // flushes the given rectangles from the view buffer to the screen
 void VID_Update(wrect_t *rects); // was vrect_t
 
-// sets the mode; only used by the Quake engine for resetting to mode 0 (the
+// sets the mode; only used by the engine for resetting to mode 0 (the
 // base mode) on memory allocation failures
 int VID_SetMode(int modenum, unsigned char *palette);
 
@@ -126,6 +137,8 @@ void VID_ForceLockState(int lk);
 int VID_ForceUnlockedAndReturnState();
 
 void VID_CheckChanges();
+
+void VID_SetDefaultMode();
 
 /*
 

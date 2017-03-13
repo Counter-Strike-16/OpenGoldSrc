@@ -30,6 +30,7 @@
 /// @brief parse a message received from the server
 
 #include "precompiled.hpp"
+//#include "commondef.hpp"
 #include "client/client.hpp"
 #include "system/system.hpp"
 #include "system/host.hpp"
@@ -77,9 +78,9 @@ const char *svc_strings[] =
 	"svc_foundsecret",
 	"svc_spawnstaticsound",
 	"svc_intermission",
-	"svc_finale",
+	"svc_finale",		// [string] music [string] text
 
-	"svc_cdtrack",
+	"svc_cdtrack",		// [byte] track [byte] looptrack
 	"svc_restore",
 
 	"svc_cutscene",
@@ -113,6 +114,8 @@ const char *svc_strings[] =
 	"svc_sendcvarvalue",
 	"svc_sendcvarvalue2",
 };
+
+//=============================================================================
 
 /*
 =====================================================================

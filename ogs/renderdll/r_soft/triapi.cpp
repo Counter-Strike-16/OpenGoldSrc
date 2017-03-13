@@ -123,7 +123,6 @@ void TriAPI_Color4f(float r, float g, float b, float a)
 	clgame.ds.triColor[1] = (byte)bound(0, (g * 255.0f), 255);
 	clgame.ds.triColor[2] = (byte)bound(0, (b * 255.0f), 255);
 	clgame.ds.triColor[3] = (byte)bound(0, (a * 255.0f), 255);
-	pglColor4ub(clgame.ds.triColor[0], clgame.ds.triColor[1], clgame.ds.triColor[2], clgame.ds.triColor[3]);
 };
 
 void TriAPI_Color4ub(unsigned char r, unsigned char g, unsigned char b, unsigned char a)

@@ -52,6 +52,7 @@ typedef struct
 	void (*R_DrawSkyChain)(msurface_t *s);
 	void (*R_DrawSkyBox)(void);
 	qboolean (*R_CullBox)(vec3_t mins, vec3_t maxs);
+	
 	void (*GL_BuildLightmaps)(void);
 	void (*GL_Bind)(int texnum);
 	void (*GL_SelectTexture)(GLenum target);

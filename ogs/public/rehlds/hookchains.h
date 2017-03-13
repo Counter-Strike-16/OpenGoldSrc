@@ -25,6 +25,9 @@
 *    version.
 *
 */
+
+/// @file
+
 #pragma once
 
 template<typename t_ret, typename ...t_args>

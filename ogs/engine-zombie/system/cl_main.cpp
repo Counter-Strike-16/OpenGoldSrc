@@ -356,7 +356,7 @@ void CL_ClearState()
 	// wipe the entire cl structure
 	memset(&cl, 0, sizeof(cl));
 
-	SZ_Clear(&cls.netchan.message);
+	SZ_Clear(&cls.netchan.message); // &cls.message
 
 	// clear other arrays
 	memset(&cl_entities, 0, sizeof(cl_entities));
@@ -438,6 +438,9 @@ void CL_Disconnect_f()
 {
 #ifndef SWDS
 	CL_Disconnect(); // Host_Error(ERR_DROP, "Disconnected from server");
+	
+	//if(sv.active)
+		//Host_ShutdownServer(false);
 #endif
 };
 
@@ -720,6 +723,8 @@ void CL_NextDemo()
 
 	if(cls.demonum == -1)
 		return; // don't play demos
+	
+	//SCR_BeginLoadingPlaque();
 
 	if(!cls.demos[cls.demonum][0] || cls.demonum == MAX_DEMOS)
 	{

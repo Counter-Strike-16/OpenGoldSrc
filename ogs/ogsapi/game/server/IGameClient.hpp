@@ -36,4 +36,5 @@ struct IGameClient
 	// put rehlds methods here
 	
 	// our methods goes here
+	virtual IInfoKeyBuffer *GetInfoKeyBuffer() = 0;
 };

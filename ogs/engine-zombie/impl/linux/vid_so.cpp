@@ -219,38 +219,13 @@ qboolean VID_LoadRefresh(char *name)
 	return true;
 }
 
-/*
-============
-VID_CheckChanges
 
-This function gets called once just before drawing each frame, and it's sole
-purpose in life
-is to check to see if any of the video mode parameters have changed, and if they
-have to
-update the rendering DLL and/or video mode to match.
-============
-*/
 void VID_CheckChanges()
 {
-	char name[100];
 	cvar_t *sw_mode;
-
-	if(vid_ref->modified)
-	{
-		S_StopAllSounds();
-	}
 
 	while(vid_ref->modified)
 	{
-		/*
-    ** refresh has changed
-    */
-		vid_ref->modified = false;
-		vid_fullscreen->modified = true;
-		cl.refresh_prepped = false;
-		cls.disable_screen = true;
-
-		sprintf(name, "r_%s.so", vid_ref->string);
 		if(!VID_LoadRefresh(name))
 		{
 			if(strcmp(vid_ref->string, "soft") == 0 ||
@@ -268,18 +243,7 @@ void VID_CheckChanges()
 				else
 					Com_Error(ERR_FATAL, "Couldn't fall back to software refresh!");
 			}
-
-			Cvar_Set("vid_ref", "soft");
-
-			/*
-      ** drop the console if we fail to load a refresh
-      */
-			if(cls.key_dest != key_console)
-			{
-				Con_ToggleConsole_f();
-			}
 		}
-		cls.disable_screen = false;
 	}
 }
 

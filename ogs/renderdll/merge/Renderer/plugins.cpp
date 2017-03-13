@@ -31,10 +31,6 @@ void IRenderer::Init(metahook_api_t *pAPI, mh_interface_t *pInterface, mh_engine
 	g_bIsDebuggerPresent = IsDebuggerPresent() != FALSE;
 }
 
-void IRenderer::Shutdown(void)
-{
-}
-
 void IRenderer::LoadEngine(void)
 {
 	g_pFileSystem = g_pInterface->FileSystem;
@@ -77,5 +73,3 @@ void IRenderer::LoadClient(cl_exportfuncs_t *pExportFunc)
 void IRenderer::ExitGame(int iResult)
 {
 }
-
-EXPOSE_SINGLE_INTERFACE(IRenderer, IRenderer, RENDERER_API_VERSION);

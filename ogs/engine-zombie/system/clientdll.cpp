@@ -75,7 +75,7 @@ static dllfunc_t cdll_exports[] =
 { NULL, NULL }
 };
 
-bool ClientDLL_Load(const char *asPath)
+bool ClientDLL::Load(const char *asPath)
 {
 	if(IsLoaded())
 		Unload();
@@ -93,8 +93,10 @@ bool ClientDLL_Load(const char *asPath)
 	
 	CL_EXPORT_FUNCS F; // export 'F'
 	
-	// trying to get single export named 'F'
-	if((F = (void *)mpClientDLL->GetExportFunc("F")) != NULL)
+	qboolean critical_exports = true;
+	
+	// trying to get a single export named 'F'
+	if((F = mpClientDLL->GetExportFunc<void*>("F")) != NULL)
 	{
 		Con_Printf("%s: found a single callback export\n", __FUNCTION__);
 
@@ -106,7 +108,7 @@ bool ClientDLL_Load(const char *asPath)
 		{
 			if(func->func == NULL)
 				break; // BAH critical function was missed
-		}
+		};
 
 		// because all the exports are loaded through function 'F"
 		if(!func || !func->name)

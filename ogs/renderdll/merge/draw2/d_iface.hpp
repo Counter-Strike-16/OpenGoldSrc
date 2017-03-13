@@ -1,41 +1,6 @@
-/*
-Copyright (C) 1996-1997 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-
-/// @file
-/// @brief interface header file for rasterization driver modules
 
 #pragma once
-
-#define WARP_WIDTH 320
-#define WARP_HEIGHT 200
-
-#define MAX_LBM_HEIGHT 200 // 480
-
-typedef struct
-{
-	float u, v;
-	float s, t;
-	float zi;
-} emitpoint_t;
-
-#define PARTICLE_Z_CLIP 8.0
 
 typedef struct polyvert_s
 {
@@ -97,9 +62,6 @@ typedef struct
 } zpointdesc_t;
 
 extern cvar_t r_drawflat;
-extern int d_spanpixcount;
-extern int r_framecount;                    // sequence # of current frame since Quake
-                                            //  started
 extern qboolean r_drawpolys;                // 1 if driver wants clipped polygons
                                             //  rather than a span list
 extern qboolean r_drawculledpolys;          // 1 if driver wants clipped polygons that
@@ -117,9 +79,7 @@ extern qboolean r_recursiveaffinetriangles; // true if a driver wants to use
 extern float r_aliasuvscale;                // scale-up factor for screen u and v
                                             //  on Alias vertices passed to driver
 extern int r_pixbytes;
-extern qboolean r_dowarp;
 
-extern affinetridesc_t r_affinetridesc;
 extern spritedesc_t r_spritedesc;
 extern zpointdesc_t r_zpointdesc;
 extern polydesc_t r_polydesc;
@@ -128,8 +88,6 @@ extern int d_con_indirect; // if 0, Quake will draw console directly
                            //  to vid.buffer; if 1, Quake will
                            //  draw console via D_DrawRect. Must be
                            //  defined by driver
-
-extern vec3_t r_pright, r_pup, r_ppn;
 
 void D_Aff8Patch(void *pcolormap);
 void D_BeginDirectRect(int x, int y, byte *pbitmap, int width, int height);
@@ -140,16 +98,13 @@ void D_PolysetDrawFinalVerts(finalvert_t *fv, int numverts);
 void D_DrawParticle(particle_t *pparticle);
 void D_DrawPoly();
 void D_DrawSprite();
-void D_DrawSurfaces();
 void D_DrawZPoint();
 void D_EnableBackBufferAccess();
 void D_EndParticles();
 void D_Init();
-void D_ViewChanged();
 void D_SetupFrame();
 void D_StartParticles();
 void D_TurnZOn();
-void D_WarpScreen();
 
 void D_FillRect(vrect_t *vrect, int color);
 void D_DrawRect();
@@ -171,28 +126,10 @@ extern byte *r_skysource;
 // !!! must be kept the same as in quakeasm.h !!!
 #define TRANSPARENT_COLOR 0xFF // 255
 
-extern void *acolormap; // FIXME: should go away
-
 //=======================================================================//
 
 // callbacks to Quake
 
-typedef struct
-{
-	pixel_t *surfdat; // destination for generated surface
-	int rowbytes;     // destination logical width in bytes
-	msurface_t *surf; // description for surface to generate
-	fixed8_t lightadj[MAXLIGHTMAPS];
-	// adjust for lightmap levels for dynamic lighting
-	texture_t *texture; // corrected for animating textures
-	int surfmip;        // mipmapped ratio of surface texels / world pixels
-	int surfwidth;      // in mipmapped texels
-	int surfheight;     // in mipmapped texels
-} drawsurf_t;
-
-extern drawsurf_t r_drawsurf;
-
-void R_DrawSurface();
 void R_GenTile(msurface_t *psurf, void *pdest);
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
@@ -210,7 +147,6 @@ void R_GenTile(msurface_t *psurf, void *pdest);
 extern float skyspeed, skyspeed2;
 extern float skytime;
 
-extern int c_surf;
 extern vrect_t scr_vrect;
 
 extern byte *r_warpbuffer;

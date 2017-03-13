@@ -1,3 +1,5 @@
+/// @file
+
 #pragma once
 
 struct IWorld;
@@ -14,4 +16,5 @@ public:
 	
 	IWorld *CreateWorld();
 private:
+	IWorld *mpWorld;
 };

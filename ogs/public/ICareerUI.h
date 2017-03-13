@@ -1,3 +1,7 @@
+#pragma once
+
+#include "public/interface.h"
+
 class ITaskVec;
 
 enum CareerDifficultyType
@@ -13,8 +17,7 @@ typedef struct
 {
 	char *name;
 	bool defeated;
-}
-MapInfo;
+} MapInfo;
 
 class ICareerUI : public IBaseInterface
 {

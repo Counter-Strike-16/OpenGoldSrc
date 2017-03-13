@@ -46,6 +46,8 @@
 #include "rehlds/bspfile.h"
 #include "rehlds/model.h"
 
+//============================================================================
+
 #ifdef HOOK_ENGINE
 #define loadmodel (*ploadmodel)
 #define loadname (*ploadname)
@@ -70,19 +72,33 @@ extern int ad_enabled;
 extern cachewad_t ad_wad;
 extern mod_known_info_t mod_known_info[MAX_KNOWN_MODELS];
 
+//============================================================================
+
 void SW_Mod_Init();
-void *Mod_Extradata(model_t *mod);
+//void Mod_Init();
+
+void *Mod_Extradata(model_t *mod); // handles caching
+
 mleaf_t *Mod_PointInLeaf(vec_t *p, model_t *model);
+
 void Mod_ClearAll();
+
 void Mod_FillInCRCInfo(qboolean trackCRC, int model_number);
+
 model_t *Mod_FindName(qboolean trackCRC, const char *name);
+
 NOXREF qboolean Mod_ValidateCRC(const char *name, CRC32_t crc);
 NOXREF void Mod_NeedCRC(const char *name, qboolean needCRC);
+
 model_t *Mod_LoadModel(model_t *mod, qboolean crash, qboolean trackCRC);
+
 NOXREF void Mod_MarkClient(model_t *pModel);
+
 model_t *Mod_ForName(const char *name, qboolean crash, qboolean trackCRC);
+
 void Mod_AdInit();
 void Mod_AdSwap(texture_t *src, int pixels, int entries);
+
 void Mod_LoadTextures(lump_t *l);
 void Mod_LoadLighting(lump_t *l);
 void Mod_LoadVisibility(lump_t *l);
@@ -91,31 +107,55 @@ void Mod_LoadVertexes(lump_t *l);
 void Mod_LoadSubmodels(lump_t *l);
 void Mod_LoadEdges(lump_t *l);
 void Mod_LoadTexinfo(lump_t *l);
+
 void CalcSurfaceExtents(msurface_t *s);
+
 void Mod_LoadFaces(lump_t *l);
+
 void Mod_SetParent(mnode_t *node, mnode_t *parent);
+
 void Mod_LoadNodes(lump_t *l);
 void Mod_LoadLeafs(lump_t *l);
 void Mod_LoadClipnodes(lump_t *l);
+
 void Mod_MakeHull0();
+
 void Mod_LoadMarksurfaces(lump_t *l);
 void Mod_LoadSurfedges(lump_t *l);
 void Mod_LoadPlanes(lump_t *l);
+
 float RadiusFromBounds(vec_t *mins, vec_t *maxs);
+
 void Mod_LoadBrushModel(model_t *mod, void *buffer);
 void Mod_LoadBrushModel_internal(model_t *mod, void *buffer);
+
 NOXREF void *Mod_LoadAliasFrame(void *pin, int *pframeindex, int numv, trivertx_t *pbboxmin, trivertx_t *pbboxmax, aliashdr_t *pheader, char *name);
 NOXREF void *Mod_LoadAliasGroup(void *pin, int *pframeindex, int numv, trivertx_t *pbboxmin, trivertx_t *pbboxmax, aliashdr_t *pheader, char *name);
 NOXREF void *Mod_LoadAliasSkin(void *pin, int *pskinindex, int skinsize, aliashdr_t *pheader);
 NOXREF void *Mod_LoadAliasSkinGroup(void *pin, int *pskinindex, int skinsize, aliashdr_t *pheader);
 NOXREF void Mod_LoadAliasModel(model_t *mod, void *buffer);
+
 void *Mod_LoadSpriteFrame(void *pin, mspriteframe_t **ppframe);
 void *Mod_LoadSpriteGroup(void *pin, mspriteframe_t **ppframe);
 void Mod_LoadSpriteModel(model_t *mod, void *buffer);
+
 NOXREF void Mod_UnloadSpriteTextures(model_t *pModel);
+
 void Mod_Print();
+
 NOXREF void Mod_ChangeGame();
+
 model_t *Mod_Handle(int modelindex);
 modtype_t Mod_GetType(int modelindex);
 
 qboolean IsCZPlayerModel(uint32 crc, const char *filename);
+
+class CModelManager
+{
+public:
+	void UnloadAll();
+	
+	model_t *GetByName(const char *asName);
+	
+	void PrintStats();
+};

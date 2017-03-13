@@ -33,9 +33,19 @@
 
 struct IWindow
 {
-	virtual void SetPos(uint anWidth, uint anHeight) = 0;
-	const vec2_t &GetPos() const = 0;
+	//virtual void Update() = 0;
 	
-	void SetTitle(const char *asTitle) = 0;
-	const char *GetTitle() const = 0;
+	//virtual bool Open() = 0;
+	virtual void Close() = 0;
+	
+	virtual void SetPos(uint anX, uint anY) = 0;
+	virtual const vec2_t &GetPos() const = 0;
+	
+	virtual void SetSize(uint anWidth, uint anHeight) = 0;
+	virtual const vec2_t &GetSize() const = 0;
+	
+	virtual void SetTitle(const char *asTitle) = 0;
+	virtual const char *GetTitle() const = 0;
+	
+	virtual bool CloseRequested() const = 0; // or WantClose
 };

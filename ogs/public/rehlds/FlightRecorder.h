@@ -25,6 +25,9 @@
 *    version.
 *
 */
+
+/// @file
+
 #pragma once
 
 #include "public/archtypes.h"
@@ -57,5 +60,4 @@ public:
 	virtual void WriteString(const char* s) = 0;
 
 	virtual void WriteBuffer(const void* data ,unsigned int len) = 0;
-
 };

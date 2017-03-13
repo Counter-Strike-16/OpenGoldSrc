@@ -73,28 +73,29 @@ struct IConsole : public IBaseInterface
 	* @param apVar - reference to cvar_t struct
 	* @return true if the cvar was successfully registered
 	*/
-	virtual bool Cvar_Register(const cvar_t &apCvar) const = 0;
+	virtual bool RegisterCvar(const cvar_t &apCvar, const char *asDesc = "<nodesc>") const = 0;
 
 	///
-	virtual cvar_t *Cvar_Add(const char *asName, const char *asValue, int flags, const char *asDesc = "") const = 0;
+	virtual cvar_t *AddCvar(const char *asName, const char *asValue, int flags, const char *asDesc = "") const = 0;
 
 	///
-	virtual bool Cvar_Remove(const char *asName) const = 0;
+	virtual bool RemoveCvar(const char *asName) const = 0;
 
 	///
-	virtual cvar_t *Cvar_Get(const char *asName) const = 0;
+	// virtual IConVar *GetCvar(const char *asName) const = 0;
+	virtual cvar_t *GetCvar(const char *asName) const = 0;
 
 	///
-	virtual void Cvar_SetString(const char *asName, const char *asValue) = 0;
+	virtual void SetCvarString(const char *asName, const char *asValue) = 0;
 
 	///
-	virtual void Cvar_SetFloat(const char *asName, float afValue) = 0;
+	virtual void SetCvarFloat(const char *asName, float afValue) = 0;
 	
 	///
-	virtual const char *Cvar_GetString(const char *asName) const = 0;
+	virtual const char *GetCvarString(const char *asName) const = 0;
 	
 	///
-	virtual float Cvar_GetFloat(const char *asName) const = 0;
+	virtual float GetCvarFloat(const char *asName) const = 0;
 	
 	///
 	virtual cmdalias_t *GetAliasList() = 0;

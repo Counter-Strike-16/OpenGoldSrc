@@ -28,7 +28,7 @@
 
 /// @file
 
-//#include "precompiled.h"
+//#include "precompiled.hpp"
 #include "dbg/dbg.hpp"
 
 class CPerformanceCounter

@@ -1,3 +1,4 @@
+
 #ifdef INCLUDELIBS
 
 #include <stdlib.h>
@@ -23,17 +24,7 @@
 typedef enum {ST_SYNC=0, ST_RAND } synctype_t;
 #endif
 
-// TODO: could be shorts
-
 #define DT_FACES_FRONT				0x0010
-
-// This mirrors trivert_t in trilib.h, is present so Quake knows how to
-// load this data
-
-typedef struct {
-	byte	v[3];
-	byte	lightnormalindex;
-} trivertx_t;
 
 typedef struct {
 	trivertx_t	bboxmin;	// lightnormal isn't used

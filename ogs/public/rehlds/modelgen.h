@@ -74,6 +74,8 @@ typedef struct mdl_s
 	float			size;
 } mdl_t;
 
+// TODO: could be shorts
+
 /* <4acd4> ../engine/modelgen.h:64 */
 typedef struct stvert_s
 {
@@ -88,6 +90,9 @@ typedef struct dtriangle_s
 	int				facesfront;
 	int				vertindex[3];
 } dtriangle_t;
+
+// This mirrors trivert_t in trilib.h, is present so Quake knows how to
+// load this data
 
 /* <4ad42> ../engine/modelgen.h:80 */
 typedef struct trivertx_s

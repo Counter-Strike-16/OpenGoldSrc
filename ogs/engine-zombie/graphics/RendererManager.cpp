@@ -30,6 +30,7 @@
 
 #include "precompiled.hpp"
 #include "graphics/RendererManager.hpp"
+#include "system/SharedLib.hpp"
 
 // Structure containing functions exported from render DLL
 // refexport_t	re;
@@ -43,7 +44,6 @@ VID_LoadRefresh
 ==============
 */
 //qboolean VID_LoadRefresh(char *name)
-
 bool CRendererManager::LoadRenderer(const char *asName)
 {
 	refimport_t ri;
@@ -51,16 +51,16 @@ bool CRendererManager::LoadRenderer(const char *asName)
 	if(reflib_active)
 	{
 		gpRender->Shutdown();
-		VID_FreeReflib();
+		UnloadRenderer(); //VID_FreeReflib
 	};
 
-	Con_Printf("------- Loading %s -------\n", name);
+	Con_Printf("------- Loading %s -------\n", asName);
 	
 	CreateInterfaceFn fnRenderFactory;
 	
-	if(!(fnRenderFactory = Sys_GetFactory(name)))
+	if(!(fnRenderFactory = Sys_GetFactory(asName)))
 	{
-		Con_Printf("LoadLibrary(\"%s\") failed\n", name);
+		Con_Printf("Can't get a factory func from the %s renderer module\n", asName);
 		return false;
 	};
 	
@@ -69,10 +69,10 @@ bool CRendererManager::LoadRenderer(const char *asName)
 	// Interface didn't exported or has an incompatible version
 	if(!gpRender)
 	{
-		Sys_Error(ERR_FATAL, "Failed to load render dll %s", name);
-		//Sys_Error(ERR_FATAL, "%s has incompatible api_version", name);
+		Sys_Error(ERR_FATAL, "Failed to load render dll %s", asName);
+		//Sys_Error(ERR_FATAL, "%s has incompatible api_version", asName);
 		//Sys_FreeModule();
-		VID_FreeReflib();
+		UnloadRenderer(); //VID_FreeReflib
 		return false;
 	};
 
@@ -93,7 +93,7 @@ bool CRendererManager::LoadRenderer(const char *asName)
 	if(gpRender->Init(fnEngineFactory, global_hInstance, MainWndProc) == -1)
 	{
 		gpRender->Shutdown();
-		VID_FreeReflib();
+		UnloadRenderer(); //VID_FreeReflib
 		return false;
 	};
 
@@ -104,9 +104,9 @@ bool CRendererManager::LoadRenderer(const char *asName)
 	
 	if(vid_ref)
 	{
-		if(!strcmp(vid_ref->string, "gl"))
+		if(!Q_strcmp(vid_ref->string, "gl"))
 			vidref_val = VIDREF_GL;
-		else if(!strcmp(vid_ref->string, "soft"))
+		else if(!Q_strcmp(vid_ref->string, "soft"))
 			vidref_val = VIDREF_SOFT;
 	};
 

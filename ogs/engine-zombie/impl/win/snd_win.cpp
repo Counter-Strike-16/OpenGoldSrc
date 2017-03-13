@@ -34,8 +34,7 @@
 
 #define iDirectSoundCreate(a, b, c) pDirectSoundCreate(a, b, c)
 
-HRESULT(WINAPI *pDirectSoundCreate)
-(GUID FAR *lpGUID, LPDIRECTSOUND FAR *lplpDS, IUnknown FAR *pUnkOuter);
+HRESULT(WINAPI *pDirectSoundCreate) (GUID FAR *lpGUID, LPDIRECTSOUND FAR *lplpDS, IUnknown FAR *pUnkOuter);
 
 // 64K is > 1 second at 16-bit, 22050 Hz
 #define WAV_BUFFERS 64
@@ -129,8 +128,7 @@ void FreeSound()
 		pDSBuf->lpVtbl->Release(pDSBuf);
 	}
 
-	// only release primary buffer if it's not also the mixing buffer we just
-	// released
+	// only release primary buffer if it's not also the mixing buffer we just released
 	if(pDSPBuf && (pDSBuf != pDSPBuf))
 	{
 		pDSPBuf->lpVtbl->Release(pDSPBuf);
@@ -269,8 +267,7 @@ sndinitstat SNDDMA_InitDirect()
 		return SIS_FAILURE;
 	}
 
-	if(DS_OK !=
-	   pDS->lpVtbl->SetCooperativeLevel(pDS, mainwindow, DSSCL_EXCLUSIVE))
+	if(DS_OK != pDS->lpVtbl->SetCooperativeLevel(pDS, mainwindow, DSSCL_EXCLUSIVE))
 	{
 		Con_SafePrintf("Set coop level failed\n");
 		FreeSound();
@@ -298,14 +295,12 @@ sndinitstat SNDDMA_InitDirect()
 			if(DS_OK != pDSPBuf->lpVtbl->SetFormat(pDSPBuf, &pformat))
 			{
 				//				if (snd_firsttime)
-				//					Con_SafePrintf ("Set primary sound
-				//buffer format: no\n");
+				//					Con_SafePrintf ("Set primary sound buffer format: no\n");
 			}
 			else
 				//			{
 				//				if (snd_firsttime)
-				//					Con_SafePrintf ("Set primary sound
-				//buffer format: yes\n");
+				//					Con_SafePrintf ("Set primary sound buffer format: yes\n");
 
 				primary_format_set = true;
 			//			}
@@ -347,8 +342,7 @@ sndinitstat SNDDMA_InitDirect()
 	}
 	else
 	{
-		if(DS_OK !=
-		   pDS->lpVtbl->SetCooperativeLevel(pDS, mainwindow, DSSCL_WRITEPRIMARY))
+		if(DS_OK != pDS->lpVtbl->SetCooperativeLevel(pDS, mainwindow, DSSCL_WRITEPRIMARY))
 		{
 			Con_SafePrintf("Set coop level failed\n");
 			FreeSound();
@@ -372,8 +366,7 @@ sndinitstat SNDDMA_InitDirect()
           Con_SafePrintf("   %d channel(s)\n"
                          "   %d bits/sample\n"
                                      "   %d bytes/sec\n",
-                                     shm->channels, shm->samplebits,
-     shm->speed);*/
+                                     shm->channels, shm->samplebits, shm->speed);*/
 
 	gSndBufSize = dsbcaps.dwBufferBytes;
 
@@ -577,7 +570,6 @@ int SNDDMA_Init()
 		if(snd_firsttime || snd_isdirect)
 		{
 			stat = SNDDMA_InitDirect();
-			;
 
 			if(stat == SIS_SUCCESS)
 			{
