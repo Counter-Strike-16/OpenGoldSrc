@@ -129,56 +129,8 @@ void SCR_CheckDrawCenterString (void)
 	SCR_DrawCenterString ();
 }
 
-//=============================================================================
-
-/*
-====================
-CalcFov
-====================
-*/
-float CalcFov (float fov_x, float width, float height)
-{
-        float   a;
-        float   x;
-
-        if (fov_x < 1 || fov_x > 179)
-                Sys_Error ("Bad fov: %f", fov_x);
-
-        x = width/tan(fov_x/360*M_PI);
-
-        a = atan (height/x);
-
-        a = a*360/M_PI;
-
-        return a;
-}
-
-/*
-=================
-SCR_CalcRefdef
-
-Must be called whenever vid changes
-Internal use only
-=================
-*/
 static void SCR_CalcRefdef (void)
 {
-	vrect_t		vrect;
-	float		size;
-
-	scr_fullupdate = 0;		// force a background redraw
-	vid.recalc_refdef = 0;
-
-// force the status bar to redraw
-	Sbar_Changed ();
-
-//========================================
-	
-// bound viewsize
-	if (scr_viewsize.value < 30)
-		Cvar_Set ("viewsize","30");
-	if (scr_viewsize.value > 120)
-		Cvar_Set ("viewsize","120");
 
 // bound field of view
 	if (scr_fov.value < 10)
@@ -188,12 +140,6 @@ static void SCR_CalcRefdef (void)
 
 	r_refdef.fov_x = scr_fov.value;
 	r_refdef.fov_y = CalcFov (r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
-
-// intermission is always full screen	
-	if (cl.intermission)
-		size = 120;
-	else
-		size = scr_viewsize.value;
 
 	if (size >= 120)
 		sb_lines = 0;		// no status bar at all
@@ -215,87 +161,6 @@ static void SCR_CalcRefdef (void)
 // vertical resolution
 	if (scr_con_current > vid.height)
 		scr_con_current = vid.height;
-
-// notify the refresh of the change
-	R_ViewChanged (&vrect, sb_lines, vid.aspect);
-}
-
-
-/*
-=================
-SCR_SizeUp_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeUp_f (void)
-{
-	Cvar_SetValue ("viewsize",scr_viewsize.value+10);
-	vid.recalc_refdef = 1;
-}
-
-
-/*
-=================
-SCR_SizeDown_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeDown_f (void)
-{
-	Cvar_SetValue ("viewsize",scr_viewsize.value-10);
-	vid.recalc_refdef = 1;
-}
-
-//============================================================================
-
-/*
-==================
-SCR_Init
-==================
-*/
-void SCR_Init (void)
-{
-	Cvar_RegisterVariable (&scr_fov);
-	Cvar_RegisterVariable (&scr_viewsize);
-	Cvar_RegisterVariable (&scr_conspeed);
-	Cvar_RegisterVariable (&scr_showram);
-	Cvar_RegisterVariable (&scr_showturtle);
-	Cvar_RegisterVariable (&scr_showpause);
-	Cvar_RegisterVariable (&scr_centertime);
-	Cvar_RegisterVariable (&scr_printspeed);
-
-//
-// register our commands
-//
-	Cmd_AddCommand ("screenshot",SCR_ScreenShot_f);
-	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);
-	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
-
-	scr_ram = Draw_PicFromWad ("ram");
-	scr_net = Draw_PicFromWad ("net");
-	scr_turtle = Draw_PicFromWad ("turtle");
-
-	scr_initialized = true;
-}
-
-
-
-/*
-==============
-SCR_DrawRam
-==============
-*/
-void SCR_DrawRam (void)
-{
-	if (!scr_showram.value)
-		return;
-
-	if (!r_cache_thrash)
-		return;
-
-	Draw_Pic (scr_vrect.x+32, scr_vrect.y, scr_ram);
 }
 
 /*
@@ -340,28 +205,6 @@ void SCR_DrawNet (void)
 
 /*
 ==============
-DrawPause
-==============
-*/
-void SCR_DrawPause (void)
-{
-	qpic_t	*pic;
-
-	if (!scr_showpause.value)		// turn off for screenshots
-		return;
-
-	if (!cl.paused)
-		return;
-
-	pic = Draw_CachePic ("gfx/pause.lmp");
-	Draw_Pic ( (vid.width - pic->width)/2, 
-		(vid.height - 48 - pic->height)/2, pic);
-}
-
-
-
-/*
-==============
 SCR_DrawLoading
 ==============
 */
@@ -377,20 +220,8 @@ void SCR_DrawLoading (void)
 		(vid.height - 48 - pic->height)/2, pic);
 }
 
-
-
-//=============================================================================
-
-
-/*
-==================
-SCR_SetUpToDrawConsole
-==================
-*/
 void SCR_SetUpToDrawConsole (void)
 {
-	Con_CheckResize ();
-	
 	if (scr_drawloading)
 		return;		// never a console with loading plaque
 		
@@ -436,11 +267,6 @@ void SCR_SetUpToDrawConsole (void)
 		con_notifylines = 0;
 }
 	
-/*
-==================
-SCR_DrawConsole
-==================
-*/
 void SCR_DrawConsole (void)
 {
 	if (scr_con_current)
@@ -546,33 +372,11 @@ void WritePCXfile (char *filename, byte *data, int width, int height,
 	length = pack - (byte *)pcx;
 	COM_WriteFile (filename, pcx, length);
 } 
- 
-
-
-/* 
-================== 
-SCR_ScreenShot_f
-================== 
-*/  
+   
 void SCR_ScreenShot_f (void) 
 { 
-	int     i; 
-	char		pcxname[80]; 
-	char		checkname[MAX_OSPATH];
-
-// 
-// find a file name to save it to 
-// 
-	strcpy(pcxname,"quake00.pcx");
-		
-	for (i=0 ; i<=99 ; i++) 
-	{ 
-		pcxname[5] = i/10 + '0'; 
-		pcxname[6] = i%10 + '0'; 
-		sprintf (checkname, "%s/%s", com_gamedir, pcxname);
-		if (Sys_FileTime(checkname) == -1)
-			break;	// file doesn't exist
-	} 
+	
+	
 	if (i==100) 
 	{
 		Con_Printf ("SCR_ScreenShot_f: Couldn't create a PCX file\n"); 

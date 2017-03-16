@@ -264,6 +264,7 @@ void SCR_CheckDrawCenterString()
 
 //=============================================================================
 
+// Moved to view.c in q2
 /*
 ====================
 CalcFov
@@ -275,7 +276,7 @@ float CalcFov(float fov_x, float width, float height)
 	float x;
 
 	if(fov_x < 1 || fov_x > 179)
-		Sys_Error("Bad fov: %f", fov_x);
+		Sys_Error("Bad fov: %f", fov_x); // ERR_DROP
 
 	x = width / tan(fov_x / 360 * M_PI);
 
@@ -320,8 +321,7 @@ static void SCR_CalcRefdef()
 		Cvar_Set("fov", "170");
 
 	r_refdef.fov_x = scr_fov.value;
-	r_refdef.fov_y =
-	CalcFov(r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
+	r_refdef.fov_y = CalcFov(r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
 
 	// intermission is always full screen
 	if(cl.intermission)
@@ -465,8 +465,7 @@ SCR_DrawNet
 */
 void SCR_DrawNet()
 {
-	if(cls.netchan.outgoing_sequence - cls.netchan.incoming_acknowledged <
-	   UPDATE_BACKUP - 1)
+	if(cls.netchan.outgoing_sequence - cls.netchan.incoming_acknowledged < UPDATE_BACKUP - 1)
 		return;
 	
 	if(cls.demoplayback)
@@ -520,7 +519,7 @@ void SCR_DrawPause()
 	
 	//int w, h;
 	pic = Draw_CachePic("gfx/pause.lmp"); // re.DrawGetPicSize (&w, &h, "pause");
-	gpRender->DrawPic((vid.width - pic->width) / 2, (vid.height - 48 - pic->height) / 2, pic); // ((viddef.width-w)/2, viddef.height/2 + 8, "pause");
+	gpRender->DrawPic((vid.width - pic->width) * 0.5, (vid.height - 48 - pic->height) * 0.5, pic); // ((viddef.width-w)/2, viddef.height/2 + 8, "pause");
 }
 
 //=============================================================================
@@ -708,6 +707,7 @@ void SCR_ScreenShot_f()
 		if(Sys_FileTime(checkname) == -1)
 			break; // file doesn't exist
 	}
+	
 	if(i == 100)
 	{
 		Con_Printf("SCR_ScreenShot_f: Couldn't create a PCX");

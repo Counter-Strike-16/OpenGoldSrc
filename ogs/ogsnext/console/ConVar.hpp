@@ -30,11 +30,25 @@
 
 #pragma once
 
-class CConVar
+#include "common/cvardef.h"
+
+class CConVar : public IConVar
 {
 public:
-	const char *GetName(){return mpWrapped->name;}
-	const char *GetDesc(){return msDesc;}
+	const char *GetName() const {return mpWrapped->name;}
+	const char *GetDesc() const {return msDesc;}
+	
+	int GetFlags() const {return mpWrapped->flags;}
+	
+	void SetString(const char *asValue);
+	void SetInt(int anValue);
+	void SetFloat(float afValue){mpWrapped->value = afValue;}
+	void SetBool(bool abValue);
+	
+	const char *GetString() const {return mpWrapped->string;}
+	int GetInt() const;
+	float GetFloat() const {return mpWrapped->value;}
+	bool GetBool() const;
 private:
 	cvar_t *mpWrapped;
 	const char *msDesc;

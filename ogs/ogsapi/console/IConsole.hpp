@@ -52,13 +52,13 @@ struct IConsole : public IBaseInterface
 	*/
 	//virtual void NotifyPrintfEx(const con_nprint_t *apInfo, PRINTF_FORMAT_STRING const char *asMsg, ...) = 0;
 
-	/// Execute a command text
+	/// Execute the command text
 	virtual void ExecuteText(int anExecMode, const char *asText) = 0;
 
-	///
+	/// Registers a command and the function to call for it
 	virtual void AddCommand(const char *asName, pfnConCmdCallback afnCallback) = 0;
 
-	///
+	/// Removes a command
 	virtual void RemoveCommand(const char *asName) = 0;
 
 	/// @return Argument count of current processing command
@@ -80,10 +80,14 @@ struct IConsole : public IBaseInterface
 
 	///
 	virtual bool RemoveCvar(const char *asName) const = 0;
-
-	///
-	// virtual IConVar *GetCvar(const char *asName) const = 0;
-	virtual cvar_t *GetCvar(const char *asName) const = 0;
+	
+	/**
+	* Finds the cvar with the given name
+	*
+	* @return NULL if there is no cvar with the given name
+	*/
+	// virtual IConVar *FindCvar(const char *asName) const = 0;
+	virtual cvar_t *FindCvar(const char *asName) const = 0;
 
 	///
 	virtual void SetCvarString(const char *asName, const char *asValue) = 0;
@@ -97,6 +101,6 @@ struct IConsole : public IBaseInterface
 	///
 	virtual float GetCvarFloat(const char *asName) const = 0;
 	
-	///
+	/// Get pointer to console command alias list
 	virtual cmdalias_t *GetAliasList() = 0;
 };

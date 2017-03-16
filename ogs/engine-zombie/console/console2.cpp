@@ -1,4 +1,3 @@
-// console.c
 
 #ifdef NeXT
 #include <libc.h>
@@ -8,10 +7,6 @@
 #endif
 #include <fcntl.h>
 #include "quakedef.h"
-
-int 		con_linewidth;
-
-float		con_cursorspeed = 4;
 
 #define		CON_TEXTSIZE	16384
 
@@ -23,33 +18,11 @@ int			con_current;		// where next message will be printed
 int			con_x;				// offset in current line for next print
 char		*con_text=0;
 
-cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
-
-#define	NUM_CON_TIMES 4
 float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 								// for transparent notify lines
 
-int			con_vislines;
-
-qboolean	con_debuglog;
-
-#define		MAXCMDLINE	256
-extern	char	key_lines[32][MAXCMDLINE];
-extern	int		edit_line;
-extern	int		key_linepos;
-		
-
-qboolean	con_initialized;
-
-int			con_notifylines;		// scan lines to clear for notify lines
-
 extern void M_Menu_Main_f (void);
 
-/*
-================
-Con_ToggleConsole_f
-================
-*/
 void Con_ToggleConsole_f (void)
 {
 	if (key_dest == key_console)
@@ -169,19 +142,11 @@ void Con_CheckResize (void)
 	con_current = con_totallines - 1;
 }
 
-
-/*
-================
-Con_Init
-================
-*/
 void Con_Init (void)
 {
 #define MAXGAMEDIRLEN	1000
 	char	temp[MAXGAMEDIRLEN+1];
 	char	*t2 = "/qconsole.log";
-
-	con_debuglog = COM_CheckParm("-condebug");
 
 	if (con_debuglog)
 	{
@@ -212,21 +177,8 @@ void Con_Linefeed (void)
 	, ' ', con_linewidth);
 }
 
-/*
-================
-Con_Print
-
-Handles cursor positioning, line wrapping, etc
-All console printing must go through this in order to be logged to disk
-If no console is visible, the notify window will pop up.
-================
-*/
 void Con_Print (char *txt)
 {
-	int		y;
-	int		c, l;
-	static int	cr;
-	int		mask;
 	
 	con_backscroll = 0;
 
@@ -295,26 +247,6 @@ void Con_Print (char *txt)
 		}
 		
 	}
-}
-
-
-/*
-================
-Con_DebugLog
-================
-*/
-void Con_DebugLog(char *file, char *fmt, ...)
-{
-    va_list argptr; 
-    static char data[1024];
-    int fd;
-    
-    va_start(argptr, fmt);
-    vsprintf(data, fmt, argptr);
-    va_end(argptr);
-    fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-    write(fd, data, strlen(data));
-    close(fd);
 }
 
 
@@ -391,30 +323,6 @@ void Con_DPrintf (char *fmt, ...)
 
 
 /*
-==================
-Con_SafePrintf
-
-Okay to call even when the screen can't be updated
-==================
-*/
-void Con_SafePrintf (char *fmt, ...)
-{
-	va_list		argptr;
-	char		msg[1024];
-	int			temp;
-		
-	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
-	va_end (argptr);
-
-	temp = scr_disabled_for_loading;
-	scr_disabled_for_loading = true;
-	Con_Printf ("%s", msg);
-	scr_disabled_for_loading = temp;
-}
-
-
-/*
 ==============================================================================
 
 DRAWING
@@ -462,49 +370,20 @@ void Con_DrawInput (void)
 	key_lines[edit_line][key_linepos] = 0;
 }
 
-
-/*
-================
-Con_DrawNotify
-
-Draws the last few lines of output transparently over the game top
-================
-*/
 void Con_DrawNotify (void)
 {
-	int		x, v;
-	char	*text;
-	int		i;
-	float	time;
 	extern char chat_buffer[];
 
-	v = 0;
 	for (i= con_current-NUM_CON_TIMES+1 ; i<=con_current ; i++)
 	{
-		if (i < 0)
-			continue;
-		time = con_times[i % NUM_CON_TIMES];
-		if (time == 0)
-			continue;
-		time = realtime - time;
 		if (time > con_notifytime.value)
 			continue;
 		text = con_text + (i % con_totallines)*con_linewidth;
-		
-		clearnotify = 0;
-		scr_copytop = 1;
-
-		for (x = 0 ; x < con_linewidth ; x++)
-			Draw_Character ( (x+1)<<3, v, text[x]);
-
-		v += 8;
 	}
 
 
 	if (key_dest == key_message)
 	{
-		clearnotify = 0;
-		scr_copytop = 1;
 	
 		x = 0;
 		
@@ -517,9 +396,6 @@ void Con_DrawNotify (void)
 		Draw_Character ( (x+5)<<3, v, 10+((int)(realtime*con_cursorspeed)&1));
 		v += 8;
 	}
-	
-	if (v > con_notifylines)
-		con_notifylines = v;
 }
 
 /*
@@ -533,18 +409,8 @@ The typing input line at the bottom should only be drawn if typing is allowed
 void Con_DrawConsole (int lines, qboolean drawinput)
 {
 	int				i, x, y;
-	int				rows;
-	char			*text;
-	int				j;
 	
-	if (lines <= 0)
-		return;
-
-// draw the background
-	Draw_ConsoleBackground (lines);
-
-// draw the text
-	con_vislines = lines;
+	int				j;
 
 	rows = (lines-16)>>3;		// rows of text to draw
 	y = lines - 16 - (rows<<3);	// may start slightly negative
@@ -565,38 +431,10 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 		Con_DrawInput ();
 }
 
-
-/*
-==================
-Con_NotifyBox
-==================
-*/
 void Con_NotifyBox (char *text)
 {
-	double		t1, t2;
-
-// during startup for sound / cd warnings
 	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 
-	Con_Printf (text);
-
-	Con_Printf ("Press a key.\n");
 	Con_Printf("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 
-	key_count = -2;		// wait for a key down and up
-	key_dest = key_console;
-
-	do
-	{
-		t1 = Sys_FloatTime ();
-		SCR_UpdateScreen ();
-		Sys_SendKeyEvents ();
-		t2 = Sys_FloatTime ();
-		realtime += t2-t1;		// make the cursor blink
-	} while (key_count < 0);
-
-	Con_Printf ("\n");
-	key_dest = key_game;
-	realtime = 0;				// put the cursor back to invisible
 }
-

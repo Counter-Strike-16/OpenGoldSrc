@@ -1,13 +1,4 @@
 
-// wad.c
-
-#include "quakedef.h"
-
-int			wad_numlumps;
-lumpinfo_t	*wad_lumps;
-byte		*wad_base;
-
-void SwapPic (qpic_t *pic);
 
 /*
 ==================
@@ -22,31 +13,11 @@ Can safely be performed in place.
 */
 void W_CleanupName (char *in, char *out)
 {
-	int		i;
-	int		c;
-	
-	for (i=0 ; i<16 ; i++ )
-	{
-		c = in[i];
-		if (!c)
-			break;
-			
-		if (c >= 'A' && c <= 'Z')
-			c += ('a' - 'A');
-		out[i] = c;
-	}
 	
 	for ( ; i< 16 ; i++ )
 		out[i] = 0;
 }
 
-
-
-/*
-====================
-W_LoadWadFile
-====================
-*/
 void W_LoadWadFile (char *filename)
 {
 	lumpinfo_t		*lump_p;
@@ -80,35 +51,8 @@ void W_LoadWadFile (char *filename)
 	}
 }
 
-
-/*
-=============
-W_GetLumpinfo
-=============
-*/
-lumpinfo_t	*W_GetLumpinfo (char *name)
-{
-	int		i;
-	lumpinfo_t	*lump_p;
-	char	clean[16];
-	
-	W_CleanupName (name, clean);
-	
-	for (lump_p=wad_lumps, i=0 ; i<wad_numlumps ; i++,lump_p++)
-	{
-		if (!strcmp(clean, lump_p->name))
-			return lump_p;
-	}
-	
-	Sys_Error ("W_GetLumpinfo: %s not found", name);
-	return NULL;
-}
-
 void *W_GetLumpName (char *name)
 {
-	lumpinfo_t	*lump;
-	
-	lump = W_GetLumpinfo (name);
 	
 	return (void *)(wad_base + lump->filepos);
 }
@@ -123,34 +67,6 @@ void *W_GetLumpNum (int num)
 	lump = wad_lumps + num;
 	
 	return (void *)(wad_base + lump->filepos);
-}
-
-/*
-=============================================================================
-
-automatic byte swapping
-
-=============================================================================
-*/
-
-void SwapPic (qpic_t *pic)
-{
-	pic->width = LittleLong(pic->width);
-	pic->height = LittleLong(pic->height);	
-}
-
-int			wad_numlumps;
-lumpinfo_t	*wad_lumps;
-byte		*wad_base;
-
-void SwapPic (qpic_t *pic);
-
-
-void W_CleanupName (char *in, char *out)
-{
-	
-	for ( ; i< 16 ; i++ )
-		out[i] = 0;
 }
 
 void W_LoadWadFile (char *filename)

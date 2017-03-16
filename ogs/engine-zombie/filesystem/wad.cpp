@@ -67,6 +67,11 @@ void W_CleanupName(char *in, char *out)
 		Q_memset(&out[i], 0, 16 - i);
 };
 
+/*
+====================
+W_LoadWadFile
+====================
+*/
 int W_LoadWadFile(char *filename)
 {
 	int slot = 0;
@@ -120,6 +125,11 @@ int W_LoadWadFile(char *filename)
 	return slot;
 };
 
+/*
+=============
+W_GetLumpinfo
+=============
+*/
 lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror)
 {
 	int i;
@@ -127,6 +137,7 @@ lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror)
 	char clean[16];
 
 	W_CleanupName(name, clean);
+	
 	for(i = 0; i < wads[wad].wad_numlumps; i++)
 	{
 		lump_p = wads[i].wad_lumps;
@@ -135,7 +146,7 @@ lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror)
 	};
 
 	if(doerror)
-		Sys_Error("W_GetLumpinfo: %s not found", name);
+		Sys_Error("%s: %s not found", __FUNCTION__, name);
 
 	return NULL;
 };

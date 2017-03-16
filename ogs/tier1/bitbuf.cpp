@@ -18,11 +18,6 @@
 // NOTE: This must be the last file included!!!
 //#include "tier0/memdbgon.h"
 
-#ifdef _X360
-// mandatory ... wary of above comment and isolating, tier0 is built as MT though
-#include "tier0/memdbgon.h"
-#endif
-
 #if _WIN32
 #define FAST_BIT_SCAN 1
 #if _X360

@@ -32,10 +32,6 @@
 #include <unistd.h>
 #define _getcwd getcwd
 #endif
-#if defined( _X360 )
-#include "xbox/xbox_win32stubs.h"
-#endif
-
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -167,17 +163,13 @@ struct ThreadedLoadLibaryContext_t
 
 #ifdef _WIN32
 
-// wraps LoadLibraryEx() since 360 doesn't support that
+// wraps LoadLibraryEx()
 static HMODULE InternalLoadLibrary( const char *pName, Sys_Flags flags )
 {
-#if defined(_X360)
-	return LoadLibrary( pName );
-#else
 	if ( flags & SYS_NOLOAD )
 		return GetModuleHandle( pName );
 	else
 		return LoadLibraryEx( pName, NULL, LOAD_WITH_ALTERED_SEARCH_PATH );
-#endif
 }
 unsigned ThreadedLoadLibraryFunc( void *pParam )
 {
@@ -198,19 +190,8 @@ HMODULE Sys_LoadLibrary( const char *pLibraryName, Sys_Flags flags )
 
 	Q_strncpy( str, pLibraryName, sizeof(str) );
 
-	if ( IsX360() )
-	{
-		// old, probably busted, behavior for xbox
-		if ( !Q_stristr( str, pModuleExtension ) )
-		{
-			V_SetExtension( str, pModuleExtension, sizeof(str) );
-		}
-	}
-	else
-	{
-		// always force the final extension to be .dll
-		V_SetExtension( str, pModuleExtension, sizeof(str) );
-	}
+	// always force the final extension to be .dll
+	V_SetExtension( str, pModuleExtension, sizeof(str) );
 
 	Q_FixSlashes( str );
 
@@ -227,10 +208,6 @@ HMODULE Sys_LoadLibrary( const char *pLibraryName, Sys_Flags flags )
 	context.m_hLibrary = 0;
 
 	ThreadHandle_t h = CreateSimpleThread( ThreadedLoadLibraryFunc, &context );
-
-#ifdef _X360
-	ThreadSetAffinity( h, XBOX_PROCESSOR_3 );
-#endif
 
 	unsigned int nTimeout = 0;
 	while( ThreadWaitForObject( h, true, nTimeout ) == TW_TIMEOUT )

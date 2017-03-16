@@ -25,13 +25,6 @@ void DrawAltString (int x, int y, char *s)
 	}
 }
 
-
-void Key_ClearTyping (void)
-{
-	key_lines[edit_line][1] = 0;	// clear any typing
-	key_linepos = 1;
-}
-
 /*
 ================
 Con_ToggleConsole_f
@@ -74,29 +67,6 @@ void Con_ToggleConsole_f (void)
 
 /*
 ================
-Con_ToggleChat_f
-================
-*/
-void Con_ToggleChat_f (void)
-{
-	Key_ClearTyping ();
-
-	if (cls.key_dest == key_console)
-	{
-		if (cls.state == ca_active)
-		{
-			M_ForceMenuOff ();
-			cls.key_dest = key_game;
-		}
-	}
-	else
-		cls.key_dest = key_console;
-	
-	Con_ClearNotify ();
-}
-
-/*
-================
 Con_Clear_f
 ================
 */
@@ -105,40 +75,12 @@ void Con_Clear_f (void)
 	memset (con.text, ' ', CON_TEXTSIZE);
 }
 
-/*
-================
-Con_ClearNotify
-================
-*/
 void Con_ClearNotify (void)
 {
 	int		i;
 	
 	for (i=0 ; i<NUM_CON_TIMES ; i++)
 		con.times[i] = 0;
-}
-
-						
-/*
-================
-Con_MessageMode_f
-================
-*/
-void Con_MessageMode_f (void)
-{
-	chat_team = false;
-	cls.key_dest = key_message;
-}
-
-/*
-================
-Con_MessageMode2_f
-================
-*/
-void Con_MessageMode2_f (void)
-{
-	chat_team = true;
-	cls.key_dest = key_message;
 }
 
 /*
@@ -203,13 +145,7 @@ void Con_CheckResize (void)
 
 void Con_Init (void)
 {
-	con.linewidth = -1;
-	
-	Com_Printf ("Console initialized.\n");
-
 	con_notifytime = Cvar_Get ("con_notifytime", "3", 0);
-
-	con.initialized = true;
 }
 
 

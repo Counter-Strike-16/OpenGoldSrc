@@ -72,9 +72,6 @@
 #include <time.h>
 #include "tier0/basetypes.h"
 #include "tier1/utldict.h"
-#if defined( _X360 )
-#include "xbox/xbox_win32stubs.h"
-#endif
 #include "tier0/memdbgon.h"
 
 static int FastToLower( char c )

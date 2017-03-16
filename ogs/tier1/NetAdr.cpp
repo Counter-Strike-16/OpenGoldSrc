@@ -5,7 +5,7 @@
 // NetAdr.cpp: implementation of the CNetAdr class.
 //
 //===========================================================================//
-#if defined( _WIN32 ) && !defined( _X360 )
+#if defined( _WIN32 )
 #include <windows.h>
 #endif
 
@@ -13,7 +13,7 @@
 #include "netadr.h"
 #include "tier1/strtools.h"
 
-#if defined( _WIN32 ) && !defined( _X360 )
+#if defined( _WIN32 )
 #define WIN32_LEAN_AND_MEAN
 #include <winsock.h>
 typedef int socklen_t;

@@ -1,19 +1,6 @@
 
 // cmd.c -- Quake script command processing module
 
-int trashtest;
-int *trashspot;
-
-//=============================================================================
-
-/*
-==============================================================================
-
-						SCRIPT COMMANDS
-
-==============================================================================
-*/
-
 
 void Cmd_StuffCmds_f (void)
 {
@@ -142,12 +129,8 @@ void Cmd_Alias_f (void)
 	a->value = CopyString (cmd);
 }
 
-#define	MAX_ARGS		80
-
 static	char		*cmd_argv[MAX_ARGS];
 static	char		*cmd_args = NULL;
-
-cmd_source_t	cmd_source;
 
 void Cmd_Init (void)
 {
@@ -284,31 +267,6 @@ void Cmd_ForwardToServer (void)
 		SZ_Print (&cls.message, "\n");
 }
 
-
-/*
-================
-Cmd_CheckParm
-
-Returns the position (1 to argc-1) in the command's argument list
-where the given parameter apears, or 0 if not present
-================
-*/
-
-int Cmd_CheckParm (char *parm)
-{
-	int i;
-	
-	if (!parm)
-		Sys_Error ("Cmd_CheckParm: NULL");
-
-	for (i = 1; i < Cmd_Argc (); i++)
-		if (! Q_strcasecmp (parm, Cmd_Argv (i)))
-			return i;
-			
-	return 0;
-}
-
-
 void Cmd_ForwardToServer (void);
 
 cvar_t cl_warncmd = {"cl_warncmd", "0"};
@@ -320,14 +278,6 @@ void Cbuf_Init (void)
 	cmd_text.data = cmd_text_buf;
 	cmd_text.maxsize = sizeof(cmd_text_buf);
 }
-
-/*
-==============================================================================
-
-						SCRIPT COMMANDS
-
-==============================================================================
-*/
 
 /*
 ===============
@@ -860,16 +810,6 @@ qboolean Cbuf_AddLateCommands (void)
 
 	return ret;
 }
-
-
-/*
-==============================================================================
-
-						SCRIPT COMMANDS
-
-==============================================================================
-*/
-
 
 /*
 ===============

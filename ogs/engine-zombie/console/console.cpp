@@ -112,7 +112,10 @@ void Con_ToggleChat_f()
 	if(key_dest == key_console)
 	{
 		if(cls.state == ca_active)
+		{
+			//M_ForceMenuOff ();
 			key_dest = key_game;
+		};
 	}
 	else
 		key_dest = key_console;
@@ -330,10 +333,10 @@ void Con_Init()
 	con_debuglog = COM_CheckParm("-condebug");
 
 	con = &con_main;
-	con_linewidth = -1;
+	con_linewidth = -1; // con.
 	Con_CheckResize();
 
-	Con_DPrintf("Console initialized.\n");
+	Con_DPrintf("Console initialized.\n"); // Con_Printf
 
 	//
 	// register our commands
@@ -353,7 +356,7 @@ void Con_Init()
 	Cmd_AddCommand("condebug", Con_Debug_f);
 #endif
 
-	con_initialized = true;
+	con_initialized = true; // con.initialized
 };
 
 void Con_Shutdown()
@@ -564,6 +567,142 @@ void Con_DPrintf(const char *fmt, ...)
 }
 
 #endif // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
+
+/*
+==================
+Con_SafePrintf
+
+Okay to call even when the screen can't be updated
+==================
+*/
+void Con_SafePrintf(const char *fmt, ...)
+{
+/*
+	va_list argptr;
+	char msg[1024];
+	int temp;
+
+	va_start(argptr, fmt);
+	vsprintf(msg, fmt, argptr);
+	va_end(argptr);
+
+	temp = scr_disabled_for_loading;
+	scr_disabled_for_loading = true;
+	Con_Printf("%s", msg);
+	scr_disabled_for_loading = temp;
+*/
+}
+
+/*
+void Con_SafePrintf(const char *fmt, ...)
+{
+	va_start(argptr, fmt);
+
+#ifdef _WIN32
+	char Dest[1024];
+	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
+	va_end(argptr);
+	Con_Printf("%s", Dest);
+#else
+	vfprintf(stdout, fmt, argptr);
+	va_end(argptr);
+	fflush(stdout);
+#endif // _WIN32
+}
+*/
+
+////////////////////////////////////////////////////////////////////////////
+
+/*
+================
+Con_DebugLog
+================
+*/
+void Con_DebugLog(const char *file, const char *fmt, ...)
+{
+	va_list argptr;
+	static char data[8192]; // 1024
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(data, sizeof(data), fmt, argptr);
+	va_end(argptr);
+
+	data[sizeof(data) - 1] = 0;
+/*
+#ifdef _WIN32
+
+	int fd = _open(file, _O_WRONLY | _O_APPEND | _O_CREAT, _S_IREAD | _S_IWRITE);
+	int len = Q_strlen(data);
+	_write(fd, data, len);
+	_close(fd);
+
+#else // _WIN32
+
+	FILE *fd = FS_Open(file, "at");
+	FS_FPrintf(fd, "%s", data);
+	FS_Close(fd);
+
+#endif // _WIN32
+*/
+}
+
+void EXT_FUNC Con_Printf(const char *fmt, ...)
+{
+/*
+	char Dest[4096];
+	va_list va;
+
+	va_start(va, fmt);
+	Q_vsnprintf(Dest, sizeof(Dest), fmt, va);
+	va_end(va);
+
+#ifdef REHLDS_FLIGHT_REC
+	FR_Log("REHLDS_CON", Dest);
+#endif
+
+#ifdef REHLDS_FIXES
+	if(sv_redirected == RD_NONE || sv_rcon_condebug.value > 0.0f)
+#endif
+	{
+		Sys_Printf("%s", Dest);
+	}
+
+	if(sv_redirected)
+	{
+		if((Q_strlen(outputbuf) + Q_strlen(Dest)) > sizeof(outputbuf) - 1)
+			SV_FlushRedirect();
+		Q_strncat(outputbuf, Dest, sizeof(outputbuf) - 1);
+	}
+	else
+	{
+		if(con_debuglog)
+			Con_DebugLog("qconsole.log", "%s", Dest);
+#ifndef SWDS
+		if(host_initialized && con_initialized && cls.state)
+		{
+			if(developer.value != 0.0f)
+			{
+				Q_strncpy(g_szNotifyAreaString, msg, 255);
+				g_szNotifyAreaString[255] = 0;
+				*con_times = realtime;
+			}
+			VGuiWrap2_ConPrintf(msg);
+		}
+#endif // SWDS
+	}
+*/
+}
+
+/*
+void EXT_FUNC Con_DPrintf(const char *fmt, ...)
+{
+	char msg[MAXPRINTMSG];
+
+	vsprintf(msg, fmt, argptr);
+
+	Con_Printf("%s", msg);
+}
+*/
 
 /*
 ==============================================================================
@@ -828,137 +967,5 @@ void Con_NotifyBox(char *text)
 	Con_Printf("\n");
 	key_dest = key_game;
 	realtime = 0; // put the cursor back to invisible
-}
-*/
-
-/*
-==================
-Con_SafePrintf
-
-Okay to call even when the screen can't be updated
-==================
-*/
-void Con_SafePrintf(const char *fmt, ...)
-{
-/*
-	va_list argptr;
-	char msg[1024];
-	int temp;
-
-	va_start(argptr, fmt);
-	vsprintf(msg, fmt, argptr);
-	va_end(argptr);
-
-	temp = scr_disabled_for_loading;
-	scr_disabled_for_loading = true;
-	Con_Printf("%s", msg);
-	scr_disabled_for_loading = temp;
-*/
-}
-
-/*
-void Con_SafePrintf(const char *fmt, ...)
-{
-	va_start(argptr, fmt);
-
-#ifdef _WIN32
-	char Dest[1024];
-	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
-	va_end(argptr);
-	Con_Printf("%s", Dest);
-#else
-	vfprintf(stdout, fmt, argptr);
-	va_end(argptr);
-	fflush(stdout);
-#endif // _WIN32
-}
-*/
-
-////////////////////////////////////////////////////////////////////////////
-
-void Con_DebugLog(const char *file, const char *fmt, ...)
-{
-/*
-	va_list argptr;
-	static char data[8192];
-
-	va_start(argptr, fmt);
-	Q_vsnprintf(data, sizeof(data), fmt, argptr);
-	va_end(argptr);
-
-	data[sizeof(data) - 1] = 0;
-
-#ifdef _WIN32
-
-	int fd = _open(file, _O_WRONLY | _O_APPEND | _O_CREAT, _S_IREAD | _S_IWRITE);
-	int len = Q_strlen(data);
-	_write(fd, data, len);
-	_close(fd);
-
-#else // _WIN32
-
-	FILE *fd = FS_Open(file, "at");
-	FS_FPrintf(fd, "%s", data);
-	FS_Close(fd);
-
-#endif // _WIN32
-*/
-}
-
-void EXT_FUNC Con_Printf(const char *fmt, ...)
-{
-/*
-	char Dest[4096];
-	va_list va;
-
-	va_start(va, fmt);
-	Q_vsnprintf(Dest, sizeof(Dest), fmt, va);
-	va_end(va);
-
-#ifdef REHLDS_FLIGHT_REC
-	FR_Log("REHLDS_CON", Dest);
-#endif
-
-#ifdef REHLDS_FIXES
-	if(sv_redirected == RD_NONE || sv_rcon_condebug.value > 0.0f)
-#endif
-	{
-		Sys_Printf("%s", Dest);
-	}
-
-	if(sv_redirected)
-	{
-		if((Q_strlen(outputbuf) + Q_strlen(Dest)) > sizeof(outputbuf) - 1)
-			SV_FlushRedirect();
-		Q_strncat(outputbuf, Dest, sizeof(outputbuf) - 1);
-	}
-	else
-	{
-		if(con_debuglog)
-			Con_DebugLog("qconsole.log", "%s", Dest);
-#ifndef SWDS
-		if(host_initialized && con_initialized && cls.state)
-		{
-			if(developer.value != 0.0f)
-			{
-				Q_strncpy(g_szNotifyAreaString, msg, 255);
-				g_szNotifyAreaString[255] = 0;
-				*con_times = realtime;
-			}
-			VGuiWrap2_ConPrintf(msg);
-		}
-#endif // SWDS
-	}
-*/
-}
-
-/*
-void EXT_FUNC Con_DPrintf(const char *fmt, ...)
-{
-	char msg[MAXPRINTMSG];
-
-	vsprintf(msg, fmt, argptr);
-
-	Con_Printf("%s", msg);
 }
 */
