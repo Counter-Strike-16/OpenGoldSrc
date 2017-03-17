@@ -16,3 +16,4 @@ ipch/
 [Rr]elease*/
 /[Mm]erge/
 *.tmp
+ogs/utils/

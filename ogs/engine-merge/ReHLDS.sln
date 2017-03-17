@@ -9,18 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReHLDS", "..\rehlds\msvc\Re
 		{CEB94F7C-E459-4673-AABB-36E2074396C0} = {CEB94F7C-E459-4673-AABB-36E2074396C0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cppunitlite", "..\dep\cppunitlite\msvc\cppunitlite.vcxproj", "{CEB94F7C-E459-4673-AABB-36E2074396C0}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bzip2", "..\dep\bzip2\msvc\bzip2.vcxproj", "{792DF067-9904-4579-99B9-46C17277ADE3}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gradle", "gradle", "{FFC337A9-D58C-4D62-B8BB-A54DD4E4DF41}"
-	ProjectSection(SolutionItems) = preProject
-		..\build.gradle = ..\build.gradle
-		..\gradle.properties = ..\gradle.properties
-		..\settings.gradle = ..\settings.gradle
-		..\shared.gradle = ..\shared.gradle
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Play|Win32 = Debug Play|Win32

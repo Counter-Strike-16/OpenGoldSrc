@@ -537,9 +537,6 @@ void CL_ParseMuzzleFlash2 ()
 		break;
 // ROGUE
 // ======
-
-// --- Xian's shit ends ---
-
 	}
 }
 

@@ -204,7 +204,7 @@ NOXREF void Sys_Sleep(int msec);
 NOBODY void Sys_DebugOutStraight(const char *pStr);
 
 // An error will cause the entire program to exit
-NOBODY void NORETURN Sys_Error(const char *error, ...);
+NOBODY void NORETURN Sys_Error(const char *error, ...); // mb add int code?
 
 NOXREF void Sys_Warning(const char *pszWarning, ...);
 

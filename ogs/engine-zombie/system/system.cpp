@@ -446,8 +446,9 @@ void NORETURN Sys_Error(const char *error, ...)
 	else
 	{
 		HWND hWnd = 0;
-		//if(pmainwindow)
-			//hWnd = *pmainwindow;
+		
+		if(pmainwindow)
+			hWnd = *pmainwindow;
 
 		Sys_Printf(text);
 		//SDL_ShowSimpleMessageBox(MB_ICONERROR | MB_OK, "Fatal Error", text, hWnd);

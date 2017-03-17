@@ -1,14 +1,4 @@
 
-char *svc_strings[] =
-{
-	"svc_serverinfo",		// [long] version
-						// [string] signon string
-						// [string]..[0]model cache [string]...[0]sounds cache
-						// [string]..[0]item cache
-	
-	"svc_damage",			// [byte] impact [byte] blood [vec3] from
-	
-};
 
 void CL_NewTranslation (int slot)
 {

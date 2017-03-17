@@ -5,13 +5,6 @@
 //#include "client/enginevgui.hpp"
 
 //#include "graphics/gl_model.hpp"
-// #include "graphics/glquake.hpp"
-// #include "graphics/d_iface.hpp"
-// #include "graphics/d_ifacea.hpp"
-// #include "graphics/d_local.hpp"
-//#include "graphics/r_local.hpp"
-//#include "graphics/r_shared.hpp"
-// #include "graphics/render.hpp"
 
 //#include "precompiled.hpp"
 // #include "commondef.hpp"

@@ -12,8 +12,6 @@
 #define	LINUX_VERSION		1.30
 #define	X11_VERSION			1.10
 
-//define	PARANOID			// speed sapping error checking
-
 #ifdef QUAKE2
 #define	GAMENAME	"id1"		// directory to look in by default
 #else
@@ -238,13 +236,9 @@ extern	cvar_t		sys_nostdout;
 
 extern	byte		*host_basepal;
 extern	byte		*host_colormap;
-extern	int			host_framecount;	// incremented every frame, never reset
-extern	double		realtime;			// not bounded in any way, changed at
-										// start of every frame, never reset
+
 
 void Host_ServerFrame (void);
-
-void Host_Quit_f (void);
 
 extern qboolean		msg_suppress_1;		// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
@@ -256,11 +250,4 @@ extern qboolean		isDedicated;
 
 extern int			minimum_memory;
 
-//
-// chase
-//
-extern	cvar_t	chase_active;
 
-void Chase_Init (void);
-void Chase_Reset (void);
-void Chase_Update (void);

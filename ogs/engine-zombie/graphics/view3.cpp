@@ -1,28 +1,4 @@
 /*
-Copyright (C) 1996-1997 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// view.c -- player eye positioning
-
-#include "quakedef.h"
-#include "r_local.h"
-
-/*
 
 The view is allowed to move slightly from it's true position for bobbing,
 but if it exceeds 8 pixels linear distance (spherical, not box), the list of
@@ -63,11 +39,6 @@ cvar_t	cl_crossx = {"cl_crossx", "0", false};
 cvar_t	cl_crossy = {"cl_crossy", "0", false};
 
 cvar_t	gl_cshiftpercent = {"gl_cshiftpercent", "100", false};
-
-float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
-
-extern	int			in_forward, in_forward2, in_back;
-
 
 /*
 ===============
@@ -256,15 +227,6 @@ cshift_t	cshift_water = { {130,80,50}, 128 };
 cshift_t	cshift_slime = { {0,25,5}, 150 };
 cshift_t	cshift_lava = { {255,80,0}, 150 };
 
-cvar_t		v_gamma = {"gamma", "1", true};
-
-byte		gammatable[256];	// palette is sent through this
-
-#ifdef	GLQUAKE
-byte		ramps[3][256];
-float		v_blend[4];		// rgba 0.0 - 1.0
-#endif	// GLQUAKE
-
 void BuildGammaTable (float g)
 {
 	int		i, inf;
@@ -286,26 +248,6 @@ void BuildGammaTable (float g)
 		gammatable[i] = inf;
 	}
 }
-
-/*
-=================
-V_CheckGamma
-=================
-*/
-qboolean V_CheckGamma (void)
-{
-	static float oldgammavalue;
-	
-	if (v_gamma.value == oldgammavalue)
-		return false;
-	oldgammavalue = v_gamma.value;
-	
-	BuildGammaTable (v_gamma.value);
-	vid.recalc_refdef = 1;				// force a surface cache flush
-	
-	return true;
-}
-
 
 
 /*
@@ -377,21 +319,6 @@ void V_ParseDamage (void)
 
 	v_dmg_time = v_kicktime.value;
 }
-
-
-/*
-==================
-V_cshift_f
-==================
-*/
-void V_cshift_f (void)
-{
-	cshift_empty.destcolor[0] = atoi(Cmd_Argv(1));
-	cshift_empty.destcolor[1] = atoi(Cmd_Argv(2));
-	cshift_empty.destcolor[2] = atoi(Cmd_Argv(3));
-	cshift_empty.percent = atoi(Cmd_Argv(4));
-}
-
 
 /*
 ==================

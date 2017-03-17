@@ -121,8 +121,8 @@ extern cvar_t host_framerate;
 extern cvar_t pausable;
 extern cvar_t suitvolume;
 
-extern double realtime; // not bounded in any way, changed at start of every
-                        // frame, never reset
+extern double realtime; // not bounded in any way, changed at
+						// start of every frame, never reset
 extern double rolling_fps;
 
 //
@@ -133,7 +133,7 @@ extern quakeparms_t host_parms;
 extern qboolean host_initialized; // true if into command execution
 extern double host_frametime;
 
-extern int host_framecount;
+extern int host_framecount; // incremented every frame, never reset
 extern client_t *host_client;
 extern qboolean gfNoMasterServer;
 extern double oldrealtime;

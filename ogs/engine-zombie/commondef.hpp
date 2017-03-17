@@ -117,8 +117,6 @@ void Host_ServerFrame(void);
 
 qboolean Host_SimulationTime(float time);
 
-void Host_Quit_f(void);
-
 extern qboolean
 msg_suppress_1; // suppresses resolution and cache size console output
                 //  an fullscreen DIB focus gain/loss

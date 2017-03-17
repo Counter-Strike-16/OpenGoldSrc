@@ -515,15 +515,11 @@ void EXT_FUNC Cmd_TokenizeString(char *text)
 
 		// If nothing was parsed
 		if(!text)
-		{
 			return;
-		}
 
 		arglen = Q_strlen(com_token) + 1;
 		if(arglen >= 516) // TODO: What is that magic number?
-		{
 			return;
-		}
 
 		cmd_argv[cmd_argc] = (char *)Z_Malloc(arglen);
 		Q_strcpy(cmd_argv[cmd_argc++], com_token);
@@ -599,9 +595,7 @@ void Cmd_AddCommand(char *cmd_name, xcommand_t function)
 	cmd_function_t *cmd;
 
 	if(host_initialized)
-	{
 		Sys_Error("%s after host_initialized", __FUNCTION__);
-	}
 
 	// Check in variables list
 	if(Cvar_FindVar(cmd_name) != NULL)
@@ -675,6 +669,11 @@ void EXT_FUNC Cmd_AddGameCommand(char *cmd_name, xcommand_t function)
 	Cmd_AddMallocCommand(cmd_name, function, FCMD_GAME_COMMAND);
 }
 
+/*
+============
+Cmd_RemoveCommand
+============
+*/
 void EXT_FUNC Cmd_RemoveCmd(char *cmd_name)
 {
 	auto prev = Cmd_FindCmdPrev(cmd_name);
@@ -734,9 +733,7 @@ qboolean Cmd_Exists(const char *cmd_name)
 	while(cmd)
 	{
 		if(!Q_stricmp(cmd_name, cmd->name))
-		{
 			return TRUE;
-		}
 
 		cmd = cmd->next;
 	}

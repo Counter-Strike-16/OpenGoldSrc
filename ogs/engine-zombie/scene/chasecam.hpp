@@ -27,25 +27,14 @@
  */
 
 /// @file
-/// @brief sound module interface
+/// @brief chase camera defs
 
 #pragma once
 
-#include "public/interface.h"
+typedef struct cvar_s cvar_t;
 
-const char OGS_SOUND_INTERFACE_VERSION[] = "OGSSound001";
+extern cvar_t chase_active;
 
-struct ISound : public IBaseInterface
-{
-	/// All non-hardware initialization
-	virtual bool Init() = 0;
-
-	/// Shutdown routine
-	virtual	void Shutdown() = 0;
-	
-	///
-	virtual void Update() = 0;
-	
-	/// Called before freeing any sound sample resources
-	virtual void StopAllSounds() = 0;
-};
+void Chase_Init();
+void Chase_Reset();
+void Chase_Update();

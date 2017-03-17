@@ -1061,11 +1061,7 @@ void Cmd_TokenizeString (char *text, qboolean macroExpand)
 	
 }
 
-/*
-============
-Cmd_RemoveCommand
-============
-*/
+
 void	Cmd_RemoveCommand (char *cmd_name)
 {
 	cmd_function_t	*cmd, **back;

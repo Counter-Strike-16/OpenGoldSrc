@@ -38,6 +38,3 @@
 #include "pmove.h"
 
 extern	cvar_t		sys_nostdout;
-
-void SV_Error (char *error, ...);
-void SV_Init (quakeparms_t *parms);

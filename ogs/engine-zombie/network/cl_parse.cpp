@@ -56,7 +56,10 @@ const char *svc_strings[] =
 	                 // the string should be \n terminated
 	"svc_setangle",  // [vec3] set the view angle to this absolute value
 
-	"svc_serverinfo",       // [long] version ...
+	"svc_serverinfo",       // [long] version
+							// [string] signon string
+							// [string]..[0]model cache [string]...[0]sounds cache
+							// [string]..[0]item cache
 	"svc_lightstyle",       // [byte] [string]
 	"svc_updateuserinfo",   // [byte] [string]
 	"svc_deltadescription", // [byte] [short]
@@ -64,7 +67,7 @@ const char *svc_strings[] =
 	"svc_stopsound",        // <see code>
 	"svc_pings",            // [byte] [byte]
 	"svc_particle",         // [vec3] <variable>
-	"svc_damage",           // deprecated
+	"svc_damage",           // deprecated; [byte] impact [byte] blood [vec3] from
 
 	"svc_spawnstatic",
 	"svc_event_reliable",

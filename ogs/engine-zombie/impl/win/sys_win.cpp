@@ -57,11 +57,11 @@ HANDLE qwclsemaphore;
 
 static HANDLE tevent;
 
-void Sys_InitFloatTime(void);
+void Sys_InitFloatTime();
 
-void MaskExceptions(void);
-void Sys_PopFPCW(void);
-void Sys_PushFPCW_SetHigh(void);
+void MaskExceptions();
+void Sys_PopFPCW();
+void Sys_PushFPCW_SetHigh();
 
 void Sys_DebugLog(char *file, char *fmt, ...)
 {
@@ -158,7 +158,7 @@ void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length)
 Sys_Init
 ================
 */
-void Sys_Init(void)
+void Sys_Init()
 {
 	LARGE_INTEGER PerformanceFreq;
 	unsigned int lowpart, highpart;
@@ -229,6 +229,11 @@ void Sys_Init(void)
 		WinNT = false;
 }
 
+/*
+================
+Sys_Error
+================
+*/
 void Sys_Error(char *error, ...)
 {
 	va_list argptr;
@@ -242,6 +247,7 @@ void Sys_Error(char *error, ...)
 	va_end(argptr);
 
 	MessageBox(NULL, text, "Error", 0 /* MB_OK */);
+	//printf ("ERROR: %s\n", text);
 
 #ifndef SERVERONLY
 	CloseHandle(qwclsemaphore);
@@ -261,7 +267,7 @@ void Sys_Printf(char *fmt, ...)
 	va_end(argptr);
 }
 
-void Sys_Quit(void)
+void Sys_Quit()
 {
 	VID_ForceUnlockedAndReturnState();
 
@@ -283,7 +289,7 @@ void Sys_Quit(void)
 Sys_DoubleTime
 ================
 */
-double Sys_DoubleTime (void)
+double Sys_DoubleTime ()
 {
 	static int			sametimecount;
 	static unsigned int	oldtime;
@@ -349,7 +355,7 @@ double Sys_DoubleTime (void)
 Sys_InitFloatTime
 ================
 */
-void Sys_InitFloatTime (void)
+void Sys_InitFloatTime ()
 {
 	int		j;
 
@@ -371,7 +377,7 @@ void Sys_InitFloatTime (void)
 
 #endif
 
-double Sys_DoubleTime(void)
+double Sys_DoubleTime()
 {
 	static DWORD starttime;
 	static qboolean first = true;
@@ -396,7 +402,7 @@ double Sys_DoubleTime(void)
 	return (now - starttime) / 1000.0;
 }
 
-char *Sys_ConsoleInput(void)
+char *Sys_ConsoleInput()
 {
 	static char text[256];
 	static int len;
@@ -503,11 +509,11 @@ char *Sys_ConsoleInput(void)
 	return NULL;
 }
 
-void Sys_Sleep(void)
+void Sys_Sleep()
 {
 }
 
-void Sys_SendKeyEvents(void)
+void Sys_SendKeyEvents()
 {
 	MSG msg;
 
