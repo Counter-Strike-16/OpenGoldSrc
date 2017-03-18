@@ -13,6 +13,8 @@ TEST(MemAllocTest, Memory, 1000)
 	printf("Alloc with Mem_Malloc\n"
 			"Requested %d bytes\n"
 			"Allocated data pointer: %\n", nAllocSize, pData);
+	
+	Mem_Free(pData);
 };
 
 TEST(ZeroMemAllocTest, Memory, 1000)
@@ -26,6 +28,8 @@ TEST(ZeroMemAllocTest, Memory, 1000)
 	printf("Alloc with Mem_ZeroMalloc\n"
 			"Requested %d bytes\n"
 			"Allocated data pointer: %\n", nAllocSize, pData);
+	
+	Mem_Free(pData);
 };
 
 TEST(CAllocTest, Memory, 1000)
@@ -39,4 +43,6 @@ TEST(CAllocTest, Memory, 1000)
 	printf("Alloc with Mem_Calloc\n"
 			"Requested %d bytes\n"
 			"Allocated data pointer: %\n", nAllocSize, pData);
+	
+	Mem_Free(pData);
 };

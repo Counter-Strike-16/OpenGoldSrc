@@ -29,13 +29,12 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "maintypes.h"
-#include "system/sizebuf.hpp"
 #include "memory/zone.hpp"
-#include "console/console.hpp"
-#include "rehlds/common_rehlds.h"
+#include "system/sizebuf.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
+#include "console/console.hpp"
+#include "rehlds/common_rehlds.h"
 
 void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize)
 {

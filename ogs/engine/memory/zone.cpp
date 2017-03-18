@@ -164,6 +164,11 @@ void *Z_TagMalloc(int size, int tag)
 	return (void *)((byte *)base + sizeof(memblock_t));
 };
 
+/*
+========================
+Z_Free
+========================
+*/
 void Z_Free(void *ptr)
 {
 	if(!ptr)
@@ -174,7 +179,7 @@ void Z_Free(void *ptr)
 	if(block->id != ZONEID)
 		Sys_Error("%s: freed a pointer without ZONEID", __FUNCTION__);
 
-	if(!block->tag)
+	if(!block->tag) // tag == 0
 		Sys_Error("%s: freed a freed pointer", __FUNCTION__);
 
 	block->tag = 0; // mark as free
@@ -208,6 +213,11 @@ void Z_Free(void *ptr)
 	};
 };
 
+/*
+========================
+Z_ClearZone
+========================
+*/
 void Z_ClearZone(memzone_t *zone, int size)
 {
 	memblock_t *block = (memblock_t *)&zone[1];

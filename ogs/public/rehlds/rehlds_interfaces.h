@@ -38,7 +38,7 @@
 #include "userid.h"
 
 #ifdef REHLDS_SELF
-#include "server/server.hpp"
+#include "system/server.hpp"
 #endif
 
 class INetChan;

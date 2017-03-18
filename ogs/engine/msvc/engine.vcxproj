@@ -18,6 +18,41 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\hlsdk\public\interface.cpp" />
+    <ClCompile Include="..\math\sse_mathfun.cpp" />
+    <ClCompile Include="..\memory\cache.cpp" />
+    <ClCompile Include="..\memory\hunk.cpp" />
+    <ClCompile Include="..\memory\mem.cpp" />
+    <ClCompile Include="..\memory\zone.cpp" />
+    <ClCompile Include="..\system\buildinfo.cpp" />
+    <ClCompile Include="..\system\crt_local.cpp" />
+    <ClCompile Include="..\system\dedicatedserverapi.cpp" />
+    <ClCompile Include="..\system\engine.cpp" />
+    <ClCompile Include="..\system\engineapi.cpp" />
+    <ClCompile Include="..\system\game.cpp" />
+    <ClCompile Include="..\workdamnit.cpp" />
+    <ClCompile Include="..\world\ed_strpool.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\filesystem\hashpak.hpp" />
+    <ClInclude Include="..\filesystem\wad.hpp" />
+    <ClInclude Include="..\math\mathlib_e.hpp" />
+    <ClInclude Include="..\math\sse_mathfun.hpp" />
+    <ClInclude Include="..\memory\mem.hpp" />
+    <ClInclude Include="..\memory\zone.hpp" />
+    <ClInclude Include="..\system\buildinfo.hpp" />
+    <ClInclude Include="..\system\dedicatedserverapi.hpp" />
+    <ClInclude Include="..\system\engine.hpp" />
+    <ClInclude Include="..\system\engineapi.hpp" />
+    <ClInclude Include="..\system\game.hpp" />
+    <ClInclude Include="..\system\iengine.hpp" />
+    <ClInclude Include="..\system\igame.hpp" />
+    <ClInclude Include="..\system\info.hpp" />
+    <ClInclude Include="..\system\sizebuf.hpp" />
+    <ClInclude Include="..\world\ed_strpool.hpp" />
+    <ClInclude Include="..\world\event.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{827605A1-AB99-40B5-BA51-7AB2BA39F20A}</ProjectGuid>
     <RootNamespace>engine</RootNamespace>
@@ -77,9 +112,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../;../../;../../public/;../../../../hlsdk-core/;../../../../../games/hlsdk-core/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>../;../../engine-zombie/;../../;../../common/;../../hookers/;../../ogsapi/;../../public/;../../rehlds/;../../../hlsdk/;../../../../../sh1ft0x0ef/shiftutil/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled.hpp</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>REHLDS_SELF;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

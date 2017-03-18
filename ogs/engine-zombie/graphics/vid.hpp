@@ -41,6 +41,8 @@
 #define scr_con_current (*pscr_con_current)
 #endif
 
+struct IWindow;
+
 const int VID_CBITS = 6;
 const int VID_GRADES = (1 << VID_CBITS);
 
@@ -139,6 +141,8 @@ int VID_ForceUnlockedAndReturnState();
 void VID_CheckChanges();
 
 void VID_SetDefaultMode();
+
+IWindow *VID_OpenWindow();
 
 /*
 

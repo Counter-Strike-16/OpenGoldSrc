@@ -31,8 +31,8 @@
 
 #pragma once
 
-#include "client/clienttypes.hpp"
-#include "client/frame.hpp"
+#include "system/clienttypes.hpp"
+#include "network/frame.hpp"
 #include "common/cl_entity.h"
 #include "common/com_model.h"
 #include "common/commontypes.h"

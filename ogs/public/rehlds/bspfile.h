@@ -25,6 +25,10 @@
 *    version.
 *
 */
+
+/// @file
+/// @brief upper design bounds
+
 #pragma once
 
 // header
@@ -35,6 +39,7 @@
 
 #define CONTENTS_ORIGIN		-7		// removed at csg time
 #define CONTENTS_CLIP		-8		// changed to contents_solid
+
 #define CONTENTS_CURRENT_0		-9
 #define CONTENTS_CURRENT_90		-10
 #define CONTENTS_CURRENT_180	-11
@@ -62,8 +67,12 @@
 
 #define	HEADER_LUMPS	15
 
+#define	MIPLEVELS 4
+
+//=============================================================================
+
 /* <a1fc> ../engine/bspfile.h:41 */
-typedef struct  lump_s
+typedef struct lump_s
 {
 	int				fileofs;
 	int				filelen;
@@ -73,7 +82,7 @@ typedef struct  lump_s
 typedef struct dheader_s
 {
 	int				version;
-	lump_t			lumps[15];
+	lump_t			lumps[HEADER_LUMPS];
 } dheader_t;
 
 /* <485b2> ../engine/bspfile.h:79 */
@@ -89,7 +98,7 @@ typedef struct miptex_s
 	char			name[16];
 	unsigned		width;
 	unsigned		height;
-	unsigned		offsets[4];
+	unsigned		offsets[MIPLEVELS]; // four mip maps stored
 } miptex_t;
 
 /* <48652> ../engine/bspfile.h:94 */
@@ -103,7 +112,7 @@ typedef struct dplane_s
 {
 	float			normal[3];
 	float			dist;
-	int				type;
+	int				type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
 } dplane_t;
 
 /* <486b2> ../engine/bspfile.h:132 */
@@ -120,15 +129,17 @@ typedef struct dnode_s
 /* <4876a> ../engine/bspfile.h:149 */
 typedef struct texinfo_s
 {
-	float			vecs[2][4];
+	float			vecs[2][4]; // [s/t][xyz offset]
 	int				_miptex;
 	int				flags;
 } texinfo_t;
 
 /* <487c2> ../engine/bspfile.h:159 */
+// note that edge 0 is never used, because negative edge nums are used for
+// counterclockwise use of the edge in a face
 typedef struct dedge_s
 {
-	unsigned short	v[2];
+	unsigned short	v[2]; // vertex numbers
 } dedge_t;
 
 /* <487f2> ../engine/bspfile.h:165 */

@@ -1,31 +1,4 @@
 
-// sbar.c -- status bar code
-
-#include "quakedef.h"
-
-
-int			sb_updates;		// if >= vid.numpages, no update needed
-
-#define STAT_MINUS		10	// num frame for '-' stats digit
-qpic_t		*sb_nums[2][11];
-qpic_t		*sb_colon, *sb_slash;
-qpic_t		*sb_ibar;
-qpic_t		*sb_sbar;
-qpic_t		*sb_scorebar;
-
-qpic_t		*sb_weapons[7][8];	// 0 is active, 1 is owned, 2-5 are flashes
-qpic_t		*sb_ammo[4];
-qpic_t		*sb_sigil[4];
-qpic_t		*sb_armor[3];
-qpic_t		*sb_items[32];
-
-qpic_t	*sb_faces[7][2];		// 0 is gibbed, 1 is dead, 2-6 are alive
-							// 0 is static, 1 is temporary animation
-qpic_t	*sb_face_invis;
-qpic_t	*sb_face_quad;
-qpic_t	*sb_face_invuln;
-qpic_t	*sb_face_invis_invuln;
-
 qboolean	sb_showscores;
 qboolean	sb_showteamscores;
 
@@ -68,137 +41,15 @@ void Sbar_DontShowTeamScores ()
 
 /*
 ===============
-Sbar_ShowScores
-
-Tab key down
-===============
-*/
-void Sbar_ShowScores ()
-{
-	if (sb_showscores)
-		return;
-
-	sb_showscores = true;
-	sb_updates = 0;
-}
-
-/*
-===============
-Sbar_DontShowScores
-
-Tab key up
-===============
-*/
-void Sbar_DontShowScores ()
-{
-	sb_showscores = false;
-	sb_updates = 0;
-}
-
-/*
-===============
-Sbar_Changed
-===============
-*/
-void Sbar_Changed ()
-{
-	sb_updates = 0;	// update next frame
-}
-
-/*
-===============
 Sbar_Init
 ===============
 */
 void Sbar_Init ()
 {
-	int		i;
-
-	for (i=0 ; i<10 ; i++)
-	{
-		sb_nums[0][i] = Draw_PicFromWad (va("num_%i",i));
-		sb_nums[1][i] = Draw_PicFromWad (va("anum_%i",i));
-	}
-
-	sb_nums[0][10] = Draw_PicFromWad ("num_minus");
-	sb_nums[1][10] = Draw_PicFromWad ("anum_minus");
-
-	sb_colon = Draw_PicFromWad ("num_colon");
-	sb_slash = Draw_PicFromWad ("num_slash");
-
-	sb_weapons[0][0] = Draw_PicFromWad ("inv_shotgun");
-	sb_weapons[0][1] = Draw_PicFromWad ("inv_sshotgun");
-	sb_weapons[0][2] = Draw_PicFromWad ("inv_nailgun");
-	sb_weapons[0][3] = Draw_PicFromWad ("inv_snailgun");
-	sb_weapons[0][4] = Draw_PicFromWad ("inv_rlaunch");
-	sb_weapons[0][5] = Draw_PicFromWad ("inv_srlaunch");
-	sb_weapons[0][6] = Draw_PicFromWad ("inv_lightng");
-	
-	sb_weapons[1][0] = Draw_PicFromWad ("inv2_shotgun");
-	sb_weapons[1][1] = Draw_PicFromWad ("inv2_sshotgun");
-	sb_weapons[1][2] = Draw_PicFromWad ("inv2_nailgun");
-	sb_weapons[1][3] = Draw_PicFromWad ("inv2_snailgun");
-	sb_weapons[1][4] = Draw_PicFromWad ("inv2_rlaunch");
-	sb_weapons[1][5] = Draw_PicFromWad ("inv2_srlaunch");
-	sb_weapons[1][6] = Draw_PicFromWad ("inv2_lightng");
-	
-	for (i=0 ; i<5 ; i++)
-	{
-		sb_weapons[2+i][0] = Draw_PicFromWad (va("inva%i_shotgun",i+1));
-		sb_weapons[2+i][1] = Draw_PicFromWad (va("inva%i_sshotgun",i+1));
-		sb_weapons[2+i][2] = Draw_PicFromWad (va("inva%i_nailgun",i+1));
-		sb_weapons[2+i][3] = Draw_PicFromWad (va("inva%i_snailgun",i+1));
-		sb_weapons[2+i][4] = Draw_PicFromWad (va("inva%i_rlaunch",i+1));
-		sb_weapons[2+i][5] = Draw_PicFromWad (va("inva%i_srlaunch",i+1));
-		sb_weapons[2+i][6] = Draw_PicFromWad (va("inva%i_lightng",i+1));
-	}
-
-	sb_ammo[0] = Draw_PicFromWad ("sb_shells");
-	sb_ammo[1] = Draw_PicFromWad ("sb_nails");
-	sb_ammo[2] = Draw_PicFromWad ("sb_rocket");
-	sb_ammo[3] = Draw_PicFromWad ("sb_cells");
-
-	sb_armor[0] = Draw_PicFromWad ("sb_armor1");
-	sb_armor[1] = Draw_PicFromWad ("sb_armor2");
-	sb_armor[2] = Draw_PicFromWad ("sb_armor3");
-
-	sb_items[0] = Draw_PicFromWad ("sb_key1");
-	sb_items[1] = Draw_PicFromWad ("sb_key2");
-	sb_items[2] = Draw_PicFromWad ("sb_invis");
-	sb_items[3] = Draw_PicFromWad ("sb_invuln");
-	sb_items[4] = Draw_PicFromWad ("sb_suit");
-	sb_items[5] = Draw_PicFromWad ("sb_quad");
-
-	sb_sigil[0] = Draw_PicFromWad ("sb_sigil1");
-	sb_sigil[1] = Draw_PicFromWad ("sb_sigil2");
-	sb_sigil[2] = Draw_PicFromWad ("sb_sigil3");
-	sb_sigil[3] = Draw_PicFromWad ("sb_sigil4");
-
-	sb_faces[4][0] = Draw_PicFromWad ("face1");
-	sb_faces[4][1] = Draw_PicFromWad ("face_p1");
-	sb_faces[3][0] = Draw_PicFromWad ("face2");
-	sb_faces[3][1] = Draw_PicFromWad ("face_p2");
-	sb_faces[2][0] = Draw_PicFromWad ("face3");
-	sb_faces[2][1] = Draw_PicFromWad ("face_p3");
-	sb_faces[1][0] = Draw_PicFromWad ("face4");
-	sb_faces[1][1] = Draw_PicFromWad ("face_p4");
-	sb_faces[0][0] = Draw_PicFromWad ("face5");
-	sb_faces[0][1] = Draw_PicFromWad ("face_p5");
-
-	sb_face_invis = Draw_PicFromWad ("face_invis");
-	sb_face_invuln = Draw_PicFromWad ("face_invul2");
-	sb_face_invis_invuln = Draw_PicFromWad ("face_inv2");
-	sb_face_quad = Draw_PicFromWad ("face_quad");
-
-	Cmd_AddCommand ("+showscores", Sbar_ShowScores);
-	Cmd_AddCommand ("-showscores", Sbar_DontShowScores);
 		
 	Cmd_AddCommand ("+showteamscores", Sbar_ShowTeamScores);
 	Cmd_AddCommand ("-showteamscores", Sbar_DontShowTeamScores);
 		
-	sb_sbar = Draw_PicFromWad ("sbar");
-	sb_ibar = Draw_PicFromWad ("ibar");
-	sb_scorebar = Draw_PicFromWad ("scorebar");
 }
 
 
@@ -261,72 +112,7 @@ void Sbar_DrawString (int x, int y, char *str)
 	Draw_String (x /*+ ((vid.width - 320)>>1) */, y+ vid.height-SBAR_HEIGHT, str);
 }
 
-/*
-=============
-Sbar_itoa
-=============
-*/
-int Sbar_itoa (int num, char *buf)
-{
-	char	*str;
-	int		pow10;
-	int		dig;
-	
-	str = buf;
-	
-	if (num < 0)
-	{
-		*str++ = '-';
-		num = -num;
-	}
-	
-	for (pow10 = 10 ; num >= pow10 ; pow10 *= 10)
-	;
-	
-	do
-	{
-		pow10 /= 10;
-		dig = num/pow10;
-		*str++ = '0'+dig;
-		num -= dig*pow10;
-	} while (pow10 != 1);
-	
-	*str = 0;
-	
-	return str-buf;
-}
 
-
-/*
-=============
-Sbar_DrawNum
-=============
-*/
-void Sbar_DrawNum (int x, int y, int num, int digits, int color)
-{
-	char			str[12];
-	char			*ptr;
-	int				l, frame;
-
-	l = Sbar_itoa (num, str);
-	ptr = str;
-	if (l > digits)
-		ptr += (l-digits);
-	if (l < digits)
-		x += (digits-l)*24;
-
-	while (*ptr)
-	{
-		if (*ptr == '-')
-			frame = STAT_MINUS;
-		else
-			frame = *ptr -'0';
-
-		Sbar_DrawTransPic (x,y,sb_nums[color][frame]);
-		x += 24;
-		ptr++;
-	}
-}
 
 //=============================================================================
 
@@ -835,40 +621,6 @@ void Sbar_Draw ()
 		Sbar_MiniDeathmatchOverlay ();
 }
 
-//=============================================================================
-
-/*
-==================
-Sbar_IntermissionNumber
-
-==================
-*/
-void Sbar_IntermissionNumber (int x, int y, int num, int digits, int color)
-{
-	char			str[12];
-	char			*ptr;
-	int				l, frame;
-
-	l = Sbar_itoa (num, str);
-	ptr = str;
-	if (l > digits)
-		ptr += (l-digits);
-	if (l < digits)
-		x += (digits-l)*24;
-
-	while (*ptr)
-	{
-		if (*ptr == '-')
-			frame = STAT_MINUS;
-		else
-			frame = *ptr -'0';
-
-		Draw_TransPic (x,y,sb_nums[color][frame]);
-		x += 24;
-		ptr++;
-	}
-}
-
 /*
 ==================
 Sbar_TeamOverlay
@@ -1308,5 +1060,3 @@ void Sbar_FinaleOverlay ()
 	pic = Draw_CachePic ("gfx/finale.lmp");
 	Draw_TransPic ( (vid.width-pic->width)/2, 16, pic);
 }
-
-

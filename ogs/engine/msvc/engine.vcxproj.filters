@@ -19,9 +19,6 @@
     <Filter Include="graphics">
       <UniqueIdentifier>{5b8dbd8a-1bd4-4178-bce8-2b864ad78325}</UniqueIdentifier>
     </Filter>
-    <Filter Include="video">
-      <UniqueIdentifier>{2c780663-a997-45d7-a883-673bcdec6369}</UniqueIdentifier>
-    </Filter>
     <Filter Include="filesystem">
       <UniqueIdentifier>{8707d5d3-b3ef-4ebe-9198-5ff7bb72078d}</UniqueIdentifier>
     </Filter>
@@ -37,5 +34,101 @@
     <Filter Include="world">
       <UniqueIdentifier>{4a2621d5-2041-4f07-9ca6-4d27a116ed6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="script">
+      <UniqueIdentifier>{d3814c68-e278-4345-a412-ab478dd80a17}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\system\buildinfo.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\crt_local.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\dedicatedserverapi.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\engine.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\engineapi.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\game.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\math\sse_mathfun.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\memory\cache.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\memory\hunk.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\memory\mem.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\memory\zone.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\world\ed_strpool.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\workdamnit.cpp" />
+    <ClCompile Include="..\..\..\hlsdk\public\interface.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\system\buildinfo.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\dedicatedserverapi.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\engine.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\engineapi.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\game.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\iengine.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\igame.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\info.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\sizebuf.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\math\mathlib_e.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\math\sse_mathfun.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filesystem\hashpak.hpp">
+      <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filesystem\wad.hpp">
+      <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\memory\mem.hpp">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\memory\zone.hpp">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\world\ed_strpool.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\world\event.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

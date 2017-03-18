@@ -32,11 +32,11 @@
 #include "memory/zone.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
-#include "client/client.hpp"
+#include "system/client.hpp"
 #include "console/cmd.hpp"
 #include "console/console.hpp"
 #include "filesystem/filesystem_internal.hpp"
-#include "server/server.hpp"
+#include "system/server.hpp"
 
 /*
 ===============================================================================
@@ -65,6 +65,8 @@ typedef struct cache_system_s
 } cache_system_t;
 
 cache_system_t cache_head;
+
+////////////////////////////////////////
 
 /*
 ============

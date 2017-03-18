@@ -1,17 +1,9 @@
-#define	DYNAMIC_SIZE	0x20000
-
-void Cache_FreeLow (int new_low_hunk);
-void Cache_FreeHigh (int new_high_hunk);
 
 
-/*
-========================
-Z_ClearZone
-========================
-*/
+
+
 void Z_ClearZone (memzone_t *zone, int size)
 {
-	memblock_t	*block;
 	
 // set the entire zone to one free block
 
@@ -25,18 +17,11 @@ void Z_ClearZone (memzone_t *zone, int size)
 }
 
 
-/*
-========================
-Z_Free
-========================
-*/
+
 void Z_Free (void *ptr)
 {
 	block = (memblock_t *) ( (byte *)ptr - sizeof(memblock_t));
-	if (block->id != ZONEID)
-		Sys_Error ("Z_Free: freed a pointer without ZONEID");
-	if (block->tag == 0)
-		Sys_Error ("Z_Free: freed a freed pointer");	
+	
 	
 	if (!other->tag)
 	{	// merge with previous free block
@@ -56,52 +41,8 @@ void Z_Free (void *ptr)
 
 //============================================================================
 
-typedef struct
-{	
-	char	name[8];
-} hunk_t;
-
-void R_FreeTextures (void);
-
-void Hunk_Print (qboolean all)
-{
-	char	name[9];
-
-	name[8] = 0;
-
-	while (1)
-	{
-
-		if (h->sentinal != HUNK_SENTINAL)
-			Sys_Error ("Hunk_Check: trahsed sentinal");
-		if (h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
-			Sys_Error ("Hunk_Check: bad size");
-		
-		memcpy (name, h->name, 8);
-			
-		if (next == endlow || next == endhigh || 
-		strncmp (h->name, next->name, 8) )
-		{
-			if (!all)
-				Con_Printf ("          :%8i %8s (TOTAL)\n",sum, name);
-			count = 0;
-			sum = 0;
-		}
-
-		h = next;
-	}
-
-	Con_Printf ("-------------------------\n");
-	Con_Printf ("%8i total blocks\n", totalblocks);
-	
-}
-
 void *Hunk_AllocName (int size, char *name)
-{
-#ifdef PARANOID
-	Hunk_Check ();
-#endif
-		
+{	
 	size = sizeof(hunk_t) + ((size+15)&~15);
 	
 	if (hunk_size - hunk_low_used - hunk_high_used < size)
@@ -119,79 +60,6 @@ void *Hunk_AllocName (int size, char *name)
 	h->size = size;
 	Q_strncpy (h->name, name, 8);
 	
-}
-
-void Hunk_FreeToLowMark (int mark)
-{
-	if (mark < 0 || mark > hunk_low_used)
-		Sys_Error ("Hunk_FreeToLowMark: bad mark %i", mark);
-	memset (hunk_base + mark, 0, hunk_low_used - mark);
-	hunk_low_used = mark;
-}
-
-void Hunk_FreeToHighMark (int mark)
-{
-	if (hunk_tempactive)
-	{
-		hunk_tempactive = false;
-		Hunk_FreeToHighMark (hunk_tempmark);
-	}
-	if (mark < 0 || mark > hunk_high_used)
-		Sys_Error ("Hunk_FreeToHighMark: bad mark %i", mark);
-	memset (hunk_base + hunk_size - hunk_high_used, 0, hunk_high_used - mark);
-	hunk_high_used = mark;
-}
-
-
-/*
-===================
-Hunk_HighAllocName
-===================
-*/
-void *Hunk_HighAllocName (int size, char *name)
-{
-	hunk_t	*h;
-
-	if (size < 0)
-		Sys_Error ("Hunk_HighAllocName: bad size: %i", size);
-
-	if (hunk_tempactive)
-	{
-		Hunk_FreeToHighMark (hunk_tempmark);
-		hunk_tempactive = false;
-	}
-
-#ifdef PARANOID
-	Hunk_Check ();
-#endif
-
-	size = sizeof(hunk_t) + ((size+15)&~15);
-
-	if (hunk_size - hunk_low_used - hunk_high_used < size)
-	{
-		Con_Printf ("Hunk_HighAlloc: failed on %i bytes\n",size);
-		return NULL;
-	}
-
-	hunk_high_used += size;
-	Cache_FreeHigh (hunk_high_used);
-
-	h = (hunk_t *)(hunk_base + hunk_size - hunk_high_used);
-
-	memset (h, 0, size);
-	h->size = size;
-	h->sentinal = HUNK_SENTINAL;
-	Q_strncpy (h->name, name, 8);
-
-	return (void *)(h+1);
-}
-
-void *Hunk_TempAlloc (int size)
-{
-	size = (size+15)&~15;
-
-	buf = Hunk_HighAllocName (size, "temp");
-
 }
 
 typedef struct cache_system_s

@@ -34,8 +34,12 @@
 #include "system/common.hpp"
 #include "system/system.hpp"
 
+////////////////////////////////////////
+
 const int HUNK_NAME_LEN = 64;
 const int HUNK_SENTINEL = 0x1df001ed;
+
+////////////////////////////////////////
 
 typedef struct hunk_s
 {
@@ -44,6 +48,8 @@ typedef struct hunk_s
 
 	char name[HUNK_NAME_LEN];
 } hunk_t;
+
+////////////////////////////////////////
 
 byte *hunk_base;
 
@@ -55,6 +61,8 @@ int hunk_high_used;
 int hunk_tempmark;
 
 qboolean hunk_tempactive;
+
+////////////////////////////////////////
 
 void *Hunk_Alloc(int size)
 {
@@ -77,8 +85,10 @@ void *Hunk_TempAlloc(int size)
 	};
 
 	hunk_tempmark = Hunk_HighMark();
+	
+	size = (size + 15) & ~15;
 
-	void *buf = Hunk_HighAllocName((size + 15) & ~15, "temp");
+	void *buf = Hunk_HighAllocName(size, "temp");
 
 	hunk_tempactive = true;
 	return buf;
@@ -93,7 +103,11 @@ void *Hunk_AllocName(int size, const char *name)
 {
 	if(size < 0)
 		Sys_Error("%s: bad size: %i", __FUNCTION__, size);
-
+	
+#ifdef PARANOID
+	Hunk_Check();
+#endif
+	
 	int totalsize = ((size + 15) & ~15) + sizeof(hunk_t);
 
 	if(hunk_size - hunk_high_used - hunk_low_used < totalsize)
@@ -130,13 +144,17 @@ void *Hunk_HighAllocName(int size, const char *name)
 		Hunk_FreeToHighMark(hunk_tempmark);
 		hunk_tempactive = FALSE;
 	};
+	
+#ifdef PARANOID
+	Hunk_Check();
+#endif
 
 	size = ((size + 15) & ~15) + sizeof(hunk_t);
 
 	if(hunk_size - hunk_high_used - hunk_low_used < size)
 	{
 		Con_Printf("%s: failed on %i bytes\n", __FUNCTION__, size);
-		return 0;
+		return nullptr;
 	};
 
 	hunk_high_used += size;
@@ -174,7 +192,8 @@ void Hunk_FreeToLowMark(int mark)
 {
 	if(mark < 0 || mark > hunk_low_used)
 		Sys_Error("%s: bad mark %i", __FUNCTION__, mark);
-
+	
+	//Q_memset(hunk_base + mark, 0, hunk_low_used - mark);
 	hunk_low_used = mark;
 };
 
@@ -188,7 +207,8 @@ void Hunk_FreeToHighMark(int mark)
 
 	if(mark < 0 || mark > hunk_high_used)
 		Sys_Error("%s: bad mark %i", __FUNCTION__, mark);
-
+	
+	//Q_memset(hunk_base + hunk_size - hunk_high_used, 0, hunk_high_used - mark);
 	hunk_high_used = mark;
 };
 
@@ -266,7 +286,8 @@ NOXREF void Hunk_Print(qboolean all)
 		// run consistancy checks
 		//
 		if(h->sentinel != HUNK_SENTINEL)
-			Sys_Error("%s: trahsed sentinal", __FUNCTION__);
+			Sys_Error("%s: trashed sentinel", __FUNCTION__);
+		
 		if(h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
 			Sys_Error("%s: bad size", __FUNCTION__);
 

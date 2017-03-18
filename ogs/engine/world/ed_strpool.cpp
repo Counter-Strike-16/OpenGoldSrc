@@ -27,10 +27,10 @@
  */
 
 /// @file
+/// @brief string pool functionality
 
 #include "precompiled.hpp"
 #include "world/ed_strpool.hpp"
-#include "common/commontypes.h"
 #include "memory/zone.hpp"
 #include "rehlds/static_map.h"
 #include "system/common.hpp"

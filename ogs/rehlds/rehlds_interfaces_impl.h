@@ -30,7 +30,7 @@
 
 #include "maintypes.h"
 #include "rehlds/rehlds_interfaces.h"
-#include "server/server.hpp"
+#include "system/server.hpp"
 
 class CNetChan : public INetChan
 {

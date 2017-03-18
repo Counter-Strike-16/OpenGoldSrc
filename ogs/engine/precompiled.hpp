@@ -99,7 +99,7 @@
 #include "pm_shared/pm_movevars.h"
 #include "pm_shared/pm_shared.h"
 
-//#include "version/appversion.h"
+//#include "version/version.h"
 
 /*
 #include "asmlib.h"
@@ -137,9 +137,9 @@
 // valve libs stuff
 #include "dbg/dbg.h"
 #include "tier0/platform.h"
+*/
 
 #include "iregistry.h"
-*/
 
 #include "public/interface.h"
 
@@ -161,10 +161,15 @@
 #include "system/igame.h"
 
 #include "hookchains_impl.h"
+*/
+
 #include "rehlds/rehlds_api.h"
 #include "rehlds/rehlds_interfaces.h"
+
 #include "rehlds_api_impl.h"
 #include "rehlds_interfaces_impl.h"
+
+/*
 #include "system/iengine.h"
 //#include "FlightRecorderImpl.h"
 //#include "flight_recorder.h"

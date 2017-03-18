@@ -446,16 +446,10 @@ extern	int	body_armor_index;
 #define MOD_SHOTGUN			2
 #define MOD_SSHOTGUN		3
 #define MOD_MACHINEGUN		4
-#define MOD_CHAINGUN		5
 #define MOD_GRENADE			6
 #define MOD_G_SPLASH		7
 #define MOD_ROCKET			8
 #define MOD_R_SPLASH		9
-#define MOD_HYPERBLASTER	10
-#define MOD_RAILGUN			11
-#define MOD_BFG_LASER		12
-#define MOD_BFG_BLAST		13
-#define MOD_BFG_EFFECT		14
 #define MOD_HANDGRENADE		15
 #define MOD_HG_SPLASH		16
 #define MOD_WATER			17

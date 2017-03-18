@@ -30,6 +30,8 @@
 
 #include "precompiled.hpp"
 #include "system/game.hpp"
+#include "video/IWindow.hpp"
+#include "graphics/vid.hpp"
 
 IWindow *gpMainWindow = nullptr;
 
@@ -109,7 +111,8 @@ HWND *CGame::GetMainWindowAddress()
 
 HWND *CGame::GetMainWindowAddress_noVirt()
 {
-	return *mainwindow;
+	//return *mainwindow;
+	return nullptr;
 };
 
 void CGame::SetWindowXY(int x, int y)

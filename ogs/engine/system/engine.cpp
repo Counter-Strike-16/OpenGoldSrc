@@ -34,7 +34,7 @@
 #include "system/system.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
-#include "client/client.hpp"
+#include "system/client.hpp"
 #include "common/dll_state.h"
 
 /*
@@ -151,28 +151,25 @@ int CEngine::Frame_noVirt()
 	m_fCurTime = Sys_FloatTime();
 	m_fFrameTime = m_fCurTime - m_fOldTime;
 	m_fOldTime = m_fCurTime;
-	if(m_fFrameTime < 0.0)
-	{
-		m_fFrameTime = 0.001;
-	}
+
+	if(m_fFrameTime < 0.0f)
+		m_fFrameTime = 0.001f;
 
 	if(m_nDLLState == DLL_INACTIVE)
 		return m_nDLLState;
 
 	int dummy;
 	int iState = Host_Frame(m_fFrameTime, m_nDLLState, &dummy);
+
 	if(iState == m_nDLLState)
 		return m_nDLLState;
 
 	SetState(iState);
+
 	if(m_nDLLState == DLL_CLOSE)
-	{
 		SetQuitting(QUIT_TODESKTOP);
-	}
 	else if(m_nDLLState == DLL_RESTART)
-	{
 		SetQuitting(QUIT_RESTART);
-	}
 
 	return m_nDLLState;
 }
@@ -263,9 +260,7 @@ void CEngine::TrapMouse_Event_noVirt(int buttons, bool down)
 		m_nTrapButtons = buttons;
 	}
 	else
-	{
 		ClientDLL_MouseEvent(buttons);
-	}
 }
 
 void CEngine::StartTrapMode()
@@ -311,9 +306,7 @@ bool CEngine::CheckDoneTrapping_noVirt(int &buttons, int &key)
 		return true;
 	}
 	else
-	{
 		return false;
-	}
 }
 
 void CEngine::SetQuitting(int quittype)

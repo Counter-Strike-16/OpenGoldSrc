@@ -113,7 +113,7 @@ void VID_Error(int err_level, char *fmt, ...)
 	vsprintf(msg, fmt, argptr);
 	va_end(argptr);
 
-	Com_Error(err_level, "%s", msg);
+	Sys_Error(err_level, "%s", msg);
 }
 
 //==========================================================================

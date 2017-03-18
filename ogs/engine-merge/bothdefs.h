@@ -78,7 +78,6 @@
 //
 
 #define	IT_LIGHTNING			64
-#define	IT_SUPER_LIGHTNING		128
 
 #define	IT_SHELLS				256
 #define	IT_NAILS				512

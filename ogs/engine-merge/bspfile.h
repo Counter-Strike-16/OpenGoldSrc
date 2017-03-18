@@ -1,6 +1,4 @@
-// upper design bounds
 
-#define	MAX_MAP_HULLS		4
 
 #define	MAX_MAP_MODELS		256
 #define	MAX_MAP_BRUSHES		4096
@@ -26,35 +24,6 @@
 #define	MAX_KEY		32
 #define	MAX_VALUE	1024
 
-
-//=============================================================================
-
-
-#define BSPVERSION	29
-
-typedef struct
-{
-	int		fileofs, filelen;
-} lump_t;
-
-#define	LUMP_ENTITIES	0
-#define	LUMP_PLANES		1
-#define	LUMP_TEXTURES	2
-#define	LUMP_VERTEXES	3
-#define	LUMP_VISIBILITY	4
-#define	LUMP_NODES		5
-#define	LUMP_TEXINFO	6
-#define	LUMP_FACES		7
-#define	LUMP_LIGHTING	8
-#define	LUMP_CLIPNODES	9
-#define	LUMP_LEAFS		10
-#define	LUMP_MARKSURFACES 11
-#define	LUMP_EDGES		12
-#define	LUMP_SURFEDGES	13
-#define	LUMP_MODELS		14
-
-#define	HEADER_LUMPS	15
-
 typedef struct
 {
 	float		mins[3], maxs[3];
@@ -66,29 +35,9 @@ typedef struct
 
 typedef struct
 {
-	int			version;	
-	lump_t		lumps[HEADER_LUMPS];
-} dheader_t;
-
-typedef struct
-{
 	int			nummiptex;
 	int			dataofs[4];		// [nummiptex]
 } dmiptexlump_t;
-
-#define	MIPLEVELS	4
-typedef struct miptex_s
-{
-	char		name[16];
-	unsigned	width, height;
-	unsigned	offsets[MIPLEVELS];		// four mip maps stored
-} miptex_t;
-
-
-typedef struct
-{
-	float	point[3];
-} dvertex_t;
 
 
 // 0-2 are axial planes
@@ -100,14 +49,6 @@ typedef struct
 #define	PLANE_ANYX		3
 #define	PLANE_ANYY		4
 #define	PLANE_ANYZ		5
-
-typedef struct
-{
-	float	normal[3];
-	float	dist;
-	int		type;		// PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
-} dplane_t;
-
 
 
 #define	CONTENTS_EMPTY		-1
@@ -137,18 +78,11 @@ typedef struct
 
 typedef struct texinfo_s
 {
-	float		vecs[2][4];		// [s/t][xyz offset]
+	float		vecs[2][4];		
 	int			miptex;
 	int			flags;
 } texinfo_t;
 #define	TEX_SPECIAL		1		// sky or slime, no lightmap or 256 subdivision
-
-// note that edge 0 is never used, because negative edge nums are used for
-// counterclockwise use of the edge in a face
-typedef struct
-{
-	unsigned short	v[2];		// vertex numbers
-} dedge_t;
 
 #define	MAXLIGHTMAPS	4
 typedef struct

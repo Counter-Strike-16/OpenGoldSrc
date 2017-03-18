@@ -73,14 +73,20 @@ const int MULTIPLAYER_BACKUP = 64;
 // Same for single player
 const int SINGLEPLAYER_BACKUP = 8;
 
+// RESOURCE COUNTS
+// DON'T TOUCH 'EM IF YOU WANT TO PRESERVE THE COMPAT WITH PROTOCOL 48
+
 const int RESOURCE_INDEX_BITS = 12;
 
 #ifdef REHLDS_FIXES
 	const int RESOURCE_MAX_COUNT = (1 << RESOURCE_INDEX_BITS);
 #endif // REHLDS_FIXES
 
-const int MAX_SOUNDS = 512;
+// 512 sounds
+const int MAX_SOUND_INDEX_BITS = 9;
+const int MAX_SOUNDS = (1 << MAX_SOUND_INDEX_BITS);
 const int MAX_SOUND_HASHLOOKUP_SIZE = (MAX_SOUNDS * 2 - 1);
+const int MAX_SOUNDS_HASHLOOKUP_SIZE = (MAX_SOUNDS * 2 - 1);
 
 // How many bits to use to encode an edict
 const int MAX_EDICT_BITS = 11; // # of bits needed to represent max edicts
@@ -88,8 +94,14 @@ const int MAX_EDICT_BITS = 11; // # of bits needed to represent max edicts
 // Max # of edicts in a level (2048)
 //const int MAX_EDICTS = (1 << MAX_EDICT_BITS);
 
-const int MAX_MODEL = 512;
-const int MAX_GENERIC = 512;
+// 512 models
+const int MAX_MODEL_INDEX_BITS = 9; // sent as a short
+const int MAX_MODELS = (1 << MAX_MODEL_INDEX_BITS);
+
+// 512 generic elements
+const int MAX_GENERIC_INDEX_BITS = 9;
+const int MAX_GENERIC = (1 << MAX_GENERIC_INDEX_BITS);
+
 const int MAX_EVENTS = 256;
 
 const int MAX_RESOURCE_LIST = 1280;
