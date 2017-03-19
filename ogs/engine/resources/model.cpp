@@ -39,9 +39,8 @@
 #include "system/common.hpp"
 #include "system/host.hpp"
 #include "console/console.hpp"
-#include "server/server.hpp"
-#include "client/client.hpp"
-#include "rehlds_api_impl.h"
+#include "system/server.hpp"
+#include "system/client.hpp"
 
 model_t *loadmodel;
 char loadname[32];

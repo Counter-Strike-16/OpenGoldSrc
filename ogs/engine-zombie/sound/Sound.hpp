@@ -27,25 +27,38 @@
  */
 
 /// @file
-/// @brief sound module backend interface
 
 #pragma once
 
-#include "public/interface.h"
+struct ISound;
 
-const char OGS_SOUND_INTERFACE_VERSION[] = "OGSSound001";
-
-struct ISound : public IBaseInterface
+class CSound
 {
-	/// All non-hardware initialization
-	virtual bool Init(CreateInterfaceFn afnModuleFactory) = 0;
-
-	/// Shutdown routine
-	virtual void Shutdown() = 0;
+public:
+	CSound(ISound *apImpl)
+	: mpImpl(apImpl), mbInitialized(false), mnBlocked(0), mnStarted(0){}
 	
-	///
-	virtual void Update() = 0;
+	bool Init();
+	void Shutdown();
 	
-	/// Called before freeing any sound sample resources
-	virtual void StopAllSounds() = 0;
+	void Update(vec_t *origin, vec_t *v_forward, vec_t *v_right, vec_t *v_up);
+	void ExtraUpdate();
+	
+	void StopAllSounds(bool abClear);
+	
+	void SetAmbientActive(bool abActive){mbAmbient = abActive;}
+	bool IsAmbientActive() const {return mbAmbient;}
+	
+	void SetBlocked(bool abBlocked){mnBlocked = abBlocked ? 1 : 0;}
+	bool IsBlocked() const {return mnBlocked;}
+	
+	bool IsInitialized() const {return mbInitialized;}
+private:
+	ISound *mpImpl;
+	
+	bool mbInitialized;
+	bool mbAmbient;
+	
+	int mnBlocked;
+	int mnStarted;
 };

@@ -34,20 +34,12 @@
 // Global variables used internally by this module
 viddef_t viddef; // global video state; used by other modules
 
-// I think it's pointless because HWND is a typedef for void*
-/*
-#ifdef WIN32
-	typedef HWND tWinHandle;
-#else
-	typedef void* tWinHandle;
-#endif
-*/
+HWND mainwindow; // Main window handle for life of program
 
-void *mainwindow; // Main window handle for life of program
-
-cvar_t vid_ref = {"vid_ref", "soft", FCVAR_ARCHIVE};
-cvar_t vid_xpos = {"vid_xpos", "3", FCVAR_ARCHIVE};
-cvar_t vid_ypos = {"vid_ypos", "22", FCVAR_ARCHIVE};
+// Console variables that we need to access from this module
+cvar_t vid_ref = {"vid_ref", "soft", FCVAR_ARCHIVE}; // Name of Render DLL loaded
+cvar_t vid_xpos = {"vid_xpos", "3", FCVAR_ARCHIVE}; // X coordinate of window position
+cvar_t vid_ypos = {"vid_ypos", "22", FCVAR_ARCHIVE}; // Y coordinate of window position
 cvar_t vid_fullscreen = {"vid_fullscreen", "0", FCVAR_ARCHIVE};
 cvar_t vid_gamma = {"vid_gamma", "1", FCVAR_ARCHIVE};
 

@@ -9,7 +9,6 @@
 #ifndef SERVERONLY
 
 #include <ddraw.h>
-#include <dsound.h>
 
 #ifndef GLQUAKE
 	#include <mgraph.h>
@@ -33,12 +32,6 @@ extern LPDIRECTDRAWSURFACE	lpFrontBuffer;
 extern LPDIRECTDRAWSURFACE	lpBackBuffer;
 
 extern LPDIRECTDRAWPALETTE	lpDDPal;
-
-extern LPDIRECTSOUND pDS;
-extern LPDIRECTSOUNDBUFFER pDSBuf;
-
-extern DWORD gSndBufSize;
-//#define SNDBUFSIZE 65536
 
 #endif
 

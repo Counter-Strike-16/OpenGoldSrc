@@ -27,25 +27,19 @@
  */
 
 /// @file
-/// @brief sound module backend interface
+/// @brief sound module implementation
 
 #pragma once
 
-#include "public/interface.h"
+#include "sound/ISound.hpp"
 
-const char OGS_SOUND_INTERFACE_VERSION[] = "OGSSound001";
-
-struct ISound : public IBaseInterface
+class CSoundImpl : public ISound
 {
-	/// All non-hardware initialization
-	virtual bool Init(CreateInterfaceFn afnModuleFactory) = 0;
-
-	/// Shutdown routine
-	virtual void Shutdown() = 0;
+public:
+	bool Init(CreateInterfaceFn afnModuleFactory);
+	void Shutdown();
 	
-	///
-	virtual void Update() = 0;
+	void Update();
 	
-	/// Called before freeing any sound sample resources
-	virtual void StopAllSounds() = 0;
+	void StopAllSounds();
 };

@@ -27,25 +27,19 @@
  */
 
 /// @file
-/// @brief sound module backend interface
 
 #pragma once
 
-#include "public/interface.h"
+#include "common/commontypes.h"
 
-const char OGS_SOUND_INTERFACE_VERSION[] = "OGSSound001";
-
-struct ISound : public IBaseInterface
+class CSoundListener
 {
-	/// All non-hardware initialization
-	virtual bool Init(CreateInterfaceFn afnModuleFactory) = 0;
-
-	/// Shutdown routine
-	virtual void Shutdown() = 0;
+public:
+	CSoundListener();
 	
-	///
-	virtual void Update() = 0;
+	vec3_t vOrigin;
 	
-	/// Called before freeing any sound sample resources
-	virtual void StopAllSounds() = 0;
+	vec3_t vForward;
+	vec3_t vRight;
+	vec3_t vUp;
 };

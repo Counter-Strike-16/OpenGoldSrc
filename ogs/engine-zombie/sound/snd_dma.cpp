@@ -64,18 +64,10 @@ void S_StopAllSoundsC();
 channel_t channels[MAX_CHANNELS];
 int total_channels;
 
-int snd_blocked = 0;
-static qboolean snd_ambient = 1;
-qboolean snd_initialized = false;
-
 // pointer should go away
 volatile dma_t *shm = 0;
 volatile dma_t sn;
 
-vec3_t listener_origin;
-vec3_t listener_forward;
-vec3_t listener_right;
-vec3_t listener_up;
 vec_t sound_nominal_clip_dist = 1000.0f;
 
 int soundtime;   // sample PAIRS
@@ -83,15 +75,10 @@ int paintedtime; // sample PAIRS
 
 const int MAX_SFX = 512;
 
-sfx_t *known_sfx; // hunk allocated [MAX_SFX]
-int num_sfx;
-
 sfx_t *ambient_sfx[NUM_AMBIENTS];
 
 int desired_speed = 11025;
 int desired_bits = 16;
-
-int sound_started = 0;
 
 cvar_t bgmvolume = { "bgmvolume", "1", FCVAR_ARCHIVE };
 cvar_t volume = { "volume", "0.7", FCVAR_ARCHIVE };
@@ -119,16 +106,6 @@ cvar_t _snd_mixahead = { "_snd_mixahead", "0.1", FCVAR_ARCHIVE };
 qboolean fakedma = false;
 int fakedma_updates = 15;
 
-void S_AmbientOff()
-{
-	snd_ambient = false;
-}
-
-void S_AmbientOn()
-{
-	snd_ambient = true;
-}
-
 void S_SoundInfo_f()
 {
 	if(!sound_started || !shm)
@@ -147,174 +124,9 @@ void S_SoundInfo_f()
 	Con_Printf("%5d total_channels\n", total_channels);
 }
 
-/*
-================
-S_Startup
-================
-*/
-
-void S_Startup()
-{
-	int rc;
-
-	if(!snd_initialized)
-		return;
-
-	if(!fakedma)
-	{
-		rc = SNDDMA_Init();
-
-		if(!rc)
-		{
-#ifndef _WIN32
-			Con_Printf("S_Startup: SNDDMA_Init failed.\n");
-#endif
-			sound_started = 0;
-			return;
-		}
-	}
-
-	sound_started = 1;
-}
-
-/*
-================
-S_Init
-================
-*/
-void S_Init()
-{
-	//	Con_Printf("\nSound Initialization\n");
-
-	if(COM_CheckParm("-nosound"))
-		return;
-
-	if(COM_CheckParm("-simsound"))
-		fakedma = true;
-
-	Cmd_AddCommand("play", S_Play);
-	Cmd_AddCommand("playvol", S_PlayVol);
-	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
-	Cmd_AddCommand("soundlist", S_SoundList);
-	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
-
-	Cvar_RegisterVariable(&nosound);
-	Cvar_RegisterVariable(&volume);
-	Cvar_RegisterVariable(&precache);
-	Cvar_RegisterVariable(&loadas8bit);
-	Cvar_RegisterVariable(&bgmvolume);
-	Cvar_RegisterVariable(&bgmbuffer);
-	Cvar_RegisterVariable(&ambient_level);
-	Cvar_RegisterVariable(&ambient_fade);
-	Cvar_RegisterVariable(&snd_noextraupdate);
-	Cvar_RegisterVariable(&snd_show);
-	Cvar_RegisterVariable(&_snd_mixahead);
-
-	if(host_parms.memsize < 0x800000)
-	{
-		Cvar_Set("loadas8bit", "1");
-		Con_Printf("loading all sounds as 8bit\n");
-	}
-
-	snd_initialized = true;
-
-	S_Startup();
-
-	SND_InitScaletable();
-
-	known_sfx = Hunk_AllocName(MAX_SFX * sizeof(sfx_t), "sfx_t");
-	num_sfx = 0;
-
-	// create a piece of DMA memory
-
-	if(fakedma)
-	{
-		shm = (void *)Hunk_AllocName(sizeof(*shm), "shm");
-		shm->splitbuffer = 0;
-		shm->samplebits = 16;
-		shm->speed = 22050;
-		shm->channels = 2;
-		shm->samples = 32768;
-		shm->samplepos = 0;
-		shm->soundalive = true;
-		shm->gamealive = true;
-		shm->submission_chunk = 1;
-		shm->buffer = Hunk_AllocName(1 << 16, "shmbuf");
-	}
-
-	//	Con_Printf ("Sound sampling rate: %i\n", shm->speed);
-
-	// provides a tick sound until washed clean
-
-	//	if (shm->buffer)
-	//		shm->buffer[4] = shm->buffer[5] = 0x7f;	// force a pop for
-	//debugging
-
-	//ambient_sfx[AMBIENT_WATER] = S_PrecacheSound("ambience/water1.wav");
-	//ambient_sfx[AMBIENT_SKY] = S_PrecacheSound("ambience/wind2.wav");
-
-	S_StopAllSounds(true);
-}
-
-// =======================================================================
-// Shutdown sound engine
-// =======================================================================
-
-void S_Shutdown()
-{
-	if(!sound_started)
-		return;
-
-	if(shm)
-		shm->gamealive = 0;
-
-	shm = 0;
-	sound_started = 0;
-
-	if(!fakedma)
-	{
-		SNDDMA_Shutdown();
-	}
-}
-
 // =======================================================================
 // Load a sound
 // =======================================================================
-
-/*
-==================
-S_FindName
-
-==================
-*/
-sfx_t *S_FindName(char *name)
-{
-	int i;
-	sfx_t *sfx;
-
-	if(!name)
-		Sys_Error("S_FindName: NULL\n");
-
-	if(Q_strlen(name) >= MAX_QPATH)
-		Sys_Error("Sound name too long: %s", name);
-
-	// see if already loaded
-	for(i = 0; i < num_sfx; i++)
-		if(!Q_strcmp(known_sfx[i].name, name))
-		{
-			return &known_sfx[i];
-		}
-
-	if(num_sfx == MAX_SFX)
-		Sys_Error("S_FindName: out of sfx_t");
-
-	sfx = &known_sfx[i];
-	strcpy(sfx->name, name);
-
-	num_sfx++;
-
-	return sfx;
-}
 
 /*
 ==================
@@ -333,27 +145,7 @@ void S_TouchSound(char *name)
 	Cache_Check(&sfx->cache);
 }
 
-/*
-==================
-S_PrecacheSound
 
-==================
-*/
-sfx_t *S_PrecacheSound(char *name)
-{
-	sfx_t *sfx;
-
-	if(!sound_started || nosound.value)
-		return NULL;
-
-	sfx = S_FindName(name);
-
-	// cache it in
-	//if(precache.value)
-		//S_LoadSound(sfx);
-
-	return sfx;
-}
 
 //=============================================================================
 
@@ -403,59 +195,6 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 		channels[first_to_die].sfx = NULL;
 
 	return &channels[first_to_die];
-}
-
-/*
-=================
-SND_Spatialize
-=================
-*/
-void SND_Spatialize(channel_t *ch)
-{
-	vec_t dot;
-	vec_t dist;
-	vec_t lscale, rscale, scale;
-	vec3_t source_vec;
-	sfx_t *snd;
-
-	// anything coming from the view entity will allways be full volume
-	if(ch->entnum == cl.viewentity)
-	{
-		ch->leftvol = ch->master_vol;
-		ch->rightvol = ch->master_vol;
-		return;
-	}
-
-	// calculate stereo seperation and distance attenuation
-
-	snd = ch->sfx;
-	VectorSubtract(ch->origin, listener_origin, source_vec);
-
-	dist = VectorNormalize(source_vec) * ch->dist_mult;
-
-	dot = DotProduct(listener_right, source_vec);
-
-	if(shm->channels == 1)
-	{
-		rscale = 1.0;
-		lscale = 1.0;
-	}
-	else
-	{
-		rscale = 1.0 + dot;
-		lscale = 1.0 - dot;
-	}
-
-	// add in distance effect
-	scale = (1.0 - dist) * rscale;
-	ch->rightvol = (int)(ch->master_vol * scale);
-	if(ch->rightvol < 0)
-		ch->rightvol = 0;
-
-	scale = (1.0 - dist) * lscale;
-	ch->leftvol = (int)(ch->master_vol * scale);
-	if(ch->leftvol < 0)
-		ch->leftvol = 0;
 }
 
 // =======================================================================

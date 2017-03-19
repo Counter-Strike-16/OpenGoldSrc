@@ -27,25 +27,66 @@
  */
 
 /// @file
-/// @brief sound module backend interface
 
-#pragma once
+#include "precompiled.hpp"
+#include "system/system.hpp"
+#include "system/common.hpp"
+#include "sound/SoundManager.hpp"
 
-#include "public/interface.h"
-
-const char OGS_SOUND_INTERFACE_VERSION[] = "OGSSound001";
-
-struct ISound : public IBaseInterface
+bool CSoundManager::Init(int anMaxSfx)
 {
-	/// All non-hardware initialization
-	virtual bool Init(CreateInterfaceFn afnModuleFactory) = 0;
+	mnMaxSfx = anMaxSfx;
+	
+	return true;
+};
 
-	/// Shutdown routine
-	virtual void Shutdown() = 0;
+/*
+==================
+S_PrecacheSound
+
+==================
+*/
+sfx_t *CSoundManager::PrecacheSound(const char *name)
+{
+	if(!sound_started || nosound.value)
+		return NULL;
+
+	sfx_t *sfx = FindByName(name);
+
+	// cache it in
+	//if(precache.value)
+		//S_LoadSound(sfx);
+
+	return sfx;
+};
+
+/*
+==================
+S_FindName
+
+==================
+*/
+sfx_t *CSoundManager::FindByName(const char *name)
+{
+	int		i;
+
+	if (!name)
+		Sys_Error ("%s: blank name entered!\n", __FUNCTION__);
+
+	if (Q_strlen(name) >= MAX_QPATH)
+		Sys_Error ("Sound name too long: %s", name);
+
+	// see if already loaded
+	for (i=0 ; i < num_sfx ; i++)
+		if (!Q_strcmp(known_sfx[i].name, name))
+			return &known_sfx[i];
+
+	if (num_sfx == mnMaxSfx)
+		Sys_Error ("%s: out of sfx_t", __FUNCTION__);
 	
-	///
-	virtual void Update() = 0;
-	
-	/// Called before freeing any sound sample resources
-	virtual void StopAllSounds() = 0;
+	sfx_t *sfx = &known_sfx[i];
+	Q_strcpy (sfx->name, name);
+
+	num_sfx++;
+	return sfx;
 };

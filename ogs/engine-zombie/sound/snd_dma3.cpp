@@ -1,22 +1,4 @@
-/*
-Copyright (C) 1996-1997 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
 // snd_dma.c -- main control for any streaming sound output device
 
 #include "quakedef.h"
@@ -39,18 +21,10 @@ void S_StopAllSoundsC(void);
 channel_t   channels[MAX_CHANNELS];
 int			total_channels;
 
-int				snd_blocked = 0;
-static qboolean	snd_ambient = 1;
-qboolean		snd_initialized = false;
-
 // pointer should go away
 volatile dma_t  *shm = 0;
 volatile dma_t sn;
 
-vec3_t		listener_origin;
-vec3_t		listener_forward;
-vec3_t		listener_right;
-vec3_t		listener_up;
 vec_t		sound_nominal_clip_dist=1000.0;
 
 int			soundtime;		// sample PAIRS
@@ -65,8 +39,6 @@ sfx_t		*ambient_sfx[NUM_AMBIENTS];
 
 int 		desired_speed = 11025;
 int 		desired_bits = 16;
-
-int sound_started=0;
 
 cvar_t bgmvolume = {"bgmvolume", "1", true};
 cvar_t volume = {"volume", "0.7", true};
@@ -97,18 +69,6 @@ qboolean fakedma = false;
 int fakedma_updates = 15;
 
 
-void S_AmbientOff (void)
-{
-	snd_ambient = false;
-}
-
-
-void S_AmbientOn (void)
-{
-	snd_ambient = true;
-}
-
-
 void S_SoundInfo_f(void)
 {
 	if (!sound_started || !shm)
@@ -127,60 +87,8 @@ void S_SoundInfo_f(void)
 	Con_Printf("%5d total_channels\n", total_channels);
 }
 
-
-/*
-================
-S_Startup
-================
-*/
-
-void S_Startup (void)
-{
-	int		rc;
-
-	if (!snd_initialized)
-		return;
-
-	if (!fakedma)
-	{
-		rc = SNDDMA_Init();
-
-		if (!rc)
-		{
-#ifndef	_WIN32
-			Con_Printf("S_Startup: SNDDMA_Init failed.\n");
-#endif
-			sound_started = 0;
-			return;
-		}
-	}
-
-	sound_started = 1;
-}
-
-
-/*
-================
-S_Init
-================
-*/
 void S_Init (void)
 {
-
-	Con_Printf("\nSound Initialization\n");
-
-	if (COM_CheckParm("-nosound"))
-		return;
-
-	if (COM_CheckParm("-simsound"))
-		fakedma = true;
-
-	Cmd_AddCommand("play", S_Play);
-	Cmd_AddCommand("playvol", S_PlayVol);
-	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
-	Cmd_AddCommand("soundlist", S_SoundList);
-	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
-
 	Cvar_RegisterVariable(&nosound);
 	Cvar_RegisterVariable(&volume);
 	Cvar_RegisterVariable(&precache);
@@ -192,25 +100,6 @@ void S_Init (void)
 	Cvar_RegisterVariable(&snd_noextraupdate);
 	Cvar_RegisterVariable(&snd_show);
 	Cvar_RegisterVariable(&_snd_mixahead);
-
-	if (host_parms.memsize < 0x800000)
-	{
-		Cvar_Set ("loadas8bit", "1");
-		Con_Printf ("loading all sounds as 8bit\n");
-	}
-
-
-
-	snd_initialized = true;
-
-	S_Startup ();
-
-	SND_InitScaletable ();
-
-	known_sfx = Hunk_AllocName (MAX_SFX*sizeof(sfx_t), "sfx_t");
-	num_sfx = 0;
-
-// create a piece of DMA memory
 
 	if (fakedma)
 	{
@@ -236,31 +125,6 @@ void S_Init (void)
 
 	ambient_sfx[AMBIENT_WATER] = S_PrecacheSound ("ambience/water1.wav");
 	ambient_sfx[AMBIENT_SKY] = S_PrecacheSound ("ambience/wind2.wav");
-
-	S_StopAllSounds (true);
-}
-
-
-// =======================================================================
-// Shutdown sound engine
-// =======================================================================
-
-void S_Shutdown(void)
-{
-
-	if (!sound_started)
-		return;
-
-	if (shm)
-		shm->gamealive = 0;
-
-	shm = 0;
-	sound_started = 0;
-
-	if (!fakedma)
-	{
-		SNDDMA_Shutdown();
-	}
 }
 
 
@@ -268,40 +132,7 @@ void S_Shutdown(void)
 // Load a sound
 // =======================================================================
 
-/*
-==================
-S_FindName
 
-==================
-*/
-sfx_t *S_FindName (char *name)
-{
-	int		i;
-	sfx_t	*sfx;
-
-	if (!name)
-		Sys_Error ("S_FindName: NULL\n");
-
-	if (Q_strlen(name) >= MAX_QPATH)
-		Sys_Error ("Sound name too long: %s", name);
-
-// see if already loaded
-	for (i=0 ; i < num_sfx ; i++)
-		if (!Q_strcmp(known_sfx[i].name, name))
-		{
-			return &known_sfx[i];
-		}
-
-	if (num_sfx == MAX_SFX)
-		Sys_Error ("S_FindName: out of sfx_t");
-	
-	sfx = &known_sfx[i];
-	strcpy (sfx->name, name);
-
-	num_sfx++;
-	
-	return sfx;
-}
 
 
 /*

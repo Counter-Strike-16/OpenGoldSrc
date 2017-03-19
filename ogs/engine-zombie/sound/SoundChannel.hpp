@@ -27,25 +27,36 @@
  */
 
 /// @file
-/// @brief sound module backend interface
 
 #pragma once
 
-#include "public/interface.h"
-
-const char OGS_SOUND_INTERFACE_VERSION[] = "OGSSound001";
-
-struct ISound : public IBaseInterface
+// !!! if this is changed, the asm code must change !!!
+typedef struct TSoundChannel
 {
-	/// All non-hardware initialization
-	virtual bool Init(CreateInterfaceFn afnModuleFactory) = 0;
-
-	/// Shutdown routine
-	virtual void Shutdown() = 0;
+	TSoundChannel();
 	
-	///
-	virtual void Update() = 0;
+	void Spatialize();
 	
-	/// Called before freeing any sound sample resources
-	virtual void StopAllSounds() = 0;
-};
+	sfx_t		*sfx;			// sfx number
+	
+	int			leftvol;		// 0-255 volume
+	int			rightvol;		// 0-255 volume
+	
+	int			end;			// end time in global paintsamples
+	
+	int 		pos;			// sample position in sfx
+	
+	int			looping;		// where to loop, -1 = no looping OBSOLETE?
+	
+	int			entnum;			// to allow overriding a specific sound
+	int			entchannel;		//
+	
+	vec3_t		origin;			// only use if fixed_origin is set
+	
+	vec_t		dist_mult;		// distance multiplier (attenuation/clipK)
+	
+	int			master_vol;		// 0-255 master volume
+	
+	qboolean	fixed_origin;	// use origin instead of fetching entnum's origin
+	qboolean	autosound;		// from an entity->sound, cleared each frame
+} channel_t;

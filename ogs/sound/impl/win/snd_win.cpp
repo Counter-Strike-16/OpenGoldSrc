@@ -30,17 +30,18 @@
 
 #include "precompiled.hpp"
 //#include "commondef.hpp"
-#include "winquake.h"
+#include "snd_win.hpp"
 
 #define iDirectSoundCreate(a, b, c) pDirectSoundCreate(a, b, c)
 
-HRESULT(WINAPI *pDirectSoundCreate) (GUID FAR *lpGUID, LPDIRECTSOUND FAR *lplpDS, IUnknown FAR *pUnkOuter);
+HRESULT (WINAPI *pDirectSoundCreate)(GUID FAR *lpGUID, LPDIRECTSOUND FAR *lplpDS, IUnknown FAR *pUnkOuter);
 
 // 64K is > 1 second at 16-bit, 22050 Hz
-#define WAV_BUFFERS 64
-#define WAV_MASK 0x3F
-#define WAV_BUFFER_SIZE 0x0400
-#define SECONDARY_BUFFER_SIZE 0x10000
+const int WAV_BUFFERS = 64;
+const int WAV_MASK = 0x3F;
+const int WAV_BUFFER_SIZE = 0x0400;
+
+const int SECONDARY_BUFFER_SIZE = 0x10000;
 
 typedef enum { SIS_SUCCESS,
 	           SIS_FAILURE,
@@ -108,9 +109,7 @@ void S_UnblockSound()
 {
 	// DirectSound takes care of blocking itself
 	if(snd_iswave)
-	{
 		snd_blocked--;
-	}
 }
 
 /*
@@ -126,19 +125,17 @@ void FreeSound()
 	{
 		pDSBuf->lpVtbl->Stop(pDSBuf);
 		pDSBuf->lpVtbl->Release(pDSBuf);
-	}
+	};
 
 	// only release primary buffer if it's not also the mixing buffer we just released
 	if(pDSPBuf && (pDSBuf != pDSPBuf))
-	{
 		pDSPBuf->lpVtbl->Release(pDSPBuf);
-	}
 
 	if(pDS)
 	{
 		pDS->lpVtbl->SetCooperativeLevel(pDS, mainwindow, DSSCL_NORMAL);
 		pDS->lpVtbl->Release(pDS);
-	}
+	};
 
 	if(hWaveOut)
 	{
@@ -148,7 +145,7 @@ void FreeSound()
 		{
 			for(i = 0; i < WAV_BUFFERS; i++)
 				waveOutUnprepareHeader(hWaveOut, lpWaveHdr + i, sizeof(WAVEHDR));
-		}
+		};
 
 		waveOutClose(hWaveOut);
 
@@ -156,13 +153,13 @@ void FreeSound()
 		{
 			GlobalUnlock(hWaveHdr);
 			GlobalFree(hWaveHdr);
-		}
+		};
 
 		if(hData)
 		{
 			GlobalUnlock(hData);
 			GlobalFree(hData);
-		}
+		};
 	}
 
 	pDS = NULL;
@@ -256,9 +253,7 @@ sndinitstat SNDDMA_InitDirect()
 	dscaps.dwSize = sizeof(dscaps);
 
 	if(DS_OK != pDS->lpVtbl->GetCaps(pDS, &dscaps))
-	{
 		Con_SafePrintf("Couldn't get DS caps\n");
-	}
 
 	if(dscaps.dwFlags & DSCAPS_EMULDRIVER)
 	{

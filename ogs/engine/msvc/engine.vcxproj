@@ -24,6 +24,7 @@
     <ClCompile Include="..\..\public\rehlds\sys_shared.cpp" />
     <ClCompile Include="..\console\cbuf.cpp" />
     <ClCompile Include="..\console\cmd.cpp" />
+    <ClCompile Include="..\console\console.cpp" />
     <ClCompile Include="..\console\cvar.cpp" />
     <ClCompile Include="..\filesystem\filesystem.cpp" />
     <ClCompile Include="..\filesystem\filesystem_internal.cpp" />
@@ -35,6 +36,7 @@
     <ClCompile Include="..\graphics\view.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\input\keys.cpp" />
     <ClCompile Include="..\math\crc.cpp" />
     <ClCompile Include="..\math\mathlib.cpp" />
     <ClCompile Include="..\math\md5.cpp" />
@@ -63,6 +65,7 @@
     <ClCompile Include="..\resources\czmodelcheck.cpp" />
     <ClCompile Include="..\resources\decals.cpp" />
     <ClCompile Include="..\resources\l_studio.cpp" />
+    <ClCompile Include="..\resources\model.cpp" />
     <ClCompile Include="..\resources\modinfo.cpp" />
     <ClCompile Include="..\resources\studio.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -98,12 +101,16 @@
     <ClCompile Include="..\system\sv_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\system\system.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\system\system.cpp" />
     <ClCompile Include="..\system\textmessage.cpp" />
     <ClCompile Include="..\workdamnit.cpp" />
     <ClCompile Include="..\world\ed_strpool.cpp" />
+    <ClCompile Include="..\world\eventapi.cpp" />
+    <ClCompile Include="..\world\pr_cmds.cpp" />
+    <ClCompile Include="..\world\pr_edict.cpp" />
+    <ClCompile Include="..\world\world.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\console\cbuf.hpp" />
@@ -152,6 +159,7 @@
     <ClInclude Include="..\resources\consistency.hpp" />
     <ClInclude Include="..\resources\decal.hpp" />
     <ClInclude Include="..\resources\l_studio.hpp" />
+    <ClInclude Include="..\resources\model_rehlds.hpp" />
     <ClInclude Include="..\resources\modinfo.hpp" />
     <ClInclude Include="..\resources\studio_rehlds.hpp" />
     <ClInclude Include="..\resources\sv_upld.hpp" />

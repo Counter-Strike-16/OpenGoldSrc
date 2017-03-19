@@ -37,7 +37,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bzip2", "..\dep\bzip2\msvc\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cppunitlite", "..\dep\cppunitlite\msvc\cppunitlite.vcxproj", "{CEB94F7C-E459-4673-AABB-36E2074396C0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "renderdll", "..\ogs\renderdll\msvc\renderdll.vcxproj", "{F9F4E564-A841-41BA-915C-A0BA5499466E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "render", "..\ogs\render\msvc\render.vcxproj", "{F9F4E564-A841-41BA-915C-A0BA5499466E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vstdlib", "..\ogs\vstdlib\msvc\vstdlib.vcxproj", "{F6F0CB17-5EF4-4016-9FB8-09465FEED8B7}"
 EndProject
@@ -46,6 +46,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hookers", "..\ogs\hookers\msvc\hookers.vcxproj", "{F0370920-9F9B-4AA6-BB78-843CBADC765A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "..\ogs\unittests\msvc\unittests.vcxproj", "{04E440B6-B0EC-4C85-B176-C86640B2D1CD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sound", "..\ogs\sound\msvc\sound.vcxproj", "{19824225-3CF5-45F2-A4F0-D3A53C4AB511}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -369,6 +371,22 @@ Global
 		{04E440B6-B0EC-4C85-B176-C86640B2D1CD}.Release|x64.Build.0 = Release|x64
 		{04E440B6-B0EC-4C85-B176-C86640B2D1CD}.Release|x86.ActiveCfg = Release|Win32
 		{04E440B6-B0EC-4C85-B176-C86640B2D1CD}.Release|x86.Build.0 = Release|Win32
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug Swds Play|x64.ActiveCfg = Debug|x64
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug Swds Play|x64.Build.0 = Debug|x64
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug Swds Play|x86.ActiveCfg = Debug|Win32
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug Swds Play|x86.Build.0 = Debug|Win32
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug Swds|x64.ActiveCfg = Debug|x64
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug Swds|x64.Build.0 = Debug|x64
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug Swds|x86.ActiveCfg = Debug|Win32
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug Swds|x86.Build.0 = Debug|Win32
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug|x64.ActiveCfg = Debug|x64
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug|x64.Build.0 = Debug|x64
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug|x86.ActiveCfg = Debug|Win32
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Debug|x86.Build.0 = Debug|Win32
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Release|x64.ActiveCfg = Release|x64
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Release|x64.Build.0 = Release|x64
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Release|x86.ActiveCfg = Release|Win32
+		{19824225-3CF5-45F2-A4F0-D3A53C4AB511}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

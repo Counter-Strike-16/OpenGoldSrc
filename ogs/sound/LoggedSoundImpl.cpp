@@ -27,25 +27,33 @@
  */
 
 /// @file
-/// @brief sound module backend interface
 
-#pragma once
+#include "SoundImpl.hpp"
+#include "console/IConsole.hpp"
 
-#include "public/interface.h"
+EXPOSE_SINGLE_INTERFACE(CSoundImpl, ISound, OGS_SOUND_INTERFACE_VERSION);
 
-const char OGS_SOUND_INTERFACE_VERSION[] = "OGSSound001";
-
-struct ISound : public IBaseInterface
+bool CSoundImpl::Init(CreateInterfaceFn afnModuleFactory)
 {
-	/// All non-hardware initialization
-	virtual bool Init(CreateInterfaceFn afnModuleFactory) = 0;
+	TRACE("CSoundImpl::Init");
+	mpImpl->Init();
+	return true;
+};
 
-	/// Shutdown routine
-	virtual void Shutdown() = 0;
-	
-	///
-	virtual void Update() = 0;
-	
-	/// Called before freeing any sound sample resources
-	virtual void StopAllSounds() = 0;
+void CSoundImpl::Shutdown()
+{
+	TRACE("CSoundImpl::Shutdown");
+	mpImpl->Shutdown();
+};
+
+void CSoundImpl::Update()
+{
+	TRACE("CSoundImpl::Update");
+	mpImpl->Update();
+};
+
+void CSoundImpl::StopAllSounds()
+{
+	TRACE("CSoundImpl::StopAllSounds");
+	mpImpl->StopAllSounds();
 };

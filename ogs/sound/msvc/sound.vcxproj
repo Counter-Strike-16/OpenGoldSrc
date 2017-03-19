@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F9F4E564-A841-41BA-915C-A0BA5499466E}</ProjectGuid>
-    <RootNamespace>renderdll</RootNamespace>
+    <ProjectGuid>{19824225-3CF5-45F2-A4F0-D3A53C4AB511}</ProjectGuid>
+    <RootNamespace>sound</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

@@ -36,8 +36,7 @@
 #include "console/console.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
-#include "client/client.hpp"
-#include "public/keydefs.h"
+#include "system/client.hpp"
 
 // key up events are sent even if in console mode
 

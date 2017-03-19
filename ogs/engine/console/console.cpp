@@ -34,7 +34,7 @@
 #include "console/cvar.hpp"
 #include "system/system.hpp"
 #include "filesystem/filesystem_internal.hpp"
-#include "client/client.hpp"
+#include "system/client.hpp"
 #include "input/keys.hpp"
 
 int con_ormask;

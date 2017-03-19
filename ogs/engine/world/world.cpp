@@ -37,8 +37,7 @@
 #include "resources/model_rehlds.hpp"
 #include "physics/sv_phys.hpp"
 #include "console/console.hpp"
-#include "server/server.hpp"
-#include "engine/edict.h"
+#include "system/server.hpp"
 
 hull_t box_hull;
 hull_t beam_hull;

@@ -29,11 +29,8 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "common/event_api.h"
 #include "physics/sv_pmove.hpp"
-#include "client/client.hpp"
-#include "pm_shared/pm_defs.h"
-#include <cstddef>
+#include "system/client.hpp"
 
 namespace
 {
@@ -137,7 +134,7 @@ const char *EventAPI_TraceTexture(int ground, float *vstart, float *vend)
 
 	physent_t *pe = &g_clmove.physents[ground];
 
-	return PM_SV_TraceTexture(pe, vstart, vend);
+	return ""; //PM_SV_TraceTexture(pe, vstart, vend);
 };
 
 void EventAPI_StopAllSounds(int entnum, int entchannel){};

@@ -27,25 +27,60 @@
  */
 
 /// @file
-/// @brief sound module backend interface
 
-#pragma once
+#include "sound/SoundChannel.hpp"
 
-#include "public/interface.h"
-
-const char OGS_SOUND_INTERFACE_VERSION[] = "OGSSound001";
-
-struct ISound : public IBaseInterface
+/*
+=================
+SND_Spatialize
+=================
+*/
+void CSoundChannel::Spatialize()
 {
-	/// All non-hardware initialization
-	virtual bool Init(CreateInterfaceFn afnModuleFactory) = 0;
+	vec_t dot;
+	vec_t dist;
+	vec_t lscale, rscale, scale;
+	vec3_t source_vec;
+	sfx_t *snd;
 
-	/// Shutdown routine
-	virtual void Shutdown() = 0;
+	// anything coming from the view entity will allways be full volume
+	if(entnum == cl.viewentity)
+	{
+		leftvol = master_vol;
+		rightvol = master_vol;
+		return;
+	}
+
+	// calculate stereo seperation and distance attenuation
+
+	snd = sfx;
+	VectorSubtract(origin, listener_origin, source_vec);
+
+	dist = VectorNormalize(source_vec) * dist_mult;
+
+	dot = DotProduct(listener_right, source_vec);
+
+	if(shm->channels == 1)
+	{
+		rscale = 1.0;
+		lscale = 1.0;
+	}
+	else
+	{
+		rscale = 1.0 + dot;
+		lscale = 1.0 - dot;
+	};
+
+	// add in distance effect
+	scale = (1.0 - dist) * rscale;
+	rightvol = (int)(master_vol * scale);
 	
-	///
-	virtual void Update() = 0;
+	if(rightvol < 0)
+		rightvol = 0;
+
+	scale = (1.0 - dist) * lscale;
+	leftvol = (int)(master_vol * scale);
 	
-	/// Called before freeing any sound sample resources
-	virtual void StopAllSounds() = 0;
+	if(leftvol < 0)
+		leftvol = 0;
 };

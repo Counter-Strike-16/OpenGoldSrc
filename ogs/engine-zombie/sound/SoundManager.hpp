@@ -27,25 +27,20 @@
  */
 
 /// @file
-/// @brief sound module backend interface
 
 #pragma once
 
-#include "public/interface.h"
-
-const char OGS_SOUND_INTERFACE_VERSION[] = "OGSSound001";
-
-struct ISound : public IBaseInterface
+class CSoundManager
 {
-	/// All non-hardware initialization
-	virtual bool Init(CreateInterfaceFn afnModuleFactory) = 0;
-
-	/// Shutdown routine
-	virtual void Shutdown() = 0;
+public:
+	bool Init(int anMaxSfx);
 	
-	///
-	virtual void Update() = 0;
+	sfx_t *S_PrecacheSound(const char *sample);
 	
-	/// Called before freeing any sound sample resources
-	virtual void StopAllSounds() = 0;
+	sfx_t *FindByName(const char *name);
+private:
+	sfx_t *known_sfx; // hunk allocated [MAX_SFX]
+	
+	int num_sfx;
+	int mnMaxSfx;
 };

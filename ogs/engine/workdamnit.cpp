@@ -10,14 +10,6 @@ void Sys_SplitPath(char const *,char *,char *,char *,char *)
 {
 };
 
-void Con_Printf(char const *,...)
-{
-};
-
-void Con_DPrintf(char const *,...)
-{
-};
-
 client_state_t cl;
 
 int allow_cheats;

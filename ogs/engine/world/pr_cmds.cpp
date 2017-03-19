@@ -30,7 +30,7 @@
 
 #include "precompiled.hpp"
 #include "world/pr_cmds.hpp"
-#include "server/server.hpp"
+#include "system/server.hpp"
 #include "system/common.hpp"
 #include "system/host.hpp"
 #include "system/system.hpp"
@@ -48,10 +48,9 @@
 #include "physics/sv_phys.hpp"
 #include "world/world.hpp"
 #include "world/pr_edict.hpp"
-#include "server/sv_user.hpp"
+#include "network/sv_user.hpp"
 #include "sound/sound.hpp"
-#include "client/client.hpp"
-#include "rehlds_api_impl.h"
+#include "system/client.hpp"
 
 vec_t gHullMins[4][3] = {
 	{ 0.0f, 0.0f, 0.0f },
@@ -1655,14 +1654,10 @@ char *EXT_FUNC PF_GetInfoKeyBuffer_I(edict_t *e)
 				value = (char *)&g_psvs.clients[e1 - 1].userinfo;
 		}
 		else
-		{
-			value = Info_Serverinfo();
-		}
+			value = Cvar_Serverinfo();
 	}
 	else
-	{
 		value = localinfo;
-	}
 
 	return value;
 }
@@ -1680,7 +1675,7 @@ void EXT_FUNC PF_SetKeyValue_I(char *infobuffer, const char *key, const char *va
 	}
 	else
 	{
-		if(infobuffer != Info_Serverinfo())
+		if(infobuffer != Cvar_Serverinfo())
 		{
 			Sys_Error("Can't set client keys with SetKeyValue");
 		}
@@ -1702,7 +1697,7 @@ void EXT_FUNC PF_SetClientKeyValue_I(int clientIndex, char *infobuffer, const ch
 {
 	client_t *pClient;
 
-	if(infobuffer == localinfo || infobuffer == Info_Serverinfo() ||
+	if(infobuffer == localinfo || infobuffer == Cvar_Serverinfo() ||
 	   clientIndex <= 0 || clientIndex > g_psvs.maxclients)
 	{
 		return;

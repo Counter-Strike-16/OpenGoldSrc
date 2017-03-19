@@ -23,15 +23,7 @@ int			s_registration_sequence;
 
 channel_t   channels[MAX_CHANNELS];
 
-qboolean	snd_initialized = false;
-int			sound_started=0;
-
 dma_t		dma;
-
-vec3_t		listener_origin;
-vec3_t		listener_forward;
-vec3_t		listener_right;
-vec3_t		listener_up;
 
 qboolean	s_registering;
 
@@ -88,13 +80,6 @@ void S_SoundInfo_f(void)
     Com_Printf("0x%x dma buffer\n", dma.buffer);
 }
 
-
-
-/*
-================
-S_Init
-================
-*/
 void S_Init (void)
 {
 	cvar_t	*cv;
@@ -131,34 +116,15 @@ void S_Init (void)
 		paintedtime = 0;
 
 		Com_Printf ("sound sampling rate: %i\n", dma.speed);
-
-		S_StopAllSounds ();
 	}
 
 	Com_Printf("------------------------------------\n");
 }
 
-
-// =======================================================================
-// Shutdown sound engine
-// =======================================================================
-
 void S_Shutdown(void)
 {
 	int		i;
 	sfx_t	*sfx;
-
-	if (!sound_started)
-		return;
-
-	SNDDMA_Shutdown();
-
-	sound_started = 0;
-
-	Cmd_RemoveCommand("play");
-	Cmd_RemoveCommand("stopsound");
-	Cmd_RemoveCommand("soundlist");
-	Cmd_RemoveCommand("soundinfo");
 
 	// free all sounds
 	for (i=0, sfx=known_sfx ; i < num_sfx ; i++,sfx++)
@@ -451,11 +417,6 @@ void S_SpatializeOrigin (vec3_t origin, float master_vol, float dist_mult, int *
 		*left_vol = 0;
 }
 
-/*
-=================
-S_Spatialize
-=================
-*/
 void S_Spatialize(channel_t *ch)
 {
 	vec3_t		origin;

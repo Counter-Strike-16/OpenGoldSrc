@@ -238,6 +238,27 @@
     <ClCompile Include="..\resources\studio.cpp">
       <Filter>resources</Filter>
     </ClCompile>
+    <ClCompile Include="..\world\pr_cmds.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\world\pr_edict.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\world\world.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\model.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\world\eventapi.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\console.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\input\keys.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\system\buildinfo.hpp">
@@ -500,6 +521,9 @@
     </ClInclude>
     <ClInclude Include="..\console\console.hpp">
       <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resources\model_rehlds.hpp">
+      <Filter>resources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

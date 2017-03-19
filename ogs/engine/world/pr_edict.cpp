@@ -37,7 +37,7 @@
 #include "system/system.hpp"
 #include "console/console.hpp"
 #include "console/cvar.hpp"
-#include "server/server.hpp"
+#include "system/server.hpp"
 #include "world/world.hpp"
 #include "resources/model_rehlds.hpp"
 
