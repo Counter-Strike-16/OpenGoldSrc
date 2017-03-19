@@ -1,6 +1,3 @@
 [submodule "hlsdk"]
 	path = hlsdk
 	url = https://github.com/Sh1ft0x0EF/hlsdk-core
-[submodule "shiftutil"]
-	path = shiftutil
-	url = https://github.com/Sh1ft0x0EF/shiftutil
