@@ -10,24 +10,6 @@ void Sys_SplitPath(char const *,char *,char *,char *,char *)
 {
 };
 
-void *FS_Open(char const *,char const *)
-{
-	return nullptr;
-};
-
-void FS_Close(void *)
-{
-};
-
-int FS_FPrintf(void *,char *,...)
-{
-	return 0;
-};
-
-void Cmd_AddCommand(char *,void (__cdecl*)(void))
-{
-};
-
 void Con_Printf(char const *,...)
 {
 };
@@ -40,34 +22,9 @@ client_state_t cl;
 
 int allow_cheats;
 
-int COM_CheckParm(char *)
-{
-	return 0;
-};
-
-int com_argc;
-char **com_argv;
-
 IReHLDSPlatform *CRehldsPlatformHolder::get(void)
 {
 	return nullptr;
-};
-
-void Cbuf_AddText(char *)
-{
-};
-
-void Cbuf_InsertText(char *)
-{
-};
-
-char *va(char *,...)
-{
-	return nullptr;
-};
-
-void Host_GetHostInfo(float *,int *,int *,int *,char *)
-{
 };
 
 void Sys_InitArgv(char *)
@@ -82,25 +39,11 @@ void TraceShutdown(char const *,int)
 {
 };
 
-int FileSystem_Init(char *,void *)
-{
-	return 0;
-};
-
-void FileSystem_Shutdown(void)
-{
-};
-
 int giActive;
 
 struct cvar_s servercfgfile;
 
 IRegistry *registry = nullptr;
-
-int Host_Frame(float,int,int *)
-{
-	return 0;
-};
 
 extern "C" void ClientDLL_MouseEvent(int)
 {
@@ -133,18 +76,6 @@ void __cdecl Sys_ShutdownGame(void)
 {
 };
 
-void __cdecl Cbuf_Execute(void)
-{
-};
-
-void __cdecl Cvar_DirectSet(struct cvar_s *,char const *)
-{
-};
-
-void __cdecl Cvar_Set(char const *,char const *)
-{
-};
-
 struct cvar_s rate_;
 
 struct client_static_s cls;
@@ -156,11 +87,34 @@ IWindow *VID_OpenWindow(void)
 
 struct HWND__ *mainwindow;
 
-unsigned int __cdecl crc32c(unsigned char const *,int)
+char * __cdecl Cvar_Serverinfo(void)
+{
+	return nullptr;
+};
+
+void __cdecl SV_BroadcastCommand(char *,...)
+{
+};
+
+void __cdecl SV_BroadcastPrintf(char const *,...)
+{
+};
+
+int __cdecl Q_UnicodeValidate(char const *)
 {
 	return 0;
 };
 
-void __cdecl MSG_WriteString(struct sizebuf_s *,char const *)
+int __cdecl Q_StripUnprintableAndSpace(char *)
 {
-};									
+	return 0;
+};
+
+int __cdecl Q_UnicodeRepair(char *)
+{
+	return 0;
+};
+
+//CRehldsHookchains g_RehldsHookchains;
+
+//_g_engdstAddrs; 

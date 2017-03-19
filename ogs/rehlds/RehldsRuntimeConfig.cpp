@@ -1,4 +1,6 @@
-#include "precompiled.h"
+#include "RehldsRuntimeConfig.h"
+#include <cstdlib>
+#include <cstring>
 
 CRehldsRuntimeConfig g_RehldsRuntimeConfig;
 

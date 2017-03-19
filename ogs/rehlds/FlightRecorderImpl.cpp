@@ -15,7 +15,8 @@
 *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 */
-#include "precompiled.h"
+
+#include "FlightRecorderImpl.h"
 
 CRehldsFlightRecorder::CRehldsFlightRecorder() {
 	m_MetaRegion = (uint8*) sys_allocmem(META_REGION_SIZE);

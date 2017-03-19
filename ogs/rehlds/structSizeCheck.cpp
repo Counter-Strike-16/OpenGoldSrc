@@ -1,4 +1,4 @@
-#include "precompiled.h"
+#include "precompiled.hpp"
 
 template <typename ToCheck, std::size_t ExpectedSize, std::size_t RealSize = sizeof(ToCheck)>
 void check_size() {

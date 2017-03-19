@@ -26,7 +26,7 @@
 *
 */
 
-#include "precompiled.h"
+#include "rehlds_interfaces_impl.h"
 
 CGameClient** g_GameClients;
 

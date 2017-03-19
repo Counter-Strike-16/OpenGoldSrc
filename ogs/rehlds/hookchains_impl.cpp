@@ -16,8 +16,9 @@
 *
 */
 
-#include "precompiled.h"
 #include "hookchains_impl.h"
+#include "system/common.hpp"
+#include "system/system.hpp"
 
 AbstractHookChainRegistry::AbstractHookChainRegistry()
 {

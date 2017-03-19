@@ -43,7 +43,7 @@ void SZ_Print(sizebuf_t *buf, const char *data);
 class CSizeBuffer;
 static CSizeBuffer *AllocSizeBuf(const char *name, sizebuf_t *buf, int startsize)
 {
-	CSizeBuffer *pSizeBuffer = new CSizeBuffer(name, buf, startsize);
+	CSizeBuffer *pSizeBuffer = nullptr; //new CSizeBuffer(name, buf, startsize);
 	return pSizeBuffer;
 };
 

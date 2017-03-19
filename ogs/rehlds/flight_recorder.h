@@ -15,8 +15,10 @@
 *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 */
+
 #pragma once
-#include "osconfig.h"
+
+#include "rehlds/osconfig.h"
 #include "FlightRecorderImpl.h"
 
 extern CRehldsFlightRecorder* g_FlightRecorder;

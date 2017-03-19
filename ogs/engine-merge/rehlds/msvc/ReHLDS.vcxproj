@@ -186,12 +186,6 @@
     </ClCompile>
     <ClCompile Include="..\public\tier0\platform_win32.cpp" />
     <ClCompile Include="..\public\utlbuffer.cpp" />
-    <ClCompile Include="..\rehlds\FlightRecorderImpl.cpp" />
-    <ClCompile Include="..\rehlds\flight_recorder.cpp" />
-    <ClCompile Include="..\rehlds\rehlds_api_impl.cpp" />
-    <ClCompile Include="..\rehlds\rehlds_interfaces_impl.cpp" />
-    <ClCompile Include="..\rehlds\hookchains_impl.cpp" />
-    <ClCompile Include="..\rehlds\platform.cpp" />
     <ClCompile Include="..\rehlds\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Swds|Win32'">Create</PrecompiledHeader>
@@ -214,9 +208,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">precompiled.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Test Fixes|Win32'">precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="..\rehlds\RehldsRuntimeConfig.cpp" />
-    <ClCompile Include="..\rehlds\rehlds_security.cpp" />
-    <ClCompile Include="..\rehlds\structSizeCheck.cpp" />
     <ClCompile Include="..\testsuite\anonymizer.cpp" />
     <ClCompile Include="..\testsuite\funccalls.cpp" />
     <ClCompile Include="..\testsuite\player.cpp" />

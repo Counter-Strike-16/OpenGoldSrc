@@ -40,4 +40,11 @@
 // Function is not tested at all
 #define UNTESTED
 
+/*
+#ifdef _MSC_VER
+	#define strncasecmp _strnicmp
+	#define strcasecmp _stricmp
+#endif
+*/
+
 typedef unsigned int string_t;		// from engine's pr_comp.h;

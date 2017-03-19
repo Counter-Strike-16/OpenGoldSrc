@@ -16,7 +16,7 @@
 *
 */
 
-#include "precompiled.h"
+#include "flight_recorder.h"
 
 CRehldsFlightRecorder* g_FlightRecorder;
 

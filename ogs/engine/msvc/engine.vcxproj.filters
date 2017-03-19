@@ -37,6 +37,12 @@
     <Filter Include="script">
       <UniqueIdentifier>{d3814c68-e278-4345-a412-ab478dd80a17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{aaeffcf2-bd40-42f6-a6b0-18d4b8fff11f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="voice">
+      <UniqueIdentifier>{851ad821-cc68-4518-8a1f-b55d37e8f4da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\system\buildinfo.cpp">
@@ -77,6 +83,161 @@
     </ClCompile>
     <ClCompile Include="..\workdamnit.cpp" />
     <ClCompile Include="..\..\..\hlsdk\public\interface.cpp" />
+    <ClCompile Include="..\console\cbuf.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\sizebuf.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\cvar.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\public\rehlds\crc32c.cpp" />
+    <ClCompile Include="..\..\public\rehlds\sys_shared.cpp" />
+    <ClCompile Include="..\console\cmd.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\common.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filesystem\filesystem.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filesystem\filesystem_internal.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filesystem\hashpak.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filesystem\wad.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\cmodel.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\com_custom.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\czmodelcheck.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\decals.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\l_studio.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\modinfo.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\textures.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\math\crc.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\math\mathlib.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\math\md5.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\ipratelimit.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\ipratelimitWrapper.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\delta.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\delta_jit.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\net_chan.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\net_msg.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\byteorder.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\demoapi.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\info.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\sv_log.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\engfuncs.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\gamedllloader.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\sv_remoteaccess.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\sv_steam3.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\sv_user.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\screen.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\view.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\physics\pmove.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\physics\pmovetst.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\physics\sv_move.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\physics\sv_phys.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\physics\sv_pmove.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\cl_parse.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\cl_demo.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\cl_main.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\host.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\host_cmd.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\sv_main.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\system.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\textmessage.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\sv_upld.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\resources\studio.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\system\buildinfo.hpp">
@@ -129,6 +290,216 @@
     </ClInclude>
     <ClInclude Include="..\world\event.hpp">
       <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\cvar.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\cmd.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\common.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filesystem\filesystem_.hpp">
+      <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filesystem\filesystem_internal.hpp">
+      <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resources\cmodel.hpp">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resources\consistency.hpp">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resources\decal.hpp">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resources\l_studio.hpp">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resources\modinfo.hpp">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resources\studio_rehlds.hpp">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resources\textures.hpp">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\cl_demo.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\client.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\clienttypes.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\host.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\host_cmd.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\server.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\server_static.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\servertypes.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\cdaudio.hpp">
+      <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\sound.hpp">
+      <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\soundfade.hpp">
+      <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\physics\pmove.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\physics\pmovetst.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\physics\sv_move.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\physics\sv_phys.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\physics\sv_pmove.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\input\input.hpp">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\input\keys.hpp">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\RendererManager.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\screen.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\spriteapi.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\vid.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\view.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\delta.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\delta_jit.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\delta_packet.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\filter.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\frame.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\ipratelimit.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\ipratelimitWrapper.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\net.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\net_chan.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\net_msg.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\networktypes.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\protocol.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\sv_remoteaccess.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\sv_user.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\usermsg.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\clientdll.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\sv_log.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\system.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\systemtypes.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\textmessage.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\voice\voice.hpp">
+      <Filter>voice</Filter>
+    </ClInclude>
+    <ClInclude Include="..\voice\voiceserver.hpp">
+      <Filter>voice</Filter>
+    </ClInclude>
+    <ClInclude Include="..\voice\voicetweak.hpp">
+      <Filter>voice</Filter>
+    </ClInclude>
+    <ClInclude Include="..\world\eventapi.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\world\inst_baseline.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\world\pr_cmds.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\world\pr_dlls.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\world\pr_edict.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\world\world.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\sv_steam3.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\bf_read.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\bf_write.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resources\sv_upld.hpp">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\cbuf.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\console.hpp">
+      <Filter>console</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

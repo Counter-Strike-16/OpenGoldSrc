@@ -1,7 +1,5 @@
 #pragma once
 
-#include "engine.h"
-
 class CMoveCommandRateLimiter {
 public:
 	CMoveCommandRateLimiter();

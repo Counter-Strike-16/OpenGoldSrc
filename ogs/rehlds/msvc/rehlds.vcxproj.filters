@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\flight_recorder.cpp" />
+    <ClCompile Include="..\FlightRecorderImpl.cpp" />
+    <ClCompile Include="..\hookchains_impl.cpp" />
+    <ClCompile Include="..\platform_rehlds.cpp" />
+    <ClCompile Include="..\precompiled_old.cpp" />
+    <ClCompile Include="..\rehlds_api_impl.cpp" />
+    <ClCompile Include="..\rehlds_interfaces_impl.cpp" />
+    <ClCompile Include="..\rehlds_security.cpp" />
+    <ClCompile Include="..\RehldsRuntimeConfig.cpp" />
+    <ClCompile Include="..\structSizeCheck.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\flight_recorder.h" />
+    <ClInclude Include="..\FlightRecorderImpl.h" />
+    <ClInclude Include="..\hookchains_impl.h" />
+    <ClInclude Include="..\jitasm.h" />
+    <ClInclude Include="..\platform_rehlds.h" />
+    <ClInclude Include="..\precompiled_old.h" />
+    <ClInclude Include="..\rehlds_api_impl.h" />
+    <ClInclude Include="..\rehlds_interfaces_impl.h" />
+    <ClInclude Include="..\rehlds_security.h" />
+    <ClInclude Include="..\RehldsRuntimeConfig.h" />
+    <ClInclude Include="..\rehlds_pch.hpp" />
+  </ItemGroup>
+</Project>

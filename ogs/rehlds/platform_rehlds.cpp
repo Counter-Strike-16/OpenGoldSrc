@@ -1,4 +1,4 @@
-#include "precompiled.h"
+#include "platform_rehlds.h"
 
 IReHLDSPlatform* CRehldsPlatformHolder::m_Platform;
 
