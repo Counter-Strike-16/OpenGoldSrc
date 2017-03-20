@@ -27,29 +27,18 @@
  */
 
 /// @file
-/// @brief resource manager for sound resource handling
+/// @brief sound module implementation provider
 
 #pragma once
 
-struct ISoundLoader;
+#include "common/FactorySharedLib.hpp"
 
-class CSoundManager
+struct ISound;
+
+class CSoundProvider
 {
 public:
-	bool Init(int anMaxSfx);
-	
-	sfx_t *PrecacheSound(const char *sample); // preload the sound for later use
-	sfxcache_t *LoadSound(sfx_t *s);
-	
-	void AddLoader(ISoundLoader *apLoader);
-	void RemoveLoader(ISoundLoader *apLoader);
-	
-	sfx_t *FindByName(const char *name /*, bool abCreate = true*/);
+	ISound *LoadSoundModule(const char *asName);
 private:
-	std::list<ISoundLoader*> mlstLoaders;
-	
-	sfx_t *known_sfx; // hunk allocated [mnMaxSfx]
-	
-	int num_sfx;
-	int mnMaxSfx;
+	CFactorySharedLib SoundLib;
 };

@@ -1,5 +1,4 @@
-#include "client.h"
-#include "snd_loc.h"
+
 
 /*
 ================
@@ -143,39 +142,11 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	return sc;
 }
 
-/*
-===============================================================================
-
-WAV loading
-
-===============================================================================
-*/
-
 byte	*data_p;
 byte 	*iff_end;
 byte 	*last_chunk;
 byte 	*iff_data;
 int 	iff_chunk_len;
-
-short GetLittleShort(void)
-{
-	short val = 0;
-	val = *data_p;
-	val = val + (*(data_p+1)<<8);
-	data_p += 2;
-	return val;
-}
-
-int GetLittleLong(void)
-{
-	int val = 0;
-	val = *data_p;
-	val = val + (*(data_p+1)<<8);
-	val = val + (*(data_p+2)<<16);
-	val = val + (*(data_p+3)<<24);
-	data_p += 4;
-	return val;
-}
 
 void FindNextChunk(char *name)
 {
@@ -205,48 +176,8 @@ void FindNextChunk(char *name)
 	}
 }
 
-void FindChunk(char *name)
-{
-	last_chunk = iff_data;
-	FindNextChunk (name);
-}
-
-
-void DumpChunks(void)
-{
-	char	str[5];
-	
-	str[4] = 0;
-	data_p=iff_data;
-	do
-	{
-		memcpy (str, data_p, 4);
-		data_p += 4;
-		iff_chunk_len = GetLittleLong();
-		Con_Printf ("0x%x : %s (%d)\n", (int)(data_p - 4), str, iff_chunk_len);
-		data_p += (iff_chunk_len + 1) & ~1;
-	} while (data_p < iff_end);
-}
-
-/*
-============
-GetWavinfo
-============
-*/
 wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 {
-	wavinfo_t	info;
-	int     i;
-	int     format;
-	int		samples;
-
-	memset (&info, 0, sizeof(info));
-
-	if (!wav)
-		return info;
-		
-	iff_data = wav;
-	iff_end = wav + wavlength;
 
 // find "RIFF" chunk
 	FindChunk("RIFF");
@@ -256,35 +187,8 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 		return info;
 	}
 
-// get "fmt " chunk
-	iff_data = data_p + 12;
-// DumpChunks ();
-
-	FindChunk("fmt ");
-	if (!data_p)
-	{
-		Con_Printf("Missing fmt chunk\n");
-		return info;
-	}
-	data_p += 8;
-	format = GetLittleShort();
-	if (format != 1)
-	{
-		Con_Printf("Microsoft PCM format only\n");
-		return info;
-	}
-
-	info.channels = GetLittleShort();
-	info.rate = GetLittleLong();
-	data_p += 4+2;
-	info.width = GetLittleShort() / 8;
-
-// get cue chunk
-	FindChunk("cue ");
 	if (data_p)
 	{
-		data_p += 32;
-		info.loopstart = GetLittleLong();
 //		Com_Printf("loopstart=%d\n", sfx->loopstart);
 
 	// if the next chunk is a LIST chunk, look for a cue length marker

@@ -21,8 +21,6 @@ void S_StopAllSounds(void);
 
 int			s_registration_sequence;
 
-channel_t   channels[MAX_CHANNELS];
-
 dma_t		dma;
 
 qboolean	s_registering;
@@ -144,15 +142,8 @@ void S_Shutdown(void)
 // Load a sound
 // =======================================================================
 
-/*
-==================
-S_FindName
-
-==================
-*/
 sfx_t *S_FindName (char *name, qboolean create)
 {
-	int		i;
 	sfx_t	*sfx;
 
 	if (!name)
@@ -162,13 +153,6 @@ sfx_t *S_FindName (char *name, qboolean create)
 
 	if (strlen(name) >= MAX_QPATH)
 		Com_Error (ERR_FATAL, "Sound name too long: %s", name);
-
-	// see if already loaded
-	for (i=0 ; i < num_sfx ; i++)
-		if (!strcmp(known_sfx[i].name, name))
-		{
-			return &known_sfx[i];
-		}
 
 	if (!create)
 		return NULL;
@@ -421,12 +405,8 @@ void S_Spatialize(channel_t *ch)
 {
 	vec3_t		origin;
 
-	// anything coming from the view entity will always be full volume
 	if (ch->entnum == cl.playernum+1)
 	{
-		ch->leftvol = ch->master_vol;
-		ch->rightvol = ch->master_vol;
-		return;
 	}
 
 	if (ch->fixed_origin)
@@ -720,17 +700,10 @@ void S_ClearBuffer (void)
 	SNDDMA_Submit ();
 }
 
-/*
-==================
-S_StopAllSounds
-==================
-*/
+
 void S_StopAllSounds(void)
 {
 	int		i;
-
-	if (!sound_started)
-		return;
 
 	// clear all the playsounds
 	memset(s_playsounds, 0, sizeof(s_playsounds));
@@ -942,13 +915,6 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data)
 
 //=============================================================================
 
-/*
-============
-S_Update
-
-Called once each time through the main loop
-============
-*/
 void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 {
 	int			i;

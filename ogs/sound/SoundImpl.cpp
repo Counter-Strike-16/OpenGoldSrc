@@ -40,17 +40,17 @@ bool CSoundImpl::Init(CreateInterfaceFn afnModuleFactory)
 	if(!mpConsole)
 		return false;
 	
+	if(!SNDDMA_Init())
+		return false;
+	
 	return true;
 };
 
 void CSoundImpl::Shutdown()
 {
+	SNDDMA_Shutdown();
 };
 
 void CSoundImpl::Update()
-{
-};
-
-void CSoundImpl::StopAllSounds()
 {
 };

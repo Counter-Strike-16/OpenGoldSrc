@@ -259,6 +259,12 @@
     <ClCompile Include="..\input\keys.cpp">
       <Filter>input</Filter>
     </ClCompile>
+    <ClCompile Include="..\sound\Sound.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\SoundProvider.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\system\buildinfo.hpp">
@@ -524,6 +530,9 @@
     </ClInclude>
     <ClInclude Include="..\resources\model_rehlds.hpp">
       <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\SoundProvider.hpp">
+      <Filter>sound</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

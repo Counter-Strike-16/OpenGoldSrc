@@ -27,29 +27,53 @@
  */
 
 /// @file
-/// @brief resource manager for sound resource handling
 
-#pragma once
+#include "SoundImpl.hpp"
+#include "console/IConsole.hpp"
 
-struct ISoundLoader;
+EXPOSE_SINGLE_INTERFACE(CSoundImpl, ISound, OGS_SOUND_INTERFACE_VERSION);
 
-class CSoundManager
+bool CSoundImpl::Init(CreateInterfaceFn afnModuleFactory)
 {
-public:
-	bool Init(int anMaxSfx);
+	mpConsole = (IConsole*)afnModuleFactory(OGS_CONSOLE_INTERFACE_VERSION, nullptr);
 	
-	sfx_t *PrecacheSound(const char *sample); // preload the sound for later use
-	sfxcache_t *LoadSound(sfx_t *s);
+	if(!mpConsole)
+		return false;
 	
-	void AddLoader(ISoundLoader *apLoader);
-	void RemoveLoader(ISoundLoader *apLoader);
+	if(!SNDDMA_Init())
+		return false;
 	
-	sfx_t *FindByName(const char *name /*, bool abCreate = true*/);
-private:
-	std::list<ISoundLoader*> mlstLoaders;
-	
-	sfx_t *known_sfx; // hunk allocated [mnMaxSfx]
-	
-	int num_sfx;
-	int mnMaxSfx;
+	return true;
+};
+
+void CSoundImpl::Shutdown()
+{
+	SNDDMA_Shutdown();
+};
+
+void CSoundImpl::Update()
+{
+#ifdef _WIN32
+	// if the buffer was lost or stopped, restore it and/or restart it
+	{
+		DWORD dwStatus;
+
+		if(pDSBuf)
+		{
+			if(pDSBuf->lpVtbl->GetStatus(pDSBuf, &dwStatus) != DD_OK)
+				gpConsole->Printf("Couldn't get sound buffer status\n");
+
+			if(dwStatus & DSBSTATUS_BUFFERLOST)
+				pDSBuf->lpVtbl->Restore(pDSBuf);
+
+			if(!(dwStatus & DSBSTATUS_PLAYING))
+				pDSBuf->lpVtbl->Play(pDSBuf, 0, 0, DSBPLAY_LOOPING);
+		};
+	};
+#endif
+};
+
+void CSoundImpl::Submit()
+{
+	SNDDMA_Submit();
 };

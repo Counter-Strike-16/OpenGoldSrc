@@ -72,6 +72,8 @@
     </ClCompile>
     <ClCompile Include="..\resources\sv_upld.cpp" />
     <ClCompile Include="..\resources\textures.cpp" />
+    <ClCompile Include="..\sound\Sound.cpp" />
+    <ClCompile Include="..\sound\SoundProvider.cpp" />
     <ClCompile Include="..\system\buildinfo.cpp" />
     <ClCompile Include="..\system\byteorder.cpp" />
     <ClCompile Include="..\system\cl_demo.cpp">
@@ -167,6 +169,7 @@
     <ClInclude Include="..\sound\cdaudio.hpp" />
     <ClInclude Include="..\sound\sound.hpp" />
     <ClInclude Include="..\sound\soundfade.hpp" />
+    <ClInclude Include="..\sound\SoundProvider.hpp" />
     <ClInclude Include="..\system\buildinfo.hpp" />
     <ClInclude Include="..\system\client.hpp" />
     <ClInclude Include="..\system\clientdll.hpp" />
@@ -261,7 +264,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../;../../engine-zombie/;../../;../../common/;../../hookers/;../../ogsapi/;../../public/;../../rehlds/;../../../hlsdk/;../../../shiftutil/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;../../engine-zombie/;../../;../../public/;../../../hlsdk/;../../../../shiftutil/include/;../../../../ogsapi/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>REHLDS_SELF;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>

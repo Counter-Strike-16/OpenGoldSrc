@@ -31,11 +31,16 @@
 #pragma once
 
 // !!! if this is changed, the asm code must change !!!
-typedef struct TSoundChannel
+typedef struct CSoundChannel
 {
-	TSoundChannel();
+	CSoundChannel();
 	
+	// spatializes a channel
 	void Spatialize();
+	
+	void Play();
+	void StartStaticSound(sfx_t *sfx, vec3_t origin, float vol, float attenuation);
+	void Stop();
 	
 	sfx_t		*sfx;			// sfx number
 	

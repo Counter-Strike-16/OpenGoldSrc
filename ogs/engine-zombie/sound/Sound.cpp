@@ -28,6 +28,7 @@
 
 /// @file
 
+#include "precompiled.hpp"
 #include "sound/Sound.hpp"
 #include "sound/ISound.hpp"
 
@@ -36,7 +37,7 @@
 S_Init
 ================
 */
-bool CSound::Init()
+bool CSound::Init(int anDesiredSpeed, int anDesiredBits)
 {
 	Con_Printf("\nSound Initialization\n");
 
@@ -137,6 +138,141 @@ void CSound::Shutdown()
 };
 
 /*
+============
+S_Update
+
+Called once each time through the main loop
+============
+*/
+void CSound::Update()
+{
+	int i, j;
+
+	if(!mnStarted || (mnBlocked > 0))
+		return;
+
+	// update general area ambient sound sources
+	UpdateAmbientSounds();
+
+	channel_t *combine = NULL;
+
+	// update spatialization for static and dynamic sounds
+	channel_t *ch = channels + NUM_AMBIENTS;
+	for(i = NUM_AMBIENTS; i < total_channels; i++, ch++)
+	{
+		if(!ch->sfx)
+			continue;
+		ch->Spatialize(); // respatialize channel
+		if(!ch->leftvol && !ch->rightvol)
+			continue;
+
+		// try to combine static sounds with a previous channel of the same
+		// sound effect so we don't mix five torches every frame
+
+		if(i >= MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS)
+		{
+			// see if it can just use the last one
+			if(combine && combine->sfx == ch->sfx)
+			{
+				combine->leftvol += ch->leftvol;
+				combine->rightvol += ch->rightvol;
+				ch->leftvol = ch->rightvol = 0;
+				continue;
+			}
+			// search for one
+			combine = channels + MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS;
+			for(j = MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS; j < i; j++, combine++)
+				if(combine->sfx == ch->sfx)
+					break;
+
+			if(j == total_channels)
+				combine = NULL;
+			else
+			{
+				if(combine != ch)
+				{
+					combine->leftvol += ch->leftvol;
+					combine->rightvol += ch->rightvol;
+					ch->leftvol = ch->rightvol = 0;
+				}
+				continue;
+			}
+		}
+	}
+
+	//
+	// debugging output
+	//
+	if(snd_show.value)
+	{
+		int total = 0;
+		ch = channels;
+		for(i = 0; i < total_channels; i++, ch++)
+			if(ch->sfx && (ch->leftvol || ch->rightvol))
+			{
+				// Con_Printf ("%3i %3i %s\n", ch->leftvol, ch->rightvol,
+				// ch->sfx->name);
+				total++;
+			}
+
+		Con_Printf("----(%i)----\n", total);
+	}
+
+	// mix some sound
+	Update_();
+};
+
+void CSound::ExtraUpdate()
+{
+#ifdef _WIN32
+	IN_Accumulate();
+#endif
+	
+	// don't pollute timings
+	if(snd_noextraupdate.value)
+		return;
+	
+	Update_();
+};
+
+void CSound::Update_()
+{
+	if(!mnStarted || (mnBlocked > 0))
+		return;
+
+	// Updates DMA time
+	GetSoundtime();
+
+	// check to make sure that we haven't overshot
+	if(paintedtime < soundtime)
+	{
+		// Con_Printf ("S_Update_ : overflow\n");
+		paintedtime = soundtime;
+	};
+
+	// mix ahead of current position
+	unsigned endtime = soundtime + _snd_mixahead.value * shm->speed;
+	int samps = shm->samples >> (shm->channels - 1);
+	
+	if(endtime - soundtime > samps)
+		endtime = soundtime + samps;
+
+	mpImpl->Update();
+	
+	S_PaintChannels(endtime);
+
+	mpImpl->Submit();
+};
+
+void CSound::SetListenerParams(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
+{
+	VectorCopy(origin, listener_origin);
+	VectorCopy(forward, listener_forward);
+	VectorCopy(right, listener_right);
+	VectorCopy(up, listener_up);
+};
+
+/*
 ================
 S_Startup
 ================
@@ -148,7 +284,7 @@ void CSound::Startup()
 	
 	if(!fakedma)
 	{
-		int rc = mpImpl->Init();
+		int rc = mpImpl->Init(anDesiredSpeed, anDesiredBits);
 
 		if(!rc)
 		{
@@ -161,4 +297,146 @@ void CSound::Startup()
 	};
 
 	mnStarted = 1;
+};
+
+/*
+==================
+S_StopAllSounds
+==================
+*/
+void CSound::StopAllSounds(bool abClear)
+{
+	if(!mnStarted)
+		return;
+
+	total_channels = MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS; // no statics
+
+	for(int i = 0; i < MAX_CHANNELS; i++)
+		if(channels[i].sfx)
+			channels[i].sfx = NULL;
+
+	Q_memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
+
+	if(clear)
+		S_ClearBuffer();
+};
+
+void CSound::StopAllSoundsC()
+{
+	StopAllSounds(true);
+};
+
+/*
+===================
+S_UpdateAmbientSounds
+===================
+*/
+void CSound::UpdateAmbientSounds()
+{
+	int ambient_channel;
+
+	if(!mnAmbient)
+		return;
+
+	// calc ambient sound levels
+	if(!cl.worldmodel)
+		return;
+
+	mleaf_t *l = Mod_PointInLeaf(listener_origin, cl.worldmodel);
+	
+	if(!l || !ambient_level.value)
+	{
+		for(ambient_channel = 0; ambient_channel < NUM_AMBIENTS; ambient_channel++)
+			channels[ambient_channel].sfx = NULL;
+		return;
+	}
+
+	for(ambient_channel = 0; ambient_channel < NUM_AMBIENTS; ambient_channel++)
+	{
+		CSoundChannel *chan = &channels[ambient_channel];
+		chan->sfx = ambient_sfx[ambient_channel];
+
+		float vol = ambient_level.value * l->ambient_sound_level[ambient_channel];
+		
+		if(vol < 8)
+			vol = 0;
+		
+		chan->Update();
+	};
+};
+
+// =======================================================================
+// Start a sound effect
+// =======================================================================
+void CSound::StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol, float attenuation)
+{
+	channel_t *target_chan, *check;
+	sfxcache_t *sc;
+	int ch_idx;
+	int skip;
+
+	if(!mnStarted)
+		return;
+
+	if(!sfx)
+		return;
+
+	if(nosound.value)
+		return;
+
+	int vol = fvol * 255;
+
+	// pick a channel to play on
+	target_chan = SND_PickChannel(entnum, entchannel);
+	
+	if(!target_chan)
+		return;
+	
+	target_chan->StartSound(entnum, entchannel, sfx, origin, fvol, attenuation);
+
+	// if an identical sound has also been started this frame, offset the pos
+	// a bit to keep it from just making the first one louder
+	check = &channels[NUM_AMBIENTS];
+	for(ch_idx = NUM_AMBIENTS; ch_idx < NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS;
+	    ch_idx++, check++)
+	{
+		if(check == target_chan)
+			continue;
+		
+		if(check->sfx == sfx && !check->pos)
+		{
+			skip = rand() % (int)(0.1 * shm->speed);
+			if(skip >= target_chan->end)
+				skip = target_chan->end - 1;
+			target_chan->pos += skip;
+			target_chan->end -= skip;
+			break;
+		};
+	};
+};
+
+void CSound::StopSound(int entnum, int entchannel)
+{
+	for(int i = 0; i < MAX_DYNAMIC_CHANNELS; ++i)
+	{
+		if(channels[i].entnum == entnum && channels[i].entchannel == entchannel)
+		{
+			channels[i].Stop();
+			return;
+		};
+	};
+};
+
+CSoundChannel *CSound::AllocChannel()
+{
+	if(total_channels == MAX_CHANNELS)
+	{
+		Con_Printf("total_channels == MAX_CHANNELS\n");
+		return;
+	};
+
+	CSoundChannel *ss = &channels[total_channels];
+	total_channels++;
+	
+	return ss;
 };

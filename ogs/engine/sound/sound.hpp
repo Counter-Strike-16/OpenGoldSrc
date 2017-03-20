@@ -121,25 +121,8 @@ typedef struct
 	byte *buffer;
 } dma_t;
 
-typedef struct
-{
-	int rate;
-	int width;
-	int channels;
-	int loopstart;
-	int samples;
-	int dataofs; // chunk starts this many bytes from file start
-} wavinfo_t;
-
 extern volatile dma_t *shm;
 extern volatile dma_t sn; // q2: non-volatile dma
-
-extern channel_t channels[MAX_CHANNELS];
-// 0 to MAX_DYNAMIC_CHANNELS-1	= normal entity sounds
-// MAX_DYNAMIC_CHANNELS to MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS -1 = water, etc
-// MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS to total_channels = static sounds
-
-extern int total_channels;
 
 //====================================================================
 
@@ -150,7 +133,6 @@ void S_ClearBuffer();
 void S_StartStaticSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, float vol, float attenuation, int flags, int pitch);
 void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, vec_t *origin, float fvol, float attenuation, int flags, int pitch);
 void S_StopSound(int entnum, int entchannel);
-
 
 void S_ClearPrecache();
 
@@ -174,22 +156,10 @@ void S_PrintStats();
 // picks a channel based on priorities, empty slots, number of channels
 channel_t *SND_PickChannel(int entnum, int entchannel); // S_
 
-// spatializes a channel
-void SND_Spatialize(channel_t *ch); // S_
-
-// initializes cycling through a DMA buffer and returns information on it
-qboolean SNDDMA_Init();
-
 // gets the current DMA position
 int SNDDMA_GetDMAPos();
 
-// shutdown the DMA xfer.
-void SNDDMA_Shutdown();
-
-wavinfo_t GetWavinfo(char *name, byte *wav, int wavlength);
-
 void SND_InitScaletable(); // S_
-void SNDDMA_Submit();
 
 // if origin is NULL, the sound will be dynamically sourced from the entity
 void S_StartSound (vec3_t origin, int entnum, int entchannel, struct sfx_s *sfx, float fvol,  float attenuation, float timeofs);
@@ -202,8 +172,6 @@ void S_Activate (qboolean active);
 void S_BeginRegistration ();
 struct sfx_s *S_RegisterSound (char *sample);
 void S_EndRegistration ();
-
-struct sfx_s *S_FindName (char *name, qboolean create);
 
 // the sound code makes callbacks to the client for entitiy position
 // information, so entities can be dynamically re-spatialized
@@ -236,10 +204,25 @@ extern	playsound_t	s_pendingplays;
 #define	MAX_RAW_SAMPLES	8192
 extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
-sfxcache_t *S_LoadSound (sfx_t *s);
-
 void S_IssuePlaysound (playsound_t *ps);
 
 void S_PaintChannels(int endtime);
 
 */
+
+void S_Init();
+void S_Shutdown();
+void S_Update();
+
+class CSound
+{
+private:
+	CSound(ISound *apSound) : mpSound(apSound){}
+	
+	bool Init();
+	void Shutdown();
+	
+	void Update();
+private:
+	ISound *mpSound;
+};

@@ -210,7 +210,7 @@ sndinitstat SNDDMA_InitDirect()
 
 	if(!hInstDS)
 	{
-		Com_DPrintf("...loading dsound.dll: ");
+		gpConsole->DPrintf("...loading dsound.dll: ");
 		
 		hInstDS = LoadLibrary("dsound.dll");
 
@@ -220,7 +220,7 @@ sndinitstat SNDDMA_InitDirect()
 			return SIS_FAILURE;
 		};
 		
-		Com_DPrintf("ok\n");
+		gpConsole->DPrintf("ok\n");
 		pDirectSoundCreate = (void *)GetProcAddress(hInstDS, "DirectSoundCreate");
 
 		if(!pDirectSoundCreate)
@@ -638,14 +638,11 @@ int SNDDMA_GetDMAPos()
 		s = mmtime.u.sample - mmstarttime.u.sample;
 	}
 	else if(wav_init)
-	{
 		s = snd_sent * WAV_BUFFER_SIZE;
-	}
 
 	s >>= sample16;
 
 	s &= (shm->samples - 1);
-
 	return s;
 }
 
@@ -717,4 +714,4 @@ Reset the sound device for exiting
 void SNDDMA_Shutdown()
 {
 	FreeSound();
-}
+};

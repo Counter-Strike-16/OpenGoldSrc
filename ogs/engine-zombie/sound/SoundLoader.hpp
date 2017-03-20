@@ -27,29 +27,11 @@
  */
 
 /// @file
-/// @brief resource manager for sound resource handling
 
 #pragma once
 
-struct ISoundLoader;
-
-class CSoundManager
+struct ISoundLoader
 {
-public:
-	bool Init(int anMaxSfx);
-	
-	sfx_t *PrecacheSound(const char *sample); // preload the sound for later use
-	sfxcache_t *LoadSound(sfx_t *s);
-	
-	void AddLoader(ISoundLoader *apLoader);
-	void RemoveLoader(ISoundLoader *apLoader);
-	
-	sfx_t *FindByName(const char *name /*, bool abCreate = true*/);
-private:
-	std::list<ISoundLoader*> mlstLoaders;
-	
-	sfx_t *known_sfx; // hunk allocated [mnMaxSfx]
-	
-	int num_sfx;
-	int mnMaxSfx;
+	virtual sfxcache_t *Load() = 0;
+	virtual void Unload() = 0;
 };

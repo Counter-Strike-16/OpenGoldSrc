@@ -29,9 +29,9 @@
 /// @file
 
 #include "precompiled.hpp"
+#include "sound/SoundManager.hpp"
 #include "system/system.hpp"
 #include "system/common.hpp"
-#include "sound/SoundManager.hpp"
 
 bool CSoundManager::Init(int anMaxSfx)
 {
@@ -54,10 +54,55 @@ sfx_t *CSoundManager::PrecacheSound(const char *name)
 	sfx_t *sfx = FindByName(name);
 
 	// cache it in
-	//if(precache.value)
-		//S_LoadSound(sfx);
+	if(precache.value)
+		LoadSound(sfx);
 
 	return sfx;
+};
+
+/*
+==============
+S_LoadSound
+==============
+*/
+sfxcache_t *CSoundManager::LoadSound(sfx_t *s)
+{
+	byte stackbuf[1 * 1024]; // avoid dirtying the cache heap
+
+	// see if still in memory
+	sfxcache_t *sc = (sfxcache_t*)Cache_Check(&s->cache);
+	
+	if(sc)
+		return sc;
+
+	//Con_Printf ("S_LoadSound: %x\n", (int)stackbuf);
+	
+	char namebuffer[256];
+	
+	// load it in
+	Q_strcpy(namebuffer, "sound/");
+	Q_strcat(namebuffer, s->name);
+
+	Con_Printf("loading %s\n", namebuffer);
+
+	byte *data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf));
+
+	if(!data)
+	{
+		Con_Printf("Couldn't load %s\n", namebuffer);
+		return NULL;
+	}
+	
+	tSoundLoaderIt It = mlstLoaders.begin();
+	for(It; It != mlstLoaders.end(); ++It)
+	{
+		sc = (*It)->Load();
+		
+		if(sc)
+			return sc;
+	};
+	
+	return sc; // nullptr
 };
 
 /*

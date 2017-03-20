@@ -27,29 +27,18 @@
  */
 
 /// @file
-/// @brief resource manager for sound resource handling
+/// @brief shared lib with factory func export
 
 #pragma once
 
-struct ISoundLoader;
+#include "shiftutil/SharedLib.hpp"
+#include "public/interface.h"
 
-class CSoundManager
+class CFactorySharedLib : public shiftutil::cSharedLib
 {
 public:
-	bool Init(int anMaxSfx);
-	
-	sfx_t *PrecacheSound(const char *sample); // preload the sound for later use
-	sfxcache_t *LoadSound(sfx_t *s);
-	
-	void AddLoader(ISoundLoader *apLoader);
-	void RemoveLoader(ISoundLoader *apLoader);
-	
-	sfx_t *FindByName(const char *name /*, bool abCreate = true*/);
-private:
-	std::list<ISoundLoader*> mlstLoaders;
-	
-	sfx_t *known_sfx; // hunk allocated [mnMaxSfx]
-	
-	int num_sfx;
-	int mnMaxSfx;
+	CreateInterfaceFn GetFactoryFunc() const
+	{
+		return GetExportFunc<CreateInterfaceFn>(CREATEINTERFACE_PROCNAME);
+	};
 };

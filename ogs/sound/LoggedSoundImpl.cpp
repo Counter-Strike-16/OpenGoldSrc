@@ -51,9 +51,3 @@ void CSoundImpl::Update()
 	TRACE("CSoundImpl::Update");
 	mpImpl->Update();
 };
-
-void CSoundImpl::StopAllSounds()
-{
-	TRACE("CSoundImpl::StopAllSounds");
-	mpImpl->StopAllSounds();
-};

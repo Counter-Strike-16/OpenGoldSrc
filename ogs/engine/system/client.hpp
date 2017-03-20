@@ -297,7 +297,7 @@ typedef struct client_state_s
 
 	int maxclients;
 	int gametype;
-	int viewentity;
+	int viewentity; // playernum + 1
 	
 	// refresh related state
 	model_t *worldmodel; ///< cl_entitites[0].model

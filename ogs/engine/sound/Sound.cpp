@@ -27,29 +27,43 @@
  */
 
 /// @file
-/// @brief resource manager for sound resource handling
 
-#pragma once
+#include "precompiled.hpp"
+#include "sound/sound.hpp"
+#include "sound/ISound.hpp"
 
-struct ISoundLoader;
+CSound *gpSound = nullptr;
 
-class CSoundManager
+void S_Init()
 {
-public:
-	bool Init(int anMaxSfx);
+	gpSound->Init();
+};
+
+void S_Shutdown()
+{
+	gpSound->Shutdown();
+};
+
+void S_Update()
+{
+	gpSound->Update();
+};
+
+bool CSound::Init()
+{
+	if(!mpSound->Init())
+		return false;
 	
-	sfx_t *PrecacheSound(const char *sample); // preload the sound for later use
-	sfxcache_t *LoadSound(sfx_t *s);
-	
-	void AddLoader(ISoundLoader *apLoader);
-	void RemoveLoader(ISoundLoader *apLoader);
-	
-	sfx_t *FindByName(const char *name /*, bool abCreate = true*/);
-private:
-	std::list<ISoundLoader*> mlstLoaders;
-	
-	sfx_t *known_sfx; // hunk allocated [mnMaxSfx]
-	
-	int num_sfx;
-	int mnMaxSfx;
+	gpSound = this;
+	return true;
+};
+
+void CSound::Shutdown()
+{
+	mpSound->Shutdown();
+};
+
+void CSound::Update()
+{
+	mpSound->Update();
 };

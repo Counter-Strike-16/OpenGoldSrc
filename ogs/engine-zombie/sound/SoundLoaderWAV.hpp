@@ -27,29 +27,39 @@
  */
 
 /// @file
-/// @brief resource manager for sound resource handling
 
 #pragma once
 
-struct ISoundLoader;
+#include "sound/SoundLoader.hpp"
 
-class CSoundManager
+typedef struct
+{
+	int rate;
+	int width;
+	int channels;
+	int loopstart;
+	int samples;
+	int dataofs; // chunk starts this many bytes from file start
+} wavinfo_t;
+
+class CSoundLoaderWAV :: public ISoundLoader
 {
 public:
-	bool Init(int anMaxSfx);
-	
-	sfx_t *PrecacheSound(const char *sample); // preload the sound for later use
-	sfxcache_t *LoadSound(sfx_t *s);
-	
-	void AddLoader(ISoundLoader *apLoader);
-	void RemoveLoader(ISoundLoader *apLoader);
-	
-	sfx_t *FindByName(const char *name /*, bool abCreate = true*/);
+	sfxcache_t *Load();
+	void Unload();
 private:
-	std::list<ISoundLoader*> mlstLoaders;
+	wavinfo_t GetWavinfo(char *name, byte *wav, int wavlength);
 	
-	sfx_t *known_sfx; // hunk allocated [mnMaxSfx]
+	void FindChunk(const char *name);
+	void FindNextChunk(const char *name);
 	
-	int num_sfx;
-	int mnMaxSfx;
+	short GetLittleShort();
+	int GetLittleLong();
+	
+	byte *data_p;
+	byte *iff_end;
+	byte *last_chunk;
+	byte *iff_data;
+	
+	int iff_chunk_len;
 };

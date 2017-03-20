@@ -64,18 +64,20 @@ not apropriate.
 
 */
 
+// clang-format off
 #ifdef HOOK_ENGINE
-#define cmd_argc (*pcmd_argc)
-#define cmd_argv (*pcmd_argv)
-#define cmd_args (*pcmd_args)
+	#define cmd_argc (*pcmd_argc)
+	#define cmd_argv (*pcmd_argv)
+	#define cmd_args (*pcmd_args)
 
-#define cmd_text (*pcmd_text)
-#define cmd_source (*pcmd_source)
-#define cmd_wait (*pcmd_wait)
+	#define cmd_text (*pcmd_text)
+	#define cmd_source (*pcmd_source)
+	#define cmd_wait (*pcmd_wait)
 
-#define cmd_functions (*pcmd_functions)
-#define cmd_alias (*pcmd_alias)
+	#define cmd_functions (*pcmd_functions)
+	#define cmd_alias (*pcmd_alias)
 #endif // HOOK_ENGINE
+// clang-format on
 
 extern int cmd_argc;
 extern char *cmd_argv[80];

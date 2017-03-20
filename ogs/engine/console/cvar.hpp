@@ -87,6 +87,7 @@ void Cvar_SetValue(const char *var_name, float value);
 void Cvar_RegisterVariable(cvar_t *variable);
 
 NOXREF void Cvar_RemoveHudCvars();
+
 const char *Cvar_IsMultipleTokens(const char *varname);
 
 // called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
@@ -101,8 +102,11 @@ NOXREF void Cvar_WriteVariables(FileHandle_t f);
 
 void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f);
 void Cmd_CvarList_f();
+
 NOXREF int Cvar_CountServerVariables();
+
 void Cvar_UnlinkExternals();
+
 void Cvar_CmdInit();
 
 // returns an info string containing all the CVAR_SERVERINFO cvars

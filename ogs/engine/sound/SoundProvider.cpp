@@ -27,29 +27,29 @@
  */
 
 /// @file
-/// @brief resource manager for sound resource handling
 
-#pragma once
+#include "precompiled.hpp"
+#include "sound/SoundProvider.hpp"
+#include "sound/ISound.hpp"
 
-struct ISoundLoader;
-
-class CSoundManager
+ISound *CSoundProvider::LoadSoundModule(const char *asName)
 {
-public:
-	bool Init(int anMaxSfx);
+	char sLibName[32] = {'\0'};
 	
-	sfx_t *PrecacheSound(const char *sample); // preload the sound for later use
-	sfxcache_t *LoadSound(sfx_t *s);
+	sprintf(sLibName, "s_%s", asName);
 	
-	void AddLoader(ISoundLoader *apLoader);
-	void RemoveLoader(ISoundLoader *apLoader);
+	if(!mSoundLib.Open(sLibName))
+		return nullptr;
 	
-	sfx_t *FindByName(const char *name /*, bool abCreate = true*/);
-private:
-	std::list<ISoundLoader*> mlstLoaders;
+	CreateInterfaceFn fnCreateInterface = mSoundLib.GetFactoryFunc();
 	
-	sfx_t *known_sfx; // hunk allocated [mnMaxSfx]
+	if(!fnCreateInterface)
+		return nullptr;
 	
-	int num_sfx;
-	int mnMaxSfx;
+	ISound *pSound = (ISound*)fnCreateInterface(OGS_SOUND_INTERFACE_VERSION, nullptr);
+	
+	if(!pSound)
+		return nullptr;
+	
+	return pSound;
 };

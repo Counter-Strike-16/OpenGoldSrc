@@ -31,6 +31,7 @@
 #pragma once
 
 struct ISound;
+class CSoundChannel;
 
 class CSound
 {
@@ -38,13 +39,16 @@ public:
 	CSound(ISound *apImpl)
 	: mpImpl(apImpl), mbInitialized(false), mnBlocked(0), mnStarted(0){}
 	
-	bool Init();
+	bool Init(int anDesiredSpeed, int anDesiredBits);
 	void Shutdown();
 	
-	void Update(vec_t *origin, vec_t *v_forward, vec_t *v_right, vec_t *v_up);
+	void Update();
 	void ExtraUpdate();
 	
+	void SetListenerParams(vec_t *origin, vec_t *v_forward, vec_t *v_right, vec_t *v_up);
+	
 	void StopAllSounds(bool abClear);
+	void StopAllSoundsC();
 	
 	void SetAmbientActive(bool abActive){mbAmbient = abActive;}
 	bool IsAmbientActive() const {return mbAmbient;}
@@ -54,6 +58,21 @@ public:
 	
 	bool IsInitialized() const {return mbInitialized;}
 private:
+	void UpdateAmbientSounds();
+	
+	//=======================================================================
+	// Internal sound data & structures
+	//=======================================================================
+	
+	// 0 to MAX_DYNAMIC_CHANNELS-1	= normal entity sounds
+	// MAX_DYNAMIC_CHANNELS to MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS -1 = water, etc
+	// MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS to total_channels = static sounds
+	CSoundChannel channels[MAX_CHANNELS];
+	
+	int total_channels;
+	
+	sfx_t *ambient_sfx[NUM_AMBIENTS];
+	
 	ISound *mpImpl;
 	
 	bool mbInitialized;

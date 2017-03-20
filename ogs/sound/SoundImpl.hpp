@@ -40,6 +40,4 @@ public:
 	void Shutdown();
 	
 	void Update();
-	
-	void StopAllSounds();
 };

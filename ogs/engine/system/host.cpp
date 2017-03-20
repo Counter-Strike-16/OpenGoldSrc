@@ -228,7 +228,7 @@ NOXREF void Info_WriteVars(FileHandle_t fp)
 {
 	NOXREFCHECK;
 	
-	/* cvar_t *pcvar;
+	cvar_t *pcvar;
 	char *s;
 	char pkey[512];
 
@@ -273,12 +273,12 @@ NOXREF void Info_WriteVars(FileHandle_t fp)
 		if(!*s)
 			return;
 		s++;
-	} */
-}
+	};
+};
 
 void Host_WriteConfiguration()
 {
-/* #ifndef SWDS
+#ifndef SWDS
 	FILE *f;
 	kbutton_t *ml;
 	kbutton_t *jl;
@@ -348,17 +348,18 @@ void Host_WriteConfiguration()
 	{
 		FS_GetLocalPath("config.cfg", nameBuf, sizeof(nameBuf));
 		chmod(nameBuf, S_IREAD);
-	}
-#endif // SWDS */
-}
+	};
+#endif // SWDS
+};
 
 void Host_WriteCustomConfig()
 {
-/* #ifndef SWDS
+#ifndef SWDS
 	FILE *f;
 	kbutton_t *ml;
 	kbutton_t *jl;
 #endif
+	
 	char configname[261];
 	Q_snprintf(configname, 257, "%s", Cmd_Args());
 	if(Q_strstr(configname, "..") || !Q_stricmp(configname, "config") ||
@@ -405,7 +406,7 @@ void Host_WriteCustomConfig()
 			}
 		}
 	}
-#endif // SWDS */
+#endif // SWDS
 }
 
 void Host_ClientCommands(const char *fmt, ...)
@@ -682,18 +683,18 @@ void Host_Speeds(double *time)
 	if(host_speeds.value != 0.0f) // FIXED: do calculations only if host_speeds is enabled
 #endif // REHLDS_FIXES
 	{
-		pass1 = (float)((time[1] - time[0]) * 1000.0);
-		pass2 = (float)((time[2] - time[1]) * 1000.0);
-		pass3 = (float)((time[3] - time[2]) * 1000.0);
-		pass4 = (float)((time[4] - time[3]) * 1000.0);
-		pass5 = (float)((time[5] - time[4]) * 1000.0);
+		pass1 = (float)((time[1] - time[0]) * 1000.0f);
+		pass2 = (float)((time[2] - time[1]) * 1000.0f);
+		pass3 = (float)((time[3] - time[2]) * 1000.0f);
+		pass4 = (float)((time[4] - time[3]) * 1000.0f);
+		pass5 = (float)((time[5] - time[4]) * 1000.0f);
 
-		frameTime = (pass5 + pass4 + pass3 + pass2 + pass1) / 1000.0;
+		frameTime = (pass5 + pass4 + pass3 + pass2 + pass1) / 1000.0f;
 
-		if(frameTime >= 0.0001)
-			fps = 1.0 / frameTime;
+		if(frameTime >= 0.0001f)
+			fps = 1.0f / frameTime;
 		else
-			fps = 999.0;
+			fps = 999.0f;
 		
 #ifndef REHLDS_FIXES
 	};
@@ -953,7 +954,7 @@ int Host_Frame(float time, int iState, int *stateInfo)
 
 void CheckGore()
 {
-	float fValue = 0.0f; //bLowViolenceBuild ? 0.0f : 1.0f;
+	float fValue = bLowViolenceBuild ? 0.0f : 1.0f;
 	
 	Cvar_SetValue("violence_hblood", fValue);
 	Cvar_SetValue("violence_hgibs", fValue);
@@ -1219,6 +1220,7 @@ void Host_Shutdown()
 	SV_DeallocateDynamicData();
 
 	pclient = g_psvs.clients;
+	
 	for(i = 0; i < g_psvs.maxclientslimit; i++, pclient++)
 		SV_ClearFrames(&pclient->frames);
 
@@ -1248,6 +1250,7 @@ void Host_Shutdown()
 	CL_Shutdown();
 	DELTA_Shutdown();
 	Key_Shutdown();
+	
 	realtime = 0.0f;
 	g_psv.time = 0.0f;
 	cl.time = 0.0f;
@@ -1285,14 +1288,10 @@ qboolean IsGameSubscribed(const char *gameName)
 	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
 	{
 		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, gameName))
-		{
-			//return ISteamApps_BIsSubscribedApp(g_GameToAppIDMap[i].iAppID);
-			return 0;
-		}
+			return ISteamApps_BIsSubscribedApp(g_GameToAppIDMap[i].iAppID);
 	}
 
-	//return ISteamApps_BIsSubscribedApp(70);
-	return 0;
+	return ISteamApps_BIsSubscribedApp(70);
 #else //_WIN32
 	return 0;
 #endif

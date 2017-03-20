@@ -29,7 +29,6 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "IRegistry.h"
 #include "system/client.hpp"
 #include "console/cmd.hpp"
 #include "filesystem/filesystem_.hpp"

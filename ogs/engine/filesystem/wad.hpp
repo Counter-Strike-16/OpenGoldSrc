@@ -80,10 +80,13 @@ typedef struct wadlist_s
 extern wadlist_t wads[NUM_WADS];
 
 void W_CleanupName(char *in, char *out);
+
 int W_LoadWadFile(char *filename);
+
 lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror);
 void *W_GetLumpName(int wad, char *name);
 NOXREF void *W_GetLumpNum(int wad, int num);
+
 void W_Shutdown();
 
 void SwapPic(qpic_t *pic);
