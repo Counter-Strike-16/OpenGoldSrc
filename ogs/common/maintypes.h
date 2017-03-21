@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "rehlds/osconfig.h"
+#include "public/rehlds/osconfig.h"
 #include "common/mathlib.h"
 
 // Has no references on server side

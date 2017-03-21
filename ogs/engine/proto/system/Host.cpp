@@ -29,8 +29,11 @@
 /// @file
 /// @brief primary header for host
 
-#include "precompiled.hpp"
+//#include "precompiled.hpp"
 #include "system/Host.hpp"
+
+#include <cstdio>
+#include <cstring>
 
 /*
 ====================
@@ -39,6 +42,7 @@ Host_Init
 */
 int CHost::Init(quakeparms_t *parms)
 {
+	/*
 	char versionString[256];
 
 	CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
@@ -168,13 +172,14 @@ int CHost::Init(quakeparms_t *parms)
 	scr_skipupdate = FALSE;
 
 	CheckGore();
-
+	*/
 	host_initialized = true;
 	return 1;
 };
 
 void CHost::InitLocal()
 {
+	/*
 	InitCommands();
 
 	mpConsole->RegisterVariable(&host_killtime);
@@ -202,6 +207,7 @@ void CHost::InitLocal()
 	mpConsole->RegisterVariable(&skill);
 
 	SV_SetMaxclients();
+	*/
 };
 
 void CHost::Shutdown()
@@ -219,6 +225,7 @@ void CHost::Shutdown()
 	if(host_initialized) // Client-side
 		WriteConfig();
 
+	/*
 	SV_ServerShutdown();
 	Voice_Deinit();
 	
@@ -277,11 +284,12 @@ void CHost::Shutdown()
 	
 	realtime = 0.0f;
 	g_psv.time = 0.0f;
-	cl.time = 0.0f;
+	cl.time = 0.0f;*/
 };
 
 void CHost::EndGame(const char *message, ...)
 {
+	/*
 	NOXREFCHECK;
 	
 	int oldn;
@@ -315,7 +323,7 @@ void CHost::EndGame(const char *message, ...)
 	CL_Disconnect();
 	mpCmdBuffer->AddText("cd stop\n");
 	mpCmdBuffer->Execute();
-	longjmp(host_abortserver, 1);
+	longjmp(host_abortserver, 1);*/
 };
 
 //void NORETURN Error(const char *error, ...);
@@ -397,6 +405,7 @@ void CHost::WriteConfig()
 
 void CHost::WriteCustomConfig()
 {
+	/*
 #ifndef SWDS
 	FILE *f;
 	kbutton_t *ml;
@@ -450,10 +459,12 @@ void CHost::WriteCustomConfig()
 		}
 	}
 #endif // SWDS
+*/
 };
 
 void CHost::ClientCommands(const char *fmt, ...)
 {
+	/*
 	va_list argptr;
 	char string[1024];
 
@@ -469,10 +480,12 @@ void CHost::ClientCommands(const char *fmt, ...)
 	};
 	
 	va_end(argptr);
+	*/
 };
 
 void CHost::ClearClients(bool bFramesOnly)
 {
+	/*
 	int i;
 	int j;
 	client_frame_t *frame;
@@ -510,10 +523,12 @@ void CHost::ClearClients(bool bFramesOnly)
 		Q_memset(g_psvs.clients, 0, sizeof(client_t) * g_psvs.maxclientslimit);
 		SV_AllocClientFrames();
 	};
+	*/
 };
 
 void CHost::ShutdownServer(bool crash)
 {
+	/*
 	int i;
 	if(!g_psv.active)
 		return;
@@ -548,10 +563,12 @@ void CHost::ShutdownServer(bool crash)
 	Steam_Shutdown();
 	Log_Printf("Server shutdown\n");
 	Log_Close();
+	*/
 };
 
 void CHost::CheckDynamicStructures()
 {
+	/*
 	client_t *cl = g_psvs.clients;
 
 	for(int i = 0; i < g_psvs.maxclients; i++, cl++)
@@ -559,10 +576,12 @@ void CHost::CheckDynamicStructures()
 		if(cl->frames)
 			SV_ClearFrames(&cl->frames);
 	};
+	*/
 };
 
 void CHost::ClearMemory(bool bQuiet)
 {
+	/*
 	// Engine string pooling
 #ifdef REHLDS_FIXES
 	Ed_StrPool_Reset();
@@ -588,10 +607,12 @@ void CHost::ClearMemory(bool bQuiet)
 	Q_memset(&g_psv, 0, sizeof(server_t));
 	CL_ClearClientState();
 	SV_ClearClientStates();
+	*/
 };
 
 bool CHost::FilterTime(float time)
 {
+	/*
 	float fps;
 	static int command_line_ticrate = -1;
 
@@ -659,7 +680,7 @@ bool CHost::FilterTime(float time)
 
 	if(host_frametime > 0.25f)
 		host_frametime = 0.25f;
-	
+	*/
 	return true;
 };
 
@@ -674,12 +695,12 @@ void CHost::GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, cha
 		*fps = 1.0f / rolling_fps;
 	else
 	{
-		rolling_fps = 0;
+		rolling_fps = 0.0f;
 		*fps = 0;
-	}
+	};
 
 	int clients = 0;
-	SV_CountPlayers(&clients);
+	//SV_CountPlayers(&clients);
 	*nActive = clients;
 
 	if(unused)
@@ -687,17 +708,20 @@ void CHost::GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, cha
 
 	if(pszMap)
 	{
-		if(g_psv.name[0])
-			Q_strcpy(pszMap, g_psv.name);
-		else
-			*pszMap = 0;
-	}
+		//if(g_psv.name[0])
+			//Q_strcpy(pszMap, g_psv.name);
+		//else
+			//*pszMap = 0;
 
-	*nMaxPlayers = g_psvs.maxclients;
+		strcpy(pszMap, "nowhere");
+	};
+
+	*nMaxPlayers = 0; //g_psvs.maxclients;
 };
 
 void CHost::Speeds(double *time)
 {
+	/*
 	float pass1, pass2, pass3, pass4, pass5;
 	double frameTime;
 	double fps;
@@ -750,7 +774,7 @@ void CHost::Speeds(double *time)
 			CL_GGSpeeds(time[3]);
 		}
 		*/
-#endif // SWDS
+//#endif // SWDS
 };
 
 /*
@@ -762,6 +786,7 @@ Refresh the screen
 */
 void CHost::UpdateScreen()
 {
+	/*
 	if(!gfBackground)
 	{
 		SCR_UpdateScreen();
@@ -772,6 +797,7 @@ void CHost::UpdateScreen()
 				VID_WriteBuffer(NULL);
 		}
 	}
+	*/
 };
 
 /*
@@ -783,7 +809,7 @@ Update sound subsystem and cd audio
 */
 void CHost::UpdateSounds()
 {
-	if(!gfBackground)
+	//if(!gfBackground)
 	{
 		// S_PrintStats();
 	};
@@ -805,6 +831,7 @@ void CHost::UpdateSounds()
 
 void CHost::CheckConnectionFailure()
 {
+	/*
 	static int frames = 5;
 	
 	if(cls.state == ca_disconnected && (giSubState & 4 || console.value == 0.0f))
@@ -815,6 +842,7 @@ void CHost::CheckConnectionFailure()
 		giActive = DLL_PAUSED;
 		frames = 5;
 	};
+	*/
 };
 
 /*
@@ -826,6 +854,7 @@ Runs all active servers
 */
 void CHost::_Frame(float time)
 {
+	/*
 	static double host_times[6];
 
 	if(setjmp(host_enddemo))
@@ -925,10 +954,12 @@ void CHost::_Frame(float time)
 
 	frameCounter++;
 #endif // REHLDS_FLIGHT_REC
+*/
 };
 
 int CHost::Frame(float time, int iState, int *stateInfo)
 {
+	/*
 	double time1;
 	double time2;
 
@@ -975,29 +1006,31 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 			mpConsole->Printf("host_profile: %2i clients %2i msec\n", c, m);
 		};
 	};
-
-	return giActive;
+	*/
+	return 0; //giActive;
 };
 
 //void CheckGore();
 
 bool CHost::IsSinglePlayerGame()
 {
+	/*
 	if(g_psv.active)
 		return g_psvs.maxclients == 1;
 	else
 		return cl.maxclients == 1;
-	
+	*/
 	return false;
 };
 
 bool CHost::IsServerActive()
 {
-	return g_psv.active;
+	return false; //g_psv.active;
 };
 
 void CHost::PrintVersion()
 {
+	/*
 	char szFileName[MAX_PATH];
 
 	Q_strcpy(gpszVersionString, "1.0.1.4");
@@ -1061,4 +1094,5 @@ void CHost::PrintVersion()
 		mpConsole->Printf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n",
 		           build_number());
 	};
+	*/
 };

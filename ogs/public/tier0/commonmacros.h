@@ -12,7 +12,7 @@
 //
 // -------------------------------------------------------
 
-#include "rehlds/osconfig.h"
+#include "public/rehlds/osconfig.h"
 
 // Makes a 4-byte "packed ID" int out of 4 characters
 #define MAKEID(d,c,b,a)					( ((int)(a) << 24) | ((int)(b) << 16) | ((int)(c) << 8) | ((int)(d)) )

@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "launcher", "..\ogs\launcher
 		{7EDBC38B-8B7D-4868-AE2A-2DB6197C13E1} = {7EDBC38B-8B7D-4868-AE2A-2DB6197C13E1}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "engine", "..\ogs\engine\msvc\engine.vcxproj", "{827605A1-AB99-40B5-BA51-7AB2BA39F20A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "engine", "..\ogs\engine\proto\msvc\engine.vcxproj", "{827605A1-AB99-40B5-BA51-7AB2BA39F20A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filesystem", "..\ogs\filesystem\msvc\filesystem.vcxproj", "{E2111A9C-52F9-48DE-8487-5B9FF62A3D23}"
 EndProject

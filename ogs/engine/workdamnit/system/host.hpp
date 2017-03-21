@@ -121,7 +121,7 @@ extern cvar_t suitvolume;
 
 extern double realtime; // not bounded in any way, changed at
 						// start of every frame, never reset
-extern double rolling_fps;
+
 
 //
 // host

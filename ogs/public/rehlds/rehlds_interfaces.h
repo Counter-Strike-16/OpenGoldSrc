@@ -34,8 +34,8 @@
 #include "common/const.h"
 #include "common/netadr.h"
 
-#include "rehlds/common_rehlds.h"
-#include "userid.h"
+#include "public/rehlds/common_rehlds.h"
+#include "common/userid.h"
 
 #ifdef REHLDS_SELF
 #include "system/server.hpp"

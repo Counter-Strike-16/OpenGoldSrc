@@ -31,10 +31,10 @@
 
 #pragma once
 
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "public/FileSystem.h"
-#include "rehlds/bspfile.h"
-#include "rehlds/common_rehlds.h"
+#include "public/rehlds/bspfile.h"
+#include "public/rehlds/common_rehlds.h"
 #include "system/info.hpp"
 
 #ifdef HOOK_ENGINE

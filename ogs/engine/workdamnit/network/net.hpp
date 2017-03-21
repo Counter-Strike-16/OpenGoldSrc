@@ -33,8 +33,8 @@
 #include "common/commontypes.h"
 #include "common/enums.h"
 #include "common/netadr.h"
-#include "maintypes.h"
-#include "rehlds/common_rehlds.h"
+#include "common/maintypes.h"
+#include "public/rehlds/common_rehlds.h"
 #include "network/networktypes.hpp"
 
 #ifndef _WIN32

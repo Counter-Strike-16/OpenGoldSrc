@@ -28,14 +28,29 @@
 
 /// @file
 
-#include "precompiled.hpp"
-#include "system/dedicatedserverapi.hpp"
+//#include "precompiled.hpp"
+#include "system/DedicatedServerAPI.hpp"
+#include "system/common.hpp"
+#include "system/Host.hpp"
+
+/*
+#include "console/cmd.hpp"
+#include "system/engine.hpp"
+#include "system/system.hpp"
+#include "system/traceinit.h"
+#include "system/buildinfo.hpp"
+#include "filesystem/filesystem_.hpp"
+#include "system/server.hpp"
+*/
+
+CHost gHost;
+CHost *gpHost = &gHost;
 
 IDedicatedExports *dedicated_;
-qboolean g_bIsDedicatedServer;
+bool gbIsDedicatedServer;
 
 #ifndef HOOK_ENGINE
-EXPOSE_SINGLE_INTERFACE(CDedicatedServerAPI, IDedicatedServerAPI, VENGINE_HLDS_API_VERSION);
+	EXPOSE_SINGLE_INTERFACE(CDedicatedServerAPI, IDedicatedServerAPI, VENGINE_HLDS_API_VERSION);
 #endif
 
 bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
@@ -70,30 +85,34 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 	if(!dedicated_)
 		return false;
 
-	Q_strncpy(m_OrigCmd, cmdline, charsmax(m_OrigCmd));
+	dedicated_->Sys_Printf("Hello world! I'm alive!");
 
-	if(!Q_strstr(cmdline, "-nobreakpad"))
-		CRehldsPlatformHolder::get()->SteamAPI_UseBreakpadCrashHandler(va("%d", build_number()), __BUILD_DATE__, __BUILD_TIME__, 0, 0, 0);
+	//Q_strncpy(m_OrigCmd, cmdline, charsmax(m_OrigCmd));
 
-	TraceInit("Sys_InitArgv( m_OrigCmd )", "Sys_ShutdownArgv()", 0);
-	Sys_InitArgv(m_OrigCmd);
-	eng->SetQuitting(IEngine::QUIT_NOTQUITTING);
-	registry->Init();
+	//if(!Q_strstr(cmdline, "-nobreakpad"))
+		//CRehldsPlatformHolder::get()->SteamAPI_UseBreakpadCrashHandler(va("%d", build_number()), __BUILD_DATE__, __BUILD_TIME__, 0, 0, 0);
 
-	g_bIsDedicatedServer = TRUE;
-	TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)",
-	          "FileSystem_Shutdown()",
-	          0);
+	//TraceInit("Sys_InitArgv( m_OrigCmd )", "Sys_ShutdownArgv()", 0);
+	//Sys_InitArgv(m_OrigCmd);
+	//eng->SetQuitting(IEngine::QUIT_NOTQUITTING);
+	
+	//registry->Init();
 
-	if(FileSystem_Init(basedir, (void*)filesystemFactory) && game->Init(0) && eng->Load(true, basedir, cmdline))
+	gbIsDedicatedServer = true;
+
+	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
+
+	//if(FileSystem_Init(basedir, (void*)filesystemFactory) && game->Init(0) && eng->Load(true, basedir, cmdline))
 	{
-		char text[256];
-		Q_snprintf(text, ARRAYSIZE(text), "exec %s\n", servercfgfile.string);
-		text[255] = 0;
-		Cbuf_InsertText(text);
+		//char text[256];
+
+		//Q_snprintf(text, ARRAYSIZE(text), "exec %s\n", servercfgfile.string);
+		//text[255] = 0;
+
+		//mpCmdBuffer->InsertText(text);
 		
 #ifdef REHLDS_FIXES // DONE: Set cstrike flags on server start
-		SetCStrikeFlags();
+		//SetCStrikeFlags();
 #endif
 		
 		return true;
@@ -104,34 +123,34 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 
 int CDedicatedServerAPI::Shutdown_noVirt()
 {
-	eng->Unload();
-	game->Shutdown();
+	//eng->Unload();
+	//game->Shutdown();
 
 	//TraceShutdown("FileSystem_Shutdown()", 0);
-	FileSystem_Shutdown();
+	//FileSystem_Shutdown();
 
 	//registry->Shutdown();
 
 	//TraceShutdown("Sys_ShutdownArgv()", 0);
 	dedicated_ = nullptr;
-	return giActive;
+	return 0; //giActive;
 };
 
 bool CDedicatedServerAPI::RunFrame_noVirt()
 {
-	if(eng->GetQuitting())
-		return false;
+	//if(eng->GetQuitting())
+		//return false;
 
-	eng->Frame();
+	//eng->Frame();
 	return true;
 };
 
 void CDedicatedServerAPI::AddConsoleText_noVirt(char *text)
 {
-	mpCmdBuffer->AddText(text);
+	//mpCmdBuffer->AddText(text);
 };
 
 void CDedicatedServerAPI::UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
 {
-	mpHost->GetInfo(fps, nActive, NULL, nMaxPlayers, pszMap);
+	gpHost->GetInfo(fps, nActive, NULL, nMaxPlayers, pszMap);
 };

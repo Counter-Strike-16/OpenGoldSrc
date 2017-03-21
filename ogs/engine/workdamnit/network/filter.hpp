@@ -31,7 +31,7 @@
 #pragma once
 
 #include "public/archtypes.h"
-#include "userid.h"
+#include "common/userid.h"
 
 #ifdef REHLDS_FIXES
 #define MAX_IPFILTERS 4096

@@ -50,7 +50,7 @@
 #include "public/savegame_version.h"
 
 // valve libs stuff
-#include "tier0/commonmacros.h"
+#include "public/tier0/commonmacros.h"
 /*
 #include "public/tier0/dbg.h"
 #include "public/tier0/platform.h"
@@ -60,10 +60,10 @@
 */
 
 // public rehlds headers
-#include "rehlds/sys_shared.h"
-#include "rehlds/crc32c.h"
-#include "rehlds/rehlds_api.h"
-#include "rehlds/rehlds_interfaces.h"
+#include "public/rehlds/sys_shared.h"
+#include "public/rehlds/crc32c.h"
+#include "public/rehlds/rehlds_api.h"
+#include "public/rehlds/rehlds_interfaces.h"
 /*
 #include "public/rehlds/modelgen.h"
 #include "public/rehlds/spritegn.h"
@@ -98,7 +98,7 @@
 // bzip2
 //#include "bzip2/bzlib.h"
 
-#include "rehlds_pch.hpp"
+#include "rehlds/rehlds_pch.hpp"
 
 // game dll code
 //#include "dlls/cdll_dll.h"

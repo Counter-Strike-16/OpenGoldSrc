@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "common/commontypes.h"
 #include "common/crc.h"
 #include "common/dll_state.h"
@@ -46,13 +46,13 @@
 #include "network/usermsg.hpp"
 #include "network/protocol.hpp"
 #include "pm_shared/pm_defs.h"
-#include "qlimits.h"
-#include "rehlds/model.h"
+#include "common/qlimits.h"
+#include "public/rehlds/model.h"
 #include "resources/consistency.hpp"
 #include "system/server_static.hpp"
 #include "system/servertypes.hpp"
 #include "system/info.hpp"
-#include "userid.h"
+#include "common/userid.h"
 #include "world/event.hpp"
 #include "world/inst_baseline.hpp"
 

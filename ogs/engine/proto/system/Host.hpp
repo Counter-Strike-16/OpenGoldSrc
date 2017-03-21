@@ -31,6 +31,8 @@
 
 #pragma once
 
+typedef struct quakeparms_s quakeparms_t;
+
 class CHost
 {
 public:
@@ -75,18 +77,18 @@ public:
 	
 	bool IsInitialized() const {return host_initialized;}
 private:
-	std::unique_ptr<IConsole> mpConsole;
-	std::unique_ptr<CCmdBuffer> mpCmdBuffer;
+	//std::unique_ptr<IConsole> mpConsole;
+	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
 	
-	std::unique_ptr<CNetwork> mpNetwork;
+	//std::unique_ptr<CNetwork> mpNetwork;
 	
-	std::unique_ptr<ISound> mpSound;
+	//std::unique_ptr<ISound> mpSound;
 	
 	bool host_initialized; // true if into command execution
 	double host_frametime;
 
 	int host_framecount; // incremented every frame, never reset
 
-	jmp_buf host_abortserver;
-	jmp_buf host_enddemo;
+	//jmp_buf host_abortserver;
+	//jmp_buf host_enddemo;
 };

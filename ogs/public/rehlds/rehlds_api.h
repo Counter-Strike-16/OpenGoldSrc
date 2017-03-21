@@ -36,7 +36,7 @@
 #include "hookchains.h"
 #include "FlightRecorder.h"
 #include "public/interface.h"
-#include "rehlds/model.h"
+#include "model.h"
 
 const int REHLDS_API_VERSION_MAJOR = 3;
 const int REHLDS_API_VERSION_MINOR = 1;

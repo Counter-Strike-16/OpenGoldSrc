@@ -59,7 +59,7 @@
 CHost *gpHost = nullptr;
 
 double realtime; // // without any filtering or bounding
-double rolling_fps;
+
 quakeparms_t host_parms;
 
 // unsigned short *host_basepal;
