@@ -12,9 +12,15 @@ Based on Reverse-engineered (and bugfixed) HLDS aka REHLDS and Id Tech sources (
 
 For more information about the project you can visit it's official [Wiki](https://github.com/Sh1ft0x0EF/OpenGoldSrc/wiki)
 
+## Building
+
+## Installation
+
+## Contributing
+
 ## Credits
 
-See [CREDITS.md](CREDITS.md) file for details
+See [CREDITS](CREDITS.md) file for details
 
 ## License
 

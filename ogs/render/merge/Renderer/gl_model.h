@@ -4,36 +4,18 @@
 #include "modelgen.h"
 #include "spritegn.h"
 
-typedef struct
-{
-	vec3_t position;
-}
-mvertex_t;
-
 #define SIDE_FRONT 0
 #define SIDE_BACK 1
 #define SIDE_ON 2
-
-typedef struct mplane_s
-{
-	vec3_t normal;
-	float dist;
-	byte type;
-	byte signbits;
-	byte pad[2];
-}
-mplane_t;
 
 typedef struct texture_s
 {
 	char name[16];
 	unsigned width, height;
+	
 	int gl_texturenum;
 	struct msurface_s *texturechain;
-	int anim_total;
-	int anim_min, anim_max;
-	struct texture_s *anim_next;
-	struct texture_s *alternate_anims;
+	
 	unsigned offsets[MIPLEVELS];
 	unsigned char *pPal;
 }
@@ -54,15 +36,6 @@ typedef struct
 	unsigned int cachededgeoffset;
 }
 medge_t;
-
-typedef struct
-{
-	float vecs[2][4];
-	float mipadjust;
-	texture_t *texture;
-	int flags;
-}
-mtexinfo_t;
 
 #define VERTEXSIZE 7
 
@@ -253,15 +226,6 @@ extern aliashdr_t *pheader;
 extern stvert_t stverts[MAXALIASVERTS];
 extern mtriangle_t triangles[MAXALIASTRIS];
 extern trivertx_t *poseverts[MAXALIASFRAMES];
-
-typedef enum
-{
-	mod_brush,
-	mod_sprite,
-	mod_alias,
-	mod_studio
-}
-modtype_t;
 
 #define FMODEL_ROCKET 0x1
 #define FMODEL_GRENADE 0x2

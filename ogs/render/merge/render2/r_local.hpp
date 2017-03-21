@@ -39,11 +39,6 @@
 // normalizing factor so player model works out to about
 //  1 pixel per triangle
 
-typedef struct
-{
-	float fv[3]; // viewspace x, y
-} auxvert_t;
-
 //===========================================================================
 
 extern cvar_t r_draworder;
