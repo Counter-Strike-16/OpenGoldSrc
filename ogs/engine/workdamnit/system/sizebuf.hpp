@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief backward-compat sizebuf component interface
 
 #pragma once
 
@@ -39,27 +40,3 @@ void *SZ_GetSpace(sizebuf_t *buf, int length);
 
 void SZ_Write(sizebuf_t *buf, const void *data, int length);
 void SZ_Print(sizebuf_t *buf, const char *data);
-
-class CSizeBuffer;
-static CSizeBuffer *AllocSizeBuf(const char *name, sizebuf_t *buf, int startsize)
-{
-	CSizeBuffer *pSizeBuffer = nullptr; //new CSizeBuffer(name, buf, startsize);
-	return pSizeBuffer;
-};
-
-class CSizeBuffer
-{
-public:
-	CSizeBuffer();
-	CSizeBuffer(sizebuf_t *apBuffer);
-	CSizeBuffer(const char *asName, sizebuf_t *apBuffer, int anStartSize) : mpBuffer(apBuffer){}
-	
-	void Clear();
-
-	void *GetSpace(int length);
-
-	void Write(const void *data, int length);
-	void Print(const char *data);
-private:
-	sizebuf_t *mpBuffer;
-};

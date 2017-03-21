@@ -31,8 +31,11 @@
 #pragma once
 
 #include "common/cvardef.h"
+//#include "console/IConVar.hpp"
 
-class CConVar : public IConVar
+typedef struct cvar_s cvar_t;
+
+class CConVar //: public IConVar
 {
 public:
 	const char *GetName() const {return mpWrapped->name;}

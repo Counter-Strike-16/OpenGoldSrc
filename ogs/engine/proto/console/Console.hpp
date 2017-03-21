@@ -88,6 +88,28 @@ public:
 	
 	void Printf(int anPrintLevel, const char *asMsg, ...);
 	
+	void DrawCharacter(int cx, int line, int num);
+
+	void CheckResize();
+
+	void Draw(int lines /*, qboolean drawinput*/);
+	//void Draw(float frac);
+
+	void Print(const char *txt);
+	void Printf(const char *fmt, ...); // _format(1);
+	void DPrintf(const char *fmt, ...); // _format(1);
+	//void NPrintf(int idx, const char *fmt, ...);
+	//void NPrintf( int idx, char *fmt, ... ) _format(2);
+	//void NXPrintf( struct con_nprint_s *info, char *fmt, ... ) _format(2);
+	void SafePrintf(const char *fmt, ...);
+	void CenteredPrint(const char *text);
+
+	void DrawNotify();
+	void ClearNotify();
+	void ShowNotifyBox(const char *text); // during startup for sound / cd warnings
+
+	void DebugLog(const char *file, const char *fmt, ...);
+	
 	IConVar *GetConVar(const char *asName);
 private:
 	tConVarList mlstConVars;

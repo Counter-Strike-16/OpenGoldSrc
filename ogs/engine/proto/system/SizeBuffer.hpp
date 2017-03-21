@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,36 +30,27 @@
 
 #pragma once
 
-#include "common/commontypes.h"
-#include "common/com_model.h"
-#include "public/FileSystem.h"
+struct IConsole;
 
-/// Max key/value length (with a NULL char)
-const int MAX_KV_LEN = 127; // 512
+typedef struct sizebuf_s sizebuf_t;
 
-// Key + value + 2 x slash + NULL
-// const int MAX_INFO_STRING = 256;
+class CSizeBuffer;
+CSizeBuffer *AllocSizeBuf(const char *name, sizebuf_t *buf, int startsize);
 
-const int INFO_MAX_BUFFER_VALUES = 4;
+class CSizeBuffer
+{
+public:
+	CSizeBuffer(IConsole *apConsole) : mpConsole(apConsole){}
+	CSizeBuffer(IConsole *apConsole, sizebuf_t *apBuffer) : mpConsole(apConsole), mpBuffer(apBuffer){}
+	CSizeBuffer(IConsole *apConsole, const char *asName, sizebuf_t *apBuffer, int anStartSize);
+	
+	void Clear();
 
-#ifdef REHLDS_FIXES
-const int MAX_LOCALINFO = 4096;
-#else
-const int MAX_LOCALINFO = MAX_INFO_STRING * 128;
-#endif // REHLDS_FIXES
+	void *GetSpace(int length);
 
-const char *Info_ValueForKey(const char *s, const char *key);
-void Info_RemoveKey(char *s, const char *key);
-void Info_RemovePrefixedKeys(char *s, const char prefix);
-qboolean Info_IsKeyImportant(const char *key);
-char *Info_FindLargestKey(char *s, int maxsize);
-void Info_SetValueForStarKey(char *s, const char *key, const char *value, int maxsize);
-void Info_SetValueForKey(char *s, const char *key, const char *value, int maxsize);
-void Info_Print(const char *s);
-qboolean Info_IsValid(const char *s);
-
-#ifdef REHLDS_FIXES
-void Info_CollectFields(char *destInfo, const char *srcInfo, const char *collectedKeysOfFields);
-#endif
-
-NOBODY void Info_WriteVars(FileHandle_t fp);
+	void Write(const void *data, int length);
+	void Print(const char *data);
+private:
+	sizebuf_t *mpBuffer{nullptr};
+	IConsole *mpConsole{nullptr};
+};

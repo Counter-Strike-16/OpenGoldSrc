@@ -47,12 +47,12 @@ public:
 	void WriteCustomConfig();
 
 	void ClientCommands(const char *fmt, ...);
-	void ClearClients(qboolean bFramesOnly);
-	void ShutdownServer(qboolean crash);
+	void ClearClients(bool bFramesOnly);
+	void ShutdownServer(bool crash);
 
 	void CheckDynamicStructures();
-	void ClearMemory(qboolean bQuiet);
-	qboolean FilterTime(float time);
+	void ClearMemory(bool bQuiet);
+	bool FilterTime(float time);
 
 	void ComputeFPS(double frametime);
 	void GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
@@ -68,8 +68,8 @@ public:
 
 	//void CheckGore();
 
-	qboolean IsSinglePlayerGame();
-	qboolean IsServerActive();
+	bool IsSinglePlayerGame();
+	bool IsServerActive();
 
 	void PrintVersion();
 };

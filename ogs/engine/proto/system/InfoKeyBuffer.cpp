@@ -28,54 +28,55 @@
 
 /// @file
 
-#include "system/info.hpp"
+#include "precompiled.hpp"
+#include "system/InfoKeyBuffer.hpp"
 
-const char *::GetValueForKey(const char *key)
+const char *CInfoKeyBuffer::GetValueForKey(const char *key)
 {
 	return Info_GetValueForKey(key);
 };
 
-void ::RemoveKey(const char *key)
+void CInfoKeyBuffer::RemoveKey(const char *key)
 {
 	Info_
 };
 
-void ::RemovePrefixedKeys(const char prefix)
+void CInfoKeyBuffer::RemovePrefixedKeys(const char prefix)
 {
 	Info_
 };
 
-qboolean ::IsKeyImportant(const char *key)
+bool CInfoKeyBuffer::IsKeyImportant(const char *key)
 {
 	return Info_
 };
 
-char *::FindLargestKey(int maxsize)
+char *CInfoKeyBuffer::FindLargestKey(int maxsize)
 {
 	return Info_
 };
 
-void ::SetStarKeyValue(const char *key, const char *value, int maxsize)
+void CInfoKeyBuffer::SetStarKeyValue(const char *key, const char *value, int maxsize)
 {
 	Info_SetValueForStarKey();
 };
 
-void ::SetKeyValueForKey(const char *key, const char *value, int maxsize)
+void CInfoKeyBuffer::SetKeyValueForKey(const char *key, const char *value, int maxsize)
 {
 	Info_SetValueForKey();
 };
 
-void ::Print()
+void CInfoKeyBuffer::Print()
 {
 	Info_Print();
 };
 
-qboolean ::IsValid()
+bool CInfoKeyBuffer::IsValid()
 {
 	return Info_IsValid();
 };
 
-void ::CollectFields(char *destInfo, const char *collectedKeysOfFields)
+void CInfoKeyBuffer::CollectFields(char *destInfo, const char *collectedKeysOfFields)
 {
 	Info_CollectFields();
 };
