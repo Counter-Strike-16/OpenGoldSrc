@@ -45,7 +45,6 @@
 #include "public/FileSystem.h"
 
 // clang-format off
-
 #ifdef HOOK_ENGINE
 	#define host_name (*phost_name)
 	#define host_speeds (*phost_speeds)
@@ -79,7 +78,6 @@
 	#define host_enddemo (*phost_enddemo)
 	#define host_basepal (*phost_basepal)
 #endif // HOOK_ENGINE
-
 // clang-format on
 
 //=============================================================================
@@ -130,17 +128,10 @@ extern double rolling_fps;
 //
 extern quakeparms_t host_parms;
 
-extern qboolean host_initialized; // true if into command execution
-extern double host_frametime;
-
-extern int host_framecount; // incremented every frame, never reset
 extern client_t *host_client;
 extern qboolean gfNoMasterServer;
 extern double oldrealtime;
 extern int host_hunklevel;
-
-extern jmp_buf host_abortserver;
-extern jmp_buf host_enddemo;
 
 extern unsigned short *host_basepal; // 16 bit color palette
 

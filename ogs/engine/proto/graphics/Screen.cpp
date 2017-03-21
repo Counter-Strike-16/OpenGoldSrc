@@ -140,8 +140,6 @@ vrect_t scr_vrect; // position of render window on screen
 
 qboolean scr_disabled_for_loading;
 
-qboolean scr_skipupdate;
-
 qboolean block_drawing;
 
 void SCR_ScreenShot_f();

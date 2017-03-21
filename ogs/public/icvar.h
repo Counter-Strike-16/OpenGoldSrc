@@ -98,10 +98,6 @@ public:
 	// A little hacky, owing to the fact the engine is loaded
 	// well after ICVar, so we can't use the standard connect pattern
 	virtual void			InstallCVarQuery( ICvarQuery *pQuery ) = 0;
-
-#if defined( _X360 )
-	virtual void			PublishToVXConsole( ) = 0;
-#endif
 };
 
 #define CVAR_INTERFACE_VERSION "VEngineCvar004"
@@ -113,6 +109,5 @@ public:
 //-----------------------------------------------------------------------------
 extern ICvar *cvar;
 extern ICvar *g_pCVar;
-
 
 #endif // ICVAR_H

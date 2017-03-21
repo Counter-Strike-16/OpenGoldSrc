@@ -63,16 +63,16 @@
 
 // clang-format on
 
-const int MAX_DISCONNECT_REASON = 256;
+constexpr auto MAX_DISCONNECT_REASON = 256;
 
 // Note: move these below to memorytypes?
 
-const int FIFTEEN_MB = 15 * 1024 * 1024;
+constexpr auto FIFTEEN_MB = 15 * 1024 * 1024;
 
-const int DEFAULT_MEMORY = 0x2800000;
-const int WARNING_MEMORY = 0x0200000;
+constexpr auto DEFAULT_MEMORY = 0x2800000;
+constexpr auto WARNING_MEMORY = 0x0200000;
 
-const int MINIMUM_WIN_MEMORY = 0x0e00000;
-const int MAXIMUM_WIN_MEMORY = 0x8000000; // Ask for 128 MB max
+constexpr auto MINIMUM_WIN_MEMORY = 0x0e00000;
+constexpr auto MAXIMUM_WIN_MEMORY = 0x8000000; // Ask for 128 MB max
 
-const int MAXIMUM_DEDICATED_MEMORY = 0x8000000; // Ask for 128 MB max
+constexpr auto MAXIMUM_DEDICATED_MEMORY = 0x8000000; // Ask for 128 MB max

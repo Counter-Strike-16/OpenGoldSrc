@@ -44,53 +44,57 @@ extern cvar_t *crosshair;
 
 extern cvar_t scr_downloading;
 
-// only the render window will be updated unless these variables are flagged
-extern int scr_copytop;
-extern int scr_copyeverything;
-
-extern qboolean scr_skipupdate; // wasn't extern
-
 extern qboolean block_drawing; // wasn't extern
 
-void SCR_Init();
+class CScreen
+{
+public:
+	void Init();
 
-void SCR_UpdateScreen();
+	void Update();
 
-void SCR_SizeUp();
-void SCR_SizeDown();
+	void SCR_SizeUp();
+	void SCR_SizeDown();
 
-void SCR_BringDownConsole();
+	void BringDownConsole();
 
-void SCR_CenterPrint(char *str);
+	void CenterPrint(const char *str);
 
-int SCR_ModalMessage(char *text);
+	int ModalMessage(const char *text);
 
-void SCR_BeginLoadingPlaque(qboolean reconnect);
-void SCR_EndLoadingPlaque();
+	void BeginLoadingPlaque(bool reconnect);
+	void EndLoadingPlaque();
 
-/*
-void	SCR_DebugGraph (float value, int color);
+	/*
+	void DebugGraph (float value, int color);
 
-void	SCR_TouchPics ();
+	void TouchPics ();
 
-void	SCR_RunConsole ();
+	void RunConsole ();
 
-extern	vrect_t		scr_vrect;		// position of render window
+	extern	vrect_t		scr_vrect;		// position of render window
 
-extern	char		crosshair_pic[MAX_QPATH];
-extern	int			crosshair_width, crosshair_height;
+	extern	char		crosshair_pic[MAX_QPATH];
+	extern	int			crosshair_width, crosshair_height;
 
-void SCR_AddDirtyPoint (int x, int y);
-void SCR_DirtyScreen ();
+	void SCR_AddDirtyPoint (int x, int y);
+	void SCR_DirtyScreen ();
 
-//
-// scr_cin.c
-//
-void SCR_PlayCinematic (char *name);
-qboolean SCR_DrawCinematic ();
-void SCR_RunCinematic ();
-void SCR_StopCinematic ();
-void SCR_FinishCinematic ();
+	//
+	// scr_cin.c
+	//
+	void SCR_PlayCinematic (char *name);
+	qboolean SCR_DrawCinematic ();
+	void SCR_RunCinematic ();
+	void SCR_StopCinematic ();
+	void SCR_FinishCinematic ();
 
-void SCR_UpdateWholeScreen();
-*/
+	void SCR_UpdateWholeScreen();
+	*/
+private:
+	// only the render window will be updated unless these variables are flagged
+	int scr_copytop;
+	int scr_copyeverything;
+
+	bool scr_skipupdate;
+};

@@ -43,7 +43,7 @@ public:
 
 	//void NORETURN Error(const char *error, ...);
 
-	void WriteConfiguration();
+	void WriteConfig();
 	void WriteCustomConfig();
 
 	void ClientCommands(const char *fmt, ...);
@@ -72,4 +72,21 @@ public:
 	bool IsServerActive();
 
 	void PrintVersion();
+	
+	bool IsInitialized() const {return host_initialized;}
+private:
+	std::unique_ptr<IConsole> mpConsole;
+	std::unique_ptr<CCmdBuffer> mpCmdBuffer;
+	
+	std::unique_ptr<CNetwork> mpNetwork;
+	
+	std::unique_ptr<ISound> mpSound;
+	
+	bool host_initialized; // true if into command execution
+	double host_frametime;
+
+	int host_framecount; // incremented every frame, never reset
+
+	jmp_buf host_abortserver;
+	jmp_buf host_enddemo;
 };

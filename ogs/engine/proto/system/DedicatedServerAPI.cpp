@@ -30,17 +30,38 @@
 
 #include "precompiled.hpp"
 #include "system/dedicatedserverapi.hpp"
-#include "console/cmd.hpp"
-#include "system/common.hpp"
-#include "system/host.hpp"
-#include "system/engine.hpp"
-#include "system/system.hpp"
-#include "system/traceinit.h"
-#include "system/buildinfo.hpp"
-#include "filesystem/filesystem_.hpp"
-#include "system/server.hpp"
 
+IDedicatedExports *dedicated_;
+qboolean g_bIsDedicatedServer;
 
+#ifndef HOOK_ENGINE
+EXPOSE_SINGLE_INTERFACE(CDedicatedServerAPI, IDedicatedServerAPI, VENGINE_HLDS_API_VERSION);
+#endif
+
+bool CDedicatedServerAPI::Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
+{
+	return Init_noVirt(basedir, cmdline, launcherFactory, filesystemFactory);
+};
+
+int CDedicatedServerAPI::Shutdown()
+{
+	return Shutdown_noVirt();
+};
+
+bool CDedicatedServerAPI::RunFrame()
+{
+	return RunFrame_noVirt();
+};
+
+void CDedicatedServerAPI::AddConsoleText(char *text)
+{
+	AddConsoleText_noVirt(text);
+};
+
+void CDedicatedServerAPI::UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
+{
+	UpdateStatus_noVirt(fps, nActive, nMaxPlayers, pszMap);
+};
 
 bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
 {
@@ -86,13 +107,13 @@ int CDedicatedServerAPI::Shutdown_noVirt()
 	eng->Unload();
 	game->Shutdown();
 
-	TraceShutdown("FileSystem_Shutdown()", 0);
+	//TraceShutdown("FileSystem_Shutdown()", 0);
 	FileSystem_Shutdown();
 
-	registry->Shutdown();
+	//registry->Shutdown();
 
-	TraceShutdown("Sys_ShutdownArgv()", 0);
-	dedicated_ = NULL;
+	//TraceShutdown("Sys_ShutdownArgv()", 0);
+	dedicated_ = nullptr;
 	return giActive;
 };
 
@@ -103,4 +124,14 @@ bool CDedicatedServerAPI::RunFrame_noVirt()
 
 	eng->Frame();
 	return true;
+};
+
+void CDedicatedServerAPI::AddConsoleText_noVirt(char *text)
+{
+	mpCmdBuffer->AddText(text);
+};
+
+void CDedicatedServerAPI::UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
+{
+	mpHost->GetInfo(fps, nActive, NULL, nMaxPlayers, pszMap);
 };

@@ -32,8 +32,8 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "engine_hlds_api.h"
-#include "idedicatedexports.h"
+#include "public/engine_hlds_api.h"
+#include "public/idedicatedexports.h"
 
 extern IDedicatedExports *dedicated_;
 
@@ -48,7 +48,7 @@ public:
 	void AddConsoleText(char *text);
 
 	void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
-
+private:
 	// non-virtual function's of wrap for hooks a virtual
 	// Only need to HOOK_ENGINE
 	bool Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
@@ -56,6 +56,6 @@ public:
 	bool RunFrame_noVirt();
 	void AddConsoleText_noVirt(char *text);
 	void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char*pszMap);
-private:
+	
 	char m_OrigCmd[1024];
 };
