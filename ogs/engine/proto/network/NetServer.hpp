@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,35 +27,42 @@
  */
 
 /// @file
-/// @brief engine launcher for dedicated mode
+/// @brief network server; accepts clients and used for authority
 
 #pragma once
 
-#include "common/commontypes.h"
-#include "public/engine_hlds_api.h"
-#include "public/idedicatedexports.h"
+typedef struct netadr_s netadr_t;
 
-extern IDedicatedExports *dedicated_;
-
-class CDedicatedServerAPI : public IDedicatedServerAPI
+class CNetServer
 {
 public:
-	bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown();
-
-	bool RunFrame();
-
-	void AddConsoleText(char *text);
-
-	void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
-private:
-	// non-virtual function's of wrap for hooks a virtual
-	// Only need to HOOK_ENGINE
-	bool Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown_noVirt();
-	bool RunFrame_noVirt();
-	void AddConsoleText_noVirt(char *text);
-	void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char*pszMap);
+	void Start(int anPort);
+	void Stop();
 	
-	char msOrigCmd[1024];
+	void Frame(float frametime);
+	
+	void HandleRconPacket(netadr_t *adr);
+	void HandleConnectionlessPacket(netadr_t *adr);
+	
+	void BroadcastCommand(char *fmt, ...);
+	void BroadcastPrintf(const char *fmt, ...);
+	
+	void ReconnectClient(int anID);
+	void DisconnectClient(int anID);
+	
+	void ReconnectAll();
+	void DisconnectAll();
+	
+	NOXREF int GetChallengeNr(netadr_t *adr);
+	NOXREF void ReplyServerChallenge(netadr_t *adr);
+	
+	int GetMaxClients();
+private:
+	void ReadPackets();
+	
+	void HandleRcon(netadr_t *net_from_);
+	int Rcon_Validate();
+	bool CheckRconFailure(netadr_t *adr);
+protected:
+	virtual HandleConnectionlessPacket(const char *c, const char *args){}
 };

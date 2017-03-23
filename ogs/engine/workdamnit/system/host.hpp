@@ -119,10 +119,6 @@ extern cvar_t host_framerate;
 extern cvar_t pausable;
 extern cvar_t suitvolume;
 
-extern double realtime; // not bounded in any way, changed at
-						// start of every frame, never reset
-
-
 //
 // host
 //
@@ -130,7 +126,6 @@ extern quakeparms_t host_parms;
 
 extern client_t *host_client;
 extern qboolean gfNoMasterServer;
-extern double oldrealtime;
 extern int host_hunklevel;
 
 extern unsigned short *host_basepal; // 16 bit color palette

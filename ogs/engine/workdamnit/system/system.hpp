@@ -94,10 +94,7 @@
 
 // clang-format on
 
-extern qboolean g_bIsDedicatedServer;
-
-extern qboolean g_bIsWin95;
-extern qboolean g_bIsWin98;
+extern qboolean gbIsDedicatedServer;
 
 extern double g_flLastSteamProgressUpdateTime;
 
@@ -135,7 +132,6 @@ extern qboolean gHasMMXTechnology;
 extern qboolean g_bPrintingKeepAliveDots;
 
 extern qboolean con_debuglog;
-extern void (*Launcher_ConsolePrintf)(char *, ...);
 
 #ifdef _WIN32
 
@@ -197,19 +193,7 @@ NOBODY void Sys_PopFPCW();
 
 NOBODY void MaskExceptions();
 
-// called to yield for a little bit so as
-// not to hog cpu when paused or debugging
-NOXREF void Sys_Sleep(int msec);
-
 NOBODY void Sys_DebugOutStraight(const char *pStr);
-
-// An error will cause the entire program to exit
-NOBODY void NORETURN Sys_Error(const char *error, ...); // mb add int code?
-
-NOXREF void Sys_Warning(const char *pszWarning, ...);
-
-// send text to the console
-void Sys_Printf(const char *fmt, ...);
 
 void Sys_Quit();
 
@@ -251,37 +235,7 @@ NOXREF const char *GetRateRegistrySetting(const char *pchDef);
 
 void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated);
 
-NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage);
 
-void Legacy_Sys_Printf(char *fmt, ...);
-
-NOXREF void Legacy_MP3subsys_Suspend_Audio();
-NOXREF void Legacy_MP3subsys_Resume_Audio();
-
-void Sys_SetupLegacyAPIs();
-
-NOXREF qboolean Sys_IsWin95();
-NOXREF qboolean Sys_IsWin98();
-
-#ifdef _WIN32
-void Sys_CheckOSVersion();
-#endif
-
-NOBODY void Sys_Init();
-NOXREF void Sys_Init();
-NOXREF void Sys_Shutdown();
-
-void Sys_InitArgv(char *lpCmdLine);
-NOXREF void Sys_ShutdownArgv();
-
-void Sys_InitMemory();
-void Sys_ShutdownMemory();
-
-void Sys_InitLauncherInterface();
-NOXREF void Sys_ShutdownLauncherInterface();
-
-void Sys_InitAuthentication();
-NOXREF void Sys_ShutdownAuthentication();
 
 void Sys_ShowProgressTicks(char *specialProgressMsg);
 

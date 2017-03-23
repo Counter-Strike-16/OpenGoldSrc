@@ -58,69 +58,18 @@
 
 CHost *gpHost = nullptr;
 
-double realtime; // // without any filtering or bounding
-
-quakeparms_t host_parms;
-
 // unsigned short *host_basepal;
 // int minimum_memory;
 client_t *host_client;
 qboolean gfNoMasterServer;
 // qboolean g_bUsingInGameAdvertisements;
-double oldrealtime; // last frame run
+
 int host_hunklevel;
 jmp_buf host_abortserver;
 jmp_buf host_enddemo;
 unsigned short *host_basepal;
 // unsigned char *host_colormap;
 // const char *g_InGameAdsAllowed[3];
-
-/*
-* Globals initialization
-*/
-#ifndef HOOK_ENGINE
-
-cvar_t host_name = { "hostname", "Half-Life", 0, 0.0f, NULL };
-cvar_t host_speeds = { "host_speeds", "0", 0, 0.0f, NULL };
-cvar_t host_profile = { "host_profile", "0", 0, 0.0f, NULL };
-cvar_t developer = { "developer", "0", 0, 0.0f, NULL };
-cvar_t host_limitlocal = { "host_limitlocal", "0", 0, 0.0f, NULL };
-cvar_t skill = { "skill", "1", 0, 0.0f, NULL };
-cvar_t deathmatch = { "deathmatch", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t coop = { "coop", "0", FCVAR_SERVER, 0.0f, NULL };
-
-cvar_t sys_ticrate = { "sys_ticrate", "100.0", 0, 0.0f, NULL };
-cvar_t sys_timescale = { "sys_timescale", "1.0", 0, 0.0f, NULL };
-cvar_t fps_max = { "fps_max", "100.0", FCVAR_ARCHIVE, 0.0f, NULL };
-cvar_t host_killtime = { "host_killtime", "0.0", 0, 0.0f, NULL };
-cvar_t sv_stats = { "sv_stats", "1", 0, 0.0f, NULL };
-cvar_t fps_override = { "fps_override", "0", 0, 0.0f, NULL };
-cvar_t host_framerate = { "host_framerate", "0", 0, 0.0f, NULL };
-cvar_t pausable = { "pausable", "1", FCVAR_SERVER, 0.0f, NULL };
-cvar_t suitvolume = { "suitvolume", "0.25", FCVAR_ARCHIVE, 0.0f, NULL };
-
-#else // HOOK_ENGINE
-
-cvar_t host_name;
-cvar_t host_speeds;
-cvar_t host_profile;
-cvar_t developer;
-cvar_t host_limitlocal;
-cvar_t skill;
-cvar_t deathmatch;
-cvar_t coop;
-
-cvar_t sys_ticrate;
-cvar_t sys_timescale;
-cvar_t fps_max;
-cvar_t host_killtime;
-cvar_t sv_stats;
-cvar_t fps_override;
-cvar_t host_framerate;
-cvar_t pausable;
-cvar_t suitvolume;
-
-#endif // HOOK_ENGINE
 
 NOXREF void Host_EndGame(const char *message, ...)
 {
@@ -129,36 +78,8 @@ NOXREF void Host_EndGame(const char *message, ...)
 
 void NORETURN Host_Error(const char *error, ...)
 {
-	va_list argptr;
-	char string[1024];
-	static qboolean inerror = FALSE;
-
-	va_start(argptr, error);
-
-	if(inerror)
-		Sys_Error("%s: recursively entered", __FUNCTION__);
-
-	inerror = TRUE;
-	SCR_EndLoadingPlaque();
-	Q_vsnprintf(string, sizeof(string), error, argptr);
-	va_end(argptr);
-
-	if(g_psv.active && developer.value != 0.0)
-		CL_WriteMessageHistory(0, 0);
-
-	Con_Printf("%s: %s\n", __FUNCTION__, string);
-	if(g_psv.active)
-		Host_ShutdownServer(FALSE);
-
-	if(cls.state)
-	{
-		CL_Disconnect();
-		cls.demonum = -1;
-		inerror = FALSE;
-		longjmp(host_abortserver, 1);
-	}
-	Sys_Error("%s: %s\n", __FUNCTION__, string);
-}
+	gpHost->Error(error);
+};
 
 void Host_InitLocal()
 {
@@ -242,17 +163,7 @@ void Host_ShutdownServer(qboolean crash)
 	gpHost->ShutdownServer(crash);
 };
 
-void SV_ClearClientStates()
-{
-	int i;
-	client_t *pcl = nullptr;
-	
-	for(i = 0, pcl = g_psvs.clients; i < g_psvs.maxclients; i++, pcl++)
-	{
-		//COM_ClearCustomizationList(&pcl->customdata, FALSE);
-		SV_ClearResourceLists(pcl);
-	};
-};
+
 
 void Host_CheckDyanmicStructures() // dynamic?
 {
@@ -325,13 +236,8 @@ int Host_Frame(float time, int iState, int *stateInfo)
 
 void CheckGore()
 {
-	float fValue = bLowViolenceBuild ? 0.0f : 1.0f;
-	
-	Cvar_SetValue("violence_hblood", fValue);
-	Cvar_SetValue("violence_hgibs", fValue);
-	Cvar_SetValue("violence_ablood", fValue);
-	Cvar_SetValue("violence_agibs", fValue);
-}
+	gpHost->CheckGore();
+};
 
 qboolean Host_IsSinglePlayerGame()
 {

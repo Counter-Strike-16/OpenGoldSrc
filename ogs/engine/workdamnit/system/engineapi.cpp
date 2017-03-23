@@ -54,7 +54,17 @@ void F(IEngineAPI **api)
 
 int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
 {
-	if(!eng->Load(false, basedir, cmdline))
+	// NOTE: what to do with the instance?
+	// NOTE: what to do with the post restart cmdline?
+	// NOTE: launcherFactory is needed for...?
+	// TODO: filesystem init using the filesystemFactory
+	
+	const char *sCmdLine = cmdline;
+	
+	if(restart)
+		sCmdLine = postRestartCmdLineArgs;
+	
+	if(!eng->Load(false, basedir, sCmdLine))
 		return 1;
 
 	while(!eng->GetQuitting()) // ?

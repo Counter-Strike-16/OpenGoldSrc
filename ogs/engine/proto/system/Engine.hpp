@@ -30,18 +30,22 @@
 
 #pragma once
 
-#include "maintypes.h"
-#include "system/iengine.hpp"
-#include "system/igame.hpp"
+#include <memory>
+#include "common/maintypes.h"
+#include "system/IEngine.hpp"
+#include "system/IGame.hpp"
+#include "system/Host.hpp"
 
 // sleep time when not focus
-#define NOT_FOCUS_SLEEP 50
-#define MINIMIZED_SLEEP 20
+constexpr auto NOT_FOCUS_SLEEP = 50;
+constexpr auto MINIMIZED_SLEEP = 20;
 
+// clang-format off
 #ifdef HOOK_ENGINE
-#define game (*pgame)
-#define eng (*peng)
+	#define game (*pgame)
+	#define eng (*peng)
 #endif // HOOK_ENGINE
+// clang-format on
 
 extern IGame *game;
 extern IEngine *eng;
@@ -50,7 +54,7 @@ class CEngine : public IEngine
 {
 public:
 	CEngine();
-	virtual ~CEngine();
+	virtual ~CEngine(){}
 
 	virtual bool Load(bool dedicated, char *rootDir, const char *cmdLine);
 	virtual void Unload();
@@ -77,33 +81,52 @@ public:
 	virtual void SetQuitting(int quittype);
 
 	// non-virtual function's of wrap for hooks a virtual
-	// Only need to HOOK_ENGINE
+	// Only needed for HOOK_ENGINE
 	bool Load_noVirt(bool dedicated, char *rootDir, const char *cmdLine);
 	void Unload_noVirt();
+	
 	void SetState_noVirt(int iState);
-	int GetState_noVirt();
+	int GetState_noVirt(){return m_nDLLState;}
+	
 	void SetSubState_noVirt(int iSubstate);
-	int GetSubState_noVirt();
+	int GetSubState_noVirt(){return m_nSubState;}
+	
 	int Frame_noVirt();
-	double GetFrameTime_noVirt();
-	double GetCurTime_noVirt();
-	void TrapKey_Event_noVirt(int key, bool down);
+	
+	double GetFrameTime_noVirt(){return m_fFrameTime;}
+	double GetCurTime_noVirt(){return m_fCurTime;}
+	
+	void TrapKey_Event_noVirt(int key, bool down){}
 	void TrapMouse_Event_noVirt(int buttons, bool down);
+	
 	void StartTrapMode_noVirt();
-	bool IsTrapping_noVirt();
+	bool IsTrapping_noVirt(){return m_bTrapMode;}
+	
 	bool CheckDoneTrapping_noVirt(int &buttons, int &keys);
-	int GetQuitting_noVirt();
-	void SetQuitting_noVirt(int quittype);
-
+	
+	int GetQuitting_noVirt(){return m_nQuitting;}
+	void SetQuitting_noVirt(int quittype){m_nQuitting = quittype;}
 private:
-	int m_nQuitting;
-	int m_nDLLState;
-	int m_nSubState;
-	double m_fCurTime;
-	double m_fFrameTime;
-	double m_fOldTime;
-	bool m_bTrapMode;
-	bool m_bDoneTrapping;
-	int m_nTrapKey;
-	int m_nTrapButtons;
+	int InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
+	void ShutdownGame();
+	
+	quakeparms_t host_parms;
+	
+	std::unique_ptr<CHost> mpHost;
+	
+	double m_fCurTime{0.0f};
+	double m_fFrameTime{0.0f};
+	double m_fOldTime{0.0f};
+	
+	int m_nQuitting{0};
+	int m_nDLLState{0};
+	int m_nSubState{0};
+	
+	int m_nTrapKey{0};
+	int m_nTrapButtons{0};
+	
+	bool m_bTrapMode{false};
+	bool m_bDoneTrapping{false};
+	
+	bool mbDedicated{false};
 };

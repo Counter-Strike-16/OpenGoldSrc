@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,475 +28,613 @@
 
 /// @file
 
-#include "game/GameClient.hpp"
+#include "precompiled.hpp"
+#include "server/GameClient.hpp"
 
-CGameClient::CGameClient(){};
-
-CGameClient::~CGameClient(){};
-
-/*
-=====================
-SV_DropClient
-
-Called when the player is totally leaving the server, either willingly
-or unwillingly.  This is NOT called if the entire server is quiting
-or crashing.
-=====================
-*/
-/*
-=====================
-SV_DropClient
-
-Called when the player is getting totally kicked off the host
-if (crash = true), don't bother sending signofs
-=====================
-*/
-void CGameClient::Drop()
+CGameClient::CGameClient(int id, client_t *apClientData) : mpClientData(apClientData)
 {
-	// add the disconnect
-	MSG_WriteByte(&mpNetChan->message, svc_disconnect);
-
-	// call the prog function for removing a client
-	// this will remove the body, among other things
-	if(meState == cs_spawned)
-		mpGame->ClientDisconnect(mpEdict);
-
-	if(mpDownload)
-	{
-		FS_FreeFile(mpDownload); // fclose
-		mpDownload = NULL;
-	};
-
-	meState = cs_zombie; // become free in a few seconds
-	msName[0] = 0;
 };
 
-/*
-void CGameServer::DropClient(CGameClient *apClient, bool crash)
+CGameClient::~CGameClient()
 {
-	int		saveSelf;
-	int		i;
-	client_t *client;
+};
 
-	if (!crash)
-	{
-		// send any final messages (don't check for errors)
-		if (NET_CanSendMessage (host_client->netconnection))
-		{
-			MSG_WriteByte (&host_client->message, svc_disconnect);
-			NET_SendMessage (host_client->netconnection, &host_client->message);
-		}
+void CGameClient::Disconnect(const char *asReason, ...)
+{
+};
+
+void CGameClient::Reconnect(const char *message)
+{
+	//myNetChan->Clear();
+	Netchan_Clear(&mpClientData->netchan);
 	
-		if (host_client->edict && host_client->spawned)
-		{
-		// call the prog function for removing a client
-		// this will set the body to a dead frame, among other things
-			saveSelf = pr_global_struct->self;
-			pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
-			PR_ExecuteProgram (pr_global_struct->ClientDisconnect);
-			pr_global_struct->self = saveSelf;
-		}
+	MSG_WriteByte(&mpClientData->netchan.message, svc_print);
+	MSG_WriteString(&mpClientData->netchan.message, message);
 
-		Sys_Printf ("Client %s removed\n",host_client->name);
-	}
+	MSG_WriteByte(&mpClientData->netchan.message, svc_stufftext);
+	MSG_WriteString(&mpClientData->netchan.message, "retry\n");
 
-// break the net connection
-	NET_Close (host_client->netconnection);
-	host_client->netconnection = NULL;
-
-// free the client (the body stays around)
-	host_client->active = false;
-	host_client->name[0] = 0;
-	host_client->old_frags = -999999;
-	net_activeconnections--;
-
-// send notification to all clients
-	for (i=0, client = svs.clients ; i<svs.maxclients ; i++, client++)
-	{
-		if (!client->active)
-			continue;
-		MSG_WriteByte (&client->message, svc_updatename);
-		MSG_WriteByte (&client->message, host_client - svs.clients);
-		MSG_WriteString (&client->message, "");
-		MSG_WriteByte (&client->message, svc_updatefrags);
-		MSG_WriteByte (&client->message, host_client - svs.clients);
-		MSG_WriteShort (&client->message, 0);
-		MSG_WriteByte (&client->message, svc_updatecolors);
-		MSG_WriteByte (&client->message, host_client - svs.clients);
-		MSG_WriteByte (&client->message, 0);
-	}
-}
-
-*/
-
-/*
-=======================
-SV_SendClientDatagram
-=======================
-*/
-bool CGameClient::SendDatagram(/*client_t *client*/)
-{
-	byte buf[MAX_DATAGRAM];
-	sizebuf_t msg;
-
-	// CNetBuffer *pNetBuffer = mpNetChan->CreateBuffer(blablabla); ?
-
-	msg.data = buf;
-	msg.maxsize = sizeof(buf);
-	msg.cursize = 0;
-	msg.allowoverflow = true;
-	msg.overflowed = false;
-
-	MSG_WriteByte(&msg, svc_time);
-	MSG_WriteFloat(&msg, sv.time);
-
-	// add the client specific data to the datagram
-	SV_WriteClientdataToMessage(client->edict, &msg);
-
-	SV_WriteEntitiesToClient(client->edict, &msg);
-
-	// copy the server datagram if there is space
-	if(msg.cursize + sv.datagram.cursize < msg.maxsize)
-		SZ_Write(&msg, sv.datagram.data, sv.datagram.cursize);
-
-	// send the datagram
-	if(NET_SendUnreliableMessage(client->netconnection, &msg) == -1)
-	{
-		SV_DropClient(true); // if the message couldn't send, kick off
-		return false;
-	}
-
-	return true;
-}
-
-/*
-=======================
-SV_SendNop
-
-Send a nop message without trashing or sending the accumulated client
-message buffer
-=======================
-*/
-void CGameClient::SendNop(/*client_t *client*/)
-{
-	sizebuf_t msg;
-	byte buf[4];
-
-	msg.data = buf;
-	msg.maxsize = sizeof(buf);
-	msg.cursize = 0;
-
-	MSG_WriteChar(&msg, svc_nop);
-
-	if(NET_SendUnreliableMessage(client->netconnection, &msg) == -1)
-		SV_DropClient(true); // if the message couldn't send, kick off
-	client->last_message = realtime;
+	Drop(false, message);
 };
 
-/*
-================
-SV_SendServerinfo
-
-Sends the first message from the server to a connected client.
-This will be sent on the initial connection and upon each server load.
-================
-*/
-void CGameClient::SendServerinfo(client_t *client)
+void CGameClient::Drop(bool crash, const char *fmt, ...)
 {
-	char **s;
-	char message[2048];
-
-	MSG_WriteByte(&client->message, svc_print);
-	sprintf(message, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, VERSION, pr_crc);
-	MSG_WriteString(&client->message, message);
-
-	MSG_WriteByte(&client->message, svc_serverinfo);
-	MSG_WriteLong(&client->message, PROTOCOL_VERSION);
-	MSG_WriteByte(&client->message, svs.maxclients);
-
-	if(!coop.value && deathmatch.value)
-		MSG_WriteByte(&client->message, GAME_DEATHMATCH);
-	else
-		MSG_WriteByte(&client->message, GAME_COOP);
-
-	sprintf(message, pr_strings + sv.edicts->v.message);
-
-	MSG_WriteString(&client->message, message);
-
-	for(s = sv.model_precache + 1; *s; s++)
-		MSG_WriteString(&client->message, *s);
-	MSG_WriteByte(&client->message, 0);
-
-	for(s = sv.sound_precache + 1; *s; s++)
-		MSG_WriteString(&client->message, *s);
-	MSG_WriteByte(&client->message, 0);
-
-	// send music
-	MSG_WriteByte(&client->message, svc_cdtrack);
-	MSG_WriteByte(&client->message, sv.edicts->v.sounds);
-	MSG_WriteByte(&client->message, sv.edicts->v.sounds);
-
-	// set view
-	MSG_WriteByte(&client->message, svc_setview);
-	MSG_WriteShort(&client->message, NUM_FOR_EDICT(client->edict));
-
-	MSG_WriteByte(&client->message, svc_signonnum);
-	MSG_WriteByte(&client->message, 1);
-
-	client->sendsignon = true;
-	client->spawned = false; // need prespawn, spawn, etc
-};
-
-/*
-=============
-SV_WriteEntitiesToClient
-
-=============
-*/
-void CGameClient::WriteEntities(edict_t *clent, sizebuf_t *msg)
-{
-	int e, i;
-	int bits;
-	byte *pvs;
-	vec3_t org;
-	float miss;
-	edict_t *ent;
-
-	// find the client's PVS
-	VectorAdd(clent->v.origin, clent->v.view_ofs, org);
-	pvs = SV_FatPVS(org);
-
-	// send over all entities (excpet the client) that touch the pvs
-	ent = NEXT_EDICT(sv.edicts);
-	for(e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
-	{
-#ifdef QUAKE2
-		// don't send if flagged for NODRAW and there are no lighting effects
-		if(ent->v.effects == EF_NODRAW)
-			continue;
-#endif
-
-		// ignore if not touching a PV leaf
-		if(ent != clent) // clent is ALLWAYS sent
-		{
-			// ignore ents without visible models
-			if(!ent->v.modelindex || !pr_strings[ent->v.model])
-				continue;
-
-			for(i = 0; i < ent->num_leafs; i++)
-				if(pvs[ent->leafnums[i] >> 3] & (1 << (ent->leafnums[i] & 7)))
-					break;
-
-			if(i == ent->num_leafs)
-				continue; // not visible
-		}
-
-		if(msg->maxsize - msg->cursize < 16)
-		{
-			Con_Printf("packet overflow\n");
-			return;
-		}
-
-		// send an update
-		bits = 0;
-
-		for(i = 0; i < 3; i++)
-		{
-			miss = ent->v.origin[i] - ent->baseline.origin[i];
-			if(miss < -0.1 || miss > 0.1)
-				bits |= U_ORIGIN1 << i;
-		}
-
-		if(ent->v.angles[0] != ent->baseline.angles[0])
-			bits |= U_ANGLE1;
-
-		if(ent->v.angles[1] != ent->baseline.angles[1])
-			bits |= U_ANGLE2;
-
-		if(ent->v.angles[2] != ent->baseline.angles[2])
-			bits |= U_ANGLE3;
-
-		if(ent->v.movetype == MOVETYPE_STEP)
-			bits |= U_NOLERP; // don't mess up the step animation
-
-		if(ent->baseline.colormap != ent->v.colormap)
-			bits |= U_COLORMAP;
-
-		if(ent->baseline.skin != ent->v.skin)
-			bits |= U_SKIN;
-
-		if(ent->baseline.frame != ent->v.frame)
-			bits |= U_FRAME;
-
-		if(ent->baseline.effects != ent->v.effects)
-			bits |= U_EFFECTS;
-
-		if(ent->baseline.modelindex != ent->v.modelindex)
-			bits |= U_MODEL;
-
-		if(e >= 256)
-			bits |= U_LONGENTITY;
-
-		if(bits >= 256)
-			bits |= U_MOREBITS;
-
-		//
-		// write the message
-		//
-		MSG_WriteByte(msg, bits | U_SIGNAL);
-
-		if(bits & U_MOREBITS)
-			MSG_WriteByte(msg, bits >> 8);
-		if(bits & U_LONGENTITY)
-			MSG_WriteShort(msg, e);
-		else
-			MSG_WriteByte(msg, e);
-
-		if(bits & U_MODEL)
-			MSG_WriteByte(msg, ent->v.modelindex);
-		if(bits & U_FRAME)
-			MSG_WriteByte(msg, ent->v.frame);
-		if(bits & U_COLORMAP)
-			MSG_WriteByte(msg, ent->v.colormap);
-		if(bits & U_SKIN)
-			MSG_WriteByte(msg, ent->v.skin);
-		if(bits & U_EFFECTS)
-			MSG_WriteByte(msg, ent->v.effects);
-		if(bits & U_ORIGIN1)
-			MSG_WriteCoord(msg, ent->v.origin[0]);
-		if(bits & U_ANGLE1)
-			MSG_WriteAngle(msg, ent->v.angles[0]);
-		if(bits & U_ORIGIN2)
-			MSG_WriteCoord(msg, ent->v.origin[1]);
-		if(bits & U_ANGLE2)
-			MSG_WriteAngle(msg, ent->v.angles[1]);
-		if(bits & U_ORIGIN3)
-			MSG_WriteCoord(msg, ent->v.origin[2]);
-		if(bits & U_ANGLE3)
-			MSG_WriteAngle(msg, ent->v.angles[2]);
-	};
-};
-
-/*
-=================
-SV_UserinfoChanged
-
-Pull specific info from a newly changed userinfo string
-into a more C freindly form.
-=================
-*/
-void CGameClient::UserinfoChanged(client_t *cl)
-{
-	char *val;
-	int i;
-
-	// call prog code to allow overrides
-	ge->ClientUserinfoChanged(cl->edict, cl->userinfo);
-
-	// name for C code
-	strncpy(cl->name, Info_ValueForKey(cl->userinfo, "name"), sizeof(cl->name) - 1);
-	// mask off high bit
-	for(i = 0; i < sizeof(cl->name); i++)
-		cl->name[i] &= 127;
-
-	// rate command
-	val = Info_ValueForKey(cl->userinfo, "rate");
-	if(strlen(val))
-	{
-		i = atoi(val);
-		cl->rate = i;
-		if(cl->rate < 100)
-			cl->rate = 100;
-		if(cl->rate > 15000)
-			cl->rate = 15000;
-	}
-	else
-		cl->rate = 5000;
-
-	// msg command
-	val = Info_ValueForKey(cl->userinfo, "msg");
-
-	if(strlen(val))
-		cl->messagelevel = atoi(val);
-};
-
-/*
-=================
-SV_ClientPrintf
-
-Sends text across to be displayed if the level passes
-FIXME: make this just a stuffed echo?
-=================
-*/
-void CGameClient::Printf(CGameClient *cl, /*int level,*/ char *fmt, ...)
-{
-	if(level < cl->messagelevel)
-		return;
-
+	char buf[1024];
 	va_list argptr;
-	char string[1024];
 
 	va_start(argptr, fmt);
-	vsprintf(string, fmt, argptr);
+	Q_vsnprintf(buf, ARRAYSIZE(buf) - 1, fmt, argptr);
 	va_end(argptr);
 
-	MSG_WriteByte(&cl->netchan.message, svc_print); // host_client->message
-	//MSG_WriteByte(&cl->netchan.message, level);
-	MSG_WriteString(&cl->netchan.message, string);
+	g_RehldsHookchains.m_SV_DropClient.callChain(SV_DropClient_hook, GetRehldsApiClient(mpClientData), crash != false, buf);
 };
 
-/*
-=======================
-SV_UpdateClientStats
-
-Performs a delta update of the stats array.  This should only be performed
-when a reliable message can be delivered this frame.
-=======================
-*/
-void CGameClient::UpdateStats(client_t *client)
+void CGameClient::Drop_internal(bool crash, const char *string)
 {
-	edict_t *ent;
-	int stats[MAX_CL_STATS];
-	int i;
+	unsigned char final[512];
+	float connection_time;
 
-	ent = client->edict;
-	memset(stats, 0, sizeof(stats));
+	int i = 0;
 
-	// if we are a spectator and we are tracking a player, we get his stats
-	// so our status bar reflects his
-	if(client->spectator && client->spec_track > 0)
-		ent = svs.clients[client->spec_track - 1].edict;
-
-	stats[STAT_HEALTH] = ent->v.health;
-	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->v.weaponmodel));
-	stats[STAT_AMMO] = ent->v.currentammo;
-	stats[STAT_ARMOR] = ent->v.armorvalue;
-	stats[STAT_SHELLS] = ent->v.ammo_shells;
-	stats[STAT_NAILS] = ent->v.ammo_nails;
-	stats[STAT_ROCKETS] = ent->v.ammo_rockets;
-	stats[STAT_CELLS] = ent->v.ammo_cells;
-	if(!client->spectator)
-		stats[STAT_ACTIVEWEAPON] = ent->v.weapon;
-	// stuff the sigil bits into the high bits of items for sbar
-	stats[STAT_ITEMS] = (int)ent->v.items | ((int)pr_global_struct->serverflags << 28);
-
-	for(i = 0; i < MAX_CL_STATS; i++)
+	if(!crash)
 	{
-		if(stats[i] != client->stats[i])
+		if(!mpClientData->fakeclient)
 		{
-			client->stats[i] = stats[i];
-			if(stats[i] >= 0 && stats[i] <= 255)
+			MSG_WriteByte(&mpClientData->netchan.message, svc_disconnect);
+			MSG_WriteString(&mpClientData->netchan.message, string);
+			final[0] = svc_disconnect;
+			Q_strncpy((char *)& final[1], string, Q_min(sizeof(final) - 1, Q_strlen(string) + 1));
+			final[sizeof(final) - 1] = 0;
+			i = 1 + Q_min(sizeof(final) - 1, Q_strlen(string) + 1);
+		};
+		
+		if(mpClientData->edict && mpClientData->spawned)
+			gEntityInterface.pfnClientDisconnect(mpClientData->edict);
+
+		CSystem::Printf("Dropped %s from server\nReason:  %s\n", mpClientData->name, string);
+
+		if(!mpClientData->fakeclient)
+			Netchan_Transmit(&mpClientData->netchan, i, final);
+	};
+
+	connection_time = realtime - mpClientData->netchan.connect_time;
+	
+	if(connection_time > 60.0f)
+	{
+		++g_psvs.stats.num_sessions;
+		g_psvs.stats.cumulative_sessiontime += connection_time;
+	};
+
+#ifdef REHLDS_FIXES
+	// prevent message reading after disconnect
+	if(mpClientData == host_client)
+		msg_readcount = net_message.cursize;
+#endif // REHLDS_FIXES
+	
+	// myNetChan->Clear();
+	Netchan_Clear(&mpClientData->netchan);
+
+	Steam_NotifyClientDisconnect(mpClientData);
+
+	mpClientData->active = FALSE;
+	mpClientData->connected = FALSE;
+	mpClientData->hasusrmsgs = FALSE;
+	mpClientData->fakeclient = FALSE;
+	mpClientData->spawned = FALSE;
+	mpClientData->fully_connected = FALSE;
+	mpClientData->name[0] = 0;
+	mpClientData->connection_started = realtime;
+	mpClientData->proxy = FALSE;
+	
+	COM_ClearCustomizationList(&mpClientData->customdata, FALSE);
+	
+	mpClientData->edict = NULL;
+	
+	Q_memset(mpClientData->userinfo, 0, sizeof(mpClientData->userinfo));
+	Q_memset(mpClientData->physinfo, 0, sizeof(mpClientData->physinfo));
+
+#ifdef REHLDS_FIXES
+	g_GameClients[mpClientData - g_psvs.clients]->SetSpawnedOnce(false);
+#endif // REHLDS_FIXES
+
+	mpServer->SendFullClientUpdateForAll(mpClientData);
+
+	//NotifyDedicatedServerUI("UpdatePlayers");
+};
+
+void CGameClient::Kick(const char *asReason, ...)
+{
+};
+
+void CGameClient::Ban()
+{
+};
+
+void CGameClient::BanEx(const char *asReason, ...)
+{
+};
+
+void CGameClient::TimeBan(uint anTimeInMins)
+{
+};
+
+void CGameClient::SetConnected(bool connected)
+{
+};
+
+bool CGameClient::IsConnected()
+{
+};
+
+void CGameClient::SetActive(bool active)
+{
+};
+
+bool CGameClient::IsActive()
+{
+};
+
+void CGameClient::Inactivate()
+{
+	mpClientData->active = FALSE;
+	mpClientData->connected = TRUE;
+	mpClientData->spawned = FALSE;
+	mpClientData->fully_connected = FALSE;
+
+	SZ_Clear(&mpClientData->netchan.message);
+	SZ_Clear(&mpClientData->datagram);
+
+	COM_ClearCustomizationList(&mpClientData->customdata, FALSE);
+	Q_memset(mpClientData->physinfo, 0, MAX_PHYSINFO_STRING);
+};
+
+void CGameClient::UpdateUserInfo()
+{
+	mpClientData->sendinfo = FALSE;
+	mpClientData->sendinfo_time = realtime + 1.0;
+	
+	ExtractFromUserinfo();
+	mpServer->SendFullClientUpdateForAll(mpClientData);
+};
+
+void CGameClient::ExtractFromUserinfo()
+{
+	int i;
+	char newname[MAX_NAME];
+	
+	char *userinfo = mpClientData->userinfo;
+
+	const char *val = Info_ValueForKey(userinfo, "name");
+	
+#ifdef REHLDS_FIXES
+	ReplaceSpecialCharactersInName(newname, val);
+#else  // REHLDS_FIXES
+	
+	Q_strncpy(newname, val, sizeof(newname) - 1);
+	newname[sizeof(newname) - 1] = '\0';
+
+	for(char *p = newname; *p; p++)
+	{
+		if(*p == '%' || *p == '&')
+			*p = ' ';
+	}
+
+	// Fix name to not start with '#', so it will not resemble userid
+	for(char *p = newname; *p == '#'; p++)
+		*p = ' ';
+#endif // REHLDS_FIXES
+
+#ifdef REHLDS_FIXES
+	Q_StripUnprintableAndSpace(newname);
+#else  // REHLDS_FIXES
+	TrimSpace(newname, newname);
+#endif // REHLDS_FIXES
+
+	if(!Q_UnicodeValidate(newname))
+		Q_UnicodeRepair(newname);
+
+	if(newname[0] == '\0' || !Q_stricmp(newname, "console")
+#ifdef REHLDS_FIXES
+	   ||
+	   Q_strstr(newname, "..") != NULL)
+#else  // REHLDS_FIXES
+	   )
+#endif // REHLDS_FIXES
+	{
+		Info_SetValueForKey(userinfo, "name", "unnamed", MAX_INFO_STRING);
+	}
+	else if(Q_strcmp(val, newname))
+		Info_SetValueForKey(userinfo, "name", newname, MAX_INFO_STRING);
+
+	// Check for duplicate names
+	mpServer->CheckForDuplicateNames(userinfo, TRUE, mpClientData - g_psvs.clients);
+
+	gEntityInterface.pfnClientUserInfoChanged(mpClientData->edict, userinfo);
+
+	val = Info_ValueForKey(userinfo, "name");
+	
+	Q_strncpy(mpClientData->name, val, sizeof(mpClientData->name) - 1);
+	mpClientData->name[sizeof(mpClientData->name) - 1] = '\0';
+
+	//ISteamGameServer_BUpdateUserData(mpClientData->network_userid.m_SteamID, mpClientData->name, 0);
+
+	val = Info_ValueForKey(userinfo, "rate");
+	
+	if(val[0] != 0)
+	{
+		i = Q_atoi(val);
+		mpClientData->netchan.rate = Q_clamp(float(i), MIN_RATE, MAX_RATE);
+	};
+
+	val = Info_ValueForKey(userinfo, "topcolor");
+	if(val[0] != 0)
+		mpClientData->topcolor = Q_atoi(val);
+	else
+		mpConsole->DPrintf("topcolor unchanged for %s\n", mpClientData->name);
+
+	val = Info_ValueForKey(userinfo, "bottomcolor");
+	if(val[0] != 0)
+		mpClientData->bottomcolor = Q_atoi(val);
+	else
+		mpConsole->DPrintf("bottomcolor unchanged for %s\n", mpClientData->name);
+
+	val = Info_ValueForKey(userinfo, "cl_updaterate");
+	if(val[0] != 0)
+	{
+		i = Q_atoi(val);
+		
+		if(i >= 10)
+			mpClientData->next_messageinterval = 1.0f / i;
+		else
+			mpClientData->next_messageinterval = 0.1f;
+	};
+
+	val = Info_ValueForKey(userinfo, "cl_lw");
+	mpClientData->lw = val[0] != 0 ? Q_atoi(val) != 0 : 0;
+
+	val = Info_ValueForKey(userinfo, "cl_lc");
+	mpClientData->lc = val[0] != 0 ? Q_atoi(val) != 0 : 0;
+
+	val = Info_ValueForKey(userinfo, "*hltv");
+	mpClientData->proxy = val[0] != 0 ? Q_atoi(val) == 1 : 0;
+
+	mpServer->CheckUpdateRate(&mpClientData->next_messageinterval);
+	CheckRate();
+};
+
+#ifdef REHLDS_FIXES
+void CGameClient::ReplaceSpecialCharactersInName(char *newname, const char *oldname)
+{
+	size_t remainChars = MAX_NAME - 1;
+	size_t n = 0;
+	
+	for(const char *s = oldname; *s != '\0' && remainChars; s++)
+	{
+		if(*s == '#' || *s == '%' || *s == '&' || (n && newname[n - 1] == '+' && (signed char)*s > 0 && isalnum(*s)))
+		{
+			if(remainChars < 3)
+				break;
+
+			// http://unicode-table.com/blocks/halfwidth-and-fullwidth-forms/
+			newname[n++] = char(0xEF);
+			newname[n++] = 0xBC | (((*s - 0x20) & 0x40) >> 6);
+			newname[n++] = 0x80 + ((*s - 0x20) & 0x3F);
+
+			remainChars -= 3;
+		}
+		else
+		{
+			newname[n++] = *s;
+			remainChars--;
+		};
+	};
+	
+	newname[n] = '\0';
+};
+#endif // REHLDS_FIXES
+
+int CGameClient::CalcPing()
+{
+	float ping;
+	int i;
+	int count;
+	int back;
+	client_frame_t *frame;
+	int idx;
+
+	if(mpClientData->fakeclient)
+		return 0;
+
+	if(SV_UPDATE_BACKUP <= 31)
+	{
+		back = SV_UPDATE_BACKUP * 0.5f;
+		
+		if(back <= 0)
+			return 0;
+	}
+	else
+		back = 16;
+
+	ping = 0.0f;
+	count = 0;
+	
+	for(i = 0; i < back; i++)
+	{
+		idx = mpClientData->netchan.incoming_acknowledged + ~i;
+		frame = &mpClientData->frames[SV_UPDATE_MASK & idx];
+
+		if(frame->ping_time > 0.0f)
+		{
+			ping += frame->ping_time;
+			count++;
+		};
+	};
+
+	if(count)
+	{
+		ping /= count;
+		
+		if(ping > 0.0f)
+			return ping * 1000.0f;
+	};
+	
+	return 0;
+};
+
+bool CGameClient::ShouldUpdatePing()
+{
+	if(mpClientData->proxy)
+	{
+		if(realtime < mpClientData->nextping)
+			return FALSE;
+
+		mpClientData->nextping = realtime + 2.0f;
+		return true;
+	};
+
+	// useless call
+	//CalcPing();
+
+	return mpClientData->lastcmd.buttons & IN_SCORE;
+};
+
+void CGameClient::CheckRate()
+{
+	if(sv_maxrate.value > 0.0f)
+	{
+		if(mpClientData->netchan.rate > sv_maxrate.value)
+		{
+			if(sv_maxrate.value > MAX_RATE)
+				mpClientData->netchan.rate = MAX_RATE;
+			else
+				mpClientData->netchan.rate = sv_maxrate.value;
+		};
+	};
+	
+	if(sv_minrate.value > 0.0f)
+	{
+		if(mpClientData->netchan.rate < sv_minrate.value)
+		{
+			if(sv_minrate.value < MIN_RATE)
+				mpClientData->netchan.rate = MIN_RATE;
+			else
+				mpClientData->netchan.rate = sv_minrate.value;
+		};
+	};
+};
+
+void CGameClient::BuildFrame()
+{
+};
+
+void CGameClient::WriteEntities(sizebuf_t *msg)
+{
+	client_frame_t *frame = &mpClientData->frames[SV_UPDATE_MASK & mpClientData->netchan.outgoing_sequence];
+
+	unsigned char *pvs = NULL;
+	unsigned char *pas = NULL;
+	
+	gEntityInterface.pfnSetupVisibility((edict_t *)mpClientData->pViewEntity,
+	                                    mpClientData->edict,
+	                                    &pvs,
+	                                    &pas);
+	unsigned char *pSet = pvs;
+
+	packet_entities_t *pack = &frame->entities;
+
+// for REHLDS_OPT_PEDANTIC: Allocate the MAX_PACKET_ENTITIES ents in the frame's
+// storage
+// This allows us to avoid intermediate 'fullpack' storage
+#ifdef REHLDS_OPT_PEDANTIC
+	SV_AllocPacketEntities(frame, MAX_PACKET_ENTITIES);
+	packet_entities_t *curPack = &frame->entities;
+	curPack->num_entities = 0;
+#else
+	SV_ClearPacketEntities(frame);
+	full_packet_entities_t fullpack;
+	fullpack.num_entities = 0;
+	full_packet_entities_t *curPack = &fullpack;
+#endif // REHLDS_OPT_PEDANTIC
+
+	qboolean sendping = ShouldUpdatePing();
+	int flags = mpClientData->lw != 0;
+
+	int e;
+	for(e = 1; e <= g_psvs.maxclients; e++)
+	{
+		client_t *cl = &g_psvs.clients[e - 1];
+		if((!cl->active && !cl->spawned) || cl->proxy)
+			continue;
+
+		qboolean add = gEntityInterface.pfnAddToFullPack(
+		&curPack->entities[curPack->num_entities], e, &g_psv.edicts[e], host_client->edict, flags, TRUE, pSet);
+		if(add)
+			++curPack->num_entities;
+	}
+
+	for(; e < g_psv.num_edicts; e++)
+	{
+		if(curPack->num_entities >= MAX_PACKET_ENTITIES)
+		{
+			mpConsole->DPrintf("Too many entities in visible packet list.\n");
+			break;
+		}
+
+		edict_t *ent = &g_psv.edicts[e];
+
+#ifdef REHLDS_OPT_PEDANTIC
+		// Part of gamedll's code is moved here to decrease amount of calls to
+		// AddToFullPack()
+		// We don't even try to transmit entities without model as well as invisible
+		// entities
+		if(ent->v.modelindex && !(ent->v.effects & EF_NODRAW))
+		{
+			qboolean add = gEntityInterface.pfnAddToFullPack(
+			&curPack->entities[curPack->num_entities], e, &g_psv.edicts[e], host_client->edict, flags, FALSE, pSet);
+			if(add)
+				++curPack->num_entities;
+		}
+#else
+		qboolean add = gEntityInterface.pfnAddToFullPack(
+		&curPack->entities[curPack->num_entities], e, &g_psv.edicts[e], host_client->edict, flags, FALSE, pSet);
+		if(add)
+			++curPack->num_entities;
+#endif // REHLDS_OPT_PEDANTIC
+	}
+
+#ifdef REHLDS_FIXES
+	if (sv_rehlds_attachedentities_playeranimationspeed_fix.value != 0)
+	{
+		int attachedEntCount[MAX_CLIENTS + 1] = {};
+		for (int i = curPack->num_entities - 1; i >= 0; i--)
+		{
+			auto &entityState = curPack->entities[i];
+			if (entityState.number > MAX_CLIENTS)
 			{
-				ClientReliableWrite_Begin(client, svc_updatestat, 3);
-				ClientReliableWrite_Byte(client, i);
-				ClientReliableWrite_Byte(client, stats[i]);
+				if (entityState.movetype == MOVETYPE_FOLLOW
+					&& 1 <= entityState.aiment && entityState.aiment <= MAX_CLIENTS)
+				{
+					attachedEntCount[entityState.aiment]++;
+				}
 			}
 			else
 			{
-				ClientReliableWrite_Begin(client, svc_updatestatlong, 6);
-				ClientReliableWrite_Byte(client, i);
-				ClientReliableWrite_Long(client, stats[i]);
+				if (attachedEntCount[entityState.number] != 0)
+				{
+					// Each attached entity causes StudioProcessGait for player
+					// But this will slow down normal animation predicting on client
+					entityState.framerate /= (1 + attachedEntCount[entityState.number]);
+				}
 			}
 		}
+	}
+#endif
+
+// for REHLDS_FIXES: Entities are already in the frame's storage, no need to
+// copy them
+#ifndef REHLDS_OPT_PEDANTIC
+	SV_AllocPacketEntities(frame, fullpack.num_entities);
+	
+	if(pack->num_entities)
+		Q_memcpy(pack->entities, fullpack.entities, sizeof(entity_state_t) * pack->num_entities);
+#endif
+
+	SV_EmitPacketEntities(mpClientData, pack, msg);
+	SV_EmitEvents(mpClientData, pack, msg);
+	if(sendping)
+		SV_EmitPings(mpClientData, msg);
+};
+
+void CGameClient::WriteFrame(sizebuf_t *msg)
+{
+};
+
+void CGameClient::ProcessFile(char *filename)
+{
+};
+
+bool CGameClient::SendDatagram(client_t *client)
+{
+	unsigned char buf[MAX_DATAGRAM];
+	sizebuf_t msg;
+
+	msg.buffername = "Client Datagram";
+	msg.data = buf;
+	msg.maxsize = sizeof(buf);
+	msg.cursize = 0;
+	msg.flags = SIZEBUF_ALLOW_OVERFLOW;
+
+	MSG_WriteByte(&msg, svc_time);
+	
+#ifdef REHLDS_FIXES
+	if(sv_rehlds_local_gametime.value != 0.0f)
+		MSG_WriteFloat(&msg, (float)g_GameClients[mpClientData - g_psvs.clients]->GetLocalGameTime());
+	else
+#endif
+	{
+		MSG_WriteFloat(&msg, g_psv.time);
 	};
+
+	WriteClientdata(&msg);
+	WriteEntities(&msg);
+
+	if(mpClientData->datagram.flags & SIZEBUF_OVERFLOWED)
+		mpConsole->Printf("WARNING: datagram overflowed for %s\n", mpClientData->name);
+	else
+	{
+#ifdef REHLDS_FIXES
+		if(msg.cursize + mpClientData->datagram.cursize > msg.maxsize)
+			mpConsole->DPrintf("Warning: Ignoring unreliable datagram for %s, would "
+			            "overflow on msg\n",
+			            mpClientData->name);
+		else
+			SZ_Write(&msg, mpClientData->datagram.data, mpClientData->datagram.cursize);
+#else
+		SZ_Write(&msg, mpClientData->datagram.data, mpClientData->datagram.cursize);
+#endif
+	}
+
+	SZ_Clear(&mpClientData->datagram);
+
+	if(msg.flags & SIZEBUF_OVERFLOWED)
+	{
+		mpConsole->Printf("WARNING: msg overflowed for %s\n", mpClientData->name);
+		SZ_Clear(&msg);
+	};
+
+	Netchan_Transmit(&mpClientData->netchan, msg.cursize, buf);
+	return true;
+};
+
+void CGameClient::SendServerInfo()
+{
+};
+
+void CGameClient::ExtractFromUserInfo()
+{
+};
+
+void CGameClient::SendFullUpdate(sizebuf_t *sb)
+{
+};
+
+char *CGameClient::GetClientIDString()
+{
+	static char idstr[64];
+
+	idstr[0] = 0;
+
+	if(!mpClientData)
+		return idstr;
+
+	if(mpClientData->netchan.remote_address.type == NA_LOOPBACK && mpClientData->network_userid.idtype == AUTH_IDTYPE_VALVE)
+		Q_snprintf(idstr, ARRAYSIZE(idstr) - 1, "VALVE_ID_LOOPBACK");
+	else
+	{
+		USERID_t *id = &mpClientData->network_userid;
+		Q_snprintf(idstr, ARRAYSIZE(idstr) - 1, "%s", SV_GetIDString(id));
+		idstr[ARRAYSIZE(idstr) - 1] = 0;
+	};
+
+	return idstr;
 };

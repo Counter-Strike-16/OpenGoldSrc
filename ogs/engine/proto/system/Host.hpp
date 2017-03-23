@@ -43,7 +43,7 @@ public:
 	
 	void EndGame(const char *message, ...);
 
-	//void NORETURN Error(const char *error, ...);
+	void NORETURN Error(const char *error, ...);
 
 	void WriteConfig();
 	void WriteCustomConfig();
@@ -68,7 +68,7 @@ public:
 	void _Frame(float time);
 	int Frame(float time, int iState, int *stateInfo);
 
-	//void CheckGore();
+	void CheckGore();
 
 	bool IsSinglePlayerGame();
 	bool IsServerActive();
@@ -84,10 +84,18 @@ private:
 	
 	//std::unique_ptr<ISound> mpSound;
 	
-	bool host_initialized; // true if into command execution
-	double host_frametime;
+	bool host_initialized{false}; // true if into command execution
+	
+	double realtime{0.0f};  // without any filtering or bounding;
+							// not bounded in any way, changed at
+							// start of every frame, never reset
+	double oldrealtime{0.0f}; // last frame run
+	
+	double host_frametime{0.0f};
 
-	int host_framecount; // incremented every frame, never reset
+	int host_framecount{0}; // incremented every frame, never reset
+	
+	double rolling_fps{0.0f};
 
 	//jmp_buf host_abortserver;
 	//jmp_buf host_enddemo;

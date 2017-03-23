@@ -609,7 +609,7 @@ extern deltacallback_t g_svdeltacallback;
 
 delta_t *SV_LookupDelta(char *name);
 NOXREF void SV_DownloadingModules();
-void SV_GatherStatistics();
+
 void SV_DeallocateDynamicData();
 void SV_ReallocateDynamicData();
 void SV_AllocClientFrames();
@@ -656,34 +656,14 @@ void SV_Spawn_f_internal();
 
 void SV_CheckUpdateRate(double *rate);
 
-void SV_RejectConnection(netadr_t *adr, char *fmt, ...);
-void SV_RejectConnectionForPassword(netadr_t *adr);
-
 int SV_GetFragmentSize(void *state);
 
 qboolean SV_FilterUser(USERID_t *userid);
 
-int SV_CheckProtocol(netadr_t *adr, int nProtocol);
-int SV_CheckProtocol_internal(netadr_t *adr, int nProtocol);
-
-bool SV_CheckChallenge_api(const netadr_t &adr, int nChallengeValue);
-int SV_CheckChallenge(netadr_t *adr, int nChallengeValue);
-
-int SV_CheckIPRestrictions(netadr_t *adr, int nAuthProtocol);
-int SV_CheckIPRestrictions_internal(netadr_t *adr, int nAuthProtocol);
-
-int SV_CheckIPConnectionReuse(netadr_t *adr);
-
-int SV_FinishCertificateCheck(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);
-int SV_FinishCertificateCheck_internal(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);
-int SV_CheckKeyInfo(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey);
-int SV_CheckKeyInfo_internal(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey);
 int SV_CheckForDuplicateSteamID(client_t *client);
 int SV_CheckForDuplicateNames(char *userinfo, qboolean bIsReconnecting, int nExcludeSlot);
-int SV_CheckUserInfo(netadr_t *adr, char *userinfo, qboolean bIsReconnecting, int nReconnectSlot, char *name);
-int SV_FindEmptySlot(netadr_t *adr, int *pslot, client_t **ppClient);
-void SV_ConnectClient();
-void SV_ConnectClient_internal();
+
+
 void SVC_Ping();
 int SV_GetChallenge(const netadr_t &adr);
 void SVC_GetChallenge();
@@ -693,35 +673,30 @@ int SV_GetFakeClientCount();
 NOXREF qboolean SV_GetModInfo(char *pszInfo, char *pszDL, int *version, int *size, qboolean *svonly, qboolean *cldll, char *pszHLVersion);
 NOXREF qboolean RequireValidChallenge(netadr_t *adr);
 NOXREF qboolean ValidInfoChallenge(netadr_t *adr, const char *nugget);
-NOXREF int GetChallengeNr(netadr_t *adr);
 NOXREF qboolean CheckChallengeNr(netadr_t *adr, int nChallengeValue);
-NOXREF void ReplyServerChallenge(netadr_t *adr);
+
 NOXREF qboolean ValidChallenge(netadr_t *adr, int challengeNr);
 NOXREF void SVC_InfoString();
 NOXREF void SVC_Info(qboolean bDetailed);
 NOXREF void SVC_PlayerInfo();
 NOXREF void SVC_RuleInfo();
 int SVC_GameDllQuery(const char *s);
+
 void SV_FlushRedirect();
 void SV_EndRedirect();
 void SV_BeginRedirect(redirect_t rd, netadr_t *addr);
 void SV_ResetRcon_f();
 void SV_AddFailedRcon(netadr_t *adr);
-qboolean SV_CheckRconFailure(netadr_t *adr);
-int SV_Rcon_Validate();
-void SV_Rcon(netadr_t *net_from_);
-void SV_ConnectionlessPacket();
-void SV_CheckRate(client_t *cl);
-void SV_ProcessFile(client_t *cl, char *filename);
+
+
+
 qboolean SV_FilterPacket();
 void SV_SendBan();
-void SV_ReadPackets();
+
 // NOBODY int ntohl();
 // NOBODY int htons();
-void SV_CheckTimeouts();
-int SV_CalcPing(client_t *cl);
+
 void SV_SendFullClientUpdateForAll(client_t *client);
-void SV_FullClientUpdate(client_t *cl, sizebuf_t *sb);
 void SV_EmitEvents(client_t *cl, packet_entities_t *pack, sizebuf_t *msg);
 void SV_EmitEvents_internal(client_t *cl, packet_entities_t *pack, sizebuf_t *msg);
 void SV_AddToFatPVS(vec_t *org, mnode_t *node);
@@ -738,19 +713,15 @@ int SV_FindBestBaseline(int index, entity_state_t **baseline, entity_state_t *to
 int SV_CreatePacketEntities(sv_delta_t type, client_t *client, packet_entities_t *to, sizebuf_t *msg);
 int SV_CreatePacketEntities_internal(sv_delta_t type, client_t *client, packet_entities_t *to, sizebuf_t *msg);
 void SV_EmitPacketEntities(client_t *client, packet_entities_t *to, sizebuf_t *msg);
-qboolean SV_ShouldUpdatePing(client_t *client);
+
 NOXREF qboolean SV_HasEventsInQueue(client_t *client);
 void SV_GetNetInfo(client_t *client, int *ping, int *packet_loss);
 int SV_CheckVisibility(edict_t *entity, unsigned char *pset);
 void SV_EmitPings(client_t *client, sizebuf_t *msg);
-void SV_WriteEntitiesToClient(client_t *client, sizebuf_t *msg);
 void SV_CleanupEnts();
-qboolean SV_SendClientDatagram(client_t *client);
-void SV_UpdateUserInfo(client_t *client);
+
 void SV_UpdateToReliableMessages();
 void SV_SkipUpdates();
-void SV_SendClientMessages();
-void SV_ExtractFromUserinfo(client_t *cl);
 int SV_ModelIndex(const char *name);
 void SV_AddResource(resourcetype_t type, const char *name, int size, unsigned char flags, int index);
 void SV_CreateGenericResources();
@@ -760,9 +731,8 @@ void SV_PropagateCustomizations();
 void SV_WriteVoiceCodec(sizebuf_t *pBuf);
 void SV_WriteVoiceCodec_internal(sizebuf_t *pBuf);
 void SV_CreateBaseline();
-void SV_BroadcastCommand(char *fmt, ...);
+
 void SV_BuildReconnect(sizebuf_t *msg);
-NOXREF void SV_ReconnectAllClients();
 void SetCStrikeFlags();
 void SV_ActivateServer(int runPhysics);
 void SV_ActivateServer_internal(int runPhysics);
@@ -785,26 +755,21 @@ void SV_ListIP_f();
 void SV_WriteIP_f();
 
 void SV_KickPlayer(int nPlayerSlot, int nReason);
-void SV_InactivateClients();
+
 void SV_FailDownload(const char *filename);
 const char *Q_stristr(const char *pStr, const char *pSearch);
 qboolean IsSafeFileToDownload(const char *filename);
 void SV_BeginFileDownload_f();
-void SV_SetMaxclients();
-void SV_HandleRconPacket();
-void SV_CheckCmdTimes();
+
 void SV_CheckForRcon();
 qboolean SV_IsSimulating();
 void SV_CheckMapDifferences();
-void SV_Frame();
+
 void SV_Drop_f();
 void SV_RegisterDelta(char *name, char *loadfile);
 
 void SV_InitDeltas();
 void SV_InitEncoders();
-void SV_Init();
-
-void SV_Shutdown();
 
 qboolean SV_CompareUserID(USERID_t *id1, USERID_t *id2);
 qboolean SV_CompareUserID_internal(USERID_t *id1, USERID_t *id2);
@@ -812,16 +777,11 @@ qboolean SV_CompareUserID_internal(USERID_t *id1, USERID_t *id2);
 char *SV_GetIDString(USERID_t *id);
 char *SV_GetIDString_internal(USERID_t *id);
 
-char *SV_GetClientIDString(client_t *client);
-
 void SV_ClearClientStates();
 
 void SV_DropClient_api(IGameClient *cl, bool crash, const char *fmt, ...);
-void SV_DropClient(client_t *cl, qboolean crash, const char *fmt, ...);
-void SV_DropClient_internal(client_t *cl, qboolean crash, const char *string);
 
 void SV_ClientPrintf(const char *fmt, ...);
-void SV_BroadcastPrintf(const char *fmt, ...);
 
 qboolean Master_IsLanGame();
 void Master_Heartbeat_f();

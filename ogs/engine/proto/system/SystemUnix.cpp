@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,43 +27,32 @@
  */
 
 /// @file
+/// @brief unix-specific impl of system funcs
 
-#pragma once
+#ifdef _WIN32
+	#error "You shouldn't use this file on your platform!"
+#endif
 
-class IEngine
+#include "precompiled.hpp"
+
+NOXREF void CSystem::Sleep(int msec)
 {
-public:
-	enum
-	{
-		QUIT_NOTQUITTING = 0,
-		QUIT_TODESKTOP,
-		QUIT_RESTART
-	};
-
-	virtual ~IEngine(){}
+	NOXREFCHECK;
 	
-	virtual bool Load(bool dedicated, char *basedir, const char *cmdline) = 0;
-	virtual void Unload() = 0;
-	
-	virtual void SetState(int iState) = 0;
-	virtual int GetState() = 0;
-	
-	virtual void SetSubState(int iSubState) = 0;
-	virtual int GetSubState() = 0;
-
-	virtual int Frame() = 0;
-	virtual double GetFrameTime() = 0;
-	virtual double GetCurTime() = 0;
-
-	virtual void TrapKey_Event(int key, bool down) = 0;
-	virtual void TrapMouse_Event(int buttons, bool down) = 0;
-
-	virtual void StartTrapMode() = 0;
-	virtual bool IsTrapping() = 0;
-	virtual bool CheckDoneTrapping(int &buttons, int &key) = 0;
-
-	virtual int GetQuitting() = 0;
-	virtual void SetQuitting(int quittype) = 0;
+	usleep(1000 * msec);
 };
 
-extern IEngine *eng;
+double Sys_FloatTime()
+{
+	static struct timespec start_time;
+	static bool bInitialized;
+	struct timespec now;
+
+	if(!bInitialized)
+	{
+		bInitialized = 1;
+		clock_gettime(1, &start_time);
+	}
+	clock_gettime(1, &now);
+	return (now.tv_sec - start_time.tv_sec) + now.tv_nsec * 0.000000001;
+};

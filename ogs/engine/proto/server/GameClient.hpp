@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief Representation of a client connected to server (+ OOP wrapper)
+/// @brief representation of a client connected to server (+ OOP wrapper)
 
 #pragma once
 
@@ -140,30 +140,34 @@ typedef struct client_s
 } client_t;
 
 // ReHLDS provides some OOP interfaces from itself
-// But we want to use OOP in the engine too (by wrapping already present code to preserve (bug/back)ward-compat)
+// But we want to use OOP inside the engine code too
 class CGameClient : public IGameClient
 {
 public:
-	CGameClient(int id, client_t *apPODClient);
+	CGameClient(int id, client_t *apClientData);
 	~CGameClient();
 
 	void Disconnect(const char *asReason, ...);
-	void Drop();
-
-	// Most valuable funcs
-	// Usually provided by amx plugins
+	void Reconnect(const char *message);
+	void Drop(bool crash, const char *fmt, ...);
+	
 	void Kick(const char *asReason, ...);
 	void Ban();
 	void BanEx(const char *asReason, ...);
 	void TimeBan(uint anTimeInMins);
 
 	void SetConnected(bool connected);
-	bool IsConnected();
+	bool IsConnected() bool;
 
 	void SetActive(bool active);
-	bool IsActive();
+	bool IsActive() bool;
+	
+	bool IsFakeClient() const; // IsBot
+	
+	void Inactivate();
 
 	void UpdateUserInfo();
+	void ExtractFromUserinfo();
 
 	int CalcPing();
 	bool ShouldUpdatePing();
@@ -182,23 +186,19 @@ public:
 
 	void ExtractFromUserInfo();
 
-	void FullUpdate(sizebuf_t *sb);
+	void SendFullUpdate(sizebuf_t *sb);
+	
+	char *GetIDString();
 
-	const char *GetName()
-	{
-		return mpPODClient->name;
-	}
-	int GetID()
-	{
-		return mpPODClient->userid;
-	}
-	edict_t *GetEdict()
-	{
-		return mpPODClient->edict;
-	}
-
+	const char *GetName() const {return mpClientData->name;}
+	int GetID() const {return mpClientData->userid;}
+	edict_t *GetEdict() const {return mpClientData->edict;}
 private:
-	client_t *mpPODClient;
+	void Drop_internal(bool crash, const char *string);
+	void ReplaceSpecialCharactersInName(char *newname, const char *oldname);
+	
+	client_t *mpClientData{nullptr};
+	CGameServer *mpServer{nullptr};
 };
 
 /*

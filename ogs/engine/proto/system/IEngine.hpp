@@ -27,35 +27,44 @@
  */
 
 /// @file
-/// @brief engine launcher for dedicated mode
 
 #pragma once
 
-#include "common/commontypes.h"
-#include "public/engine_hlds_api.h"
-#include "public/idedicatedexports.h"
-
-extern IDedicatedExports *dedicated_;
-
-class CDedicatedServerAPI : public IDedicatedServerAPI
+class IEngine
 {
 public:
-	bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown();
+	enum
+	{
+		QUIT_NOTQUITTING = 0,
+		QUIT_TODESKTOP,
+		QUIT_RESTART
+	};
 
-	bool RunFrame();
-
-	void AddConsoleText(char *text);
-
-	void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
-private:
-	// non-virtual function's of wrap for hooks a virtual
-	// Only need to HOOK_ENGINE
-	bool Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown_noVirt();
-	bool RunFrame_noVirt();
-	void AddConsoleText_noVirt(char *text);
-	void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char*pszMap);
+	virtual ~IEngine(){}
 	
-	char msOrigCmd[1024];
+	virtual bool Load(bool dedicated, char *basedir, const char *cmdline) = 0;
+	virtual void Unload() = 0;
+	
+	virtual void SetState(int iState) = 0;
+	virtual int GetState() = 0;
+	
+	virtual void SetSubState(int iSubState) = 0;
+	virtual int GetSubState() = 0;
+
+	virtual int Frame() = 0;
+	
+	virtual double GetFrameTime() = 0;
+	virtual double GetCurTime() = 0;
+
+	virtual void TrapKey_Event(int key, bool down) = 0;
+	virtual void TrapMouse_Event(int buttons, bool down) = 0;
+
+	virtual void StartTrapMode() = 0;
+	virtual bool IsTrapping() = 0;
+	virtual bool CheckDoneTrapping(int &buttons, int &key) = 0;
+
+	virtual int GetQuitting() = 0;
+	virtual void SetQuitting(int quittype) = 0;
 };
+
+extern IEngine *eng;

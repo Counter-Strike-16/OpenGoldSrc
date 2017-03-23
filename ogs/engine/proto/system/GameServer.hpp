@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,35 +27,47 @@
  */
 
 /// @file
-/// @brief engine launcher for dedicated mode
 
 #pragma once
 
-#include "common/commontypes.h"
-#include "public/engine_hlds_api.h"
-#include "public/idedicatedexports.h"
+#include <memory>
+#include "network/LoginServer.hpp"
 
-extern IDedicatedExports *dedicated_;
-
-class CDedicatedServerAPI : public IDedicatedServerAPI
+class CGameServer
 {
 public:
-	bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown();
-
-	bool RunFrame();
-
-	void AddConsoleText(char *text);
-
-	void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
-private:
-	// non-virtual function's of wrap for hooks a virtual
-	// Only need to HOOK_ENGINE
-	bool Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown_noVirt();
-	bool RunFrame_noVirt();
-	void AddConsoleText_noVirt(char *text);
-	void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char*pszMap);
+	void Init();
+	void Shutdown();
 	
-	char msOrigCmd[1024];
+	void Frame(float frametime);
+	
+	void ClearClientStates();
+	
+	bool IsActive();
+	
+	void SetupMaxClients();
+	
+	void HandleConnectionlessPacket();
+	
+	void BroadcastCommand(char *fmt, ...);
+	
+	void ConnectClient();
+	
+	void InactivateClients();
+	NOXREF void ReconnectAllClients();
+	
+	bool FindEmptySlot(int *pslot, client_t **ppClient);
+	
+	void CountPlayers(int *clients);
+private:
+	void CheckCmdTimes();
+	void ReadPackets();
+	void CheckTimeouts();
+	void SendClientMessages();
+	void CheckMapDifferences();
+	void GatherStatistics();
+	
+	void ConnectClient_internal();
+	
+	std::unique_ptr<CLoginServer> mpLoginServer;
 };

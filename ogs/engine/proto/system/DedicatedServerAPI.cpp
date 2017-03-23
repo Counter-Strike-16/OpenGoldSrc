@@ -32,10 +32,11 @@
 #include "system/DedicatedServerAPI.hpp"
 #include "system/common.hpp"
 #include "system/Host.hpp"
+#include "system/Engine.hpp"
 
 /*
 #include "console/cmd.hpp"
-#include "system/engine.hpp"
+
 #include "system/system.hpp"
 #include "system/traceinit.h"
 #include "system/buildinfo.hpp"
@@ -87,14 +88,14 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 
 	dedicated_->Sys_Printf("Hello world! I'm alive!");
 
-	//Q_strncpy(m_OrigCmd, cmdline, charsmax(m_OrigCmd));
+	//Q_strncpy(msOrigCmd, cmdline, charsmax(msOrigCmd));
 
 	//if(!Q_strstr(cmdline, "-nobreakpad"))
 		//CRehldsPlatformHolder::get()->SteamAPI_UseBreakpadCrashHandler(va("%d", build_number()), __BUILD_DATE__, __BUILD_TIME__, 0, 0, 0);
 
-	//TraceInit("Sys_InitArgv( m_OrigCmd )", "Sys_ShutdownArgv()", 0);
-	//Sys_InitArgv(m_OrigCmd);
-	//eng->SetQuitting(IEngine::QUIT_NOTQUITTING);
+	//TraceInit("Sys_InitArgv( msOrigCmd )", "Sys_ShutdownArgv()", 0);
+	//CSystem::InitArgv(msOrigCmd);
+	eng->SetQuitting(IEngine::QUIT_NOTQUITTING);
 	
 	//registry->Init();
 
@@ -102,12 +103,12 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 
 	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
 
-	//if(FileSystem_Init(basedir, (void*)filesystemFactory) && game->Init(0) && eng->Load(true, basedir, cmdline))
+	//if(mpFileSystem->Init(basedir, (void*)filesystemFactory) && game->Init(0) && eng->Load(true, basedir, cmdline))
 	{
-		//char text[256];
+		char text[256];
 
 		//Q_snprintf(text, ARRAYSIZE(text), "exec %s\n", servercfgfile.string);
-		//text[255] = 0;
+		text[255] = 0;
 
 		//mpCmdBuffer->InsertText(text);
 		
@@ -123,11 +124,11 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 
 int CDedicatedServerAPI::Shutdown_noVirt()
 {
-	//eng->Unload();
+	eng->Unload();
 	//game->Shutdown();
 
 	//TraceShutdown("FileSystem_Shutdown()", 0);
-	//FileSystem_Shutdown();
+	//mpFileSystem->Shutdown();
 
 	//registry->Shutdown();
 
@@ -138,10 +139,10 @@ int CDedicatedServerAPI::Shutdown_noVirt()
 
 bool CDedicatedServerAPI::RunFrame_noVirt()
 {
-	//if(eng->GetQuitting())
-		//return false;
+	if(eng->GetQuitting())
+		return false;
 
-	//eng->Frame();
+	eng->Frame();
 	return true;
 };
 

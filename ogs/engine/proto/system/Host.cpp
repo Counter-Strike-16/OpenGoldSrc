@@ -36,15 +36,61 @@
 #include <cstring>
 
 /*
+* Globals initialization
+*/
+#ifndef HOOK_ENGINE
+
+cvar_t host_name = { "hostname", "Half-Life", 0, 0.0f, NULL };
+cvar_t host_speeds = { "host_speeds", "0", 0, 0.0f, NULL };
+cvar_t host_profile = { "host_profile", "0", 0, 0.0f, NULL };
+cvar_t developer = { "developer", "0", 0, 0.0f, NULL };
+cvar_t host_limitlocal = { "host_limitlocal", "0", 0, 0.0f, NULL };
+cvar_t skill = { "skill", "1", 0, 0.0f, NULL };
+cvar_t deathmatch = { "deathmatch", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t coop = { "coop", "0", FCVAR_SERVER, 0.0f, NULL };
+
+cvar_t sys_ticrate = { "sys_ticrate", "100.0", 0, 0.0f, NULL };
+cvar_t sys_timescale = { "sys_timescale", "1.0", 0, 0.0f, NULL };
+cvar_t fps_max = { "fps_max", "100.0", FCVAR_ARCHIVE, 0.0f, NULL };
+cvar_t host_killtime = { "host_killtime", "0.0", 0, 0.0f, NULL };
+cvar_t sv_stats = { "sv_stats", "1", 0, 0.0f, NULL };
+cvar_t fps_override = { "fps_override", "0", 0, 0.0f, NULL };
+cvar_t host_framerate = { "host_framerate", "0", 0, 0.0f, NULL };
+cvar_t pausable = { "pausable", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t suitvolume = { "suitvolume", "0.25", FCVAR_ARCHIVE, 0.0f, NULL };
+
+#else // HOOK_ENGINE
+
+cvar_t host_name;
+cvar_t host_speeds;
+cvar_t host_profile;
+cvar_t developer;
+cvar_t host_limitlocal;
+cvar_t skill;
+cvar_t deathmatch;
+cvar_t coop;
+
+cvar_t sys_ticrate;
+cvar_t sys_timescale;
+cvar_t fps_max;
+cvar_t host_killtime;
+cvar_t sv_stats;
+cvar_t fps_override;
+cvar_t host_framerate;
+cvar_t pausable;
+cvar_t suitvolume;
+
+#endif // HOOK_ENGINE
+
+/*
 ====================
 Host_Init
 ====================
 */
 int CHost::Init(quakeparms_t *parms)
 {
-	/*
 	char versionString[256];
-
+/*
 	CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
 
 	Q_memcpy(&host_parms, parms, sizeof(host_parms));
@@ -116,11 +162,11 @@ int CHost::Init(quakeparms_t *parms)
 	Q_memset(&g_module, 0, sizeof(g_module));
 	if(cls.state != ca_dedicated)
 	{
-		// Sys_Error("Only dedicated server mode is supported");
+		// CSystem::Error("Only dedicated server mode is supported");
 
 		color24 *disk_basepal = (color24 *)COM_LoadHunkFile("gfx/palette.lmp");
 		if(!disk_basepal)
-			Sys_Error("Host_Init: Couldn't load gfx/palette.lmp");
+			CSystem::Error("Host_Init: Couldn't load gfx/palette.lmp");
 
 		host_basepal = (unsigned short *)Hunk_AllocName(
 		sizeof(PackedColorVec) * 256, "palette.lmp");
@@ -170,9 +216,10 @@ int CHost::Init(quakeparms_t *parms)
 	host_hunklevel = Hunk_LowMark();
 	giActive = DLL_ACTIVE;
 	scr_skipupdate = FALSE;
-
+*/
+	
 	CheckGore();
-	*/
+	
 	host_initialized = true;
 	return 1;
 };
@@ -226,13 +273,14 @@ void CHost::Shutdown()
 		WriteConfig();
 
 	/*
-	SV_ServerShutdown();
+	SV_ServerShutdown(); // Deactivate
 	Voice_Deinit();
 	
 	host_initialized = false;
 
 	// CDAudio_Shutdown();
 	// VGui_Shutdown();
+	
 	if(cls.state != ca_dedicated)
 		ClientDLL_Shutdown();
 
@@ -310,7 +358,7 @@ void CHost::EndGame(const char *message, ...)
 	cls.demonum = oldn;
 
 	if(!cls.state)
-		Sys_Error("%s: %s\n", __FUNCTION__, string);
+		CSystem::Error("%s: %s\n", __FUNCTION__, string);
 
 	if(oldn != -1)
 	{
@@ -326,7 +374,42 @@ void CHost::EndGame(const char *message, ...)
 	longjmp(host_abortserver, 1);*/
 };
 
-//void NORETURN Error(const char *error, ...);
+void NORETURN CHost::Error(const char *error, ...)
+{
+	static bool inerror = false;
+	
+	va_list argptr;
+	va_start(argptr, error);
+
+	if(inerror)
+		CSystem::Error("%s: recursively entered", __FUNCTION__);
+
+	inerror = true;
+	
+	SCR_EndLoadingPlaque();
+	
+	char string[1024];
+	Q_vsnprintf(string, sizeof(string), error, argptr);
+	va_end(argptr);
+
+	if(g_psv.active && developer.value != 0.0f)
+		CL_WriteMessageHistory(0, 0);
+
+	mpConsole->Printf("%s: %s\n", __FUNCTION__, string);
+	
+	if(g_psv.active)
+		ShutdownServer(false);
+
+	if(cls.state)
+	{
+		CL_Disconnect();
+		cls.demonum = -1;
+		inerror = false;
+		longjmp(host_abortserver, 1);
+	};
+	
+	CSystem::Error("%s: %s\n", __FUNCTION__, string);
+};
 
 void CHost::WriteConfig()
 {
@@ -612,10 +695,10 @@ void CHost::ClearMemory(bool bQuiet)
 
 bool CHost::FilterTime(float time)
 {
-	/*
 	float fps;
 	static int command_line_ticrate = -1;
 
+	/*
 	if(host_framerate.value > 0.0f)
 	{
 		if(IsSinglePlayerGame() || cls.demoplayback)
@@ -627,7 +710,8 @@ bool CHost::FilterTime(float time)
 	};
 
 	realtime += sys_timescale.value * time;
-	if(g_bIsDedicatedServer)
+
+	if(gbIsDedicatedServer)
 	{
 		if(command_line_ticrate == -1)
 			command_line_ticrate = COM_CheckParm("-sys_ticrate");
@@ -641,46 +725,52 @@ bool CHost::FilterTime(float time)
 		{
 			if(1.0f / (fps + 1.0f) > realtime - oldrealtime)
 				return false;
-		}
+		};
 	}
 	else
 	{
 		fps = 31.0f;
-		if(g_psv.active || cls.state == ca_disconnected ||
-		   cls.state == ca_active)
+
+		if(g_psv.active || cls.state == ca_disconnected || cls.state == ca_active)
 		{
 			fps = 0.5f;
+
 			if(fps_max.value >= 0.5f)
 				fps = fps_max.value;
-		}
+		};
+
 		if(!fps_override.value)
 		{
 			if(fps > 100.0f)
 				fps = 100.0f;
-		}
+		};
+
 		if(cl.maxclients > 1)
 		{
 			if(fps < 20.0f)
 				fps = 20.0f;
-		}
+		};
+
 		if(gl_vsync.value)
 		{
 			if(!fps_override.value)
 				fps = 100.f;
-		}
+		};
+
 		if(!cls.timedemo)
 		{
 			if(sys_timescale.value / (fps + 0.5f) > realtime - oldrealtime)
 				return false;
-		}
-	}
+		};
+	};
+	*/
 
 	host_frametime = realtime - oldrealtime;
 	oldrealtime = realtime;
 
 	if(host_frametime > 0.25f)
 		host_frametime = 0.25f;
-	*/
+
 	return true;
 };
 
@@ -721,7 +811,6 @@ void CHost::GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, cha
 
 void CHost::Speeds(double *time)
 {
-	/*
 	float pass1, pass2, pass3, pass4, pass5;
 	double frameTime;
 	double fps;
@@ -745,7 +834,7 @@ void CHost::Speeds(double *time)
 		
 #ifndef REHLDS_FIXES
 	};
-	
+	/*
 		if(host_speeds.value != 0.0f)
 #endif // REHLDS_FIXES
 		{
@@ -815,34 +904,32 @@ void CHost::UpdateSounds()
 	};
 
 	/*
-          #if defined( _WIN32 ) && !defined( SWDS )
-          // update audio
-          if ( cl.IsActive() )
-          {
-                  S_Update( &s_AudioState );
-          }
-          else
-          {
-                  S_Update( NULL );
-          }
-          #endif
+#if defined(_WIN32) && !defined(SWDS)
+	// update audio
+	if(cl.IsActive())
+	{
+		S_Update(&s_AudioState);
+	};
+#else
+	{
+		S_Update(NULL);
+	};
+#endif
   */
 };
 
 void CHost::CheckConnectionFailure()
 {
-	/*
 	static int frames = 5;
 	
-	if(cls.state == ca_disconnected && (giSubState & 4 || console.value == 0.0f))
+	//if(cls.state == ca_disconnected && (giSubState & 4 || console.value == 0.0f))
 	{
 		if(frames-- > 0)
 			return;
 
-		giActive = DLL_PAUSED;
+		//giActive = DLL_PAUSED;
 		frames = 5;
 	};
-	*/
 };
 
 /*
@@ -888,10 +975,11 @@ void CHost::_Frame(float time)
 	if(g_psv.active)
 		CL_Move();
 
-	host_times[1] = Sys_FloatTime();
-	SV_Frame();
+	host_times[1] = CSystem::FloatTime();
+	
+	SV_Frame(host_frametime); // netserver or gameserver (works as netserver->gameserver) frame
 
-	host_times[2] = Sys_FloatTime();
+	host_times[2] = CSystem::FloatTime();
 	SV_CheckForRcon();
 
 	if(!g_psv.active)
@@ -921,22 +1009,23 @@ void CHost::_Frame(float time)
 	CL_MoveSpectatorCamera();
 
 	host_times[3] = Sys_FloatTime();
-
+*/
 	UpdateScreen();
 
-	host_times[4] = Sys_FloatTime();
+	//host_times[4] = Sys_FloatTime();
 
-	CL_DecayLights();
+	//CL_DecayLights();
 
 	UpdateSounds();
 
-	host_times[0] = host_times[5];
-	host_times[5] = Sys_FloatTime();
+	//host_times[0] = host_times[5];
+	//host_times[5] = Sys_FloatTime();
 
 	Speeds(host_times);
 
 	++host_framecount;
 
+	/*
 	CL_AdjustClock();
 
 	if(sv_stats.value == 1.0f)
@@ -982,7 +1071,7 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 		*stateInfo = giStateInfo;
 		giStateInfo = 0;
 		mpCmdBuffer->Execute();
-	}
+	};
 
 	if(host_profile.value != 0.0)
 	{
@@ -1010,7 +1099,15 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 	return 0; //giActive;
 };
 
-//void CheckGore();
+void CHost::CheckGore()
+{
+	float fValue = bLowViolenceBuild ? 0.0f : 1.0f;
+	
+	Cvar_SetValue("violence_hblood", fValue);
+	Cvar_SetValue("violence_hgibs", fValue);
+	Cvar_SetValue("violence_ablood", fValue);
+	Cvar_SetValue("violence_agibs", fValue);
+};
 
 bool CHost::IsSinglePlayerGame()
 {
