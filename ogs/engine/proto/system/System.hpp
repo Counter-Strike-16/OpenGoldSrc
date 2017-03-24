@@ -31,6 +31,10 @@
 
 #pragma once
 
+#include "common/maintypes.h"
+
+typedef struct quakeparms_s quakeparms_t;
+
 extern void (*Launcher_ConsolePrintf)(char *, ...);
 
 void Legacy_Sys_Printf(char *fmt, ...);
@@ -40,11 +44,16 @@ NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage);
 NOXREF void Legacy_MP3subsys_Suspend_Audio();
 NOXREF void Legacy_MP3subsys_Resume_Audio();
 
+double Sys_FloatTime();
+
 class CSystem
 {
 public:
 	static NOBODY void Init();
 	static NOXREF void Shutdown();
+	
+	static void InitFloatTime();
+	static void ShutdownFloatTime();
 	
 	static void InitArgv(char *lpCmdLine);
 	static NOXREF void ShutdownArgv();
@@ -78,6 +87,8 @@ public:
 	static NOXREF bool IsWin98();
 private:
 	static void SetupLegacyAPIs();
+	
+	static quakeparms_t *mhost_parms;
 	
 	static bool mbIsWin95{false};
 	static bool mbIsWin98{false};

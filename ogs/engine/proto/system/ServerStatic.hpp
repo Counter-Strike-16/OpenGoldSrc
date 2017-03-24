@@ -30,32 +30,60 @@
 
 #pragma once
 
-#include "common/maintypes.h"
+#include "common/commontypes.h"
+#include "common/netadr.h"
 
-class IGame
+typedef struct server_log_s
 {
-public:
-	virtual ~IGame(){}
+	qboolean active;
+	qboolean net_log_;
 	
-	virtual bool Init(void *pvInstance) = 0;
-	virtual bool Shutdown() = 0;
+	netadr_t net_address_;
+	
+	void *file;
+} server_log_t;
 
-	virtual bool CreateGameWindow() = 0;
+typedef struct server_stats_s
+{
+	int num_samples;
+	int at_capacity;
+	int at_empty;
+	
+	float capacity_percent;
+	float empty_percent;
+	
+	int minusers;
+	int maxusers;
+	
+	float cumulative_occupancy;
+	float occupancy;
+	
+	int num_sessions;
+	
+	float cumulative_sessiontime;
+	float average_session_len;
+	float cumulative_latency;
+	float average_latency;
+} server_stats_t;
 
-	virtual void SleepUntilInput(int time) = 0;
-
-	virtual HWND GetMainWindow() = 0;
-	virtual HWND *GetMainWindowAddress() = 0;
-
-	virtual void SetWindowXY(int x, int y) = 0;
-	virtual void SetWindowSize(int w, int h) = 0;
-	virtual void GetWindowRect(int *x, int *y, int *w, int *h) = 0;
-
-	virtual bool IsActiveApp() = 0;
-	virtual bool IsMultiplayer() = 0;
-
-	virtual void PlayStartupVideos() = 0;
-	virtual void PlayAVIAndWait(const char *aviFile) = 0;
-
-	virtual void SetCursorVisible(bool bState) = 0;
-};
+typedef struct server_static_s
+{
+	qboolean dll_initialized;
+	
+	struct client_s *clients;
+	
+	int maxclients;
+	int maxclientslimit;
+	
+	int spawncount;
+	int serverflags;
+	
+	server_log_t log;
+	
+	double next_cleartime;
+	double next_sampletime;
+	
+	server_stats_t stats;
+	
+	qboolean isSecure;
+} server_static_t;

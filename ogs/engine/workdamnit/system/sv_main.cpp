@@ -1287,128 +1287,7 @@ void SV_SendResources(sizebuf_t *msg)
 	MSG_EndBitWriting(msg);
 }
 
-void SV_WriteClientdataToMessage(client_t *client, sizebuf_t *msg)
-{
-	edict_t *ent = client->edict;
-	client_frame_t *frame =
-	&client->frames[SV_UPDATE_MASK & client->netchan.outgoing_sequence];
-	int bits = (SV_UPDATE_MASK & host_client->delta_sequence);
 
-	frame->senttime = realtime;
-	frame->ping_time = -1.0f;
-
-	if(client->chokecount)
-	{
-		MSG_WriteByte(msg, svc_choke);
-		client->chokecount = 0;
-	}
-
-	if(ent->v.fixangle)
-	{
-		if(ent->v.fixangle == 2)
-		{
-			MSG_WriteByte(msg, svc_addangle);
-			MSG_WriteHiresAngle(msg, ent->v.avelocity[1]);
-			ent->v.avelocity[1] = 0;
-		}
-		else
-		{
-			MSG_WriteByte(msg, svc_setangle);
-			MSG_WriteHiresAngle(msg, ent->v.angles[0]);
-			MSG_WriteHiresAngle(msg, ent->v.angles[1]);
-			MSG_WriteHiresAngle(msg, ent->v.angles[2]);
-		}
-		ent->v.fixangle = 0;
-	}
-
-	Q_memset(&frame->clientdata, 0, sizeof(frame->clientdata));
-	gEntityInterface.pfnUpdateClientData(ent, host_client->lw != 0, &frame->clientdata);
-
-	MSG_WriteByte(msg, svc_clientdata);
-
-	if(client->proxy)
-		return;
-
-	MSG_StartBitWriting(msg);
-
-	clientdata_t baseline;
-	Q_memset(&baseline, 0, sizeof(baseline));
-
-	clientdata_t *from = &baseline;
-	clientdata_t *to = &frame->clientdata;
-
-	if(host_client->delta_sequence == -1)
-	{
-		MSG_WriteBits(0, 1);
-	}
-	else
-	{
-		MSG_WriteBits(1, 1);
-		MSG_WriteBits(host_client->delta_sequence, 8);
-		from = &host_client->frames[bits].clientdata;
-	}
-
-	DELTA_WriteDelta((byte *)from, (byte *)to, TRUE, (delta_t *)g_pclientdelta, NULL);
-
-	if(host_client->lw &&
-	   gEntityInterface.pfnGetWeaponData(host_client->edict,
-	                                     frame->weapondata))
-	{
-		weapon_data_t wbaseline;
-		Q_memset(&wbaseline, 0, sizeof(wbaseline));
-
-		weapon_data_t *fdata = NULL;
-		weapon_data_t *tdata = frame->weapondata;
-
-		for(int i = 0; i < 64; i++, tdata++)
-		{
-#ifdef REHLDS_FIXES
-			// So, HL and CS games send absolute gametime in these vars, DMC and Ricochet games don't send absolute gametime
-			// TODO: idk about other games
-			// FIXME: there is a loss of precision, because gamedll has already written float gametime in them 
-			if (sv_rehlds_local_gametime.value != 0.0f)
-			{
-				auto convertGlobalGameTimeToLocal = 
-					[](float &globalGameTime)
-				{
-					if(globalGameTime > 0.0f)
-						globalGameTime -= (float)g_GameClients[host_client - g_psvs.clients]->GetLocalGameTimeBase();
-				};
-				
-				if (g_bIsCStrike || g_bIsCZero)
-					convertGlobalGameTimeToLocal(std::ref(tdata->m_fAimedDamage));
-				
-				if (g_bIsHL1 || g_bIsCStrike || g_bIsCZero)
-				{
-					convertGlobalGameTimeToLocal(std::ref(tdata->fuser2));
-					convertGlobalGameTimeToLocal(std::ref(tdata->fuser3));
-				}
-			}
-#endif
-			
-			if(host_client->delta_sequence == -1)
-				fdata = &wbaseline;
-			else
-				fdata = &host_client->frames[bits].weapondata[i];
-
-			if(DELTA_CheckDelta((byte *)fdata, (byte *)tdata, g_pweapondelta))
-			{
-				MSG_WriteBits(1, 1);
-				MSG_WriteBits(i, 6);
-
-#if defined(REHLDS_OPT_PEDANTIC) || defined(REHLDS_FIXES)
-				// all calculations are already done
-				_DELTA_WriteDelta((byte *)fdata, (byte *)tdata, TRUE, g_pweapondelta, NULL, TRUE);
-#else
-				DELTA_WriteDelta((byte *)fdata, (byte *)tdata, TRUE, g_pweapondelta, NULL);
-#endif
-			}
-		}
-	}
-
-	MSG_WriteBits(0, 1);
-	MSG_EndBitWriting(msg);
-}
 
 void SV_WriteSpawn(sizebuf_t *msg)
 {
@@ -3382,19 +3261,18 @@ NOXREF qboolean SV_HasEventsInQueue(client_t *client)
 {
 	NOXREFCHECK;
 	
-	int i;
-	event_state_t *es;
 	event_info_t *ei;
 
-	es = &client->events;
+	event_state_t *es = &client->events;
 
-	for(i = 0; i < MAX_EVENT_QUEUE; i++)
+	for(int i = 0; i < MAX_EVENT_QUEUE; i++)
 	{
 		ei = &es->ei[i];
 
 		if(ei->index)
 			return TRUE;
-	}
+	};
+	
 	return FALSE;
 }
 
@@ -3491,158 +3369,7 @@ void SV_CleanupEnts()
 }
 
 
-void SV_UpdateToReliableMessages()
-{
-	int i;
-	client_t *client;
 
-	// Prepare setinfo changes and send new user messages
-	for(i = 0; i < g_psvs.maxclients; i++)
-	{
-		client = &g_psvs.clients[i];
-
-		if(!client->edict)
-			continue;
-
-		host_client = client;
-
-#ifdef REHLDS_FIXES
-		// skip update in this frame if would overflow
-		if(client->sendinfo && client->sendinfo_time <= realtime &&
-		   (1 + 1 + 4 + (int)Q_strlen(client->userinfo) + 1 + 16 +
-		    g_psv.reliable_datagram.cursize <=
-		    g_psv.reliable_datagram.maxsize))
-#else  // REHLDS_FIXES
-		if(client->sendinfo && client->sendinfo_time <= realtime)
-#endif // REHLDS_FIXES
-		{
-			SV_UpdateUserInfo(client);
-		}
-
-		if(!client->fakeclient && (client->active || client->connected))
-		{
-			if(sv_gpNewUserMsgs != NULL)
-			{
-				SV_SendUserReg(&client->netchan.message);
-			}
-		}
-	}
-
-	// Link new user messages to sent chain
-	if(sv_gpNewUserMsgs != NULL)
-	{
-		UserMsg *pMsg = sv_gpUserMsgs;
-		if(pMsg != NULL)
-		{
-			while(pMsg->next)
-			{
-				pMsg = pMsg->next;
-			}
-			pMsg->next = sv_gpNewUserMsgs;
-		}
-		else
-		{
-			sv_gpUserMsgs = sv_gpNewUserMsgs;
-		}
-		sv_gpNewUserMsgs = NULL;
-	}
-
-	if(g_psv.datagram.flags & SIZEBUF_OVERFLOWED)
-	{
-		Con_DPrintf("sv.datagram overflowed!\n");
-		SZ_Clear(&g_psv.datagram);
-	}
-	if(g_psv.spectator.flags & SIZEBUF_OVERFLOWED)
-	{
-		Con_DPrintf("sv.spectator overflowed!\n");
-		SZ_Clear(&g_psv.spectator);
-	}
-
-// Fix for the "server failed to transmit file 'AY&SY..." bug
-// https://github.com/dreamstalker/rehlds/issues/38
-#ifdef REHLDS_FIXES
-	bool svReliableCompressed = false;
-#endif
-
-	// Send broadcast data
-	for(i = 0; i < g_psvs.maxclients; i++)
-	{
-		client = &g_psvs.clients[i];
-
-// Fix for the "server failed to transmit file 'AY&SY..." bug
-// https://github.com/dreamstalker/rehlds/issues/38
-#ifdef REHLDS_FIXES
-		if(!(!client->fakeclient && (client->active || g_GameClients[i]->GetSpawnedOnce())))
-			continue;
-
-		if (!svReliableCompressed && g_psv.reliable_datagram.cursize + client->netchan.message.cursize < client->netchan.message.maxsize)
-		{
-			SZ_Write(&client->netchan.message, g_psv.reliable_datagram.data, g_psv.reliable_datagram.cursize);
-		}
-		else
-		{
-			Netchan_CreateFragments(TRUE, &client->netchan, &g_psv.reliable_datagram);
-			svReliableCompressed = true;
-		}
-#else
-		if (!(!client->fakeclient && client->active))
-			continue;
-
-		if (g_psv.reliable_datagram.cursize + client->netchan.message.cursize < client->netchan.message.maxsize)
-		{
-			SZ_Write(&client->netchan.message, g_psv.reliable_datagram.data, g_psv.reliable_datagram.cursize);
-		}
-		else
-		{
-			Netchan_CreateFragments(TRUE, &client->netchan, &g_psv.reliable_datagram);
-		}
-#endif
-
-		if (g_psv.datagram.cursize + client->datagram.cursize < client->datagram.maxsize)
-		{
-			SZ_Write(&client->datagram, g_psv.datagram.data, g_psv.datagram.cursize);
-		}
-		else
-		{
-			Con_DPrintf("Warning:  Ignoring unreliable datagram for %s, would overflow\n", client->name);
-		}
-
-		if (client->proxy)
-		{
-			if (g_psv.spectator.cursize + client->datagram.cursize < client->datagram.maxsize)
-			{
-				SZ_Write(&client->datagram, g_psv.spectator.data, g_psv.spectator.cursize);
-			}
-			else
-			{
-				Con_DPrintf(
-				"Warning:  Ignoring spectator datagram for %s, would overflow\n",
-				client->name);
-			}
-
-			if(client->proxy)
-			{
-				if(g_psv.spectator.cursize + client->datagram.cursize <
-				   client->datagram.maxsize)
-				{
-					SZ_Write(&client->datagram, g_psv.spectator.data, g_psv.spectator.cursize);
-				}
-#ifdef REHLDS_FIXES
-				else
-				{
-					Con_DPrintf(
-					"Warning:  Ignoring spectator datagram for %s, would overflow\n",
-					client->name);
-				}
-#endif
-			}
-		}
-	}
-
-	SZ_Clear(&g_psv.reliable_datagram);
-	SZ_Clear(&g_psv.datagram);
-	SZ_Clear(&g_psv.spectator);
-}
 
 void SV_SkipUpdates()
 {
@@ -4185,41 +3912,7 @@ void SV_CreateBaseline()
 }
 
 void SV_BroadcastCommand(char *fmt, ...)
-{
-	va_list argptr;
-	char string[1024];
-	char data[128];
-	sizebuf_t msg;
 
-	if(!g_psv.active)
-		return;
-
-	va_start(argptr, fmt);
-	msg.data = (byte *)data;
-	msg.buffername = "Broadcast Command";
-	msg.cursize = 0;
-	msg.maxsize = sizeof(data);
-	msg.flags = SIZEBUF_ALLOW_OVERFLOW;
-
-	Q_vsnprintf(string, sizeof(string), fmt, argptr);
-	va_end(argptr);
-
-	MSG_WriteByte(&msg, svc_stufftext);
-	MSG_WriteString(&msg, string);
-	if(msg.flags & SIZEBUF_OVERFLOWED)
-		CSystem::Error("SV_BroadcastCommand:  Overflowed on %s, %i is max size\n",
-		          string,
-		          msg.maxsize);
-
-	for(int i = 0; i < g_psvs.maxclients; ++i)
-	{
-		client_t *cl = &g_psvs.clients[i];
-		if(cl->active || cl->connected || (cl->spawned && !cl->fakeclient))
-		{
-			SZ_Write(&cl->netchan.message, msg.data, msg.cursize);
-		}
-	}
-}
 
 void SV_BuildReconnect(sizebuf_t *msg)
 {

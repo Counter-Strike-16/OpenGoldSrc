@@ -43,6 +43,12 @@
     <Filter Include="voice">
       <UniqueIdentifier>{851ad821-cc68-4518-8a1f-b55d37e8f4da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl">
+      <UniqueIdentifier>{d812781f-983b-4d83-bc15-33445f0438c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl\win">
+      <UniqueIdentifier>{4cbc9e84-ddae-47f0-9146-7e06ba28bf0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\system\DedicatedServerAPI.cpp">
@@ -52,12 +58,21 @@
     <ClCompile Include="..\system\Host.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="..\system\Engine.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\system\DedicatedServerAPI.hpp">
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="..\system\Host.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\Engine.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\IEngine.hpp">
       <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>

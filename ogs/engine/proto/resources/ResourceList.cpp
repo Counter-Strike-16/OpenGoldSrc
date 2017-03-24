@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,24 +27,44 @@
  */
 
 /// @file
-/// @brief engine launcher for both client+server mode (localhost)
 
-#pragma once
+#include "precompiled.hpp"
+#include "resources/ResourceList.hpp"
 
-#include "common/commontypes.h"
-#include "engine_launcher_api.h"
-
-void EXPORT F(IEngineAPI **api);
-
-class CEngineAPI : public IEngineAPI
+void CResourceList::Clear()
 {
-public:
-	int Run(void *instance,
+	resource_t *n = nullptr;
 
-	        char *basedir,
-	        const char *cmdline,
-	        char *postRestartCmdLineArgs,
+	for(resource_t *p = mpList->pNext; p && p != mpList; p = n)
+	{
+		n = p->pNext;
 
-	        CreateInterfaceFn launcherFactory,
-	        CreateInterfaceFn filesystemFactory);
+		Remove(p);
+		Mem_Free(p);
+	};
+
+	mpList->pPrev = mpList;
+	mpList->pNext = mpList;
+};
+
+void CResourceList::Add(resource_t *pResource)
+{
+	if(pResource->pPrev || pResource->pNext)
+	{
+		mpConsole->Printf("Resource is already linked!\n"); // TODO: which resource
+		return;
+	};
+
+	pResource->pPrev = mpList->pPrev;
+	pResource->pNext = mpList;
+	mpList->pPrev->pNext = pResource;
+	mpList->pPrev = pResource;
+};
+
+void CResourceList::Remove(resource_t *pResource)
+{
+	pResource->pPrev->pNext = pResource->pNext;
+	pResource->pNext->pPrev = pResource->pPrev;
+	pResource->pPrev = nullptr;
+	pResource->pNext = nullptr;
 };

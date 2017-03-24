@@ -3321,72 +3321,47 @@ Host_InitCommands
 void Host_InitCommands()
 {
 #ifdef HOOK_ENGINE
-	Cmd_AddCommand("shutdownserver",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_KillServer_f", (void *)Host_KillServer_f));
-	Cmd_AddCommand("soundfade",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_Soundfade_f", (void *)Host_Soundfade_f));
+	Cmd_AddCommand("shutdownserver", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_KillServer_f", (void *)Host_KillServer_f));
+	Cmd_AddCommand("soundfade", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Soundfade_f", (void *)Host_Soundfade_f));
 	Cmd_AddCommand("status", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Status_f", (void *)Host_Status_f));
-	Cmd_AddCommand(
-	"stat", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Status_Formatted_f", (void *)Host_Status_Formatted_f));
+	Cmd_AddCommand("stat", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Status_Formatted_f", (void *)Host_Status_Formatted_f));
 	Cmd_AddCommand("quit", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Quit_f", (void *)Host_Quit_f));
-	Cmd_AddCommand("_restart",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_Quit_Restart_f", (void *)Host_Quit_Restart_f));
+	Cmd_AddCommand("_restart", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Quit_Restart_f", (void *)Host_Quit_Restart_f));
 	Cmd_AddCommand("exit", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Quit_f", (void *)Host_Quit_f));
 	Cmd_AddCommand("map", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Map_f", (void *)Host_Map_f));
 	Cmd_AddCommand("career", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Career_f", (void *)Host_Career_f));
 	Cmd_AddCommand("maps", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Maps_f", (void *)Host_Maps_f));
 	Cmd_AddCommand("restart", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Restart_f", (void *)Host_Restart_f));
 	Cmd_AddCommand("reload", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Reload_f", (void *)Host_Reload_f));
-	Cmd_AddCommand("changelevel",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_Changelevel_f", (void *)Host_Changelevel_f));
-	Cmd_AddCommand("changelevel2",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_Changelevel2_f", (void *)Host_Changelevel2_f));
-	Cmd_AddCommand("reconnect",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_Reconnect_f", (void *)Host_Reconnect_f));
+	Cmd_AddCommand("changelevel", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Changelevel_f", (void *)Host_Changelevel_f));
+	Cmd_AddCommand("changelevel2", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Changelevel2_f", (void *)Host_Changelevel2_f));
+	Cmd_AddCommand("reconnect", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Reconnect_f", (void *)Host_Reconnect_f));
 	Cmd_AddCommand("version", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Version_f", (void *)Host_Version_f));
 	Cmd_AddCommand("say", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Say_f", (void *)Host_Say_f));
 	Cmd_AddCommand("say_team", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Say_Team_f", (void *)Host_Say_Team_f));
 	Cmd_AddCommand("tell", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Tell_f", (void *)Host_Tell_f));
 	Cmd_AddCommand("kill", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Kill_f", (void *)Host_Kill_f));
-	Cmd_AddCommand("pause",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_TogglePause_f", (void *)Host_TogglePause_f));
+	Cmd_AddCommand("pause", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_TogglePause_f", (void *)Host_TogglePause_f));
 	Cmd_AddCommand("setpause", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Pause_f", (void *)Host_Pause_f));
 	Cmd_AddCommand("unpause", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Unpause_f", (void *)Host_Unpause_f));
 	Cmd_AddCommand("kick", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Kick_f", (void *)Host_Kick_f));
 	Cmd_AddCommand("ping", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Ping_f", (void *)Host_Ping_f));
 	Cmd_AddCommand("motd", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Motd_f", (void *)Host_Motd_f));
-	Cmd_AddCommand("motd_write",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_Motd_Write_f", (void *)Host_Motd_Write_f));
+	Cmd_AddCommand("motd_write", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Motd_Write_f", (void *)Host_Motd_Write_f));
 	Cmd_AddCommand("stats", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Stats_f", (void *)Host_Stats_f));
 	Cmd_AddCommand("load", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Loadgame_f", (void *)Host_Loadgame_f));
 	Cmd_AddCommand("save", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Savegame_f", (void *)Host_Savegame_f));
 	Cmd_AddCommand("autosave", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_AutoSave_f", (void *)Host_AutoSave_f));
-	Cmd_AddCommand("writecfg",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_WriteCustomConfig", (void *)Host_WriteCustomConfig));
-	Cmd_AddCommand("startdemos",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Host_Startdemos_f", (void *)Host_Startdemos_f));
+	Cmd_AddCommand("writecfg", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_WriteCustomConfig", (void *)Host_WriteCustomConfig));
+	Cmd_AddCommand("startdemos",(xcommand_t)GetOriginalFuncAddrOrDefault("Host_Startdemos_f", (void *)Host_Startdemos_f));
 	Cmd_AddCommand("demos", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Demos_f", (void *)Host_Demos_f));
 	Cmd_AddCommand("stopdemo", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Stopdemo_f", (void *)Host_Stopdemo_f));
 	Cmd_AddCommand("setinfo", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_SetInfo_f", (void *)Host_SetInfo_f));
 	Cmd_AddCommand("fullinfo", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_FullInfo_f", (void *)Host_FullInfo_f));
 	Cmd_AddCommand("mcache", (xcommand_t)GetOriginalFuncAddrOrDefault("Mod_Print", (void *)Mod_Print));
 	Cmd_AddCommand("interp", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Interp_f", (void *)Host_Interp_f));
-	Cmd_AddCommand("setmaster",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Master_SetMaster_f", (void *)Master_SetMaster_f));
-	Cmd_AddCommand("heartbeat",
-	               (xcommand_t)GetOriginalFuncAddrOrDefault(
-	               "Master_Heartbeat_f", (void *)Master_Heartbeat_f));
+	Cmd_AddCommand("setmaster", (xcommand_t)GetOriginalFuncAddrOrDefault("Master_SetMaster_f", (void *)Master_SetMaster_f));
+	Cmd_AddCommand("heartbeat", (xcommand_t)GetOriginalFuncAddrOrDefault("Master_Heartbeat_f", (void *)Master_Heartbeat_f));
 #else // HOOK_ENGINE
 
 #ifndef SWDS
@@ -3466,6 +3441,7 @@ void Host_InitCommands()
 
 	Cmd_AddCommand("mcache", Mod_Print);
 	Cmd_AddCommand("interp", Host_Interp_f);
+	
 	//Cmd_AddCommand("setmaster", Master_SetMaster_f);
 	Cmd_AddCommand("heartbeat", Master_Heartbeat_f);
 #endif // HOOK_ENGINE

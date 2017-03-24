@@ -31,7 +31,9 @@
 #pragma once
 
 #include <memory>
+#include "common/maintypes.h"
 #include "network/LoginServer.hpp"
+#include "system/client.hpp"
 
 class CGameServer
 {
@@ -61,11 +63,12 @@ public:
 	void CountPlayers(int *clients);
 private:
 	void CheckCmdTimes();
-	void ReadPackets();
 	void CheckTimeouts();
-	void SendClientMessages();
+	void SendClientMessages(float frametime);
 	void CheckMapDifferences();
 	void GatherStatistics();
+	
+	void UpdateToReliableMessages();
 	
 	void ConnectClient_internal();
 	

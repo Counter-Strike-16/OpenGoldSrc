@@ -32,49 +32,7 @@
 #include "precompiled.hpp"
 #include "network/NetServer.hpp"
 
-void SVC_GetChallenge()
-{
-	char data[1024];
-	qboolean steam = (Cmd_Argc() == 2 && !Q_stricmp(Cmd_Argv(1), "steam"));
-	int challenge = SV_GetChallenge(net_from);
-
-	if(steam)
-		Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 3 %lld %d\n", S2C_CHALLENGE, challenge, g_RehldsHookchains.m_Steam_GSGetSteamID.callChain(Steam_GSGetSteamID), Steam_GSBSecure());
-	else
-	{
-		Con_DPrintf("Server requiring authentication\n");
-		Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 2\n", S2C_CHALLENGE, challenge);
-	}
-
-	// Give 3-rd party plugins a chance to modify challenge response
-	g_RehldsHookchains.m_SVC_GetChallenge_mod.callChain(NULL, data, challenge);
-	NET_SendPacket(NS_SERVER, Q_strlen(data) + 1, data, net_from);
-};
-
-void SVC_ServiceChallenge()
-{
-	char data[128];
-	const char *type;
-	int challenge;
-
-	if(Cmd_Argc() != 2)
-		return;
-
-	type = Cmd_Argv(1);
-	if(!type)
-		return;
-
-	if(!type[0] || Q_stricmp(type, "rcon"))
-		return;
-
-	challenge = SV_GetChallenge(net_from);
-
-	Q_snprintf(data, sizeof(data), "%c%c%c%cchallenge %s %u\n", 255, 255, 255, 255, type, challenge);
-
-	NET_SendPacket(NS_SERVER, Q_strlen(data) + 1, data, net_from);
-};
-
-void CNetServer::Start(int anPort)
+bool CNetServer::Start(int anPort)
 {
 };
 
@@ -82,8 +40,12 @@ void CNetServer::Stop()
 {
 };
 
-void CNetServer::Frame()
+void CNetServer::Frame(float frametime)
 {
+	if(!g_psv.active)
+		return;
+	
+	ReadPackets(frametime);
 };
 
 void CNetServer::HandleRconPacket(netadr_t *adr)
@@ -120,12 +82,49 @@ void CNetServer::HandleConnectionlessPacket(netadr_t *adr)
 		SVC_ServiceChallenge();
 	else if(!Q_strcmp(c, "rcon"))
 		HandleRcon(adr);
+	else if(!Q_strcmp(c, "connect"))
+		ConnectClient();
 	
 	HandleConnectionlessPacket(c, args);
 };
 
 void CNetServer::BroadcastCommand(char *fmt, ...)
 {
+	if(!g_psv.active)
+		return;
+	
+	va_list argptr;
+	
+	va_start(argptr, fmt);
+	
+	//INetMsg *pMsg = mpNetwork->BeginNetMsg();
+	sizebuf_t msg;
+	char data[128];
+	
+	msg.data = (byte *)data;
+	msg.buffername = "Broadcast Command";
+	msg.cursize = 0;
+	msg.maxsize = sizeof(data);
+	msg.flags = SIZEBUF_ALLOW_OVERFLOW;
+	
+	char string[1024];
+	Q_vsnprintf(string, sizeof(string), fmt, argptr);
+	
+	va_end(argptr);
+
+	MSG_WriteByte(&msg, svc_stufftext);
+	MSG_WriteString(&msg, string);
+	
+	if(msg.flags & SIZEBUF_OVERFLOWED)
+		CSystem::Error("SV_BroadcastCommand:  Overflowed on %s, %i is max size\n", string, msg.maxsize);
+
+	for(int i = 0; i < g_psvs.maxclients; ++i)
+	{
+		client_t *cl = &g_psvs.clients[i];
+		
+		if(cl->active || cl->connected || (cl->spawned && !cl->fakeclient))
+			SZ_Write(&cl->netchan.message, msg.data, msg.cursize);
+	};
 };
 
 void CNetServer::BroadcastPrintf(const char *fmt, ...)
@@ -151,6 +150,12 @@ void CNetServer::BroadcastPrintf(const char *fmt, ...)
 	};
 	
 	mpConsole->DPrintf("%s", string);
+};
+
+void CNetServer::ConnectClient()
+{
+	//g_RehldsHookchains.m_SV_ConnectClient.callChain(SV_ConnectClient_internal);
+	ConnectClient_internal();
 };
 
 void CNetServer::ReconnectClient(int anID)
@@ -217,12 +222,123 @@ NOXREF void CNetServer::ReplyServerChallenge(netadr_t *adr)
 	MSG_WriteLong(&buf, 0xffffffff);
 	MSG_WriteByte(&buf, 65);
 	MSG_WriteLong(&buf, GetChallengeNr(adr));
+	
 	NET_SendPacket(NS_SERVER, buf.cursize, (char *)buf.data, *adr);
 };
 
 int CNetServer::GetMaxClients()
 {
 	return 0;
+};
+
+void CNetServer::ReadPackets(float frametime)
+{
+	while(mpNetwork->GetPacket(NS_SERVER)) // mpSocket->GetPacket
+	{
+		if(SV_FilterPacket())
+		{
+			SV_SendBan();
+			continue;
+		};
+
+		bool pass = g_RehldsHookchains.m_PreprocessPacket.callChain(NET_GetPacketPreprocessor, net_message.data, net_message.cursize, net_from);
+		
+		if(!pass)
+			continue;
+
+		if(*(uint32 *)net_message.data == 0xFFFFFFFF)
+		{
+			// Connectionless packet
+			if(CheckIP(net_from))
+			{
+				Steam_HandleIncomingPacket(net_message.data, net_message.cursize, ntohl(*(u_long *)&net_from.ip[0]), htons(net_from.port));
+				HandleConnectionlessPacket();
+			}
+			else if(sv_logblocks.value != 0.0f)
+			{
+				Log_Printf("Traffic from %s was blocked for exceeding rate limits\n",
+				           NET_AdrToString(net_from));
+			}
+			continue;
+		}
+
+		for(int i = 0; i < g_psvs.maxclients; i++)
+		{
+			client_t *cl = &g_psvs.clients[i];
+			
+			if(!cl->connected && !cl->active && !cl->spawned)
+				continue;
+
+			if(NET_CompareAdr(net_from, cl->netchan.remote_address) != TRUE)
+				continue;
+
+			if(Netchan_Process(&cl->netchan))
+			{
+				if(g_psvs.maxclients == 1 || !cl->active || !cl->spawned || !cl->fully_connected)
+					cl->send_message = TRUE;
+
+				SV_ExecuteClientMessage(cl);
+				gGlobalVariables.frametime = frametime;
+			}
+
+			if(Netchan_IncomingReady(&cl->netchan))
+			{
+				if(Netchan_CopyNormalFragments(&cl->netchan))
+				{
+					MSG_BeginReading();
+					SV_ExecuteClientMessage(cl);
+				};
+				
+				if(Netchan_CopyFileFragments(&cl->netchan))
+				{
+					host_client = cl;
+					SV_ProcessFile(cl, cl->netchan.incomingfilename);
+				};
+			};
+		};
+	};
+};
+
+void CNetServer::SVC_GetChallenge(netadr_t *adr)
+{
+	qboolean steam = (Cmd_Argc() == 2 && !Q_stricmp(Cmd_Argv(1), "steam"));
+	
+	int challenge = GetChallenge(adr);
+	
+	char data[1024];
+	
+	if(steam)
+		Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 3 %lld %d\n", S2C_CHALLENGE, challenge, g_RehldsHookchains.m_Steam_GSGetSteamID.callChain(Steam_GSGetSteamID), Steam_GSBSecure());
+	else
+	{
+		mpConsole->DPrintf("Server requiring authentication\n");
+		Q_snprintf(data, sizeof(data), "\xFF\xFF\xFF\xFF%c00000000 %u 2\n", S2C_CHALLENGE, challenge);
+	};
+
+	// Give 3-rd party plugins a chance to modify challenge response
+	g_RehldsHookchains.m_SVC_GetChallenge_mod.callChain(NULL, data, challenge);
+	NET_SendPacket(NS_SERVER, Q_strlen(data) + 1, data, adr);
+};
+
+void CNetServer::SVC_ServiceChallenge(netadr_t *adr)
+{
+	if(Cmd_Argc() != 2)
+		return;
+
+	const char *type = Cmd_Argv(1);
+	
+	if(!type)
+		return;
+
+	if(!type[0] || Q_stricmp(type, "rcon"))
+		return;
+
+	int challenge = GetChallenge(adr);
+	
+	char data[128];
+	Q_snprintf(data, sizeof(data), "%c%c%c%cchallenge %s %u\n", 255, 255, 255, 255, type, challenge);
+
+	NET_SendPacket(NS_SERVER, Q_strlen(data) + 1, data, adr);
 };
 
 void CNetServer::HandleRcon(netadr_t *net_from_)

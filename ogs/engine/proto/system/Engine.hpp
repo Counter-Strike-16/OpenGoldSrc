@@ -36,16 +36,18 @@
 #include "system/IGame.hpp"
 #include "system/Host.hpp"
 
-// sleep time when not focus
-constexpr auto NOT_FOCUS_SLEEP = 50;
-constexpr auto MINIMIZED_SLEEP = 20;
-
 // clang-format off
 #ifdef HOOK_ENGINE
 	#define game (*pgame)
 	#define eng (*peng)
 #endif // HOOK_ENGINE
 // clang-format on
+
+// sleep time when not focus
+constexpr auto NOT_FOCUS_SLEEP = 50;
+constexpr auto MINIMIZED_SLEEP = 20;
+
+typedef struct quakeparms_s quakeparms_t;
 
 extern IGame *game;
 extern IEngine *eng;
@@ -107,7 +109,7 @@ public:
 	int GetQuitting_noVirt(){return m_nQuitting;}
 	void SetQuitting_noVirt(int quittype){m_nQuitting = quittype;}
 private:
-	int InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
+	int InitGame(/*const*/ char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
 	void ShutdownGame();
 	
 	quakeparms_t host_parms;

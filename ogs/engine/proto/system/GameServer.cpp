@@ -253,14 +253,11 @@ void CGameServer::Shutdown()
 
 void CGameServer::Frame(float frametime)
 {
-	if(!g_psv.active)
-		return;
-
 	gGlobalVariables.frametime = frametime;
 	g_psv.oldtime = g_psv.time;
 	
 	CheckCmdTimes();
-	ReadPackets();
+	//ReadPackets(frametime); // handled by netserver
 	
 	if(SV_IsSimulating())
 	{
@@ -271,7 +268,7 @@ void CGameServer::Frame(float frametime)
 	SV_QueryMovevarsChanged();
 	SV_RequestMissingResourcesFromClients();
 	CheckTimeouts();
-	SendClientMessages();
+	SendClientMessages(frametime);
 	CheckMapDifferences();
 	GatherStatistics();
 	Steam_RunFrame();
@@ -284,7 +281,7 @@ void CGameServer::ClearClientStates()
 	for(int i = 0; i < g_psvs.maxclients; i++, pcl++)
 	{
 		COM_ClearCustomizationList(&pcl->customdata, FALSE);
-		SV_ClearResourceLists(pcl);
+		pcl->ClearResourceLists();
 	};
 };
 
@@ -297,6 +294,7 @@ void CGameServer::SetupMaxClients()
 		SV_ClearFrames(&cl->frames);
 
 	g_psvs.maxclients = 1;
+	
 	i = COM_CheckParm("-maxplayers");
 
 	if(i)
@@ -304,15 +302,16 @@ void CGameServer::SetupMaxClients()
 	else
 	{
 		if(gbIsDedicatedServer)
-			g_psvs.maxclients = 6;
-	}
+			g_psvs.maxclients = 6; // magic?
+	};
 
 	cls.state = (cactive_t)(gbIsDedicatedServer == FALSE);
 
 	if(g_psvs.maxclients > 32)
 		g_psvs.maxclients = 32;
+	
 	if(g_psvs.maxclients < 1)
-		g_psvs.maxclients = 6;
+		g_psvs.maxclients = 6; // why 6 and not 1?
 
 	if(gbIsDedicatedServer)
 		g_psvs.maxclientslimit = 32;
@@ -328,8 +327,8 @@ void CGameServer::SetupMaxClients()
 		SV_UPDATE_MASK = 63;
 	};
 
-	g_psvs.clients = (client_t *)Hunk_AllocName(
-	sizeof(client_t) * g_psvs.maxclientslimit, "clients");
+	g_psvs.clients = (client_t *)Hunk_AllocName(sizeof(client_t) * g_psvs.maxclientslimit, "clients");
+	
 	for(i = 0, cl = g_psvs.clients; i < g_psvs.maxclientslimit; i++, cl++)
 	{
 		Q_memset(cl, 0, sizeof(client_t));
@@ -338,7 +337,8 @@ void CGameServer::SetupMaxClients()
 		cl->resourcesneeded.pNext = &cl->resourcesneeded;
 		cl->resourcesonhand.pPrev = &cl->resourcesonhand;
 		cl->resourcesonhand.pNext = &cl->resourcesonhand;
-	}
+	};
+	
 	if(g_psvs.maxclients >= 2)
 		Cvar_SetValue("deathmatch", 1.0);
 	else
@@ -354,8 +354,7 @@ void CGameServer::SetupMaxClients()
 
 void CGameServer::CheckForRcon()
 {
-	if(g_psv.active || cls.state != ca_dedicated || giActive == DLL_CLOSE ||
-	   !host_initialized)
+	if(g_psv.active || cls.state != ca_dedicated || giActive == DLL_CLOSE || !host_initialized)
 		return;
 
 	while(NET_GetPacket(NS_SERVER))
@@ -380,18 +379,16 @@ void CGameServer::HandleConnectionlessPacket(const char *c, const char *args)
 	        c[0] == A2S_PLAYER || c[0] == A2S_RULES || c[0] == S2A_LOGSTRING ||
 	        c[0] == M2S_REQUESTRESTART || c[0] == M2A_CHALLENGE)
 		return;
-
 	else if(!Q_stricmp(c, "log"))
 	{
 		if(sv_logrelay.value != 0.0f && Q_strlen(args) > 4)
 		{
 			const char *s = &args[Q_strlen("log ")];
+			
 			if(s && s[0])
 				mpConsole->Printf("%s\n", s);
 		};
 	}
-	else if(!Q_strcmp(c, "connect"))
-		ConnectClient();
 	else if(!Q_strcmp(c, "pstat"))
 	{
 		if(g_modfuncs.m_pfnPlayerStatus)
@@ -399,11 +396,6 @@ void CGameServer::HandleConnectionlessPacket(const char *c, const char *args)
 	}
 	else
 		SVC_GameDllQuery(args);
-};
-
-void CGameServer::ConnectClient()
-{
-	g_RehldsHookchains.m_SV_ConnectClient.callChain(SV_ConnectClient_internal);
 };
 
 void EXT_FUNC CGameServer::ConnectClient_internal()
@@ -432,11 +424,13 @@ void EXT_FUNC CGameServer::ConnectClient_internal()
 		g_modfuncs.m_pfnConnectClient(nClientSlot);
 
 	Netchan_Setup(NS_SERVER, &host_client->netchan, adr, client - g_psvs.clients, client, SV_GetFragmentSize);
-	host_client->next_messageinterval = 5.0;
-	host_client->next_messagetime = realtime + 0.05;
+	host_client->next_messageinterval = 5.0f;
+	host_client->next_messagetime = realtime + 0.05f;
 	host_client->delta_sequence = -1;
+	
 	Q_memset(&host_client->lastcmd, 0, sizeof(usercmd_t));
-	host_client->nextping = -1.0;
+	
+	host_client->nextping = -1.0f;
 	
 	if(host_client->netchan.remote_address.type == NA_LOOPBACK)
 		mpConsole->DPrintf("Local connection.\n");
@@ -493,7 +487,7 @@ void CGameServer::InactivateClients()
 
 		if(cl->fakeclient)
 		{
-			SV_DropClient(cl, FALSE, "Dropping fakeclient on level change");
+			cl->Drop(false, "Dropping fakeclient on level change");
 			continue;
 		};
 		
@@ -505,16 +499,15 @@ NOXREF void CGameServer::ReconnectAllClients()
 {
 	NOXREFCHECK;
 	
-	int i;
 	char message[34];
 	Q_snprintf(message, sizeof(message), "Server updating Security Module.\n");
 
-	for(i = 0; i < g_psvs.maxclients; i++)
+	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
 		client_t *client = &g_psvs.clients[i];
 
 		if((client->active || client->connected) && !client->fakeclient)
-			client->Reconnect();
+			client->Reconnect(message);
 	};
 };
 
@@ -536,7 +529,7 @@ void CGameServer::CheckCmdTimes()
 {
 	static double lastreset;
 
-	if(Host_IsSinglePlayerGame())
+	if(mpHost->IsSinglePlayerGame())
 		return;
 
 	if(realtime - lastreset < 1.0)
@@ -547,6 +540,7 @@ void CGameServer::CheckCmdTimes()
 	for(int i = g_psvs.maxclients - 1; i >= 0; i--)
 	{
 		client_t *cl = &g_psvs.clients[i];
+		
 		if(!cl->connected || !cl->active)
 			continue;
 
@@ -566,79 +560,9 @@ void CGameServer::CheckCmdTimes()
 	};
 };
 
-void CGameServer::ReadPackets()
+void CGameServer::SendClientMessages(float frametime)
 {
-	while(NET_GetPacket(NS_SERVER))
-	{
-		if(SV_FilterPacket())
-		{
-			SV_SendBan();
-			continue;
-		};
-
-		bool pass = g_RehldsHookchains.m_PreprocessPacket.callChain(NET_GetPacketPreprocessor, net_message.data, net_message.cursize, net_from);
-		
-		if(!pass)
-			continue;
-
-		if(*(uint32 *)net_message.data == 0xFFFFFFFF)
-		{
-			// Connectionless packet
-			if(CheckIP(net_from))
-			{
-				Steam_HandleIncomingPacket(net_message.data, net_message.cursize, ntohl(*(u_long *)&net_from.ip[0]), htons(net_from.port));
-				HandleConnectionlessPacket();
-			}
-			else if(sv_logblocks.value != 0.0f)
-			{
-				Log_Printf("Traffic from %s was blocked for exceeding rate limits\n",
-				           NET_AdrToString(net_from));
-			}
-			continue;
-		}
-
-		for(int i = 0; i < g_psvs.maxclients; i++)
-		{
-			client_t *cl = &g_psvs.clients[i];
-			if(!cl->connected && !cl->active && !cl->spawned)
-				continue;
-
-			if(NET_CompareAdr(net_from, cl->netchan.remote_address) != TRUE)
-				continue;
-
-			if(Netchan_Process(&cl->netchan))
-			{
-				if(g_psvs.maxclients == 1 || !cl->active || !cl->spawned ||
-				   !cl->fully_connected)
-				{
-					cl->send_message = TRUE;
-				}
-
-				SV_ExecuteClientMessage(cl);
-				gGlobalVariables.frametime = host_frametime;
-			}
-
-			if(Netchan_IncomingReady(&cl->netchan))
-			{
-				if(Netchan_CopyNormalFragments(&cl->netchan))
-				{
-					MSG_BeginReading();
-					SV_ExecuteClientMessage(cl);
-				};
-				
-				if(Netchan_CopyFileFragments(&cl->netchan))
-				{
-					host_client = cl;
-					SV_ProcessFile(cl, cl->netchan.incomingfilename);
-				};
-			};
-		};
-	};
-};
-
-void CGameServer::SendClientMessages()
-{
-	SV_UpdateToReliableMessages();
+	UpdateToReliableMessages();
 
 	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
@@ -652,14 +576,12 @@ void CGameServer::SendClientMessages()
 		{
 			cl->skip_message = FALSE;
 			continue;
-		}
+		};
 
-		if(host_limitlocal.value == 0.0f &&
-		   cl->netchan.remote_address.type == NA_LOOPBACK)
+		if(host_limitlocal.value == 0.0f && cl->netchan.remote_address.type == NA_LOOPBACK)
 			cl->send_message = TRUE;
 
-		if(cl->active && cl->spawned && cl->fully_connected &&
-		   host_frametime + realtime >= cl->next_messagetime)
+		if(cl->active && cl->spawned && cl->fully_connected && frametime + realtime >= cl->next_messagetime)
 			cl->send_message = TRUE;
 
 		if(cl->netchan.message.flags & SIZEBUF_OVERFLOWED)
@@ -688,28 +610,28 @@ void CGameServer::SendClientMessages()
 			{
 				++cl->chokecount;
 				continue;
-			}
+			};
 
 			host_client->send_message = FALSE;
-			cl->next_messagetime =
-			host_frametime + cl->next_messageinterval + realtime;
+			cl->next_messagetime = frametime + cl->next_messageinterval + realtime;
+			
 			if(cl->active && cl->spawned && cl->fully_connected)
-				SV_SendClientDatagram(cl);
+				cl->SendDatagram();
 			else
 				Netchan_Transmit(&cl->netchan, 0, NULL);
-		}
-	}
+		};
+	};
+	
 	SV_CleanupEnts();
 };
 
 void CGameServer::CheckTimeouts()
 {
-	int i;
-	client_t *cl;
-	
 	float droptime = realtime - sv_timeout.value;
+	
+	client_t *cl = g_psvs.clients;
 
-	for(i = 0, cl = g_psvs.clients; i < g_psvs.maxclients; i++, cl++)
+	for(int i = 0; i < g_psvs.maxclients; i++, cl++)
 	{
 		if(cl->fakeclient)
 			continue;
@@ -720,14 +642,14 @@ void CGameServer::CheckTimeouts()
 		if(cl->netchan.last_received < droptime)
 		{
 			BroadcastPrintf("%s timed out\n", cl->name);
-			SV_DropClient(cl, FALSE, "Timed out");
+			cl->Drop(false, "Timed out");
 		};
 	};
 };
 
 void CGameServer::CheckMapDifferences()
 {
-	static double lastcheck;
+	static double lastcheck{0.0};
 
 	if(realtime - lastcheck < 5.0f)
 		return;
@@ -773,8 +695,7 @@ void CGameServer::GatherStatistics()
 	g_psvs.stats.cumulative_occupancy += (players * 100.0 / g_psvs.maxclients);
 
 	if(g_psvs.stats.num_samples >= 1)
-		g_psvs.stats.occupancy =
-		g_psvs.stats.cumulative_occupancy / g_psvs.stats.num_samples;
+		g_psvs.stats.occupancy = g_psvs.stats.cumulative_occupancy / g_psvs.stats.num_samples;
 
 	if(g_psvs.stats.minusers > players)
 		g_psvs.stats.minusers = players;
@@ -783,6 +704,7 @@ void CGameServer::GatherStatistics()
 
 	if((g_psvs.maxclients - 1) <= players)
 		g_psvs.stats.at_capacity++;
+	
 	if(players <= 1)
 		g_psvs.stats.at_empty++;
 
@@ -811,10 +733,138 @@ void CGameServer::GatherStatistics()
 		v /= c;
 
 	g_psvs.stats.cumulative_latency += v;
+	
 	if(g_psvs.stats.num_samples >= 1)
-		g_psvs.stats.average_latency =
-		g_psvs.stats.cumulative_latency / g_psvs.stats.num_samples;
+		g_psvs.stats.average_latency = g_psvs.stats.cumulative_latency / g_psvs.stats.num_samples;
+	
 	if(g_psvs.stats.num_sessions >= 1)
-		g_psvs.stats.average_session_len =
-		g_psvs.stats.cumulative_sessiontime / g_psvs.stats.num_sessions;
+		g_psvs.stats.average_session_len = g_psvs.stats.cumulative_sessiontime / g_psvs.stats.num_sessions;
+};
+
+void CGameServer::UpdateToReliableMessages()
+{
+	int i;
+	client_t *client;
+
+	// Prepare setinfo changes and send new user messages
+	for(i = 0; i < g_psvs.maxclients; i++)
+	{
+		client = &g_psvs.clients[i];
+
+		if(!client->edict)
+			continue;
+
+		host_client = client;
+
+#ifdef REHLDS_FIXES
+		// skip update in this frame if would overflow
+		if(client->sendinfo && client->sendinfo_time <= realtime &&
+		   (1 + 1 + 4 + (int)Q_strlen(client->userinfo) + 1 + 16 +
+		    g_psv.reliable_datagram.cursize <=
+		    g_psv.reliable_datagram.maxsize))
+#else  // REHLDS_FIXES
+		if(client->sendinfo && client->sendinfo_time <= realtime)
+#endif // REHLDS_FIXES
+		{
+			client->UpdateUserInfo();
+		};
+
+		if(!client->fakeclient && (client->active || client->connected))
+		{
+			if(sv_gpNewUserMsgs != NULL)
+				SV_SendUserReg(&client->netchan.message);
+		};
+	};
+
+	// Link new user messages to sent chain
+	if(sv_gpNewUserMsgs != NULL)
+	{
+		UserMsg *pMsg = sv_gpUserMsgs;
+		
+		if(pMsg != NULL)
+		{
+			while(pMsg->next)
+				pMsg = pMsg->next;
+			
+			pMsg->next = sv_gpNewUserMsgs;
+		}
+		else
+			sv_gpUserMsgs = sv_gpNewUserMsgs;
+		
+		sv_gpNewUserMsgs = NULL;
+	};
+
+	if(g_psv.datagram.flags & SIZEBUF_OVERFLOWED)
+	{
+		mpConsole->DPrintf("sv.datagram overflowed!\n");
+		SZ_Clear(&g_psv.datagram);
+	};
+	
+	if(g_psv.spectator.flags & SIZEBUF_OVERFLOWED)
+	{
+		mpConsole->DPrintf("sv.spectator overflowed!\n");
+		SZ_Clear(&g_psv.spectator);
+	};
+
+// Fix for the "server failed to transmit file 'AY&SY..." bug
+// https://github.com/dreamstalker/rehlds/issues/38
+#ifdef REHLDS_FIXES
+	bool svReliableCompressed = false;
+#endif
+
+	// Send broadcast data
+	for(i = 0; i < g_psvs.maxclients; i++)
+	{
+		client = &g_psvs.clients[i];
+
+// Fix for the "server failed to transmit file 'AY&SY..." bug
+// https://github.com/dreamstalker/rehlds/issues/38
+#ifdef REHLDS_FIXES
+		if(!(!client->fakeclient && (client->active || g_GameClients[i]->GetSpawnedOnce())))
+			continue;
+
+		if (!svReliableCompressed && g_psv.reliable_datagram.cursize + client->netchan.message.cursize < client->netchan.message.maxsize)
+			SZ_Write(&client->netchan.message, g_psv.reliable_datagram.data, g_psv.reliable_datagram.cursize);
+		else
+		{
+			Netchan_CreateFragments(TRUE, &client->netchan, &g_psv.reliable_datagram);
+			svReliableCompressed = true;
+		};
+#else
+		if (!(!client->fakeclient && client->active))
+			continue;
+
+		if (g_psv.reliable_datagram.cursize + client->netchan.message.cursize < client->netchan.message.maxsize)
+			SZ_Write(&client->netchan.message, g_psv.reliable_datagram.data, g_psv.reliable_datagram.cursize);
+		else
+			Netchan_CreateFragments(TRUE, &client->netchan, &g_psv.reliable_datagram);
+#endif
+
+		if (g_psv.datagram.cursize + client->datagram.cursize < client->datagram.maxsize)
+			SZ_Write(&client->datagram, g_psv.datagram.data, g_psv.datagram.cursize);
+		else
+			mpConsole->DPrintf("Warning:  Ignoring unreliable datagram for %s, would overflow\n", client->name);
+
+		if (client->proxy)
+		{
+			if (g_psv.spectator.cursize + client->datagram.cursize < client->datagram.maxsize)
+				SZ_Write(&client->datagram, g_psv.spectator.data, g_psv.spectator.cursize);
+			else
+				mpConsole->DPrintf("Warning:  Ignoring spectator datagram for %s, would overflow\n", client->name);
+
+			if(client->proxy)
+			{
+				if(g_psv.spectator.cursize + client->datagram.cursize < client->datagram.maxsize)
+					SZ_Write(&client->datagram, g_psv.spectator.data, g_psv.spectator.cursize);
+#ifdef REHLDS_FIXES
+				else
+					mpConsole->DPrintf("Warning:  Ignoring spectator datagram for %s, would overflow\n", client->name);
+#endif
+			};
+		};
+	};
+
+	SZ_Clear(&g_psv.reliable_datagram);
+	SZ_Clear(&g_psv.datagram);
+	SZ_Clear(&g_psv.spectator);
 };

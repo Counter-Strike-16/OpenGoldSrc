@@ -29,11 +29,8 @@
 /// @file
 /// @brief primary header for host
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/Host.hpp"
-
-#include <cstdio>
-#include <cstring>
 
 /*
 * Globals initialization
@@ -89,7 +86,6 @@ Host_Init
 */
 int CHost::Init(quakeparms_t *parms)
 {
-	char versionString[256];
 /*
 	CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
 
@@ -103,8 +99,7 @@ int CHost::Init(quakeparms_t *parms)
 	Voice_RegisterCvars();
 	Cvar_RegisterVariable(&console);
 
-	if(COM_CheckParm("-console") || COM_CheckParm("-toconsole") ||
-	   COM_CheckParm("-dev"))
+	if(COM_CheckParm("-console") || COM_CheckParm("-toconsole") || COM_CheckParm("-dev"))
 		Cvar_DirectSet(&console, "1.0");
 
 	InitLocal();
@@ -153,23 +148,30 @@ int CHost::Init(quakeparms_t *parms)
 
 	// Rehlds Security
 	//Rehlds_Security_Init();
-
+	
+	char versionString[256];
 	Q_snprintf(versionString, sizeof(versionString), "%s,%i,%i", gpszVersionString, PROTOCOL_VERSION, build_number());
 	Cvar_Set("sv_version", versionString);
+	
 	mpConsole->DPrintf("%4.1f Mb heap\n", (double)parms->memsize / (1024.0f * 1024.0f));
+	
 	//R_InitTextures();
+	
 	HPAK_CheckIntegrity("custom");
+	
 	Q_memset(&g_module, 0, sizeof(g_module));
+	
 	if(cls.state != ca_dedicated)
 	{
 		// CSystem::Error("Only dedicated server mode is supported");
 
 		color24 *disk_basepal = (color24 *)COM_LoadHunkFile("gfx/palette.lmp");
+		
 		if(!disk_basepal)
 			CSystem::Error("Host_Init: Couldn't load gfx/palette.lmp");
 
-		host_basepal = (unsigned short *)Hunk_AllocName(
-		sizeof(PackedColorVec) * 256, "palette.lmp");
+		host_basepal = (unsigned short *)Hunk_AllocName(sizeof(PackedColorVec) * 256, "palette.lmp");
+		
 		for(int i = 0; i < 256; i++)
 		{
 			PackedColorVec *basepal = (PackedColorVec *)&host_basepal[i];
@@ -180,11 +182,12 @@ int CHost::Init(quakeparms_t *parms)
 			basepal->a = 0; // alpha
 
 			disk_basepal++;
-		}
+		};
 		
 		//if(!LoadRender())
 		//	return 0;
 		//GL_Init(); gpRender->Init();
+		
 		PM_Init(&g_clmove);
 		CL_InitEventSystem();
 		ClientDLL_Init();
@@ -212,8 +215,10 @@ int CHost::Init(quakeparms_t *parms)
 		mpConsole->RegisterVariable(&suitvolume);
 
 	mpCmdBuffer->InsertText("exec valve.rc\n");
+	
 	Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark();
+	
 	giActive = DLL_ACTIVE;
 	scr_skipupdate = FALSE;
 */
@@ -253,7 +258,7 @@ void CHost::InitLocal()
 	mpConsole->RegisterVariable(&pausable);
 	mpConsole->RegisterVariable(&skill);
 
-	SV_SetMaxclients();
+	mpServer->SetupMaxClients();
 	*/
 };
 
@@ -272,12 +277,11 @@ void CHost::Shutdown()
 	if(host_initialized) // Client-side
 		WriteConfig();
 
-	/*
-	SV_ServerShutdown(); // Deactivate
-	Voice_Deinit();
+	//SV_ServerShutdown(); // Deactivate
+	//Voice_Deinit();
 	
 	host_initialized = false;
-
+/*
 	// CDAudio_Shutdown();
 	// VGui_Shutdown();
 	
@@ -290,7 +294,9 @@ void CHost::Shutdown()
 	Cmd_RemoveGameCmds();
 	Cmd_Shutdown();
 	Cvar_Shutdown();
+	
 	HPAK_FlushHostQueue();
+	
 	SV_DeallocateDynamicData();
 
 	client_t *pclient = g_psvs.clients;
@@ -298,7 +304,7 @@ void CHost::Shutdown()
 	for(int i = 0; i < g_psvs.maxclientslimit; i++, pclient++)
 		SV_ClearFrames(&pclient->frames);
 
-	SV_Shutdown();
+	mpServer->Shutdown();
 	
 	// SystemWrapper_ShutDown();
 	
@@ -329,10 +335,12 @@ void CHost::Shutdown()
 	CL_Shutdown();
 	DELTA_Shutdown();
 	Key_Shutdown();
+*/
 	
 	realtime = 0.0f;
-	g_psv.time = 0.0f;
-	cl.time = 0.0f;*/
+	
+	//g_psv.time = 0.0f;
+	//cl.time = 0.0f;
 };
 
 void CHost::EndGame(const char *message, ...)
@@ -377,35 +385,35 @@ void CHost::EndGame(const char *message, ...)
 void NORETURN CHost::Error(const char *error, ...)
 {
 	static bool inerror = false;
-	
-	va_list argptr;
-	va_start(argptr, error);
 
 	if(inerror)
 		CSystem::Error("%s: recursively entered", __FUNCTION__);
 
 	inerror = true;
 	
-	SCR_EndLoadingPlaque();
+	va_list argptr;
+	va_start(argptr, error);
+	
+	//SCR_EndLoadingPlaque();
 	
 	char string[1024];
 	Q_vsnprintf(string, sizeof(string), error, argptr);
 	va_end(argptr);
 
-	if(g_psv.active && developer.value != 0.0f)
-		CL_WriteMessageHistory(0, 0);
+	//if(g_psv.active && developer.value != 0.0f)
+		//CL_WriteMessageHistory(0, 0);
 
-	mpConsole->Printf("%s: %s\n", __FUNCTION__, string);
+	//mpConsole->Printf("%s: %s\n", __FUNCTION__, string);
 	
-	if(g_psv.active)
-		ShutdownServer(false);
+	//if(g_psv.active)
+		//ShutdownServer(false);
 
-	if(cls.state)
+	//if(cls.state)
 	{
-		CL_Disconnect();
-		cls.demonum = -1;
+		//CL_Disconnect();
+		//cls.demonum = -1;
 		inerror = false;
-		longjmp(host_abortserver, 1);
+		//longjmp(host_abortserver, 1);
 	};
 	
 	CSystem::Error("%s: %s\n", __FUNCTION__, string);
@@ -430,11 +438,12 @@ void CHost::WriteConfig()
 #else
 	SetRateRegistrySetting(rate_.string);
 #endif // _WIN32
+	
 	if(Key_CountBindings() <= 1)
 	{
 		mpConsole->Printf("skipping config.cfg output, no keys bound\n");
 		return;
-	}
+	};
 
 	bool bSetFileToReadOnly = false;
 	f = FS_OpenPathID("config.cfg", "w", "GAMECONFIG");
@@ -664,12 +673,12 @@ void CHost::CheckDynamicStructures()
 
 void CHost::ClearMemory(bool bQuiet)
 {
-	/*
 	// Engine string pooling
 #ifdef REHLDS_FIXES
 	Ed_StrPool_Reset();
 #endif // REHLDS_FIXES
 
+/*
 	CM_FreePAS();
 	SV_ClearEntities();
 
@@ -690,7 +699,7 @@ void CHost::ClearMemory(bool bQuiet)
 	Q_memset(&g_psv, 0, sizeof(server_t));
 	CL_ClearClientState();
 	SV_ClearClientStates();
-	*/
+*/
 };
 
 bool CHost::FilterTime(float time)
@@ -809,7 +818,7 @@ void CHost::GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, cha
 	*nMaxPlayers = 0; //g_psvs.maxclients;
 };
 
-void CHost::Speeds(double *time)
+void CHost::PrintSpeeds(double *time) // Or CalcSpeeds
 {
 	float pass1, pass2, pass3, pass4, pass5;
 	double frameTime;
@@ -906,14 +915,10 @@ void CHost::UpdateSounds()
 	/*
 #if defined(_WIN32) && !defined(SWDS)
 	// update audio
-	if(cl.IsActive())
-	{
-		S_Update(&s_AudioState);
-	};
-#else
-	{
-		S_Update(NULL);
-	};
+	if(cl.IsActive()) // if(cls.state == ca_active)
+		S_Update(&s_AudioState); // S_Update(r_origin, vpn, vright, vup);
+	else
+		S_Update(NULL); // S_Update(vec3_origin, vec3_origin, vec3_origin, vec3_origin);
 #endif
   */
 };
@@ -941,11 +946,10 @@ Runs all active servers
 */
 void CHost::_Frame(float time)
 {
-	/*
 	static double host_times[6];
-
-	if(setjmp(host_enddemo))
-		return;
+	
+	//if(setjmp(host_enddemo))
+		//return;
 
 	// Unknown_windows_func_01D37CD0();
 	
@@ -954,16 +958,19 @@ void CHost::_Frame(float time)
 
 #ifdef REHLDS_FLIGHT_REC
 	static long frameCounter = 0;
+	
 	if(rehlds_flrec_frame.string[0] != '0')
 		FR_StartFrame(frameCounter);
 #endif // REHLDS_FLIGHT_REC
 
 	// SystemWrapper_RunFrame(host_frametime);
 
-	if(g_modfuncs.m_pfnFrameBegin)
-		g_modfuncs.m_pfnFrameBegin();
-
+	//if(g_modfuncs.m_pfnFrameBegin)
+		//g_modfuncs.m_pfnFrameBegin();
+	
 	ComputeFPS(host_frametime);
+	
+/*
 	//R_SetStackBase();
 	CL_CheckClientState();
 
@@ -977,10 +984,11 @@ void CHost::_Frame(float time)
 
 	host_times[1] = CSystem::FloatTime();
 	
-	SV_Frame(host_frametime); // netserver or gameserver (works as netserver->gameserver) frame
+	mpServer->Frame(host_frametime); // netserver or gameserver (works as netserver->gameserver) frame
 
 	host_times[2] = CSystem::FloatTime();
-	SV_CheckForRcon();
+	
+	mpServer->CheckForRcon();
 
 	if(!g_psv.active)
 		CL_Move();
@@ -990,10 +998,16 @@ void CHost::_Frame(float time)
 
 	// fetch results from server
 	CL_ReadPackets();
-
+	
+	// wipe all the local states that are older than the latest state 
+	// received from the server and reapply the rest above it
 	CL_RedoPrediction();
+	
 	CL_VoiceIdle();
+	
+	// build a refresh entity list
 	CL_EmitEntities();
+	
 	CL_CheckForResend();
 
 	while(CL_RequestMissingResources())
@@ -1008,20 +1022,22 @@ void CHost::_Frame(float time)
 	ClientDLL_CAM_Think();
 	CL_MoveSpectatorCamera();
 
-	host_times[3] = Sys_FloatTime();
+	host_times[3] = CSystem::FloatTime();
 */
 	UpdateScreen();
 
-	//host_times[4] = Sys_FloatTime();
+	//host_times[4] = CSystem::FloatTime();
 
 	//CL_DecayLights();
 
 	UpdateSounds();
+	
+	//CDAudio_Update(); // call here or inside the UpdateSounds method
 
 	//host_times[0] = host_times[5];
-	//host_times[5] = Sys_FloatTime();
+	//host_times[5] = CSystem::FloatTime();
 
-	Speeds(host_times);
+	PrintSpeeds(host_times);
 
 	++host_framecount;
 
@@ -1048,10 +1064,10 @@ void CHost::_Frame(float time)
 
 int CHost::Frame(float time, int iState, int *stateInfo)
 {
-	/*
 	double time1;
 	double time2;
-
+/*
+	// something bad happened, or the server disconnected
 	if(setjmp(host_abortserver))
 		return giActive;
 
@@ -1059,10 +1075,14 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 		giActive = iState;
 
 	*stateInfo = 0;
+	
 	if(host_profile.value != 0.0f)
 		time1 = Sys_FloatTime();
+*/
 
 	_Frame(time);
+	
+/*
 	if(host_profile.value != 0.0)
 		time2 = Sys_FloatTime();
 
@@ -1127,20 +1147,27 @@ bool CHost::IsServerActive()
 
 void CHost::PrintVersion()
 {
-	/*
 	char szFileName[MAX_PATH];
-
-	Q_strcpy(gpszVersionString, "1.0.1.4");
-	Q_strcpy(gpszProductString, "valve");
+	
 	Q_strcpy(szFileName, "steam.inf");
-	FileHandle_t fp = FS_Open(szFileName, "r");
+	
+	//Q_strcpy(gpszVersionString, "1.0.1.4");
+	//Q_strcpy(gpszProductString, "valve");
+	
+/*	
+	FileHandle_t fp = mpFS->Open(szFileName, "r");
+	
 	if(fp)
 	{
-		int bufsize = FS_Size(fp);
+		int bufsize = mpFS->Size(fp);
 		char *buffer = (char *)Mem_Malloc(bufsize + 1);
-		FS_Read(buffer, bufsize, 1, fp);
+		
+		mpFS->Read(buffer, bufsize, 1, fp);
+		
 		char *pbuf = buffer;
-		FS_Close(fp);
+		
+		mpFS->Close(fp);
+		
 		buffer[bufsize] = 0;
 		int gotKeys = 0;
 
@@ -1160,7 +1187,8 @@ void CHost::PrintVersion()
 						                       sizeof(szSteamVersionId) - 1);
 						Q_snprintf(gpszVersionString, sizeof(gpszVersionString), "%s/%s", &com_token[Q_strlen("PatchVersion=")], szSteamVersionId);
 						gpszVersionString[sizeof(gpszVersionString) - 1] = 0;
-					}
+					};
+					
 					++gotKeys;
 				}
 				else if(!Q_strnicmp(com_token, "ProductName=", Q_strlen("ProductName=")))
@@ -1168,28 +1196,38 @@ void CHost::PrintVersion()
 					++gotKeys;
 					Q_strncpy(gpszProductString, &com_token[Q_strlen("ProductName=")], sizeof(gpszProductString) - 1);
 					gpszProductString[sizeof(gpszProductString) - 1] = 0;
-				}
+				};
 
 				pbuf = COM_Parse(pbuf);
 				if(!pbuf)
 					break;
-			}
-		}
+			};
+		};
+		
 		if(buffer)
 			Mem_Free(buffer);
-	}
+	};
 
 	if(cls.state != ca_dedicated)
 	{
 		mpConsole->DPrintf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
-		mpConsole->DPrintf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n",
-		            build_number());
+		mpConsole->DPrintf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
 	}
 	else
 	{
 		mpConsole->Printf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
-		mpConsole->Printf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n",
-		           build_number());
+		mpConsole->Printf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
 	};
 	*/
+};
+
+void CHost::ClearIOStates()
+{
+#ifndef SWDS
+	for(int i = 0; i < 256; ++i)
+		Key_Event(i, false);
+	
+	Key_ClearStates();
+	ClientDLL_ClearStates();
+#endif // SWDS
 };

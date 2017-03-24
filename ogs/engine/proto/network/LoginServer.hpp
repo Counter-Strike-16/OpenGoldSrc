@@ -56,7 +56,7 @@ private:
 	int CheckIPRestrictions(netadr_t *adr, int nAuthProtocol);
 	int CheckIPRestrictions_internal(netadr_t *adr, int nAuthProtocol);
 	
-	int CheckUserInfo(netadr_t *adr, char *userinfo, qboolean bIsReconnecting, int nReconnectSlot, char *name);
+	int CheckUserInfo(netadr_t *adr, char *userinfo, bool bIsReconnecting, int nReconnectSlot, char *name);
 	
 	int FinishCertificateCheck(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);
 	int FinishCertificateCheck_internal(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);

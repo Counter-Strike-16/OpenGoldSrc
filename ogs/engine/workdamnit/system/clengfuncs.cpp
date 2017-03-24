@@ -1247,13 +1247,18 @@ cl_enginefunc_t gClEngFuncs =
 
   pfnIsSpectateOnly,
   pfnLoadMapSprite,
+  
   COM_AddAppDirectoryToSearchPath,
   COM_ExpandFilename,
+  
   PlayerInfo_ValueForKey,
   PlayerInfo_SetValueForKey,
+  
   pfnGetPlayerUniqueID,
+  
   pfnGetTrackerIDForPlayer,
   pfnGetPlayerForTrackerID,
+  
   pfnServerCmdUnreliable,
 
   pfnGetMousePos,
@@ -1285,7 +1290,7 @@ cl_enginefunc_t gClEngFuncs =
   pfnIsCareerMatch,
   pfnPlaySoundVoiceByName,
   pfnMP3_InitStream,
-  Sys_DoubleTime,
+  Sys_FloatTime,
   pfnProcessTutorMessageDecayBuffer,
   pfnConstructTutorMessageDecayBuffer,
   pfnResetTutorMessageDecayData,

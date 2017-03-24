@@ -52,6 +52,8 @@ public:
 	int GetInt() const;
 	float GetFloat() const {return mpWrapped->value;}
 	bool GetBool() const;
+	
+	operator cvar_t() const {return mpWrapped;}
 private:
 	cvar_t *mpWrapped;
 	const char *msDesc;

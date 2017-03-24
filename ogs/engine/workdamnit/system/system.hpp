@@ -48,7 +48,6 @@
 //#include "engine_launcher_api.h"
 
 // clang-format off
-
 #ifdef HOOK_ENGINE
 	#define g_hfind (*pg_hfind)
 	
@@ -91,7 +90,6 @@
 	#define szReslistsBaseDir (*pszReslistsBaseDir)
 	#define szReslistsExt (*pszReslistsExt)
 #endif
-
 // clang-format on
 
 extern qboolean gbIsDedicatedServer;
@@ -197,8 +195,6 @@ NOBODY void Sys_DebugOutStraight(const char *pStr);
 
 void Sys_Quit();
 
-double Sys_FloatTime();
-
 void Dispatch_Substate(int iSubState);
 void GameSetSubState(int iSubState);
 void GameSetState(int iState);
@@ -235,14 +231,7 @@ NOXREF const char *GetRateRegistrySetting(const char *pchDef);
 
 void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated);
 
-
-
 void Sys_ShowProgressTicks(char *specialProgressMsg);
-
-int Sys_InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
-void Sys_ShutdownGame();
-
-void ClearIOStates();
 
 // TODO: Needs rechecking
 // NOXREF int BuildMapCycleListHints(char **hints);

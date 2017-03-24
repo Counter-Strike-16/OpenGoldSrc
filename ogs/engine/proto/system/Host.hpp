@@ -31,7 +31,12 @@
 
 #pragma once
 
+#include <memory>
+#include "system/GameServer.hpp"
+
 typedef struct quakeparms_s quakeparms_t;
+
+class CFileSystem;
 
 class CHost
 {
@@ -40,6 +45,9 @@ public:
 	void InitLocal();
 	
 	void Shutdown();
+	
+	void _Frame(float time);
+	int Frame(float time, int iState, int *stateInfo);
 	
 	void EndGame(const char *message, ...);
 
@@ -58,15 +66,12 @@ public:
 
 	void ComputeFPS(double frametime);
 	void GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
-	void Speeds(double *time);
+	void PrintSpeeds(double *time); // CalcSpeeds
 
 	void UpdateScreen();
 	void UpdateSounds();
 
 	void CheckConnectionFailure();
-
-	void _Frame(float time);
-	int Frame(float time, int iState, int *stateInfo);
 
 	void CheckGore();
 
@@ -77,12 +82,18 @@ public:
 	
 	bool IsInitialized() const {return host_initialized;}
 private:
+	void ClearIOStates();
+	
 	//std::unique_ptr<IConsole> mpConsole;
 	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
 	
 	//std::unique_ptr<CNetwork> mpNetwork;
 	
 	//std::unique_ptr<ISound> mpSound;
+	
+	std::unique_ptr<CGameServer> mpServer;
+	
+	CFileSystem *mpFS{nullptr};
 	
 	bool host_initialized{false}; // true if into command execution
 	
@@ -92,10 +103,12 @@ private:
 	double oldrealtime{0.0f}; // last frame run
 	
 	double host_frametime{0.0f};
-
-	int host_framecount{0}; // incremented every frame, never reset
 	
 	double rolling_fps{0.0f};
+	
+	int host_framecount{0}; // incremented every frame, never reset
+	
+	int host_hunklevel{0};
 
 	//jmp_buf host_abortserver;
 	//jmp_buf host_enddemo;

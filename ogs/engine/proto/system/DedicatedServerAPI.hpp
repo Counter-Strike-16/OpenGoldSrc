@@ -49,8 +49,8 @@ public:
 
 	void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
 private:
-	// non-virtual function's of wrap for hooks a virtual
-	// Only need to HOOK_ENGINE
+	// Non-virtual function's of wrap for hooks a virtual
+	// Only needed for HOOK_ENGINE
 	bool Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
 	int Shutdown_noVirt();
 	bool RunFrame_noVirt();

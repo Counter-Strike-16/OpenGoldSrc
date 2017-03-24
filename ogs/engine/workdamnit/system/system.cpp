@@ -151,66 +151,6 @@ FileFindHandle_t g_hfind;
 
 #endif // HOOK_ENGINE
 
-#ifdef _WIN32
-void Sys_SetupFPUOptions()
-{
-#ifndef __SSE__
-	static uint8 fpuOpts[32];
-
-	//__asm { fnstenv byte ptr fpuOpts }
-	fpuOpts[0] |= 0x3Fu;
-	//__asm { fldenv  byte ptr fpuOpts }
-#endif
-}
-
-void Sys_InitFPUControlWords()
-{
-#ifndef __SSE__
-	int fpucw = 0;
-	//__asm { fnstcw fpucw }
-
-	g_FPUCW_Mask_Prec_64Bit = (fpucw & 0xF0FF) | 0x300;
-	g_FPUCW_Mask_Prec_64Bit_2 = (fpucw & 0xF0FF) | 0x300;
-	g_FPUCW_Mask_Round_Trunc = (fpucw & 0xF0FF) | 0xC00;
-	g_FPUCW_Mask_Round_Up = (fpucw & 0xF0FF) | 0x800;
-#endif
-}
-
-void Sys_SetStartTime()
-{
-	int startTimeArg;
-
-	Sys_FloatTime();
-	startTimeArg = COM_CheckParm("-starttime");
-	if(startTimeArg)
-		g_CurrentTime = Q_atof(com_argv[startTimeArg + 1]);
-	else
-		g_CurrentTime = 0;
-
-	g_StartTime = g_CurrentTime;
-}
-
-
-
-int g_SavedFPUCW1 = 0;
-void Sys_FPUCW_Push_Prec64()
-{
-#ifndef __SSE__
-	uint16 tmp = g_FPUCW_Mask_Prec_64Bit;
-	//__asm { fnstcw  g_SavedFPUCW1 }
-	//__asm {fldcw tmp}
-#endif
-}
-
-void Sys_FPUCW_Pop_Prec64()
-{
-#ifndef __SSE__
-	uint16 tmp = g_SavedFPUCW1;
-	//__asm { fldcw tmp }
-#endif
-}
-
-#endif // _WIN32
 
 NOXREF void Sys_PageIn(void *ptr, int size)
 {
@@ -277,7 +217,7 @@ void Sys_FindClose()
 	{
 		FS_FindClose(g_hfind);
 		g_hfind = -1;
-	}
+	};
 
 #ifdef REHLDS_FIXES
 	g_szFindFirstFileName[0] = 0;
@@ -318,7 +258,7 @@ NOXREF void Sys_MakeCodeWriteable(uint32 startaddr, uint32 length)
 	
 #ifdef _WIN32
 	if(!VirtualProtect((LPVOID)startaddr, length, PAGE_EXECUTE_READWRITE, (PDWORD)&length))
-		Sys_Error("Protection change failed.");
+		CSystem::Error("Protection change failed.");
 #endif // _WIN32
 }
 
@@ -384,8 +324,7 @@ DISPATCHFUNCTION GetDispatch(char *pname)
 
 	for(int i = 0; i < g_iextdllMac; i++)
 	{
-		pDispatch = (DISPATCHFUNCTION)GetProcAddress(
-		(HMODULE)g_rgextdll[i].lDLLHandle, pname);
+		pDispatch = (DISPATCHFUNCTION)GetProcAddress((HMODULE)g_rgextdll[i].lDLLHandle, pname);
 		if(pDispatch)
 			return pDispatch;
 	};
@@ -399,16 +338,13 @@ const char *FindAddressInTable(extensiondll_t *pDll, uint32 function)
 	for(int i = 0; i < pDll->functionCount; i++)
 	{
 		if(pDll[i].functionTable->pFunction == function)
-		{
 			return pDll[i].functionTable->pFunctionName;
-		}
-	}
+	};
 #else  // _WIN32
 	Dl_info addrInfo;
+	
 	if(dladdr((void *)function, &addrInfo))
-	{
 		return addrInfo.dli_sname;
-	}
 #endif // _WIN32
 
 	return NULL;
@@ -420,10 +356,9 @@ uint32 FindNameInTable(extensiondll_t *pDll, const char *pName)
 	for(int i = 0; i < pDll->functionCount; i++)
 	{
 		if(!Q_strcmp(pName, pDll->functionTable[i].pFunctionName))
-		{
 			return pDll[i].functionTable->pFunction;
-		}
-	}
+	};
+	
 	return NULL;
 #else
 	return (uint32)dlsym(pDll->lDLLHandle, pName);
@@ -450,25 +385,22 @@ NOBODY const char *ConvertNameToLocalPlatform(const char *pchInName);
 uint32 EXT_FUNC FunctionFromName(const char *pName)
 {
 	return 0; // TODO: do we really need to reverse it?
-}
+};
 
 const char *EXT_FUNC NameForFunction(uint32 function)
 {
-	int i;
-	const char *pName;
+	const char *pName = "";
 
-	for(i = 0; i < g_iextdllMac; i++)
+	for(int i = 0; i < g_iextdllMac; i++)
 	{
 		pName = FindAddressInTable(&g_rgextdll[i], function);
 		if(pName)
-		{
 			return pName;
-		}
-	}
+	};
 
 	Con_Printf("Can't find address: %08lx\n", function);
 	return NULL;
-}
+};
 
 ENTITYINIT GetEntityInit(char *pClassName)
 {
@@ -610,10 +542,9 @@ NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname,
 
 const char *GetCurrentSteamAppName()
 {
-	if(!Q_stricmp(com_gamedir, "cstrike") ||
-	   !Q_stricmp(com_gamedir, "cstrike_beta"))
+	if(!Q_stricmp(com_gamedir, "cstrike") || !Q_stricmp(com_gamedir, "cstrike_beta"))
 		return "Counter-Strike";
-
+	
 	else if(!Q_stricmp(com_gamedir, "valve"))
 		return "Half-Life";
 
@@ -633,7 +564,7 @@ const char *GetCurrentSteamAppName()
 		return "Condition Zero";
 
 	return "Half-Life";
-}
+};
 
 NOXREF void SetRateRegistrySetting(const char *pchRate)
 {
@@ -684,34 +615,6 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 		*bDedicated = 0;
 }
 
-NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage)
-{
-	NOXREFCHECK;
-}
-
-void Legacy_Sys_Printf(char *fmt, ...)
-{
-	va_list argptr;
-	char text[1024];
-
-	va_start(argptr, fmt);
-	Q_vsnprintf(text, sizeof(text), fmt, argptr);
-	va_end(argptr);
-
-	if(dedicated_)
-		dedicated_->Sys_Printf(text);
-}
-
-NOXREF void Legacy_MP3subsys_Suspend_Audio()
-{
-	NOXREFCHECK;
-}
-
-NOXREF void Legacy_MP3subsys_Resume_Audio()
-{
-	NOXREFCHECK;
-}
-
 void Sys_ShowProgressTicks(char *specialProgressMsg)
 {
 	static bool recursionGuard = false;
@@ -725,11 +628,12 @@ void Sys_ShowProgressTicks(char *specialProgressMsg)
 		{
 			currentTime = Sys_FloatTime();
 
-			if(g_flLastSteamProgressUpdateTime + 2.0 <= currentTime)
+			if(g_flLastSteamProgressUpdateTime + 2.0f <= currentTime)
 			{
 				g_flLastSteamProgressUpdateTime = currentTime;
 				numTics++;
-				if(g_bIsDedicatedServer)
+				
+				if(gbIsDedicatedServer)
 				{
 					//if(g_bMajorMapChange)
 					//{
@@ -759,17 +663,6 @@ void Sys_ShowProgressTicks(char *specialProgressMsg)
 		}
 		recursionGuard = false;
 	}
-}
-
-void ClearIOStates()
-{
-#ifndef SWDS
-	for(int i = 0; i < 256; i++)
-		Key_Event(i, false);
-	
-	Key_ClearStates();
-	ClientDLL_ClearStates();
-#endif // SWDS
 }
 
 // TODO: Needs rechecking

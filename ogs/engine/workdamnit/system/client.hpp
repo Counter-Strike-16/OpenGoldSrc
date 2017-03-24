@@ -42,7 +42,7 @@
 #include "common/netadr.h"
 #include "common/screenfade.h"
 #include "common/usercmd.h"
-#include "filesystem/filesystem_internal.hpp"
+#include "filesystem/FileSystem.hpp"
 #include "network/net_chan.hpp"
 #include "resources/consistency.hpp"
 #include "network/protocol.hpp"
@@ -50,7 +50,7 @@
 #include "system/common.hpp"
 #include "world/event.hpp"
 //#include "engine/custom.h"
-#include "qlimits.h"
+#include "common/qlimits.h"
 
 #ifdef HOOK_ENGINE
 #define cls (*pcls)

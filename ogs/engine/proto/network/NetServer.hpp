@@ -36,7 +36,7 @@ typedef struct netadr_s netadr_t;
 class CNetServer
 {
 public:
-	void Start(int anPort);
+	bool Start(int anPort);
 	void Stop();
 	
 	void Frame(float frametime);
@@ -47,6 +47,8 @@ public:
 	void BroadcastCommand(char *fmt, ...);
 	void BroadcastPrintf(const char *fmt, ...);
 	
+	void ConnectClient();
+	
 	void ReconnectClient(int anID);
 	void DisconnectClient(int anID);
 	
@@ -56,13 +58,20 @@ public:
 	NOXREF int GetChallengeNr(netadr_t *adr);
 	NOXREF void ReplyServerChallenge(netadr_t *adr);
 	
-	int GetMaxClients();
+	int GetClientCount() const;
+	int GetFakeClientCount() const;
+	
+	int GetMaxClients() const;
 private:
-	void ReadPackets();
+	void ReadPackets(float frametime);
+	
+	void SVC_GetChallenge(netadr_t *adr);
+	void SVC_ServiceChallenge(netadr_t *adr);
 	
 	void HandleRcon(netadr_t *net_from_);
 	int Rcon_Validate();
 	bool CheckRconFailure(netadr_t *adr);
 protected:
-	virtual HandleConnectionlessPacket(const char *c, const char *args){}
+	virtual void HandleConnectionlessPacket(const char *c, const char *args){}
+	virtual void ConnectClient_internal(){}
 };

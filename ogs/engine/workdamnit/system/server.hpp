@@ -49,7 +49,7 @@
 #include "common/qlimits.h"
 #include "public/rehlds/model.h"
 #include "resources/consistency.hpp"
-#include "system/server_static.hpp"
+#include "system/ServerStatic.hpp"
 #include "system/servertypes.hpp"
 #include "system/info.hpp"
 #include "common/userid.h"
@@ -645,7 +645,7 @@ void SV_QueryMovevarsChanged();
 void SV_SendServerinfo(sizebuf_t *msg, client_t *client);
 void SV_SendServerinfo_internal(sizebuf_t *msg, client_t *client);
 void SV_SendResources(sizebuf_t *msg);
-void SV_WriteClientdataToMessage(client_t *client, sizebuf_t *msg);
+
 void SV_WriteSpawn(sizebuf_t *msg);
 void SV_SendUserReg(sizebuf_t *msg);
 
@@ -666,10 +666,9 @@ int SV_CheckForDuplicateNames(char *userinfo, qboolean bIsReconnecting, int nExc
 
 void SVC_Ping();
 int SV_GetChallenge(const netadr_t &adr);
-void SVC_GetChallenge();
-void SVC_ServiceChallenge();
+
 void SV_ResetModInfo();
-int SV_GetFakeClientCount();
+
 NOXREF qboolean SV_GetModInfo(char *pszInfo, char *pszDL, int *version, int *size, qboolean *svonly, qboolean *cldll, char *pszHLVersion);
 NOXREF qboolean RequireValidChallenge(netadr_t *adr);
 NOXREF qboolean ValidInfoChallenge(netadr_t *adr, const char *nugget);

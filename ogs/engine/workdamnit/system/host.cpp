@@ -64,9 +64,7 @@ client_t *host_client;
 qboolean gfNoMasterServer;
 // qboolean g_bUsingInGameAdvertisements;
 
-int host_hunklevel;
-jmp_buf host_abortserver;
-jmp_buf host_enddemo;
+
 unsigned short *host_basepal;
 // unsigned char *host_colormap;
 // const char *g_InGameAdsAllowed[3];
@@ -270,8 +268,19 @@ typedef struct GameToAppIDMapItem_s
 	const char *pGameDir;
 } GameToAppIDMapItem_t;
 
-GameToAppIDMapItem_t g_GameToAppIDMap[11] = {
-	0x0A, "cstrike", 0x14, "tfc", 0x1E, "dod", 0x28, "dmc", 0x32, "gearbox", 0x3C, "ricochet", 0x46, "valve", 0x50, "czero", 0x64, "czeror", 0x82, "bshift", 0x96, "cstrike_beta",
+GameToAppIDMapItem_t g_GameToAppIDMap[11] =
+{
+	0x0A, "cstrike",
+	0x14, "tfc",
+	0x1E, "dod",
+	0x28, "dmc",
+	0x32, "gearbox",
+	0x3C, "ricochet",
+	0x46, "valve",
+	0x50, "czero",
+	0x64, "czeror",
+	0x82, "bshift",
+	0x96, "cstrike_beta",
 };
 
 int GetGameAppID()
@@ -281,14 +290,15 @@ int GetGameAppID()
 
 	COM_ParseDirectoryFromCmd("-game", gd, "valve");
 	COM_FileBase(gd, arg);
+	
 	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
 	{
 		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, arg))
 			return g_GameToAppIDMap[i].iAppID;
-	}
+	};
 
 	return 70;
-}
+};
 
 qboolean IsGameSubscribed(const char *gameName)
 {
@@ -352,8 +362,9 @@ void Host_Frame(float time)
         static double time3 = 0;
         int           pass1, pass2, pass3;
         float         fps;
+		
         if(setjmp(host_abort))
-                return; // something bad happened, or the server disconnected
+                return; 
 
         // decide the simulation time
         realtime += time;
@@ -399,7 +410,7 @@ void Host_Frame(float time)
         // Set up prediction for other players
         CL_SetUpPlayerPrediction(true);
 
-        // build a refresh entity list
+        
         CL_EmitEntities();
 
         // update video
@@ -410,15 +421,6 @@ void Host_Frame(float time)
 
         if(host_speeds.value)
                 time2 = Sys_DoubleTime();
-
-        // update audio
-        if(cls.state == ca_active)
-        {
-                S_Update(r_origin, vpn, vright, vup);
-                CL_DecayLights();
-        }
-        else
-                S_Update(vec3_origin, vec3_origin, vec3_origin, vec3_origin);
 
         CDAudio_Update();
 

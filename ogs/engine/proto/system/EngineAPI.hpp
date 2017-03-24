@@ -27,43 +27,24 @@
  */
 
 /// @file
+/// @brief engine launcher for both client+server mode (localhost)
 
 #pragma once
 
 #include "common/commontypes.h"
-#include "maintypes.h"
+#include "engine_launcher_api.h"
 
-typedef enum {
-	BOTH = 0,
-	SINGLEPLAYER_ONLY,
-	MULTIPLAYER_ONLY,
-} MOD_GAMEPLAY_TYPE_E;
+void EXPORT F(IEngineAPI **api);
 
-typedef struct modinfo_s
+class CEngineAPI : public IEngineAPI
 {
-	qboolean bIsMod;
-
-	char szInfo[256];
-	char szDL[256];
-	char szHLVersion[32];
-
-	int version;
-	int size;
-
-	qboolean svonly;
-	qboolean cldll;
-	qboolean secure;
-
-	MOD_GAMEPLAY_TYPE_E type;
-
-	int num_edicts;
-	qboolean clientcrccheck;
-} modinfo_t;
-
-#ifdef HOOK_ENGINE
-#define gmodinfo (*pgmodinfo)
-#endif
-
-extern modinfo_t gmodinfo;
-
-NOBODY void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue);
+public:
+	int Run(void *instance,
+			
+	        char *basedir,
+	        const char *cmdline,
+	        char *postRestartCmdLineArgs,
+			
+	        CreateInterfaceFn launcherFactory,
+	        CreateInterfaceFn filesystemFactory);
+};

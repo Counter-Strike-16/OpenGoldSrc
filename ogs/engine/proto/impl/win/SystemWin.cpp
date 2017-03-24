@@ -168,4 +168,62 @@ void __cdecl CSystem::InitHardwareTimer()
 	Sys_SetStartTime();
 };
 
+void Sys_SetupFPUOptions()
+{
+#ifndef __SSE__
+	static uint8 fpuOpts[32];
+
+	//__asm { fnstenv byte ptr fpuOpts }
+	fpuOpts[0] |= 0x3Fu;
+	//__asm { fldenv  byte ptr fpuOpts }
+#endif
+}
+
+void Sys_InitFPUControlWords()
+{
+#ifndef __SSE__
+	int fpucw = 0;
+	//__asm { fnstcw fpucw }
+
+	g_FPUCW_Mask_Prec_64Bit = (fpucw & 0xF0FF) | 0x300;
+	g_FPUCW_Mask_Prec_64Bit_2 = (fpucw & 0xF0FF) | 0x300;
+	g_FPUCW_Mask_Round_Trunc = (fpucw & 0xF0FF) | 0xC00;
+	g_FPUCW_Mask_Round_Up = (fpucw & 0xF0FF) | 0x800;
+#endif
+}
+
+void Sys_SetStartTime()
+{
+	int startTimeArg;
+
+	Sys_FloatTime();
+	startTimeArg = COM_CheckParm("-starttime");
+	if(startTimeArg)
+		g_CurrentTime = Q_atof(com_argv[startTimeArg + 1]);
+	else
+		g_CurrentTime = 0;
+
+	g_StartTime = g_CurrentTime;
+}
+
+
+
+int g_SavedFPUCW1 = 0;
+void Sys_FPUCW_Push_Prec64()
+{
+#ifndef __SSE__
+	uint16 tmp = g_FPUCW_Mask_Prec_64Bit;
+	//__asm { fnstcw  g_SavedFPUCW1 }
+	//__asm {fldcw tmp}
+#endif
+}
+
+void Sys_FPUCW_Pop_Prec64()
+{
+#ifndef __SSE__
+	uint16 tmp = g_SavedFPUCW1;
+	//__asm { fldcw tmp }
+#endif
+}
+
 #endif // _WIN32

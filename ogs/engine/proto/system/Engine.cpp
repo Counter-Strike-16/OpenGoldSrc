@@ -225,11 +225,10 @@ int CEngine::Frame_noVirt()
 	//(*(void (**)())(*(DWORD *)cdaudio + 24))();
 #endif // SWDS
 
-	if(!game->IsActiveApp())
-		game->SleepUntilInput(m_nDLLState != DLL_PAUSED ? MINIMIZED_SLEEP
-		                                                : NOT_FOCUS_SLEEP);
+	//if(!game->IsActiveApp())
+		//game->SleepUntilInput(m_nDLLState != DLL_PAUSED ? MINIMIZED_SLEEP : NOT_FOCUS_SLEEP);
 
-	m_fCurTime = Sys_FloatTime();
+	m_fCurTime = CSystem::FloatTime();
 	m_fFrameTime = m_fCurTime - m_fOldTime;
 	m_fOldTime = m_fCurTime;
 
@@ -244,7 +243,7 @@ int CEngine::Frame_noVirt()
 	
 	iState = mpHost->Frame(m_fFrameTime, m_nDLLState, &dummy);
 	
-	// Compare a new state the current
+	// Compare a new state with the current
 	if(iState == m_nDLLState)
 		return m_nDLLState;
 
@@ -267,8 +266,8 @@ void CEngine::TrapMouse_Event_noVirt(int buttons, bool down)
 		m_nTrapKey = 0;
 		m_nTrapButtons = buttons;
 	}
-	else
-		ClientDLL_MouseEvent(buttons);
+	//else
+		//ClientDLL_MouseEvent(buttons);
 };
 
 void CEngine::StartTrapMode_noVirt()
@@ -297,27 +296,29 @@ bool CEngine::CheckDoneTrapping_noVirt(int &buttons, int &key)
 
 int CEngine::InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated)
 {
-#ifndef SWDS
-	if(!bIsDedicated)
-	{
-		//pmainwindow = (HWND *)pwnd;
-#ifdef _WIN32
-		//videomode->UpdateWindowPosition();
-#endif // _WIN32
-	}
-#endif // SWDS
-	
 	mbDedicated = bIsDedicated;
 	gbIsDedicatedServer = bIsDedicated;
 	
-	Q_memset(&gmodinfo, 0, sizeof(modinfo_t));
+#ifndef SWDS
+	if(!mbIsDedicated)
+	{
+		//pmainwindow = (HWND *)pwnd;
+		
+#ifdef _WIN32
+		//videomode->UpdateWindowPosition();
+#endif
+
+	};
+#endif // SWDS
 	
-	SV_ResetModInfo();
+	//Q_memset(&gmodinfo, 0, sizeof(modinfo_t));
 	
-	TraceInit("Sys_Init()", "Sys_Shutdown()", 0);
+	//SV_ResetModInfo();
+	
+	//TraceInit("Sys_Init()", "Sys_Shutdown()", 0);
 
 #ifdef _WIN32
-	CSystem::InitHardwareTimer();
+	//CSystem::InitHardwareTimer();
 #endif // _WIN32
 
 	//CSystem::CheckCpuInstructionsSupport();
@@ -330,35 +331,35 @@ int CEngine::InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDed
 	
 	//SeedRandomNumberGenerator();
 	
-	TraceInit("Sys_InitMemory()", "Sys_ShutdownMemory()", 0);
-	CSystem::InitMemory(&host_parms);
+	//TraceInit("Sys_InitMemory()", "Sys_ShutdownMemory()", 0);
+	//CSystem::InitMemory(&host_parms);
 	
-	TraceInit("Sys_InitLauncherInterface()", "Sys_ShutdownLauncherInterface()", 0);
-	CSystem::InitLauncherInterface();
+	//TraceInit("Sys_InitLauncherInterface()", "Sys_ShutdownLauncherInterface()", 0);
+	//CSystem::InitLauncherInterface();
 
 #ifndef SWDS
 	//if(!GL_SetMode(*pmainwindow, &maindc, &baseRC))
 		//return 0;
 #endif // SWDS
 	
-	TraceInit("Host_Init( &host_parms )", "Host_Shutdown()", 0);
+	//TraceInit("Host_Init( &host_parms )", "Host_Shutdown()", 0);
 	
 	if(!mpHost->Init(&host_parms))
 		return 0;
 
-	TraceInit("Sys_InitAuthentication()", "Sys_ShutdownAuthentication()", 0);
+	//TraceInit("Sys_InitAuthentication()", "Sys_ShutdownAuthentication()", 0);
 	
-	CSystem::InitAuthentication();
+	//CSystem::InitAuthentication();
 	
 	if(mbDedicated)
 	{
 		mpHost->InitializeGameDLL();
-		NET_Config(TRUE);
+		//NET_Config(TRUE);
 	};
 
 #ifndef SWDS
-	else
-		ClientDLL_ActivateMouse();
+	//else
+		//ClientDLL_ActivateMouse();
 
 	char en_US[12];
 
@@ -387,22 +388,22 @@ int CEngine::InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDed
 
 void CEngine::ShutdownGame()
 {
-	if(!mbDedicated)
-		ClientDLL_DeactivateMouse();
+	//if(!mbDedicated)
+		//ClientDLL_DeactivateMouse();
 
-	TraceShutdown("Host_Shutdown()", 0);
+	//TraceShutdown("Host_Shutdown()", 0);
 	mpHost->Shutdown();
 
-	if(mbDedicated)
-		NET_Config(FALSE);
+	//if(mbDedicated)
+		//NET_Config(FALSE);
 
-	TraceShutdown("Sys_ShutdownLauncherInterface()", 0);
+	//TraceShutdown("Sys_ShutdownLauncherInterface()", 0);
 	
-	TraceShutdown("Sys_ShutdownAuthentication()", 0);
+	//TraceShutdown("Sys_ShutdownAuthentication()", 0);
 	
-	TraceShutdown("Sys_ShutdownMemory()", 0);
-	CSystem::ShutdownMemory();
+	//TraceShutdown("Sys_ShutdownMemory()", 0);
+	//CSystem::ShutdownMemory();
 	
-	TraceShutdown("Sys_Shutdown()", 0);
-	CSystem::Shutdown();
+	//TraceShutdown("Sys_Shutdown()", 0);
+	//CSystem::Shutdown();
 };

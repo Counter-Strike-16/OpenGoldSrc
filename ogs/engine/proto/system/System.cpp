@@ -28,34 +28,55 @@
 
 /// @file
 
+#include "precompiled.hpp"
 #include "system/System.hpp"
+#include "system/Host.hpp"
+#include "system/common.hpp"
 
-void CSystem::Init()
+void CSystem::Init(quakeparms_t *host_parms)
 {
+	mhost_parms = host_parms;
+	
 #ifndef SWDS
-	//Sys_InitFloatTime();
+	InitFloatTime();
 #endif
 };
 
 void CSystem::Shutdown()
 {
 #ifndef SWDS
-	//Sys_ShutdownFloatTime();
+	ShutdownFloatTime();
 #endif // SWDS
+	
 	//Steam_ShutdownClient();
+	
 #ifdef _WIN32
 	if(g_PerfCounterInitialized)
 	{
 		DeleteCriticalSection(&g_PerfCounterMutex);
 		g_PerfCounterInitialized = 0;
 	};
-#else
+	
+#else // if not _WIN32
+	
 #ifndef SWDS
 	GL_Shutdown(*pmainwindow, maindc, baseRC);
 #endif // SWDS
 
 #endif // _WIN32
 };
+
+#ifndef SWDS
+void CSystem::InitFloatTime()
+{
+	// TODO
+};
+
+void CSystem::ShutdownFloatTime()
+{
+	// TODO
+};
+#endif // SWDS
 
 void CSystem::InitArgv(char *lpCmdLine)
 {
@@ -67,8 +88,8 @@ void CSystem::InitArgv(char *lpCmdLine)
 
 	argv[0] = "";
 	c = *lpCmdLine;
-	for(host_parms.argc = 1; c && host_parms.argc < MAX_COMMAND_LINE_PARAMS;
-	    c = *(++lpCmdLine))
+	
+	for(mhost_parms->argc = 1; c && mhost_parms->argc < MAX_COMMAND_LINE_PARAMS; c = *(++lpCmdLine))
 	{
 #ifdef REHLDS_FIXES
 		// Skip whitespace
@@ -84,11 +105,12 @@ void CSystem::InitArgv(char *lpCmdLine)
 		// TODO: Add MultiByteToWideChar conversion under Windows, to correctly get
 		// UTF8, but need to alloc memory to store it
 		// Store arg pointer
-		argv[host_parms.argc] = lpCmdLine;
-		host_parms.argc++;
+		argv[mhost_parms->argc] = lpCmdLine;
+		mhost_parms->argc++;
 
 		// Find end of the argument
 		inQuotes = false;
+		
 		while(c > ' ' || (c && inQuotes)) // FIXED: Do not break quoted arguments
 		{
 			if(c == '"')
@@ -109,8 +131,8 @@ void CSystem::InitArgv(char *lpCmdLine)
 			break;
 
 		// Store arg pointer
-		argv[host_parms.argc] = lpCmdLine;
-		host_parms.argc++;
+		argv[mhost_parms->argc] = lpCmdLine;
+		mhost_parms->argc++;
 
 		// Find end of the argument
 		while(c > ' ' && c <= '~')
@@ -126,10 +148,10 @@ void CSystem::InitArgv(char *lpCmdLine)
 		*lpCmdLine = 0;
 	};
 
-	host_parms.argv = argv;
-	COM_InitArgv(host_parms.argc, argv);
-	host_parms.argc = com_argc;
-	host_parms.argv = com_argv;
+	mhost_parms->argv = argv;
+	COM_InitArgv(mhost_parms->argc, argv);
+	mhost_parms->argc = com_argc;
+	mhost_parms->argv = com_argv;
 };
 
 NOXREF void CSystem::ShutdownArgv()
@@ -137,14 +159,14 @@ NOXREF void CSystem::ShutdownArgv()
 	NOXREFCHECK;
 };
 
-void CSystem::InitMemory(quakeparms_t *host_parms)
+void CSystem::InitMemory()
 {
 	int i = COM_CheckParm("-heapsize");
 	
 	if(i && i < com_argc - 1)
-		host_parms->memsize = Q_atoi(com_argv[i + 1]) * 1024;
+		mhost_parms->memsize = Q_atoi(com_argv[i + 1]) * 1024;
 
-	if(host_parms->memsize < MINIMUM_WIN_MEMORY)
+	if(mhost_parms->memsize < MINIMUM_WIN_MEMORY)
 	{
 #ifdef _WIN32
 		MEMORYSTATUS lpBuffer;
@@ -154,49 +176,49 @@ void CSystem::InitMemory(quakeparms_t *host_parms)
 		if(lpBuffer.dwTotalPhys)
 		{
 			if(lpBuffer.dwTotalPhys < FIFTEEN_MB)
-				Error("Available memory less than 15MB!!! %i", host_parms.memsize);
+				Error("Available memory less than 15MB!!! %i", mhost_parms.memsize);
 
-			host_parms.memsize = (int)(lpBuffer.dwTotalPhys >> 1);
+			mhost_parms->memsize = (int)(lpBuffer.dwTotalPhys >> 1);
 			
-			if(host_parms->memsize < MINIMUM_WIN_MEMORY)
-				host_parms->memsize = MINIMUM_WIN_MEMORY;
+			if(mhost_parms->memsize < MINIMUM_WIN_MEMORY)
+				mhost_parms->memsize = MINIMUM_WIN_MEMORY;
 		}
 		else
-			host_parms->memsize = MAXIMUM_WIN_MEMORY;
+			mhost_parms->memsize = MAXIMUM_WIN_MEMORY;
 
 		if(gbIsDedicatedServer)
-			host_parms->memsize = DEFAULT_MEMORY;
+			mhost_parms->memsize = DEFAULT_MEMORY;
 #else
-		host_parms->memsize = DEFAULT_MEMORY;
+		mhost_parms->memsize = DEFAULT_MEMORY;
 #endif // _WIN32
 	};
 
-	if(host_parms->memsize > MAXIMUM_DEDICATED_MEMORY)
-		host_parms->memsize = MAXIMUM_DEDICATED_MEMORY;
+	if(mhost_parms->memsize > MAXIMUM_DEDICATED_MEMORY)
+		mhost_parms->memsize = MAXIMUM_DEDICATED_MEMORY;
 
 	if(COM_CheckParm("-minmemory"))
-		host_parms->memsize = MINIMUM_WIN_MEMORY;
+		mhost_parms->memsize = MINIMUM_WIN_MEMORY;
 	
 #ifdef _WIN32
-	host_parms->membase = (void *)GlobalAlloc(GMEM_FIXED, host_parms->memsize);
+	mhost_parms->membase = (void *)GlobalAlloc(GMEM_FIXED, mhost_parms->memsize);
 #else
-	host_parms->membase = Mem_Malloc(host_parms->memsize);
+	mhost_parms->membase = Mem_Malloc(mhost_parms->memsize);
 #endif // _WIN32
 
-	if(!host_parms->membase)
-		Error("Unable to allocate %.2f MB\n", (float)host_parms->memsize / (1024.0f * 1024.0f));
+	if(!mhost_parms->membase)
+		Error("Unable to allocate %.2f MB\n", (float)mhost_parms->memsize / (1024.0f * 1024.0f));
 };
 
 void CSystem::ShutdownMemory()
 {
 #ifdef _WIN32
-	GlobalFree((HGLOBAL)host_parms->membase);
+	GlobalFree((HGLOBAL)mhost_parms->membase);
 #else
-	Mem_Free(host_parms->membase);
+	Mem_Free(mhost_parms->membase);
 #endif // _WIN32
 	
-	host_parms->membase = NULL;
-	host_parms->memsize = 0;
+	mhost_parms->membase = NULL;
+	mhost_parms->memsize = 0;
 };
 
 void CSystem::InitLauncherInterface()
@@ -375,4 +397,32 @@ NOXREF bool CSystem::IsWin98()
 	// NOTE: no need to check for Win
 	return false;
 #endif // _WIN32
+};
+
+NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage)
+{
+	NOXREFCHECK;
+};
+
+void Legacy_Sys_Printf(char *fmt, ...)
+{
+	va_list argptr;
+	char text[1024];
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(text, sizeof(text), fmt, argptr);
+	va_end(argptr);
+
+	if(dedicated_)
+		dedicated_->Sys_Printf(text);
+};
+
+NOXREF void Legacy_MP3subsys_Suspend_Audio()
+{
+	NOXREFCHECK;
+};
+
+NOXREF void Legacy_MP3subsys_Resume_Audio()
+{
+	NOXREFCHECK;
 };

@@ -101,19 +101,8 @@ qboolean SV_CheckFile(sizebuf_t *msg, char *filename)
 	return FALSE;
 }
 
-void SV_ClearResourceLists(client_t *cl)
-{
-	if(!cl)
-	{
-		Sys_Error("SV_ClearResourceLists with NULL client!");
-	}
-
-	SV_ClearResourceList(&cl->resourcesneeded);
-	SV_ClearResourceList(&cl->resourcesonhand);
-}
-
-// Reinitializes customizations list. Tries to create customization for each
-// resource in on-hands list.
+// Reinitializes customizations list.
+// Tries to create customization for each resource in on-hands list.
 void SV_CreateCustomizationList(client_t *pHost)
 {
 	resource_t *pResource;
@@ -256,44 +245,6 @@ void SV_MoveToOnHandList(resource_t *pResource)
 
 	SV_RemoveFromResourceList(pResource);
 	SV_AddToResourceList(pResource, &host_client->resourcesonhand);
-}
-
-void SV_AddToResourceList(resource_t *pResource, resource_t *pList)
-{
-	if(pResource->pPrev || pResource->pNext)
-	{
-		Con_Printf("Resource already linked\n");
-		return;
-	}
-
-	pResource->pPrev = pList->pPrev;
-	pResource->pNext = pList;
-	pList->pPrev->pNext = pResource;
-	pList->pPrev = pResource;
-}
-
-void SV_ClearResourceList(resource_t *pList)
-{
-	resource_t *p, *n;
-
-	for(p = pList->pNext; p && p != pList; p = n)
-	{
-		n = p->pNext;
-
-		SV_RemoveFromResourceList(p);
-		Mem_Free(p);
-	}
-
-	pList->pPrev = pList;
-	pList->pNext = pList;
-}
-
-void SV_RemoveFromResourceList(resource_t *pResource)
-{
-	pResource->pPrev->pNext = pResource->pNext;
-	pResource->pNext->pPrev = pResource->pPrev;
-	pResource->pPrev = NULL;
-	pResource->pNext = NULL;
 }
 
 // For each t_decal and RES_CUSTOM resource the player had shown to us, tries to

@@ -98,7 +98,7 @@
 // bzip2
 //#include "bzip2/bzlib.h"
 
-#include "rehlds/rehlds_pch.hpp"
+//#include "rehlds/rehlds_pch.hpp"
 
 // game dll code
 //#include "dlls/cdll_dll.h"

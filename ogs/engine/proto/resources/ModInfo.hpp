@@ -30,32 +30,42 @@
 
 #pragma once
 
-#include "common/maintypes.h"
+#include "common/commontypes.h"
+#include "maintypes.h"
 
-class IGame
+#ifdef HOOK_ENGINE
+	#define gmodinfo (*pgmodinfo)
+#endif
+
+typedef enum
 {
-public:
-	virtual ~IGame(){}
-	
-	virtual bool Init(void *pvInstance) = 0;
-	virtual bool Shutdown() = 0;
+	BOTH = 0,
+	SINGLEPLAYER_ONLY,
+	MULTIPLAYER_ONLY,
+} MOD_GAMEPLAY_TYPE_E;
 
-	virtual bool CreateGameWindow() = 0;
+// NOTE: I think it should be GameInfo_s/_t
+typedef struct modinfo_s
+{
+	qboolean bIsMod;
 
-	virtual void SleepUntilInput(int time) = 0;
+	char szInfo[256];
+	char szDL[256];
+	char szHLVersion[32];
 
-	virtual HWND GetMainWindow() = 0;
-	virtual HWND *GetMainWindowAddress() = 0;
+	int version;
+	int size;
 
-	virtual void SetWindowXY(int x, int y) = 0;
-	virtual void SetWindowSize(int w, int h) = 0;
-	virtual void GetWindowRect(int *x, int *y, int *w, int *h) = 0;
+	qboolean svonly;
+	qboolean cldll;
+	qboolean secure;
 
-	virtual bool IsActiveApp() = 0;
-	virtual bool IsMultiplayer() = 0;
+	MOD_GAMEPLAY_TYPE_E type;
 
-	virtual void PlayStartupVideos() = 0;
-	virtual void PlayAVIAndWait(const char *aviFile) = 0;
+	int num_edicts;
+	qboolean clientcrccheck;
+} modinfo_t;
 
-	virtual void SetCursorVisible(bool bState) = 0;
-};
+extern modinfo_t gmodinfo;
+
+NOBODY void DLL_SetModKey(modinfo_t *pinfo, char *pkey, char *pvalue);

@@ -157,10 +157,10 @@ public:
 	void TimeBan(uint anTimeInMins);
 
 	void SetConnected(bool connected);
-	bool IsConnected() bool;
+	bool IsConnected() const;
 
 	void SetActive(bool active);
-	bool IsActive() bool;
+	bool IsActive() const;
 	
 	bool IsFakeClient() const; // IsBot
 	
@@ -188,6 +188,15 @@ public:
 
 	void SendFullUpdate(sizebuf_t *sb);
 	
+	void ClearResourceLists(client_t *cl);
+	void CreateCustomizationList(client_t *pHost);
+	void Customization(client_t *pPlayer, resource_t *pResource, qboolean bSkipPlayer);
+
+	bool UploadComplete(client_t *cl);
+	void BatchUploadRequest(client_t *cl);
+
+	void ParseResourceList(client_t *pSenderClient);
+	
 	char *GetIDString();
 
 	const char *GetName() const {return mpClientData->name;}
@@ -196,6 +205,8 @@ public:
 private:
 	void Drop_internal(bool crash, const char *string);
 	void ReplaceSpecialCharactersInName(char *newname, const char *oldname);
+	
+	void WriteClientdata(sizebuf_t *msg);
 	
 	client_t *mpClientData{nullptr};
 	CGameServer *mpServer{nullptr};

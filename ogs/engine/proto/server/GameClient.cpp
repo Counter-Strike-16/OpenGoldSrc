@@ -553,7 +553,7 @@ void CGameClient::ProcessFile(char *filename)
 {
 };
 
-bool CGameClient::SendDatagram(client_t *client)
+bool CGameClient::SendDatagram()
 {
 	unsigned char buf[MAX_DATAGRAM];
 	sizebuf_t msg;
@@ -618,6 +618,15 @@ void CGameClient::SendFullUpdate(sizebuf_t *sb)
 {
 };
 
+void CGameClient::ClearResourceLists()
+{
+	if(!mpClientData)
+		CSystem::Error("SV_ClearResourceLists with NULL client!");
+
+	mpServer->ClearResourceList(&mpClientData->resourcesneeded);
+	mpServer->ClearResourceList(&mpClientData->resourcesonhand);
+};
+
 char *CGameClient::GetClientIDString()
 {
 	static char idstr[64];
@@ -637,4 +646,123 @@ char *CGameClient::GetClientIDString()
 	};
 
 	return idstr;
+};
+
+void CGameClient::WriteClientdata(client_t *client, sizebuf_t *msg)
+{
+	edict_t *ent = client->edict;
+	client_frame_t *frame = &client->frames[SV_UPDATE_MASK & client->netchan.outgoing_sequence];
+	int bits = (SV_UPDATE_MASK & host_client->delta_sequence);
+
+	frame->senttime = realtime;
+	frame->ping_time = -1.0f;
+
+	if(client->chokecount)
+	{
+		MSG_WriteByte(msg, svc_choke);
+		client->chokecount = 0;
+	};
+
+	if(ent->v.fixangle)
+	{
+		if(ent->v.fixangle == 2)
+		{
+			MSG_WriteByte(msg, svc_addangle);
+			MSG_WriteHiresAngle(msg, ent->v.avelocity[1]);
+			ent->v.avelocity[1] = 0;
+		}
+		else
+		{
+			MSG_WriteByte(msg, svc_setangle);
+			MSG_WriteHiresAngle(msg, ent->v.angles[0]);
+			MSG_WriteHiresAngle(msg, ent->v.angles[1]);
+			MSG_WriteHiresAngle(msg, ent->v.angles[2]);
+		};
+		
+		ent->v.fixangle = 0;
+	};
+
+	Q_memset(&frame->clientdata, 0, sizeof(frame->clientdata));
+	gEntityInterface.pfnUpdateClientData(ent, host_client->lw != 0, &frame->clientdata);
+
+	MSG_WriteByte(msg, svc_clientdata);
+
+	if(client->proxy)
+		return;
+
+	MSG_StartBitWriting(msg);
+
+	clientdata_t baseline;
+	Q_memset(&baseline, 0, sizeof(baseline));
+
+	clientdata_t *from = &baseline;
+	clientdata_t *to = &frame->clientdata;
+
+	if(host_client->delta_sequence == -1)
+		MSG_WriteBits(0, 1);
+	else
+	{
+		MSG_WriteBits(1, 1);
+		MSG_WriteBits(host_client->delta_sequence, 8);
+		from = &host_client->frames[bits].clientdata;
+	};
+
+	DELTA_WriteDelta((byte *)from, (byte *)to, TRUE, (delta_t *)g_pclientdelta, NULL);
+
+	if(host_client->lw && gEntityInterface.pfnGetWeaponData(host_client->edict, frame->weapondata))
+	{
+		weapon_data_t wbaseline;
+		Q_memset(&wbaseline, 0, sizeof(wbaseline));
+
+		weapon_data_t *fdata = NULL;
+		weapon_data_t *tdata = frame->weapondata;
+
+		for(int i = 0; i < 64; i++, tdata++)
+		{
+#ifdef REHLDS_FIXES
+			// So, HL and CS games send absolute gametime in these vars, DMC and Ricochet games don't send absolute gametime
+			// TODO: idk about other games
+			// FIXME: there is a loss of precision, because gamedll has already written float gametime in them 
+			if (sv_rehlds_local_gametime.value != 0.0f)
+			{
+				auto convertGlobalGameTimeToLocal = 
+					[](float &globalGameTime)
+				{
+					if(globalGameTime > 0.0f)
+						globalGameTime -= (float)g_GameClients[host_client - g_psvs.clients]->GetLocalGameTimeBase();
+				};
+				
+				if (g_bIsCStrike || g_bIsCZero)
+					convertGlobalGameTimeToLocal(std::ref(tdata->m_fAimedDamage));
+				
+				if (g_bIsHL1 || g_bIsCStrike || g_bIsCZero)
+				{
+					convertGlobalGameTimeToLocal(std::ref(tdata->fuser2));
+					convertGlobalGameTimeToLocal(std::ref(tdata->fuser3));
+				};
+			};
+#endif
+			
+			if(host_client->delta_sequence == -1)
+				fdata = &wbaseline;
+			else
+				fdata = &host_client->frames[bits].weapondata[i];
+
+			if(DELTA_CheckDelta((byte *)fdata, (byte *)tdata, g_pweapondelta))
+			{
+				MSG_WriteBits(1, 1);
+				MSG_WriteBits(i, 6);
+
+#if defined(REHLDS_OPT_PEDANTIC) || defined(REHLDS_FIXES)
+				// all calculations are already done
+				_DELTA_WriteDelta((byte *)fdata, (byte *)tdata, TRUE, g_pweapondelta, NULL, TRUE);
+#else
+				DELTA_WriteDelta((byte *)fdata, (byte *)tdata, TRUE, g_pweapondelta, NULL);
+#endif
+			};
+		};
+	};
+
+	MSG_WriteBits(0, 1);
+	MSG_EndBitWriting(msg);
 };

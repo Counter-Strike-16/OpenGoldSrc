@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,49 +27,19 @@
  */
 
 /// @file
+/// @brief resource list struct wrapper
 
 #pragma once
 
-#include "common/commontypes.h"
-#include "common/netadr.h"
+typedef struct resource_s resource_t;
 
-typedef struct server_log_s
+class CResourceList
 {
-	qboolean active;
-	qboolean net_log_;
-	netadr_t net_address_;
-	void *file;
-} server_log_t;
-
-typedef struct server_stats_s
-{
-	int num_samples;
-	int at_capacity;
-	int at_empty;
-	float capacity_percent;
-	float empty_percent;
-	int minusers;
-	int maxusers;
-	float cumulative_occupancy;
-	float occupancy;
-	int num_sessions;
-	float cumulative_sessiontime;
-	float average_session_len;
-	float cumulative_latency;
-	float average_latency;
-} server_stats_t;
-
-typedef struct server_static_s
-{
-	qboolean dll_initialized;
-	struct client_s *clients;
-	int maxclients;
-	int maxclientslimit;
-	int spawncount;
-	int serverflags;
-	server_log_t log;
-	double next_cleartime;
-	double next_sampletime;
-	server_stats_t stats;
-	qboolean isSecure;
-} server_static_t;
+public:
+	void Clear();
+	
+	void Add(resource_t *apResource);
+	void Remove(resource_t *apResource);
+private:
+	resource_t *mpList{nullptr};
+};

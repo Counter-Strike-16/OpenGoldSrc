@@ -37,11 +37,11 @@
 /*
 #include "console/cmd.hpp"
 
-#include "system/system.hpp"
+#include "system/System.hpp"
 #include "system/traceinit.h"
 #include "system/buildinfo.hpp"
-#include "filesystem/filesystem_.hpp"
-#include "system/server.hpp"
+#include "filesystem/FileSystem.hpp"
+#include "system/GameServer.hpp"
 */
 
 CHost gHost;
@@ -86,7 +86,8 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 	if(!dedicated_)
 		return false;
 
-	dedicated_->Sys_Printf("Hello world! I'm alive!");
+	//dedicated_->Sys_Printf
+	CSystem::Printf("Hello world! I'm alive!");
 
 	//Q_strncpy(msOrigCmd, cmdline, charsmax(msOrigCmd));
 

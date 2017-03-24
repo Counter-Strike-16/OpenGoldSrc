@@ -31,7 +31,7 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "rehlds/cmd_rehlds.h"
 
 // All command/alias names are case insensitive! Arguments not
