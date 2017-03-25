@@ -32,6 +32,110 @@
 #include "system/System.hpp"
 #include "system/Host.hpp"
 #include "system/common.hpp"
+#include "system/systemtypes.hpp"
+#include "system/DedicatedServerAPI.hpp"
+
+void (*Launcher_ConsolePrintf)(char *, ...);
+char *(*Launcher_GetLocalizedString)(unsigned int);
+
+int (*Launcher_MP3subsys_Suspend_Audio)();
+void (*Launcher_MP3subsys_Resume_Audio)();
+
+/*
+* Globals initialization
+*/
+#ifndef HOOK_ENGINE
+
+//FileFindHandle_t g_hfind = FILESYSTEM_INVALID_FIND_HANDLE;
+
+#else // HOOK_ENGINE
+
+//FileFindHandle_t g_hfind;
+
+#endif // HOOK_ENGINE
+
+const int MAX_COMMAND_LINE_PARAMS = 50;
+
+// Crappy MS compiler...
+
+quakeparms_t *CSystem::mhost_parms = nullptr;
+
+bool CSystem::mbIsWin95 = false;
+bool CSystem::mbIsWin98 = false;
+
+void NORETURN Sys_Error(const char *error, ...)
+{
+	va_list argptr;
+	char text[1024];
+	static bool bReentry;
+
+	va_start(argptr, error);
+	Q_vsnprintf(text, ARRAYSIZE(text), error, argptr);
+	va_end(argptr);
+
+#ifdef _WIN32
+	MessageBox(GetForegroundWindow(), text, "Fatal error - Dedicated server", MB_ICONERROR | MB_OK);
+#endif // _WIN32
+
+	if(bReentry)
+	{
+		fprintf(stderr, "%s\n", text);
+		//longjmp(host_abortserver, 2);
+	};
+
+	bReentry = true;
+
+	//if(g_psvs.dll_initialized && gEntityInterface.pfnSys_Error)
+		//gEntityInterface.pfnSys_Error(text);
+
+	//Log_Printf("FATAL ERROR (shutting down): %s\n", text);
+
+#ifdef REHLDS_FIXES
+	if(syserror_logfile.string[0] != '\0')
+	{
+		auto pFile = gpFS->Open(syserror_logfile.string, "a");
+
+		if(pFile)
+		{
+			tm *today;
+			time_t ltime;
+			char szDate[32];
+
+			time(&ltime);
+			today = localtime(&ltime);
+			strftime(szDate, ARRAYSIZE(szDate) - 1, "L %d/%m/%Y - %H:%M:%S:", today);
+
+			FS_FPrintf(pFile, "%s (map \"%s\") %s\n", szDate, &pr_strings[gGlobalVariables.mapname], text);
+			FS_Close(pFile);
+		};
+	};
+#endif // REHLDS_FIXES
+
+	if(gbIsDedicatedServer)
+	{
+		if(Launcher_ConsolePrintf)
+			Launcher_ConsolePrintf("FATAL ERROR (shutting down): %s\n", text);
+		else
+			printf("FATAL ERROR (shutting down): %s\n", text);
+	}
+#ifndef SWDS
+	else
+	{
+		HWND hWnd = 0;
+
+		//if(pmainwindow)
+		//hWnd = *pmainwindow;
+
+		Printf(text);
+		//SDL_ShowSimpleMessageBox(MB_ICONERROR | MB_OK, "Fatal Error", text, hWnd);
+		//VideoMode_IsWindowed();
+	};
+#endif // SWDS
+
+	// exit(-1);
+	// Allahu akbar!
+	*(int *)NULL = NULL;
+};
 
 void CSystem::Init(quakeparms_t *host_parms)
 {
@@ -51,10 +155,10 @@ void CSystem::Shutdown()
 	//Steam_ShutdownClient();
 	
 #ifdef _WIN32
-	if(g_PerfCounterInitialized)
+	//if(g_PerfCounterInitialized)
 	{
-		DeleteCriticalSection(&g_PerfCounterMutex);
-		g_PerfCounterInitialized = 0;
+		//DeleteCriticalSection(&g_PerfCounterMutex);
+		//g_PerfCounterInitialized = 0;
 	};
 	
 #else // if not _WIN32
@@ -149,9 +253,9 @@ void CSystem::InitArgv(char *lpCmdLine)
 	};
 
 	mhost_parms->argv = argv;
-	COM_InitArgv(mhost_parms->argc, argv);
-	mhost_parms->argc = com_argc;
-	mhost_parms->argv = com_argv;
+	//COM_InitArgv(mhost_parms->argc, argv);
+	//mhost_parms->argc = com_argc;
+	//mhost_parms->argv = com_argv;
 };
 
 NOXREF void CSystem::ShutdownArgv()
@@ -161,10 +265,10 @@ NOXREF void CSystem::ShutdownArgv()
 
 void CSystem::InitMemory()
 {
-	int i = COM_CheckParm("-heapsize");
+	int i = 0; //COM_CheckParm("-heapsize");
 	
-	if(i && i < com_argc - 1)
-		mhost_parms->memsize = Q_atoi(com_argv[i + 1]) * 1024;
+	//if(i && i < com_argc - 1)
+		//mhost_parms->memsize = Q_atoi(com_argv[i + 1]) * 1024;
 
 	if(mhost_parms->memsize < MINIMUM_WIN_MEMORY)
 	{
@@ -176,7 +280,7 @@ void CSystem::InitMemory()
 		if(lpBuffer.dwTotalPhys)
 		{
 			if(lpBuffer.dwTotalPhys < FIFTEEN_MB)
-				Error("Available memory less than 15MB!!! %i", mhost_parms.memsize);
+				Sys_Error("Available memory less than 15MB!!! %i", mhost_parms->memsize);
 
 			mhost_parms->memsize = (int)(lpBuffer.dwTotalPhys >> 1);
 			
@@ -196,8 +300,8 @@ void CSystem::InitMemory()
 	if(mhost_parms->memsize > MAXIMUM_DEDICATED_MEMORY)
 		mhost_parms->memsize = MAXIMUM_DEDICATED_MEMORY;
 
-	if(COM_CheckParm("-minmemory"))
-		mhost_parms->memsize = MINIMUM_WIN_MEMORY;
+	//if(COM_CheckParm("-minmemory"))
+		//mhost_parms->memsize = MINIMUM_WIN_MEMORY;
 	
 #ifdef _WIN32
 	mhost_parms->membase = (void *)GlobalAlloc(GMEM_FIXED, mhost_parms->memsize);
@@ -206,7 +310,7 @@ void CSystem::InitMemory()
 #endif // _WIN32
 
 	if(!mhost_parms->membase)
-		Error("Unable to allocate %.2f MB\n", (float)mhost_parms->memsize / (1024.0f * 1024.0f));
+		Sys_Error("Unable to allocate %.2f MB\n", (float)mhost_parms->memsize / (1024.0f * 1024.0f));
 };
 
 void CSystem::ShutdownMemory()
@@ -252,10 +356,15 @@ NOXREF void CSystem::ShutdownAuthentication()
 	NOXREFCHECK;
 };
 
-void CSystem::Sleep(int msec)
+double CSystem::GetFloatTime()
 {
-	Sys_Sleep(msec);
+	return Sys_FloatTime();
 };
+
+//void CSystem::Sleep(int msec)
+//{
+	//Sys_Sleep(msec);
+//};
 
 void CSystem::Printf(const char *fmt, ...)
 {
@@ -289,80 +398,6 @@ NOXREF void CSystem::Warning(const char *pszWarning, ...)
 	va_end(argptr);
 
 	Printf(text);
-};
-
-void NORETURN CSystem::Error(const char *error, ...)
-{
-	va_list argptr;
-	char text[1024];
-	static bool bReentry;
-
-	va_start(argptr, error);
-	Q_vsnprintf(text, ARRAYSIZE(text), error, argptr);
-	va_end(argptr);
-
-#ifdef _WIN32
-	MessageBox(GetForegroundWindow(), text, "Fatal error - Dedicated server", MB_ICONERROR | MB_OK);
-#endif // _WIN32
-
-	if(bReentry)
-	{
-		fprintf(stderr, "%s\n", text);
-		longjmp(host_abortserver, 2);
-	};
-	
-	bReentry = true;
-
-	if(g_psvs.dll_initialized && gEntityInterface.pfnSys_Error)
-		gEntityInterface.pfnSys_Error(text);
-
-	Log_Printf("FATAL ERROR (shutting down): %s\n", text);
-
-#ifdef REHLDS_FIXES
-	if(syserror_logfile.string[0] != '\0')
-	{
-		auto pFile = gpFS->Open(syserror_logfile.string, "a");
-		
-		if(pFile)
-		{
-			tm *today;
-			time_t ltime;
-			char szDate[32];
-
-			time(&ltime);
-			today = localtime(&ltime);
-			strftime(szDate, ARRAYSIZE(szDate) - 1, "L %d/%m/%Y - %H:%M:%S:", today);
-
-			FS_FPrintf(pFile, "%s (map \"%s\") %s\n", szDate, &pr_strings[gGlobalVariables.mapname], text);
-			FS_Close(pFile);
-		};
-	};
-#endif // REHLDS_FIXES
-
-	if(gbIsDedicatedServer)
-	{
-		if(Launcher_ConsolePrintf)
-			Launcher_ConsolePrintf("FATAL ERROR (shutting down): %s\n", text);
-		else
-			printf("FATAL ERROR (shutting down): %s\n", text);
-	}
-#ifndef SWDS
-	else
-	{
-		HWND hWnd = 0;
-		
-		//if(pmainwindow)
-			//hWnd = *pmainwindow;
-
-		Printf(text);
-		//SDL_ShowSimpleMessageBox(MB_ICONERROR | MB_OK, "Fatal Error", text, hWnd);
-		//VideoMode_IsWindowed();
-	};
-#endif // SWDS
-
-	// exit(-1);
-	// Allahu akbar!
-	*(int *)NULL = NULL;
 };
 
 void CSystem::SetupLegacyAPIs()

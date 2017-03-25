@@ -164,7 +164,7 @@ private:
 	bool LoadDLL(CreateInterfaceFn filesystemFactory);
 	void UnloadDLL();
 	
-	CSysModule *gpFileSystemModule{nullptr};
+	CSysModule *mpFileSystemModule{nullptr};
 	CreateInterfaceFn g_FileSystemFactory{nullptr};
 	
 	IFileSystem *mpFileSystem{nullptr}; // pimpl

@@ -20,15 +20,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\hlsdk-core\public\interface.cpp" />
+    <ClCompile Include="..\impl\win\SystemWin.cpp" />
     <ClCompile Include="..\system\DedicatedServerAPI.cpp" />
     <ClCompile Include="..\system\Engine.cpp" />
     <ClCompile Include="..\system\Host.cpp" />
+    <ClCompile Include="..\system\System.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\filesystem\FileSystem.hpp" />
     <ClInclude Include="..\system\DedicatedServerAPI.hpp" />
     <ClInclude Include="..\system\Engine.hpp" />
     <ClInclude Include="..\system\Host.hpp" />
     <ClInclude Include="..\system\IEngine.hpp" />
+    <ClInclude Include="..\system\System.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{827605A1-AB99-40B5-BA51-7AB2BA39F20A}</ProjectGuid>

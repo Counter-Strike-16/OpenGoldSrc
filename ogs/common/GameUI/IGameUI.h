@@ -41,6 +41,8 @@ public:
 	virtual void SetSecondaryProgressBarText(const char *statusText) = 0;
 };
 
+extern IGameUI* g_pGameUI;
+
 #define GAMEUI_INTERFACE_VERSION "GameUI007"
 
 #endif // IGAMEUI_H

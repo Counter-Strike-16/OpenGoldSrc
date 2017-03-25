@@ -34,7 +34,17 @@
 #include <memory>
 #include "system/GameServer.hpp"
 
-typedef struct quakeparms_s quakeparms_t;
+typedef struct quakeparms_s
+{
+	char *basedir;
+	char *cachedir; // for development over ISDN lines
+
+	int argc;
+	char **argv;
+
+	void *membase;
+	int memsize;
+} quakeparms_t;
 
 class CFileSystem;
 
@@ -94,6 +104,8 @@ private:
 	std::unique_ptr<CGameServer> mpServer;
 	
 	CFileSystem *mpFS{nullptr};
+
+	quakeparms_t *host_params{nullptr};
 	
 	bool host_initialized{false}; // true if into command execution
 	

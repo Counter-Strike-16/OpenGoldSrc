@@ -55,32 +55,32 @@ IEngine *eng;
 
 void ForceReloadProfile()
 {
-	Cbuf_AddText("exec config.cfg\n");
-	Cbuf_AddText("+mlook\n");
-	Cbuf_Execute();
+	//Cbuf_AddText("exec config.cfg\n");
+	//Cbuf_AddText("+mlook\n");
+	//Cbuf_Execute();
 	
-	if(COM_CheckParm("-nomousegrab"))
-		Cvar_Set("cl_mousegrab", "0");
+	//if(COM_CheckParm("-nomousegrab"))
+		//Cvar_Set("cl_mousegrab", "0");
 
 	// Key_SetBinding(126, "toggleconsole");
 	// Key_SetBinding(96, "toggleconsole");
 	// Key_SetBinding(27, "cancelselect");
 	// SDL_GL_SetSwapInterval((gl_vsync.value <= 0.0) - 1);
 	
-	if(cls.state != ca_dedicated)
+	//if(cls.state != ca_dedicated)
 	{
 		//Sys_Error("Only dedicated mode is supported");
 		
 		char sRate[32] = {'\0'};
 		const char *sRegRate = "";
 		
-		sRegRate = GetRateRegistrySetting(rate_.string);
-		Q_strncpy(sRate, sRegRate, sizeof(sRate)); // 0x20u
+		//sRegRate = GetRateRegistrySetting(rate_.string);
+		//Q_strncpy(sRate, sRegRate, sizeof(sRate)); // 0x20u
 		
 		//Q_strncpy(sRate, sRegRate, charsmax(sRate)); // == sizeof(sRate) - 1
 		//sRate[sizeof(sRate) - 1] = '\0';
 		
-		Cvar_DirectSet(&rate_, sRate);
+		//Cvar_DirectSet(&rate_, sRate);
 	};
 };
 
@@ -181,6 +181,16 @@ int CEngine::GetQuitting()
 	return GetQuitting_noVirt();
 };
 
+void CEngine::AddCommandText(const char *asText)
+{
+	AddCommandText_noVirt(asText);
+};
+
+void CEngine::GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap)
+{
+	GetHostInfo_noVirt(fps, nActive, unused, nMaxPlayers, pszMap);
+};
+
 bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 {
 	bool success = false;
@@ -189,7 +199,7 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 	
 	mpHost = std::make_unique<CHost>();
 	
-	if(InitGame(cmdline, basedir, game->GetMainWindowAddress(), dedicated))
+	if(InitGame(cmdline, basedir, nullptr /*game->GetMainWindowAddress()*/, dedicated))
 	{
 		success = true;
 		
@@ -210,13 +220,13 @@ void CEngine::Unload_noVirt()
 void CEngine::SetState_noVirt(int iState)
 {
 	m_nDLLState = iState;
-	GameSetState(iState);
+	//GameSetState(iState);
 };
 
 void CEngine::SetSubState_noVirt(int iSubState)
 {
-	if(iSubState != 1)
-		GameSetSubState(iSubState);
+	//if(iSubState != 1)
+		//GameSetSubState(iSubState);
 };
 
 int CEngine::Frame_noVirt()
@@ -228,7 +238,7 @@ int CEngine::Frame_noVirt()
 	//if(!game->IsActiveApp())
 		//game->SleepUntilInput(m_nDLLState != DLL_PAUSED ? MINIMIZED_SLEEP : NOT_FOCUS_SLEEP);
 
-	m_fCurTime = CSystem::FloatTime();
+	m_fCurTime = CSystem::GetFloatTime();
 	m_fFrameTime = m_fCurTime - m_fOldTime;
 	m_fOldTime = m_fCurTime;
 
@@ -294,10 +304,19 @@ bool CEngine::CheckDoneTrapping_noVirt(int &buttons, int &key)
 		return false;
 };
 
-int CEngine::InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated)
+void CEngine::AddCommandText_noVirt(const char *asText)
+{
+};
+
+void CEngine::GetHostInfo_noVirt(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap)
+{
+	mpHost->GetInfo(fps, nActive, unused, nMaxPlayers, pszMap);
+};
+
+int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated)
 {
 	mbDedicated = bIsDedicated;
-	gbIsDedicatedServer = bIsDedicated;
+	//gbIsDedicatedServer = bIsDedicated;
 	
 #ifndef SWDS
 	if(!mbIsDedicated)
@@ -327,7 +346,7 @@ int CEngine::InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDed
 	//CSystem::InitFloatTime();
 #endif // SWDS
 	
-	gpFileSystem->LogLevelLoadStarted("Launcher");
+	//gpFileSystem->LogLevelLoadStarted("Launcher");
 	
 	//SeedRandomNumberGenerator();
 	
@@ -353,7 +372,7 @@ int CEngine::InitGame(char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDed
 	
 	if(mbDedicated)
 	{
-		mpHost->InitializeGameDLL();
+		//mpHost->InitializeGameDLL();
 		//NET_Config(TRUE);
 	};
 

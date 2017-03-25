@@ -81,6 +81,10 @@ public:
 	
 	virtual int GetQuitting();
 	virtual void SetQuitting(int quittype);
+	
+	virtual void AddCommandText(const char *asText);
+	
+	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
 
 	// non-virtual function's of wrap for hooks a virtual
 	// Only needed for HOOK_ENGINE
@@ -108,8 +112,12 @@ public:
 	
 	int GetQuitting_noVirt(){return m_nQuitting;}
 	void SetQuitting_noVirt(int quittype){m_nQuitting = quittype;}
+	
+	void AddCommandText_noVirt(const char *asText);
+	
+	void GetHostInfo_noVirt(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
 private:
-	int InitGame(/*const*/ char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
+	int InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
 	void ShutdownGame();
 	
 	quakeparms_t host_parms;

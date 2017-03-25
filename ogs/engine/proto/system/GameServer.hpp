@@ -33,7 +33,7 @@
 #include <memory>
 #include "common/maintypes.h"
 #include "network/LoginServer.hpp"
-#include "system/client.hpp"
+#include "system/server.hpp"
 
 class CGameServer
 {

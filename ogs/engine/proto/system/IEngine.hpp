@@ -27,8 +27,13 @@
  */
 
 /// @file
+/// @brief shared engine interface for dedicated server/client
 
 #pragma once
+
+// This interface isn't oriented on export
+// (has no version define and doesn't inherited from IBaseInterface)
+// Only for internal use
 
 class IEngine
 {
@@ -42,29 +47,61 @@ public:
 
 	virtual ~IEngine(){}
 	
+	/// Load the engine
 	virtual bool Load(bool dedicated, char *basedir, const char *cmdline) = 0;
+	
+	/// Unload the engine
 	virtual void Unload() = 0;
 	
+	/// Set the new engine state
 	virtual void SetState(int iState) = 0;
+	
+	/// Get current engine state
 	virtual int GetState() = 0;
 	
+	/// Set new new engine sub-state
 	virtual void SetSubState(int iSubState) = 0;
+	
+	/// Get current engine sub-state
 	virtual int GetSubState() = 0;
-
+	
+	/// Run a single frame
 	virtual int Frame() = 0;
 	
+	/// Get frame time value
 	virtual double GetFrameTime() = 0;
+	
+	/// Get current time value
 	virtual double GetCurTime() = 0;
-
+	
+	/// Event for keyboard when in trapping mode
 	virtual void TrapKey_Event(int key, bool down) = 0;
+	
+	/// Event for mouse when in trapping mode
 	virtual void TrapMouse_Event(int buttons, bool down) = 0;
-
+	
+	/// Start the input trapping mode
 	virtual void StartTrapMode() = 0;
+	
+	/// @return true if currently in trapping mode
 	virtual bool IsTrapping() = 0;
+	
+	/// @return true if the trapping mode is done
 	virtual bool CheckDoneTrapping(int &buttons, int &key) = 0;
-
+	
+	/// Should the engine be closed
 	virtual int GetQuitting() = 0;
+	
+	/// Mark engine for quit
 	virtual void SetQuitting(int quittype) = 0;
+	
+	// OGS extensions
+	
+	/// Add the text to console command buffer
+	virtual void AddCommandText(const char *asText) = 0;
+	
+	/// Get the info about current player count and map
+	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap) = 0;
 };
 
 extern IEngine *eng;

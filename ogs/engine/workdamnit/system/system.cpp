@@ -116,42 +116,6 @@ qboolean gHasMMXTechnology;
 char g_szFindFirstFileName[MAX_PATH];
 #endif
 
-#ifdef _WIN32
-int g_PerfCounterInitialized;
-CRITICAL_SECTION g_PerfCounterMutex;
-
-int g_PerfCounterShiftRightAmount;
-double g_PerfCounterSlice;
-double g_CurrentTime;
-double g_StartTime;
-
-int g_WinNTOrHigher;
-#endif // _WIN32
-
-/*
-* Globals initialization
-*/
-#ifndef HOOK_ENGINE
-
-int g_FPUCW_Mask_Prec_64Bit = 0;
-int g_FPUCW_Mask_Prec_64Bit_2 = 0;
-int g_FPUCW_Mask_Round_Trunc = 0;
-int g_FPUCW_Mask_Round_Up = 0;
-
-FileFindHandle_t g_hfind = FILESYSTEM_INVALID_FIND_HANDLE;
-
-#else // HOOK_ENGINE
-
-int g_FPUCW_Mask_Prec_64Bit;
-int g_FPUCW_Mask_Prec_64Bit_2;
-int g_FPUCW_Mask_Round_Trunc;
-int g_FPUCW_Mask_Round_Up;
-
-FileFindHandle_t g_hfind;
-
-#endif // HOOK_ENGINE
-
-
 NOXREF void Sys_PageIn(void *ptr, int size)
 {
 	NOXREFCHECK;

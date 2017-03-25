@@ -61,6 +61,12 @@
     <ClCompile Include="..\system\Engine.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="..\system\System.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\win\SystemWin.cpp">
+      <Filter>impl\win</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\system\DedicatedServerAPI.hpp">
@@ -74,6 +80,12 @@
     </ClInclude>
     <ClInclude Include="..\system\IEngine.hpp">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\System.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filesystem\FileSystem.hpp">
+      <Filter>filesystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

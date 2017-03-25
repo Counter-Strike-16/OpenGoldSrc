@@ -37,6 +37,8 @@ typedef struct quakeparms_s quakeparms_t;
 
 extern void (*Launcher_ConsolePrintf)(char *, ...);
 
+extern bool gbIsDedicatedServer;
+
 void Legacy_Sys_Printf(char *fmt, ...);
 
 NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage);
@@ -46,10 +48,15 @@ NOXREF void Legacy_MP3subsys_Resume_Audio();
 
 double Sys_FloatTime();
 
+//void Sys_Sleep(int msec);
+
+// An error will cause the entire program to exit
+NOBODY void NORETURN Sys_Error(const char *error, ...); // mb add int code?
+
 class CSystem
 {
 public:
-	static NOBODY void Init();
+	static NOBODY void Init(quakeparms_t *host_parms);
 	static NOXREF void Shutdown();
 	
 	static void InitFloatTime();
@@ -67,6 +74,8 @@ public:
 	static void InitAuthentication();
 	static NOXREF void ShutdownAuthentication();
 	
+	static double GetFloatTime();
+
 	// called to yield for a little bit so as
 	// not to hog cpu when paused or debugging
 	static NOXREF void Sleep(int msec);
@@ -76,10 +85,9 @@ public:
 	
 	static NOXREF void Warning(const char *pszWarning, ...);
 	
-	// An error will cause the entire program to exit
-	static NOBODY void NORETURN Error(const char *error, ...); // mb add int code?
-	
 #ifdef _WIN32
+	void __cdecl InitHardwareTimer();
+
 	static void CheckOSVersion();
 #endif
 	
@@ -90,6 +98,6 @@ private:
 	
 	static quakeparms_t *mhost_parms;
 	
-	static bool mbIsWin95{false};
-	static bool mbIsWin98{false};
+	static bool mbIsWin95;
+	static bool mbIsWin98;
 };

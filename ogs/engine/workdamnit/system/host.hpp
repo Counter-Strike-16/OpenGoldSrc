@@ -82,22 +82,11 @@
 
 //=============================================================================
 
-const int MAX_COMMAND_LINE_PARAMS = 50;
 
 typedef struct cvar_s cvar_t;
 typedef struct client_s client_t;
 
-typedef struct quakeparms_s
-{
-	char *basedir;
-	char *cachedir; // for development over ISDN lines
-	
-	int argc;
-	char **argv;
-	
-	void *membase;
-	int memsize;
-} quakeparms_t;
+
 
 //=============================================================================
 

@@ -31,6 +31,8 @@
 
 #include "precompiled.hpp"
 #include "system/Host.hpp"
+#include "system/common.hpp"
+#include "system/System.hpp"
 
 /*
 * Globals initialization
@@ -387,7 +389,7 @@ void NORETURN CHost::Error(const char *error, ...)
 	static bool inerror = false;
 
 	if(inerror)
-		CSystem::Error("%s: recursively entered", __FUNCTION__);
+		Sys_Error("%s: recursively entered", __FUNCTION__);
 
 	inerror = true;
 	
@@ -416,7 +418,7 @@ void NORETURN CHost::Error(const char *error, ...)
 		//longjmp(host_abortserver, 1);
 	};
 	
-	CSystem::Error("%s: %s\n", __FUNCTION__, string);
+	Sys_Error("%s: %s\n", __FUNCTION__, string);
 };
 
 void CHost::WriteConfig()
@@ -872,7 +874,7 @@ void CHost::PrintSpeeds(double *time) // Or CalcSpeeds
 			CL_GGSpeeds(time[3]);
 		}
 		*/
-//#endif // SWDS
+#endif // SWDS
 };
 
 /*
@@ -1121,12 +1123,12 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 
 void CHost::CheckGore()
 {
-	float fValue = bLowViolenceBuild ? 0.0f : 1.0f;
+	//float fValue = bLowViolenceBuild ? 0.0f : 1.0f;
 	
-	Cvar_SetValue("violence_hblood", fValue);
-	Cvar_SetValue("violence_hgibs", fValue);
-	Cvar_SetValue("violence_ablood", fValue);
-	Cvar_SetValue("violence_agibs", fValue);
+	//Cvar_SetValue("violence_hblood", fValue);
+	//Cvar_SetValue("violence_hgibs", fValue);
+	//Cvar_SetValue("violence_ablood", fValue);
+	//Cvar_SetValue("violence_agibs", fValue);
 };
 
 bool CHost::IsSinglePlayerGame()

@@ -92,8 +92,6 @@
 #endif
 // clang-format on
 
-extern qboolean gbIsDedicatedServer;
-
 extern double g_flLastSteamProgressUpdateTime;
 
 extern char *szCommonPreloads;
@@ -166,9 +164,7 @@ extern int g_FPUCW_Mask_Round_Up;
 extern int g_WinNTOrHigher;
 #endif //_WIN32
 
-#ifdef _WIN32
-extern void __cdecl Sys_InitHardwareTimer();
-#endif //_WIN32
+
 
 NOXREF void Sys_PageIn(void *ptr, int size);
 

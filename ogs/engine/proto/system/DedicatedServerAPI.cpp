@@ -33,19 +33,15 @@
 #include "system/common.hpp"
 #include "system/Host.hpp"
 #include "system/Engine.hpp"
+#include "system/System.hpp"
 
 /*
 #include "console/cmd.hpp"
-
-#include "system/System.hpp"
 #include "system/traceinit.h"
 #include "system/buildinfo.hpp"
 #include "filesystem/FileSystem.hpp"
 #include "system/GameServer.hpp"
 */
-
-CHost gHost;
-CHost *gpHost = &gHost;
 
 IDedicatedExports *dedicated_;
 bool gbIsDedicatedServer;
@@ -96,6 +92,7 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 
 	//TraceInit("Sys_InitArgv( msOrigCmd )", "Sys_ShutdownArgv()", 0);
 	//CSystem::InitArgv(msOrigCmd);
+	
 	eng->SetQuitting(IEngine::QUIT_NOTQUITTING);
 	
 	//registry->Init();
@@ -104,7 +101,7 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 
 	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
 
-	//if(mpFileSystem->Init(basedir, (void*)filesystemFactory) && game->Init(0) && eng->Load(true, basedir, cmdline))
+	if(/*mpFileSystem->Init(basedir, (void*)filesystemFactory) && game->Init(0) &&*/ eng->Load(true, basedir, cmdline))
 	{
 		char text[256];
 
@@ -149,10 +146,10 @@ bool CDedicatedServerAPI::RunFrame_noVirt()
 
 void CDedicatedServerAPI::AddConsoleText_noVirt(char *text)
 {
-	//mpCmdBuffer->AddText(text);
+	eng->AddCommandText(text);
 };
 
 void CDedicatedServerAPI::UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
 {
-	gpHost->GetInfo(fps, nActive, NULL, nMaxPlayers, pszMap);
+	eng->GetHostInfo(fps, nActive, nullptr, nMaxPlayers, pszMap);
 };
