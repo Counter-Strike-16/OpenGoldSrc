@@ -32,8 +32,8 @@
 #pragma once
 
 // This interface isn't oriented on export
-// (has no version define and doesn't inherited from IBaseInterface)
-// Only for internal use
+// (has no version define and isn't inherited from IBaseInterface)
+// Only for internal use (in other words can be freely changed)
 
 class IEngine
 {

@@ -31,6 +31,14 @@
 
 #pragma once
 
+//=============================================================================
+
+// the host system specifies the base of the directory tree, the
+// command line parms passed to the program, and the amount of memory
+// available for the program to use
+
+//=============================================================================
+
 #include <memory>
 #include "system/GameServer.hpp"
 
@@ -46,6 +54,7 @@ typedef struct quakeparms_s
 	int memsize;
 } quakeparms_t;
 
+struct IConsole;
 class CFileSystem;
 
 class CHost
@@ -91,10 +100,14 @@ public:
 	void PrintVersion();
 	
 	bool IsInitialized() const {return host_initialized;}
+	
+	int GetStartTime();
 private:
 	void ClearIOStates();
 	
-	//std::unique_ptr<IConsole> mpConsole;
+	void InitCommands();
+	
+	std::unique_ptr<IConsole> mpConsole;
 	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
 	
 	//std::unique_ptr<CNetwork> mpNetwork;
@@ -117,6 +130,8 @@ private:
 	double host_frametime{0.0f};
 	
 	double rolling_fps{0.0f};
+	
+	int32 startTime{0};
 	
 	int host_framecount{0}; // incremented every frame, never reset
 	

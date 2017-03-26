@@ -105,7 +105,7 @@ void CCmdBuffer::InsertText(char *text)
 		cmd_text->Clear();
 	};
 
-	Cbuf_AddText(text);
+	AddText(text);
 
 	if(currLen)
 	{
@@ -131,7 +131,7 @@ void CCmdBuffer::InsertTextLines(char *text)
 		Q_memmove(cmd_text->data + addLen + 2, cmd_text->data, currLen);
 
 	cmd_text->data[0] = '\n'; // TODO: Why we need leading \n, if there is no
-	                         // commands in the start?
+	                         // commands at the start?
 	Q_memcpy(&cmd_text->data[1], text, addLen);
 	cmd_text->data[addLen + 1] = '\n';
 

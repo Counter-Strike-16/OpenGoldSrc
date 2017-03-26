@@ -1886,21 +1886,6 @@ void SV_ResetModInfo()
 	FS_Close(hLibListFile);
 }
 
-int SV_GetFakeClientCount()
-{
-	int i;
-	int fakeclients = 0;
-
-	for(i = 0; i < g_psvs.maxclients; i++)
-	{
-		client_t *client = &g_psvs.clients[i];
-
-		if(client->fakeclient)
-			fakeclients++;
-	}
-	return fakeclients;
-}
-
 NOXREF qboolean SV_GetModInfo(char *pszInfo, char *pszDL, int *version, int *size, qboolean *svonly, qboolean *cldll, char *pszHLVersion)
 {
 	NOXREFCHECK;
@@ -2412,124 +2397,6 @@ void SV_ResetRcon_f()
 	Q_memset(g_rgRconFailures, 0, sizeof(g_rgRconFailures));
 }
 
-void SV_AddFailedRcon(netadr_t *adr)
-{
-	int i;
-	int best = 0;
-	float best_update = -99999.0f;
-	float time;
-	qboolean found = FALSE;
-	rcon_failure_t *r;
-	int failed;
-
-	if(sv_rcon_minfailures.value < 1.0f)
-	{
-		Cvar_SetValue("sv_rcon_minfailures", 1.0);
-	}
-	else if(sv_rcon_minfailures.value > 20.0f)
-	{
-		Cvar_SetValue("sv_rcon_minfailures", 20.0);
-	}
-	if(sv_rcon_maxfailures.value < 1.0f)
-	{
-		Cvar_SetValue("sv_rcon_maxfailures", 1.0);
-	}
-	else if(sv_rcon_maxfailures.value > 20.0f)
-	{
-		Cvar_SetValue("sv_rcon_maxfailures", 20.0);
-	}
-	if(sv_rcon_maxfailures.value < sv_rcon_minfailures.value)
-	{
-		float temp = sv_rcon_maxfailures.value;
-		Cvar_SetValue("sv_rcon_maxfailures", sv_rcon_minfailures.value);
-		Cvar_SetValue("sv_rcon_minfailures", temp);
-	}
-	if(sv_rcon_minfailuretime.value < 1.0f)
-	{
-		Cvar_SetValue("sv_rcon_minfailuretime", 1.0);
-	}
-
-	for(i = 0; i < MAX_RCON_FAILURES_STORAGE; i++)
-	{
-		r = &g_rgRconFailures[i];
-		if(!r->active)
-		{
-			break;
-		}
-		if(NET_CompareAdr(r->adr, *adr))
-		{
-			found = TRUE;
-			break;
-		}
-		time = (float)(realtime - r->last_update);
-		if(time >= best_update)
-		{
-			best = i;
-			best_update = time;
-		}
-	}
-
-	// If no match found, take the oldest entry for usage
-	if(i >= MAX_RCON_FAILURES_STORAGE)
-	{
-		r = &g_rgRconFailures[best];
-	}
-
-	// Prepare new or stale entry
-	if(!found)
-	{
-		r->shouldreject = FALSE;
-		r->num_failures = 0;
-		Q_memcpy(&r->adr, adr, sizeof(netadr_t));
-	}
-	else if(r->shouldreject)
-	{
-		return;
-	}
-
-	r->active = TRUE;
-	r->last_update = (float)realtime;
-
-	if(r->num_failures >= sv_rcon_maxfailures.value)
-	{
-#ifdef REHLDS_FIXES
-		// FIXED: Accessing beyond array
-		for(i = 0; i < sv_rcon_maxfailures.value - 1; i++)
-		{
-			r->failure_times[i] = r->failure_times[i + 1];
-		}
-		r->num_failures = sv_rcon_maxfailures.value - 1;
-#else  // REHLDS_FIXES
-		for(i = 0; i < sv_rcon_maxfailures.value; i++)
-		{
-			r->failure_times[i] = r->failure_times[i + 1];
-		}
-		r->num_failures--;
-#endif // REHLDS_FIXES
-	}
-
-	r->failure_times[r->num_failures] = (float)realtime;
-	r->num_failures++;
-
-	failed = 0;
-	for(i = 0; i < r->num_failures; i++)
-	{
-		if(realtime - r->failure_times[i] <= sv_rcon_minfailuretime.value)
-			failed++;
-	}
-
-	if(failed >= sv_rcon_minfailures.value)
-	{
-		Con_Printf("User %s will be banned for rcon hacking\n",
-		           NET_AdrToString(*adr));
-		r->shouldreject = TRUE;
-	}
-}
-
-
-
-
-
 void SV_ProcessFile(client_t *cl, char *filename)
 {
 	customization_t *pList;
@@ -2590,42 +2457,7 @@ void SV_ProcessFile(client_t *cl, char *filename)
 		Con_Printf("Error parsing custom decal from %s\n", cl->name);
 }
 
-qboolean SV_FilterPacket()
-{
-	for(int i = numipfilters - 1; i >= 0; i--)
-	{
-		ipfilter_t *curFilter = &ipfilters[i];
-		if(curFilter->compare.u32 == 0xFFFFFFFF || curFilter->banEndTime == 0.0f ||
-		   curFilter->banEndTime > realtime)
-		{
-			if((*(uint32 *)net_from.ip & curFilter->mask) == curFilter->compare.u32)
-				return (int)sv_filterban.value;
-		}
-		else
-		{
-			if(i < numipfilters - 1)
-				Q_memmove(curFilter, &curFilter[1], sizeof(ipfilter_t) * (numipfilters - i - 1));
 
-			--numipfilters;
-		}
-	}
-	return sv_filterban.value == 0.0f;
-}
-
-void SV_SendBan()
-{
-	char szMessage[64];
-	Q_snprintf(szMessage, sizeof(szMessage), "You have been banned from this server.\n");
-
-	SZ_Clear(&net_message);
-
-	MSG_WriteLong(&net_message, -1);
-	MSG_WriteByte(&net_message, 108);
-	MSG_WriteString(&net_message, szMessage);
-	NET_SendPacket(NS_SERVER, net_message.cursize, net_message.data, net_from);
-
-	SZ_Clear(&net_message);
-}
 
 bool EXT_FUNC NET_GetPacketPreprocessor(uint8 *data, unsigned int len, const netadr_t &srcAddr)
 {

@@ -31,14 +31,6 @@
 
 #pragma once
 
-//=============================================================================
-
-// the host system specifies the base of the directory tree, the
-// command line parms passed to the program, and the amount of memory
-// available for the program to use
-
-//=============================================================================
-
 #include <csetjmp>
 #include "common/commontypes.h"
 #include "maintypes.h"
@@ -115,7 +107,6 @@ extern quakeparms_t host_parms;
 
 extern client_t *host_client;
 extern qboolean gfNoMasterServer;
-extern int host_hunklevel;
 
 extern unsigned short *host_basepal; // 16 bit color palette
 

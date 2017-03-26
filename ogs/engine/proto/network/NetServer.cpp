@@ -31,6 +31,7 @@
 
 #include "precompiled.hpp"
 #include "network/NetServer.hpp"
+#include "system/common.hpp"
 
 bool CNetServer::Start(int anPort)
 {
@@ -46,6 +47,62 @@ void CNetServer::Frame(float frametime)
 		return;
 	
 	ReadPackets(frametime);
+};
+
+bool CNetServer::FilterPacket()
+{
+	for(int i = numipfilters - 1; i >= 0; i--)
+	{
+		ipfilter_t *curFilter = &ipfilters[i];
+		
+		if(curFilter->compare.u32 == 0xFFFFFFFF || curFilter->banEndTime == 0.0f || curFilter->banEndTime > realtime)
+		{
+			if((*(uint32 *)net_from.ip & curFilter->mask) == curFilter->compare.u32)
+				return (int)sv_filterban.value;
+		}
+		else
+		{
+			if(i < numipfilters - 1)
+				Q_memmove(curFilter, &curFilter[1], sizeof(ipfilter_t) * (numipfilters - i - 1));
+
+			--numipfilters;
+		};
+	};
+	
+	return sv_filterban.value == 0.0f;
+};
+
+void CNetServer::SendBan()
+{
+	char szMessage[64];
+	Q_snprintf(szMessage, sizeof(szMessage), "You have been banned from this server.\n");
+
+	SZ_Clear(&net_message);
+
+	MSG_WriteLong(&net_message, -1);
+	MSG_WriteByte(&net_message, 108);
+	MSG_WriteString(&net_message, szMessage);
+	
+	NET_SendPacket(NS_SERVER, net_message.cursize, net_message.data, net_from);
+
+	SZ_Clear(&net_message);
+};
+
+void CNetServer::CheckForRcon()
+{
+	if(g_psv.active || cls.state != ca_dedicated || giActive == DLL_CLOSE || !host_initialized)
+		return;
+
+	while(NET_GetPacket(NS_SERVER))
+	{
+		if(FilterPacket())
+			SendBan();
+		else
+		{
+			if(*(uint32 *)net_message.data == 0xFFFFFFFF)
+				HandleRconPacket();
+		};
+	};
 };
 
 void CNetServer::HandleRconPacket(netadr_t *adr)
@@ -85,7 +142,7 @@ void CNetServer::HandleConnectionlessPacket(netadr_t *adr)
 	else if(!Q_strcmp(c, "connect"))
 		ConnectClient();
 	
-	HandleConnectionlessPacket(c, args);
+	HandleConnectionlessPacket(adr, c, args);
 };
 
 void CNetServer::BroadcastCommand(char *fmt, ...)
@@ -226,7 +283,26 @@ NOXREF void CNetServer::ReplyServerChallenge(netadr_t *adr)
 	NET_SendPacket(NS_SERVER, buf.cursize, (char *)buf.data, *adr);
 };
 
-int CNetServer::GetMaxClients()
+int CNetServer::GetClientCount() const
+{
+};
+
+int CNetServer::GetFakeClientCount() const
+{
+	int fakeclients = 0;
+
+	for(int i = 0; i < g_psvs.maxclients; ++i)
+	{
+		client_t *client = &g_psvs.clients[i];
+
+		if(client->fakeclient)
+			fakeclients++;
+	};
+	
+	return fakeclients;
+};
+
+int CNetServer::GetMaxClients() const
 {
 	return 0;
 };
@@ -235,9 +311,9 @@ void CNetServer::ReadPackets(float frametime)
 {
 	while(mpNetwork->GetPacket(NS_SERVER)) // mpSocket->GetPacket
 	{
-		if(SV_FilterPacket())
+		if(FilterPacket())
 		{
-			SV_SendBan();
+			SendBan();
 			continue;
 		};
 
@@ -252,15 +328,13 @@ void CNetServer::ReadPackets(float frametime)
 			if(CheckIP(net_from))
 			{
 				Steam_HandleIncomingPacket(net_message.data, net_message.cursize, ntohl(*(u_long *)&net_from.ip[0]), htons(net_from.port));
-				HandleConnectionlessPacket();
+				HandleConnectionlessPacket(net_from);
 			}
 			else if(sv_logblocks.value != 0.0f)
-			{
-				Log_Printf("Traffic from %s was blocked for exceeding rate limits\n",
-				           NET_AdrToString(net_from));
-			}
+				Log_Printf("Traffic from %s was blocked for exceeding rate limits\n", NET_AdrToString(net_from));
+			
 			continue;
-		}
+		};
 
 		for(int i = 0; i < g_psvs.maxclients; i++)
 		{
@@ -346,7 +420,7 @@ void CNetServer::HandleRcon(netadr_t *net_from_)
 	char remaining[512];
 	char rcon_buff[1024];
 
-	int invalid = SV_Rcon_Validate();
+	int invalid = Rcon_Validate();
 	int len = net_message.cursize - Q_strlen("rcon");
 	if(len <= 0 || len >= sizeof(remaining))
 		return;
@@ -360,26 +434,26 @@ void CNetServer::HandleRcon(netadr_t *net_from_)
 	{
 		if(invalid)
 		{
-			Con_Printf("Bad Rcon from %s:\n%s\n", NET_AdrToString(*net_from_), remaining);
+			mpConsole->Printf("Bad Rcon from %s:\n%s\n", NET_AdrToString(*net_from_), remaining);
 			Log_Printf("Bad Rcon: \"%s\" from \"%s\"\n", remaining, NET_AdrToString(*net_from_));
 		}
 		else
 		{
-			Con_Printf("Rcon from %s:\n%s\n", NET_AdrToString(*net_from_), remaining);
+			mpConsole->Printf("Rcon from %s:\n%s\n", NET_AdrToString(*net_from_), remaining);
 			Log_Printf("Rcon: \"%s\" from \"%s\"\n", remaining, NET_AdrToString(*net_from_));
-		}
-	}
+		};
+	};
 
 	SV_BeginRedirect(RD_PACKET, net_from_);
 
 	if(invalid)
 	{
 		if(invalid == 2)
-			Con_Printf("Bad rcon_password.\n");
+			mpConsole->Printf("Bad rcon_password.\n");
 		else if(Q_strlen(rcon_password.string) == 0)
-			Con_Printf("Bad rcon_password.\nNo password set for this server.\n");
+			mpConsole->Printf("Bad rcon_password.\nNo password set for this server.\n");
 		else
-			Con_Printf("Bad rcon_password.\n");
+			mpConsole->Printf("Bad rcon_password.\n");
 
 		SV_EndRedirect();
 		return;
@@ -387,7 +461,7 @@ void CNetServer::HandleRcon(netadr_t *net_from_)
 	char *data = COM_Parse(COM_Parse(COM_Parse(remaining)));
 	if(!data)
 	{
-		Con_Printf("Empty rcon\n");
+		mpConsole->Printf("Empty rcon\n");
 
 #ifdef REHLDS_FIXES
 		// missing SV_EndRedirect()
@@ -412,8 +486,7 @@ int CNetServer::Rcon_Validate()
 
 	if(CheckRconFailure(&net_from))
 	{
-		Con_Printf("Banning %s for rcon hacking attempts\n",
-		           NET_AdrToString(net_from));
+		mpConsole->Printf("Banning %s for rcon hacking attempts\n", NET_AdrToString(net_from));
 		Cbuf_AddText(va("addip %i %s\n", (int)sv_rcon_banpenalty.value, NET_BaseAdrToString(net_from)));
 		return 3;
 	};
@@ -423,7 +496,7 @@ int CNetServer::Rcon_Validate()
 
 	if(Q_strcmp(Cmd_Argv(2), rcon_password.string))
 	{
-		SV_AddFailedRcon(&net_from);
+		AddFailedRcon(&net_from);
 		return 1;
 	};
 	
@@ -444,4 +517,109 @@ bool CNetServer::CheckRconFailure(netadr_t *adr)
 	};
 
 	return false;
+};
+
+void CNetServer::AddFailedRcon(netadr_t *adr)
+{
+	int i;
+	int best = 0;
+	float best_update = -99999.0f;
+	float time;
+	bool found = false;
+	rcon_failure_t *r;
+	int failed;
+
+	if(sv_rcon_minfailures.value < 1.0f)
+		Cvar_SetValue("sv_rcon_minfailures", 1.0);
+	else if(sv_rcon_minfailures.value > 20.0f)
+		Cvar_SetValue("sv_rcon_minfailures", 20.0);
+	
+	if(sv_rcon_maxfailures.value < 1.0f)
+		Cvar_SetValue("sv_rcon_maxfailures", 1.0);
+	else if(sv_rcon_maxfailures.value > 20.0f)
+		Cvar_SetValue("sv_rcon_maxfailures", 20.0);
+	
+	if(sv_rcon_maxfailures.value < sv_rcon_minfailures.value)
+	{
+		float temp = sv_rcon_maxfailures.value;
+		Cvar_SetValue("sv_rcon_maxfailures", sv_rcon_minfailures.value);
+		Cvar_SetValue("sv_rcon_minfailures", temp);
+	};
+	
+	if(sv_rcon_minfailuretime.value < 1.0f)
+		Cvar_SetValue("sv_rcon_minfailuretime", 1.0);
+
+	for(i = 0; i < MAX_RCON_FAILURES_STORAGE; i++)
+	{
+		r = &g_rgRconFailures[i];
+		
+		if(!r->active)
+			break;
+		
+		if(NET_CompareAdr(r->adr, *adr))
+		{
+			found = true;
+			break;
+		};
+		
+		time = (float)(realtime - r->last_update);
+		
+		if(time >= best_update)
+		{
+			best = i;
+			best_update = time;
+		};
+	};
+
+	// If no match found, take the oldest entry for usage
+	if(i >= MAX_RCON_FAILURES_STORAGE)
+		r = &g_rgRconFailures[best];
+
+	// Prepare new or stale entry
+	if(!found)
+	{
+		r->shouldreject = FALSE;
+		r->num_failures = 0;
+		Q_memcpy(&r->adr, adr, sizeof(netadr_t));
+	}
+	else if(r->shouldreject)
+		return;
+
+	r->active = TRUE;
+	r->last_update = (float)realtime;
+
+	if(r->num_failures >= sv_rcon_maxfailures.value)
+	{
+#ifdef REHLDS_FIXES
+		// FIXED: Accessing beyond array
+		for(i = 0; i < sv_rcon_maxfailures.value - 1; i++)
+		{
+			r->failure_times[i] = r->failure_times[i + 1];
+		}
+		r->num_failures = sv_rcon_maxfailures.value - 1;
+#else  // REHLDS_FIXES
+		for(i = 0; i < sv_rcon_maxfailures.value; i++)
+		{
+			r->failure_times[i] = r->failure_times[i + 1];
+		}
+		r->num_failures--;
+#endif // REHLDS_FIXES
+	}
+
+	r->failure_times[r->num_failures] = (float)realtime;
+	r->num_failures++;
+
+	failed = 0;
+	
+	for(i = 0; i < r->num_failures; i++)
+	{
+		if(realtime - r->failure_times[i] <= sv_rcon_minfailuretime.value)
+			failed++;
+	};
+
+	if(failed >= sv_rcon_minfailures.value)
+	{
+		mpConsole->Printf("User %s will be banned for rcon hacking\n", NET_AdrToString(*adr));
+		r->shouldreject = TRUE;
+	};
 };

@@ -41,6 +41,11 @@ public:
 	
 	void Frame(float frametime);
 	
+	bool FilterPacket();
+	void SendBan();
+	
+	void CheckForRcon();
+	
 	void HandleRconPacket(netadr_t *adr);
 	void HandleConnectionlessPacket(netadr_t *adr);
 	
@@ -48,6 +53,8 @@ public:
 	void BroadcastPrintf(const char *fmt, ...);
 	
 	void ConnectClient();
+	
+	void KickPlayer(int nPlayerSlot, int nReason);
 	
 	void ReconnectClient(int anID);
 	void DisconnectClient(int anID);
@@ -71,7 +78,8 @@ private:
 	void HandleRcon(netadr_t *net_from_);
 	int Rcon_Validate();
 	bool CheckRconFailure(netadr_t *adr);
+	void AddFailedRcon(netadr_t *adr);
 protected:
-	virtual void HandleConnectionlessPacket(const char *c, const char *args){}
+	virtual void HandleConnectionlessPacket(netadr_t *adr, const char *c, const char *args){}
 	virtual void ConnectClient_internal(){}
 };

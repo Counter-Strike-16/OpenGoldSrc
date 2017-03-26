@@ -55,16 +55,16 @@ void F(IEngineAPI **api)
 int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
 {
 	// NOTE: what to do with the instance?
-	// NOTE: what to do with the post restart cmdline?
+	// TODO: check for state and if it's (or previous) DLL_RESTART then apply the postRestartCmdLineArgs
 	// NOTE: launcherFactory is needed for...?
 	// TODO: filesystem init using the filesystemFactory
 	
 	const char *sCmdLine = cmdline;
 	
-	if(restart)
+	if(restart) // DLL_RESTART
 		sCmdLine = postRestartCmdLineArgs;
 	
-	if(!eng->Load(false, basedir, sCmdLine))
+	if(!eng->Load(false, basedir, sCmdLine)) // init fs and igame here (dunno why iengineapi and idedicatedserverapi duplicates this)
 		return 1;
 
 	while(!eng->GetQuitting()) // ?

@@ -27,47 +27,20 @@
  */
 
 /// @file
-/// @brief script command processing component
 
-#pragma once
+#include "console/ConCmdArgs.hpp"
 
-struct IConsole;
-
-void Cbuf_Init();
-void Cbuf_AddText(char *text);
-
-void Cbuf_InsertText(char *text);
-void Cbuf_InsertTextLines(char *text);
-
-void Cbuf_Execute();
-
-// Note: should be singleton
-class CCmdBuffer
+int CConCmdArgs::GetCount() const
 {
-public:
-	CCmdBuffer(IConsole *apConsole) : mpConsole(apConsole){}
-	
-	// Allocates an initial text buffer that will grow as needed
-	void Init();
+	return 0;
+};
 
-	// As new commands are generated from the console or keybindings,
-	// the text is added to the end of the command buffer
-	void AddText(char *text);
+const char *CConCmdArgs::GetArgVal(int anArg) const
+{
+	return "";
+};
 
-	// When a command wants to issue other commands immediately, the text is
-	// inserted at the beginning of the buffer, before any remaining unexecuted
-	// commands
-	void InsertText(char *text);
-
-	void InsertTextLines(char *text);
-
-	// Pulls off \n terminated lines of text from the command buffer and sends
-	// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-	// Normally called once per frame, but may be explicitly invoked.
-	// Do not call inside a command function!
-	void Execute();
-private:
-	IConsole *mpConsole{nullptr};
-	
-	CSizeBuffer *cmd_text{nullptr};
+const char *CConCmdArgs::ToString() const
+{
+	return "";
 };

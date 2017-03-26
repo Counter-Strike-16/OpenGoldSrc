@@ -306,6 +306,7 @@ bool CEngine::CheckDoneTrapping_noVirt(int &buttons, int &key)
 
 void CEngine::AddCommandText_noVirt(const char *asText)
 {
+	//mpConsole->AddCommandText(asText);
 };
 
 void CEngine::GetHostInfo_noVirt(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap)
@@ -354,7 +355,7 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	//CSystem::InitMemory(&host_parms);
 	
 	//TraceInit("Sys_InitLauncherInterface()", "Sys_ShutdownLauncherInterface()", 0);
-	//CSystem::InitLauncherInterface();
+	CSystem::InitLauncherInterface();
 
 #ifndef SWDS
 	//if(!GL_SetMode(*pmainwindow, &maindc, &baseRC))
@@ -366,13 +367,18 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	if(!mpHost->Init(&host_parms))
 		return 0;
 
+	CSystem::Printf("Host initialized\n");
+
 	//TraceInit("Sys_InitAuthentication()", "Sys_ShutdownAuthentication()", 0);
+	CSystem::InitAuthentication();
 	
-	//CSystem::InitAuthentication();
-	
+	// Since the dedicated mode is oriented on multiplayer (only)
+	// We should init the game dll and enable the multiplayer mode for the network here
 	if(mbDedicated)
 	{
-		//mpHost->InitializeGameDLL();
+		//mpHost->InitializeGameDLL(); // We should immediately init the game dll for dedicated mode
+									   // (client is initializing it after the first call to new game)
+									   // NOTE: move to host init?
 		//NET_Config(TRUE);
 	};
 
@@ -383,7 +389,7 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	char en_US[12];
 
 	Q_strcpy(en_US, "en_US.UTF-8");
-	//en_US[16] = 0; // nice try
+	en_US[sizeof(en_US) - 1] = 0; // was [16] = 0; dunno why
 
 	char *cat = setlocale(6, NULL);
 	
@@ -393,11 +399,9 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	if(Q_stricmp(cat, en_US))
 	{
 		char MessageText[512];
-		Q_snprintf(MessageText, sizeof(MessageText), "SetLocale('%s') failed. Using '%s'.\nYou may have limited "
-		                                             "glyph support.\nPlease install '%s' locale.",
-		           en_US,
-		           cat,
-		           en_US);
+		Q_snprintf(MessageText, sizeof(MessageText), "SetLocale('%s') failed. Using '%s'.\n"
+													 "You may have limited glyph support.\n
+													 "Please install '%s' locale.", en_US, cat, en_US);
 		//SDL_ShowSimpleMessageBox(0, "Warning", MessageText, *pmainwindow);
 	};
 	
@@ -417,12 +421,14 @@ void CEngine::ShutdownGame()
 		//NET_Config(FALSE);
 
 	//TraceShutdown("Sys_ShutdownLauncherInterface()", 0);
-	
+	CSystem::ShutdownLauncherInterface();
+
 	//TraceShutdown("Sys_ShutdownAuthentication()", 0);
-	
+	CSystem::ShutdownAuthentication();
+
 	//TraceShutdown("Sys_ShutdownMemory()", 0);
 	//CSystem::ShutdownMemory();
 	
 	//TraceShutdown("Sys_Shutdown()", 0);
-	//CSystem::Shutdown();
+	CSystem::Shutdown();
 };

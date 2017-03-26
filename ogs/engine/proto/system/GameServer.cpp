@@ -28,6 +28,7 @@
 
 /// @file
 
+#include "precompiled.hpp"
 #include "system/GameServer.hpp"
 
 void CGameServer::Init()
@@ -352,29 +353,12 @@ void CGameServer::SetupMaxClients()
 	Rehlds_Interfaces_InitClients();
 };
 
-void CGameServer::CheckForRcon()
-{
-	if(g_psv.active || cls.state != ca_dedicated || giActive == DLL_CLOSE || !host_initialized)
-		return;
-
-	while(NET_GetPacket(NS_SERVER))
-	{
-		if(SV_FilterPacket())
-			SV_SendBan();
-		else
-		{
-			if(*(uint32 *)net_message.data == 0xFFFFFFFF)
-				HandleRconPacket();
-		};
-	};
-};
-
-void CGameServer::HandleConnectionlessPacket(const char *c, const char *args)
+void CGameServer::HandleConnectionlessPacket(netadr_t *adr, const char *c, const char *args)
 {
 	if(!Q_strcmp(c, "ping") || (c[0] == A2A_PING && (c[1] == 0 || c[1] == '\n')))
 		SVC_Ping();
 	else if(c[0] == A2A_ACK && (c[1] == 0 || c[1] == '\n'))
-		Con_NetPrintf("A2A_ACK from %s\n", NET_AdrToString(net_from));
+		Con_NetPrintf("A2A_ACK from %s\n", NET_AdrToString(adr));
 	else if(c[0] == A2A_GETCHALLENGE || c[0] == A2S_INFO ||
 	        c[0] == A2S_PLAYER || c[0] == A2S_RULES || c[0] == S2A_LOGSTRING ||
 	        c[0] == M2S_REQUESTRESTART || c[0] == M2A_CHALLENGE)

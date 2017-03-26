@@ -110,7 +110,7 @@ typedef struct TITLECOMMENT_s
 extern int r_dointerp;
 extern vec3_t r_origin;
 extern double cpuPercent;
-extern int32 startTime;
+
 extern int current_skill;
 extern int gHostSpawnCount;
 extern CareerStateType g_careerState;
@@ -132,7 +132,7 @@ void SV_GetPlayerHulls();
 void Host_InitializeGameDLL();
 void Host_Motd_f();
 void Host_Motd_Write_f();
-int Host_GetStartTime();
+
 void Host_UpdateStats();
 void GetStatsString(char *buf, int bufSize);
 void Host_Stats_f();
@@ -209,6 +209,6 @@ void Host_KillServer_f();
 void Host_VoiceRecordStart_f();
 void Host_VoiceRecordStop_f();
 void Host_Crash_f();
-void Host_InitCommands();
+
 void SV_CheckBlendingInterface();
 void SV_CheckSaveGameCommentInterface();

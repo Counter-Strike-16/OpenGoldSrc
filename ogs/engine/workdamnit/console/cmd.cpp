@@ -817,11 +817,8 @@ void EXT_FUNC Cmd_ExecuteString_internal(const char *cmdName, cmd_source_t src, 
 		{
 			cmd->function();
 
-			if(cls.demorecording && (cmd->flags & FCMD_HUD_COMMAND) &&
-			   !cls.spectator)
-			{
+			if(cls.demorecording && (cmd->flags & FCMD_HUD_COMMAND) && !cls.spectator)
 				CL_RecordHUDCommand(cmd->name);
-			}
 
 			return;
 		}

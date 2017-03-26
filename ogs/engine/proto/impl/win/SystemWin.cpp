@@ -65,13 +65,6 @@ double g_StartTime;
 
 int g_WinNTOrHigher;
 
-NOXREF void CSystem::Sleep(int msec)
-{
-	NOXREFCHECK;
-	
-	Sleep(msec);
-};
-
 // Hacky
 #pragma warning( push )  
 #pragma warning( disable : 4996 )

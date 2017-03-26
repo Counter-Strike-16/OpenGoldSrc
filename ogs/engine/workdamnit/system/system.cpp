@@ -44,11 +44,6 @@
 #include "system/server.hpp"
 #include "system/sv_log.hpp"
 
-void (*Launcher_ConsolePrintf)(char *, ...);
-char *(*Launcher_GetLocalizedString)(unsigned int);
-
-int (*Launcher_MP3subsys_Suspend_Audio)();
-void (*Launcher_MP3subsys_Resume_Audio)();
 
 void (*VID_FlipScreen)();
 

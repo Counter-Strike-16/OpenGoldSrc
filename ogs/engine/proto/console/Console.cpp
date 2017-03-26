@@ -28,9 +28,84 @@
 
 /// @file
 
-#include "console/console.hpp"
+#include "precompiled.hpp"
+#include "console/Console.hpp"
+
+bool CConsole::Init();
+{
+};
+
+void CConsole::Shutdown()
+{
+};
 
 void CConsole::Printf(int anPrintLevel, const char *asMsg, ...)
 {
 	//Con_Print();
+};
+
+void CConsole::DrawCharacter(int cx, int line, int num)
+{
+};
+
+void CConsole::CheckResize()
+{
+};
+
+void CConsole::Draw(int lines /*, qboolean drawinput*/)
+{
+};
+
+//void Draw(float frac);
+
+void CConsole::Print(const char *txt)
+{
+};
+
+void CConsole::Printf(const char *fmt, ...) // _format(1);
+{
+};
+
+void CConsole::DPrintf(const char *fmt, ...) // _format(1);
+{
+};
+
+//void NPrintf(int idx, const char *fmt, ...)
+//{
+//};
+
+//void NPrintf( int idx, char *fmt, ... ) // _format(2);
+//{
+//};
+
+//void NXPrintf( struct con_nprint_s *info, char *fmt, ... ) //_format(2)
+//{
+//};
+
+void CConsole::SafePrintf(const char *fmt, ...)
+{
+};
+
+void CConsole::CenteredPrint(const char *text)
+{
+};
+
+void CConsole::DrawNotify()
+{
+};
+
+void CConsole::ClearNotify()
+{
+};
+
+void CConsole::ShowNotifyBox(const char *text)
+{
+};
+
+void CConsole::DebugLog(const char *file, const char *fmt, ...)
+{
+};
+
+IConVar *CConsole::GetConVar(const char *asName)
+{
 };

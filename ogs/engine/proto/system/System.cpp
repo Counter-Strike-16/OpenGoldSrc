@@ -29,6 +29,7 @@
 /// @file
 
 #include "precompiled.hpp"
+#include <thread>
 #include "system/System.hpp"
 #include "system/Host.hpp"
 #include "system/common.hpp"
@@ -59,6 +60,8 @@ const int MAX_COMMAND_LINE_PARAMS = 50;
 // Crappy MS compiler...
 
 quakeparms_t *CSystem::mhost_parms = nullptr;
+
+bool CSystem::mbDedicatedServer = false;
 
 bool CSystem::mbIsWin95 = false;
 bool CSystem::mbIsWin98 = false;
@@ -124,7 +127,7 @@ void NORETURN Sys_Error(const char *error, ...)
 		HWND hWnd = 0;
 
 		//if(pmainwindow)
-		//hWnd = *pmainwindow;
+			//hWnd = *pmainwindow;
 
 		Printf(text);
 		//SDL_ShowSimpleMessageBox(MB_ICONERROR | MB_OK, "Fatal Error", text, hWnd);
@@ -361,10 +364,12 @@ double CSystem::GetFloatTime()
 	return Sys_FloatTime();
 };
 
-//void CSystem::Sleep(int msec)
-//{
-	//Sys_Sleep(msec);
-//};
+NOXREF void CSystem::Sleep(int msec)
+{
+	NOXREFCHECK;
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(msec));
+};
 
 void CSystem::Printf(const char *fmt, ...)
 {

@@ -685,12 +685,6 @@ void SV_FlushRedirect();
 void SV_EndRedirect();
 void SV_BeginRedirect(redirect_t rd, netadr_t *addr);
 void SV_ResetRcon_f();
-void SV_AddFailedRcon(netadr_t *adr);
-
-
-
-qboolean SV_FilterPacket();
-void SV_SendBan();
 
 // NOBODY int ntohl();
 // NOBODY int htons();
@@ -719,7 +713,6 @@ int SV_CheckVisibility(edict_t *entity, unsigned char *pset);
 void SV_EmitPings(client_t *client, sizebuf_t *msg);
 void SV_CleanupEnts();
 
-void SV_UpdateToReliableMessages();
 void SV_SkipUpdates();
 int SV_ModelIndex(const char *name);
 void SV_AddResource(resourcetype_t type, const char *name, int size, unsigned char flags, int index);
@@ -753,16 +746,14 @@ void SV_RemoveIP_f();
 void SV_ListIP_f();
 void SV_WriteIP_f();
 
-void SV_KickPlayer(int nPlayerSlot, int nReason);
+
 
 void SV_FailDownload(const char *filename);
 const char *Q_stristr(const char *pStr, const char *pSearch);
 qboolean IsSafeFileToDownload(const char *filename);
 void SV_BeginFileDownload_f();
 
-void SV_CheckForRcon();
 qboolean SV_IsSimulating();
-void SV_CheckMapDifferences();
 
 void SV_Drop_f();
 void SV_RegisterDelta(char *name, char *loadfile);
@@ -775,8 +766,6 @@ qboolean SV_CompareUserID_internal(USERID_t *id1, USERID_t *id2);
 
 char *SV_GetIDString(USERID_t *id);
 char *SV_GetIDString_internal(USERID_t *id);
-
-void SV_ClearClientStates();
 
 void SV_DropClient_api(IGameClient *cl, bool crash, const char *fmt, ...);
 

@@ -82,9 +82,6 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 	if(!dedicated_)
 		return false;
 
-	//dedicated_->Sys_Printf
-	CSystem::Printf("Hello world! I'm alive!");
-
 	//Q_strncpy(msOrigCmd, cmdline, charsmax(msOrigCmd));
 
 	//if(!Q_strstr(cmdline, "-nobreakpad"))
@@ -97,7 +94,7 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 	
 	//registry->Init();
 
-	gbIsDedicatedServer = true;
+	gbIsDedicatedServer = true; // TODO: remove usage of this
 
 	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
 
@@ -111,7 +108,7 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 		//mpCmdBuffer->InsertText(text);
 		
 #ifdef REHLDS_FIXES // DONE: Set cstrike flags on server start
-		//SetCStrikeFlags();
+		SetCStrikeFlags();
 #endif
 		
 		return true;
@@ -131,6 +128,8 @@ int CDedicatedServerAPI::Shutdown_noVirt()
 	//registry->Shutdown();
 
 	//TraceShutdown("Sys_ShutdownArgv()", 0);
+	CSystem::ShutdownArgv();
+
 	dedicated_ = nullptr;
 	return 0; //giActive;
 };

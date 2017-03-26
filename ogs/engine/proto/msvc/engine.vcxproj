@@ -93,10 +93,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../;../../workdamnit/;../../engine-zombie/;../../../public/;../../../;../../../../../hlsdk-core/;../../../../../shiftutil/include/;../../../../../ogsapi/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;../../workdamnit/;../../engine-zombie/;../../../public/;../../../;../../../../../hlsdk-core/;../../../../../shiftutil/include/;../../../../../ogsapi/ogs/ogsapi/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>REHLDS_SELF;_CRT_SECURE_NO_WARNINGS;SWDS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

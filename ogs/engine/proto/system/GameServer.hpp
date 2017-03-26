@@ -49,7 +49,7 @@ public:
 	
 	void SetupMaxClients();
 	
-	void HandleConnectionlessPacket();
+	void HandleConnectionlessPacket(netadr_t *adr, const char *c, const char *args);
 	
 	void BroadcastCommand(char *fmt, ...);
 	

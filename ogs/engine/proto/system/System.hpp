@@ -48,8 +48,6 @@ NOXREF void Legacy_MP3subsys_Resume_Audio();
 
 double Sys_FloatTime();
 
-//void Sys_Sleep(int msec);
-
 // An error will cause the entire program to exit
 NOBODY void NORETURN Sys_Error(const char *error, ...); // mb add int code?
 
@@ -86,7 +84,7 @@ public:
 	static NOXREF void Warning(const char *pszWarning, ...);
 	
 #ifdef _WIN32
-	void __cdecl InitHardwareTimer();
+	static void __cdecl InitHardwareTimer();
 
 	static void CheckOSVersion();
 #endif
@@ -98,6 +96,8 @@ private:
 	
 	static quakeparms_t *mhost_parms;
 	
+	static bool mbDedicatedServer;
+
 	static bool mbIsWin95;
 	static bool mbIsWin98;
 };

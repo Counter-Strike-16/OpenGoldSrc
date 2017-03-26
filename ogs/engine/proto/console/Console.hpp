@@ -31,8 +31,10 @@
 #pragma once
 
 #include <list>
+#include <memory>
 #include "common/commontypes.h"
 #include "console/IConsole.hpp"
+#include "console/CmdBuffer.hpp"
 
 constexpr auto NUM_CON_TIMES = 4;
 
@@ -44,12 +46,12 @@ extern CConsole *gpConsole;
 class CConVar;
 using tConVarList = std::list<CConVar*>;
 
-extern console_t con_main;
-extern console_t con_chat;
+//extern console_t con_main;
+//extern console_t con_chat;
 
 //extern console_t con;
 
-extern console_t *con; // point to either con_main or con_chat
+//extern console_t *con; // point to either con_main or con_chat
 
 void Con_DrawCharacter(int cx, int line, int num);
 
@@ -111,8 +113,12 @@ public:
 	void DebugLog(const char *file, const char *fmt, ...);
 	
 	IConVar *GetConVar(const char *asName);
+	
+	cmdalias_t *GetAliasList() const;
 private:
 	tConVarList mlstConVars;
+	
+	std::unique_ptr<CCmdBuffer> mpCmdBuffer;
 	
 	char text[CON_TEXTSIZE];
 
