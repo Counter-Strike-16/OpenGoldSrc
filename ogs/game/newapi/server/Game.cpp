@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,29 +28,35 @@
 
 /// @file
 
-#pragma once
+#include "Game.hpp"
+#include "memory/IMemory.hpp"
+#include "console/IConsole.hpp"
+#include "engine/IEngineSound.hpp"
 
-#include "engine/progdefs.h"
-
-using tEdictVec = std::vector<edict_t*>;
-typedef tEdictVec::iterator tEdictVecIt;
-
-class CEdictPool
+bool CGame::Init(CreateInterfaceFn afnEngineFactory)
 {
-public:
-	CEdictPool();
-	~CEdictPool();
+	mpMemory = (IMemory*)afnEngineFactory(OGS_MEMORY_INTERFACE_VERSION, nullptr);
 	
-	// Max size should be > than start size
-	// -1 means default value (original GS limits)
-	bool Init(int anStartSize = -1, int anMaxSize = -1);
+	if(!mpMemory)
+		return false;
+	
+	mpConsole = (IConsole*)afnEngineFactory(OGS_CONSOLE_INTERFACE_VERSION, nullptr);
+	
+	if(!mpConsole)
+		return false;
+	
+	mpSound = (IEngineSound*)afnEngineFactory(OGS_ENGINESOUNDSERVER_INTERFACE_VERSION, nullptr);
+	
+	if(!mpSound)
+		return false;
+	
+	return true;
+};
 
-	edict_t *Alloc(const char *asName);       // AllocEdict
-	void Free(edict_t *ed); // FreeEdict
-	
-	void FreeAll();
-	
-	int GetSize();
-private:
-	tEdictVec mvEdicts;
+void CGame::Shutdown()
+{
+};
+
+void CGame::Frame()
+{
 };

@@ -1,11 +1,15 @@
+// +	- means than we have exposed it from the module
+// ++	- means than we have fully implemented support for it
+
 /*
 gameui.dll
 
 VGuiModuleLoader003
 RunGameEngine006
-MusicManager001
+MusicManager001 (czero only?)
 GameUI007
 GameConsole003
+CareerUI001 (czero only?)
 */
 
 /*
@@ -27,11 +31,11 @@ VGUI_Input004
 hw.DLL
 
 EngineSurface007
-VENGINE_GAMEUIFUNCS_VERSION001
-VENGINE_HLDS_API_VERSION002
-VENGINE_LAUNCHER_API_VERSION002
-GameServerData001
+VENGINE_GAMEUIFUNCS_VERSION001		+
+VENGINE_HLDS_API_VERSION002			+
+VENGINE_LAUNCHER_API_VERSION002		+
+GameServerData001					+
 VGUI_Surface026
 VEngineVGui001
-BaseUI001
+BaseUI001							+
 */

@@ -42,6 +42,8 @@ public:
 	
 	bool IsConnected() const;
 	
+	// Provide an info struct about the server the
+	// client is currently connected to (if connected)
 	const TServerInfo &GetServerInfo() const;
 private:
 	TServerInfo mServerInfo;

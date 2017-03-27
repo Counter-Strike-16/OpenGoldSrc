@@ -40,7 +40,7 @@
 #ifdef HOOK_ENGINE
 	#define game (*pgame)
 	#define eng (*peng)
-#endif // HOOK_ENGINE
+#endif
 // clang-format on
 
 // sleep time when not focus

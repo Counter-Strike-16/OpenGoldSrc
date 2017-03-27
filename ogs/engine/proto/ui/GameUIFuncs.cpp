@@ -28,25 +28,48 @@
 
 /// @file
 
-#pragma once
+#include "ui/GameUIFuncs.hpp"
 
-#include "game/server/IGameDLL.hpp"
+EXPOSE_SINGLE_INTERFACE(CGameUIFuncs, IGameUIFuncs, VENGINE_GAMEUIFUNCS_VERSION);
 
-struct IMemory;
-struct IConsole;
-struct IEngineSound;
-
-class CGameDLL : public IGameDLL
+bool CGameUIFuncs::IsKeyDown(char const *keyname, bool &isdown)
 {
-public:
-	CGameDLL() : mpMemory(nullptr), mpConsole(nullptr), mpSound(nullptr){}
-	
-	bool Init(CreateInterfaceFn afnEngineFactory);
-	void Shutdown();
-	
-	void Frame();
-private:
-	IMemory *mpMemory;
-	IConsole *mpConsole;
-	IEngineSound *mpSound;
+	return false;
+};
+
+const char *CGameUIFuncs::Key_NameForKey(int keynum)
+{
+	return "";
+};
+
+const char *CGameUIFuncs::Key_BindingForKey(int keynum)
+{
+	return "";
+};
+
+vgui::KeyCode CGameUIFuncs::GetVGUI2KeyCodeForBind(const char *bind)
+{
+	return 0;
+};
+
+void CGameUIFuncs::GetVideoModes(struct vmode_s **liststart, int *count)
+{
+};
+
+void CGameUIFuncs::GetCurrentVideoMode(int *wide, int *tall, int *bpp)
+{
+};
+
+void CGameUIFuncs::GetCurrentRenderer(char *name, int namelen, int *windowed)
+{
+};
+
+bool CGameUIFuncs::IsConnectedToVACSecureServer()
+{
+	return false;
+};
+
+int CGameUIFuncs::Key_KeyStringToKeyNum(const char *string)
+{
+	return 0;
 };

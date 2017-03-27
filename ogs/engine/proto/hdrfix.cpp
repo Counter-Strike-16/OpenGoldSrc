@@ -4,7 +4,7 @@
 
 //#include "client/enginevgui.hpp"
 
-//#include "graphics/gl_model.hpp"
+//#include "graphics/model_legacy.hpp"
 
 //#include "precompiled.hpp"
 // #include "commondef.hpp"

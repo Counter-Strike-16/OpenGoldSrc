@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,51 +27,28 @@
  */
 
 /// @file
+/// @brief engine funcs exported for gameui usage
 
 #pragma once
 
-#include "IGameServerData.h"
-#include "tier1/utlbuffer.h"
-#include "tier1/utllinkedlist.h"
+#include "common/GameUI/GameUIFuncs.h"
 
-class CServerRemoteAccess : public IGameServerData
+class CGameUIFuncs : public IGameUIFuncs
 {
 public:
-	CServerRemoteAccess();
-	virtual ~CServerRemoteAccess()
-	{
-	}
-	virtual void WriteDataRequest(const void *buffer, int bufferSize);
-	virtual int ReadDataResponse(void *data, int len);
-
-	void WriteDataRequest_noVirt(const void *buffer, int bufferSize);
-	int ReadDataResponse_noVirt(void *data, int len);
-
-	void SendMessageToAdminUI(const char *message);
-	void RequestValue(int requestID, const char *variable);
-	void SetValue(const char *variable, const char *value);
-	void ExecCommand(const char *cmdString);
-	bool LookupValue(const char *variable, CUtlBuffer &value);
-	const char *LookupStringValue(const char *variable);
-	void GetUserBanList(CUtlBuffer &value);
-	void GetPlayerList(CUtlBuffer &value);
-	void GetMapList(CUtlBuffer &value);
-
-	struct DataResponse_t
-	{
-		CUtlBuffer packet;
-	};
-
-private:
-	CUtlLinkedList<DataResponse_t, int> m_ResponsePackets;
-	int m_iBytesSent;
-	int m_iBytesReceived;
+	bool IsKeyDown(char const *keyname, bool &isdown);
+	
+	const char *Key_NameForKey(int keynum);
+	const char *Key_BindingForKey(int keynum);
+	
+	vgui::KeyCode GetVGUI2KeyCodeForBind(const char *bind);
+	
+	void GetVideoModes(struct vmode_s **liststart, int *count);
+	void GetCurrentVideoMode(int *wide, int *tall, int *bpp);
+	
+	void GetCurrentRenderer(char *name, int namelen, int *windowed);
+	
+	bool IsConnectedToVACSecureServer();
+	
+	int Key_KeyStringToKeyNum(const char *string);
 };
-
-#ifdef HOOK_ENGINE
-#define g_ServerRemoteAccess (*pg_ServerRemoteAccess)
-#endif
-
-extern class CServerRemoteAccess g_ServerRemoteAccess;
-
-extern void NotifyDedicatedServerUI(const char *message);

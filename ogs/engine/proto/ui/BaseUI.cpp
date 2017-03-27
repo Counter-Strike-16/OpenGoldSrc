@@ -78,8 +78,8 @@ void CBaseUI::Start(struct cl_enginefuncs_s *engineFuncs, int interfaceVersion)
 	vgui::g_pInput->SetIMEWindow(g_hMainWnd);
 
 	g_pVGuiLocalize = (vgui::ILocalize *)(Sys_GetFactoryThis())(VGUI_LOCALIZE_INTERFACE_VERSION, NULL);
+	
 	g_pVGuiLocalize->AddFile("resource/valve_%language%.txt", "GAME");
-	g_pVGuiLocalize->AddFile("resource/csbte_%language%.txt", "GAME");
 
 	g_pfnCBaseUI_Start(this, FALSE, engineFuncs, interfaceVersion);
 	g_pFileSystem->CreateDirHierarchy("cfg", "DEFAULT_WRITE_PATH");

@@ -39,7 +39,7 @@ class CGameConnectionHandler : public IConnectionHandler
 public:
 	CGameConnectionHandler(CGameServer *apServer) : mpServer(apServer){}
 	
-	bool ConnectClient(netadr_t *adr);
+	bool ConnectClient(netadr_t *adr) override;
 private:
 	void RejectConnection(netadr_t *adr, char *fmt, ...);
 	void RejectConnectionForPassword(netadr_t *adr);

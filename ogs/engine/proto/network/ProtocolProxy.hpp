@@ -32,7 +32,7 @@
 
 #pragma once
 
-class INetProtocol;
+struct INetProtocol;
 
 class CProtocolProxy
 {

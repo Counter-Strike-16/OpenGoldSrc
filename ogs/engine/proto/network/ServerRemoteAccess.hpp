@@ -30,27 +30,47 @@
 
 #pragma once
 
-#include "engine/progdefs.h"
+#include "common/IGameServerData.h"
+#include "tier1/utlbuffer.h"
+#include "tier1/utllinkedlist.h"
 
-using tEdictVec = std::vector<edict_t*>;
-typedef tEdictVec::iterator tEdictVecIt;
-
-class CEdictPool
+class CServerRemoteAccess : public IGameServerData
 {
 public:
-	CEdictPool();
-	~CEdictPool();
+	CServerRemoteAccess();
+	virtual ~CServerRemoteAccess(){}
 	
-	// Max size should be > than start size
-	// -1 means default value (original GS limits)
-	bool Init(int anStartSize = -1, int anMaxSize = -1);
+	virtual void WriteDataRequest(const void *buffer, int bufferSize);
+	virtual int ReadDataResponse(void *data, int len);
 
-	edict_t *Alloc(const char *asName);       // AllocEdict
-	void Free(edict_t *ed); // FreeEdict
-	
-	void FreeAll();
-	
-	int GetSize();
+	void WriteDataRequest_noVirt(const void *buffer, int bufferSize);
+	int ReadDataResponse_noVirt(void *data, int len);
+
+	void SendMessageToAdminUI(const char *message);
+	void RequestValue(int requestID, const char *variable);
+	void SetValue(const char *variable, const char *value);
+	void ExecCommand(const char *cmdString);
+	bool LookupValue(const char *variable, CUtlBuffer &value);
+	const char *LookupStringValue(const char *variable);
+	void GetUserBanList(CUtlBuffer &value);
+	void GetPlayerList(CUtlBuffer &value);
+	void GetMapList(CUtlBuffer &value);
+
+	struct DataResponse_t
+	{
+		CUtlBuffer packet;
+	};
+
 private:
-	tEdictVec mvEdicts;
+	CUtlLinkedList<DataResponse_t, int> m_ResponsePackets;
+	int m_iBytesSent;
+	int m_iBytesReceived;
 };
+
+#ifdef HOOK_ENGINE
+#define g_ServerRemoteAccess (*pg_ServerRemoteAccess)
+#endif
+
+extern class CServerRemoteAccess g_ServerRemoteAccess;
+
+extern void NotifyDedicatedServerUI(const char *message);

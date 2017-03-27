@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief Wrapper class around edict_t to interact with it in OOP way
+/// @brief wrapper class around edict_t to interact with it in OOP way
 
 #pragma once
 
@@ -48,10 +48,7 @@ edict_t *privedict;
 class CEdictHandle
 {
 public:
-	CEdictHandle(int id, edict_t *apEdict)
-	    : mnID(id), mpHandlingEdict(apEdict)
-	{
-	}
+	CEdictHandle(int id, edict_t *apEdict) : mnID(id), mpHandlingEdict(apEdict){}
 	~CEdictHandle();
 
 	void Clear();
@@ -61,10 +58,7 @@ public:
 	void InitGameDLLFields();
 	void ReleaseGameDLLFields();
 
-	int GetID()
-	{
-		return mnID;
-	} // IndexOfEdict
+	int GetID(){return mnID;} // IndexOfEdict
 	entvars_t *GetEntVars();
 	void *GetModelPtr();
 
