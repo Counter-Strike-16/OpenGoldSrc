@@ -129,7 +129,9 @@ extern int g_iQuitCommandIssued;
 extern char *g_pPostRestartCmdLineArgs;
 
 void SV_GetPlayerHulls();
+
 void Host_InitializeGameDLL();
+
 void Host_Motd_f();
 void Host_Motd_Write_f();
 
@@ -185,12 +187,14 @@ void DirectoryExtract(FileHandle_t pFile, int fileCount);
 int DirectoryCount(const char *pPath);
 void Host_ClearSaveDirectory();
 void Host_ClearGameState();
+void Host_Say(qboolean teamonly);
+NOXREF void Host_EndSection(const char *pszSection);
+
 void Host_Changelevel2_f();
 void Host_Version_f();
 void Host_FullInfo_f();
 NOXREF void Host_KillVoice_f();
 void Host_SetInfo_f();
-void Host_Say(qboolean teamonly);
 void Host_Say_f();
 void Host_Say_Team_f();
 void Host_Tell_f();
@@ -203,7 +207,6 @@ void Host_NextDemo();
 void Host_Startdemos_f();
 void Host_Demos_f();
 void Host_Stopdemo_f();
-NOXREF void Host_EndSection(const char *pszSection);
 void Host_Soundfade_f();
 void Host_KillServer_f();
 void Host_VoiceRecordStart_f();

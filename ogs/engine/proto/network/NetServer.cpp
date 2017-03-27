@@ -140,7 +140,7 @@ void CNetServer::HandleConnectionlessPacket(netadr_t *adr)
 	else if(!Q_strcmp(c, "rcon"))
 		HandleRcon(adr);
 	else if(!Q_strcmp(c, "connect"))
-		ConnectClient();
+		ConnectClient(adr);
 	
 	HandleConnectionlessPacket(adr, c, args);
 };
@@ -209,8 +209,11 @@ void CNetServer::BroadcastPrintf(const char *fmt, ...)
 	mpConsole->DPrintf("%s", string);
 };
 
-void CNetServer::ConnectClient()
+void CNetServer::ConnectClient(netadr_t *adr)
 {
+	if(mpConnectionHandler)
+		mpConnectionHandler->ConnectClient(adr);
+	
 	//g_RehldsHookchains.m_SV_ConnectClient.callChain(SV_ConnectClient_internal);
 	ConnectClient_internal();
 };

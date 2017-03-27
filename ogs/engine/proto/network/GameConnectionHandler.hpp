@@ -27,51 +27,41 @@
  */
 
 /// @file
-/// @brief script command processing component
 
 #pragma once
 
-struct IConsole;
+#include "network/IConnectionHandler.hpp"
 
-void Cbuf_Init();
-void Cbuf_AddText(char *text);
+class CGameServer;
 
-void Cbuf_InsertText(char *text);
-void Cbuf_InsertTextLines(char *text);
-
-void Cbuf_Execute();
-
-// Note: should be singleton
-class CCmdBuffer
+class CGameConnectionHandler : public IConnectionHandler
 {
 public:
-	CCmdBuffer(IConsole *apConsole) : mpConsole(apConsole){}
+	CGameConnectionHandler(CGameServer *apServer) : mpServer(apServer){}
 	
-	// Allocates an initial text buffer that will grow as needed
-	void Init();
-
-	// As new commands are generated from the console or keybindings,
-	// the text is added to the end of the command buffer
-	void AddText(char *text);
-
-	// When a command wants to issue other commands immediately, the text is
-	// inserted at the beginning of the buffer, before any remaining unexecuted
-	// commands
-	void InsertText(char *text);
-
-	void InsertTextLines(char *text);
-
-	// Pulls off \n terminated lines of text from the command buffer and sends
-	// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-	// Normally called once per frame, but may be explicitly invoked.
-	// Do not call inside a command function!
-	void Execute();
-	
-	// Leave the execution for next frame
-	void SetWait(bool abWait);
+	bool ConnectClient(netadr_t *adr);
 private:
-	IConsole *mpConsole{nullptr};
-	CSizeBuffer *cmd_text{nullptr};
+	void RejectConnection(netadr_t *adr, char *fmt, ...);
+	void RejectConnectionForPassword(netadr_t *adr);
 	
-	bool cmd_wait{false};
+	int CheckProtocol(netadr_t *adr, int nProtocol);
+	int CheckProtocol_internal(netadr_t *adr, int nProtocol);
+
+	bool CheckChallenge_api(const netadr_t &adr, int nChallengeValue);
+	int CheckChallenge(netadr_t *adr, int nChallengeValue);
+	
+	int CheckKeyInfo(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey);
+	int CheckKeyInfo_internal(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey);
+	
+	int CheckIPRestrictions(netadr_t *adr, int nAuthProtocol);
+	int CheckIPRestrictions_internal(netadr_t *adr, int nAuthProtocol);
+	
+	int CheckUserInfo(netadr_t *adr, char *userinfo, bool bIsReconnecting, int nReconnectSlot, char *name);
+	
+	int FinishCertificateCheck(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);
+	int FinishCertificateCheck_internal(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);
+	
+	int CheckIPConnectionReuse(netadr_t *adr);
+	
+	CGameServer *mpServer{nullptr};
 };

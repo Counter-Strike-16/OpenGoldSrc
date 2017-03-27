@@ -43,6 +43,8 @@ public:
 	
 	const char *GetArgVal(int anArg) const;
 	
+	int CheckParm(const char *asParm) const;
+	
 	const char *ToString() const;
 private:
 	//std::map<int, string>?

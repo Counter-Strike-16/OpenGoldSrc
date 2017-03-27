@@ -55,7 +55,6 @@ char *cmd_argv[MAX_ARGS];
 char *cmd_args = NULL;
 
 cmd_source_t cmd_source;
-qboolean cmd_wait;
 cmdalias_t *cmd_alias;
 
 // int trashtest;
@@ -63,6 +62,9 @@ cmdalias_t *cmd_alias;
 
 cmd_function_t *cmd_functions;
 char *const cmd_null_string = "";
+
+// Crappy
+CCmdBuffer *gpCmdBuffer = nullptr;
 
 //=============================================================================
 
@@ -85,7 +87,7 @@ bind g "impulse 5 ; +attack ; wait ; -attack ; impulse 2"
 */
 void Cmd_Wait_f()
 {
-	cmd_wait = true;
+	gpCmdBuffer->SetWait(true);
 }
 
 /*
@@ -952,9 +954,7 @@ NOXREF int Cmd_CheckParm(char *parm)
 	if(!parm)
 		Sys_Error("%s: NULL", __FUNCTION__);
 
-	int c = Cmd_Argc();
-
-	for(int i = 1; i < c; ++i)
+	for(int i = 1; i < Cmd_Argc(); ++i)
 	{
 		if(!Q_stricmp(Cmd_Argv(i), parm)) // Q_strcasecmp
 			return i;

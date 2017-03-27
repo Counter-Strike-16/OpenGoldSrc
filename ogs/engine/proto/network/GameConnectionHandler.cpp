@@ -30,7 +30,7 @@
 /// @brief server connection handler component
 
 #include "precompiled.hpp"
-#include "network/LoginServer.hpp"
+#include "network/GameConnectionHandler.hpp"
 
 bool EXT_FUNC CLoginServer::ConnectClient(netadr_t *adr)
 {
@@ -525,7 +525,7 @@ int EXT_FUNC CLoginServer::FinishCertificateCheck_internal(netadr_t *adr,
 	{
 		if(Q_stricmp(szRawCertificate, "steam"))
 		{
-			SV_RejectConnection(adr, "Expecting STEAM authentication USERID ticket!\n");
+			RejectConnection(adr, "Expecting STEAM authentication USERID ticket!\n");
 			return 0;
 		};
 
@@ -534,7 +534,7 @@ int EXT_FUNC CLoginServer::FinishCertificateCheck_internal(netadr_t *adr,
 
 	if(Q_strlen(szRawCertificate) != 32)
 	{
-		SV_RejectConnection(adr, "Invalid CD Key.\n");
+		RejectConnection(adr, "Invalid CD Key.\n");
 		return 0;
 	};
 
@@ -545,7 +545,7 @@ int EXT_FUNC CLoginServer::FinishCertificateCheck_internal(netadr_t *adr,
 
 	if(val[0] == 0 || Q_atoi(val) != 1)
 	{
-		SV_RejectConnection(adr, "Invalid CD Key.\n");
+		RejectConnection(adr, "Invalid CD Key.\n");
 		return 0;
 	};
 

@@ -27,51 +27,14 @@
  */
 
 /// @file
-/// @brief script command processing component
+/// @brief connection handler - checks that a client could be connected
+/// (i.e. has a valid userinfo passed, not in a ban-list, etc)
 
 #pragma once
 
-struct IConsole;
+typedef struct netadr_s netadr_t;
 
-void Cbuf_Init();
-void Cbuf_AddText(char *text);
-
-void Cbuf_InsertText(char *text);
-void Cbuf_InsertTextLines(char *text);
-
-void Cbuf_Execute();
-
-// Note: should be singleton
-class CCmdBuffer
+struct IConnectionHandler
 {
-public:
-	CCmdBuffer(IConsole *apConsole) : mpConsole(apConsole){}
-	
-	// Allocates an initial text buffer that will grow as needed
-	void Init();
-
-	// As new commands are generated from the console or keybindings,
-	// the text is added to the end of the command buffer
-	void AddText(char *text);
-
-	// When a command wants to issue other commands immediately, the text is
-	// inserted at the beginning of the buffer, before any remaining unexecuted
-	// commands
-	void InsertText(char *text);
-
-	void InsertTextLines(char *text);
-
-	// Pulls off \n terminated lines of text from the command buffer and sends
-	// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-	// Normally called once per frame, but may be explicitly invoked.
-	// Do not call inside a command function!
-	void Execute();
-	
-	// Leave the execution for next frame
-	void SetWait(bool abWait);
-private:
-	IConsole *mpConsole{nullptr};
-	CSizeBuffer *cmd_text{nullptr};
-	
-	bool cmd_wait{false};
+	virtual bool ConnectClient(netadr_t *adr){return true;}
 };

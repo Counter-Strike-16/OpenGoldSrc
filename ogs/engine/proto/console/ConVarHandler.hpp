@@ -30,38 +30,19 @@
 
 #pragma once
 
-typedef struct netadr_s netadr_t;
-
-class CGameServer;
-
-class CLoginServer
+class CConVarHandler
 {
 public:
-	CLoginServer(CGameServer *apServer) : mpServer(apServer){}
+	void Init();
+	void Shutdown();
 	
-	bool ConnectClient(netadr_t *adr);
+	IConVar *FindVar(const char *asName);
+	IConVar *FindVarPrev(const char *asName);
+	
+	const char *CompleteVar(const char *asSearch, bool abForward);
+	
+	bool InsertVar(cvar_t *apVar);
+	
+	void WriteVars(FileHandle_t ahFile);
 private:
-	void RejectConnection(netadr_t *adr, char *fmt, ...);
-	void RejectConnectionForPassword(netadr_t *adr);
-	
-	int CheckProtocol(netadr_t *adr, int nProtocol);
-	int CheckProtocol_internal(netadr_t *adr, int nProtocol);
-
-	bool CheckChallenge_api(const netadr_t &adr, int nChallengeValue);
-	int CheckChallenge(netadr_t *adr, int nChallengeValue);
-	
-	int CheckKeyInfo(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey);
-	int CheckKeyInfo_internal(netadr_t *adr, char *protinfo, unsigned short *port, int *pAuthProtocol, char *pszRaw, char *cdkey);
-	
-	int CheckIPRestrictions(netadr_t *adr, int nAuthProtocol);
-	int CheckIPRestrictions_internal(netadr_t *adr, int nAuthProtocol);
-	
-	int CheckUserInfo(netadr_t *adr, char *userinfo, bool bIsReconnecting, int nReconnectSlot, char *name);
-	
-	int FinishCertificateCheck(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);
-	int FinishCertificateCheck_internal(netadr_t *adr, int nAuthProtocol, char *szRawCertificate, char *userinfo);
-	
-	int CheckIPConnectionReuse(netadr_t *adr);
-	
-	CGameServer *mpServer{nullptr};
 };

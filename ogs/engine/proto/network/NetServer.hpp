@@ -33,11 +33,16 @@
 
 typedef struct netadr_s netadr_t;
 
+struct IConnectionHandler;
+
 class CNetServer
 {
 public:
 	bool Start(int anPort);
 	void Stop();
+	
+	void SetConnectionHandler(IConnectionHandler *apHandler);
+	IConnectionHandler *GetConnectionHandler() const {return mpConnectionHandler;}
 	
 	void Frame(float frametime);
 	
@@ -52,7 +57,7 @@ public:
 	void BroadcastCommand(char *fmt, ...);
 	void BroadcastPrintf(const char *fmt, ...);
 	
-	void ConnectClient();
+	void ConnectClient(netadr_t *adr);
 	
 	void KickPlayer(int nPlayerSlot, int nReason);
 	
@@ -79,6 +84,9 @@ private:
 	int Rcon_Validate();
 	bool CheckRconFailure(netadr_t *adr);
 	void AddFailedRcon(netadr_t *adr);
+	
+	IConnectionHandler *mpConnectionHandler{nullptr};
+	IConnectionHandler *mpDefaultConnHandler{nullptr};
 protected:
 	virtual void HandleConnectionlessPacket(netadr_t *adr, const char *c, const char *args){}
 	virtual void ConnectClient_internal(){}

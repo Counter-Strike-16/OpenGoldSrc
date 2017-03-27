@@ -49,7 +49,7 @@ sizebuf_t cmd_text;
 
 void CCmdBuffer::Init()
 {
-	cmd_text = SZ_Alloc("cmd_text", MAX_CMD_BUFFER);
+	cmd_text = SZ_Alloc("cmd_text", &cmd_text, MAX_CMD_BUFFER);
 };
 
 /*

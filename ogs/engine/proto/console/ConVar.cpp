@@ -30,3 +30,29 @@
 
 #include "precompiled.hpp"
 #include "console/ConVar.hpp"
+
+void CConVar::SetString(const char *asValue)
+{
+	//mpEventManager
+	//mpConsole->NotifyConVarChanged(this);
+};
+
+void CConVar::SetInt(int anValue)
+{
+	mpWrapped->value = (float)anValue;
+};
+
+void CConVar::SetBool(bool abValue)
+{
+	mpWrapped->value = abValue ? 1.0f : 0.0f;
+};
+
+int CConVar::GetInt() const
+{
+	return 0;
+};
+
+bool CConVar::GetBool() const
+{
+	return false;
+};

@@ -85,7 +85,6 @@ extern char *cmd_args;
 
 extern sizebuf_t cmd_text;
 extern cmd_source_t cmd_source;
-extern qboolean cmd_wait;
 
 extern cmd_function_t *cmd_functions;
 extern cmdalias_t *cmd_alias;

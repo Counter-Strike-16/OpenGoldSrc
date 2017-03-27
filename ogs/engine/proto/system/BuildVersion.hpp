@@ -27,51 +27,14 @@
  */
 
 /// @file
-/// @brief script command processing component
 
 #pragma once
 
-struct IConsole;
+// Altering saves so that the version goes in the Details file 
+// that we read in during the enumeration phase
+//constexpr auto BUILD_NUMBER_SAVE_VERSION_CHANGE = 1400;
 
-void Cbuf_Init();
-void Cbuf_AddText(char *text);
+//constexpr auto BUILD_NUMBER = BUILD_NUMBER_SAVE_VERSION_CHANGE;
+//constexpr auto BUILD_NUMBER_MINOR = 0;
 
-void Cbuf_InsertText(char *text);
-void Cbuf_InsertTextLines(char *text);
-
-void Cbuf_Execute();
-
-// Note: should be singleton
-class CCmdBuffer
-{
-public:
-	CCmdBuffer(IConsole *apConsole) : mpConsole(apConsole){}
-	
-	// Allocates an initial text buffer that will grow as needed
-	void Init();
-
-	// As new commands are generated from the console or keybindings,
-	// the text is added to the end of the command buffer
-	void AddText(char *text);
-
-	// When a command wants to issue other commands immediately, the text is
-	// inserted at the beginning of the buffer, before any remaining unexecuted
-	// commands
-	void InsertText(char *text);
-
-	void InsertTextLines(char *text);
-
-	// Pulls off \n terminated lines of text from the command buffer and sends
-	// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-	// Normally called once per frame, but may be explicitly invoked.
-	// Do not call inside a command function!
-	void Execute();
-	
-	// Leave the execution for next frame
-	void SetWait(bool abWait);
-private:
-	IConsole *mpConsole{nullptr};
-	CSizeBuffer *cmd_text{nullptr};
-	
-	bool cmd_wait{false};
-};
+constexpr auto BUILD_NUMBER = 0012;
