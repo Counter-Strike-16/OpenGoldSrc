@@ -28,22 +28,41 @@
 
 /// @file
 
-#pragma once
+#include "precompiled.hpp"
+#include "filesystem/File.hpp"
+#include "filesystem/FileSystem.hpp"
 
-class CConVarHandler
+CFile::CFile(const char *asName, CFileSystem *apFileSystem) : CFile(apFileSystem)
 {
-public:
-	void Init();
-	void Shutdown();
+	assert(asName);
 	
-	IConVar *FindVar(const char *asName);
-	IConVar *FindVarPrev(const char *asName);
+	//if(!Open(asName))
+		//boom!
 	
-	const char *CompleteVar(const char *asSearch, bool abForward);
+	//assert(mpFile);
+};
+
+bool CFile::Open(const char *asName)
+{
+	Close();
 	
-	bool InsertVar(cvar_t *apVar);
+	mpFile = mpFileSystem->Open(asName);
 	
-	void WriteVars(FileHandle_t ahFile);
-private:
-	cvar_t *cvar_vars;
+	if(!mpFile)
+		return false;
+	
+	return true;
+};
+
+void CFile::Printf(const char *asData, ...)
+{
+	assert(mpFile);
+	
+	mpFileSystem->FPrintf(mpFile, asData);
+};
+
+void CFile::Close()
+{
+	if(mpFile)
+		mpFileSystem->Close(mpFile);
 };

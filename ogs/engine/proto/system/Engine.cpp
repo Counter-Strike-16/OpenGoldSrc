@@ -367,8 +367,6 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	if(!mpHost->Init(&host_parms))
 		return 0;
 
-	CSystem::Printf("Host initialized\n");
-
 	//TraceInit("Sys_InitAuthentication()", "Sys_ShutdownAuthentication()", 0);
 	CSystem::InitAuthentication();
 	
@@ -376,7 +374,7 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	// We should init the game dll and enable the multiplayer mode for the network here
 	if(mbDedicated)
 	{
-		//mpHost->InitializeGameDLL(); // We should immediately init the game dll for dedicated mode
+		mpHost->InitializeGameDLL(); // We should immediately init the game dll for dedicated mode
 									   // (client is initializing it after the first call to new game)
 									   // NOTE: move to host init?
 		//NET_Config(TRUE);
@@ -400,7 +398,7 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	{
 		char MessageText[512];
 		Q_snprintf(MessageText, sizeof(MessageText), "SetLocale('%s') failed. Using '%s'.\n"
-													 "You may have limited glyph support.\n
+													 "You may have limited glyph support.\n"
 													 "Please install '%s' locale.", en_US, cat, en_US);
 		//SDL_ShowSimpleMessageBox(0, "Warning", MessageText, *pmainwindow);
 	};

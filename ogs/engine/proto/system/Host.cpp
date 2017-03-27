@@ -1059,8 +1059,8 @@ void CHost::_Frame(float time)
 
 	//CL_AdjustClock();
 
-	//if(sv_stats.value == 1.0f)
-		//UpdateStats();
+	if(sv_stats.value == 1.0f)
+		UpdateStats();
 /*
 	if(host_killtime.value != 0.0 && host_killtime.value < g_psv.time)
 		Host_Quit_f();
@@ -1252,6 +1252,190 @@ int CHost::GetStartTime()
 	return startTime;
 };
 
+void CHost::InitializeGameDLL()
+{
+	//mpCmdBuffer->Execute();
+	//mpNetwork->Config(g_psvs.maxclients > 1);
+
+	//if(g_psvs.dll_initialized)
+	{
+		//mpConsole->DPrintf("Sys_InitializeGameDLL called twice, skipping second call\n");
+		return;
+	};
+
+	//g_psvs.dll_initialized = TRUE; // it's actually not initialized yet
+	//LoadEntityDLLs(host_parms.basedir);
+	//gEntityInterface.pfnGameInit();
+	//gEntityInterface.pfnPM_Init(&g_svmove);
+	//gEntityInterface.pfnRegisterEncoders();
+
+	//SV_InitEncoders();
+	//SV_GetPlayerHulls();
+	//SV_CheckBlendingInterface();
+	//SV_CheckSaveGameCommentInterface();
+	
+	//mpCmdBuffer->Execute();
+	
+#ifdef REHLDS_FIXES // DONE: Set cstrike flags on server start
+	SetCStrikeFlags();
+#endif
+};
+
+void CHost::UpdateStats()
+{
+	uint32 runticks = 0;
+	uint32 cputicks = 0;
+
+	static float last = 0.0f;
+	static float lastAvg = 0.0f;
+
+	static uint64 lastcputicks = 0;
+	static uint64 lastrunticks = 0;
+
+#ifdef _WIN32
+
+	struct _FILETIME ExitTime;
+	struct _FILETIME UserTime;
+	struct _FILETIME KernelTime;
+	struct _FILETIME CreationTime;
+	struct _FILETIME SystemTimeAsFileTime;
+
+	if(!startTime)
+		startTime = CSystem::GetFloatTime();
+
+	if(last + 1.0f < CSystem::GetFloatTime())
+	{
+		GetProcessTimes(GetCurrentProcess(), &CreationTime, &ExitTime, &KernelTime, &UserTime);
+		GetSystemTimeAsFileTime(&SystemTimeAsFileTime);
+
+		//CRehldsPlatformHolder::get()->GetProcessTimes(GetCurrentProcess(), &CreationTime, &ExitTime, &KernelTime, &UserTime);
+		//CRehldsPlatformHolder::get()->GetSystemTimeAsFileTime(&SystemTimeAsFileTime);
+
+		if(!lastcputicks)
+		{
+			cputicks = CreationTime.dwLowDateTime;
+			runticks = CreationTime.dwHighDateTime;
+
+			lastcputicks = FILETIME_TO_QWORD(CreationTime);
+		}
+		else
+		{
+			cputicks = (uint32)(lastcputicks & 0xFFFFFFFF);
+			runticks = (uint32)(lastcputicks >> 32);
+		};
+
+		cpuPercent = (FILETIME_TO_QWORD(UserTime) + FILETIME_TO_QWORD(KernelTime) -
+		              lastrunticks) / (FILETIME_TO_QWORD(SystemTimeAsFileTime) - (double)FILETIME_TO_PAIR(runticks, cputicks));
+
+		if(lastAvg + 5.0f < CSystem::GetFloatTime())
+		{
+			lastcputicks = FILETIME_TO_QWORD(SystemTimeAsFileTime);
+			lastrunticks = FILETIME_TO_QWORD(UserTime) + FILETIME_TO_QWORD(KernelTime);
+			lastAvg = last;
+		};
+		
+		last = CSystem::GetFloatTime();
+	};
+
+#else // _WIN32
+
+	FILE *pFile;
+	int32 dummy;
+	int32 ctime;
+	int32 stime;
+	int32 start_time;
+	char statFile[4096];
+	struct sysinfo infos;
+
+	if(!startTime)
+		startTime = CSystem::GetFloatTime();
+
+	if(CSystem::GetFloatTime() > last + 1.0f)
+	{
+		time(NULL);
+		pid_t pid = getpid();
+		Q_snprintf(statFile, sizeof(statFile), "/proc/%i/stat", pid);
+		
+		pFile = fopen(statFile, "rt");
+		
+		if(!pFile)
+		{
+			last = CSystem::GetFloatTime();
+			return;
+		};
+		
+		sysinfo(&infos);
+		fscanf(pFile, "%d %s %c %d %d %d %d %d %lu %lu \t\t\t%lu %lu %lu %ld %ld "
+		              "%ld %ld %ld %ld %lu \t\t\t%lu %ld %lu %lu %lu %lu %lu %lu "
+		              "%lu %lu \t\t\t%lu %lu %lu %lu %lu %lu",
+		       &dummy,
+		       statFile,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &ctime,
+		       &stime,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &start_time,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy,
+		       &dummy);
+		fclose(pFile);
+
+		runticks = 100 * infos.uptime - start_time;
+		cputicks = ctime + stime;
+
+		if(!lastcputicks)
+			lastcputicks = cputicks;
+
+		if(lastrunticks)
+			cpuPercent = (double)(cputicks - lastcputicks) / (double)(runticks - lastrunticks);
+		else
+			lastrunticks = runticks;
+
+		if(lastAvg + 5.0f < CSystem::GetFloatTime())
+		{
+			lastcputicks = cputicks;
+			lastrunticks = runticks;
+			
+			lastAvg = CSystem::GetFloatTime();
+		};
+		
+		if(cpuPercent > 0.999f)
+			cpuPercent = 0.999f;
+		else if(cpuPercent < 0.0f)
+			cpuPercent = 0.0f;
+		
+		last = CSystem::GetFloatTime();
+	};
+
+#endif // _WIN32
+};
+
 void CHost::ClearIOStates()
 {
 #ifndef SWDS
@@ -1270,7 +1454,6 @@ Host_InitCommands
 */
 void CHost::InitCommands()
 {
-/*
 #ifdef HOOK_ENGINE
 	Cmd_AddCommand("shutdownserver", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_KillServer_f", (void *)Host_KillServer_f));
 	Cmd_AddCommand("soundfade", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Soundfade_f", (void *)Host_Soundfade_f));
@@ -1321,6 +1504,7 @@ void CHost::InitCommands()
 	//Cmd_AddCommand("_careeraudio", CareerAudio_Command_f);
 #endif // SWDS
 
+/*
 	Cmd_AddCommand("shutdownserver", Host_KillServer_f);
 	Cmd_AddCommand("soundfade", Host_Soundfade_f);
 	Cmd_AddCommand("status", Host_Status_f);
@@ -1338,7 +1522,7 @@ void CHost::InitCommands()
 #endif // SWDS
 
 	Cmd_AddCommand("exit", Host_Quit_f);
-	Cmd_AddCommand("map", Host_Map_f);
+	Cmd_AddCommand("map", Host_Map_f); ([this](){Map_f();})
 	Cmd_AddCommand("career", Host_Career_f);
 	Cmd_AddCommand("maps", Host_Maps_f);
 	Cmd_AddCommand("restart", Host_Restart_f);

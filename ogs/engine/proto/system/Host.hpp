@@ -102,7 +102,114 @@ public:
 	bool IsInitialized() const {return host_initialized;}
 	
 	int GetStartTime();
+	
+	void InitializeGameDLL();
+	
+	void UpdateStats();
+	
+	//
+	
+	void GetStatsString(char *buf, int bufSize);
+	
+	void Status_Printf(qboolean conprint, qboolean log, char *fmt, ...);
+	void Map(qboolean bIsDemo, char *mapstring, char *mapName, qboolean loadGame);
+	
+	// save handler
+	
+	const char *FindRecentSave(char *pNameBuf);
+	char *SaveGameDirectory();
+	void SavegameComment(char *pszBuffer, int iSizeBuffer);
+	void SaveAgeList(const char *pName, int count);
+	int ValidSave();
+	
+	SAVERESTOREDATA *SaveInit(int size);
+	void SaveExit(SAVERESTOREDATA *save);
+	
+	qboolean SaveGameSlot(const char *pSaveName, const char *pSaveComment);
+	qboolean SaveGame(const char *pszSlot, const char *pszComment);
+	
+	int SaveReadHeader(FileHandle_t pFile, GAME_HEADER *pHeader, int readGlobalState);
+	void SaveReadComment(FileHandle_t f, char *name);
+	
+	int LoadGame(const char *pName);
+	int Host_Load(const char *pName);
+	SAVERESTOREDATA *SaveGamestate();
+	void EntityInit(edict_t *pEdict, int className);
+	SAVERESTOREDATA *LoadSaveData(const char *level);
+	void ParseSaveTables(SAVERESTOREDATA *pSaveData, SAVE_HEADER *pHeader, int updateGlobals);
+	void EntityPatchWrite(SAVERESTOREDATA *pSaveData, const char *level);
+	void EntityPatchRead(SAVERESTOREDATA *pSaveData, const char *level);
+	int LoadGamestate(char *level, int createPlayers);
+	int EntryInTable(SAVERESTOREDATA *pSaveData, const char *pMapName, int index);
+	void LandmarkOrigin(SAVERESTOREDATA *pSaveData, vec_t *output, const char *pLandmarkName);
+	int EntityInSolid(edict_t *pent);
+	int CreateEntityList(SAVERESTOREDATA *pSaveData, int levelMask);
+	void LoadAdjacentEntities(const char *pOldLevel, const char *pLandmarkName);
+	int FileSize(FileHandle_t pFile);
+	void FileCopy(FileHandle_t pOutput, FileHandle_t pInput, int fileSize);
+	void DirectoryCopy(const char *pPath, FileHandle_t pFile);
+	void DirectoryExtract(FileHandle_t pFile, int fileCount);
+	int DirectoryCount(const char *pPath);
+	void Host_ClearSaveDirectory();
+	void Host_ClearGameState();
+	void Host_Say(qboolean teamonly);
+	NOXREF void Host_EndSection(const char *pszSection);
+	
+	void Host_NextDemo();
 private:
+	// Console commands
+/*	
+	void Host_Motd_f();
+	void Host_Motd_Write_f();
+
+	void Host_Stats_f();
+	void Host_Quit_f();
+	void Host_Quit_Restart_f();
+
+	void Host_Status_f();
+	void Host_Status_Formatted_f();
+	void Host_Ping_f();
+
+	void Host_Map_f();
+	void Host_Career_f();
+	void Host_Maps_f();
+	void Host_Changelevel_f();
+
+	void Host_Restart_f();
+	void Host_Reload_f();
+	void Host_Reconnect_f();
+
+	void Host_Savegame_f();
+	void Host_AutoSave_f();
+
+	void Host_Loadgame_f();
+
+	void Host_Changelevel2_f();
+	void Host_Version_f();
+	void Host_FullInfo_f();
+	NOXREF void Host_KillVoice_f();
+	void Host_SetInfo_f();
+	void Host_Say_f();
+	void Host_Say_Team_f();
+	void Host_Tell_f();
+	void Host_Kill_f();
+	void Host_TogglePause_f();
+	void Host_Pause_f();
+	void Host_Unpause_f();
+	void Host_Interp_f();
+
+	void Host_Startdemos_f();
+	void Host_Demos_f();
+	void Host_Stopdemo_f();
+	void Host_Soundfade_f();
+	void Host_KillServer_f();
+	void Host_VoiceRecordStart_f();
+	void Host_VoiceRecordStop_f();
+	void Host_Crash_f();
+*/
+	
+	//
+	
 	void ClearIOStates();
 	
 	void InitCommands();

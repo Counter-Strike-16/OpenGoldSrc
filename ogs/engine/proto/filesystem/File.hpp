@@ -30,20 +30,23 @@
 
 #pragma once
 
-class CConVarHandler
+#include "public/FileSystem.h"
+
+class CFileSystem;
+
+class CFile
 {
 public:
-	void Init();
-	void Shutdown();
+	CFile(CFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
+	CFile(const char *asName, CFileSystem *apFileSystem);
 	
-	IConVar *FindVar(const char *asName);
-	IConVar *FindVarPrev(const char *asName);
+	bool Open(const char *asName);
 	
-	const char *CompleteVar(const char *asSearch, bool abForward);
-	
-	bool InsertVar(cvar_t *apVar);
-	
-	void WriteVars(FileHandle_t ahFile);
+	void Printf(const char *asData, ...);
 private:
-	cvar_t *cvar_vars;
+	void Close();
+	
+	CFileSystem *mpFileSystem{nullptr};
+	
+	FileHandle_t *mpFileHandle{nullptr};
 };

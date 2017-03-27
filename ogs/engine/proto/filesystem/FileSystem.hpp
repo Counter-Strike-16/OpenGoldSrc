@@ -28,6 +28,10 @@
 
 /// @file
 
+// this was originally the C wrapper for the filesystem interface
+// that's still present in original GoldSrc sources
+// but it was removed from here
+
 #pragma once
 
 #include "common/maintypes.h"

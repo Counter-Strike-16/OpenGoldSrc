@@ -47,29 +47,14 @@
 	All cvar names are case insensitive! Values not
 */
 
-cvar_t *cvar_vars;
 char cvar_null_string[] = "";
 
-/*
-============
-Cvar_Init
-
-Reads in all archived cvars
-============
-*/
 void Cvar_Init()
 {
-#ifndef SWDS
-// TODO: add client code, possibly none
-#endif
-
-	Cvar_CmdInit();
 };
 
 void Cvar_Shutdown()
 {
-	// TODO: Check memory releasing
-	cvar_vars = NULL;
 };
 
 /*
@@ -371,50 +356,7 @@ void Cvar_SetValue(const char *var_name, float value)
 
 void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 {
-	char *oldstr;
-	cvar_t *v, *c;
-	cvar_t dummyvar;
-
-	if(Cvar_FindVar(variable->name))
-	{
-		Con_Printf("Can't register variable \"%s\", already defined\n",
-		           variable->name);
-		return;
-	};
-
-	if(Cmd_Exists(variable->name))
-	{
-		Con_Printf("%s: \"%s\" is a command\n", __FUNCTION__, variable->name);
-		return;
-	};
-
-	oldstr = variable->string;
-
-	// Alloc string, so it will not dissapear on side modules unloading and to
-	// maintain the same name during run
-	variable->string = (char *)Z_Malloc(Q_strlen(variable->string) + 1);
-	Q_strcpy(variable->string, oldstr);
-	variable->value = (float)Q_atof(oldstr);
-
-	dummyvar.name = " ";
-	dummyvar.next = cvar_vars;
-
-	v = cvar_vars;
-	c = &dummyvar;
-
-	// Insert with alphabetic order
-	while(v)
-	{
-		if(Q_stricmp(v->name, variable->name) > 0)
-			break;
-
-		c = v;
-		v = v->next;
-	};
-
-	c->next = variable;
-	variable->next = v;
-	cvar_vars = dummyvar.next;
+	gpConVarHandler->RegisterVariable(variable);
 };
 
 NOXREF void Cvar_RemoveHudCvars()
@@ -514,23 +456,8 @@ qboolean Cvar_Command()
 	return FALSE;
 };
 
-/*
-============
-Cvar_WriteVariables
-
-Appends lines containing "set variable value" for all variables
-with the archive flag set to true.
-============
-*/
 NOXREF void Cvar_WriteVariables(FileHandle_t f)
 {
-	NOXREFCHECK;
-	
-	for(cvar_t *var = cvar_vars; var; var = var->next)
-	{
-		if(var->flags & FCVAR_ARCHIVE)
-			FS_FPrintf(f, "%s \"%s\"\n", var->name, var->string);
-	};
 };
 
 void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f)
@@ -691,18 +618,6 @@ void Cmd_CvarList_f()
 
 NOXREF int Cvar_CountServerVariables()
 {
-	NOXREFCHECK;
-	
-	cvar_t *var = nullptr;
-	int i = 0;
-	
-	for(i, var = cvar_vars; var; var = var->next)
-	{
-		if(var->flags & FCVAR_SERVER)
-			++i;
-	};
-	
-	return i;
 };
 
 void Cvar_UnlinkExternals()
