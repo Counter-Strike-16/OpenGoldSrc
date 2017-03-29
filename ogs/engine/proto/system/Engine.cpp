@@ -62,6 +62,7 @@ void ForceReloadProfile()
 	// Key_SetBinding(126, "toggleconsole");
 	// Key_SetBinding(96, "toggleconsole");
 	// Key_SetBinding(27, "cancelselect");
+	
 	// SDL_GL_SetSwapInterval((gl_vsync.value <= 0.0) - 1);
 	
 	//if(cls.state != ca_dedicated)

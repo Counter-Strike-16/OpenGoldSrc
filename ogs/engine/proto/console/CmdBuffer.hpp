@@ -41,7 +41,6 @@ void Cbuf_InsertTextLines(char *text);
 
 void Cbuf_Execute();
 
-// Note: should be singleton
 class CCmdBuffer
 {
 public:

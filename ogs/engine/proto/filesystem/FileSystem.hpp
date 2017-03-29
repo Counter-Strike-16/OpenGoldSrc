@@ -60,12 +60,10 @@
 // clang-format on
 
 extern CUtlVector<char *> g_fallbackLocalizationFiles;
-extern char s_pBaseDir[512];
 extern bool bLowViolenceBuild;
 
 extern IFileSystem *gpFileSystem;
 
-const char *GetBaseDirectory();
 NOXREF void *GetFileSystemFactory();
 
 bool BEnabledHDAddon();
@@ -86,6 +84,8 @@ class CFileSystem
 public:
 	int Init(char *basedir, void *voidfilesystemFactory);
 	void Shutdown();
+	
+	const char *GetBaseDirectory();
 	
 	int SetGameDirectory(const char *pDefaultDir, const char *pGameDir);
 	int AddFallbackGameDir(const char *pGameDir);
@@ -167,6 +167,8 @@ private:
 	void UnloadDLL();
 	
 	void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_);
+	
+	char msBaseDir[512];
 	
 	CSysModule *mpFileSystemModule{nullptr};
 	CreateInterfaceFn g_FileSystemFactory{nullptr};

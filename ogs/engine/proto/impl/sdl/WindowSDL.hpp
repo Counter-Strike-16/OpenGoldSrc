@@ -31,7 +31,29 @@
 
 #pragma once
 
+#include "video/IWindow.hpp"
+#include "SDL2/SDL_video.h"
+
 class CWindowSDL : public IWindow
 {
 public:
+	CWindowSDL();
+	CWindowSDL(const char *asTitle, int anPosX, int anPoY, int anWidth, int anHeight, uint32 anFlags);
+	~CWindowSDL(){Close();}
+	
+	bool Open();
+	//void Close(); // private?
+	
+	void SetPos(uint anX, uint anY);
+	const vec2_t &GetPos() const;
+	
+	void SetSize(uint anWidth, uint anHeight);
+	const vec2_t &GetSize() const;
+	
+	void SetTitle(const char *asTitle);
+	const char *GetTitle() const;
+	
+	bool CloseRequested() const;
+private:
+	SDL_Window *mpSDLWindow{nullptr};
 };

@@ -42,13 +42,7 @@
 #include "steam/isteamapps.h"
 
 CUtlVector<char *> g_fallbackLocalizationFiles;
-char s_pBaseDir[512];
 bool bLowViolenceBuild;
-
-const char *GetBaseDirectory()
-{
-	return s_pBaseDir;
-};
 
 NOXREF void *GetFileSystemFactory()
 {
@@ -60,13 +54,13 @@ NOXREF void *GetFileSystemFactory()
 int CFileSystem::Init(char *basedir, void *voidfilesystemFactory)
 {
 #ifdef REHLDS_CHECKS
-	Q_strncpy(s_pBaseDir, basedir, ARRAYSIZE(s_pBaseDir));
-	s_pBaseDir[ARRAYSIZE(s_pBaseDir) - 1] = 0;
+	Q_strncpy(msBaseDir, basedir, ARRAYSIZE(msBaseDir));
+	msBaseDir[ARRAYSIZE(msBaseDir) - 1] = 0;
 #else
-	Q_strcpy(s_pBaseDir, basedir);
+	Q_strcpy(msBaseDir, basedir);
 #endif
 
-	//host_parms.basedir = s_pBaseDir;
+	//host_parms.basedir = msBaseDir;
 
 	if(LoadDLL((CreateInterfaceFn)voidfilesystemFactory))
 		return 1; //COM_SetupDirectories() != 0;
@@ -110,6 +104,11 @@ void CFileSystem::UnloadDLL()
 		g_FileSystemFactory = NULL;
 		mpFileSystem = NULL;
 	};
+};
+
+const char *CFileSystem::GetBaseDirectory()
+{
+	return msBaseDir;
 };
 
 int CFileSystem::SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
@@ -704,7 +703,7 @@ void CFileSystem::CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguag
 			{
 				Close(hFile);
 				return;
-			}
+			};
 
 			end = Q_strchr(start + 1, '"');
 
