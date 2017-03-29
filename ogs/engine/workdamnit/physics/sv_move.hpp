@@ -31,9 +31,7 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "maintypes.h"
-
-#define DI_NODIR -1
+#include "common/maintypes.h"
 
 #ifdef HOOK_ENGINE
 
@@ -41,6 +39,8 @@
 #define c_no (*pc_no)
 
 #endif // HOOK_ENGINE
+
+constexpr auto DI_NODIR = -1;
 
 typedef struct edict_s edict_t;
 

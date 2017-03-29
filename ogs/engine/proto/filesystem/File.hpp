@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief generic file handle wrapper (RAII styled)
 
 #pragma once
 
@@ -39,14 +40,30 @@ class CFile
 public:
 	CFile(CFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
 	CFile(const char *asName, CFileSystem *apFileSystem);
+	~CFile(){Close();}
 	
-	bool Open(const char *asName);
+	bool Open(const char *asName, const char *asOptions);
 	
-	void Printf(const char *asData, ...);
+	void Printf(const char *asData, ...); // return int?
+	
+	void Seek(int anPos, FileSystemSeek_t seekType);
+	uint Tell() const;
+	
+	void Flush();
+	
+	int IsOk() const;
+	int IsEOF() const;
+
+	int Read(void *apOutput, int anSize, int anCount); // const?
+	int Write(const void *apInput, int anSize, int anCount); // const?
+	
+	char *ReadLine(char *asOutput, int anMaxChars); // const?
+	
+	uint GetSize() const;
 private:
-	void Close();
+	void Close(); // make public?
 	
 	CFileSystem *mpFileSystem{nullptr};
 	
-	FileHandle_t *mpFileHandle{nullptr};
+	FileHandle_t mpFileHandle{nullptr};
 };

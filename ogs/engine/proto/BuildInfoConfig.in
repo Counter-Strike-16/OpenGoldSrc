@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief build info config file
 
 #pragma once
 
@@ -37,4 +38,26 @@
 //constexpr auto BUILD_NUMBER = BUILD_NUMBER_SAVE_VERSION_CHANGE;
 //constexpr auto BUILD_NUMBER_MINOR = 0;
 
-constexpr auto BUILD_NUMBER = 0012;
+// Target build num
+// Current engine build num (latest successful) is equals to (BUILD_NUMBER - 1)
+constexpr auto BUILD_NUMBER = 0013;
+
+constexpr auto DEV_STAGE = "Pre-Alpha";
+
+constexpr auto VERSION_MAJOR = 0;
+constexpr auto VERSION_MINOR = 1;
+constexpr auto VERSION_REV = 1;
+
+#ifdef _DEBUG
+	constexpr auto BUILD_TYPE = "Debug";
+#else
+	constexpr auto BUILD_TYPE = "Release";
+#endif
+
+#ifdef _X64
+	constexpr auto PLATFORM_BIT = "x64";
+#elif _X86
+	constexpr auto PLATFORM_BIT = "x86";
+#else
+	#error "?"
+#endif

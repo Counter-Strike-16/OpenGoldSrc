@@ -27,28 +27,11 @@
  */
 
 /// @file
-/// @brief console command args
+/// @brief SDL2 impl of window
 
 #pragma once
 
-#include "console/IConCmdArgs.hpp"
-
-class CConCmdArgs : public IConCmdArgs
+class CWindowSDL : public IWindow
 {
 public:
-	CConCmdArgs(int anArgCount, const char **asArgValues);
-	CConCmdArgs(const char *asArgString);
-	
-	int GetCount() const;
-	
-	const char *GetArgVal(int anArg) const;
-	
-	int HasArg(const char *asArg) const;
-	
-	const char *ToString() const;
-private:
-	//std::map<int, string>?
-	
-	int mnArgCount;
-	char **msArgValues;
 };

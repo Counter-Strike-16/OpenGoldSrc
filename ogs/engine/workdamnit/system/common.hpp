@@ -108,7 +108,6 @@ extern qboolean s_com_token_unget;
 
 extern char com_clientfallback[MAX_PATH];
 extern char com_gamedir[MAX_PATH]; // MAX_OSPATH
-extern char com_cmdline[COM_MAX_CMD_LINE];
 
 typedef struct cache_user_s cache_user_t;
 
@@ -262,8 +261,6 @@ NOXREF int memsearch(unsigned char *start, int count, int search);
 
 NOXREF void COM_WriteFile(char *filename, void *data, int len);
 NOXREF void COM_CopyFile(char *netpath, char *cachepath);
-
-void COM_FixSlashes(char *pname);
 
 void COM_CreatePath(const char *path);
 

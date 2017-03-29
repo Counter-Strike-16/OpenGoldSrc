@@ -1058,68 +1058,6 @@ int SV_ValidateClientCommand(char *pszCommand)
 	return 0;
 }
 
-float SV_CalcClientTime(client_t *cl)
-{
-	float minping;
-	float maxping;
-	int backtrack;
-
-	float ping = 0.0;
-	int count = 0;
-	backtrack = (int)sv_unlagsamples.value;
-
-	if(backtrack < 1)
-		backtrack = 1;
-
-	if(backtrack >= (SV_UPDATE_BACKUP <= 16 ? SV_UPDATE_BACKUP : 16))
-		backtrack = (SV_UPDATE_BACKUP <= 16 ? SV_UPDATE_BACKUP : 16);
-
-	if(backtrack <= 0)
-		return 0.0f;
-
-	for(int i = 0; i < backtrack; i++)
-	{
-		client_frame_t *frame =
-		&cl->frames[SV_UPDATE_MASK & (cl->netchan.incoming_acknowledged - i)];
-		if(frame->ping_time <= 0.0f)
-			continue;
-
-		++count;
-		ping += frame->ping_time;
-	}
-
-	if(!count)
-		return 0.0f;
-
-	minping = 9999.0;
-	maxping = -9999.0;
-	ping /= count;
-
-	for(int i = 0; i < (SV_UPDATE_BACKUP <= 4 ? SV_UPDATE_BACKUP : 4); i++)
-	{
-		client_frame_t *frame =
-		&cl->frames[SV_UPDATE_MASK & (cl->netchan.incoming_acknowledged - i)];
-		if(frame->ping_time <= 0.0f)
-			continue;
-
-		if(frame->ping_time < minping)
-			minping = frame->ping_time;
-
-		if(frame->ping_time > maxping)
-			maxping = frame->ping_time;
-	}
-
-	if(maxping < minping || fabs(maxping - minping) <= 0.2)
-		return ping;
-
-	return 0.0f;
-}
-
-void SV_ComputeLatency(client_t *cl)
-{
-	cl->latency = SV_CalcClientTime(cl);
-}
-
 int SV_UnlagCheckTeleport(vec_t *v1, vec_t *v2)
 {
 	for(int i = 0; i < 3; i++)
@@ -1214,6 +1152,8 @@ void SV_SetupMove(client_t *_host_client)
 		return;
 
 	nofind = 0;
+	
+	// Memento
 	for(int i = 0; i < g_psvs.maxclients; i++)
 	{
 		cl = &g_psvs.clients[i];

@@ -28,8 +28,6 @@
 
 /// @file
 
-// WHY THIS LOOKS SO CRAPPY?
-
 #include "precompiled.hpp"
 #include "system/Engine.hpp"
 #include "system/Host.hpp"
@@ -37,7 +35,6 @@
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
 #include "system/client.hpp"
-#include "common/dll_state.h"
 
 /*
 * Globals initialization

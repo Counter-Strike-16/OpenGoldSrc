@@ -74,6 +74,7 @@
 #include "common/triangleapi.h"
 #include "common/weaponinfo.h"
 #include "common/pmtrace.h"
+#include "common/dll_state.h"
 
 #include "public/keydefs.h"
 

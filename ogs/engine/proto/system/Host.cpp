@@ -34,7 +34,7 @@
 #include "system/common.hpp"
 #include "system/System.hpp"
 #include "system/systemtypes.hpp"
-#include "console/Console.hpp"
+//#include "console/Console.hpp"
 
 /*
 * Globals initialization
@@ -103,15 +103,15 @@ int CHost::Init(quakeparms_t *parms)
 	Voice_RegisterCvars();
 	Cvar_RegisterVariable(&console);
 
-	if(COM_CheckParm("-console") || COM_CheckParm("-toconsole") || COM_CheckParm("-dev"))
+	if(mpCmdLine->CheckArg("-console") || mpCmdLine->CheckArg("-toconsole") || mpCmdLine->CheckArg("-dev"))
 		Cvar_DirectSet(&console, "1.0");
 */
 
-	mpConsole = std::make_unique<CConsole>();
+	//mpConsole = std::make_unique<CConsole>();
 
 	InitLocal();
 
-	//if(COM_CheckParm("-dev"))
+	//if(mpCmdLine->CheckArg("-dev"))
 		//Cvar_SetValue("developer", 1.0);
 
 	// Engine string pooling
@@ -358,7 +358,6 @@ void CHost::EndGame(const char *message, ...)
 {
 	NOXREFCHECK;
 	
-	int oldn;
 	va_list argptr;
 	char string[1024];
 
@@ -369,7 +368,7 @@ void CHost::EndGame(const char *message, ...)
 	/*
 	mpConsole->DPrintf("%s: %s\n", __FUNCTION__, string);
 
-	oldn = cls.demonum;
+	int oldn = cls.demonum;
 
 	if(g_psv.active)
 		ShutdownServer(false);
@@ -415,7 +414,7 @@ void NORETURN CHost::Error(const char *error, ...)
 	//if(g_psv.active && developer.value != 0.0f)
 		//CL_WriteMessageHistory(0, 0);
 
-	mpConsole->Printf("%s: %s\n", __FUNCTION__, string);
+	//mpConsole->Printf("%s: %s\n", __FUNCTION__, string);
 	
 	//if(g_psv.active)
 		//ShutdownServer(false);
@@ -453,7 +452,7 @@ void CHost::WriteConfig()
 	
 	if(Key_CountBindings() <= 1)
 	{
-		mpConsole->Printf("skipping config.cfg output, no keys bound\n");
+		//mpConsole->Printf("skipping config.cfg output, no keys bound\n");
 		return;
 	};
 
@@ -509,12 +508,6 @@ void CHost::WriteConfig()
 
 void CHost::WriteCustomConfig()
 {
-#ifndef SWDS
-	FILE *f;
-	kbutton_t *ml;
-	kbutton_t *jl;
-#endif
-	
 	char configname[261];
 	//Q_snprintf(configname, 257, "%s", Cmd_Args());
 
@@ -524,44 +517,46 @@ void CHost::WriteCustomConfig()
 	   !Q_stricmp(configname, "server") ||
 	   !Q_stricmp(configname, "userconfig"))
 	{
-		mpConsole->Printf("skipping writecfg output, invalid filename given\n");
+		//mpConsole->Printf("skipping writecfg output, invalid filename given\n");
 	}
 #ifndef SWDS
 	else
 	{
-		if(host_initialized && cls.state != ca_dedicated)
+		//if(host_initialized && cls.state != ca_dedicated)
 		{
-			if(Key_CountBindings() < 2)
-				mpConsole->Printf("skipping config.cfg output, no keys bound\n");
-			else
+			//if(Key_CountBindings() < 2)
+				//mpConsole->Printf("skipping config.cfg output, no keys bound\n");
+			//else
 			{
 				Q_strcat(configname, ".cfg");
-				f = FS_OpenPathID(configname, "w", "GAMECONFIG");
+				
+				CFile *f = FS_OpenPathID(configname, "w", "GAMECONFIG");
+				
 				if(!f)
 				{
-					mpConsole->Printf("Couldn't write %s.\n", configname);
+					//mpConsole->Printf("Couldn't write %s.\n", configname);
 					return;
-				}
+				};
 
-				FS_FPrintf(f, "unbindall\n");
+				f->Printf("unbindall\n");
 				Key_WriteBindings(f);
 				Cvar_WriteVariables(f);
 				Info_WriteVars(f);
 
-				ml = ClientDLL_FindKey("in_mlook");
-				jl = ClientDLL_FindKey("in_jlook");
+				kbutton_t *ml = ClientDLL_FindKey("in_mlook");
+				kbutton_t *jl = ClientDLL_FindKey("in_jlook");
 
 				if(ml && ml->state & 1)
-					FS_FPrintf(f, "+mlook\n");
+					f->Printf("+mlook\n");
 
 				if(jl && jl->state & 1)
-					FS_FPrintf(f, "+jlook\n");
+					f->Printf("+jlook\n");
 
-				FS_Close(f);
-				mpConsole->Printf("%s successfully created!\n", configname);
-			}
-		}
-	}
+				//f->Close(); // hm...
+				//mpConsole->Printf("%s successfully created!\n", configname);
+			};
+		};
+	};
 #endif // SWDS
 };
 
@@ -733,7 +728,7 @@ bool CHost::FilterTime(float time)
 	if(gbIsDedicatedServer)
 	{
 		//if(command_line_ticrate == -1)
-			//command_line_ticrate = COM_CheckParm("-sys_ticrate");
+			//command_line_ticrate = mpCmdLine->CheckArg("-sys_ticrate");
 
 		//if(command_line_ticrate > 0)
 			//fps = Q_atof(com_argv[command_line_ticrate + 1]);
@@ -859,11 +854,13 @@ void CHost::PrintSpeeds(double *time) // Or CalcSpeeds
 #endif // REHLDS_FIXES
 		{
 			int ent_count = 0;
+			
 			for(int i = 0; i < g_psv.num_edicts; i++)
 			{
 				if(!g_psv.edicts[i].free)
 					++ent_count;
-			}
+			};
+			
 			mpConsole->Printf("%3i fps -- host(%3.0f) sv(%3.0f) cl(%3.0f) gfx(%3.0f) "
 			           "snd(%3.0f) ents(%d)\n",
 			           (int)fps,
@@ -1100,7 +1097,7 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 
 	// 100 frames interval
 	if(nFrame % 100 == 0)
-		CSystem::Printf("Crappy host frame #%d (FrameTime: %.2f, %d)\n", nFrame, time, iState);
+		CSystem::Printf("Crappy host frame #%d (FrameTime: %2f, %d)\n", nFrame, time, iState);
 	
 	_Frame(time);
 	
@@ -1131,14 +1128,15 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 
 			timecount = 0;
 			timetotal = 0.0f;
-			
+		
+			//mpServer->GetActiveClients(); or GetClients(bool active = true)
 			//for(int i = 0; i < g_psvs.maxclients; i++)
 			{
 				//if(g_psvs.clients[i].active)
 					//++c;
 			};
 
-			mpConsole->Printf("host_profile: %2i clients %2i msec\n", c, m);
+			//mpConsole->Printf("host_profile: %2i clients %2i msec\n", c, m);
 		};
 	};
 
@@ -1206,7 +1204,8 @@ void CHost::PrintVersion()
 				{
 					Q_strncpy(gpszVersionString, &com_token[Q_strlen("PatchVersion=")], sizeof(gpszVersionString));
 					gpszVersionString[sizeof(gpszVersionString) - 1] = 0;
-					if(COM_CheckParm("-steam"))
+					
+					if(mpCmdLine->CheckArg("-steam"))
 					{
 						char szSteamVersionId[32];
 						FS_GetInterfaceVersion(szSteamVersionId,
@@ -1293,7 +1292,7 @@ void CHost::UpdateStats()
 	static uint64 lastrunticks = 0;
 
 #ifdef _WIN32
-
+/*
 	struct _FILETIME ExitTime;
 	struct _FILETIME UserTime;
 	struct _FILETIME KernelTime;
@@ -1336,7 +1335,7 @@ void CHost::UpdateStats()
 		
 		last = CSystem::GetFloatTime();
 	};
-
+*/
 #else // _WIN32
 
 	FILE *pFile;
@@ -1439,11 +1438,11 @@ void CHost::UpdateStats()
 void CHost::ClearIOStates()
 {
 #ifndef SWDS
-	for(int i = 0; i < 256; ++i)
-		Key_Event(i, false);
+	//for(int i = 0; i < 256; ++i)
+		//Key_Event(i, false);
 	
-	Key_ClearStates();
-	ClientDLL_ClearStates();
+	//Key_ClearStates();
+	//ClientDLL_ClearStates();
 #endif // SWDS
 };
 
@@ -1579,10 +1578,10 @@ void CHost::InitCommands()
 	
 	//Cmd_AddCommand("setmaster", Master_SetMaster_f);
 	Cmd_AddCommand("heartbeat", Master_Heartbeat_f);
+*/
 #endif // HOOK_ENGINE
 
-	Cvar_RegisterVariable(&gHostMap);
-	Cvar_RegisterVariable(&voice_recordtofile);
-	Cvar_RegisterVariable(&voice_inputfromfile);
-*/
+	//Cvar_RegisterVariable(&gHostMap);
+	//Cvar_RegisterVariable(&voice_recordtofile);
+	//Cvar_RegisterVariable(&voice_inputfromfile);
 };

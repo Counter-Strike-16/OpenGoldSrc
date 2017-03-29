@@ -109,6 +109,7 @@ public:
 	
 	//
 	
+/*
 	void GetStatsString(char *buf, int bufSize);
 	
 	void Status_Printf(qboolean conprint, qboolean log, char *fmt, ...);
@@ -156,6 +157,7 @@ public:
 	NOXREF void Host_EndSection(const char *pszSection);
 	
 	void Host_NextDemo();
+*/
 private:
 	// Console commands
 /*	
@@ -214,7 +216,7 @@ private:
 	
 	void InitCommands();
 	
-	std::unique_ptr<IConsole> mpConsole;
+	//std::unique_ptr<IConsole> mpConsole;
 	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
 	
 	//std::unique_ptr<CNetwork> mpNetwork;

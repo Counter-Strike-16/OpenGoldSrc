@@ -174,14 +174,33 @@ void CSystem::Shutdown()
 };
 
 #ifndef SWDS
+
+/*
+================
+Sys_InitFloatTime
+================
+*/
 void CSystem::InitFloatTime()
 {
-	// TODO
+	// Win-only?
+#ifdef _WIN32
+	
+	GetFloatTime();
+
+	int j = COM_CheckParm("-starttime");
+
+	if(j)
+		curtime = (double)(Q_atof(com_argv[j + 1]));
+	else
+		curtime = 0.0f;
+
+	lastcurtime = curtime;
+#endif
 };
 
 void CSystem::ShutdownFloatTime()
 {
-	// TODO
+	// Nothing?
 };
 #endif // SWDS
 
@@ -227,6 +246,7 @@ void CSystem::InitArgv(char *lpCmdLine)
 			c = *lpCmdLine;
 		};
 #else  // REHLDS_FIXES
+		
 		// Skip whitespace and UTF8
 		while(c && (c <= ' ' || c > '~'))
 		{

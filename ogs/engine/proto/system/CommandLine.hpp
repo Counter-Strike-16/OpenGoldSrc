@@ -27,28 +27,24 @@
  */
 
 /// @file
-/// @brief console command args
+/// @brief command line args
+
+// NOTE: merge with CComCmdArgs?
 
 #pragma once
 
-#include "console/IConCmdArgs.hpp"
-
-class CConCmdArgs : public IConCmdArgs
+class CCmdLine
 {
 public:
-	CConCmdArgs(int anArgCount, const char **asArgValues);
-	CConCmdArgs(const char *asArgString);
+	CCmdLine();
 	
-	int GetCount() const;
+	void Init(int argc, char **argv);
 	
-	const char *GetArgVal(int anArg) const;
-	
-	int HasArg(const char *asArg) const;
-	
-	const char *ToString() const;
+	int HasArg(const char *asArg);
 private:
-	//std::map<int, string>?
+	int com_argc{0};
 	
-	int mnArgCount;
-	char **msArgValues;
+	char **com_argv{nullptr};
+	
+	char com_cmdline[COM_MAX_CMD_LINE];
 };

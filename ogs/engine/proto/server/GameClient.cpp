@@ -398,6 +398,67 @@ bool CGameClient::ShouldUpdatePing()
 	return mpClientData->lastcmd.buttons & IN_SCORE;
 };
 
+float CGameClient::CalcClientTime()
+{
+	float ping = 0.0f;
+	int count = 0;
+	
+	int backtrack = (int)sv_unlagsamples.value;
+
+	if(backtrack < 1)
+		backtrack = 1;
+
+	if(backtrack >= (SV_UPDATE_BACKUP <= 16 ? SV_UPDATE_BACKUP : 16))
+		backtrack = (SV_UPDATE_BACKUP <= 16 ? SV_UPDATE_BACKUP : 16);
+
+	if(backtrack <= 0)
+		return 0.0f;
+
+	for(int i = 0; i < backtrack; i++)
+	{
+		client_frame_t *frame = &mpClientData->frames[SV_UPDATE_MASK & (mpClientData->netchan.incoming_acknowledged - i)];
+		
+		if(frame->ping_time <= 0.0f)
+			continue;
+
+		++count;
+		ping += frame->ping_time;
+	};
+
+	if(!count)
+		return 0.0f;
+	
+	// Aren't these two supposed to be reversed?
+	float minping = 9999.0f;
+	float maxping = -9999.0f;
+	
+	ping /= count;
+
+	for(int i = 0; i < (SV_UPDATE_BACKUP <= 4 ? SV_UPDATE_BACKUP : 4); i++)
+	{
+		client_frame_t *frame = &mpClientData->frames[SV_UPDATE_MASK & (mpClientData->netchan.incoming_acknowledged - i)];
+		
+		if(frame->ping_time <= 0.0f)
+			continue;
+
+		if(frame->ping_time < minping)
+			minping = frame->ping_time;
+
+		if(frame->ping_time > maxping)
+			maxping = frame->ping_time;
+	};
+
+	if(maxping < minping || fabs(maxping - minping) <= 0.2f)
+		return ping;
+
+	return 0.0f;
+};
+
+void CGameClient::ComputeLatency()
+{
+	mpClientData->latency = CalcTime();
+};
+
 void CGameClient::CheckRate()
 {
 	if(sv_maxrate.value > 0.0f)

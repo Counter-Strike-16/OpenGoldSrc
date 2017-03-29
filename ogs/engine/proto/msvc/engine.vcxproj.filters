@@ -67,6 +67,18 @@
     <ClCompile Include="..\impl\win\SystemWin.cpp">
       <Filter>impl\win</Filter>
     </ClCompile>
+    <ClCompile Include="..\filesystem\File.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filesystem\FileSystem.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\rehlds\crc32c.cpp" />
+    <ClCompile Include="..\..\..\public\rehlds\sys_shared.cpp" />
+    <ClCompile Include="..\..\..\tier0\dbg.cpp" />
+    <ClCompile Include="..\system\StringHandler.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\system\DedicatedServerAPI.hpp">
@@ -86,6 +98,12 @@
     </ClInclude>
     <ClInclude Include="..\filesystem\FileSystem.hpp">
       <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filesystem\File.hpp">
+      <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\StringHandler.hpp">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

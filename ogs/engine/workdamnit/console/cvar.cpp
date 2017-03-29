@@ -31,23 +31,21 @@
 #include "precompiled.hpp"
 #include "console/cvar.hpp"
 #include "console/cmd.hpp"
-#include "console/console.hpp"
+#include "console/Console.hpp"
 #include "memory/zone.hpp"
-#include "filesystem/filesystem_internal.hpp"
+#include "filesystem/FileSystem.hpp"
 #include "system/sizebuf.hpp"
-#include "system/system.hpp"
+#include "system/System.hpp"
 #include "system/unicode_strtools.h"
 #include "network/net_msg.hpp"
 #include "system/client.hpp"
 #include "system/server.hpp"
-#include "network/sv_steam3.hpp"
+#include "network/Steam3.hpp"
 #include "system/sv_log.hpp"
 
 /*
 	All cvar names are case insensitive! Values not
 */
-
-char cvar_null_string[] = "";
 
 void Cvar_Init()
 {
@@ -57,81 +55,24 @@ void Cvar_Shutdown()
 {
 };
 
-/*
-============
-Cvar_FindVar
-============
-*/
 cvar_t *Cvar_FindVar(const char *var_name)
 {
-#ifndef SWDS
-	g_engdstAddrs.pfnGetCvarPointer(&var_name);
-#endif
-
-	cvar_t *var = NULL;
-
-	for(var = cvar_vars; var; var = var->next)
-	{
-		if(!Q_stricmp(var_name, var->name))
-			break;
-	};
-
-	return var;
 };
 
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 {
-	NOXREFCHECK;
-
-	for(cvar_t *var = cvar_vars; var && var->next; var = var->next)
-	{
-		if(!Q_stricmp(var_name, var->next->name))
-			return var;
-	};
-
-	return NULL;
 };
 
-/*
-============
-Cvar_VariableValue
-============
-*/
 float Cvar_VariableValue(const char *var_name)
 {
-	cvar_t *var = Cvar_FindVar(var_name);
-
-	if(var)
-		return (float)Q_atof(var->string);
-
-	return 0.0f;
 };
 
-/*
-============
-Cvar_VariableInteger
-============
-*/
 NOXREF int Cvar_VariableInt(const char *var_name)
 {
-	NOXREFCHECK;
-
-	cvar_t *var = Cvar_FindVar(var_name);
-
-	if(var)
-		return Q_atoi(var->string);
-
-	return 0;
 };
 
 char *Cvar_VariableString(const char *var_name)
 {
-	cvar_t *var = Cvar_FindVar(var_name);
-
-	if(var)
-		return var->string;
-
-	return cvar_null_string;
 };
 
 NOXREF const char *Cvar_CompleteVariable(const char *search, int forward)
@@ -320,38 +261,10 @@ void Cvar_DirectSet(struct cvar_s *var, const char *value)
 
 void Cvar_Set(const char *var_name, const char *value)
 {
-	cvar_t *var = Cvar_FindVar(var_name);
-
-	if(!var)
-	{
-		Con_DPrintf("%s: variable \"%s\" not found\n", __FUNCTION__, var_name);
-		return;
-	};
-
-	Cvar_DirectSet(var, value);
 };
 
-/*
-============
-Cvar_SetValue
-============
-*/
 void Cvar_SetValue(const char *var_name, float value)
 {
-	char val[32];
-
-#ifndef SWDS
-	g_engdstAddrs.Cvar_SetValue((char**)&var_name, &value);
-#endif
-
-	if(fabs(value - (double)(signed int)value) >= 0.000001)
-		Q_snprintf(val, ARRAYSIZE(val) - 1, "%f", value);
-	else
-		Q_snprintf(val, ARRAYSIZE(val) - 1, "%d", (signed int)value);
-	
-	val[ARRAYSIZE(val) - 1] = 0;
-
-	Cvar_Set(var_name, val);
 };
 
 void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
@@ -361,27 +274,6 @@ void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 
 NOXREF void Cvar_RemoveHudCvars()
 {
-	NOXREFCHECK;
-
-	cvar_t *pVar;
-	cvar_t **pList;
-
-	pVar = cvar_vars;
-	pList = &cvar_vars;
-
-	while(pVar)
-	{
-		if(pVar->flags & FCVAR_CLIENTDLL)
-		{
-			*pList = pVar->next;
-			Z_Free(pVar->string);
-			Z_Free(pVar);
-		}
-		else
-			pList = &pVar->next;
-
-		pVar = *pList;
-	};
 };
 
 // Returns first token if there is more than one, else returns NULL.
@@ -622,18 +514,6 @@ NOXREF int Cvar_CountServerVariables()
 
 void Cvar_UnlinkExternals()
 {
-	cvar_t *pVar = cvar_vars;
-	cvar_t **pList = &cvar_vars;
-
-	while(pVar)
-	{
-		if(pVar->flags & FCVAR_EXTDLL)
-			*pList = pVar->next;
-		else
-			pList = &pVar->next;
-
-		pVar = *pList;
-	};
 };
 
 void Cvar_CmdInit()

@@ -27,28 +27,22 @@
  */
 
 /// @file
-/// @brief console command args
 
-#pragma once
+#include "precompiled.hpp"
+#include "system/StringHandler.hpp"
 
-#include "console/IConCmdArgs.hpp"
-
-class CConCmdArgs : public IConCmdArgs
+void CStringHandler::FixSlashes(char *pname)
 {
-public:
-	CConCmdArgs(int anArgCount, const char **asArgValues);
-	CConCmdArgs(const char *asArgString);
-	
-	int GetCount() const;
-	
-	const char *GetArgVal(int anArg) const;
-	
-	int HasArg(const char *asArg) const;
-	
-	const char *ToString() const;
-private:
-	//std::map<int, string>?
-	
-	int mnArgCount;
-	char **msArgValues;
+	while(*pname)
+	{
+#ifdef _WIN32
+		if(*pname == '/')
+			*pname = '\\';
+#else
+		if(*pname == '\\')
+			*pname = '/';
+#endif
+
+		pname++;
+	};
 };

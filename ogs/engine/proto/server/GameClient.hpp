@@ -171,6 +171,9 @@ public:
 
 	int CalcPing();
 	bool ShouldUpdatePing();
+	
+	float CalcTime();
+	void ComputeLatency();
 
 	void CheckRate();
 

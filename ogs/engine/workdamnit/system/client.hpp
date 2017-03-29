@@ -46,7 +46,7 @@
 #include "network/net_chan.hpp"
 #include "resources/consistency.hpp"
 #include "network/protocol.hpp"
-#include "sound/soundfade.hpp"
+#include "sound/SoundFadeData.hpp"
 #include "system/common.hpp"
 #include "world/event.hpp"
 //#include "engine/custom.h"

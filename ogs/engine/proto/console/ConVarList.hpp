@@ -27,28 +27,33 @@
  */
 
 /// @file
-/// @brief console command args
 
 #pragma once
 
-#include "console/IConCmdArgs.hpp"
+typedef struct cvar_s cvar_t;
 
-class CConCmdArgs : public IConCmdArgs
+struct IConsole;
+struct IConVar;
+class CFile;
+
+class CConVarList
 {
 public:
-	CConCmdArgs(int anArgCount, const char **asArgValues);
-	CConCmdArgs(const char *asArgString);
+	CConVarList(IConsole *apConsole);
 	
-	int GetCount() const;
+	void Init();
+	void Shutdown();
 	
-	const char *GetArgVal(int anArg) const;
+	IConVar *FindVar(const char *asName);
+	IConVar *FindVarPrev(const char *asName);
 	
-	int HasArg(const char *asArg) const;
+	bool InsertVar(cvar_t *apVar);
 	
-	const char *ToString() const;
+	NOXREF int CountServerVariables();
+	
+	void UnlinkExternals(); // I'm not sure it's the right place for that
+	
+	void WriteVars(CFile *apFile); // ref?
 private:
-	//std::map<int, string>?
-	
-	int mnArgCount;
-	char **msArgValues;
+	cvar_t *cvar_vars{nullptr};
 };

@@ -34,9 +34,8 @@
 #include "system/common.hpp"
 #include "system/system.hpp"
 #include "system/unicode_strtools.h"
-#include "console/console.hpp"
-#include "filesystem/filesystem_.hpp"
-#include "filesystem/filesystem_internal.hpp"
+#include "console/Console.hpp"
+#include "filesystem/FileSystem.hpp"
 #include "resources/modinfo.hpp"
 #include "network/bf_read.hpp"
 #include "network/bf_write.hpp"
@@ -173,8 +172,8 @@ NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...)
 
 #ifndef COM_Functions_region
 
-int com_argc;
-char **com_argv;
+//int com_argc;
+//char **com_argv;
 
 char com_token[COM_TOKEN_LEN];
 
@@ -183,7 +182,6 @@ qboolean s_com_token_unget;
 char *com_last_in_quotes_data = NULL;
 char com_clientfallback[MAX_PATH];
 char com_gamedir[MAX_PATH];
-char com_cmdline[COM_MAX_CMD_LINE];
 
 cache_user_t *loadcache;
 unsigned char *loadbuf;
@@ -530,81 +528,13 @@ int COM_TokenWaiting(char *buffer)
 
 int COM_CheckParm(char *parm)
 {
-	int i;
-
-	for(i = 1; i < com_argc; i++)
-	{
-		if(!com_argv[i])
-		{
-			continue;
-		}
-
-		if(!Q_strcmp(parm, (const char *)com_argv[i]))
-		{
-			return i;
-		}
-	}
-
+	//gpCmdLine->HasArg(parm);
 	return 0;
 }
 
 void COM_InitArgv(int argc, char *argv[])
 {
-	qboolean safe = 0;
-
-	static char *safeargvs[NUM_SAFE_ARGVS] = { "-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly" };
-	static char *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
-
-	int i, j;
-	char *c;
-
-	// Reconstruct full command line
-	com_cmdline[0] = 0;
-	for(i = 0, j = 0; i < MAX_NUM_ARGVS && i < argc && j < COM_MAX_CMD_LINE - 1;
-	    i++)
-	{
-		c = argv[i];
-		if(*c)
-		{
-			while(*c && j < COM_MAX_CMD_LINE - 1)
-			{
-				com_cmdline[j++] = *c++;
-			}
-			if(j >= COM_MAX_CMD_LINE - 1)
-			{
-				break;
-			}
-			com_cmdline[j++] = ' ';
-		}
-	}
-	com_cmdline[j] = 0;
-
-	// Copy args pointers to our array
-	for(com_argc = 0; (com_argc < MAX_NUM_ARGVS) && (com_argc < argc);
-	    com_argc++)
-	{
-		largv[com_argc] = argv[com_argc];
-
-		if(!Q_strcmp("-safe", argv[com_argc]))
-		{
-			safe = 1;
-		}
-	}
-
-	// Add arguments introducing more failsafeness
-	if(safe)
-	{
-		// force all the safe-mode switches. Note that we reserved extra space in
-		// case we need to add these, so we don't need an overflow check
-		for(int i = 0; i < NUM_SAFE_ARGVS; i++)
-		{
-			largv[com_argc] = safeargvs[i];
-			com_argc++;
-		}
-	}
-
-	largv[com_argc] = " ";
-	com_argv = largv;
+	gpCmdLine->Init(argc, argv);
 }
 
 void COM_Init(char *basedir)
@@ -701,26 +631,6 @@ NOXREF void COM_WriteFile(char *filename, void *data, int len)
 	else
 	{
 		Sys_Printf("%s: failed on %s\n", __FUNCTION__, path);
-	}
-}
-
-void COM_FixSlashes(char *pname)
-{
-	while(*pname)
-	{
-#ifdef _WIN32
-		if(*pname == '/')
-		{
-			*pname = '\\';
-		}
-#else
-		if(*pname == '\\')
-		{
-			*pname = '/';
-		}
-#endif
-
-		pname++;
 	}
 }
 

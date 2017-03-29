@@ -1,3 +1,7 @@
+# Ripped cmd list from CS 1.6 6153
+# (Some of these cmds cs-specific)
+# Need to check that have all these cmds registered and implemented
+
 appenddemo      
 cl_messages     
 commentator  // commentator mode?       

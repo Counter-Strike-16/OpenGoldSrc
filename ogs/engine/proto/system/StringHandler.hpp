@@ -27,28 +27,11 @@
  */
 
 /// @file
-/// @brief console command args
 
 #pragma once
 
-#include "console/IConCmdArgs.hpp"
-
-class CConCmdArgs : public IConCmdArgs
+class CStringHandler
 {
 public:
-	CConCmdArgs(int anArgCount, const char **asArgValues);
-	CConCmdArgs(const char *asArgString);
-	
-	int GetCount() const;
-	
-	const char *GetArgVal(int anArg) const;
-	
-	int HasArg(const char *asArg) const;
-	
-	const char *ToString() const;
-private:
-	//std::map<int, string>?
-	
-	int mnArgCount;
-	char **msArgValues;
+	static void FixSlashes(char *pname);
 };

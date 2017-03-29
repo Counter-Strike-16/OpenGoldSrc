@@ -34,12 +34,12 @@
 #include "system/Host.hpp"
 #include "system/Engine.hpp"
 #include "system/System.hpp"
+#include "filesystem/FileSystem.hpp"
 
 /*
 #include "console/cmd.hpp"
 #include "system/traceinit.h"
 #include "system/buildinfo.hpp"
-#include "filesystem/FileSystem.hpp"
 #include "system/GameServer.hpp"
 */
 
@@ -97,8 +97,10 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 	gbIsDedicatedServer = true; // TODO: remove usage of this
 
 	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
-
-	if(/*mpFileSystem->Init(basedir, (void*)filesystemFactory) && game->Init(0) &&*/ eng->Load(true, basedir, cmdline))
+	
+	mpFileSystem = std::make_unique<CFileSystem>();
+	
+	if(mpFileSystem->Init(basedir, (void*)filesystemFactory) && /*game->Init(0) &&*/ eng->Load(true, basedir, cmdline))
 	{
 		char text[256];
 
@@ -123,7 +125,7 @@ int CDedicatedServerAPI::Shutdown_noVirt()
 	//game->Shutdown();
 
 	//TraceShutdown("FileSystem_Shutdown()", 0);
-	//mpFileSystem->Shutdown();
+	mpFileSystem->Shutdown();
 
 	//registry->Shutdown();
 

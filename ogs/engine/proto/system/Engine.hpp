@@ -35,6 +35,7 @@
 #include "system/IEngine.hpp"
 #include "system/IGame.hpp"
 #include "system/Host.hpp"
+#include "filesystem/FileSystem.hpp"
 
 // clang-format off
 #ifdef HOOK_ENGINE
@@ -52,11 +53,13 @@ typedef struct quakeparms_s quakeparms_t;
 extern IGame *game;
 extern IEngine *eng;
 
+class CFileSystem;
+
 class CEngine : public IEngine
 {
 public:
 	CEngine();
-	virtual ~CEngine(){}
+	virtual ~CEngine() = default;
 
 	virtual bool Load(bool dedicated, char *rootDir, const char *cmdLine);
 	virtual void Unload();
@@ -123,6 +126,7 @@ private:
 	quakeparms_t host_parms;
 	
 	std::unique_ptr<CHost> mpHost;
+	std::unique_ptr<CFileSystem> mpFileSystem;
 	
 	double m_fCurTime{0.0f};
 	double m_fFrameTime{0.0f};

@@ -33,7 +33,7 @@
 #include "common/commontypes.h"
 #include "system/server.hpp"
 
-#define CMD_MAXBACKUP 64
+constexpr auto CMD_MAXBACKUP = 64;
 
 typedef struct command_s command_t;
 typedef struct edict_s edict_t;
@@ -52,13 +52,19 @@ typedef struct sv_adjusted_positions_s
 {
 	int active;
 	int needrelink;
+	
 	vec3_t neworg;
 	vec3_t oldorg;
+	
 	vec3_t initial_correction_org;
+	
 	vec3_t oldabsmin;
 	vec3_t oldabsmax;
+	
 	int deadflag;
+	
 	vec3_t temp_org;
+	
 	int temp_org_setflag;
 } sv_adjusted_positions_t;
 
@@ -121,8 +127,7 @@ extern cvar_t sv_voiceenable;
 extern qboolean nofind;
 
 void SV_ParseConsistencyResponse(client_t *pSenderClient);
-qboolean SV_FileInConsistencyList(const char *filename,
-                                  consistency_t **ppconsist);
+qboolean SV_FileInConsistencyList(const char *filename, consistency_t **ppconsist);
 int SV_TransferConsistencyInfo();
 int SV_TransferConsistencyInfo_internal();
 void SV_SendConsistencyList(sizebuf_t *msg);
@@ -137,25 +142,32 @@ void SV_ConvertPMTrace(trace_t *dest, pmtrace_t *src, edict_t *ent);
 void SV_ForceFullClientsUpdate();
 void SV_RunCmd(usercmd_t *ucmd, int random_seed);
 int SV_ValidateClientCommand(char *pszCommand);
-float SV_CalcClientTime(client_t *cl);
-void SV_ComputeLatency(client_t *cl);
+
 int SV_UnlagCheckTeleport(vec_t *v1, vec_t *v2);
+
 void SV_GetTrueOrigin(int player, vec_t *origin);
 void SV_GetTrueMinMax(int player, float **fmin, float **fmax);
+
 entity_state_t *SV_FindEntInPack(int index, packet_entities_t *pack);
+
 void SV_SetupMove(client_t *_host_client);
 void SV_RestoreMove(client_t *_host_client);
+
 void SV_ParseStringCommand(client_t *pSenderClient);
 void SV_ParseDelta(client_t *pSenderClient);
+
 void SV_EstablishTimeBase(client_t *cl, usercmd_t *cmds, int dropped, int numbackup, int numcmds);
 void SV_EstablishTimeBase_internal(client_t *cl, usercmd_t *cmds, int dropped, int numbackup, int numcmds);
+
 void SV_ParseMove(client_t *pSenderClient);
 void SV_ParseVoiceData(client_t *cl);
 void SV_IgnoreHLTV(client_t *cl);
 void SV_ParseCvarValue(client_t *cl);
 void SV_ParseCvarValue2(client_t *cl);
 void SV_ExecuteClientMessage(client_t *cl);
+
 qboolean SV_SetPlayer(int idnum);
+
 void SV_ShowServerinfo_f();
 void SV_SendEnts_f();
 void SV_FullUpdate_f();

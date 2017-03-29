@@ -11,7 +11,8 @@
 // The main debug library implementation
 //=============================================================================
 
-#include "dbg/dbg.h"
+#include "tier0/dbg.h"
+#include "system/common.hpp" // temp
 
 //-----------------------------------------------------------------------------
 // internal structures

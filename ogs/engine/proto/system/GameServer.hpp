@@ -32,7 +32,7 @@
 
 #include <memory>
 #include "common/maintypes.h"
-#include "network/LoginServer.hpp"
+#include "network/GameConnectionHandler.hpp"
 #include "system/server.hpp"
 
 class CGameServer
@@ -72,5 +72,5 @@ private:
 	
 	void ConnectClient_internal();
 	
-	std::unique_ptr<CLoginServer> mpLoginServer;
+	std::unique_ptr<CGameConnectionHandler> mpConnectionHandler;
 };

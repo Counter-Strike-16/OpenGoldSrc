@@ -31,6 +31,7 @@
 #include "precompiled.hpp"
 #include "filesystem/File.hpp"
 #include "filesystem/FileSystem.hpp"
+#include "system/common.hpp"
 
 CFile::CFile(const char *asName, CFileSystem *apFileSystem) : CFile(apFileSystem)
 {
@@ -42,13 +43,13 @@ CFile::CFile(const char *asName, CFileSystem *apFileSystem) : CFile(apFileSystem
 	//assert(mpFile);
 };
 
-bool CFile::Open(const char *asName)
+bool CFile::Open(const char *asName, const char *asOptions)
 {
 	Close();
 	
-	mpFile = mpFileSystem->Open(asName);
+	mpFileHandle = mpFileSystem->Open(asName, asOptions);
 	
-	if(!mpFile)
+	if(!mpFileHandle)
 		return false;
 	
 	return true;
@@ -56,13 +57,65 @@ bool CFile::Open(const char *asName)
 
 void CFile::Printf(const char *asData, ...)
 {
-	assert(mpFile);
+	assert(mpFileHandle);
 	
-	mpFileSystem->FPrintf(mpFile, asData);
+	va_list arglist;
+	char sText[256] = {'\0'};
+	
+	va_start(arglist, asData);
+	Q_vsnprintf(sText, sizeof(sText), asData, arglist);
+	va_end(arglist);
+	
+	mpFileSystem->FPrintf(mpFileHandle, "%s", sText);
+};
+
+void CFile::Seek(int anPos, FileSystemSeek_t seekType)
+{
+	mpFileSystem->Seek(mpFileHandle, anPos, seekType);
+};
+
+uint CFile::Tell() const
+{
+	return mpFileSystem->Tell(mpFileHandle);
+};
+
+void CFile::Flush()
+{
+	mpFileSystem->Flush(mpFileHandle);
+};
+
+int CFile::IsOk() const
+{
+	return mpFileSystem->IsOk(mpFileHandle);
+};
+
+int CFile::IsEOF() const
+{
+	return mpFileSystem->EndOfFile(mpFileHandle);
+};
+
+int CFile::Read(void *apOutput, int anSize, int anCount)
+{
+	return mpFileSystem->Read(apOutput, anSize, anCount, mpFileHandle);
+};
+
+int CFile::Write(const void *apInput, int anSize, int anCount)
+{
+	return mpFileSystem->Write(apInput, anSize, anCount, mpFileHandle);
+};
+
+char *CFile::ReadLine(char *asOutput, int anMaxChars)
+{
+	return mpFileSystem->ReadLine(asOutput, anMaxChars, mpFileHandle);
+};
+
+uint CFile::GetSize() const
+{
+	return mpFileSystem->Size(mpFileHandle);
 };
 
 void CFile::Close()
 {
-	if(mpFile)
-		mpFileSystem->Close(mpFile);
+	if(mpFileHandle)
+		mpFileSystem->Close(mpFileHandle);
 };

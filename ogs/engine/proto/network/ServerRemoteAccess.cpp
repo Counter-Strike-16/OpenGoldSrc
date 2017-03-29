@@ -29,14 +29,14 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "network/sv_remoteaccess.hpp"
+#include "network/ServerRemoteAccess.hpp"
 #include "system/server.hpp"
 #include "system/common.hpp"
-#include "system/system.hpp"
-#include "system/host.hpp"
+#include "system/System.hpp"
+#include "system/Host.hpp"
 #include "system/host_cmd.hpp"
-#include "filesystem/filesystem_internal.hpp"
-#include "console/console.hpp"
+#include "filesystem/FileSystem.hpp"
+#include "console/Console.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
 
@@ -58,8 +58,7 @@ int CServerRemoteAccess::ReadDataResponse(void *data, int len)
 	return ReadDataResponse_noVirt(data, len);
 }
 
-void CServerRemoteAccess::WriteDataRequest_noVirt(const void *buffer,
-                                                  int bufferSize)
+void CServerRemoteAccess::WriteDataRequest_noVirt(const void *buffer, int bufferSize)
 {
 	int requestID;
 	int requestType;

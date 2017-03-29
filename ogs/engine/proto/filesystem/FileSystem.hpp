@@ -30,7 +30,7 @@
 
 // this was originally the C wrapper for the filesystem interface
 // that's still present in original GoldSrc sources
-// but it was removed from here
+// but it was upgraded to class here
 
 #pragma once
 
@@ -78,8 +78,6 @@ void Host_SetAddonsFolder_f();
 void Host_SetVideoLevel_f();
 
 int Host_GetVideoLevel();
-
-void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_);
 
 void *FS_LoadLibrary(const char *dllName);
 
@@ -167,6 +165,8 @@ public:
 private:
 	bool LoadDLL(CreateInterfaceFn filesystemFactory);
 	void UnloadDLL();
+	
+	void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_);
 	
 	CSysModule *mpFileSystemModule{nullptr};
 	CreateInterfaceFn g_FileSystemFactory{nullptr};

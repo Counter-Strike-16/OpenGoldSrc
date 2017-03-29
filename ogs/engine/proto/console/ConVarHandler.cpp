@@ -30,10 +30,13 @@
 
 #include "precompiled.hpp"
 #include "console/ConVarHandler.hpp"
+#include "console/IConsole.hpp"
+#include "console/IConVar.hpp"
 #include "system/common.hpp"
 
-CConVarHandler::CConVarHandler(IConsole *apConsole, CFileSystem *apFileSystem)
-: mpConsole(apConsole), mpFileSystem(apFileSystem)
+char cvar_null_string[] = "";
+
+CConVarHandler::CConVarHandler(IConsole *apConsole) : mpConsole(apConsole)
 {
 };
 
@@ -47,7 +50,7 @@ Reads in all archived cvars
 void CConVarHandler::Init()
 {
 #ifndef SWDS
-// TODO: add client code, possibly none
+	// TODO: add client code, possibly none
 #endif
 
 	Cvar_CmdInit();
@@ -55,88 +58,82 @@ void CConVarHandler::Init()
 
 void CConVarHandler::Shutdown()
 {
-	// TODO: Check memory releasing
-	cvar_vars = nullptr;
 };
 
-void EXT_FUNC CConVarHandler::RegisterVariable(cvar_t *variable)
+void CConVarHandler::SetVarString(const char *var_name, const char *value)
 {
-	char *oldstr;
-	cvar_t *v, *c;
-	cvar_t dummyvar;
+	cvar_t *var = Cvar_FindVar(var_name);
 
-	if(FindVar(variable->name))
+	if(!var)
 	{
-		mpConsole->Printf("Can't register variable \"%s\", already defined\n", variable->name);
+		mpConsole->DPrintf("%s: variable \"%s\" not found\n", __FUNCTION__, var_name);
 		return;
 	};
 
-	if(Cmd_Exists(variable->name))
-	{
-		mpConsole->Printf("%s: \"%s\" is a command\n", __FUNCTION__, variable->name);
-		return;
-	};
-
-	oldstr = variable->string;
-
-	// Alloc string, so it will not dissapear on side modules unloading and to
-	// maintain the same name during run
-	variable->string = (char *)Z_Malloc(Q_strlen(variable->string) + 1);
-	Q_strcpy(variable->string, oldstr);
-	variable->value = (float)Q_atof(oldstr);
-
-	dummyvar.name = " ";
-	dummyvar.next = cvar_vars;
-
-	v = cvar_vars;
-	c = &dummyvar;
-
-	// Insert with alphabetic order
-	while(v)
-	{
-		if(Q_stricmp(v->name, variable->name) > 0)
-			break;
-
-		c = v;
-		v = v->next;
-	};
-
-	c->next = variable;
-	variable->next = v;
-	cvar_vars = dummyvar.next;
-};
-
-NOXREF int CConVarHandler::CountServerVariables()
-{
-	NOXREFCHECK;
-	
-	cvar_t *var = nullptr;
-	int i = 0;
-	
-	for(i, var = cvar_vars; var; var = var->next)
-	{
-		if(var->flags & FCVAR_SERVER)
-			++i;
-	};
-	
-	return i;
+	Cvar_DirectSet(var, value);
 };
 
 /*
 ============
-Cvar_WriteVariables
-
-Appends lines containing "set variable value" for all variables
-with the archive flag set to true.
+Cvar_SetValue
 ============
 */
-NOXREF void CConVarHandler::WriteVariables(FileHandle_t f)
+void CConVarHandler::SetVarValue(const char *var_name, float value)
+{
+	char val[32];
+
+#ifndef SWDS
+	g_engdstAddrs.Cvar_SetValue((char**)&var_name, &value);
+#endif
+
+	if(fabs(value - (double)(signed int)value) >= 0.000001)
+		Q_snprintf(val, ARRAYSIZE(val) - 1, "%f", value);
+	else
+		Q_snprintf(val, ARRAYSIZE(val) - 1, "%d", (signed int)value);
+	
+	val[ARRAYSIZE(val) - 1] = 0;
+
+	SetVarString(var_name, val);
+};
+
+char *CConVarHandler::GetVarString(const char *var_name)
+{
+	cvar_t *var = Cvar_FindVar(var_name);
+
+	if(var)
+		return var->string;
+
+	return cvar_null_string;
+};
+
+/*
+============
+Cvar_VariableValue
+============
+*/
+float CConVarHandler::GetVarValue(const char *var_name)
+{
+	cvar_t *var = Cvar_FindVar(var_name);
+
+	if(var)
+		return (float)Q_atof(var->string);
+
+	return 0.0f;
+};
+
+/*
+============
+Cvar_VariableInteger
+============
+*/
+NOXREF int CConVarHandler::GetVarInt(const char *var_name)
 {
 	NOXREFCHECK;
-	
-	for(cvar_t *var = cvar_vars; var; var = var->next)
-	{
-		if(var->flags & FCVAR_ARCHIVE)
-			mpFileSystem->FPrintf(f, "%s \"%s\"\n", var->name, var->string);
-	};
+
+	cvar_t *var = Cvar_FindVar(var_name);
+
+	if(var)
+		return Q_atoi(var->string);
+
+	return 0;
 };

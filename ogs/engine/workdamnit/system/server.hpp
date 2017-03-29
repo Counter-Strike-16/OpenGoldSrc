@@ -40,7 +40,7 @@
 #include "engine/progs.h"
 #include "network/delta.hpp"
 #include "network/delta_packet.hpp"
-#include "network/filter.hpp"
+#include "network/IPFilter.hpp"
 #include "network/net.hpp"
 #include "network/net_chan.hpp"
 #include "network/usermsg.hpp"

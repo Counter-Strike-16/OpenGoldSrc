@@ -30,20 +30,16 @@
 
 #pragma once
 
+struct IConsole;
+
 class CConVarHandler
 {
 public:
+	CConVarHandler(IConsole *apConsole);
+	
 	void Init();
 	void Shutdown();
 	
-	IConVar *FindVar(const char *asName);
-	IConVar *FindVarPrev(const char *asName);
-	
 	const char *CompleteVar(const char *asSearch, bool abForward);
-	
-	bool InsertVar(cvar_t *apVar);
-	
-	void WriteVars(FileHandle_t ahFile);
 private:
-	cvar_t *cvar_vars;
 };

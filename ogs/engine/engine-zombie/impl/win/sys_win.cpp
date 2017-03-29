@@ -350,31 +350,6 @@ double Sys_DoubleTime ()
     return curtime;
 }
 
-/*
-================
-Sys_InitFloatTime
-================
-*/
-void Sys_InitFloatTime ()
-{
-	int		j;
-
-	Sys_DoubleTime ();
-
-	j = COM_CheckParm("-starttime");
-
-	if (j)
-	{
-		curtime = (double) (Q_atof(com_argv[j+1]));
-	}
-	else
-	{
-		curtime = 0.0;
-	}
-
-	lastcurtime = curtime;
-}
-
 #endif
 
 double Sys_DoubleTime()
@@ -507,10 +482,6 @@ char *Sys_ConsoleInput()
 	}
 
 	return NULL;
-}
-
-void Sys_Sleep()
-{
 }
 
 void Sys_SendKeyEvents()
