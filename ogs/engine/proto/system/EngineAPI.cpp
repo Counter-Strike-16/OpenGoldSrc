@@ -54,30 +54,60 @@ void F(IEngineAPI **api)
 
 int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
 {
-	// NOTE: what to do with the instance?
-	// TODO: check for state and if it's (or previous) DLL_RESTART then apply the postRestartCmdLineArgs
-	// NOTE: launcherFactory is needed for...?
-	// TODO: filesystem init using the filesystemFactory
+	// TODO: find out how is the postRestartCmdLineArgs mech works?
 	
-	//const char *sCmdLine = cmdline;
+	// Application system factory
+	//gLauncherFactory = launcherFactory;
 	
-	//if(restart) // DLL_RESTART
-		//sCmdLine = postRestartCmdLineArgs;
+	//Q_strcpy(gsPostRestartCmdLineArgs, postRestartCmdLineArgs);
+	
+	eng->SetQuitting(IEngine::QUIT_NOTQUITTING);
 	
 	//registry->Init();
 	
-	//mpFileSystem->Init(basedir, (void*)filesystemFactory);
+	//VideoMode_Create();
 	
-	if(!eng->Load(false, basedir, cmdline)) // init fs and igame here (dunno why iengineapi and idedicatedserverapi duplicates this)
-		return 1;
+	bool bRestart = false;
+	
+	if(!mpFileSystem->Init(basedir, (void*)filesystemFactory))
+		return bRestart;
+	
+	//host_parms.basedir = basedir;
+	
+	//if(!videomode->Init((void*)instance))
+		//return bRestart;
+	
+	if(!game->Init((void*)instance))
+		return bRestart;
+	
+	if(!eng->Load(false, basedir, cmdline))
+		return bRestart;
+	
+	// Windows msg pump here
 
-	while(!eng->GetQuitting()) // ?
+	while(true)
+	{
+		if(eng->GetQuitting() != IEngine::QUIT_NOTQUITTING)
+		{
+			// eng->GetQuitting() != QUIT_TODESKTOP
+			if(eng->GetQuitting() == IEngine::QUIT_RESTART)
+				bRestart = true;
+			
+			break;
+		};
+		
 		eng->Frame();
+	};
 
 	eng->Unload();
+
+	game->Shutdown();
+
+	//videomode->Shutdown();
 	
-	//mpFileSystem->Shutdown();
+	mpFileSystem->Shutdown();
 	
 	//registry->Shutdown();
-	return 0;
+	
+	return bRestart;
 };

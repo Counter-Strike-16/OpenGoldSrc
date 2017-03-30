@@ -27,7 +27,9 @@
  */
 
 /// @file
+/// @brief high-level file system
 
+// filesystem_engine.h
 // this was originally the C wrapper for the filesystem interface
 // that's still present in original GoldSrc sources
 // but it was upgraded to class here

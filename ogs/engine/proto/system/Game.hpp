@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "system/igame.hpp"
+#include "system/IGame.hpp"
 
 class CGame : public IGame
 {
@@ -77,5 +77,5 @@ public:
 	void PlayAVIAndWait_noVirt(const char *aviFile);
 	void SetCursorVisible_noVirt(bool bState);
 private:
-	bool m_bActiveApp;
+	bool m_bActiveApp{false};
 };

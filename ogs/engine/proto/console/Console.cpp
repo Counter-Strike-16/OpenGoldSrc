@@ -33,29 +33,97 @@
 #include "system/System.hpp"
 #include "system/common.hpp"
 
+/*
+================
+Con_Init
+================
+*/
 bool CConsole::Init()
 {
+	//con_debuglog = //COM_CheckParm("-condebug");
+
+	//con = &con_main;
+	//con_linewidth = -1; // con.
+	//Con_CheckResize();
+
+	DevPrintf("Console initialized.\n"); // Con_Printf
+
+	//
+	// register our commands
+	//
+	//Cvar_RegisterVariable(&con_notifytime);
+
+	//Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
+	
+	//Cmd_AddCommand("togglechat", Con_ToggleChat_f);
+	
+	//Cmd_AddCommand("messagemode", [this](){Con_MessageMode_f();});
+	//Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
+	//Cmd_AddCommand("clear", Con_Clear_f);
+	//Cmd_AddCommand("condump", Con_Dump_f);
+
+#ifdef HOOK_ENGINE
+	//Cmd_AddCommand("condebug", (xcommand_t)GetOriginalFuncAddrOrDefault("Con_Debug_f", (void *)Con_Debug_f));
+#else
+	//Cmd_AddCommand("condebug", Con_Debug_f);
+#endif
+
+	initialized = true; // con.initialized
 	return true;
 };
 
 void CConsole::Shutdown()
 {
+#ifndef SWDS
+#endif
 };
 
-void CConsole::Printf(/*int anPrintLevel,*/ const char *asMsg, ...)
+void EXT_FUNC CConsole::Printf(/*int anPrintLevel,*/ const char *asMsg, ...) // _format(1)
 {
-	//Con_Print();
-
-#ifdef _DEBUG
-	va_list arglist;
-	char sText[256] = {'\0'};
+	va_list arglist; // was va
+	char sText[256] = {'\0'}; // was Dest[4096];
 
 	va_start(arglist, asMsg);
 	Q_vsnprintf(sText, charsmax(sText), asMsg, arglist);
 	va_end(arglist);
+	
+#ifdef REHLDS_FLIGHT_REC
+	FR_Log("REHLDS_CON", sText);
+#endif
 
-	CSystem::Printf(sText);
-#endif // _DEBUG
+#ifdef REHLDS_FIXES // && !defined(_DEBUG)
+	if(sv_redirected == RD_NONE || sv_rcon_condebug.value > 0.0f)
+#endif
+	{
+		CSystem::Printf("%s", sText);
+	};
+	
+	//if(sv_redirected)
+	{
+		//if((Q_strlen(outputbuf) + Q_strlen(sText)) > sizeof(outputbuf) - 1)
+			//SV_FlushRedirect();
+		
+		//Q_strncat(outputbuf, sText, sizeof(outputbuf) - 1);
+	}
+	else
+	{
+		//if(con_debuglog)
+			//DebugLog("qconsole.log", "%s", sText);
+		
+#ifndef SWDS
+		if(host_initialized && con_initialized && cls.state)
+		{
+			if(developer.value != 0.0f)
+			{
+				Q_strncpy(g_szNotifyAreaString, msg, 255);
+				g_szNotifyAreaString[255] = 0;
+				*con_times = realtime;
+			};
+			
+			VGuiWrap2_ConPrintf(msg);
+		};
+#endif // SWDS
+	};
 };
 
 void CConsole::DrawCharacter(int cx, int line, int num)
@@ -76,38 +144,113 @@ void CConsole::Print(const char *txt)
 {
 };
 
-//void CConsole::Printf(const char *fmt, ...) // _format(1);
-//{
-//};
+/*
+================
+Con_DPrintf
+
+A Con_Printf that only shows up if the "developer" cvar is set
+================
+*/
+#if defined(REHLDS_FIXES) && defined(REHLDS_FLIGHT_REC)
+
+//void EXT_FUNC Con_DPrintf(const char *fmt, ...)
+
+void EXT_FUNC CConsole::DevPrintf(const char *fmt, ...)
+{
+	va_list argptr;
+	va_start(argptr, fmt);
+
+#ifdef REHLDS_FIXES
+
+#ifdef REHLDS_FLIGHT_REC
+	// Always print debug logs to the flight recorder
+	FR_Log("REHLDS_CONDBG", Dest);
+#endif // REHLDS_FLIGHT_REC
+	
+	if(developer.value != 0.0f)
+	{
+#endif // REHLDS_FIXES
+
+#ifdef _WIN32
+		char Dest[4096];
+		Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
+		
+		OutputDebugStringA(Dest);
+
+		//if(con_debuglog)
+			//DebugLog("qconsole.log", "%s", Dest);
+
+#else // if not _WIN32
+		vfprintf(stdout, fmt, argptr);
+		fflush(stdout);
+#endif // _WIN32
+
+#ifdef REHLDS_FIXES
+	};
+#endif // REHLDS_FIXES
+	
+	va_end(argptr);
+};
+
+#else // if not defined(REHLDS_FIXES) and not defined(REHLDS_FLIGHT_REC)
+
 
 void CConsole::DevPrintf(const char *asMsg, ...) // _format(1);
 {
-#ifdef _DEBUG
+	// don't confuse non-developers with techical stuff...
+	//if(!developer.value)
+		//return;
+	
 	va_list arglist;
-	char sText[256] = {'\0'};
+	char sText[256] = {'\0'}; // char msg[MAXPRINTMSG];
 
 	va_start(arglist, asMsg);
-	Q_vsnprintf(sText, charsmax(sText), asMsg, arglist);
+	Q_vsnprintf(sText, charsmax(sText), asMsg, arglist); // vsprintf(msg, fmt, argptr);
 	va_end(arglist);
 
-	CSystem::Printf("[DEV] %s", sText);
-#endif // _DEBUG
+	Printf("[DEV] %s", sText);
 };
+
+#endif // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
 
 //void CConsole::NPrintf(int idx, const char *fmt, ...)
 //{
 //};
 
-//void CConsole::NPrintf( int idx, char *fmt, ... ) // _format(2);
+//void EXT_FUNC CConsole::NPrintf(int idx, /*const*/ char *fmt, ...) // _format(2);
+//{
+//#ifndef SWDS
+//#endif
+//};
+
+//void CConsole::NXPrintf(struct con_nprint_s *info, char *fmt, ...) //_format(2)
 //{
 //};
 
-//void CConsole::NXPrintf( struct con_nprint_s *info, char *fmt, ... ) //_format(2)
-//{
-//};
+/*
+==================
+Con_SafePrintf
 
+Okay to call even when the screen can't be updated
+==================
+*/
 void CConsole::SafePrintf(const char *fmt, ...)
 {
+	va_list argptr;
+	char msg[1024];
+	
+	va_start(argptr, fmt);
+	
+#ifdef _WIN32
+	char Dest[1024];
+	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
+	Printf("%s", Dest);
+#else
+	vfprintf(stdout, fmt, argptr);
+	fflush(stdout);
+#endif // _WIN32
+	
+	va_end(argptr);
 };
 
 void CConsole::CenteredPrint(const char *text)

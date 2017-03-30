@@ -27,12 +27,21 @@
  */
 
 /// @file
+/// @brief sizebuffer component
 
 #pragma once
 
-struct IConsole;
+void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize);
+void SZ_Clear(sizebuf_t *buf);
+
+void *SZ_GetSpace(sizebuf_t *buf, int length);
+
+void SZ_Write(sizebuf_t *buf, const void *data, int length);
+void SZ_Print(sizebuf_t *buf, const char *data);
 
 typedef struct sizebuf_s sizebuf_t;
+
+struct IConsole;
 
 class CSizeBuffer;
 CSizeBuffer *AllocSizeBuf(const char *name, sizebuf_t *buf, int startsize);

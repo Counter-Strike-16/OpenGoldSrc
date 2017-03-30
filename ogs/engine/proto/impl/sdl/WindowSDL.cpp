@@ -32,6 +32,23 @@
 #include "WindowSDL.hpp"
 #include "SDL2/SDL_video.h"
 
+CWindowSDL::CWindowSDL(const TWindowCreateProps &aWinProps)
+{
+	Open(aWinProps);
+	
+	assert(mpSDLWindow);
+};
+
+bool CWindowSDL::Open(const TWindowCreateProps &aWinProps)
+{
+	mpSDLWindow = SDL_CreateWindow();
+	
+	if(!mpSDLWindow)
+		return false;
+	
+	return true;
+};
+
 void CWindowSDL::Close()
 {
 	SDL_DestroyWindow(mpSDLWindow);
@@ -52,11 +69,9 @@ void CWindowSDL::SetSize(uint anWidth, uint anHeight)
 	SDL_SetWindowSize(mpSDLWindow, anWidth, anHeight);
 };
 
-const vec2_t &CWindowSDL::GetSize() const
+void CWindowSDL::GetSize(const vec2_t &avSize)
 {
-	vec2_t vSize{0.0f, 0.0f};
-	SDL_GetWindowSize(mpSDLWindow, vSize[0], vSize[1]);
-	return vSize; // ouch...
+	SDL_GetWindowSize(mpSDLWindow, avSize[0], avSize[1]);
 };
 
 void CWindowSDL::SetPos(uint anPosX, uint anPosY)
@@ -64,9 +79,7 @@ void CWindowSDL::SetPos(uint anPosX, uint anPosY)
 	SDL_SetWindowPosition(mpSDLWindow, anPosX, anPosY);
 };
 
-const vec2_t &CWindowSDL::GetPos() const
+void CWindowSDL::GetPos(const vec2_t &avPos)
 {
-	vec2_t vPos{0.0f, 0.0f};
-	SDL_GetWindowPosition(mpSDLWindow, vPos[0], vPos[1]);
-	return vPos; // ouch... (x2)
+	SDL_GetWindowPosition(mpSDLWindow, avPos[0], avPos[1]);
 };

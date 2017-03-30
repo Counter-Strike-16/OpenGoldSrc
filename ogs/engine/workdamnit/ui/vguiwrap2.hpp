@@ -27,16 +27,13 @@
  */
 
 /// @file
-/// @brief backward-compat sizebuf component interface
+
+// Looks like this thing was used before the "EngineVgui()->"
 
 #pragma once
 
-typedef struct sizebuf_s sizebuf_t;
-
-void SZ_Alloc(const char *name, sizebuf_t *buf, int startsize);
-void SZ_Clear(sizebuf_t *buf);
-
-void *SZ_GetSpace(sizebuf_t *buf, int length);
-
-void SZ_Write(sizebuf_t *buf, const void *data, int length);
-void SZ_Print(sizebuf_t *buf, const char *data);
+int VGuiWrap2_IsInCareerMatch();
+void VguiWrap2_GetCareerUI();
+int VGuiWrap2_GetLocalizedStringLength(const char *label);
+void VGuiWrap2_LoadingStarted(const char *resourceType, const char *resourceName);
+void VguiWrap2_ConPrintf(const char *asMsg, ...);

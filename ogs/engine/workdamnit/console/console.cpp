@@ -37,15 +37,10 @@
 #include "system/client.hpp"
 #include "input/keys.hpp"
 
-int con_ormask;
-
 console_t con_main;
 console_t con_chat;
 
 console_t *con; // point to either con_main or con_chat
-
-int con_linewidth;  // characters across screen
-int con_totallines; // total lines in console scrollback
 
 float con_cursorspeed = 4;
 
@@ -56,9 +51,6 @@ const int NUM_CON_TIMES = 4;
 float con_times[NUM_CON_TIMES]; // realtime time the line was generated
                                 // for transparent notify lines
 
-int con_vislines;
-int con_notifylines; // scan lines to clear for notify lines
-
 qboolean con_debuglog;
 
 const int MAXCMDLINE = 256;
@@ -66,8 +58,6 @@ const int MAXCMDLINE = 256;
 extern char key_lines[32][MAXCMDLINE];
 extern int edit_line;
 extern int key_linepos;
-
-qboolean con_initialized;
 
 void Key_ClearTyping()
 {
@@ -323,46 +313,14 @@ void Con_CheckResize()
 	Con_Resize(&con_chat);
 }
 
-/*
-================
-Con_Init
-================
-*/
 void Con_Init()
 {
-	con_debuglog = COM_CheckParm("-condebug");
-
-	con = &con_main;
-	con_linewidth = -1; // con.
-	Con_CheckResize();
-
-	Con_DPrintf("Console initialized.\n"); // Con_Printf
-
-	//
-	// register our commands
-	//
-	Cvar_RegisterVariable(&con_notifytime);
-
-	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
-	//Cmd_AddCommand("togglechat", Con_ToggleChat_f);
-	Cmd_AddCommand("messagemode", Con_MessageMode_f);
-	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
-	Cmd_AddCommand("clear", Con_Clear_f);
-	Cmd_AddCommand("condump", Con_Dump_f);
-
-#ifdef HOOK_ENGINE
-	Cmd_AddCommand("condebug", (xcommand_t)GetOriginalFuncAddrOrDefault("Con_Debug_f", (void *)Con_Debug_f));
-#else
-	Cmd_AddCommand("condebug", Con_Debug_f);
-#endif
-
-	con_initialized = true; // con.initialized
+	
 };
 
 void Con_Shutdown()
 {
-#ifndef SWDS
-#endif
+
 };
 
 /*
@@ -500,89 +458,13 @@ void Con_Printf(char *fmt, ...)
 */
 }
 
-void EXT_FUNC Con_NPrintf(int idx, const char *fmt, ...)
-{
-#ifndef SWDS
-#endif
-};
 
-/*
-================
-Con_DPrintf
-
-A Con_Printf that only shows up if the "developer" cvar is set
-================
-*/
-#if defined(REHLDS_FIXES) && defined(REHLDS_FLIGHT_REC)
-// Always print debug logs to the flight recorder
-void EXT_FUNC Con_DPrintf(const char *fmt, ...)
-{
-	char Dest[4096];
-	va_list argptr;
-	va_start(argptr, fmt);
-	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
-	va_end(argptr);
-
-	FR_Log("REHLDS_CONDBG", Dest);
-
-	if(developer.value != 0.0f)
-	{
-#ifdef _WIN32
-		OutputDebugStringA(Dest);
-		if(con_debuglog)
-			Con_DebugLog("qconsole.log", "%s", Dest);
-#else
-		vfprintf(stdout, fmt, argptr);
-		fflush(stdout);
-#endif // _WIN32
-	}
-}
-
-#else // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
-
-void Con_DPrintf(const char *fmt, ...)
-{
-/*
-	// don't confuse non-developers with techical stuff...
-	if(!developer.value)
-		return;
-	
-	va_list argptr;
-	va_start(argptr, fmt);
-	
-#ifdef _WIN32
-	char Dest[4096];
-	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
-
-	OutputDebugStringA(Dest);
-	if(con_debuglog)
-		Con_DebugLog("qconsole.log", "%s", Dest);
-#else
-	vfprintf(stdout, fmt, argptr);
-	fflush(stdout);
-#endif // _WIN32
-	
-	va_end(argptr);
-*/
-}
-
-#endif // defined(REHLDS_FIXES) and defined(REHLDS_FLIGHT_REC)
-
-/*
-==================
-Con_SafePrintf
-
-Okay to call even when the screen can't be updated
-==================
-*/
 void Con_SafePrintf(const char *fmt, ...)
 {
 /*
-	va_list argptr;
-	char msg[1024];
+	
 	int temp;
 
-	va_start(argptr, fmt);
 	vsprintf(msg, fmt, argptr);
 	va_end(argptr);
 
@@ -592,24 +474,6 @@ void Con_SafePrintf(const char *fmt, ...)
 	scr_disabled_for_loading = temp;
 */
 }
-
-/*
-void Con_SafePrintf(const char *fmt, ...)
-{
-	va_start(argptr, fmt);
-
-#ifdef _WIN32
-	char Dest[1024];
-	Q_vsnprintf(Dest, sizeof(Dest), fmt, argptr);
-	va_end(argptr);
-	Con_Printf("%s", Dest);
-#else
-	vfprintf(stdout, fmt, argptr);
-	va_end(argptr);
-	fflush(stdout);
-#endif // _WIN32
-}
-*/
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -645,64 +509,6 @@ void Con_DebugLog(const char *file, const char *fmt, ...)
 #endif // _WIN32
 */
 }
-
-void EXT_FUNC Con_Printf(const char *fmt, ...)
-{
-/*
-	char Dest[4096];
-	va_list va;
-
-	va_start(va, fmt);
-	Q_vsnprintf(Dest, sizeof(Dest), fmt, va);
-	va_end(va);
-
-#ifdef REHLDS_FLIGHT_REC
-	FR_Log("REHLDS_CON", Dest);
-#endif
-
-#ifdef REHLDS_FIXES
-	if(sv_redirected == RD_NONE || sv_rcon_condebug.value > 0.0f)
-#endif
-	{
-		Sys_Printf("%s", Dest);
-	}
-
-	if(sv_redirected)
-	{
-		if((Q_strlen(outputbuf) + Q_strlen(Dest)) > sizeof(outputbuf) - 1)
-			SV_FlushRedirect();
-		Q_strncat(outputbuf, Dest, sizeof(outputbuf) - 1);
-	}
-	else
-	{
-		if(con_debuglog)
-			Con_DebugLog("qconsole.log", "%s", Dest);
-#ifndef SWDS
-		if(host_initialized && con_initialized && cls.state)
-		{
-			if(developer.value != 0.0f)
-			{
-				Q_strncpy(g_szNotifyAreaString, msg, 255);
-				g_szNotifyAreaString[255] = 0;
-				*con_times = realtime;
-			}
-			VGuiWrap2_ConPrintf(msg);
-		}
-#endif // SWDS
-	}
-*/
-}
-
-/*
-void EXT_FUNC Con_DPrintf(const char *fmt, ...)
-{
-	char msg[MAXPRINTMSG];
-
-	vsprintf(msg, fmt, argptr);
-
-	Con_Printf("%s", msg);
-}
-*/
 
 /*
 ==============================================================================

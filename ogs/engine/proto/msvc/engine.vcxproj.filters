@@ -91,6 +91,9 @@
     <ClCompile Include="..\console\Console.cpp">
       <Filter>console</Filter>
     </ClCompile>
+    <ClCompile Include="..\system\Game.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\system\DedicatedServerAPI.hpp">
@@ -125,6 +128,12 @@
     </ClInclude>
     <ClInclude Include="..\console\Console.hpp">
       <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\Game.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\IGame.hpp">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

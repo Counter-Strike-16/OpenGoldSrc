@@ -95,6 +95,7 @@
     <ClCompile Include="..\system\DedicatedServerAPI.cpp" />
     <ClCompile Include="..\system\Engine.cpp" />
     <ClCompile Include="..\system\EngineAPI.cpp" />
+    <ClCompile Include="..\system\Game.cpp" />
     <ClCompile Include="..\system\Host.cpp" />
     <ClCompile Include="..\system\StringHandler.cpp" />
     <ClCompile Include="..\system\System.cpp" />
@@ -107,8 +108,10 @@
     <ClInclude Include="..\system\DedicatedServerAPI.hpp" />
     <ClInclude Include="..\system\Engine.hpp" />
     <ClInclude Include="..\system\EngineAPI.hpp" />
+    <ClInclude Include="..\system\Game.hpp" />
     <ClInclude Include="..\system\Host.hpp" />
     <ClInclude Include="..\system\IEngine.hpp" />
+    <ClInclude Include="..\system\IGame.hpp" />
     <ClInclude Include="..\system\StringHandler.hpp" />
     <ClInclude Include="..\system\System.hpp" />
   </ItemGroup>

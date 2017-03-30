@@ -480,15 +480,6 @@ void CL_AddVoiceToDatagram(qboolean bFinal);
 void CL_VoiceIdle();
 
 //
-// vguiwrap2
-//
-int VGuiWrap2_IsInCareerMatch();
-void VguiWrap2_GetCareerUI();
-int VGuiWrap2_GetLocalizedStringLength(const char *label);
-void VGuiWrap2_LoadingStarted(const char *resourceType,
-                              const char *resourceName);
-
-//
 //
 //
 void SetCareerAudioState(int state);
