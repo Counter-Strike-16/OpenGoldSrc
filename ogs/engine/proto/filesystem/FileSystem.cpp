@@ -36,7 +36,7 @@
 #include "system/common.hpp"
 #include "system/Host.hpp"
 #include "system/System.hpp"
-#include "system/systemtypes.hpp"
+#include "system/SystemTypes.hpp"
 #include "system/StringHandler.hpp"
 #include "steam/isteamclient.h"
 #include "steam/isteamapps.h"
@@ -106,6 +106,57 @@ void CFileSystem::UnloadDLL()
 	};
 };
 
+void CFileSystem::CreatePath(char *path)
+{
+	if(*path == 0)
+		return;
+	
+	char old;
+	
+	for(char *ofs = path + 1; *ofs; ofs++)
+	{
+		if(*ofs == '/' || *ofs == '\\')
+		{
+			old = *ofs;
+			*ofs = 0;
+			CreateDirHierarchy(path, 0);
+			*ofs = old;
+		};
+	};
+};
+
+NOXREF void CFileSystem::CopyFile(char *netpath, char *cachepath)
+{
+	NOXREFCHECK;
+
+	int count;
+	int remaining;
+	char buf[4096];
+
+	FileHandle_t out;
+	FileHandle_t in = Open(netpath, "rb");
+
+	if(!in)
+		return;
+
+	count = Size(in);
+	CreatePath(cachepath);
+
+	for(out = Open(cachepath, "wb"); count; count -= remaining)
+	{
+		remaining = count;
+
+		if(remaining > 4096)
+			remaining = 4096;
+
+		Read(buf, remaining, 1, in);
+		Write(buf, remaining, 1, out);
+	};
+
+	Close(in);
+	Close(out);
+};
+
 const char *CFileSystem::GetBaseDirectory()
 {
 	return msBaseDir;
@@ -124,7 +175,7 @@ int CFileSystem::SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 	{
 		//if(CRehldsPlatformHolder::get()->SteamApps() && GetGameAppID() == 70)
 			//bLowViolenceBuild = CRehldsPlatformHolder::get()->SteamApps()->BIsLowViolence();
-	}
+	};
 
 	//pchLang = CRehldsPlatformHolder::get()->SteamApps() ? CRehldsPlatformHolder::get()->SteamApps()->GetCurrentGameLanguage() : NULL;
 	Q_strncpy(language, pchLang ? pchLang : "english", ARRAYSIZE(language));
@@ -242,16 +293,17 @@ int CFileSystem::SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 				temp[sizeof(temp) - 1] = 0;
 				CStringHandler::FixSlashes(temp);
 				mpFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
-			}
-		}
-	}
+			};
+		};
+	};
+
 	if(bEnableHDPack)
 	{
 		Q_snprintf(temp, sizeof(temp) - 1, "%s/%s_hd", GetBaseDirectory(), pDefaultDir);
 		temp[sizeof(temp) - 1] = 0;
 		CStringHandler::FixSlashes(temp);
 		mpFileSystem->AddSearchPathNoWrite(temp, "DEFAULTGAME");
-	}
+	};
 
 	Q_snprintf(temp, sizeof(temp) - 1, "%s", GetBaseDirectory());
 	temp[sizeof(temp) - 1] = 0;
@@ -365,9 +417,36 @@ unsigned int CFileSystem::Size(FileHandle_t file)
 	return mpFileSystem->Size(file);
 };
 
+// merged with int EXT_FUNC COM_FileSize(char *filename)
 unsigned int CFileSystem::FileSize(const char *pFileName)
 {
-	return mpFileSystem->Size(pFileName);
+	int iSize = -1;
+	
+	// I think it's already handled by IFileSystem...
+	// I even think that this is the actual impl inside the IFileSystem...
+	
+	FileHandle_t fp = Open(pFileName, "rb");
+	
+	if(fp)
+	{
+		iSize = Size(fp);
+		Close(fp);
+	};
+	
+	return iSize; // ouch...
+	
+	//return mpFileSystem->Size(pFileName);
+};
+
+NOXREF int CFileSystem::ExpandFileName(char *filename)
+{
+	NOXREFCHECK;
+
+	char netpath[MAX_PATH];
+
+	GetLocalPath(filename, netpath, ARRAYSIZE(netpath));
+	Q_strcpy(filename, netpath);
+	return *filename != 0;
 };
 
 int32 CFileSystem::GetFileTime(const char *pFileName)

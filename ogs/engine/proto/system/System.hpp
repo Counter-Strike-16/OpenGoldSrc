@@ -78,7 +78,7 @@ public:
 	// not to hog cpu when paused or debugging
 	static NOXREF void Sleep(int msec);
 	
-	// send text to the console
+	// send text to the remote console
 	static void Printf(const char *fmt, ...);
 	
 	static NOXREF void Warning(const char *pszWarning, ...);

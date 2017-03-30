@@ -34,4 +34,5 @@ class CStringHandler
 {
 public:
 	static void FixSlashes(char *pname);
+	static void StripTrailingSlash(char *ppath);
 };

@@ -227,7 +227,6 @@ const int NET_WS_MAX_FRAGMENTS = 5;
 #define normalqueue (*pnormalqueue)
 #endif // HOOK_ENGINE
 
-extern qboolean net_thread_initialized;
 extern cvar_t net_address;
 extern cvar_t ipname;
 extern cvar_t defport;
@@ -237,7 +236,7 @@ extern int net_sleepforever;
 extern loopback_t loopbacks[2];
 extern packetlag_t g_pLagData[3];
 extern float gFakeLag;
-extern int net_configured;
+
 #ifdef _WIN32
 extern netadr_t net_local_ipx_adr;
 #endif // _WIN32
@@ -249,7 +248,6 @@ extern qboolean noipx;
 #endif // _WIN32
 extern sizebuf_t net_message;
 extern cvar_t clockwindow;
-extern int use_thread;
 extern cvar_t iphostport;
 extern cvar_t hostport;
 #ifdef _WIN32
@@ -274,9 +272,6 @@ extern int ipx_sockets[3];
 extern LONGPACKET gNetSplit;
 extern net_messages_t *messages[3];
 extern net_messages_t *normalqueue;
-
-void NET_ThreadLock();
-void NET_ThreadUnlock();
 
 unsigned short Q_ntohs(unsigned short netshort);
 
@@ -317,9 +312,6 @@ qboolean NET_QueuePacket(netsrc_t sock);
 
 int NET_Sleep();
 
-void NET_StartThread();
-void NET_StopThread();
-
 void *net_malloc(size_t size);
 
 net_messages_t *NET_AllocMsg(int size);
@@ -327,30 +319,19 @@ void NET_FreeMsg(net_messages_t *pmsg);
 
 qboolean NET_GetPacket(netsrc_t sock);
 
-void NET_AllocateQueues();
-void NET_FlushQueues();
-
 int NET_SendLong(netsrc_t sock, int s, const char *buf, int len, int flags, const struct sockaddr *to, int tolen);
 
 void NET_SendPacket_api(unsigned int length, void *data, const netadr_t &to);
 void NET_SendPacket(netsrc_t sock, int length, void *data, const netadr_t &to);
 
 int NET_IPSocket(char *net_interface, int port, qboolean multicast);
-void NET_OpenIP();
+
 
 int NET_IPXSocket(int hostshort);
-void NET_OpenIPX();
-
-void NET_GetLocalAddress();
-
-int NET_IsConfigured();
-void NET_Config(qboolean multiplayer);
 
 void MaxPlayers_f();
 
-void NET_Init();
 void NET_ClearLagData(qboolean bClient, qboolean bServer);
-void NET_Shutdown();
 
 qboolean NET_JoinGroup(netsrc_t sock, netadr_t &addr);
 qboolean NET_LeaveGroup(netsrc_t sock, netadr_t &addr);

@@ -29,12 +29,14 @@
 /// @file
 /// @brief primary header for host
 
+// TODO: reduce the size of this crap
+
 #include "precompiled.hpp"
 #include "system/Host.hpp"
 #include "system/common.hpp"
 #include "system/System.hpp"
-#include "system/systemtypes.hpp"
-//#include "console/Console.hpp"
+#include "system/SystemTypes.hpp"
+#include "console/Console.hpp"
 
 /*
 * Globals initialization
@@ -107,7 +109,8 @@ int CHost::Init(quakeparms_t *parms)
 		Cvar_DirectSet(&console, "1.0");
 */
 
-	//mpConsole = std::make_unique<CConsole>();
+	mpConsole = std::make_unique<CConsole>();
+	mpNetwork = std::make_unique<CNetwork>(mpConsole.get());
 
 	InitLocal();
 
@@ -138,19 +141,21 @@ int CHost::Init(quakeparms_t *parms)
 	W_LoadWadFile("gfx.wad");
 	W_LoadWadFile("fonts.wad");
 	Key_Init();
+*/
+
 	mpConsole->Init();
-	Decal_Init();
-	Mod_Init();
 
-	NET_Init();
-	Netchan_Init();
+	//Decal_Init();
+	//Mod_Init();
 
-	DELTA_Init();
+	mpNetwork->Init();
+	//Netchan_Init();
 
-	mpServer->Init();
+	//DELTA_Init();
+
+	//mpServer->Init();
 
 	// SystemWrapper_Init();
-	*/
 
 	PrintVersion();
 
@@ -286,7 +291,7 @@ void CHost::Shutdown()
 	isdown = true;
 	
 	if(host_initialized) // Client-side
-		WriteConfig();
+		WriteConfig(); // TODO: also call it before the new game
 
 	//mpServer->ServerShutdown(); // Deactivate
 	//Voice_Deinit();
@@ -318,11 +323,14 @@ void CHost::Shutdown()
 	mpServer->Shutdown();
 	
 	// SystemWrapper_ShutDown();
-	
+	*/
+
 	mpNetwork->Shutdown();
-	mpSound->Shutdown();
+
+	//mpSound->Shutdown();
 	mpConsole->Shutdown();
 	
+	/*
 	ReleaseEntityDlls();
 	CL_ShutDownClientStatic();
 	CM_FreePAS();
@@ -365,9 +373,9 @@ void CHost::EndGame(const char *message, ...)
 	Q_vsnprintf(string, sizeof(string), message, argptr);
 	va_end(argptr);
 
-	/*
-	mpConsole->DPrintf("%s: %s\n", __FUNCTION__, string);
-
+	mpConsole->DevPrintf("%s: %s\n", __FUNCTION__, string);
+	
+/*
 	int oldn = cls.demonum;
 
 	if(g_psv.active)
@@ -414,7 +422,7 @@ void NORETURN CHost::Error(const char *error, ...)
 	//if(g_psv.active && developer.value != 0.0f)
 		//CL_WriteMessageHistory(0, 0);
 
-	//mpConsole->Printf("%s: %s\n", __FUNCTION__, string);
+	mpConsole->Printf("%s: %s\n", __FUNCTION__, string);
 	
 	//if(g_psv.active)
 		//ShutdownServer(false);
@@ -452,7 +460,7 @@ void CHost::WriteConfig()
 	
 	if(Key_CountBindings() <= 1)
 	{
-		//mpConsole->Printf("skipping config.cfg output, no keys bound\n");
+		mpConsole->Printf("skipping config.cfg output, no keys bound\n");
 		return;
 	};
 
@@ -517,7 +525,7 @@ void CHost::WriteCustomConfig()
 	   !Q_stricmp(configname, "server") ||
 	   !Q_stricmp(configname, "userconfig"))
 	{
-		//mpConsole->Printf("skipping writecfg output, invalid filename given\n");
+		mpConsole->Printf("skipping writecfg output, invalid filename given\n");
 	}
 #ifndef SWDS
 	else
@@ -534,7 +542,7 @@ void CHost::WriteCustomConfig()
 				
 				if(!f)
 				{
-					//mpConsole->Printf("Couldn't write %s.\n", configname);
+					mpConsole->Printf("Couldn't write %s.\n", configname);
 					return;
 				};
 
@@ -553,7 +561,7 @@ void CHost::WriteCustomConfig()
 					f->Printf("+jlook\n");
 
 				//f->Close(); // hm...
-				//mpConsole->Printf("%s successfully created!\n", configname);
+				mpConsole->Printf("%s successfully created!\n", configname);
 			};
 		};
 	};
@@ -662,7 +670,7 @@ void CHost::ShutdownServer(bool crash)
 	*/
 };
 
-void CHost::CheckDynamicStructures()
+void CHost::CheckDynamicStructures() // TODO: move to server class
 {
 	/*
 	client_t *cl = g_psvs.clients;
@@ -682,16 +690,14 @@ void CHost::ClearMemory(bool bQuiet)
 	Ed_StrPool_Reset();
 #endif // REHLDS_FIXES
 
-/*
-	CM_FreePAS();
-	SV_ClearEntities();
+	//CM_FreePAS();
+	//SV_ClearEntities();
 
 	if(!bQuiet)
-		mpConsole->DPrintf("Clearing memory\n");
+		mpConsole->DevPrintf("Clearing memory\n");
 
 	//D_FlushCaches();
-	Mod_ClearAll();
-*/
+	//Mod_ClearAll();
 
 	if(host_hunklevel)
 	{
@@ -821,7 +827,7 @@ void CHost::GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, cha
 		Q_strcpy(pszMap, "<no map>");
 	};
 
-	*nMaxPlayers = 0; //g_psvs.maxclients;
+	*nMaxPlayers = 0; //g_psvs.maxclients; // mpServer->GetMaxClients();
 };
 
 void CHost::PrintSpeeds(double *time) // Or CalcSpeeds
@@ -1011,6 +1017,12 @@ void CHost::_Frame(float time)
 	
 	// wipe all the local states that are older than the latest state 
 	// received from the server and reapply the rest above it
+	//			received state time
+	//					|
+	//					v
+	// [----------------|---------------]
+	//				<--- will be removed
+	//					|---> reapply our predicted states
 	CL_RedoPrediction();
 	
 	CL_VoiceIdle();
@@ -1123,7 +1135,7 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 
 		if(++timecount >= 1000)
 		{
-			int m = (timetotal * 1000.0 / (double)timecount);
+			int m = (timetotal * 1000.0f / (double)timecount);
 			int c = 0;
 
 			timecount = 0;
@@ -1136,7 +1148,7 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 					//++c;
 			};
 
-			//mpConsole->Printf("host_profile: %2i clients %2i msec\n", c, m);
+			mpConsole->Printf("host_profile: %2i clients %2i msec\n", c, m);
 		};
 	};
 
@@ -1258,7 +1270,7 @@ void CHost::InitializeGameDLL()
 
 	//if(g_psvs.dll_initialized)
 	{
-		//mpConsole->DPrintf("Sys_InitializeGameDLL called twice, skipping second call\n");
+		mpConsole->DevPrintf("Sys_InitializeGameDLL called twice, skipping second call\n");
 		return;
 	};
 

@@ -260,12 +260,8 @@ char *vstr(vec_t *v);
 NOXREF int memsearch(unsigned char *start, int count, int search);
 
 NOXREF void COM_WriteFile(char *filename, void *data, int len);
-NOXREF void COM_CopyFile(char *netpath, char *cachepath);
 
-void COM_CreatePath(const char *path);
 
-NOXREF int COM_ExpandFilename(char *filename);
-int COM_FileSize(char *filename);
 unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
 void COM_FreeFile(void *buffer);
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize);
@@ -277,7 +273,7 @@ NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, i
 void COM_Shutdown();
 NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName);
 void COM_AddDefaultDir(char *pszDir);
-void COM_StripTrailingSlash(char *ppath);
+
 void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault);
 qboolean COM_SetupDirectories();
 void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOutdated);

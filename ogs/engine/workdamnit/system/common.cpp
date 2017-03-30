@@ -316,18 +316,15 @@ void COM_FileBase(const char *in, char *out)
 
 void COM_DefaultExtension(char *path, char *extension)
 {
-	char *src;
-	src = path + Q_strlen(path) - 1;
+	char *src = path + Q_strlen(path) - 1;
 
 	while(*src != '/' && *src != '\\' && src != path)
 	{
 		if(*src == '.')
-		{
 			return;
-		}
 
 		src--;
-	}
+	};
 
 	Q_strcat(path, extension);
 }
@@ -353,15 +350,13 @@ char *COM_Parse(char *data)
 	com_token[0] = 0;
 
 	if(!data)
-	{
 		return NULL;
-	}
 
 	if(com_last_in_quotes_data == data)
 	{
 		// continue to parse quoted string
 		com_last_in_quotes_data = NULL;
-		goto inquotes;
+		goto inquotes; // crap
 	}
 
 skipwhite:
@@ -617,8 +612,8 @@ NOXREF void COM_WriteFile(char *filename, void *data, int len)
 	Q_snprintf(path, MAX_PATH - 1, "%s", filename);
 	path[MAX_PATH - 1] = 0;
 
-	COM_FixSlashes(path);
-	COM_CreatePath(path);
+	CStringHandler::FixSlashes(path);
+	gpFileSystem->CreatePath(path);
 
 	FileHandle_t fp = FS_Open(path, "wb");
 
@@ -632,90 +627,6 @@ NOXREF void COM_WriteFile(char *filename, void *data, int len)
 	{
 		Sys_Printf("%s: failed on %s\n", __FUNCTION__, path);
 	}
-}
-
-void COM_CreatePath(char *path)
-{
-	char *ofs;
-	char old;
-
-	if(*path == 0)
-	{
-		return;
-	}
-
-	for(ofs = path + 1; *ofs; ofs++)
-	{
-		if(*ofs == '/' || *ofs == '\\')
-		{
-			old = *ofs;
-			*ofs = 0;
-			FS_CreateDirHierarchy(path, 0);
-			*ofs = old;
-		}
-	}
-}
-
-NOXREF void COM_CopyFile(char *netpath, char *cachepath)
-{
-	NOXREFCHECK;
-
-	int count;
-	int remaining;
-	char buf[4096];
-
-	FileHandle_t out;
-	FileHandle_t in = FS_Open(netpath, "rb");
-
-	if(!in)
-	{
-		return;
-	}
-
-	count = FS_Size(in);
-	COM_CreatePath(cachepath);
-
-	for(out = FS_Open(cachepath, "wb"); count; count -= remaining)
-	{
-		remaining = count;
-
-		if(remaining > 4096)
-		{
-			remaining = 4096;
-		}
-
-		FS_Read(buf, remaining, 1, in);
-		FS_Write(buf, remaining, 1, out);
-	}
-
-	FS_Close(in);
-	FS_Close(out);
-}
-
-NOXREF int COM_ExpandFilename(char *filename)
-{
-	NOXREFCHECK;
-
-	char netpath[MAX_PATH];
-
-	FS_GetLocalPath(filename, netpath, ARRAYSIZE(netpath));
-	Q_strcpy(filename, netpath);
-	return *filename != 0;
-}
-
-int EXT_FUNC COM_FileSize(char *filename)
-{
-	FileHandle_t fp;
-	int iSize;
-
-	iSize = -1;
-	fp = FS_Open(filename, "rb");
-	if(fp)
-	{
-		iSize = FS_Size(fp);
-		FS_Close(fp);
-	}
-	return iSize;
 }
 
 unsigned char *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength)
@@ -935,19 +846,6 @@ void COM_AddDefaultDir(char *pszDir)
 	}
 }
 
-void COM_StripTrailingSlash(char *ppath)
-{
-	int len = Q_strlen(ppath);
-
-	if(len > 0)
-	{
-		if((ppath[len - 1] == '\\') || (ppath[len - 1] == '/'))
-		{
-			ppath[len - 1] = 0;
-		}
-	}
-}
-
 void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault)
 {
 	const char *pParameter = NULL;
@@ -980,7 +878,7 @@ void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char 
 		pDirName[0] = 0;
 	}
 
-	COM_StripTrailingSlash(pDirName);
+	CStringHandler::StripTrailingSlash(pDirName);
 }
 
 // TODO: finish me!
@@ -994,8 +892,7 @@ qboolean COM_SetupDirectories()
 	COM_ParseDirectoryFromCmd("-basedir", pDirName, "valve");
 	COM_ParseDirectoryFromCmd("-game", com_gamedir, pDirName);
 
-	if(FileSystem_SetGameDirectory(
-	   pDirName, (const char *)(com_gamedir[0] != 0 ? com_gamedir : 0)))
+	if(FileSystem_SetGameDirectory(pDirName, (const char *)(com_gamedir[0] != 0 ? com_gamedir : 0)))
 	{
 		Info_SetValueForStarKey(Info_Serverinfo(), "*gamedir", com_gamedir, MAX_INFO_STRING);
 		return 1;

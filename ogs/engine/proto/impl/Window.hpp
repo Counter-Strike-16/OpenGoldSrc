@@ -32,13 +32,14 @@
 #pragma once
 
 #include "video/IWindow.hpp"
-#include "SDL2/SDL_video.h"
+
+typedef struct SDL_Window SDL_Window;
 
 class CWindowSDL : public IWindow
 {
 public:
 	CWindowSDL();
-	CWindowSDL(const char *asTitle, int anPosX, int anPoY, int anWidth, int anHeight, uint32 anFlags);
+	CWindowSDL(const char *asTitle, int anPosX, int anPosY, int anWidth, int anHeight, uint32 anFlags);
 	~CWindowSDL(){Close();}
 	
 	bool Open();

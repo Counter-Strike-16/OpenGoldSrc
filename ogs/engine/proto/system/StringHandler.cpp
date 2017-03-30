@@ -30,6 +30,7 @@
 
 #include "precompiled.hpp"
 #include "system/StringHandler.hpp"
+#include "system/common.hpp"
 
 void CStringHandler::FixSlashes(char *pname)
 {
@@ -44,5 +45,16 @@ void CStringHandler::FixSlashes(char *pname)
 #endif
 
 		pname++;
+	};
+};
+
+void CStringHandler::StripTrailingSlash(char *ppath)
+{
+	int len = Q_strlen(ppath);
+
+	if(len > 0)
+	{
+		if((ppath[len - 1] == '\\') || (ppath[len - 1] == '/'))
+			ppath[len - 1] = 0;
 	};
 };

@@ -87,20 +87,26 @@
     <ClCompile Include="..\..\..\public\rehlds\crc32c.cpp" />
     <ClCompile Include="..\..\..\public\rehlds\sys_shared.cpp" />
     <ClCompile Include="..\..\..\tier0\dbg.cpp" />
+    <ClCompile Include="..\console\Console.cpp" />
     <ClCompile Include="..\filesystem\File.cpp" />
     <ClCompile Include="..\filesystem\FileSystem.cpp" />
     <ClCompile Include="..\impl\win\SystemWin.cpp" />
+    <ClCompile Include="..\network\Network.cpp" />
     <ClCompile Include="..\system\DedicatedServerAPI.cpp" />
     <ClCompile Include="..\system\Engine.cpp" />
+    <ClCompile Include="..\system\EngineAPI.cpp" />
     <ClCompile Include="..\system\Host.cpp" />
     <ClCompile Include="..\system\StringHandler.cpp" />
     <ClCompile Include="..\system\System.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\console\Console.hpp" />
     <ClInclude Include="..\filesystem\File.hpp" />
     <ClInclude Include="..\filesystem\FileSystem.hpp" />
+    <ClInclude Include="..\network\Network.hpp" />
     <ClInclude Include="..\system\DedicatedServerAPI.hpp" />
     <ClInclude Include="..\system\Engine.hpp" />
+    <ClInclude Include="..\system\EngineAPI.hpp" />
     <ClInclude Include="..\system\Host.hpp" />
     <ClInclude Include="..\system\IEngine.hpp" />
     <ClInclude Include="..\system\StringHandler.hpp" />
@@ -150,7 +156,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Swds Play|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -287,10 +293,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Swds|Win32'">
     <OutDir>../../../../bin/msvc/debug/</OutDir>
     <IntDir>../../../../build/msvc/debug/engine/</IntDir>
+    <TargetName>swds</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Swds Play|Win32'">
     <OutDir>../../../../bin/msvc/debug/</OutDir>
     <IntDir>../../../../build/msvc/debug/engine/</IntDir>
+    <TargetName>swds</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Record|Win32'">
     <OutDir>../../../../bin/msvc/debug/</OutDir>
@@ -299,6 +307,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
     <OutDir>../../../../bin/msvc/debug/</OutDir>
     <IntDir>../../../../build/msvc/debug/engine/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Swds Play|Win32'">
+    <TargetName>swds</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

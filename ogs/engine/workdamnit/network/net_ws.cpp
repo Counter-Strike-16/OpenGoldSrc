@@ -31,10 +31,10 @@
 #include "precompiled.hpp"
 #include "network/net.hpp"
 #include "memory/mem.hpp"
-#include "system/system.hpp"
+#include "system/System.hpp"
 #include "system/common.hpp"
-#include "system/host.hpp"
-#include "console/console.hpp"
+#include "system/Host.hpp"
+#include "console/Console.hpp"
 #include "console/cvar.hpp"
 #include "console/cmd.hpp"
 #include "world/pr_cmds.hpp"
@@ -42,16 +42,11 @@
 #include "client/client.hpp"
 #include "tier0/platform.h"
 
-#ifdef _WIN32
-CRITICAL_SECTION net_cs;
-#endif // _WIN32
 
-qboolean net_thread_initialized;
 
 loopback_t loopbacks[2];
 packetlag_t g_pLagData[3]; // List of lag structures, if fakelag is set.
 float gFakeLag;
-int net_configured;
 #ifdef _WIN32
 netadr_t net_local_ipx_adr;
 #endif
@@ -60,8 +55,6 @@ netadr_t net_from;
 sizebuf_t net_message;
 qboolean noip;
 qboolean noipx;
-
-int use_thread;
 
 unsigned char net_message_buffer[NET_MAX_PAYLOAD];
 unsigned char in_message_buf[NET_MAX_PAYLOAD];
@@ -147,25 +140,7 @@ cvar_t net_graphpos;
 
 #endif // HOOK_ENGINE
 
-void NET_ThreadLock()
-{
-#ifdef _WIN32
-	if(use_thread && net_thread_initialized)
-	{
-		EnterCriticalSection(&net_cs);
-	}
-#endif // _WIN32
-}
 
-void NET_ThreadUnlock()
-{
-#ifdef _WIN32
-	if(use_thread && net_thread_initialized)
-	{
-		LeaveCriticalSection(&net_cs);
-	}
-#endif // _WIN32
-}
 
 unsigned short Q_ntohs(unsigned short netshort)
 {
@@ -1238,51 +1213,6 @@ int NET_Sleep()
 	return select(number + 1, &fdset, 0, 0, net_sleepforever == 0 ? &tv : NULL);
 }
 
-void NET_StartThread()
-{
-	if(use_thread)
-	{
-		if(!net_thread_initialized)
-		{
-			net_thread_initialized = TRUE;
-			Sys_Error("-net_thread is not reversed yet");
-#ifdef _WIN32
-/*
-                        InitializeCriticalSection(&net_cs);
-                        hThread = CreateThread(0, 0,
-   (LPTHREAD_START_ROUTINE)NET_ThreadMain, 0, 0, &ThreadId);
-                        if (!hThread)
-                        {
-                                DeleteCriticalSection(&net_cs);
-                                net_thread_initialized = 0;
-                                use_thread = 0;
-                                Sys_Error("Couldn't initialize network thread,
-   run without -net_thread\n");
-                        }
-                        */
-#endif // _WIN32
-		}
-	}
-}
-
-void NET_StopThread()
-{
-	if(use_thread)
-	{
-		if(net_thread_initialized)
-		{
-#ifdef _WIN32
-/*
-                        TerminateThread(hThread, 0);
-                        DeleteCriticalSection(&net_cs);
-                        */
-#endif // _WIN32
-			net_thread_initialized = FALSE;
-			Sys_Error("-net_thread is not reversed yet");
-		}
-	}
-}
-
 void *net_malloc(size_t size)
 {
 	return Mem_ZeroMalloc(size);
@@ -1372,47 +1302,9 @@ qboolean NET_GetPacket(netsrc_t sock)
 	return bret;
 }
 
-void NET_AllocateQueues()
-{
-	net_messages_t *p;
-	for(int i = 0; i < NUM_MSG_QUEUES; i++)
-	{
-		p = (net_messages_t *)Mem_ZeroMalloc(sizeof(net_messages_t));
-		p->buffer = (unsigned char *)Mem_ZeroMalloc(MSG_QUEUE_SIZE);
-		p->preallocated = 1;
-		p->next = normalqueue;
-		normalqueue = p;
-	}
 
-	NET_StartThread();
-}
 
-void NET_FlushQueues()
-{
-	for(int i = 0; i < 3; i++)
-	{
-		net_messages_t *p = messages[i];
-		while(p)
-		{
-			net_messages_t *n = p->next;
-			Mem_Free(p->buffer);
-			Mem_Free(p);
-			p = n;
-		}
 
-		messages[i] = NULL;
-	}
-
-	net_messages_t *p = normalqueue;
-	while(p)
-	{
-		net_messages_t *n = p->next;
-		Mem_Free(p->buffer);
-		Mem_Free(p);
-		p = n;
-	}
-	normalqueue = NULL;
-}
 
 int NET_SendLong(netsrc_t sock, int s, const char *buf, int len, int flags, const struct sockaddr *to, int tolen)
 {
@@ -1727,102 +1619,7 @@ int NET_IPSocket(char *net_interface, int port, qboolean multicast)
 	return newsocket;
 }
 
-void NET_OpenIP()
-{
-	// cvar_t *ip;//unused?
-	int port;
-	int dedicated;
-	int sv_port = 0;
-	int cl_port = 0;
-	// int mc_port;//unused?
-	static qboolean bFirst = TRUE;
 
-	port = 0;
-	dedicated = cls.state == ca_dedicated;
-
-	NET_ThreadLock();
-
-#ifdef REHLDS_FIXES
-	if(ip_sockets[NS_SERVER] == INVALID_SOCKET)
-#else
-	if(!ip_sockets[NS_SERVER])
-#endif
-	{
-		port = (int)iphostport.value;
-
-		if(!port)
-		{
-			port = (int)hostport.value;
-			if(!port)
-			{
-				port = (int)defport.value;
-				hostport.value = defport.value;
-			}
-		}
-		ip_sockets[NS_SERVER] = NET_IPSocket(ipname.string, port, FALSE);
-
-#ifdef REHLDS_FIXES
-		if(ip_sockets[NS_SERVER] == INVALID_SOCKET && dedicated)
-#else
-		if(!ip_sockets[NS_SERVER] && dedicated)
-#endif
-		{
-			Sys_Error("Couldn't allocate dedicated server IP port %d.", port);
-		}
-		sv_port = port;
-	}
-	NET_ThreadUnlock();
-
-	if(dedicated)
-		return;
-
-	NET_ThreadLock();
-#ifdef REHLDS_FIXES
-	if(ip_sockets[NS_CLIENT] == INVALID_SOCKET)
-#else
-	if(!ip_sockets[NS_CLIENT])
-#endif
-	{
-		port = (int)ip_clientport.value;
-
-		if(!port)
-		{
-			port = (int)clientport.value;
-			if(!port)
-				port = -1;
-		}
-		ip_sockets[NS_CLIENT] = NET_IPSocket(ipname.string, port, FALSE);
-#ifdef REHLDS_FIXES
-		if(ip_sockets[NS_CLIENT] == INVALID_SOCKET)
-#else
-		if(!ip_sockets[NS_CLIENT])
-#endif
-			ip_sockets[NS_CLIENT] = NET_IPSocket(ipname.string, -1, FALSE);
-		cl_port = port;
-	}
-#ifdef REHLDS_FIXES
-	if(ip_sockets[NS_MULTICAST] == INVALID_SOCKET)
-#else
-	if(!ip_sockets[NS_MULTICAST])
-#endif
-	{
-		ip_sockets[NS_MULTICAST] =
-		NET_IPSocket(ipname.string, multicastport.value, TRUE);
-#ifdef REHLDS_FIXES
-		if(ip_sockets[NS_MULTICAST] == INVALID_SOCKET && !dedicated)
-#else
-		if(!ip_sockets[NS_MULTICAST] && !dedicated)
-#endif
-			Con_Printf("Warning! Couldn't allocate multicast IP port.\n");
-	}
-	NET_ThreadUnlock();
-
-	if(bFirst)
-	{
-		bFirst = FALSE;
-		Con_Printf("NET Ports:  server %i, client %i\n", sv_port, cl_port);
-	}
-}
 
 #ifdef _WIN32
 
@@ -1938,164 +1735,9 @@ void NET_OpenIPX()
 
 #endif // _WIN32
 
-void NET_GetLocalAddress()
-{
-	char buff[512];
-	struct sockaddr_in address;
-	int namelen;
-	int net_error;
 
-	Q_memset(&net_local_adr, 0, sizeof(netadr_t));
 
-#ifdef _WIN32
-	Q_memset(&net_local_ipx_adr, 0, sizeof(netadr_t));
-#endif // _WIN32
 
-	if(noip)
-	{
-		Con_Printf("TCP/IP Disabled.\n");
-	}
-	else
-	{
-		if(Q_strcmp(ipname.string, "localhost"))
-			Q_strncpy(buff, ipname.string, ARRAYSIZE(buff) - 1);
-		else
-		{
-#ifdef _WIN32
-			CRehldsPlatformHolder::get()->gethostname(buff, ARRAYSIZE(buff));
-#else
-			gethostname(buff, ARRAYSIZE(buff));
-#endif // _WIN32
-		}
-
-		buff[ARRAYSIZE(buff) - 1] = 0;
-
-#ifdef REHLDS_FIXES
-		// check if address is valid
-		if(NET_StringToAdr(buff, &net_local_adr))
-		{
-#else
-		NET_StringToAdr(buff, &net_local_adr);
-#endif
-			namelen = sizeof(address);
-#ifdef _WIN32
-			if(CRehldsPlatformHolder::get()->getsockname(
-			   (SOCKET)ip_sockets[NS_SERVER], (struct sockaddr *)&address, (socklen_t *)&namelen) == SOCKET_ERROR)
-#else
-		if(getsockname((SOCKET)ip_sockets[NS_SERVER], (struct sockaddr *)&address, (socklen_t *)&namelen) == SOCKET_ERROR)
-#endif // _WIN32
-			{
-				noip = TRUE;
-				net_error = NET_GetLastError();
-
-				Con_Printf(
-				"Could not get TCP/IP address, TCP/IP disabled\nReason:  %s\n",
-				NET_ErrorString(net_error));
-			}
-			//else
-			{
-				//net_local_adr.port = address.sin_port;
-				//Con_Printf("Server IP address %s\n", NET_AdrToString(net_local_adr));
-				//Cvar_Set("net_address", va(NET_AdrToString(net_local_adr)));
-			}
-
-#ifdef REHLDS_FIXES
-		}
-		else
-		{
-			Con_Printf("Could not get TCP/IP address, Invalid hostname '%s'\n", buff);
-		}
-#endif
-	}
-
-#ifdef _WIN32
-	if(noipx)
-	{
-		Con_Printf("No IPX Support.\n");
-	}
-	else
-	{
-		namelen = 14;
-		if(CRehldsPlatformHolder::get()->getsockname(
-		   ipx_sockets[NS_SERVER], (struct sockaddr *)&address, (socklen_t *)&namelen) == SOCKET_ERROR)
-		{
-			noipx = TRUE;
-			net_error = NET_GetLastError();
-		}
-		//else
-		{
-			//SockadrToNetadr((struct sockaddr *)&address, &net_local_ipx_adr);
-			//Con_Printf("Server IPX address %s\n", NET_AdrToString(net_local_ipx_adr));
-		}
-	}
-#endif //_WIN32
-}
-
-int NET_IsConfigured()
-{
-	return net_configured;
-}
-
-void NET_Config(qboolean multiplayer)
-{
-	int i;
-	static qboolean old_config;
-	static qboolean bFirst = TRUE;
-
-	if(old_config == multiplayer)
-	{
-		return;
-	}
-
-	old_config = multiplayer;
-
-	if(multiplayer)
-	{
-		if(!noip)
-			NET_OpenIP();
-#ifdef _WIN32
-		if(!noipx)
-			NET_OpenIPX();
-#endif //_WIN32
-		if(bFirst)
-		{
-			bFirst = FALSE;
-			NET_GetLocalAddress();
-		}
-	}
-	else
-	{
-#ifdef REHLDS_FIXES
-		const int invalid_socket = INVALID_SOCKET;
-#else
-		const int invalid_socket = 0;
-#endif // REHLDS_FIXES
-		NET_ThreadLock();
-		for(i = 0; i < 3; i++)
-		{
-			if(ip_sockets[i] != invalid_socket)
-			{
-#ifdef _WIN32
-				CRehldsPlatformHolder::get()->closesocket(ip_sockets[i]);
-#else
-				SOCKET_CLOSE(ip_sockets[i]);
-#endif //_WIN32
-				ip_sockets[i] = invalid_socket;
-			}
-#ifdef _WIN32
-
-			if(ipx_sockets[i] != invalid_socket)
-			{
-				CRehldsPlatformHolder::get()->closesocket(ipx_sockets[i]);
-				ipx_sockets[i] = invalid_socket;
-			}
-#endif //_WIN32
-		}
-		NET_ThreadUnlock();
-	}
-
-	net_configured = multiplayer ? 1 : 0;
-}
 
 void MaxPlayers_f()
 {
@@ -2128,76 +1770,6 @@ void MaxPlayers_f()
 		Cvar_Set("deathmatch", "1");
 }
 
-void NET_Init()
-{
-#ifdef HOOK_ENGINE
-	Cmd_AddCommand("maxplayers", (xcommand_t)GetOriginalFuncAddrOrDefault("MaxPlayers_f", (void *)MaxPlayers_f));
-#else
-	Cmd_AddCommand("maxplayers", MaxPlayers_f);
-#endif // HOOK_ENGINE
-
-	Cvar_RegisterVariable(&net_address);
-	Cvar_RegisterVariable(&ipname);
-	Cvar_RegisterVariable(&iphostport);
-	Cvar_RegisterVariable(&hostport);
-	Cvar_RegisterVariable(&defport);
-	Cvar_RegisterVariable(&ip_clientport);
-	Cvar_RegisterVariable(&clientport);
-	Cvar_RegisterVariable(&clockwindow);
-	Cvar_RegisterVariable(&multicastport);
-#ifdef _WIN32
-	Cvar_RegisterVariable(&ipx_hostport);
-	Cvar_RegisterVariable(&ipx_clientport);
-#endif // _WIN32
-	Cvar_RegisterVariable(&fakelag);
-	Cvar_RegisterVariable(&fakeloss);
-	Cvar_RegisterVariable(&net_graph);
-	Cvar_RegisterVariable(&net_graphwidth);
-	Cvar_RegisterVariable(&net_scale);
-	Cvar_RegisterVariable(&net_graphpos);
-
-	if(COM_CheckParm("-netthread"))
-		use_thread = 1;
-
-	if(COM_CheckParm("-netsleep"))
-		net_sleepforever = 0;
-
-#ifdef _WIN32
-	if(COM_CheckParm("-noipx"))
-		noipx = TRUE;
-#endif // _WIN32
-
-	if(COM_CheckParm("-noip"))
-		noip = TRUE;
-
-	int port = COM_CheckParm("-port");
-	if(port)
-		Cvar_SetValue("hostport", Q_atof(com_argv[port + 1]));
-
-	int clockwindow_ = COM_CheckParm("-clockwindow");
-	if(clockwindow_)
-		Cvar_SetValue("clockwindow", Q_atof(com_argv[clockwindow_ + 1]));
-
-	net_message.data = (byte *)&net_message_buffer;
-	net_message.maxsize = sizeof(net_message_buffer);
-	net_message.flags = 0;
-	net_message.buffername = "net_message";
-
-	in_message.data = (byte *)&in_message_buf;
-	in_message.maxsize = sizeof(in_message_buf);
-	in_message.flags = 0;
-	in_message.buffername = "in_message";
-
-	for(int i = 0; i < 3; i++)
-	{
-		g_pLagData[i].pPrev = &g_pLagData[i];
-		g_pLagData[i].pNext = &g_pLagData[i];
-	}
-
-	NET_AllocateQueues();
-	Con_DPrintf("Base networking initialized.\n");
-}
-
 void NET_ClearLagData(qboolean bClient, qboolean bServer)
 {
 	NET_ThreadLock();
@@ -2214,19 +1786,6 @@ void NET_ClearLagData(qboolean bClient, qboolean bServer)
 	}
 
 	NET_ThreadUnlock();
-}
-
-void NET_Shutdown()
-{
-	NET_ThreadLock();
-
-	NET_ClearLaggedList(g_pLagData);
-	NET_ClearLaggedList(&g_pLagData[1]);
-
-	NET_ThreadUnlock();
-
-	NET_Config(FALSE);
-	NET_FlushQueues();
 }
 
 qboolean NET_JoinGroup(netsrc_t sock, netadr_t &addr)

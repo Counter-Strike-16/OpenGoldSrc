@@ -59,17 +59,25 @@ int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *po
 	// NOTE: launcherFactory is needed for...?
 	// TODO: filesystem init using the filesystemFactory
 	
-	const char *sCmdLine = cmdline;
+	//const char *sCmdLine = cmdline;
 	
-	if(restart) // DLL_RESTART
-		sCmdLine = postRestartCmdLineArgs;
+	//if(restart) // DLL_RESTART
+		//sCmdLine = postRestartCmdLineArgs;
 	
-	if(!eng->Load(false, basedir, sCmdLine)) // init fs and igame here (dunno why iengineapi and idedicatedserverapi duplicates this)
+	//registry->Init();
+	
+	//mpFileSystem->Init(basedir, (void*)filesystemFactory);
+	
+	if(!eng->Load(false, basedir, cmdline)) // init fs and igame here (dunno why iengineapi and idedicatedserverapi duplicates this)
 		return 1;
 
 	while(!eng->GetQuitting()) // ?
 		eng->Frame();
 
 	eng->Unload();
+	
+	//mpFileSystem->Shutdown();
+	
+	//registry->Shutdown();
 	return 0;
 };

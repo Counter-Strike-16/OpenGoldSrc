@@ -27,37 +27,54 @@
  */
 
 /// @file
-/// @brief build info config file
 
 #pragma once
 
-// Altering saves so that the version goes in the Details file 
-// that we read in during the enumeration phase
-//constexpr auto BUILD_NUMBER_SAVE_VERSION_CHANGE = 1400;
+struct IConsole;
+class CNetServer;
+class CNetClient;
 
-//constexpr auto BUILD_NUMBER = BUILD_NUMBER_SAVE_VERSION_CHANGE;
-//constexpr auto BUILD_NUMBER_MINOR = 0;
+class CNetwork
+{
+public:
+	CNetwork(IConsole *apConsole) : mpConsole(apConsole){}
 
-// Target build num
-// Current engine build num (latest successful) is equals to (BUILD_NUMBER - 1)
-constexpr auto BUILD_NUMBER = 0015;
-
-constexpr auto DEV_STAGE = "Pre-Alpha";
-
-constexpr auto VERSION_MAJOR = 0;
-constexpr auto VERSION_MINOR = 1;
-constexpr auto VERSION_PATCH = 2;
-
-#ifdef _DEBUG
-	constexpr auto BUILD_TYPE = "Debug";
-#else
-	constexpr auto BUILD_TYPE = "Release";
+	void Init();
+	void Shutdown();
+	
+	void Update();
+	
+	void Config(bool multiplayer);
+	int IsConfigured();
+	
+	CNetServer *StartServer(int anPort);
+	CNetClient *StartClient();
+private:
+	void AllocateQueues();
+	void FlushQueues();
+	
+	void StartThread();
+	void StopThread();
+	
+	void ThreadLock();
+	void ThreadUnlock();
+	
+	void OpenIP();
+	
+#ifdef _WIN32
+	void OpenIPX();
 #endif
-
-#ifdef _X64
-	constexpr auto PLATFORM_BIT = "x64";
-#elif _X86
-	constexpr auto PLATFORM_BIT = "x86";
-#else
-	#error "?"
-#endif
+	
+	void GetLocalAddress();
+	
+#ifdef _WIN32
+	CRITICAL_SECTION net_cs;
+#endif // _WIN32
+	
+	IConsole *mpConsole{nullptr};
+	
+	bool use_thread{false};
+	bool net_thread_initialized{false};
+	
+	int net_configured{0};
+};

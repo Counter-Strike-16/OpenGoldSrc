@@ -30,18 +30,32 @@
 
 #include "precompiled.hpp"
 #include "console/Console.hpp"
+#include "system/System.hpp"
+#include "system/common.hpp"
 
-bool CConsole::Init();
+bool CConsole::Init()
 {
+	return true;
 };
 
 void CConsole::Shutdown()
 {
 };
 
-void CConsole::Printf(int anPrintLevel, const char *asMsg, ...)
+void CConsole::Printf(/*int anPrintLevel,*/ const char *asMsg, ...)
 {
 	//Con_Print();
+
+#ifdef _DEBUG
+	va_list arglist;
+	char sText[256] = {'\0'};
+
+	va_start(arglist, asMsg);
+	Q_vsnprintf(sText, charsmax(sText), asMsg, arglist);
+	va_end(arglist);
+
+	CSystem::Printf(sText);
+#endif // _DEBUG
 };
 
 void CConsole::DrawCharacter(int cx, int line, int num)
@@ -62,23 +76,33 @@ void CConsole::Print(const char *txt)
 {
 };
 
-void CConsole::Printf(const char *fmt, ...) // _format(1);
-{
-};
-
-void CConsole::DPrintf(const char *fmt, ...) // _format(1);
-{
-};
-
-//void NPrintf(int idx, const char *fmt, ...)
+//void CConsole::Printf(const char *fmt, ...) // _format(1);
 //{
 //};
 
-//void NPrintf( int idx, char *fmt, ... ) // _format(2);
+void CConsole::DevPrintf(const char *asMsg, ...) // _format(1);
+{
+#ifdef _DEBUG
+	va_list arglist;
+	char sText[256] = {'\0'};
+
+	va_start(arglist, asMsg);
+	Q_vsnprintf(sText, charsmax(sText), asMsg, arglist);
+	va_end(arglist);
+
+	CSystem::Printf("[DEV] %s", sText);
+#endif // _DEBUG
+};
+
+//void CConsole::NPrintf(int idx, const char *fmt, ...)
 //{
 //};
 
-//void NXPrintf( struct con_nprint_s *info, char *fmt, ... ) //_format(2)
+//void CConsole::NPrintf( int idx, char *fmt, ... ) // _format(2);
+//{
+//};
+
+//void CConsole::NXPrintf( struct con_nprint_s *info, char *fmt, ... ) //_format(2)
 //{
 //};
 
@@ -106,6 +130,6 @@ void CConsole::DebugLog(const char *file, const char *fmt, ...)
 {
 };
 
-IConVar *CConsole::GetConVar(const char *asName)
-{
-};
+//IConVar *CConsole::GetConVar(const char *asName)
+//{
+//};

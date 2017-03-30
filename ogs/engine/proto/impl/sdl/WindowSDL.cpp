@@ -30,6 +30,7 @@
 
 #include "precompiled.hpp"
 #include "WindowSDL.hpp"
+#include "SDL2/SDL_video.h"
 
 void CWindowSDL::Close()
 {

@@ -85,6 +85,10 @@ public:
 	int Init(char *basedir, void *voidfilesystemFactory);
 	void Shutdown();
 	
+	void CreatePath(char *path);
+	
+	NOXREF void CopyFile(char *netpath, char *cachepath);
+	
 	const char *GetBaseDirectory();
 	
 	int SetGameDirectory(const char *pDefaultDir, const char *pGameDir);
@@ -110,6 +114,8 @@ public:
 
 	unsigned int Size(FileHandle_t file);
 	unsigned int FileSize(const char *pFileName);
+	
+	NOXREF int ExpandFileName(char *filename);
 
 	int32 GetFileTime(const char *pFileName);
 	NOXREF void FileTimeToString(char *pStrip, int maxCharsIncludingTerminator, int32 fileTime);

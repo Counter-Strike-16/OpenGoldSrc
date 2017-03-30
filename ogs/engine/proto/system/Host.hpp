@@ -41,6 +41,8 @@
 
 #include <memory>
 #include "system/GameServer.hpp"
+#include "console/Console.hpp"
+#include "network/Network.hpp"
 
 typedef struct quakeparms_s
 {
@@ -54,7 +56,6 @@ typedef struct quakeparms_s
 	int memsize;
 } quakeparms_t;
 
-struct IConsole;
 class CFileSystem;
 
 class CHost
@@ -216,10 +217,10 @@ private:
 	
 	void InitCommands();
 	
-	//std::unique_ptr<IConsole> mpConsole;
+	std::unique_ptr<CConsole> mpConsole; // IConsole
 	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
 	
-	//std::unique_ptr<CNetwork> mpNetwork;
+	std::unique_ptr<CNetwork> mpNetwork;
 	
 	//std::unique_ptr<ISound> mpSound;
 	

@@ -34,7 +34,7 @@
 #include <memory>
 #include "common/commontypes.h"
 #include "console/IConsole.hpp"
-#include "console/CmdBuffer.hpp"
+//#include "console/CmdBuffer.hpp"
 
 constexpr auto NUM_CON_TIMES = 4;
 
@@ -88,7 +88,7 @@ public:
 	bool Init();
 	void Shutdown();
 	
-	void Printf(int anPrintLevel, const char *asMsg, ...);
+	void Printf(/*int anPrintLevel,*/ const char *asMsg, ...);
 	
 	void DrawCharacter(int cx, int line, int num);
 
@@ -98,8 +98,10 @@ public:
 	//void Draw(float frac);
 
 	void Print(const char *txt);
-	void Printf(const char *fmt, ...); // _format(1);
-	void DPrintf(const char *fmt, ...); // _format(1);
+	//void Printf(const char *fmt, ...); // _format(1);
+
+	void DevPrintf(const char *fmt, ...); // _format(1);
+	//void DPrintf(const char *fmt, ...); // _format(1);
 	//void NPrintf(int idx, const char *fmt, ...);
 	//void NPrintf( int idx, char *fmt, ... ) _format(2);
 	//void NXPrintf( struct con_nprint_s *info, char *fmt, ... ) _format(2);
@@ -112,13 +114,13 @@ public:
 
 	void DebugLog(const char *file, const char *fmt, ...);
 	
-	IConVar *GetConVar(const char *asName);
+	//IConVar *GetConVar(const char *asName);
 	
 	cmdalias_t *GetAliasList() const;
 private:
 	tConVarList mlstConVars;
 	
-	std::unique_ptr<CCmdBuffer> mpCmdBuffer;
+	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
 	
 	char text[CON_TEXTSIZE];
 

@@ -49,6 +49,9 @@
     <Filter Include="impl\win">
       <UniqueIdentifier>{4cbc9e84-ddae-47f0-9146-7e06ba28bf0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\sdl">
+      <UniqueIdentifier>{7a1068db-8f2d-4dd5-b988-c9a08d1c7a01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\system\DedicatedServerAPI.cpp">
@@ -79,6 +82,15 @@
     <ClCompile Include="..\system\StringHandler.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="..\system\EngineAPI.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\Network.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\Console.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\system\DedicatedServerAPI.hpp">
@@ -104,6 +116,15 @@
     </ClInclude>
     <ClInclude Include="..\system\StringHandler.hpp">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\EngineAPI.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\Network.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\Console.hpp">
+      <Filter>console</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
