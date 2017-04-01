@@ -33,7 +33,7 @@
 
 #include "common/commontypes.h"
 #include "common/wrect.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 
 #ifdef HOOK_ENGINE
 #define r_pixbytes (*pr_pixbytes)
@@ -53,14 +53,14 @@ extern cvar_t gl_vsync;
 extern float scr_con_current;
 
 #ifndef _WIN32
-	typedef void* HWND;
+	typedef void* HWND; // already handled by osconfig.h
 #endif
 
 extern HWND mainwindow; // cl_hwnd for q2 code
 
 //void CenterWindow(HWND hWnd, int width, int height, bool lefttopjustify);
 
-extern int window_center_x, window_center_y;
+extern int window_center_x, window_center_y; // IWindow::GetCenterPoint?
 extern RECT window_rect;
 
 // a pixel can be one, two, or four bytes

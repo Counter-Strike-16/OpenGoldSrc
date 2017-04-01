@@ -28,6 +28,7 @@
 
 /// @file
 
+#include "precompiled.hpp"
 #include "world/EdictHandle.hpp"
 
 /*

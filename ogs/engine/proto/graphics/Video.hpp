@@ -31,11 +31,11 @@
 
 #pragma once
 
-#include "video/Video.hpp"
+#include "video/IVideo.hpp"
 
 class CVideo : public IVideo
 {
 public:
-	IWindow *OpenWindow(const TWindowProps &aWinProps) const;
+	IWindow *OpenWindow(const TWindowCreateProps &aWinProps) const;
 	void CloseWindow(const IWindow *&apWindow);
 };

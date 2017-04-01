@@ -82,37 +82,6 @@ edict_t *ED_Alloc()
 	return e;
 }
 
-void ED_Free(edict_t *ed)
-{
-	if(!ed->free)
-	{
-		SV_UnlinkEdict(ed);
-		FreeEntPrivateData(ed);
-		ed->serialnumber++;
-		ed->freetime = (float)g_psv.time;
-		ed->free = TRUE;
-		ed->v.flags = 0;
-		ed->v.model = 0;
-
-		ed->v.takedamage = 0;
-		ed->v.modelindex = 0;
-		ed->v.colormap = 0;
-		ed->v.skin = 0;
-		ed->v.frame = 0;
-		ed->v.scale = 0;
-		ed->v.gravity = 0;
-		ed->v.nextthink = -1.0;
-		ed->v.solid = SOLID_NOT;
-
-		ed->v.origin[0] = vec3_origin[0];
-		ed->v.origin[1] = vec3_origin[1];
-		ed->v.origin[2] = vec3_origin[2];
-		ed->v.angles[0] = vec3_origin[0];
-		ed->v.angles[1] = vec3_origin[1];
-		ed->v.angles[2] = vec3_origin[2];
-	}
-}
-
 NOXREF void ED_Count()
 {
 	NOXREFCHECK;

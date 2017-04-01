@@ -30,7 +30,7 @@
 
 #include "video/Video.hpp"
 
-IWindow *CVideo::OpenWindow(const TWindowProps &aWinProps)
+IWindow *CVideo::OpenWindow(const TWindowCreateProps &aWinProps)
 {
 	return nullptr;
 };

@@ -1266,14 +1266,15 @@ int CHost::GetStartTime()
 void CHost::InitializeGameDLL()
 {
 	//mpCmdBuffer->Execute();
-	//mpNetwork->Config(g_psvs.maxclients > 1);
+	//mpNetwork->Config(g_psvs.maxclients > 1); // WTF? report to rehlds
 
 	//if(g_psvs.dll_initialized)
 	{
 		mpConsole->DevPrintf("Sys_InitializeGameDLL called twice, skipping second call\n");
 		return;
 	};
-
+	
+	// if we initializing it here then it's init state shouldn't be contained in server static data
 	//g_psvs.dll_initialized = TRUE; // it's actually not initialized yet
 	//LoadEntityDLLs(host_parms.basedir);
 	//gEntityInterface.pfnGameInit();

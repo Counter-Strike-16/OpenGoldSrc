@@ -28,10 +28,10 @@
 
 /// @file
 
+#include "precompiled.hpp"
 #include "world/EdictPool.hpp"
 
-CEdictPool::CEdictPool(unsigned anMaxEdicts)
-    : mnMaxEdicts(anMaxEdicts){};
+CEdictPool::CEdictPool(unsigned anMaxEdicts) : mnMaxEdicts(anMaxEdicts){}
 
 CEdictPool::~CEdictPool(){};
 
@@ -81,7 +81,7 @@ Marks the edict as free
 FIXME: walk all entities and NULL out references to this entity
 =================
 */
-void CEdictPool::FreeEdict(edict_t *edict) // can be turned into method of edicthandle
+void CEdictPool::FreeEdict(edict_t *edict)
 {
 	if(!edict)
 		return;
@@ -94,8 +94,10 @@ void CEdictPool::FreeEdict(edict_t *edict) // can be turned into method of edict
 		FreeEntPrivateData(ed);
 
 		ed->serialnumber++;
+		
 		ed->freetime = (float)g_psv.time;
 		ed->free = TRUE;
+		
 		ed->v.flags = 0;
 		ed->v.model = 0;
 
@@ -122,6 +124,7 @@ void CEdictPool::FreeEdict(edict_t *edict) // can be turned into method of edict
 		ed->v.origin[0] = vec3_origin[0];
 		ed->v.origin[1] = vec3_origin[1];
 		ed->v.origin[2] = vec3_origin[2];
+		
 		ed->v.angles[0] = vec3_origin[0];
 		ed->v.angles[1] = vec3_origin[1];
 		ed->v.angles[2] = vec3_origin[2];

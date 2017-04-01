@@ -33,7 +33,7 @@
 #include "common/commontypes.h"
 #include "common/entity_state.h"
 
-#define NUM_BASELINES 64
+constexpr auto NUM_BASELINES = 64;
 
 typedef struct extra_baselines_s
 {

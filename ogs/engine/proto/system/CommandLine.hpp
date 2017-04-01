@@ -29,7 +29,7 @@
 /// @file
 /// @brief command line args
 
-// NOTE: merge with CComCmdArgs?
+// NOTE: merge with CConCmdArgs?
 
 #pragma once
 

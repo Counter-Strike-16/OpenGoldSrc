@@ -30,13 +30,13 @@
 
 #pragma once
 
-#include "game/server/IGameDLL.hpp"
+#include "game/server/IGame.hpp"
 
-class CHLGameDLL : public IGameDLL
+class CHLGame : public IGame
 {
 public:
-	CHLGameDLL();
-	~CHLGameDLL();
+	CHLGame();
+	~CHLGame();
 	
 	bool DLLInit(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs);
 	bool DLLInit(CreateInterfaceFn afnEngineFactory) override;
