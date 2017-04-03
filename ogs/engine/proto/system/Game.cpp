@@ -32,7 +32,7 @@
 #include "system/Game.hpp"
 #include "system/System.hpp"
 #include "video/IWindow.hpp"
-#include "graphics/vid.hpp"
+#include "graphics/Video.hpp"
 
 IWindow *gpMainWindow = nullptr;
 
@@ -133,7 +133,7 @@ bool CGame::Shutdown_noVirt()
 bool CGame::CreateGameWindow_noVirt()
 {
 #ifndef SWDS
-	gpMainWindow = VID_OpenWindow();
+	gpMainWindow = mpVideo->OpenWindow();
 #endif
 	
 	return true;

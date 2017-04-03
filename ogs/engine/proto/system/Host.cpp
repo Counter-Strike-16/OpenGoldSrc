@@ -466,6 +466,7 @@ void CHost::WriteConfig()
 
 	bool bSetFileToReadOnly = false;
 	f = FS_OpenPathID("config.cfg", "w", "GAMECONFIG");
+	
 	if(!f)
 	{
 		if(!developer.value || !FS_FileExists("../goldsrc/dev_build_all.bat"))
@@ -474,15 +475,17 @@ void CHost::WriteConfig()
 			{
 				bSetFileToReadOnly = true;
 				chmod(nameBuf, S_IREAD | S_IWRITE);
-			}
+			};
+			
 			f = FS_OpenPathID("config.cfg", "w", "GAMECONFIG");
+			
 			if(!f)
 			{
 				mpConsole->Printf("Couldn't write config.cfg.\n");
 				return;
-			}
-		}
-	}
+			};
+		};
+	};
 
 	FS_FPrintf(f, "// This file is overwritten whenever you change your user "
 	              "settings in the game.\n");
@@ -560,7 +563,7 @@ void CHost::WriteCustomConfig()
 				if(jl && jl->state & 1)
 					f->Printf("+jlook\n");
 
-				//f->Close(); // hm...
+				FS->Close(f);
 				mpConsole->Printf("%s successfully created!\n", configname);
 			};
 		};
@@ -1266,7 +1269,7 @@ int CHost::GetStartTime()
 void CHost::InitializeGameDLL()
 {
 	//mpCmdBuffer->Execute();
-	//mpNetwork->Config(g_psvs.maxclients > 1); // WTF? report to rehlds
+	//mpNetwork->Config(g_psvs.maxclients > 1);
 
 	//if(g_psvs.dll_initialized)
 	{

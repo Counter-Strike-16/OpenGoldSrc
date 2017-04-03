@@ -30,17 +30,55 @@
 
 #include "precompiled.hpp"
 #include "sound/Sound.hpp"
+#include "sound/ISound.hpp" // ISoundImpl
 
+CSound *gpSound = nullptr;
+
+void S_Init()
+{
+	gpSound->Init();
+};
+
+void S_Shutdown()
+{
+	gpSound->Shutdown();
+};
+
+void S_Update()
+{
+	gpSound->Update();
+};
+
+/*
+================
+S_Init
+================
+*/
 bool CSound::Init()
 {
+	mpConsole->Printf("\nSound Initialization\n");
+	
+	if(COM_CheckParm("-nosound"))
+		return true;
+	
+	if(COM_CheckParm("-simsound"))
+		fakedma = true;
+	
+	if(!mpSound->Init())
+		return false;
+	
+	gpSound = this;
 	return true;
 };
 
 void CSound::Shutdown()
 {
+	mpSound->Shutdown();
 };
 
 void CSound::Update()
 {
+	mpSound->Update();
+	
 	CL_UpdateSoundFade();
 };

@@ -27,11 +27,29 @@
  */
 
 /// @file
+/// @brief build info data
 
 #pragma once
+
+// clang-format off
+#ifndef REHLDS_FIXES
+	#define __BUILD_TIME__ __TIME__
+	#define __BUILD_DATE__ __DATE__
+#else // REHLDS_FIXES
+	#define __BUILD_TIME__ APP_COMMIT_TIME
+	#define __BUILD_DATE__ APP_COMMIT_DATE
+#endif // REHLDS_FIXES
+// clang-format on
 
 int build_number();
 
 class CBuildInfo
 {
+	uint version_major{0};
+	uint version_minor{0};
+	uint version_patch{0};
+	
+	uint build_number{0}; 
+	
+	void ToString(char *asString, int anSize);
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#define WM_MOUSEWHEEL 0x020A
+constexpr auto WM_MOUSEWHEEL = 0x020A;
 
 extern qboolean	mouseinitialized;
 

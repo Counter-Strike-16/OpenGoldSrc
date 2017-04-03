@@ -19,9 +19,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gameui", "..\ogs\gameui\msv
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbg", "..\ogs\dbg\msvc\dbg.vcxproj", "{B1D74CB3-EAC8-4290-9785-C5E2CA3F0676}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "..\ogs\core\msvc\Core.vcxproj", "{66B2C7ED-5505-4600-AC7D-CEAD81A6B31C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "..\ogs\hltv\core\msvc\Core.vcxproj", "{66B2C7ED-5505-4600-AC7D-CEAD81A6B31C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demoplayer", "..\ogs\demoplayer\msvc\DemoPlayer.vcxproj", "{C0A91F9C-F325-48DD-9388-7AC5E7C42636}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demoplayer", "..\ogs\hltv\demoplayer\msvc\DemoPlayer.vcxproj", "{C0A91F9C-F325-48DD-9388-7AC5E7C42636}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tier0", "..\ogs\tier0\msvc\tier0.vcxproj", "{261A3450-F3AB-41FD-8770-CA294C1496EF}"
 EndProject

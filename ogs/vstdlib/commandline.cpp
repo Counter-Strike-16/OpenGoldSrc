@@ -1,5 +1,4 @@
-#include "public/interface.h"
-#include "tier0/ICommandLine.h"
+#include "commandline.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,31 +6,6 @@
 #include <ctype.h>
 
 static const int MAX_PARAMETER_LEN = 128;
-
-class CCommandLine : public ICommandLine
-{
-public:
-	CCommandLine();
-	~CCommandLine();
-	
-	void CreateCmdLine(const char *commandline);
-	const char *GetCmdLine() const;
-	const char *CheckParm(const char *psz, const char **ppszValue = 0) const;
-	void RemoveParm(const char *parm);
-	void AppendParm(const char *pszParm, const char *pszValues);
-	void SetParm(const char *pszParm, const char *pszValues);
-	void SetParm(const char *pszParm, int iValue);
-private:
-	enum
-	{
-		MAX_PARAMETER_LEN = 128,
-		MAX_PARAMETERS = 256,
-	};
-	
-	void LoadParametersFromFile(char *&pSrc, char *&pDst);
-	
-	char *m_pszCmdLine;
-};
 
 CCommandLine g_CmdLine;
 ICommandLine *g_pCmdLine = (ICommandLine *)&g_CmdLine;

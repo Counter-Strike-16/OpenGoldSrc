@@ -27,7 +27,9 @@
  */
 
 /// @file
+/// @brief authoritative server side world
 
+#include "precompiled.hpp"
 #include "world/GameWorld.hpp"
 
 CGameWorld::CGameWorld(){};
@@ -36,12 +38,10 @@ CGameWorld::~CGameWorld(){};
 
 void CGameWorld::Init()
 {
-	Con_DPrintf("World module initialized.\n");
 };
 
 void CGameWorld::Shutdown()
 {
-	Con_DPrintf("World module shutdown.\n");
 };
 
 /*

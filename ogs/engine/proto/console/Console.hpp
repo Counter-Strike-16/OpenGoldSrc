@@ -53,15 +53,10 @@ using tConVarList = std::list<CConVar*>;
 
 //extern console_t *con; // point to either con_main or con_chat
 
-void Con_DrawCharacter(int cx, int line, int num);
-
 void Con_CheckResize();
 
 void Con_Init();
 void Con_Shutdown();
-
-void Con_DrawConsole(int lines /*, qboolean drawinput*/);
-//void Con_DrawConsole (float frac);
 
 void Con_Print(const char *txt);
 void Con_Printf(const char *fmt, ...); // _format(1);
@@ -89,13 +84,8 @@ public:
 	void Shutdown();
 	
 	void Printf(/*int anPrintLevel,*/ const char *asMsg, ...);
-	
-	void DrawCharacter(int cx, int line, int num);
 
 	void CheckResize();
-
-	void Draw(int lines /*, qboolean drawinput*/);
-	//void Draw(float frac);
 
 	void Print(const char *txt);
 	//void Printf(const char *fmt, ...); // _format(1);

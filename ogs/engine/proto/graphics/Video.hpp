@@ -36,6 +36,26 @@
 class CVideo : public IVideo
 {
 public:
+	// Video module initialization, etc
+	// Called at startup to set up translation tables, takes 256 8 bit RGB values
+	// the palette data will go away after the call, so it must be copied off if
+	// the video driver will need it again
+	NOBODY int Init(unsigned short *palette); // was void (uchar*)
+	
+	// Called at shutdown
+	void Shutdown();
+	
+	// flushes the given rectangles from the view buffer to the screen
+	void Update(wrect_t *rects); // was vrect_t
+	
 	IWindow *OpenWindow(const TWindowCreateProps &aWinProps) const;
 	void CloseWindow(const IWindow *&apWindow);
+	
+	// sets the mode; only used by the engine for resetting to mode 0 
+	// (the base mode) on memory allocation failures
+	int SetMode(int modenum, unsigned char *palette);
+	
+	void SetDefaultMode();
+private:
+	void CheckChanges();
 };

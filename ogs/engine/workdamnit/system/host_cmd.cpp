@@ -1019,6 +1019,7 @@ This is sent just before a server changes levels
 void Host_Reconnect_f()
 {
 	char cmdString[128];
+	
 	if(cls.state < ca_connected)
 		return;
 
@@ -2910,13 +2911,23 @@ void Host_Interp_f()
 		Con_Printf("Frame Interpolation ON\n");
 }
 
+/*
+=====================
+CL_NextDemo
+
+Called to play the next demo in the demo loop
+=====================
+*/
 void Host_NextDemo()
 {
 	char str[1024];
+	
+	// don't play demos
 	if(cls.demonum == -1)
 		return;
 
 	SCR_BeginLoadingPlaque(FALSE);
+	
 	if(cls.demos[cls.demonum][0])
 	{
 #ifdef REHLDS_FIXES
@@ -2929,10 +2940,11 @@ void Host_NextDemo()
 		Q_snprintf(str, sizeof(str), "playdemo %s\n", cls.demos[cls.demonum]);
 		Cbuf_InsertText(str);
 		++cls.demonum;
-	}
+	};
+	
 	Con_Printf("No demos listed with startdemos\n");
 	cls.demonum = -1;
-}
+};
 
 void Host_Startdemos_f()
 {

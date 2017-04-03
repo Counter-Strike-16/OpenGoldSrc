@@ -27,12 +27,13 @@
  */
 
 /// @file
+/// @brief info k-v buffer
 
 #pragma once
 
 #include "system/IInfoKeyBuffer.hpp"
 
-class CInfoBuffer : public IInfoKeyBuffer
+class CInfoKeyBuffer : public IInfoKeyBuffer
 {
 public:
 	const char *GetKeyValue(const char *key);

@@ -32,20 +32,12 @@
 #include "sound/Sound.hpp"
 #include "sound/ISound.hpp"
 
-/*
-================
-S_Init
-================
-*/
+
 bool CSound::Init(int anDesiredSpeed, int anDesiredBits)
 {
-	Con_Printf("\nSound Initialization\n");
-
-	if(COM_CheckParm("-nosound"))
-		return true;
 	
-	if(COM_CheckParm("-simsound"))
-		fakedma = true;
+
+	
 	
 	Cmd_AddCommand("play", S_Play);
 	Cmd_AddCommand("playvol", S_PlayVol);

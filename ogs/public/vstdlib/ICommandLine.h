@@ -21,7 +21,6 @@ public:
 
 //-----------------------------------------------------------------------------
 // Gets a singleton to the commandline interface
-// NOTE: this interface used to lie in the vstdlib library
 //-----------------------------------------------------------------------------
 VSTDLIB_INTERFACE ICommandLine *CommandLine(void);
 

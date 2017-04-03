@@ -35,6 +35,7 @@
 #define __HACK_LINE_AS_STRING__(x) CONST_INTEGER_AS_STRING(x) // __LINE__ can only be converted to an actual number by going through this, otherwise the output is literally "__LINE__"
 #define __LINE__AS_STRING __HACK_LINE_AS_STRING__(__LINE__) // Gives you the line number in constant string form
 
+// These macros are x32 only (ebp/esp -> rbp/rsp)
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 	#define NOXREFCHECK		   __asm { push [ebp + 4] } Sys_Error("[NOXREFCHECK]:" __FUNCTION__ " (" __FILE__ ":"__LINE__AS_STRING") NOXREF, but called from 0x%.08x")
 #elif defined(__GNUC__)
@@ -50,18 +51,6 @@
 								"m" (noxref_msg)			\
 								);
 #endif
-
-// clang-format off
-
-#ifndef REHLDS_FIXES
-	#define __BUILD_TIME__ __TIME__
-	#define __BUILD_DATE__ __DATE__
-#else // REHLDS_FIXES
-	#define __BUILD_TIME__ APP_COMMIT_TIME
-	#define __BUILD_DATE__ APP_COMMIT_DATE
-#endif // REHLDS_FIXES
-
-// clang-format on
 
 constexpr auto MAX_DISCONNECT_REASON = 256;
 

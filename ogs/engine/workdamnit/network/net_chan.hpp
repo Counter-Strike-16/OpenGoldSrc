@@ -209,3 +209,11 @@ void Netchan_Init(void);
 
 NOXREF qboolean Netchan_CompressPacket(sizebuf_t *chan);
 NOXREF qboolean Netchan_DecompressPacket(sizebuf_t *chan);
+
+class CNetChan
+{
+public:
+	CNetChan(netchan_t *apData);
+private:
+	netchan_t *mpData{nullptr};
+};

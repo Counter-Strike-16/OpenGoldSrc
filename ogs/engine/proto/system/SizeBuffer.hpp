@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief sizebuffer component
+/// @brief universal sized-buffer component
 
 #pragma once
 

@@ -68,4 +68,5 @@ class CKeyboard
 {
 public:
 	bool IsKeyDown(int key);
+	bool IsAnyKeyDown();
 };

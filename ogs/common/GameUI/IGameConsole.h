@@ -43,6 +43,8 @@ public:
 	virtual void SetParent(int parent) = 0; // int = VPANEL
 };
 
+extern IGameConsole* g_pConsole;
+
 #define GAMECONSOLE_INTERFACE_VERSION "GameConsole003"
 
 #endif // IGAMECONSOLE_H

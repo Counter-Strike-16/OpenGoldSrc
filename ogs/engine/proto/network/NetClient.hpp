@@ -31,9 +31,13 @@
 
 #pragma once
 
+class CNetChan;
+
 class CNetClient
 {
 public:
+	CNetClient(netchan_t *apChanData);
+	
 	bool Connect(const char *asAdr);
 	bool Reconnect();
 	void Disconnect();
@@ -47,4 +51,6 @@ public:
 	const TServerInfo &GetServerInfo() const;
 private:
 	TServerInfo mServerInfo;
+	
+	CNetChan *mpNetChan{nullptr};
 };

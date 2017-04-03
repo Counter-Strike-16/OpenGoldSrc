@@ -107,22 +107,6 @@ void VID_SetPalette(unsigned char *palette);
 // called for bonus and pain flashes, and for underwater color changes
 void VID_ShiftPalette(unsigned char *palette);
 
-// Video module initialization, etc
-// Called at startup to set up translation tables, takes 256 8 bit RGB values
-// the palette data will go away after the call, so it must be copied off if
-// the video driver will need it again
-NOBODY int VID_Init(unsigned short *palette); // was void (uchar*)
-
-// Called at shutdown
-void VID_Shutdown();
-
-// flushes the given rectangles from the view buffer to the screen
-void VID_Update(wrect_t *rects); // was vrect_t
-
-// sets the mode; only used by the engine for resetting to mode 0 (the
-// base mode) on memory allocation failures
-int VID_SetMode(int modenum, unsigned char *palette);
-
 // called only on Win32, when pause happens, so the mouse can be released
 void VID_HandlePause(qboolean pause);
 
@@ -138,14 +122,7 @@ void VID_WriteBuffer(const char *pFilename);
 void VID_ForceLockState(int lk);
 int VID_ForceUnlockedAndReturnState();
 
-void VID_CheckChanges();
-
-void VID_SetDefaultMode();
-
-IWindow *VID_OpenWindow();
-
 /*
-
 void StartLoadingProgressBar(const char *loadingType, int numProgressPoints);
 void ContinueLoadingProgressBar(const char *loadingType, int progressPoint, float progressFraction);
 void SetLoadingProgressBarStatusText(const char *statusText);

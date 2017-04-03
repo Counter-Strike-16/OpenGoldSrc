@@ -54,6 +54,7 @@ enum EOSType
 VSTDLIB_INTERFACE const char *GetNameFromOSType( EOSType eOSType );
 VSTDLIB_INTERFACE const char *GetOSDetailString( char *pchOutBuf, int cchOutBuf );
 VSTDLIB_INTERFACE EOSType GetOSType();
+VSTDLIB_INTERFACE EOSType GetOSTypeFromString(const char *asStr);
 VSTDLIB_INTERFACE bool OSTypesAreCompatible( EOSType eOSTypeDetected, EOSType eOSTypeRequired );
 VSTDLIB_INTERFACE const char *GetPlatformName( bool *pbIs64Bit );
 

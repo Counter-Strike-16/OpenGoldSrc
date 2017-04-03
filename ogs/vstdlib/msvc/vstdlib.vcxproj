@@ -25,9 +25,9 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -68,12 +68,17 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>../../../build/msvc/debug/vstdlib/</IntDir>
+    <OutDir>../../../bin/msvc/debug/</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../../public/;../../../../hlsdk-core/</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VSTDLIB_DLL_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -110,6 +115,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\commandline.cpp" />
+    <ClCompile Include="..\CommandLineParam.cpp" />
+    <ClCompile Include="..\coroutine.cpp" />
+    <ClCompile Include="..\cvar.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\KeyValuesSystem.cpp" />
+    <ClCompile Include="..\osversion.cpp" />
+    <ClCompile Include="..\random.cpp" />
+    <ClCompile Include="..\stringnormalize.cpp" />
+    <ClCompile Include="..\strtools.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\public\vstdlib\coroutine.h" />
+    <ClInclude Include="..\..\public\vstdlib\cvar.h" />
+    <ClInclude Include="..\..\public\vstdlib\ICommandLine.h" />
+    <ClInclude Include="..\..\public\vstdlib\IKeyValuesSystem.h" />
+    <ClInclude Include="..\..\public\vstdlib\iprocessutils.h" />
+    <ClInclude Include="..\..\public\vstdlib\jobthread.h" />
+    <ClInclude Include="..\..\public\vstdlib\osversion.h" />
+    <ClInclude Include="..\..\public\vstdlib\pch_vstdlib.h" />
+    <ClInclude Include="..\..\public\vstdlib\random.h" />
+    <ClInclude Include="..\..\public\vstdlib\vcover.h" />
+    <ClInclude Include="..\..\public\vstdlib\vstdlib.h" />
+    <ClInclude Include="..\commandline.hpp" />
+    <ClInclude Include="..\CommandLineParam.hpp" />
+    <ClInclude Include="..\KeyValuesSystem.hpp" />
+    <ClInclude Include="..\stringnormalize.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

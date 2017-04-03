@@ -393,8 +393,6 @@ void CL_Disconnect()
 	// Stop sounds (especially looping!)
 	S_StopAllSounds(true);
 
-	cls.connect_time = -1.0f; // 0
-
 	// bring the console down and fade the colors back to normal
 	//	SCR_BringDownConsole();
 
@@ -402,16 +400,7 @@ void CL_Disconnect()
 	if(cls.demoplayback) // TODO: demoplayback -> clientstate?
 		CL_StopPlayback();
 	
-	// send a disconnect message to the server
-	byte sFinalMsg[32];
-	sFinalMsg[0] = clc_stringcmd;
 	
-	strcpy((char *)sFinalMsg + 1, "disconnect");
-	
-	Netchan_Transmit(&cls.netchan, Q_strlen(sFinalMsg), sFinalMsg);
-	Netchan_Transmit(&cls.netchan, Q_strlen(sFinalMsg), sFinalMsg);
-	Netchan_Transmit(&cls.netchan, Q_strlen(sFinalMsg), sFinalMsg);
-
 	//mvStates[state]->OnDisconnect();
 
 	cls.demoplayback = cls.timedemo = false;
@@ -421,14 +410,7 @@ void CL_Disconnect()
 	
 	CL_ClearState();
 	
-	// stop download
-	//if(cls.download)
-	//{
-		//fclose(cls.download);
-		//cls.download = NULL;
-	//};
-
-	//CL_StopUpload();
+	//mpNetClient->Disconnect();
 	
 	cls.state = ca_disconnected;
 #endif // SWDS
@@ -710,21 +692,9 @@ void CL_Packet_f()
 	//NET_SendPacket(/*NS_CLIENT,*/ out - send, send, adr);
 };
 
-/*
-=====================
-CL_NextDemo
 
-Called to play the next demo in the demo loop
-=====================
-*/
 void CL_NextDemo()
 {
-	char str[1024];
-
-	if(cls.demonum == -1)
-		return; // don't play demos
-	
-	//SCR_BeginLoadingPlaque();
 
 	if(!cls.demos[cls.demonum][0] || cls.demonum == MAX_DEMOS)
 	{

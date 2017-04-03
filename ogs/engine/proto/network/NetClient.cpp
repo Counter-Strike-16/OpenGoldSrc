@@ -30,6 +30,8 @@
 
 #include "network/NetClient.hpp"
 
+// mpNetChan = new CNetChannel(&cls.netchan);
+
 bool CNetClient::Connect(const char *asAdr)
 {
 	// Resolve the IP
@@ -46,6 +48,29 @@ bool CNetClient::Reconnect()
 void CNetClient::Disconnect()
 {
 	// Disconnect from the current server
+	
+	cls.connect_time = -1.0f; // 0
+	
+	// send a disconnect message to the server
+	byte sFinalMsg[32];
+	sFinalMsg[0] = clc_stringcmd;
+	
+	strcpy((char *)sFinalMsg + 1, "disconnect");
+	
+	mpNetChan->Transmit(Q_strlen(sFinalMsg), sFinalMsg);
+	mpNetChan->Transmit(Q_strlen(sFinalMsg), sFinalMsg);
+	mpNetChan->Transmit(Q_strlen(sFinalMsg), sFinalMsg);
+	
+	// stop download
+	//if(cls.download)
+	//{
+		//fclose(cls.download);
+		//cls.download = NULL;
+	//};
+
+	//StopUpload();
+	
+	mbConnected = false;
 };
 
 void CNetClient::ReadPackets()

@@ -51,6 +51,10 @@ EOSType GetOSType()
 
 bool OSTypesAreCompatible(EOSType eOSTypeDetected, EOSType eOSTypeRequired)
 {
+	switch(eOSTypeDetected)
+	{
+	};
+	
 	return false;
 };
 

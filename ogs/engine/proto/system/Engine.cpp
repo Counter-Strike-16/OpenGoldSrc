@@ -375,7 +375,7 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 		mpHost->InitializeGameDLL(); // We should immediately init the game dll for dedicated mode
 									   // (client is initializing it after the first call to new game)
 									   // NOTE: move to host init?
-		//NET_Config(TRUE);
+		//NET_Config(TRUE); // double call (already called inside host_initgamedll)
 	};
 
 #ifndef SWDS
