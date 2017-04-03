@@ -11,6 +11,8 @@
 #pragma once
 #endif
 
+#include "public/interface.h"
+
 //-----------------------------------------------------------------------------
 // Purpose: interface to accessing all loaded modules
 //-----------------------------------------------------------------------------
@@ -25,7 +27,8 @@ public:
 	virtual void SetPlatformToRestart() = 0;
 };
 
-extern IVGuiModuleLoader* g_pIVGuiModuleLoader;
+//extern IVGuiModuleLoader* g_pIVGuiModuleLoader;
 
 #define VGUIMODULELOADER_INTERFACE_VERSION "VGuiModuleLoader003"
-#endif
+
+#endif // IVGUIMODULELOADER_H

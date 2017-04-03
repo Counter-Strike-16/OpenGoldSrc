@@ -29,5 +29,5 @@
 #define VSTDLIB_CLASS		DLL_CLASS_IMPORT
 #define VSTDLIB_GLOBAL		DLL_GLOBAL_IMPORT
 #endif
- 
+
 #endif // VSTDLIB_H

@@ -38,7 +38,10 @@ CFileSystemImpl::CFileSystemImpl(){};
 
 CFileSystemImpl::~CFileSystemImpl(){};
 
-void CFileSystemImpl::Mount(){};
+void CFileSystemImpl::Mount()
+{
+	
+};
 
 void CFileSystemImpl::Unmount(){};
 
