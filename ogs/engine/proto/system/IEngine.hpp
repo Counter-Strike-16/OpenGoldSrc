@@ -94,14 +94,6 @@ public:
 	
 	/// Mark engine for quit
 	virtual void SetQuitting(int quittype) = 0;
-	
-	// OGS extensions
-	
-	/// Add the text to console command buffer
-	virtual void AddCommandText(const char *asText) = 0;
-	
-	/// Get the info about current player count and map
-	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap) = 0;
 };
 
 extern IEngine *eng;

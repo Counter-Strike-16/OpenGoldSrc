@@ -84,56 +84,10 @@ void Host_InitLocal()
 	gpHost->InitLocal();
 }
 
+//cls.userinfo->WriteToFile(fp)
 NOXREF void Info_WriteVars(FileHandle_t fp)
 {
 	NOXREFCHECK;
-	
-	cvar_t *pcvar;
-	char *s;
-	char pkey[512];
-
-	static char value[4][512];
-	static int valueindex;
-
-	char *o;
-
-	valueindex = (valueindex + 1) % 4;
-	s = &cls.userinfo[0];
-
-	if(*s == '\\')
-		s++;
-
-	while(1)
-	{
-		o = pkey;
-		while(*s != '\\')
-		{
-			if(!*s)
-				return;
-			*o++ = *s++;
-		}
-
-		*o = 0;
-		s++;
-
-		o = value[valueindex];
-
-		while(*s != '\\' && *s)
-		{
-			if(!*s)
-				return;
-			*o++ = *s++;
-		}
-		*o = 0;
-
-		pcvar = Cvar_FindVar(pkey);
-		if(!pcvar && pkey[0] != '*')
-			FS_FPrintf(fp, "setinfo \"%s\" \"%s\"\n", pkey, value[valueindex]);
-
-		if(!*s)
-			return;
-		s++;
-	};
 };
 
 void Host_WriteConfiguration()

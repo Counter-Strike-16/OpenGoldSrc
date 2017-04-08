@@ -39,6 +39,9 @@
 
 extern IDedicatedExports *dedicated_;
 
+//-----------------------------------------------------------------------------
+// Purpose: Expose engine interface to launcher
+//-----------------------------------------------------------------------------
 class CDedicatedServerAPI : public IDedicatedServerAPI
 {
 public:

@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,30 +27,20 @@
  */
 
 /// @file
-/// @brief hl-compatible game spectator listener class
 
-#include "game/HLGameSpectatorListener.hpp"
+#pragma once
 
-CHLGameSpectatorListener::CHLGameSpectatorListener(DLL_FUNCTIONS *apHLGameDLL)
+class CConCmd
 {
-	mpHLGameDLL = apHLGameDLL;
-};
-
-CHLGameSpectatorListener::~CHLGameSpectatorListener()
-{
-};
-
-void CHLSpectatorListener::OnSpectatorConnect(edict_t *apSpectator)
-{
-	mpHLGameDLL->pfnSpectatorConnect(apSpectator);
-};
-
-void CHLSpectatorListener::OnSpectatorDisconnect(edict_t *apSpectator)
-{
-	mpHLGameDLL->pfnSpectatorDisconnect(apSpectator);
-};
-
-void CHLSpectatorListener::OnSpectatorThink(edict_t *apSpectator)
-{
-	mpHLGameDLL->pfnSpectatorThink(apSpectator);
+public:
+private:
+	CConCmd *next;
+	
+	char *					name;
+	char *					description;
+	
+	cmdFunction_t			function;
+	argCompletion_t			argCompletion;
+	
+	int						flags;
 };

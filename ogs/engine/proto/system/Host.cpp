@@ -92,14 +92,14 @@ Host_Init
 */
 int CHost::Init(quakeparms_t *parms)
 {
+	//CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
+
+	//Q_memcpy(&host_parms, parms, sizeof(host_parms));
+	//com_argc = parms->argc;
+	//com_argv = parms->argv;
+	
+	realtime = 0.0f;
 /*
-	CRehldsPlatformHolder::get()->srand(CRehldsPlatformHolder::get()->time(NULL));
-
-	Q_memcpy(&host_parms, parms, sizeof(host_parms));
-	com_argc = parms->argc;
-	com_argv = parms->argv;
-	realtime = 0;
-
 	Memory_Init(parms->membase, parms->memsize);
 
 	Voice_RegisterCvars();
@@ -177,12 +177,12 @@ int CHost::Init(quakeparms_t *parms)
 	
 	if(cls.state != ca_dedicated)
 	{
-		//Sys_Error("Only dedicated server mode is supported");
+		//CSystem::Error("Only dedicated server mode is supported");
 
 		color24 *disk_basepal = (color24 *)COM_LoadHunkFile("gfx/palette.lmp");
 		
 		if(!disk_basepal)
-			Sys_Error("Host_Init: Couldn't load gfx/palette.lmp");
+			CSystem::Error("Host_Init: Couldn't load gfx/palette.lmp");
 
 		host_basepal = (unsigned short *)Hunk_AllocName(sizeof(PackedColorVec) * 256, "palette.lmp");
 		
@@ -384,7 +384,7 @@ void CHost::EndGame(const char *message, ...)
 	cls.demonum = oldn;
 
 	if(!cls.state)
-		Sys_Error("%s: %s\n", __FUNCTION__, string);
+		CSystem::Error("%s: %s\n", __FUNCTION__, string);
 
 	if(oldn != -1)
 	{
@@ -406,7 +406,7 @@ void NORETURN CHost::Error(const char *error, ...)
 	static bool inerror = false;
 
 	if(inerror)
-		Sys_Error("%s: recursively entered", __FUNCTION__);
+		CSystem::Error("%s: recursively entered", __FUNCTION__);
 
 	inerror = true;
 	
@@ -435,17 +435,12 @@ void NORETURN CHost::Error(const char *error, ...)
 		//longjmp(host_abortserver, 1);
 	};
 	
-	Sys_Error("%s: %s\n", __FUNCTION__, string);
+	CSystem::Error("%s: %s\n", __FUNCTION__, string);
 };
 
 void CHost::WriteConfig()
 {
 #ifndef SWDS
-	FILE *f;
-	kbutton_t *ml;
-	kbutton_t *jl;
-	char nameBuf[4096];
-
 	if(!host_initialized || cls.state == ca_dedicated)
 		return;
 
@@ -465,19 +460,22 @@ void CHost::WriteConfig()
 	};
 
 	bool bSetFileToReadOnly = false;
-	f = FS_OpenPathID("config.cfg", "w", "GAMECONFIG");
+	
+	char nameBuf[4096];
+	
+	CFile *f = mpFileSystem->OpenPathID("config.cfg", "w", "GAMECONFIG");
 	
 	if(!f)
 	{
-		if(!developer.value || !FS_FileExists("../goldsrc/dev_build_all.bat"))
+		if(!developer.value || !mpFileSystem->FileExists("../goldsrc/dev_build_all.bat"))
 		{
-			if(FS_GetLocalPath("config.cfg", nameBuf, sizeof(nameBuf)))
+			if(mpFileSystem->GetLocalPath("config.cfg", nameBuf, sizeof(nameBuf)))
 			{
 				bSetFileToReadOnly = true;
 				chmod(nameBuf, S_IREAD | S_IWRITE);
 			};
 			
-			f = FS_OpenPathID("config.cfg", "w", "GAMECONFIG");
+			f = mpFileSystem->OpenPathID("config.cfg", "w", "GAMECONFIG");
 			
 			if(!f)
 			{
@@ -487,31 +485,29 @@ void CHost::WriteConfig()
 		};
 	};
 
-	FS_FPrintf(f, "// This file is overwritten whenever you change your user "
-	              "settings in the game.\n");
-	FS_FPrintf(
-	f, "// Add custom configurations to the file \"userconfig.cfg\".\n\n");
-	FS_FPrintf(f, "unbindall\n");
+	f->Printf("// This file is overwritten whenever you change your user settings in the game.\n");
+	f->Printf("// Add custom configurations to the file \"userconfig.cfg\".\n\n");
+	f->Printf("unbindall\n");
 
 	Key_WriteBindings(f);
 	Cvar_WriteVariables(f);
-	Info_WriteVars(f);
+	//mpClient->GetUserInfo()->WriteToFile(f);
 
-	ml = ClientDLL_FindKey("in_mlook");
-	jl = ClientDLL_FindKey("in_jlook");
+	kbutton_t *ml = ClientDLL_FindKey("in_mlook");
+	kbutton_t *jl = ClientDLL_FindKey("in_jlook");
 
 	if(ml && (ml->state & 1))
-		FS_FPrintf(f, "+mlook\n");
+		f->Printf("+mlook\n");
 
 	if(jl && (jl->state & 1))
-		FS_FPrintf(f, "+jlook\n");
+		f->Printf("+jlook\n");
 
-	FS_FPrintf(f, "exec userconfig.cfg\n");
-	FS_Close(f);
+	mpFileSystem->FPrintf(f, "exec userconfig.cfg\n");
+	mpFileSystem->Close(f);
 
 	if(bSetFileToReadOnly)
 	{
-		FS_GetLocalPath("config.cfg", nameBuf, sizeof(nameBuf));
+		mpFileSystem->GetLocalPath("config.cfg", nameBuf, sizeof(nameBuf));
 		chmod(nameBuf, S_IREAD);
 	};
 #endif // SWDS
@@ -541,7 +537,7 @@ void CHost::WriteCustomConfig()
 			{
 				Q_strcat(configname, ".cfg");
 				
-				CFile *f = FS_OpenPathID(configname, "w", "GAMECONFIG");
+				CFile *f = mpFileSystem->OpenPathID(configname, "w", "GAMECONFIG");
 				
 				if(!f)
 				{
@@ -552,7 +548,7 @@ void CHost::WriteCustomConfig()
 				f->Printf("unbindall\n");
 				Key_WriteBindings(f);
 				Cvar_WriteVariables(f);
-				Info_WriteVars(f);
+				mpClient->GetUserInfo()->WriteToFile(f);
 
 				kbutton_t *ml = ClientDLL_FindKey("in_mlook");
 				kbutton_t *jl = ClientDLL_FindKey("in_jlook");
@@ -563,7 +559,7 @@ void CHost::WriteCustomConfig()
 				if(jl && jl->state & 1)
 					f->Printf("+jlook\n");
 
-				FS->Close(f);
+				mpFileSystem->Close(f);
 				mpConsole->Printf("%s successfully created!\n", configname);
 			};
 		};
@@ -582,9 +578,15 @@ void CHost::ClientCommands(const char *fmt, ...)
 	{
 		Q_vsnprintf(string, sizeof(string), fmt, argptr);
 		string[sizeof(string) - 1] = 0;
-
-		//MSG_WriteByte(&host_client->netchan.message, svc_stufftext);
-		//MSG_WriteString(&host_client->netchan.message, string);
+		
+		//host_client->netchan.message
+		//INetMsg *pMsg = pHostClient->GetNetChan()->BeginMessage();
+		//pHostClient->SendStuffText();
+		// or
+		//...->SendStuffText(pHostClient);
+		
+		//pMsg->WriteByte(svc_stufftext);
+		//pMsg->WriteString(string);
 	};
 
 	va_end(argptr);
@@ -1112,7 +1114,7 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 
 	// 100 frames interval
 	if(nFrame % 100 == 0)
-		CSystem::Printf("Crappy host frame #%d (FrameTime: %2f, %d)\n", nFrame, time, iState);
+		CSystem::Printf("Flap #%d (FrameTime: %2f, %d)\n", nFrame, time, iState);
 	
 	_Frame(time);
 	
@@ -1194,18 +1196,18 @@ void CHost::PrintVersion()
 	//Q_strcpy(gpszProductString, "valve");
 	
 /*	
-	FileHandle_t fp = mpFS->Open(szFileName, "r");
+	CFile *fp = mpFileSystem->Open(szFileName, "r");
 	
 	if(fp)
 	{
-		int bufsize = mpFS->Size(fp);
+		int bufsize = mpFileSystem->Size(fp);
 		char *buffer = (char *)Mem_Malloc(bufsize + 1);
 		
-		mpFS->Read(buffer, bufsize, 1, fp);
+		mpFileSystem->Read(buffer, bufsize, 1, fp);
 		
 		char *pbuf = buffer;
 		
-		mpFS->Close(fp);
+		mpFileSystem->Close(fp);
 		
 		buffer[bufsize] = 0;
 		int gotKeys = 0;
@@ -1223,7 +1225,7 @@ void CHost::PrintVersion()
 					if(mpCmdLine->CheckArg("-steam"))
 					{
 						char szSteamVersionId[32];
-						FS_GetInterfaceVersion(szSteamVersionId,
+						mpFileSystem->GetInterfaceVersion(szSteamVersionId,
 						                       sizeof(szSteamVersionId) - 1);
 						Q_snprintf(gpszVersionString, sizeof(gpszVersionString), "%s/%s", &com_token[Q_strlen("PatchVersion=")], szSteamVersionId);
 						gpszVersionString[sizeof(gpszVersionString) - 1] = 0;
@@ -1280,6 +1282,10 @@ void CHost::InitializeGameDLL()
 	// if we initializing it here then it's init state shouldn't be contained in server static data
 	//g_psvs.dll_initialized = TRUE; // it's actually not initialized yet
 	//LoadEntityDLLs(host_parms.basedir);
+	
+	//CHLGame *pOldAPIGame = new HLGame();
+	//pOldAPIGame->Init();
+	
 	//gEntityInterface.pfnGameInit();
 	//gEntityInterface.pfnPM_Init(&g_svmove);
 	//gEntityInterface.pfnRegisterEncoders();

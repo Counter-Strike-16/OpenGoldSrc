@@ -65,7 +65,7 @@ void CConVarList::Shutdown()
 Cvar_FindVar
 ============
 */
-cvar_t *CConVarList::FindVar(const char *var_name)
+cvar_t *CConVarList::Find(const char *var_name)
 {
 #ifndef SWDS
 	g_engdstAddrs.pfnGetCvarPointer(&var_name);
@@ -82,7 +82,7 @@ cvar_t *CConVarList::FindVar(const char *var_name)
 	return var;
 };
 
-NOXREF cvar_t *CConVarList::FindPrevVar(const char *var_name)
+NOXREF cvar_t *CConVarList::FindVar(const char *var_name)
 {
 	NOXREFCHECK;
 

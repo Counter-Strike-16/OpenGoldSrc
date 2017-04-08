@@ -8,6 +8,9 @@
 #pragma once
 
 #include "vstdlib/IKeyValuesSystem.h"
+#include "UtlSymbol.h"
+
+class CMemoryPool;
 
 //-----------------------------------------------------------------------------
 // Purpose: Central storage point for KeyValues memory and symbols

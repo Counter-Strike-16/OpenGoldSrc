@@ -27,39 +27,40 @@
  */
 
 /// @file
-/// @brief hl-compatible game dll class
+/// @brief old api game module wrapper
 
-#include "hlcompat/HLGameDLL.hpp"
+#include "precompiled.hpp"
+#include "game/HLGame.hpp"
 #include "utils/LibUtil.hpp"
 #include "engine/eiface.h"
 #include <cstring>
 
-CHLGameDLL::CHLGameDLL()
+CHLGame::CHLGame(CSystem *apSystem) : mpSystem(apSystem)
 {
-	LogMsg("Constructing the hl-compatible game dll component...");
+	LogMsg("Constructing the old api game component...");
 	
-	mpDLLFuncs = new DLL_FUNCTIONS;
-	mpDLLFuncsEx = new NEW_DLL_FUNCTIONS;
+	mpFuncs = new DLL_FUNCTIONS;
+	mpFuncsEx = new NEW_DLL_FUNCTIONS;
 	
 	// Make sure that new dll functions is cleared
-	//memset(&mpDLLFuncsEx, 0, sizeof(mpDLLFuncsEx));
+	//memset(&mpFuncsEx, 0, sizeof(mpFuncsEx));
 };
 
-CHLGameDLL::~CHLGameDLL()
+CHLGame::~CHLGame()
 {
-	if(mpDLLFuncs)
-		delete mpDLLFuncs;
+	if(mpFuncs)
+		delete mpFuncs;
 	
-	if(mpDLLFuncsEx)
-		delete mpDLLFuncsEx;
+	if(mpFuncsEx)
+		delete mpFuncsEx;
 	
-	mpDLLFuncs = nullptr;
-	mpDLLFuncsEx = nullptr;
+	mpFuncs = nullptr;
+	mpFuncsEx = nullptr;
 	
-	LogMsg("Destructing the hl-compatible game dll component...");
+	LogMsg("Destructing the old api game component...");
 };
 
-bool CHLGameDLL::DLLInit(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs)
+bool CHLGame::Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs)
 {
 	int nVersion;
 	
@@ -68,12 +69,12 @@ bool CHLGameDLL::DLLInit(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 
 	{
 		nVersion = NEW_DLL_FUNCTIONS_VERSION;
 		
-		if(!afnGetNewDllFuncs(mpDLLFuncsEx, &nVersion))
+		if(!afnGetNewDllFuncs(mpFuncsEx, &nVersion))
 		{
 			if(nVersion != NEW_DLL_FUNCTIONS_VERSION)
 				DevWarning("SV_LoadProgs: new interface version is %d, should be %d", NEW_DLL_FUNCTIONS_VERSION, nVersion);
 			
-			memset(&mpDLLFuncsEx, 0, sizeof(mpDLLFuncsEx));
+			memset(&mpFuncsEx, 0, sizeof(mpFuncsEx));
 		};
 	};
 	
@@ -81,158 +82,165 @@ bool CHLGameDLL::DLLInit(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 
 	
 	if(afnGetEntityAPI2)
 	{
-		if(!afnGetEntityAPI2(mpDLLFuncs, &nVersion))
+		if(!afnGetEntityAPI2(mpFuncs, &nVersion))
 		{
 			DevWarning("SV_LoadProgs: interface version is %d, should be %d", INTERFACE_VERSION, nVersion);
 			
 			// Fallback to old API
-			if(!afnGetEntityAPI(mpDLLFuncs, nVersion))
+			if(!afnGetEntityAPI(mpFuncs, nVersion))
 				return false;
 		}
 		else
 			DevMsg(eMsgType_AIConsole, "SV_LoadProgs: ^2initailized extended EntityAPI ^7ver. %d", nVersion);
 	}
 	else
-		if(!afnGetEntityAPI(mpDLLFuncs, nVersion))
+		if(!afnGetEntityAPI(mpFuncs, nVersion))
 			return false;
-		
+	
 	return true;
 };
 
-bool CHLGameDLL::DLLInit(CreateInterfaceFn afnEngineFactory)
+bool CHLGame::Init(CreateInterfaceFn afnEngineFactory)
 {
-	DevMsg("Initializing the hl-compatible game dll component...");
+	DevMsg("Initializing the old api game component...");
+	
+	mpSystem->AddListener(mpHLGameListener); // add a system event listener
+	
+	mpFuncs->pfnGameInit();
 	return true;
 };
 
-void CHLGameDLL::DLLShutdown()
+void CHLGame::Shutdown()
 {
+	if(mpFuncsEx)
+		mpFuncsEx->pfnGameShutdown();
 };
 
-void CHLGameDLL::GameInit()
+// Since the new engine arch isn't oriented on old api
+// We need to listen to some events in order to react to them
+// Engine is just broadcasting events from now so everybody can 
+// listen and react to them (gamedll/plugins/other modules)
+void CHLGame::OnEvent(const TEvent &aEvent)
 {
-	mpDLLFuncs->pfnGameInit();
+	switch(aEvent.type)
+	{
+	case SystemEvent::Type::Error:
+		SysError(aEvent.SysError.asMsg);
+	case UnsortedEvent::Type::LevelInit:
+		LevelInit(aEvent.LevelInitData);
+		break;
+	case UnsortedEvent::Type::LevelShutdown:
+		LevelShutdown();
+		break;
+	default:
+		break;
+	};
 };
 
-void CHLGameDLL::GameShutdown()
+const char *CHLGame::GetGameDescription()
 {
-	if(mpDLLFuncsEx)
-		mpDLLFuncsEx->pfnGameShutdown();
+	return mpFuncs->pfnGetGameDescription();
 };
 
-const char *CHLGameDLL::GetGameDescription()
+bool CHLGame::AllowLagCompensation()
 {
-	return mpDLLFuncs->pfnGetGameDescription();
+	return mpFuncs->pfnAllowLagCompensation() ? true : false;
 };
 
-bool CHLGameDLL::AllowLagCompensation()
-{
-	return mpDLLFuncs->pfnAllowLagCompensation() ? true : false;
-};
-
-bool CHLGameDLL::LevelInit(char const *asMapName, char const *asMapEntities, char const *asOldLevel, char const *asLandmarkName, bool abLoadGame, bool abBackground)
+bool CHLGame::LevelInit(char const *asMapName, char const *asMapEntities, char const *asOldLevel, char const *asLandmarkName, bool abLoadGame, bool abBackground)
 {
 	return true;
 };
 
-void CHLGameDLL::LevelShutdown()
+void CHLGame::LevelShutdown()
 {
 };
 
-void CHLGameDLL::RegisterEncoders()
+void CHLGame::RegisterEncoders()
 {
-	mpDLLFuncs->pfnRegisterEncoders();
+	mpFuncs->pfnRegisterEncoders();
 };
 
-void CHLGameDLL::PostInit()
-{
-};
-
-void CHLGameDLL::SysError(const char *asMsg)
-{
-	mpDLLFuncs->pfnSys_Error(asMsg);
-};
-
-void CHLGameDLL::GetPlayerLimits(int &anMinPlayers, int &anMaxPlayers, int &anDefaultMaxPlayers) const
+void CHLGame::PostInit()
 {
 };
 
-void CHLGameDLL::Update()
+void CHLGame::SysError(const char *asMsg)
 {
-	mpDLLFuncs->pfnStartFrame();
+	mpFuncs->pfnSys_Error(asMsg);
 };
 
-void CHLGameDLL::OnServerActivate(edict_t *apEdictList, uint anEdictCount, uint anMaxPlayers)
+void CHLGame::Update()
 {
-	mpDLLFuncs->pfnServerActivate(apEdictList, anEdictCount, anMaxPlayers);
+	mpFuncs->pfnStartFrame();
 };
 
-void CHLGameDLL::OnServerDeactivate()
+void CHLGame::OnServerActivate(edict_t *apEdictList, uint anEdictCount, uint anMaxPlayers)
 {
-	mpDLLFuncs->pfnServerDeactivate();
+	mpFuncs->pfnServerActivate(apEdictList, anEdictCount, anMaxPlayers);
 };
 
-void CHLGameDLL::OnNewLevel()
+void CHLGame::OnServerDeactivate()
 {
-	mpDLLFuncs->pfnParmsNewLevel();
+	mpFuncs->pfnServerDeactivate();
 };
 
-void CHLCompatGameDLL::OnChangeLevel()
+void CHLGame::OnNewLevel()
 {
-	mpDLLFuncs->pfnParmsChangeLevel();
+	mpFuncs->pfnParmsNewLevel();
 };
 
-bool CHLGameDLL::ShouldHideServer()
+void CHLGame::OnChangeLevel()
 {
-	return false;
+	mpFuncs->pfnParmsChangeLevel();
 };
 
-int CHLGameDLL::OnConnectionlessPacket(const netadr_t *apFrom, const char *asArgs, char *asResponseBuffer, int *anBufferSize)
+int CHLGame::OnConnectionlessPacket(const netadr_t *apFrom, const char *asArgs, char *asResponseBuffer, int *anBufferSize)
 {
-	return mpDLLFuncs->pfnConnectionlessPacket(apFrom, asArgs, asResponseBuffer, anBufferSize);
+	return mpFuncs->pfnConnectionlessPacket(apFrom, asArgs, asResponseBuffer, anBufferSize);
 };
 
-void CHLGameDLL::SaveWriteFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an)
+void CHLGame::SaveWriteFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an)
 {
-	mpDLLFuncs->pfnSaveWriteFields(apSaveRestoreData, as, ap, apTypeDesc, an);
+	mpFuncs->pfnSaveWriteFields(apSaveRestoreData, as, ap, apTypeDesc, an);
 };
 
-void CHLGameDLL::SaveReadFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an)
+void CHLGame::SaveReadFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an)
 {
-	mpDLLFuncs->pfnSaveReadFields(apSaveRestoreData, as, ap, apTypeDesc, an);
+	mpFuncs->pfnSaveReadFields(apSaveRestoreData, as, ap, apTypeDesc, an);
 };
 
-void CHLGameDLL::OnSaveGlobalState(SAVERESTOREDATA *apSaveRestoreData)
+void CHLGame::OnSaveGlobalState(SAVERESTOREDATA *apSaveRestoreData)
 {
-	mpDLLFuncs->pfnSaveGlobalState(apSaveRestoreData);
+	mpFuncs->pfnSaveGlobalState(apSaveRestoreData);
 };
 
-void CHLGameDLL::OnRestoreGlobalState(SAVERESTOREDATA *apSaveRestoreData)
+void CHLGame::OnRestoreGlobalState(SAVERESTOREDATA *apSaveRestoreData)
 {
-	mpDLLFuncs->pfnRestoreGlobalState(apSaveRestoreData);
+	mpFuncs->pfnRestoreGlobalState(apSaveRestoreData);
 };
 
-void CHLGameDLL::OnResetGlobalState()
+void CHLGame::OnResetGlobalState()
 {
-	mpDLLFuncs->pfnResetGlobalState();
+	mpFuncs->pfnResetGlobalState();
 };
 
-int CHLGameDLL::AddToFullPack(entity_state_t *apEntityState, int anE, edict_t *apEnt, edict_t *apHost, int anHostFlags, int anPlayer, unsigned char *apSet)
+int CHLGame::AddToFullPack(entity_state_t *apEntityState, int anE, edict_t *apEnt, edict_t *apHost, int anHostFlags, int anPlayer, unsigned char *apSet)
 {
-	return mpDLLFuncs->pfnAddToFullPack(apEntityState, anE, apEnt, apHost, anHostFlags, anPlayer, apSet);
+	return mpFuncs->pfnAddToFullPack(apEntityState, anE, apEnt, apHost, anHostFlags, anPlayer, apSet);
 };
 
-void CHLGameDLL::CreateBaseline(int anPlayer, int anEntIndex, entity_state_t *apBaseline, edict_t *apEntity, int anPlayerModelIndex, vec3_t avPlayerMins, vec3_t avPlayerMaxs)
+void CHLGame::CreateBaseline(int anPlayer, int anEntIndex, entity_state_t *apBaseline, edict_t *apEntity, int anPlayerModelIndex, vec3_t avPlayerMins, vec3_t avPlayerMaxs)
 {
-	mpDLLFuncs->pfnCreateBaseline(anPlayer, anEntIndex, apBaseline, apEntity, anPlayerModelIndex, avPlayerMins, avPlayerMaxs);
+	mpFuncs->pfnCreateBaseline(anPlayer, anEntIndex, apBaseline, apEntity, anPlayerModelIndex, avPlayerMins, avPlayerMaxs);
 };
 
-void CHLGameDLL::CreateInstancedBaselines()
+void CHLGame::CreateInstancedBaselines()
 {
-	mpDLLFuncs->pfnCreateInstancedBaselines();
+	mpFuncs->pfnCreateInstancedBaselines();
 };
 
-int CHLGameDLL::GetHullBounds(int anHullNumber, float *afMins, float *afMaxs)
+int CHLGame::GetHullBounds(int anHullNumber, float *afMins, float *afMaxs)
 {
-	return mpDLLFuncs->pfnGetHullBounds(anHullNumber, afMins, afMaxs);
+	return mpFuncs->pfnGetHullBounds(anHullNumber, afMins, afMaxs);
 };

@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,30 +27,35 @@
  */
 
 /// @file
-/// @brief hl-compatible game spectator listener class
+/// @brief info k-v store
 
-#include "game/HLGameSpectatorListener.hpp"
+#pragma once
 
-CHLGameSpectatorListener::CHLGameSpectatorListener(DLL_FUNCTIONS *apHLGameDLL)
+#include "system/IInfoKeyStore.hpp"
+
+class CInfoKeyStore : public IInfoKeyStore
 {
-	mpHLGameDLL = apHLGameDLL;
-};
-
-CHLGameSpectatorListener::~CHLGameSpectatorListener()
-{
-};
-
-void CHLSpectatorListener::OnSpectatorConnect(edict_t *apSpectator)
-{
-	mpHLGameDLL->pfnSpectatorConnect(apSpectator);
-};
-
-void CHLSpectatorListener::OnSpectatorDisconnect(edict_t *apSpectator)
-{
-	mpHLGameDLL->pfnSpectatorDisconnect(apSpectator);
-};
-
-void CHLSpectatorListener::OnSpectatorThink(edict_t *apSpectator)
-{
-	mpHLGameDLL->pfnSpectatorThink(apSpectator);
+public:
+	const char *GetKeyValue(const char *key);
+	
+	void RemoveKey(const char *key);
+	void RemovePrefixedKeys(const char prefix);
+	
+	bool IsKeyImportant(const char *key);
+	
+	char *FindLargestKey(int maxsize);
+	
+	void SetStarKeyValue(const char *key, const char *value, int maxsize);
+	void SetKeyValue(const char *key, const char *value, int maxsize);
+	
+	void Print();
+	
+	bool IsValid();
+	
+	void CollectFields(char *destInfo, const char *collectedKeysOfFields);
+	
+	void WriteToFile(CFile *apFile);
+private:
+	char *msBuffer{nullptr};
+	//key-value strings map here?
 };

@@ -137,6 +137,7 @@
     <ClInclude Include="..\..\public\vstdlib\osversion.h" />
     <ClInclude Include="..\..\public\vstdlib\pch_vstdlib.h" />
     <ClInclude Include="..\..\public\vstdlib\random.h" />
+    <ClInclude Include="..\..\public\vstdlib\strtools.h" />
     <ClInclude Include="..\..\public\vstdlib\vcover.h" />
     <ClInclude Include="..\..\public\vstdlib\vstdlib.h" />
     <ClInclude Include="..\commandline.hpp" />

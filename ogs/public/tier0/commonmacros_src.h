@@ -1,27 +1,6 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
-//
-// Purpose: 
-//
-// $NoKeywords: $
-//
-//=============================================================================//
-#ifndef COMMONMACROS_H
-#define COMMONMACROS_H
 
-#ifdef _WIN32
-#pragma once
-#endif
 
 #include "tier0/platform.h"
-
-// -------------------------------------------------------
-//
-// commonmacros.h
-//
-// This should contain ONLY general purpose macros that are 
-// appropriate for use in engine/launcher/all tools
-//
-// -------------------------------------------------------
 
 // Makes a 4-byte "packed ID" int out of 4 characters
 #define MAKEID(d,c,b,a)					( ((int)(a) << 24) | ((int)(b) << 16) | ((int)(c) << 8) | ((int)(d)) )
@@ -169,5 +148,3 @@ T ClampedArrayElement( const T (&buffer)[N], unsigned int uIndex )
 		uIndex = N - 1;
 	return buffer[ uIndex ];
 }
-
-#endif // COMMONMACROS_H

@@ -22,7 +22,6 @@
 #  define MEM_INTERFACE DLL_IMPORT
 #endif
 
-
 //-----------------------------------------------------------------------------
 // DLL-exported methods for particular kinds of memory
 //-----------------------------------------------------------------------------
@@ -32,6 +31,5 @@ MEM_INTERFACE void MemFreeScratch();
 #ifdef __linux__
 MEM_INTERFACE void ZeroMemory(void *mem, size_t length);
 #endif
-
 
 #endif /* TIER0_MEM_H */

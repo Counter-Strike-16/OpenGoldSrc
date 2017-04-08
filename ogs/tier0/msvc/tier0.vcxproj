@@ -117,24 +117,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\CommandLine.cpp" />
-    <ClCompile Include="..\platform_linux.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\platform_win32.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\public\tier0\fasttimer.h" />
-    <ClInclude Include="..\..\public\tier0\ICommandLine.h" />
-    <ClInclude Include="..\..\public\tier0\mem.h" />
-    <ClInclude Include="..\..\public\tier0\memalloc.h" />
-    <ClInclude Include="..\..\public\tier0\memdbgoff.h" />
-    <ClInclude Include="..\..\public\tier0\memdbgon.h" />
-    <ClInclude Include="..\..\public\tier0\platform.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -27,68 +27,68 @@
  */
 
 /// @file
-/// @brief hl-compatible format implementation of game dll to support HLSDK gamedlls
+/// @brief old api implementation of game dll to support HLSDK gamedlls
 
 #pragma once
 
 #include "game/server/IGame.hpp"
+//#include "system/IEventListener.hpp"
 
-class CHLGame : public IGame
+class CHLGame : public IGame//, public IEventListener
 {
 public:
-	CHLGame();
+	CHLGame(CSystem *apSystem);
 	~CHLGame();
 	
-	bool DLLInit(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs);
-	bool DLLInit(CreateInterfaceFn afnEngineFactory) override;
+	bool Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs);
 	
-	void DLLShutdown() override;
-	
-	void GameInit() override;
-	void GameShutdown() override;
+	bool Init(CreateInterfaceFn afnEngineFactory);
+	void Shutdown();
 	
 	bool LevelInit(char const *asMapName, char const *asMapEntities, char const *asOldLevel, char const *asLandmarkName, bool abLoadGame, bool abBackground);
 	void LevelShutdown();
 	
-	void RegisterEncoders() override;
+	void RegisterEncoders();
 	
-	void PostInit() override;
+	void PostInit();
 	
-	void OnNewLevel() override;
-	void OnChangeLevel() override;
+	void OnNewLevel();
+	void OnChangeLevel();
 	
-	void OnServerActivate(edict_t *apEdictList, uint anEdictCount, uint anMaxPlayers) override;
-	void OnServerDeactivate() override;
+	void OnServerActivate(edict_t *apEdictList, uint anEdictCount, uint anMaxPlayers);
+	void OnServerDeactivate();
 	
-	void Update() override;
+	void Update();
 	
-	const char *GetGameDescription() override;
+	const char *GetGameDescription();
 	
-	bool ShouldHideServer() override;
+	bool ShouldHideServer();
 	
-	bool AllowLagCompensation() override;
+	bool AllowLagCompensation();
 	
-	int OnConnectionlessPacket(const netadr_t *apFrom, const char *asArgs, char *asResponseBuffer, int *anBufferSize) override;
+	int OnConnectionlessPacket(const netadr_t *apFrom, const char *asArgs, char *asResponseBuffer, int *anBufferSize);
 	
-	void SysError(const char *asMsg) override;
+	void SysError(const char *asMsg);
 	
-	void GetPlayerLimits(int &anMinPlayers, int &anMaxPlayers, int &anDefaultMaxPlayers) const override;
+	void GetPlayerLimits(int &anMinPlayers, int &anMaxPlayers, int &anDefaultMaxPlayers) const;
 	
-	void CreateInstancedBaselines() override;
+	void CreateInstancedBaselines();
 	
-	int AddToFullPack(entity_state_t *apEntityState, int anE, edict_t *apEnt, edict_t *apHost, int anHostFlags, int anPlayer, unsigned char *apSet) override;
+	int AddToFullPack(entity_state_t *apEntityState, int anE, edict_t *apEnt, edict_t *apHost, int anHostFlags, int anPlayer, unsigned char *apSet);
 	
-	void CreateBaseline(int anPlayer, int anEntIndex, entity_state_t *apBaseline, edict_t *apEntity, int anPlayerModelIndex, vec3_t avPlayerMins, vec3_t avPlayerMaxs) override;
+	void CreateBaseline(int anPlayer, int anEntIndex, entity_state_t *apBaseline, edict_t *apEntity, int anPlayerModelIndex, vec3_t avPlayerMins, vec3_t avPlayerMaxs);
 	
-	int GetHullBounds(int anHullNumber, float *afMins, float *afMaxs) override;
+	int GetHullBounds(int anHullNumber, float *afMins, float *afMaxs);
 	
-	void SaveWriteFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an) override;
-	void SaveReadFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an) override;
+	void SaveWriteFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an);
+	void SaveReadFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an);
 	
-	void OnSaveGlobalState(SAVERESTOREDATA *apSaveRestoreData) override;
-	void OnRestoreGlobalState(SAVERESTOREDATA *apSaveRestoreData) override;
-	void OnResetGlobalState() override;
+	void OnSaveGlobalState(SAVERESTOREDATA *apSaveRestoreData);
+	void OnRestoreGlobalState(SAVERESTOREDATA *apSaveRestoreData);
+	void OnResetGlobalState();
 private:
 	DLL_FUNCTIONS *mpDLLFuncs{nullptr}; // DLL exported funcs
 	NEW_DLL_FUNCTIONS *mpDLLFuncsEx{nullptr}; // New dll exported funcs (may be null)
+	
+	CSystem *mpSystem{nullptr}; // temp
 };

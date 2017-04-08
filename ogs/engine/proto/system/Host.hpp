@@ -40,7 +40,7 @@
 //=============================================================================
 
 #include <memory>
-#include "system/GameServer.hpp"
+#include "game/GameServer.hpp"
 #include "console/Console.hpp"
 #include "network/Network.hpp"
 
@@ -61,6 +61,8 @@ class CFileSystem;
 class CHost
 {
 public:
+	CHost(CFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
+
 	int Init(quakeparms_t *parms);
 	void InitLocal();
 	
@@ -226,7 +228,7 @@ private:
 	
 	std::unique_ptr<CGameServer> mpServer;
 	
-	CFileSystem *mpFS{nullptr};
+	CFileSystem *mpFileSystem{nullptr};
 
 	quakeparms_t *host_params{nullptr};
 	

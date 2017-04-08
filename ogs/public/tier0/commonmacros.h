@@ -1,7 +1,14 @@
+//========= Copyright Valve Corporation, All rights reserved. ============//
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//
+//=============================================================================//
+
 #ifndef COMMONMACROS_H
 #define COMMONMACROS_H
 #pragma once
-
 
 // -------------------------------------------------------
 //

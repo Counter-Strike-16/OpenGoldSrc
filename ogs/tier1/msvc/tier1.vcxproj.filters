@@ -6,4 +6,12 @@
   <ItemGroup>
     <ClInclude Include="..\..\public\tier1\interface.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="public">
+      <UniqueIdentifier>{8974711c-0d0c-4dc2-88f9-3661debb3aa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{c0fd1375-d148-41f2-aa15-5faf80458a5a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>

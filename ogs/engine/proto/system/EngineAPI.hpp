@@ -31,10 +31,14 @@
 
 #pragma once
 
+#include <memory>
 #include "common/commontypes.h"
-#include "engine_launcher_api.h"
+#include "public/engine_launcher_api.h"
+#include "filesystem/FileSystem.hpp"
 
 void EXPORT F(IEngineAPI **api);
+
+class CFileSystem;
 
 class CEngineAPI : public IEngineAPI
 {
@@ -47,4 +51,6 @@ public:
 			
 	        CreateInterfaceFn launcherFactory,
 	        CreateInterfaceFn filesystemFactory);
+private:
+	std::unique_ptr<CFileSystem> mpFileSystem;
 };

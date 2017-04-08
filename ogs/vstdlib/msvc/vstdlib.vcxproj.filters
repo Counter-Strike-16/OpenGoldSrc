@@ -75,6 +75,9 @@
     <ClInclude Include="..\KeyValuesSystem.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\strtools.h">
+      <Filter>public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="public">

@@ -44,10 +44,10 @@ public:
 	void Init();
 	void Shutdown();
 	
-	IConVar *FindVar(const char *asName);
-	IConVar *FindVarPrev(const char *asName);
+	IConVar *Find(const char *asName);
+	IConVar *FindPrev(const char *asName);
 	
-	bool InsertVar(cvar_t *apVar);
+	bool Insert(cvar_t *apVar);
 	
 	NOXREF int CountServerVariables();
 	

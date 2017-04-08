@@ -29,11 +29,11 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "system/system.hpp"
+#include "system/System.hpp"
 #include "system/common.hpp"
-#include "system/host.hpp"
+#include "system/Host.hpp"
 #include "memory/mem.hpp"
-#include "filesystem/filesystem_internal.hpp"
+#include "filesystem/FileSystem.hpp"
 #include "resources/modinfo.hpp"
 #include "console/console.hpp"
 #include "console/cvar.hpp"

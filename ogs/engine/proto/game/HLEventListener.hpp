@@ -27,35 +27,14 @@
  */
 
 /// @file
-/// @brief info k-v buffer
+/// @brief event listener for old api
 
 #pragma once
 
-#include "system/IInfoKeyBuffer.hpp"
+#include "system/IEventListener.hpp"
 
-class CInfoKeyBuffer : public IInfoKeyBuffer
+class CHLEventListener : public IEventListener
 {
 public:
-	const char *GetKeyValue(const char *key);
-	
-	void RemoveKey(const char *key);
-	void RemovePrefixedKeys(const char prefix);
-	
-	bool IsKeyImportant(const char *key);
-	
-	char *FindLargestKey(int maxsize);
-	
-	void SetStarKeyValue(const char *key, const char *value, int maxsize);
-	void SetKeyValue(const char *key, const char *value, int maxsize);
-	
-	void Print();
-	
-	bool IsValid();
-	
-	void CollectFields(char *destInfo, const char *collectedKeysOfFields);
-	
-	//void WriteVars(FileHandle_t fp);
-private:
-	char *msBuffer{nullptr};
-	//key-value strings map here?
+	void OnEvent(const TEvent &aEvent);
 };

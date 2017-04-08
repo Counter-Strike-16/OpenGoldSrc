@@ -40,7 +40,7 @@ Con_Init
 */
 bool CConsole::Init()
 {
-	//con_debuglog = //COM_CheckParm("-condebug");
+	//con_debuglog = //CommandLine()->CheckParm("-condebug");
 
 	//con = &con_main;
 	//con_linewidth = -1; // con.
@@ -126,17 +126,17 @@ void EXT_FUNC CConsole::Printf(/*int anPrintLevel,*/ const char *asMsg, ...) // 
 	};
 };
 
-void CConsole::DrawCharacter(int cx, int line, int num)
-{
-};
+//void CConsole::DrawCharacter(int cx, int line, int num)
+//{
+//};
 
 void CConsole::CheckResize()
 {
 };
 
-void CConsole::Draw(int lines /*, qboolean drawinput*/)
-{
-};
+//void CConsole::Draw(int lines /*, qboolean drawinput*/)
+//{
+//};
 
 //void Draw(float frac);
 

@@ -135,5 +135,8 @@
     <ClInclude Include="..\system\IGame.hpp">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="..\system\IOGSEngine.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

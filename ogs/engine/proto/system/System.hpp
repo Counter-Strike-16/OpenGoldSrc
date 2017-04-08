@@ -48,9 +48,6 @@ NOXREF void Legacy_MP3subsys_Resume_Audio();
 
 double Sys_FloatTime();
 
-// An error will cause the entire program to exit
-NOBODY void NORETURN Sys_Error(const char *error, ...); // mb add int code?
-
 class CSystem
 {
 public:
@@ -82,6 +79,9 @@ public:
 	static void Printf(const char *fmt, ...);
 	
 	static NOXREF void Warning(const char *pszWarning, ...);
+	
+	// An error will cause the entire program to exit
+	static NOBODY void NORETURN Error(const char *error, ...); // mb add int code?
 	
 #ifdef _WIN32
 	static void __cdecl InitHardwareTimer();

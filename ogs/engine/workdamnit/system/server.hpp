@@ -49,7 +49,7 @@
 #include "common/qlimits.h"
 #include "public/rehlds/model.h"
 #include "resources/consistency.hpp"
-#include "system/ServerStatic.hpp"
+#include "game/ServerStatic.hpp"
 #include "system/servertypes.hpp"
 #include "system/info.hpp"
 #include "common/userid.h"

@@ -42,11 +42,11 @@
 #ifndef HOOK_ENGINE
 
 CEngine gEngine;
-IEngine *eng = &gEngine;
+IOGSEngine *ogseng = &gEngine;
 
 #else // HOOK_ENGINE
 
-IEngine *eng;
+IOGSEngine *ogseng;
 
 #endif // HOOK_ENGINE
 
@@ -67,7 +67,7 @@ void ForceReloadProfile()
 	
 	//if(cls.state != ca_dedicated)
 	{
-		//Sys_Error("Only dedicated mode is supported");
+		//CSystem::Error("Only dedicated mode is supported");
 		
 		char sRate[32] = {'\0'};
 		const char *sRegRate = "";
@@ -102,6 +102,11 @@ CEngine::CEngine()
 bool CEngine::Load(bool dedicated, char *basedir, const char *cmdline)
 {
 	return Load_noVirt(dedicated, basedir, cmdline);
+};
+
+bool CEngine::LoadEx(const TEngineLoadParams &aLoadParams)
+{
+	return LoadEx_noVirt(aLoadParams);
 };
 
 void CEngine::Unload()
@@ -195,7 +200,7 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 	
 	SetState(DLL_ACTIVE);
 	
-	mpHost = std::make_unique<CHost>();
+	mpHost = std::make_unique<CHost>(mpFileSystem);
 	
 	if(InitGame(cmdline, basedir, nullptr /*game->GetMainWindowAddress()*/, dedicated))
 	{
@@ -207,6 +212,13 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 	};
 	
 	return success;
+};
+
+bool CEngine::LoadEx_noVirt(const TEngineLoadParams &aLoadParams)
+{
+	mpFileSystem = aLoadParams.filesystem;
+
+	return Load(aLoadParams.dedicated, aLoadParams.basedir, aLoadParams.cmdline);
 };
 
 void CEngine::Unload_noVirt()
@@ -304,7 +316,7 @@ bool CEngine::CheckDoneTrapping_noVirt(int &buttons, int &key)
 
 void CEngine::AddCommandText_noVirt(const char *asText)
 {
-	//mpConsole->AddCommandText(asText);
+	//mpConsole->AddCommandText(asText); // Cbuf_AddText
 };
 
 void CEngine::GetHostInfo_noVirt(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap)

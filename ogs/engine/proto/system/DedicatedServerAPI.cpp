@@ -90,7 +90,7 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 	//TraceInit("Sys_InitArgv( msOrigCmd )", "Sys_ShutdownArgv()", 0);
 	//CSystem::InitArgv(msOrigCmd);
 	
-	eng->SetQuitting(IEngine::QUIT_NOTQUITTING);
+	ogseng->SetQuitting(IEngine::QUIT_NOTQUITTING);
 	
 	//registry->Init();
 
@@ -100,7 +100,12 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 	
 	mpFileSystem = std::make_unique<CFileSystem>();
 	
-	if(mpFileSystem->Init(basedir, (void*)filesystemFactory) && /*game->Init(0) &&*/ eng->Load(true, basedir, cmdline))
+	if(!mpFileSystem->Init(basedir, (void*)filesystemFactory))
+		return false;
+
+	TEngineLoadParams DedicatedEngParams = {mpFileSystem.get(), basedir, cmdline, true};
+
+	if(/*game->Init(0) &&*/ ogseng->LoadEx(DedicatedEngParams))
 	{
 		char text[256];
 
@@ -121,7 +126,7 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 
 int CDedicatedServerAPI::Shutdown_noVirt()
 {
-	eng->Unload();
+	ogseng->Unload();
 	//game->Shutdown();
 
 	//TraceShutdown("FileSystem_Shutdown()", 0);
@@ -138,19 +143,21 @@ int CDedicatedServerAPI::Shutdown_noVirt()
 
 bool CDedicatedServerAPI::RunFrame_noVirt()
 {
-	if(eng->GetQuitting())
+	// Bail if someone wants to quit
+	if(ogseng->GetQuitting()) // != IEngine::QUIT_NOTQUITTING
 		return false;
-
-	eng->Frame();
+	
+	// Run a single engine frame
+	ogseng->Frame();
 	return true;
 };
 
 void CDedicatedServerAPI::AddConsoleText_noVirt(char *text)
 {
-	eng->AddCommandText(text);
+	ogseng->AddCommandText(text);
 };
 
 void CDedicatedServerAPI::UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char *pszMap)
 {
-	eng->GetHostInfo(fps, nActive, nullptr, nMaxPlayers, pszMap);
+	ogseng->GetHostInfo(fps, nActive, nullptr, nMaxPlayers, pszMap);
 };

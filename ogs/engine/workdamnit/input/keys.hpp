@@ -61,6 +61,7 @@ void Key_WriteBindings(FileHandle_t f);
 const char *Key_LookupBinding(const char *pBinding);
 
 const char *Key_KeynumToString(int nKey);
+int Key_StringToKeynum(const char *string);
 
 int Key_GetKey(const char *sBinding); // int Key_GetKey();
 

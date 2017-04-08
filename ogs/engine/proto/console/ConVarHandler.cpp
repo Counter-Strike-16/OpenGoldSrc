@@ -62,7 +62,7 @@ void CConVarHandler::Shutdown()
 
 void CConVarHandler::SetVarString(const char *var_name, const char *value)
 {
-	cvar_t *var = Cvar_FindVar(var_name);
+	cvar_t *var = mpVarList->Find(var_name);
 
 	if(!var)
 	{
@@ -98,7 +98,7 @@ void CConVarHandler::SetVarValue(const char *var_name, float value)
 
 char *CConVarHandler::GetVarString(const char *var_name)
 {
-	cvar_t *var = Cvar_FindVar(var_name);
+	cvar_t *var = mpVarList->Find(var_name);
 
 	if(var)
 		return var->string;
@@ -113,7 +113,7 @@ Cvar_VariableValue
 */
 float CConVarHandler::GetVarValue(const char *var_name)
 {
-	cvar_t *var = Cvar_FindVar(var_name);
+	cvar_t *var = mpVarList->Find(var_name);
 
 	if(var)
 		return (float)Q_atof(var->string);
@@ -130,7 +130,7 @@ NOXREF int CConVarHandler::GetVarInt(const char *var_name)
 {
 	NOXREFCHECK;
 
-	cvar_t *var = Cvar_FindVar(var_name);
+	cvar_t *var = mpVarList->Find(var_name);
 
 	if(var)
 		return Q_atoi(var->string);

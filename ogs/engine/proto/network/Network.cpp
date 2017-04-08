@@ -262,7 +262,7 @@ void CNetwork::StartThread()
 		if(!net_thread_initialized)
 		{
 			net_thread_initialized = true;
-			Sys_Error("-net_thread is not reversed yet");
+			CSystem::Error("-net_thread is not reversed yet");
 			
 #ifdef _WIN32
 			InitializeCriticalSection(&net_cs);
@@ -273,7 +273,7 @@ void CNetwork::StartThread()
 				DeleteCriticalSection(&net_cs);
 				net_thread_initialized = false;
 				use_thread = false;
-				Sys_Error("Couldn't initialize network thread, run without -net_thread\n");
+				CSystem::Error("Couldn't initialize network thread, run without -net_thread\n");
 			};
 #endif // _WIN32
 		
@@ -294,7 +294,7 @@ void CNetwork::StopThread()
 #endif // _WIN32
 			
 			net_thread_initialized = false;
-			Sys_Error("-net_thread is not reversed yet");
+			CSystem::Error("-net_thread is not reversed yet");
 		};
 	};
 };
@@ -358,7 +358,7 @@ void CNetwork::OpenIP()
 		if(!ip_sockets[NS_SERVER] && dedicated)
 #endif
 		{
-			Sys_Error("Couldn't allocate dedicated server IP port %d.", port);
+			CSystem::Error("Couldn't allocate dedicated server IP port %d.", port);
 		};
 		
 		sv_port = port;

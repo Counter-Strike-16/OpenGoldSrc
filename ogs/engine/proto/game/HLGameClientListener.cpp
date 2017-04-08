@@ -28,20 +28,18 @@
 
 /// @file
 
-#include "hlcompatgamedll/HLGameClientListener.hpp"
+#include "precompiled.hpp"
+#include "game/HLGameClientListener.hpp"
 
 CHLGameClientListener::CHLGameClientListener(DLL_FUNCTIONS *apHLGameDLL, NEW_DLL_FUNCTIONS *apHLGameDLLEx)
 {
-	LogMsg("Constructing the hl-compatible game client listener component...");
-	
 	mpHLGameDLL = apHLGameDLL;
 	mpHLGameDLLEx = apHLGameDLLEx;
 };
 
 CHLGameClientListener::~CHLGameClientListener()
 {
-	LogMsg("Destructing the hl-compatible game client listener component...");
-};
+;
 
 bool CHLGameClientListener::OnClientConnect(IGameClient *apClient, const char *asName, const char *asAdr, char *asRejectMsg, int anMaxRejectMsgLen)
 {

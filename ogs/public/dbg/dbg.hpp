@@ -27,6 +27,7 @@
  */
  
  /// @file
+ /// @brief interface for dbg module
  
  #pragma once
 

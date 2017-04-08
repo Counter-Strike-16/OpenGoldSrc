@@ -31,7 +31,10 @@
 
 #pragma once
 
+#ifndef SWDS
+
 #include "common/GameUI/GameUIFuncs.h"
+#include "common/kbutton.h"
 
 class CGameUIFuncs : public IGameUIFuncs
 {
@@ -41,7 +44,7 @@ public:
 	const char *Key_NameForKey(int keynum);
 	const char *Key_BindingForKey(int keynum);
 	
-	vgui::KeyCode GetVGUI2KeyCodeForBind(const char *bind);
+	/*virtual*/ vgui::KeyCode GetVGUI2KeyCodeForBind(const char *bind);
 	
 	void GetVideoModes(struct vmode_s **liststart, int *count);
 	void GetCurrentVideoMode(int *wide, int *tall, int *bpp);
@@ -52,3 +55,5 @@ public:
 	
 	int Key_KeyStringToKeyNum(const char *string);
 };
+
+#endif // SWDS

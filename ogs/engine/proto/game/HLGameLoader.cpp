@@ -27,10 +27,11 @@
  */
 
 /// @file
+/// @brief old api game (dll) loader component
 
-#include "hlcompat/HLGameLoader.hpp"
-#include "hlcompat/HLGame.hpp"
-#include "engine/progdefs.h"
+#include "precompiled.hpp"
+#include "game/HLGameLoader.hpp"
+#include "game/HLGame.hpp"
 
 // Exports
 using pfnLinkEntity = void (__cdecl *)(entvars_t *pev);
@@ -38,12 +39,10 @@ using pfnGiveFnPtrsToDLL = void (__stdcall *)(enginefuncs_t *apEngFuncs, globalv
 
 CHLGameLoader::CHLGameLoader()
 {
-	DebugLog("Constructing the hl-compatible game loader component...");
 };
 
 CHLGameLoader::~CHLGameLoader()
 {
-	DebugLog("Destructing the hl-compatible game loader component...");
 };
 
 IGame *CHLGameLoader::LoadGame(const tString &asPath)
@@ -68,7 +67,7 @@ IGame *CHLGameLoader::LoadGame(const tString &asPath)
 		return nullptr;
 	
 	// Try to find a format of gamedll
-	DevMsg("Trying to detect game dll format...");
+	mpConsole->DevPrintf("Trying to detect game dll format...");
 	
 	// Engine funcs
 	if(!(fnGiveFnPtrsToDLL = (pfnGiveFnPtrsToDLL)LibUtil::GetProcAddr(mpGameLib, "GiveFnptrsToDll")))
@@ -79,7 +78,7 @@ IGame *CHLGameLoader::LoadGame(const tString &asPath)
 		if(!(fnGetEntityAPI = (APIFUNCTION)LibUtil::GetProcAddr(mpGameLib, "GetEntityAPI"))) // Check if primary api is present
 			return nullptr;
 	
-	DevMsg("Detected legacy hlsdk format...");
+	mpConsole->DevPrintf("Detected legacy hlsdk format...");
 	
 	// Extended export set
 	fnGetNewDllFuncs = (NEW_DLL_FUNCTIONS_FN)LibUtil::GetProcAddr(mpGameLib, "GetNewDLLFunctions", false);

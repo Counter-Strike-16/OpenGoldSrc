@@ -29,10 +29,10 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "system/InfoKeyBuffer.hpp"
+#include "system/InfoKeyStore.hpp"
 #include "console/Console.hpp"
 #include "system/common.hpp"
-#include "system/systemtypes.hpp"
+#include "system/SystemTypes.hpp"
 #include "system/unicode_strtools.h"
 
 // NOTE: This file contains a lot of fixes that are not covered by REHLDS_FIXES
@@ -464,6 +464,53 @@ void CInfoKeyBuffer::CollectFields(char *destInfo, const char *collectedKeysOfFi
 	Info_CollectFields();
 };
 
-//void ::WriteVars(FileHandle_t fp)
-//{
-//};
+NOXREF void CInfoKeyBuffer::WriteToFile(FileHandle_t fp)
+{
+	NOXREFCHECK;
+
+	static char value[4][512];
+	static int valueindex;
+
+	valueindex = (valueindex + 1) % 4;
+	char *s = &msInternalString[0];
+
+	if(*s == '\\')
+		s++;
+	
+	char *o;
+	char pkey[512];
+	
+	while(1)
+	{
+		o = pkey;
+		while(*s != '\\')
+		{
+			if(!*s)
+				return;
+			*o++ = *s++;
+		}
+
+		*o = 0;
+		s++;
+
+		o = value[valueindex];
+
+		while(*s != '\\' && *s)
+		{
+			if(!*s)
+				return;
+			*o++ = *s++;
+		};
+		
+		*o = 0;
+
+		cvar_t *pcvar = Cvar_FindVar(pkey);
+		
+		if(!pcvar && pkey[0] != '*')
+			FS_FPrintf(fp, "setinfo \"%s\" \"%s\"\n", pkey, value[valueindex]);
+
+		if(!*s)
+			return;
+		s++;
+	};
+};

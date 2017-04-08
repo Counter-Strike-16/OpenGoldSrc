@@ -49,7 +49,10 @@ class CBuildInfo
 	uint version_minor{0};
 	uint version_patch{0};
 	
-	uint build_number{0}; 
+	uint build_number{0};
+	
+	const char *GetBuildTime() const;
+	const char *GetBuildDate() const;
 	
 	void ToString(char *asString, int anSize);
 };

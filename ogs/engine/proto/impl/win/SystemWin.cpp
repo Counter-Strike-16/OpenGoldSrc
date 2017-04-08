@@ -80,7 +80,7 @@ void CSystem::CheckOSVersion()
 	verInfo.dwOSVersionInfoSize = sizeof(verInfo);
 	
 	if(!GetVersionEx(&verInfo))
-		Sys_Error("Couldn't get OS info");
+		Error("Couldn't get OS info");
 
 	g_WinNTOrHigher = verInfo.dwMajorVersion >= 4;
 	

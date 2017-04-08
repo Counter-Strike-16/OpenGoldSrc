@@ -54,15 +54,6 @@ public:
 	virtual bool RegisterConCommandBase( ConCommandBase *pVar ) = 0;
 };
 
-
-//-----------------------------------------------------------------------------
-// Helper method for console development
-//-----------------------------------------------------------------------------
-#if defined( _X360 ) && !defined( _RETAIL )
-void ConVar_PublishToVXConsole();
-#endif
-
-
 //-----------------------------------------------------------------------------
 // Called when a ConCommand needs to execute
 //-----------------------------------------------------------------------------

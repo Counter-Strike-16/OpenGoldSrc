@@ -28,40 +28,66 @@
 
 /// @file
 
+#include "precompiled.hpp"
 #include "ui/GameUIFuncs.hpp"
+
+#ifndef SWDS
 
 EXPOSE_SINGLE_INTERFACE(CGameUIFuncs, IGameUIFuncs, VENGINE_GAMEUIFUNCS_VERSION);
 
-bool CGameUIFuncs::IsKeyDown(char const *keyname, bool &isdown)
+bool CGameUIFuncs::IsKeyDown(const char *keyname, bool &isdown)
 {
-	return false;
+	kbutton_t *key = g_ClientDLL ? g_ClientDLL->IN_FindKey( keyname ) : NULL;
+	
+	if(!key)
+		return false;
+
+	isdown = ( key->state & 1 ) ? true : false;
+
+	return true;
 };
 
 const char *CGameUIFuncs::Key_NameForKey(int keynum)
 {
-	return "";
+	return ::Key_KeynumToString( keynum );
 };
 
 const char *CGameUIFuncs::Key_BindingForKey(int keynum)
 {
-	return "";
+	return ::Key_BindingForKey( keynum );
 };
 
 vgui::KeyCode CGameUIFuncs::GetVGUI2KeyCodeForBind(const char *bind)
 {
-	return 0;
+	char *keyname = const_cast<char *>( Key_NameForBinding( bind ) );
+	
+	int engineKeyCode = 0;
+	
+	if( keyname )
+	{
+		engineKeyCode = Key_StringToKeynum( _strupr( keyname ) ) ;
+	
+		int virtualKey = MapEngineKeyToVirtualKey( engineKeyCode );
+		
+		return vgui::system()->KeyCode_VirtualKeyToVGUI( virtualKey );
+	};
+	
+	return vgui::KEY_NONE;
 };
 
 void CGameUIFuncs::GetVideoModes(struct vmode_s **liststart, int *count)
 {
+	VideoMode_GetVideoModes( liststart, count );
 };
 
 void CGameUIFuncs::GetCurrentVideoMode(int *wide, int *tall, int *bpp)
 {
+	VideoMode_GetCurrentVideoMode( wide, tall, bpp );
 };
 
 void CGameUIFuncs::GetCurrentRenderer(char *name, int namelen, int *windowed)
 {
+	VideoMode_GetCurrentRenderer( name, namelen, windowed );
 };
 
 bool CGameUIFuncs::IsConnectedToVACSecureServer()
@@ -71,5 +97,7 @@ bool CGameUIFuncs::IsConnectedToVACSecureServer()
 
 int CGameUIFuncs::Key_KeyStringToKeyNum(const char *string)
 {
-	return 0;
+	return Key_StringToKeynum(string);
 };
+
+#endif // SWDS

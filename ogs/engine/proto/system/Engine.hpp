@@ -32,7 +32,7 @@
 
 #include <memory>
 #include "common/maintypes.h"
-#include "system/IEngine.hpp"
+#include "system/IOGSEngine.hpp"
 #include "system/IGame.hpp"
 #include "system/Host.hpp"
 #include "filesystem/FileSystem.hpp"
@@ -51,17 +51,16 @@ constexpr auto MINIMIZED_SLEEP = 20;
 typedef struct quakeparms_s quakeparms_t;
 
 extern IGame *game;
-extern IEngine *eng;
+extern IOGSEngine *ogseng;
 
-class CFileSystem;
-
-class CEngine : public IEngine
+class CEngine : public IOGSEngine
 {
 public:
 	CEngine();
 	virtual ~CEngine() = default;
 
 	virtual bool Load(bool dedicated, char *rootDir, const char *cmdLine);
+	virtual bool LoadEx(const TEngineLoadParams &aLoadParams);
 	virtual void Unload();
 	
 	virtual void SetState(int iState);
@@ -92,6 +91,7 @@ public:
 	// non-virtual function's of wrap for hooks a virtual
 	// Only needed for HOOK_ENGINE
 	bool Load_noVirt(bool dedicated, char *rootDir, const char *cmdLine);
+	bool LoadEx_noVirt(const TEngineLoadParams &aLoadParams);
 	void Unload_noVirt();
 	
 	void SetState_noVirt(int iState);
@@ -126,7 +126,8 @@ private:
 	quakeparms_t host_parms;
 	
 	std::unique_ptr<CHost> mpHost;
-	std::unique_ptr<CFileSystem> mpFileSystem;
+
+	CFileSystem *mpFileSystem{nullptr};
 	
 	double m_fCurTime{0.0f};
 	double m_fFrameTime{0.0f};

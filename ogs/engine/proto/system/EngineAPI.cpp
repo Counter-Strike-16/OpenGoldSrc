@@ -29,8 +29,8 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "system/engineapi.hpp"
-#include "system/iengine.hpp"
+#include "system/EngineAPI.hpp"
+#include "system/IOGSEngine.hpp"
 
 static CEngineAPI g_CEngineAPI;
 
@@ -61,7 +61,7 @@ int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *po
 	
 	//Q_strcpy(gsPostRestartCmdLineArgs, postRestartCmdLineArgs);
 	
-	eng->SetQuitting(IEngine::QUIT_NOTQUITTING);
+	ogseng->SetQuitting(IEngine::QUIT_NOTQUITTING);
 	
 	//registry->Init();
 	
@@ -77,31 +77,33 @@ int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *po
 	//if(!videomode->Init((void*)instance))
 		//return bRestart;
 	
-	if(!game->Init((void*)instance))
-		return bRestart;
+	//if(!game->Init((void*)instance))
+		//return bRestart;
 	
-	if(!eng->Load(false, basedir, cmdline))
+	TEngineLoadParams EngLauncherParams = {mpFileSystem.get(), basedir, cmdline, false};
+
+	if(!ogseng->LoadEx(EngLauncherParams))
 		return bRestart;
 	
 	// Windows msg pump here
 
 	while(true)
 	{
-		if(eng->GetQuitting() != IEngine::QUIT_NOTQUITTING)
+		if(ogseng->GetQuitting() != IEngine::QUIT_NOTQUITTING)
 		{
-			// eng->GetQuitting() != QUIT_TODESKTOP
-			if(eng->GetQuitting() == IEngine::QUIT_RESTART)
+			// ogseng->GetQuitting() != QUIT_TODESKTOP
+			if(ogseng->GetQuitting() == IEngine::QUIT_RESTART)
 				bRestart = true;
 			
 			break;
 		};
 		
-		eng->Frame();
+		ogseng->Frame();
 	};
 
-	eng->Unload();
+	ogseng->Unload();
 
-	game->Shutdown();
+	//game->Shutdown();
 
 	//videomode->Shutdown();
 	
