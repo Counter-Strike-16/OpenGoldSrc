@@ -31,19 +31,15 @@
 
 #include "precompiled.hpp"
 #include "game/HLGame.hpp"
-#include "utils/LibUtil.hpp"
-#include "engine/eiface.h"
 #include <cstring>
 
 CHLGame::CHLGame(CSystem *apSystem) : mpSystem(apSystem)
 {
-	LogMsg("Constructing the old api game component...");
-	
 	mpFuncs = new DLL_FUNCTIONS;
-	mpFuncsEx = new NEW_DLL_FUNCTIONS;
+	mpNewFuncs = new NEW_DLL_FUNCTIONS;
 	
 	// Make sure that new dll functions is cleared
-	//memset(&mpFuncsEx, 0, sizeof(mpFuncsEx));
+	//memset(&mpNewFuncs, 0, sizeof(mpNewFuncs));
 };
 
 CHLGame::~CHLGame()
@@ -51,13 +47,11 @@ CHLGame::~CHLGame()
 	if(mpFuncs)
 		delete mpFuncs;
 	
-	if(mpFuncsEx)
-		delete mpFuncsEx;
+	if(mpNewFuncs)
+		delete mpNewFuncs;
 	
 	mpFuncs = nullptr;
-	mpFuncsEx = nullptr;
-	
-	LogMsg("Destructing the old api game component...");
+	mpNewFuncs = nullptr;
 };
 
 bool CHLGame::Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs)
@@ -69,12 +63,12 @@ bool CHLGame::Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGe
 	{
 		nVersion = NEW_DLL_FUNCTIONS_VERSION;
 		
-		if(!afnGetNewDllFuncs(mpFuncsEx, &nVersion))
+		if(!afnGetNewDllFuncs(mpNewFuncs, &nVersion))
 		{
 			if(nVersion != NEW_DLL_FUNCTIONS_VERSION)
 				DevWarning("SV_LoadProgs: new interface version is %d, should be %d", NEW_DLL_FUNCTIONS_VERSION, nVersion);
 			
-			memset(&mpFuncsEx, 0, sizeof(mpFuncsEx));
+			memset(&mpNewFuncs, 0, sizeof(mpNewFuncs));
 		};
 	};
 	
@@ -112,8 +106,8 @@ bool CHLGame::Init(CreateInterfaceFn afnEngineFactory)
 
 void CHLGame::Shutdown()
 {
-	if(mpFuncsEx)
-		mpFuncsEx->pfnGameShutdown();
+	if(mpNewFuncs)
+		mpNewFuncs->pfnGameShutdown();
 };
 
 // Since the new engine arch isn't oriented on old api
@@ -125,7 +119,8 @@ void CHLGame::OnEvent(const TEvent &aEvent)
 	switch(aEvent.type)
 	{
 	case SystemEvent::Type::Error:
-		SysError(aEvent.SysError.asMsg);
+		HandleSysError(aEvent.SysError.asMsg);
+		break;
 	case UnsortedEvent::Type::LevelInit:
 		LevelInit(aEvent.LevelInitData);
 		break;
@@ -165,7 +160,7 @@ void CHLGame::PostInit()
 {
 };
 
-void CHLGame::SysError(const char *asMsg)
+void CHLGame::HandleSysError(const char *asMsg)
 {
 	mpFuncs->pfnSys_Error(asMsg);
 };

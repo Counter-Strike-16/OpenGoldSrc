@@ -31,13 +31,13 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 
 #ifdef HOOK_ENGINE
-#define wads (*pwads)
+	#define wads (*pwads)
 #endif
 
-const int NUM_WADS = 2;
+constexpr auto NUM_WADS = 2;
 
 typedef struct qpic_s
 {

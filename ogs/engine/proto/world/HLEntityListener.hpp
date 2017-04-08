@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief hl-compatible entity listener class
+/// @brief old api entity listener
 
 #pragma once
 
@@ -36,8 +36,8 @@
 class CHLEntityListener : public IEntityListener
 {
 public:
-	CHLEntityListener(DLL_FUNCTIONS *apHLGameDLL, NEW_DLL_FUNCTIONS *apHLGameDLLEx);
-	~CHLEntityListener();
+	CHLEntityListener(DLL_FUNCTIONS *apGameFuncs, NEW_DLL_FUNCTIONS *apNewGameFuncs) : mpGameFuncs(apGameFuncs), mpNewGameFuncs(apNewGameFuncs){}
+	~CHLEntityListener() = default;
 	
 	int OnEntitySpawn(IEntity *apEntity);
 	void OnEntityThink(IEntity *apEntity);
@@ -57,6 +57,6 @@ public:
 	
 	void OnEntityFreePrivateData(IEntity *apEntity);
 private:
-	DLL_FUNCTIONS *mpHLGameDLL{nullptr};
-	NEW_DLL_FUNCTIONS *mpHLGameDLLEx{nullptr};
+	DLL_FUNCTIONS *mpGameFuncs{nullptr};
+	NEW_DLL_FUNCTIONS *mpNewGameFuncs{nullptr};
 };

@@ -111,6 +111,8 @@ int CHost::Init(quakeparms_t *parms)
 
 	mpConsole = std::make_unique<CConsole>();
 	mpNetwork = std::make_unique<CNetwork>(mpConsole.get());
+	mpSound = std::make_unique<CSound>();
+	mpScreen = std::make_unique<CScreen>();
 
 	InitLocal();
 
@@ -162,38 +164,38 @@ int CHost::Init(quakeparms_t *parms)
 	// Rehlds Security
 	//Rehlds_Security_Init();
 	
-	/*
 	char versionString[256];
 	Q_snprintf(versionString, sizeof(versionString), "%s,%i,%i", gpszVersionString, PROTOCOL_VERSION, build_number());
-	Cvar_Set("sv_version", versionString);
+	//Cvar_Set("sv_version", versionString);
 	
-	mpConsole->DPrintf("%4.1f Mb heap\n", (double)parms->memsize / (1024.0f * 1024.0f));
+	mpConsole->DevPrintf("%4.1f Mb heap\n", (double)parms->memsize / (1024.0f * 1024.0f));
 	
 	//R_InitTextures();
 	
-	HPAK_CheckIntegrity("custom");
+	//HPAK_CheckIntegrity("custom");
 	
-	Q_memset(&g_module, 0, sizeof(g_module));
+	//Q_memset(&g_module, 0, sizeof(g_module));
 	
-	if(cls.state != ca_dedicated)
+	//if(cls.state != ca_dedicated)
 	{
-		//CSystem::Error("Only dedicated server mode is supported");
-
-		color24 *disk_basepal = (color24 *)COM_LoadHunkFile("gfx/palette.lmp");
+#ifdef SWDS
+		CSystem::Error("Only dedicated server mode is supported");
+#else
+		color24 *disk_basepal = nullptr; //(color24 *)COM_LoadHunkFile("gfx/palette.lmp");
 		
 		if(!disk_basepal)
 			CSystem::Error("Host_Init: Couldn't load gfx/palette.lmp");
 
-		host_basepal = (unsigned short *)Hunk_AllocName(sizeof(PackedColorVec) * 256, "palette.lmp");
+		//host_basepal = (unsigned short *)Hunk_AllocName(sizeof(PackedColorVec) * 256, "palette.lmp");
 		
 		for(int i = 0; i < 256; i++)
 		{
-			PackedColorVec *basepal = (PackedColorVec *)&host_basepal[i];
+			//PackedColorVec *basepal = (PackedColorVec *)&host_basepal[i];
 
-			basepal->b = disk_basepal->r;
-			basepal->g = disk_basepal->g;
-			basepal->r = disk_basepal->b;
-			basepal->a = 0; // alpha
+			//basepal->b = disk_basepal->r;
+			//basepal->g = disk_basepal->g;
+			//basepal->r = disk_basepal->b;
+			//basepal->a = 0; // alpha
 
 			disk_basepal++;
 		};
@@ -202,40 +204,44 @@ int CHost::Init(quakeparms_t *parms)
 		//	return 0;
 		//GL_Init(); gpRender->Init();
 		
-		PM_Init(&g_clmove);
-		CL_InitEventSystem();
-		ClientDLL_Init();
+		//PM_Init(&g_clmove);
+		//CL_InitEventSystem();
+		//ClientDLL_Init();
 		// VGui_Startup();
 
-		if(!VID_Init(host_basepal))
+		//if(!VID_Init(host_basepal))
 		{
 			// VGui_Shutdown();
-			return 0;
+			//return 0;
 		};
 
 		// IN_Init ();
 		//Draw_Init();
-		SCR_Init();
+		
+		mpScreen->Init();
+		
 		//R_Init();
-		S_Init();
+		
+		mpSound->Init();
+		
 		// CDAudio_Init();
 		// Voice_Init("voice_speex", 1);
 		// DemoPlayer_Init();
 		// cls.state = ca_disconnected;
 		// Sbar_Init ();
-		CL_Init();
+		//CL_Init();
+#endif // SWDS
 	}
-	else
-		mpConsole->RegisterVariable(&suitvolume);
+	//else
+		//mpConsole->RegisterVariable(&suitvolume);
 
-	mpCmdBuffer->InsertText("exec valve.rc\n");
+	//mpCmdBuffer->InsertText("exec valve.rc\n");
 	
-	Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
-	host_hunklevel = Hunk_LowMark();
+	//Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
+	//host_hunklevel = Hunk_LowMark();
 	
-	giActive = DLL_ACTIVE;
-	scr_skipupdate = FALSE;
-*/
+	//giActive = DLL_ACTIVE;
+	//scr_skipupdate = FALSE;
 	
 	CheckGore();
 	
@@ -327,7 +333,8 @@ void CHost::Shutdown()
 
 	mpNetwork->Shutdown();
 
-	//mpSound->Shutdown();
+	mpSound->Shutdown();
+	
 	mpConsole->Shutdown();
 	
 	/*
@@ -378,7 +385,7 @@ void CHost::EndGame(const char *message, ...)
 /*
 	int oldn = cls.demonum;
 
-	if(g_psv.active)
+	if(g_psv.IsActive())
 		ShutdownServer(false);
 
 	cls.demonum = oldn;
@@ -413,18 +420,18 @@ void NORETURN CHost::Error(const char *error, ...)
 	va_list argptr;
 	va_start(argptr, error);
 	
-	//SCR_EndLoadingPlaque();
+	mpScreen->EndLoadingPlaque();
 	
 	char string[1024];
 	Q_vsnprintf(string, sizeof(string), error, argptr);
 	va_end(argptr);
 
-	//if(g_psv.active && developer.value != 0.0f)
+	//if(g_psv.IsActive() && developer.value != 0.0f)
 		//CL_WriteMessageHistory(0, 0);
 
 	mpConsole->Printf("%s: %s\n", __FUNCTION__, string);
 	
-	//if(g_psv.active)
+	//if(g_psv.IsActive())
 		//ShutdownServer(false);
 
 	//if(cls.state)
@@ -446,11 +453,11 @@ void CHost::WriteConfig()
 
 #ifdef _WIN32
 	Sys_GetRegKeyValue("Software\\Valve\\Steam", "rate", rate_.string);
-	if(cl_name.string && Q_stricmp(cl_name.string, "unnamed") &&
-	   Q_stricmp(cl_name.string, "player") && Q_strlen(cl_name.string))
+	
+	if(cl_name.string && Q_stricmp(cl_name.string, "unnamed") && Q_stricmp(cl_name.string, "player") && Q_strlen(cl_name.string))
 		Sys_GetRegKeyValue("Software\\Valve\\Steam", "LastGameNameUsed", cl_name.string);
 #else
-	SetRateRegistrySetting(rate_.string);
+	CSystem::SetRateRegistrySetting(rate_.string);
 #endif // _WIN32
 	
 	if(Key_CountBindings() <= 1)
@@ -502,7 +509,8 @@ void CHost::WriteConfig()
 	if(jl && (jl->state & 1))
 		f->Printf("+jlook\n");
 
-	mpFileSystem->FPrintf(f, "exec userconfig.cfg\n");
+	f->Printf("exec userconfig.cfg\n");
+	
 	mpFileSystem->Close(f);
 
 	if(bSetFileToReadOnly)
@@ -531,9 +539,9 @@ void CHost::WriteCustomConfig()
 	{
 		//if(host_initialized && cls.state != ca_dedicated)
 		{
-			//if(Key_CountBindings() < 2)
-				//mpConsole->Printf("skipping config.cfg output, no keys bound\n");
-			//else
+			if(0 < 2) //if(Key_CountBindings() < 2)
+				mpConsole->Printf("skipping config.cfg output, no keys bound\n");
+			else
 			{
 				Q_strcat(configname, ".cfg");
 				
@@ -721,7 +729,6 @@ void CHost::ClearMemory(bool bQuiet)
 
 bool CHost::FilterTime(float time)
 {
-	float fps;
 	static int command_line_ticrate = -1;
 
 	if(host_framerate.value > 0.0f)
@@ -735,12 +742,14 @@ bool CHost::FilterTime(float time)
 	};
 
 	realtime += sys_timescale.value * time;
-
+	
+	float fps = 0.0f;
+	
 	if(gbIsDedicatedServer)
 	{
 		//if(command_line_ticrate == -1)
 			//command_line_ticrate = mpCmdLine->CheckArg("-sys_ticrate");
-
+		
 		//if(command_line_ticrate > 0)
 			//fps = Q_atof(com_argv[command_line_ticrate + 1]);
 		//else
@@ -825,7 +834,7 @@ void CHost::GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, cha
 	if(pszMap)
 	{
 		//if(g_psv.name[0])
-			//Q_strcpy(pszMap, g_psv.name);
+			//Q_strcpy(pszMap, g_psv.GetMapName());
 		//else
 			//*pszMap = 0;
 
@@ -906,7 +915,7 @@ void CHost::UpdateScreen()
 	/*
 	if(!gfBackground)
 	{
-		SCR_UpdateScreen();
+		mpScreen->Update();
 		
 		if(cl_inmovie)
 		{
@@ -935,9 +944,9 @@ void CHost::UpdateSounds()
 #if defined(_WIN32) && !defined(SWDS)
 	// update audio
 	if(cl.IsActive()) // if(cls.state == ca_active)
-		S_Update(&s_AudioState); // S_Update(r_origin, vpn, vright, vup);
+		mpSound->Update(&s_AudioState); // S_Update(r_origin, vpn, vright, vup);
 	else
-		S_Update(NULL); // S_Update(vec3_origin, vec3_origin, vec3_origin, vec3_origin);
+		mpSound->Update(NULL); // S_Update(vec3_origin, vec3_origin, vec3_origin, vec3_origin);
 #endif
   */
 };
@@ -1173,7 +1182,7 @@ void CHost::CheckGore()
 bool CHost::IsSinglePlayerGame()
 {
 	/*
-	if(g_psv.active)
+	if(g_psv.IsActive())
 		return g_psvs.maxclients == 1;
 	else
 		return cl.maxclients == 1;
@@ -1181,9 +1190,9 @@ bool CHost::IsSinglePlayerGame()
 	return false;
 };
 
-bool CHost::IsServerActive()
+bool CHost::IsServerActive() // remove?
 {
-	return false; //g_psv.active;
+	return false; //g_psv.IsActive();
 };
 
 void CHost::PrintVersion()
@@ -1192,18 +1201,17 @@ void CHost::PrintVersion()
 	
 	Q_strcpy(szFileName, "steam.inf");
 	
-	//Q_strcpy(gpszVersionString, "1.0.1.4");
-	//Q_strcpy(gpszProductString, "valve");
+	Q_strcpy(gpszVersionString, "1.0.1.4");
+	Q_strcpy(gpszProductString, "valve");
 	
-/*	
 	CFile *fp = mpFileSystem->Open(szFileName, "r");
 	
 	if(fp)
 	{
-		int bufsize = mpFileSystem->Size(fp);
-		char *buffer = (char *)Mem_Malloc(bufsize + 1);
+		int bufsize = fp->GetSize();
+		char *buffer = nullptr; //(char *)Mem_Malloc(bufsize + 1);
 		
-		mpFileSystem->Read(buffer, bufsize, 1, fp);
+		fp->Read(buffer, bufsize, 1);
 		
 		char *pbuf = buffer;
 		
@@ -1212,7 +1220,8 @@ void CHost::PrintVersion()
 		buffer[bufsize] = 0;
 		int gotKeys = 0;
 
-		pbuf = COM_Parse(pbuf);
+		//pbuf = COM_Parse(pbuf);
+		
 		if(pbuf)
 		{
 			while(Q_strlen(com_token) > 0 && gotKeys <= 1)
@@ -1225,8 +1234,7 @@ void CHost::PrintVersion()
 					if(mpCmdLine->CheckArg("-steam"))
 					{
 						char szSteamVersionId[32];
-						mpFileSystem->GetInterfaceVersion(szSteamVersionId,
-						                       sizeof(szSteamVersionId) - 1);
+						mpFileSystem->GetInterfaceVersion(szSteamVersionId, sizeof(szSteamVersionId) - 1);
 						Q_snprintf(gpszVersionString, sizeof(gpszVersionString), "%s/%s", &com_token[Q_strlen("PatchVersion=")], szSteamVersionId);
 						gpszVersionString[sizeof(gpszVersionString) - 1] = 0;
 					};
@@ -1240,27 +1248,27 @@ void CHost::PrintVersion()
 					gpszProductString[sizeof(gpszProductString) - 1] = 0;
 				};
 
-				pbuf = COM_Parse(pbuf);
+				//pbuf = COM_Parse(pbuf);
+				
 				if(!pbuf)
 					break;
 			};
 		};
 		
-		if(buffer)
-			Mem_Free(buffer);
+		//if(buffer)
+			//Mem_Free(buffer);
 	};
 
-	if(cls.state != ca_dedicated)
+	//if(cls.state != ca_dedicated)
 	{
-		mpConsole->DPrintf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
-		mpConsole->DPrintf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
+		//mpConsole->DevPrintf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
+		//mpConsole->DevPrintf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
 	}
-	else
+	//else
 	{
 		mpConsole->Printf("Protocol version %i\nExe version %s (%s)\n", PROTOCOL_VERSION, gpszVersionString, gpszProductString);
 		mpConsole->Printf("Exe build: " __BUILD_TIME__ " " __BUILD_DATE__ " (%i)\n", build_number());
 	};
-	*/
 };
 
 int CHost::GetStartTime()

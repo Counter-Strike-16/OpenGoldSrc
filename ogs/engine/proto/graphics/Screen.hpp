@@ -49,12 +49,15 @@ extern qboolean block_drawing; // wasn't extern
 class CScreen
 {
 public:
+	CScreen() = default;
+	~CScreen() = default;
+	
 	void Init();
 
 	void Update();
 
-	void SCR_SizeUp();
-	void SCR_SizeDown();
+	void SizeUp();
+	void SizeDown();
 
 	void BringDownConsole();
 

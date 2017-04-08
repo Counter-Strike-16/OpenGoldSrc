@@ -26,9 +26,12 @@
  *	version.
  */
 
+/// @file
+
 #include "precompiled.hpp"
+#include "game/EngFuncs.hpp"
 #include "system/common.hpp"
-#include "system/system.hpp"
+#include "system/System.hpp"
 #include "system/host_cmd.hpp"
 #include "math/mathlib_e.hpp"
 #include "world/pr_cmds.hpp"

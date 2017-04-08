@@ -43,6 +43,8 @@
 #include "game/GameServer.hpp"
 #include "console/Console.hpp"
 #include "network/Network.hpp"
+#include "sound/Sound.hpp"
+#include "graphics/Screen.hpp"
 
 typedef struct quakeparms_s
 {
@@ -219,14 +221,16 @@ private:
 	
 	void InitCommands();
 	
+	char gpszVersionString[32];
+	char gpszProductString[32];
+	
 	std::unique_ptr<CConsole> mpConsole; // IConsole
 	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
 	
 	std::unique_ptr<CNetwork> mpNetwork;
-	
-	//std::unique_ptr<ISound> mpSound;
-	
+	std::unique_ptr<CSound> mpSound;
 	std::unique_ptr<CGameServer> mpServer;
+	std::unique_ptr<CScreen> mpScreen;
 	
 	CFileSystem *mpFileSystem{nullptr};
 

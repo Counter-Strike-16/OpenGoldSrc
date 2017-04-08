@@ -89,6 +89,8 @@ public:
 	
 	void CreatePath(char *path);
 	
+	NOXREF void WriteFile(char *filename, void *data, int len);
+	
 	NOXREF void CopyFile(char *netpath, char *cachepath);
 	
 	const char *GetBaseDirectory();

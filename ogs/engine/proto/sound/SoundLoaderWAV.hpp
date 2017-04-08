@@ -42,7 +42,7 @@ typedef struct
 	int dataofs; // chunk starts this many bytes from file start
 } wavinfo_t;
 
-class CSoundLoaderWAV :: public ISoundLoader
+class CSoundLoaderWAV : public ISoundLoader
 {
 public:
 	sfxcache_t *Load();

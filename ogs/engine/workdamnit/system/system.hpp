@@ -33,11 +33,10 @@
 
 #include "common/commontypes.h"
 #include "engine/eiface.h"
-#include "maintypes.h"
-#include "system/systemtypes.hpp"
+#include "common/maintypes.h"
+#include "system/SystemTypes.hpp"
 //#include "public/interface.h"
 //#include "tier0/platform.h"
-#include "public/FileSystem.h"
 #include "world/pr_dlls.hpp"
 
 // vmodes.h must be included before cdll_int.h (wrect_t declaration)
@@ -49,14 +48,12 @@
 
 // clang-format off
 #ifdef HOOK_ENGINE
-	#define g_hfind (*pg_hfind)
-	
 	#define g_engfuncsExportedToDlls (*pg_engfuncsExportedToDlls)
 	
 	#define gszDisconnectReason (*pgszDisconnectReason)
 	#define gszExtendedDisconnectReason (*pgszExtendedDisconnectReason)
 	#define gfExtendedError (*pgfExtendedError)
-	#define g_bIsDedicatedServer (*pg_bIsDedicatedServer)
+	
 	#define giSubState (*pgiSubState)
 	#define giActive (*pgiActive)
 	#define giStateInfo (*pgiStateInfo)
@@ -68,13 +65,8 @@
 	
 	#define gfBackground (*pgfBackground)
 	
-#ifndef _WIN32
-	#define gHasMMXTechnology (*pgHasMMXTechnology)
-#endif
-	
 	#define con_debuglog (*pcon_debuglog)
 	#define g_bPrintingKeepAliveDots (*pg_bPrintingKeepAliveDots)
-	#define Launcher_ConsolePrintf (*pLauncher_ConsolePrintf)
 #endif // HOOK_ENGINE
 
 #ifdef HOOK_ENGINE
@@ -98,9 +90,6 @@ extern char *szCommonPreloads;
 extern char *szReslistsBaseDir;
 extern char *szReslistsExt;
 
-extern FileFindHandle_t g_hfind;
-extern enginefuncs_t g_engfuncsExportedToDlls;
-
 extern char gszDisconnectReason[MAX_DISCONNECT_REASON];
 extern char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON];
 
@@ -120,10 +109,6 @@ extern extensiondll_t g_rgextdll[50];
 extern int g_iextdllMac;
 
 extern qboolean gfBackground;
-
-#ifndef _WIN32
-extern qboolean gHasMMXTechnology;
-#endif
 
 extern qboolean g_bPrintingKeepAliveDots;
 
@@ -163,8 +148,6 @@ extern int g_FPUCW_Mask_Round_Up;
 
 extern int g_WinNTOrHigher;
 #endif //_WIN32
-
-
 
 NOXREF void Sys_PageIn(void *ptr, int size);
 
@@ -220,10 +203,6 @@ void AlertMessage(ALERT_TYPE atype, const char *szFmt, ...);
 NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname, char *ext);
 
 const char *GetCurrentSteamAppName();
-
-NOXREF void SetRateRegistrySetting(const char *pchRate);
-
-NOXREF const char *GetRateRegistrySetting(const char *pchDef);
 
 void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated);
 

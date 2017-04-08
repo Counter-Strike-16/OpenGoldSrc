@@ -33,7 +33,7 @@
 #include "system/System.hpp"
 #include "system/Host.hpp"
 #include "system/common.hpp"
-#include "system/systemtypes.hpp"
+#include "system/SystemTypes.hpp"
 #include "system/DedicatedServerAPI.hpp"
 
 void (*Launcher_ConsolePrintf)(char *, ...);
@@ -47,11 +47,11 @@ void (*Launcher_MP3subsys_Resume_Audio)();
 */
 #ifndef HOOK_ENGINE
 
-//FileFindHandle_t g_hfind = FILESYSTEM_INVALID_FIND_HANDLE;
+FileFindHandle_t g_hfind = FILESYSTEM_INVALID_FIND_HANDLE;
 
 #else // HOOK_ENGINE
 
-//FileFindHandle_t g_hfind;
+FileFindHandle_t g_hfind;
 
 #endif // HOOK_ENGINE
 
@@ -61,12 +61,14 @@ const int MAX_COMMAND_LINE_PARAMS = 50;
 
 quakeparms_t *CSystem::mhost_parms = nullptr;
 
+CFileSystem *CSystem::mpFileSystem = nullptr;
+
 bool CSystem::mbDedicatedServer = false;
 
 bool CSystem::mbIsWin95 = false;
 bool CSystem::mbIsWin98 = false;
 
-void CSystem::Init(quakeparms_t *host_parms)
+void CSystem::Init(quakeparms_t *host_parms, CFileSystem *apFileSystem) : mpFileSystem(apFileSystem)
 {
 	mhost_parms = host_parms;
 	
@@ -373,7 +375,8 @@ void NORETURN CSystem::Error(const char *error, ...)
 
 	bReentry = true;
 
-	//eventmanger->BroadcastEvent(GenerateSysErrorEvent())
+	//eventmanager->BroadcastEvent(GenerateSysErrorEvent())
+	
 	//if(g_psvs.dll_initialized && gEntityInterface.pfnSys_Error)
 		//gEntityInterface.pfnSys_Error(text);
 
@@ -382,9 +385,9 @@ void NORETURN CSystem::Error(const char *error, ...)
 #ifdef REHLDS_FIXES
 	if(syserror_logfile.string[0] != '\0')
 	{
-		auto pFile = gpFS->Open(syserror_logfile.string, "a");
+		auto pLogFile = mpFileSystem->Open(syserror_logfile.string, "a");
 
-		if(pFile)
+		if(pLogFile)
 		{
 			tm *today;
 			time_t ltime;
@@ -394,8 +397,9 @@ void NORETURN CSystem::Error(const char *error, ...)
 			today = localtime(&ltime);
 			strftime(szDate, ARRAYSIZE(szDate) - 1, "L %d/%m/%Y - %H:%M:%S:", today);
 
-			FS_FPrintf(pFile, "%s (map \"%s\") %s\n", szDate, &pr_strings[gGlobalVariables.mapname], text);
-			FS_Close(pFile);
+			pLogFile->Printf("%s (map \"%s\") %s\n", szDate, &pr_strings[gGlobalVariables.mapname], text);
+			
+			mpFileSystem->Close(pLogFile);
 		};
 	};
 #endif // REHLDS_FIXES
@@ -424,6 +428,20 @@ void NORETURN CSystem::Error(const char *error, ...)
 	// exit(-1);
 	// Allahu akbar!
 	*(int *)NULL = NULL;
+};
+
+NOXREF void CSystem::SetRateRegistrySetting(const char *pchRate)
+{
+	NOXREFCHECK;
+	
+	registry->WriteString("rate", pchRate);
+};
+
+NOXREF const char *CSystem::GetRateRegistrySetting(const char *pchDef)
+{
+	NOXREFCHECK;
+	
+	return registry->ReadString("rate", pchDef);
 };
 
 void CSystem::SetupLegacyAPIs()

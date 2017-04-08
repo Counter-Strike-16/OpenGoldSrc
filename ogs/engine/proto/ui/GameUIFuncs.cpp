@@ -37,7 +37,7 @@ EXPOSE_SINGLE_INTERFACE(CGameUIFuncs, IGameUIFuncs, VENGINE_GAMEUIFUNCS_VERSION)
 
 bool CGameUIFuncs::IsKeyDown(const char *keyname, bool &isdown)
 {
-	kbutton_t *key = g_ClientDLL ? g_ClientDLL->IN_FindKey( keyname ) : NULL;
+	kbutton_t *key = gpClientDLL ? gpClientDLL->IN_FindKey( keyname ) : NULL;
 	
 	if(!key)
 		return false;

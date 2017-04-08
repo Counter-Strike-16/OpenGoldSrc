@@ -60,6 +60,8 @@ public:
 	char *ReadLine(char *asOutput, int anMaxChars); // const?
 	
 	uint GetSize() const;
+	
+	operator bool(){return mpFileHandle != nullptr;}
 private:
 	void Close(); // make public?
 	

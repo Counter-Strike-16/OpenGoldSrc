@@ -125,6 +125,29 @@ void CFileSystem::CreatePath(char *path)
 	};
 };
 
+NOXREF void CFileSystem::WriteFile(char *filename, void *data, int len)
+{
+	NOXREFCHECK;
+
+	char path[MAX_PATH];
+	Q_snprintf(path, MAX_PATH - 1, "%s", filename);
+	path[MAX_PATH - 1] = 0;
+
+	CStringHandler::FixSlashes(path);
+	CreatePath(path);
+
+	CFile *fp = Open(path, "wb");
+
+	if(fp)
+	{
+		CSystem::Printf("%s: %s\n", __FUNCTION__, path);
+		Write(data, len, 1, fp);
+		Close(fp);
+	}
+	else
+		CSystem::Printf("%s: failed on %s\n", __FUNCTION__, path);
+};
+
 NOXREF void CFileSystem::CopyFile(char *netpath, char *cachepath)
 {
 	NOXREFCHECK;

@@ -31,7 +31,10 @@
 
 #pragma once
 
+#include <list>
+
 struct ISoundLoader;
+using tSoundLoaderList = std::list<ISoundLoader*>;
 
 class CSoundManager
 {
@@ -46,7 +49,7 @@ public:
 	
 	sfx_t *FindByName(const char *name /*, bool abCreate = true*/);
 private:
-	std::list<ISoundLoader*> mlstLoaders;
+	tSoundLoaderList mlstLoaders;
 	
 	sfx_t *known_sfx; // hunk allocated [mnMaxSfx]
 	

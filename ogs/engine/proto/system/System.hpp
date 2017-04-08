@@ -32,12 +32,33 @@
 #pragma once
 
 #include "common/maintypes.h"
+#include "public/FileSystem.h"
+
+// clang-format off
+#ifdef HOOK_ENGINE
+	#define g_hfind (*pg_hfind)
+	
+	#define gbIsDedicatedServer (*pg_bIsDedicatedServer)
+	
+#ifndef _WIN32
+	#define gHasMMXTechnology (*pgHasMMXTechnology)
+#endif
+	
+	#define Launcher_ConsolePrintf (*pLauncher_ConsolePrintf)
+#endif // HOOK_ENGINE
+// clang-format on
 
 typedef struct quakeparms_s quakeparms_t;
 
 extern void (*Launcher_ConsolePrintf)(char *, ...);
 
 extern bool gbIsDedicatedServer;
+
+extern FileFindHandle_t g_hfind;
+
+#ifndef _WIN32
+extern qboolean gHasMMXTechnology;
+#endif
 
 void Legacy_Sys_Printf(char *fmt, ...);
 
@@ -51,7 +72,7 @@ double Sys_FloatTime();
 class CSystem
 {
 public:
-	static NOBODY void Init(quakeparms_t *host_parms);
+	static NOBODY void Init(quakeparms_t *host_parms, CFileSystem *apFileSystem);
 	static NOXREF void Shutdown();
 	
 	static void InitFloatTime();
@@ -71,17 +92,21 @@ public:
 	
 	static double GetFloatTime();
 
-	// called to yield for a little bit so as
-	// not to hog cpu when paused or debugging
+	/// Called to yield for a little bit so as
+	/// not to hog cpu when paused or debugging
 	static NOXREF void Sleep(int msec);
 	
-	// send text to the remote console
+	/// Send text to the remote console
 	static void Printf(const char *fmt, ...);
 	
 	static NOXREF void Warning(const char *pszWarning, ...);
 	
-	// An error will cause the entire program to exit
+	/// An error will cause the entire program to exit
 	static NOBODY void NORETURN Error(const char *error, ...); // mb add int code?
+	
+	static NOXREF void SetRateRegistrySetting(const char *pchRate);
+
+	static NOXREF const char *GetRateRegistrySetting(const char *pchDef);
 	
 #ifdef _WIN32
 	static void __cdecl InitHardwareTimer();
@@ -95,6 +120,8 @@ private:
 	static void SetupLegacyAPIs();
 	
 	static quakeparms_t *mhost_parms;
+	
+	static CFileSystem *mpFileSystem;
 	
 	static bool mbDedicatedServer;
 

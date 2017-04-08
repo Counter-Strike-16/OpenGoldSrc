@@ -29,13 +29,13 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "system/system.hpp"
-#include "system/dedicatedserverapi.hpp"
+#include "system/System.hpp"
+#include "system/DedicatedServerAPI.hpp"
 #include "system/common.hpp"
-#include "system/host.hpp"
+#include "system/Host.hpp"
 #include "system/host_cmd.hpp"
 #include "system/traceinit.h"
-#include "filesystem/filesystem_internal.hpp"
+#include "filesystem/FileSystem.hpp"
 #include "resources/modinfo.hpp"
 #include "console/console.hpp"
 #include "world/pr_cmds.hpp"
@@ -43,7 +43,6 @@
 #include "input/keys.hpp"
 #include "system/server.hpp"
 #include "system/sv_log.hpp"
-
 
 void (*VID_FlipScreen)();
 
@@ -244,12 +243,6 @@ NOBODY void Sys_DebugOutStraight(const char *pStr);
 //{
 //}
 
-
-
-
-
-
-
 void Sys_Quit()
 {
 	giActive = DLL_CLOSE;
@@ -276,20 +269,6 @@ void GameSetState(int iState)
 NOBODY void GameSetBackground(qboolean bNewSetting);
 //{
 //}
-
-DISPATCHFUNCTION GetDispatch(char *pname)
-{
-	DISPATCHFUNCTION pDispatch;
-
-	for(int i = 0; i < g_iextdllMac; i++)
-	{
-		pDispatch = (DISPATCHFUNCTION)GetProcAddress((HMODULE)g_rgextdll[i].lDLLHandle, pname);
-		if(pDispatch)
-			return pDispatch;
-	};
-
-	return NULL;
-};
 
 const char *FindAddressInTable(extensiondll_t *pDll, uint32 function)
 {
@@ -360,16 +339,6 @@ const char *EXT_FUNC NameForFunction(uint32 function)
 	Con_Printf("Can't find address: %08lx\n", function);
 	return NULL;
 };
-
-ENTITYINIT GetEntityInit(char *pClassName)
-{
-	return (ENTITYINIT)GetDispatch(pClassName);
-}
-
-FIELDIOFUNCTION GetIOFunction(char *pName)
-{
-	return (FIELDIOFUNCTION)GetDispatch(pName);
-}
 
 void EXT_FUNC EngineFprintf(void *pfile, const char *szFmt, ...)
 {
@@ -524,20 +493,6 @@ const char *GetCurrentSteamAppName()
 
 	return "Half-Life";
 };
-
-NOXREF void SetRateRegistrySetting(const char *pchRate)
-{
-	NOXREFCHECK;
-	
-	registry->WriteString("rate", pchRate);
-}
-
-NOXREF const char *GetRateRegistrySetting(const char *pchDef)
-{
-	NOXREFCHECK;
-	
-	return registry->ReadString("rate", pchDef);
-}
 
 void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 {

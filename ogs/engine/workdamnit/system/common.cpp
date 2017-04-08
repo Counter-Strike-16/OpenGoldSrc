@@ -42,9 +42,6 @@
 
 char serverinfo[MAX_INFO_STRING];
 
-char gpszVersionString[32];
-char gpszProductString[32];
-
 char *strcpy_safe(char *dst, char *src)
 {
 	int len = Q_strlen(src);
@@ -604,31 +601,6 @@ NOXREF int memsearch(unsigned char *start, int count, int search)
 	return -1;
 }
 
-NOXREF void COM_WriteFile(char *filename, void *data, int len)
-{
-	NOXREFCHECK;
-
-	char path[MAX_PATH];
-	Q_snprintf(path, MAX_PATH - 1, "%s", filename);
-	path[MAX_PATH - 1] = 0;
-
-	CStringHandler::FixSlashes(path);
-	gpFileSystem->CreatePath(path);
-
-	FileHandle_t fp = FS_Open(path, "wb");
-
-	if(fp)
-	{
-		Sys_Printf("%s: %s\n", __FUNCTION__, path);
-		FS_Write(data, len, 1, fp);
-		FS_Close(fp);
-	}
-	else
-	{
-		Sys_Printf("%s: failed on %s\n", __FUNCTION__, path);
-	}
-}
-
 unsigned char *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength)
 {
 	char base[33];
@@ -1068,23 +1040,6 @@ int COM_EntsForPlayerSlots(int nPlayers)
 	}
 
 	return (numedicts + 15 * (nPlayers - 1));
-}
-
-void COM_NormalizeAngles(vec_t *angles)
-{
-	int i;
-
-	for(i = 0; i < 3; i++)
-	{
-		if(angles[i] > 180.0)
-		{
-			angles[i] = (float)(fmod((double)angles[i], 360.0) - 360.0);
-		}
-		else if(angles[i] < -180.0)
-		{
-			angles[i] = (float)(fmod((double)angles[i], 360.0) + 360.0);
-		}
-	}
 }
 
 // Anti-proxy/aimbot obfuscation code

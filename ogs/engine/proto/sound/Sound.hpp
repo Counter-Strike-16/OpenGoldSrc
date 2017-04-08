@@ -27,14 +27,24 @@
  */
 
 /// @file
+/// @brief high-level sound component
 
 #pragma once
+
+struct IConsole;
+struct ISound;
 
 class CSound
 {
 public:
+	CSound(IConsole *apConsole) : mpConsole(apConsole){}
+	
 	bool Init();
 	void Shutdown();
 	
 	void Update();
+private:
+	IConsole *mpConsole{nullptr};
+	
+	ISound *mpImpl{nullptr};
 };

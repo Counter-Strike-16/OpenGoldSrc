@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief old api implementation of game dll to support HLSDK gamedlls
+/// @brief old api implementation of game module to support HLSDK gamedlls
 
 #pragma once
 
@@ -68,7 +68,7 @@ public:
 	
 	int OnConnectionlessPacket(const netadr_t *apFrom, const char *asArgs, char *asResponseBuffer, int *anBufferSize);
 	
-	void SysError(const char *asMsg);
+	void HandleSysError(const char *asMsg);
 	
 	void GetPlayerLimits(int &anMinPlayers, int &anMaxPlayers, int &anDefaultMaxPlayers) const;
 	
@@ -87,8 +87,8 @@ public:
 	void OnRestoreGlobalState(SAVERESTOREDATA *apSaveRestoreData);
 	void OnResetGlobalState();
 private:
-	DLL_FUNCTIONS *mpDLLFuncs{nullptr}; // DLL exported funcs
-	NEW_DLL_FUNCTIONS *mpDLLFuncsEx{nullptr}; // New dll exported funcs (may be null)
+	DLL_FUNCTIONS *mpFuncs{nullptr}; // DLL exported funcs
+	NEW_DLL_FUNCTIONS *mpNewFuncs{nullptr}; // New dll exported funcs (may be null)
 	
-	CSystem *mpSystem{nullptr}; // temp
+	CSystem *mpSystem{nullptr}; // temp; purpose?
 };

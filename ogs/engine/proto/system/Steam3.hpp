@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "SteamCommon.h"
-#include "maintypes.h"
+#include "common/SteamCommon.h"
+#include "common/maintypes.h"
 #include "system/common.hpp"
 #include "system/server.hpp"
 #include "steam/steam_api.h"

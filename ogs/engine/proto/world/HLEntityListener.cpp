@@ -27,74 +27,61 @@
  */
 
 /// @file
-/// @brief source of hl-compatible entity listener class
 
-#include "hlcompat/HLEntityListener.hpp"
-
-CHLEntityListener::CHLEntityListener(DLL_FUNCTIONS *apHLGameDLL, NEW_DLL_FUNCTIONS *apHLGameDLLEx)
-{
-	LogMsg("Constructing the hl-compatible entity listener component...");
-	
-	mpHLGameDLL = apHLGameDLL;
-	mpHLGameDLLEx = apHLGameDLLEx;
-};
-
-CHLEntityListener::~CHLEntityListener()
-{
-	LogMsg("Destructing the hl-compatible entity listener component...");
-};
+#include "precompiled.hpp"
+#include "world/HLEntityListener.hpp"
 
 int CHLEntityListener::OnEntitySpawn(IEntity *apEntity)
 {
-	return mpHLGameDLL->pfnSpawn(apEntity->ToPOD());
+	return mpGameFuncs->pfnSpawn(apEntity->ToPOD());
 };
 
 void CHLEntityListener::OnEntityThink(IEntity *apEntity)
 {
-	mpHLGameDLL->pfnThink(apEntity->ToPOD());
+	mpGameFuncs->pfnThink(apEntity->ToPOD());
 };
 
 void CHLEntityListener::OnEntityUse(IEntity *apEntity, IEntity *apUsedBy)
 {
-	mpHLGameDLL->pfnUse(apEdict, apUsedBy);
+	mpGameFuncs->pfnUse(apEdict, apUsedBy);
 };
 
 void CHLEntityListener::OnEntityTouch(IEntity *apEntity, IEntity *apTouchedBy)
 {
-	mpHLGameDLL->pfnTouch(apEdict, apTouchedBy);
+	mpGameFuncs->pfnTouch(apEdict, apTouchedBy);
 };
 
 void CHLEntityListener::OnEntityBlocked(IEntity *apEntity, IEntity *apBlockedBy)
 {
-	mpHLGameDLL->pfnBlocked(apEdict, apBlockedBy);
+	mpGameFuncs->pfnBlocked(apEdict, apBlockedBy);
 };
 
 void CHLEntityListener::EntityKeyValue(IEntity *apEntity, KeyValueData *apKeyValueData)
 {
-	mpHLGameDLL->pfnKeyValue(apEdict, apKeyValueData);
+	mpGameFuncs->pfnKeyValue(apEdict, apKeyValueData);
 };
 
 int CHLEntityListener::ShouldCollide(IEntity *apEntity, IEntity *apCollideWith)
 {
-	return mpHLGameDLLEx->pfnShouldCollide(apEdict, apCollideWith);
+	return mpNewGameFuncs->pfnShouldCollide(apEdict, apCollideWith);
 };
 
 void CHLEntityListener::OnEntitySave(IEntity *apEntity, SAVERESTOREDATA *apSaveData)
 {
-	mpHLGameDLL->pfnSave(apEdict, apSaveData);
+	mpGameFuncs->pfnSave(apEdict, apSaveData);
 };
 
 int CHLEntityListener::OnEntityRestore(IEntity *apEntity, SAVERESTOREDATA *apSaveData, int anGlobalEntity)
 {
-	return mpHLGameDLL->pfnRestore(apEdict, apSaveData, anGlobalEntity);
+	return mpGameFuncs->pfnRestore(apEdict, apSaveData, anGlobalEntity);
 };
 
 void CHLEntityListener::SetEntityAbsBox(IEntity *apEntity)
 {
-	mpHLGameDLL->pfnSetAbsBox(apEdict);
+	mpGameFuncs->pfnSetAbsBox(apEdict);
 };
 
 void CHLEntityListener::OnEntityFreePrivateData(IEntity *apEntity)
 {
-	mpHLGameDLLEx->pfnOnFreeEntPrivateData(apEdict);
+	mpNewGameFuncs->pfnOnFreeEntPrivateData(apEdict);
 };

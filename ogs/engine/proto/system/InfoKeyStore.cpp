@@ -464,7 +464,7 @@ void CInfoKeyBuffer::CollectFields(char *destInfo, const char *collectedKeysOfFi
 	Info_CollectFields();
 };
 
-NOXREF void CInfoKeyBuffer::WriteToFile(FileHandle_t fp)
+NOXREF void CInfoKeyBuffer::WriteToFile(CFile *fp)
 {
 	NOXREFCHECK;
 
@@ -507,10 +507,11 @@ NOXREF void CInfoKeyBuffer::WriteToFile(FileHandle_t fp)
 		cvar_t *pcvar = Cvar_FindVar(pkey);
 		
 		if(!pcvar && pkey[0] != '*')
-			FS_FPrintf(fp, "setinfo \"%s\" \"%s\"\n", pkey, value[valueindex]);
+			fp->Printf("setinfo \"%s\" \"%s\"\n", pkey, value[valueindex]);
 
 		if(!*s)
 			return;
+		
 		s++;
 	};
 };

@@ -74,9 +74,6 @@
 
 extern char serverinfo[MAX_INFO_STRING];
 
-extern char gpszVersionString[32];
-extern char gpszProductString[32];
-
 typedef struct bf_read_s bf_read_t;
 typedef struct bf_write_s bf_write_t;
 
@@ -259,9 +256,6 @@ char *va(char *format, ...);
 char *vstr(vec_t *v);
 NOXREF int memsearch(unsigned char *start, int count, int search);
 
-NOXREF void COM_WriteFile(char *filename, void *data, int len);
-
-
 unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
 void COM_FreeFile(void *buffer);
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize);
@@ -283,7 +277,6 @@ unsigned char *COM_LoadFileForMe(char *filename, int *pLength);
 int COM_CompareFileTime(char *filename1, char *filename2, int *iCompare);
 void COM_GetGameDir(char *szGameDir);
 int COM_EntsForPlayerSlots(int nPlayers);
-void COM_NormalizeAngles(vec_t *angles);
 
 void COM_Munge(unsigned char *data, int len, int seq);
 void COM_UnMunge(unsigned char *data, int len, int seq);

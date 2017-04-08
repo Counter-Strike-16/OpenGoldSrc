@@ -32,23 +32,6 @@
 #include "sound/Sound.hpp"
 #include "sound/ISound.hpp" // ISoundImpl
 
-CSound *gpSound = nullptr;
-
-void S_Init()
-{
-	gpSound->Init();
-};
-
-void S_Shutdown()
-{
-	gpSound->Shutdown();
-};
-
-void S_Update()
-{
-	gpSound->Update();
-};
-
 /*
 ================
 S_Init
@@ -64,21 +47,20 @@ bool CSound::Init()
 	if(COM_CheckParm("-simsound"))
 		fakedma = true;
 	
-	if(!mpSound->Init())
+	if(!mpImpl->Init())
 		return false;
 	
-	gpSound = this;
 	return true;
 };
 
 void CSound::Shutdown()
 {
-	mpSound->Shutdown();
+	mpImpl->Shutdown();
 };
 
 void CSound::Update()
 {
-	mpSound->Update();
+	mpImpl->Update();
 	
 	CL_UpdateSoundFade();
 };

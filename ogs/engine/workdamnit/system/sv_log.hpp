@@ -30,17 +30,17 @@
 
 #pragma once
 
-#include "system/server_static.hpp"
+#include "game/ServerStatic.hpp"
+
+#ifdef HOOK_ENGINE
+	#define firstLog (*pfirstLog)
+#endif // HOOK_ENGINE
 
 typedef struct loglist
 {
 	server_log_t log;
 	struct loglist *next;
 } LOGLIST_T;
-
-#ifdef HOOK_ENGINE
-#define firstLog (*pfirstLog)
-#endif // HOOK_ENGINE
 
 extern LOGLIST_T *firstLog;
 
@@ -53,3 +53,14 @@ void SV_SetLogAddress_f();
 void SV_AddLogAddress_f();
 void SV_DelLogAddress_f();
 void SV_ServerLog_f();
+
+class CLog
+{
+public:
+	void Open();
+	void Close();
+	
+	void Printf(const char *fmt, ...);
+	
+	void PrintServerVars();
+};

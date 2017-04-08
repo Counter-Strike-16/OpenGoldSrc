@@ -33,7 +33,7 @@
 
 #include <csetjmp>
 #include "common/commontypes.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "public/FileSystem.h"
 
 // clang-format off
@@ -77,7 +77,6 @@
 
 typedef struct cvar_s cvar_t;
 typedef struct client_s client_t;
-
 
 
 //=============================================================================

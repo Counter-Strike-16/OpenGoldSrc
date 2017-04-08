@@ -7,8 +7,7 @@
 
 ![OGS Logo](docs/OGSLogo1280x512.png?raw=true "OGS Logo")
 
-Open Source implementation of GoldSrc engine  
-A recreation of the GoldSrc game engine, complete in the original beta engine  
+Open Source implementation (a recreation) of the GoldSrc engine   
 Based on Reverse-engineered (and bugfixed) HLDS aka ReHLDS and Id Tech sources (+ Xash and Metahook)
 
 For more information about the project you can visit it's official [Wiki](https://github.com/Sh1ft0x0EF/OpenGoldSrc/wiki)
