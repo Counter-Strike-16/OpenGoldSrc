@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief filesystem module wrapper
+/// @brief high-level filesystem module
 
 #include "precompiled.hpp"
 #include "system/client.hpp"
@@ -44,14 +44,7 @@
 CUtlVector<char *> g_fallbackLocalizationFiles;
 bool bLowViolenceBuild;
 
-NOXREF void *GetFileSystemFactory()
-{
-	NOXREFCHECK;
-
-	return nullptr; //(void *)g_FileSystemFactory;
-};
-
-int CFileSystem::Init(char *basedir, void *voidfilesystemFactory)
+int CFileSystem::Init(char *basedir)
 {
 #ifdef REHLDS_CHECKS
 	Q_strncpy(msBaseDir, basedir, ARRAYSIZE(msBaseDir));
@@ -62,8 +55,7 @@ int CFileSystem::Init(char *basedir, void *voidfilesystemFactory)
 
 	//host_parms.basedir = msBaseDir;
 
-	if(LoadDLL((CreateInterfaceFn)voidfilesystemFactory))
-		return 1; //COM_SetupDirectories() != 0;
+	//return COM_SetupDirectories() != 0;
 
 	return 0;
 };
@@ -71,39 +63,6 @@ int CFileSystem::Init(char *basedir, void *voidfilesystemFactory)
 void CFileSystem::Shutdown()
 {
 	RemoveAllSearchPaths();
-	UnloadDLL();
-};
-
-bool CFileSystem::LoadDLL(CreateInterfaceFn filesystemFactory)
-{
-	if(!filesystemFactory)
-	{
-		mpFileSystemModule = Sys_LoadModule(FILESYSTEM_DLL_NAME);
-
-		if(mpFileSystemModule)
-			filesystemFactory = Sys_GetFactory(mpFileSystemModule);
-	};
-
-	if(filesystemFactory)
-	{
-		g_FileSystemFactory = filesystemFactory;
-
-		mpFileSystem = (IFileSystem *)filesystemFactory(FILESYSTEM_INTERFACE_VERSION, 0);
-		return mpFileSystem != NULL;
-	};
-
-	return false;
-};
-
-void CFileSystem::UnloadDLL()
-{
-	if(mpFileSystemModule)
-	{
-		Sys_UnloadModule((CSysModule *)mpFileSystemModule);
-		mpFileSystemModule = NULL;
-		g_FileSystemFactory = NULL;
-		mpFileSystem = NULL;
-	};
 };
 
 void CFileSystem::CreatePath(char *path)

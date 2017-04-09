@@ -96,14 +96,13 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 
 	gbIsDedicatedServer = true; // TODO: remove usage of this
 
-	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
-	
-	mpFileSystem = std::make_unique<CFileSystem>();
-	
-	if(!mpFileSystem->Init(basedir, (void*)filesystemFactory))
-		return false;
-
-	TEngineLoadParams DedicatedEngParams = {mpFileSystem.get(), basedir, cmdline, true};
+	TEngineLoadParams DedicatedEngParams =
+	{
+		filesystemFactory,
+		basedir,
+		cmdline,
+		true // dedicated mode
+	};
 
 	if(/*game->Init(0) &&*/ ogseng->LoadEx(DedicatedEngParams))
 	{
@@ -130,7 +129,7 @@ int CDedicatedServerAPI::Shutdown_noVirt()
 	//game->Shutdown();
 
 	//TraceShutdown("FileSystem_Shutdown()", 0);
-	mpFileSystem->Shutdown();
+	//mpFileSystem->Shutdown();
 
 	//registry->Shutdown();
 

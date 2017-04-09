@@ -200,7 +200,14 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 	
 	SetState(DLL_ACTIVE);
 	
-	mpHost = std::make_unique<CHost>(mpFileSystem);
+	mpFileSystemLoader = std::make_unique<CFileSystemLoader>();
+	
+	mpFileSystem = std::make_unique<CFileSystem>(mpFileSystemLoader->Load(filesystemFactory));
+	mpHost = std::make_unique<CHost>(mpFileSystem.get());
+	
+	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
+	if(!mpFileSystem->Init(basedir))
+		return false;
 	
 	if(InitGame(cmdline, basedir, nullptr /*game->GetMainWindowAddress()*/, dedicated))
 	{
@@ -424,6 +431,9 @@ void CEngine::ShutdownGame()
 
 	//TraceShutdown("Host_Shutdown()", 0);
 	mpHost->Shutdown();
+	
+	//TraceShutdown("FileSystem_Shutdown()", 0);
+	mpFileSystem->Shutdown();
 
 	//if(mbDedicated)
 		//mpNetwork->Config(FALSE);

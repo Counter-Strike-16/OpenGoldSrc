@@ -84,7 +84,9 @@ void *FS_LoadLibrary(const char *dllName);
 class CFileSystem
 {
 public:
-	int Init(char *basedir, void *voidfilesystemFactory);
+	CFileSystem(IFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
+	
+	int Init(char *basedir);
 	void Shutdown();
 	
 	void CreatePath(char *path);
@@ -173,15 +175,9 @@ public:
 
 	void Rename(const char *originalName, const char *newName);
 private:
-	bool LoadDLL(CreateInterfaceFn filesystemFactory);
-	void UnloadDLL();
-	
 	void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_);
 	
 	char msBaseDir[512];
-	
-	CSysModule *mpFileSystemModule{nullptr};
-	CreateInterfaceFn g_FileSystemFactory{nullptr};
 	
 	IFileSystem *mpFileSystem{nullptr}; // pimpl
 };

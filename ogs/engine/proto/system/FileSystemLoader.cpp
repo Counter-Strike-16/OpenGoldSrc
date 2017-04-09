@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,42 +27,53 @@
  */
 
 /// @file
-/// @brief engine launcher for dedicated mode
 
-#pragma once
-
-#include <memory>
-#include "common/commontypes.h"
-#include "public/engine_hlds_api.h"
-#include "public/idedicatedexports.h"
+#include "precompiled.hpp"
 #include "system/FileSystemLoader.hpp"
 
-extern IDedicatedExports *dedicated_;
-
-//-----------------------------------------------------------------------------
-// Purpose: Expose engine interface to launcher
-//-----------------------------------------------------------------------------
-class CDedicatedServerAPI : public IDedicatedServerAPI
+IFileSystem *CFileSystemLoader::Load(CreateInterfaceFn afnFileSystemFactory)
 {
-public:
-	bool Init(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown();
+	return LoadDLL(afnFileSystemFactory);
+};
 
-	bool RunFrame();
+NOXREF void *CFileSystemLoader::GetFileSystemFactory()
+{
+	NOXREFCHECK;
 
-	void AddConsoleText(char *text);
+	return (void *)g_FileSystemFactory;
+};
 
-	void UpdateStatus(float *fps, int *nActive, int *nMaxPlayers, char *pszMap);
-private:
-	// Non-virtual function's of wrap for hooks a virtual
-	// Only needed for HOOK_ENGINE
-	bool Init_noVirt(char *basedir, char *cmdline, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory);
-	int Shutdown_noVirt();
-	bool RunFrame_noVirt();
-	void AddConsoleText_noVirt(char *text);
-	void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char*pszMap);
-	
-	std::unique_ptr<CFileSystemLoader> mpFileSystemLoader;
-	
-	char msOrigCmd[1024];
+IFileSystem *CFileSystemLoader::LoadDLL(CreateInterfaceFn filesystemFactory)
+{
+	if(!filesystemFactory)
+	{
+		mpFileSystemModule = Sys_LoadModule(FILESYSTEM_DLL_NAME);
+
+		if(mpFileSystemModule)
+			filesystemFactory = Sys_GetFactory(mpFileSystemModule);
+	};
+
+	if(filesystemFactory)
+	{
+		g_FileSystemFactory = filesystemFactory;
+
+		IFileSystem *pFileSystem = (IFileSystem *)filesystemFactory(FILESYSTEM_INTERFACE_VERSION, 0);
+		
+		assert(pFileSystem);
+		
+		return pFileSystem;
+	};
+
+	return nullptr;
+};
+
+void CFileSystemLoader::UnloadDLL()
+{
+	if(mpFileSystemModule)
+	{
+		Sys_UnloadModule((CSysModule *)mpFileSystemModule);
+		mpFileSystemModule = NULL;
+		g_FileSystemFactory = NULL;
+		mpFileSystem = NULL;
+	};
 };
