@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief representation of a client connected to server (+ OOP wrapper)
+/// @brief representation of a client connected to server
 
 #pragma once
 

@@ -37,7 +37,7 @@ typedef struct edict_s edict_t;
 typedef struct entvars_s entvars_t;
 typedef struct cvar_s cvar_t;
 
-// commented thing was conflicting with progs.h
+// commented things was conflicting with progs.h
 
 void ED_ClearEdict(edict_t *e);
 //edict_t *ED_Alloc(void);
@@ -63,13 +63,6 @@ edict_t *PEntityOfEntIndex(int iEntIndex);
 const char *SzFromIndex(int iString);
 entvars_t *GetVarsOfEnt(edict_t *pEdict);
 edict_t *FindEntityByVars(entvars_t *pvars);
-
-float CVarGetFloat(const char *szVarName);
-const char *CVarGetString(const char *szVarName);
-cvar_t *CVarGetPointer(const char *szVarName);
-void CVarSetFloat(const char *szVarName, float flValue);
-void CVarSetString(const char *szVarName, const char *szValue);
-void CVarRegister(cvar_t *pCvar);
 
 int AllocEngineString(const char *szValue);
 

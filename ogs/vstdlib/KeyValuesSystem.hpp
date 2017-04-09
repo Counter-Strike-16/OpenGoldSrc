@@ -21,19 +21,19 @@ public:
 	CKeyValuesSystem();
 	~CKeyValuesSystem();
 	
-	void RegisterSizeofKeyValues(int size);
+	/*virtual*/ void RegisterSizeofKeyValues(int size);
 	
-	void *AllocKeyValuesMemory(int size);
-	void FreeKeyValuesMemory(void *pMem);
+	/*virtual*/ void *AllocKeyValuesMemory(int size);
+	/*virtual*/ void FreeKeyValuesMemory(void *pMem);
 	
-	HKeySymbol GetSymbolForString(const char *name);
-	const char *GetStringForSymbol(HKeySymbol symbol);
+	/*virtual*/ HKeySymbol GetSymbolForString(const char *name);
+	/*virtual*/ const char *GetStringForSymbol(HKeySymbol symbol);
 	
-	HLocalized GetLocalizedFromANSI(const char *string);
-	const char *GetANSIFromLocalized(HLocalized l);
+	/*virtual*/ HLocalized GetLocalizedFromANSI(const char *string);
+	/*virtual*/ const char *GetANSIFromLocalized(HLocalized l);
 	
-	void AddKeyValuesToMemoryLeakList(void *pMem, HKeySymbol name);
-	void RemoveKeyValuesFromMemoryLeakList(void *pMem);
+	/*virtual*/ void AddKeyValuesToMemoryLeakList(void *pMem, HKeySymbol name);
+	/*virtual*/ void RemoveKeyValuesFromMemoryLeakList(void *pMem);
 private:
 	CMemoryPool *m_pMemPool;
 	CUtlSymbolTable m_SymbolTable;

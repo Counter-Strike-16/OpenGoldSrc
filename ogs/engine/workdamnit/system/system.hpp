@@ -197,9 +197,6 @@ void LoadEntityDLLs(const char *szBaseDir);
 void LoadThisDll(const char *szDllFilename);
 void ReleaseEntityDlls();
 
-void EngineFprintf(void *pfile, const char *szFmt, ...);
-void AlertMessage(ALERT_TYPE atype, const char *szFmt, ...);
-
 NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname, char *ext);
 
 const char *GetCurrentSteamAppName();

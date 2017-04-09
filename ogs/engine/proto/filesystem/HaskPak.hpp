@@ -32,8 +32,16 @@
 
 #include "common/commontypes.h"
 #include "engine/custom.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "public/FileSystem.h"
+
+// clang-format off
+#ifdef HOOK_ENGINE
+	#define gp_hpak_queue (*pgp_hpak_queue)
+	#define hash_pack_dir (*phash_pack_dir)
+	#define hash_pack_header (*phash_pack_header)
+#endif // HOOK_ENGINE
+// clang-format on
 
 const char HASHPAK_EXTENSION[] = ".hpk";
 
@@ -70,14 +78,6 @@ typedef struct hash_pack_header_s
 	int version;
 	int nDirectoryOffset;
 } hash_pack_header_t;
-
-// clang-format off
-#ifdef HOOK_ENGINE
-	#define gp_hpak_queue (*pgp_hpak_queue)
-	#define hash_pack_dir (*phash_pack_dir)
-	#define hash_pack_header (*phash_pack_header)
-#endif // HOOK_ENGINE
-// clang-format on
 
 extern hash_pack_queue_t *gp_hpak_queue;
 

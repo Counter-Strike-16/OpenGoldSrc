@@ -29,8 +29,6 @@ void COM_InitFilesystem (void);
 #define PAK0_CRC                32981
 
 char	com_token[1024];
-int		com_argc;
-char	**com_argv;
 
 #define CMDLINE_LENGTH	256
 char	com_cmdline[CMDLINE_LENGTH];
@@ -45,13 +43,6 @@ FIXME:
 The file "parms.txt" will be read out of the game directory and appended to the current command line arguments to allow different games to initialize startup parms differently.  This could be used to add a "-sspeed 22050" for the high quality sound edition.  Because they are added at the end, they will not override an explicit setting on the original command line.
 	
 */
-
-
-
-
-
-
-
 
 void MSG_WriteAngle (sizebuf_t *sb, float f)
 {

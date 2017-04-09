@@ -109,7 +109,7 @@ bool CDedicatedServerAPI::Init_noVirt(char *basedir, char *cmdline, CreateInterf
 	{
 		char text[256];
 
-		//Q_snprintf(text, ARRAYSIZE(text), "exec %s\n", servercfgfile.string);
+		Q_snprintf(text, ARRAYSIZE(text), "exec %s\n", servercfgfile.string);
 		text[255] = 0;
 
 		//mpCmdBuffer->InsertText(text);

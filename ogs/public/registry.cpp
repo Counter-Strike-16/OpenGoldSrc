@@ -6,6 +6,7 @@
 //=============================================================================
 
 //#include "precompiled.hpp"
+#include <windows.h>
 #include "iregistry.h"
 
 #ifndef _WIN32
@@ -118,9 +119,7 @@ void CRegistry::WriteInt(const char *key, int value)
 	DWORD dwSize;
 
 	if (!m_bValid)
-	{
 		return;
-	}
 
 	dwSize = sizeof(DWORD);
 
@@ -193,9 +192,7 @@ void CRegistry::WriteString(const char *key, const char *value)
 	DWORD dwSize;           // Size of element data
 
 	if (!m_bValid)
-	{
 		return;
-	}
 
 	dwSize = strlen(value) + 1;
 
@@ -209,7 +206,7 @@ void CRegistry::WriteString(const char *key, const char *value)
 #endif
 }
 
-// FIXME:  SHould be "steam"
+// FIXME: Should be "steam"
 static char *GetPlatformName(void)
 {
 	return "Half-Life";

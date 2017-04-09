@@ -27,8 +27,8 @@
  */
 
 /// @file
-/// @brief source of engine functions set for exposing to game dll
 
+#include "precompiled.hpp"
 #include "game/ServerEngineFuncs.hpp"
 #include "resources/IModelManager.hpp"
 #include "resources/ISoundManager.hpp"
@@ -39,7 +39,6 @@
 #include "console/Console.hpp"
 #include "console/CmdBuffer.hpp"
 #include "math/Math.hpp"
-#include "engine/eiface.h"
 
 IModelManager *gpModelManager = nullptr;
 ISoundManager *gpSoundManager = nullptr;
@@ -216,16 +215,6 @@ static enginefuncs_t gEngFuncs =
 };
 
 enginefuncs_t *gpEngFuncs = &gEngFuncs;
-
-CEngineFuncs::CEngineFuncs()
-{
-	LogMsg("Constructing the server engine functions component...");
-};
-
-CEngineFuncs::~CEdictHandler()
-{
-	LogMsg("Destructing the server engine functions component...");
-};
 
 void CEngineFuncs::Init(IModelManager *apModelManager, ISoundManager *apSoundManager, CEngineServer *apEngineServer, CEdictHandler *apEdictHandler, CGameWorld *apGameWorld)
 {

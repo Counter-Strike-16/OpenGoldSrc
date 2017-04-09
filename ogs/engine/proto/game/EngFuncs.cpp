@@ -41,6 +41,7 @@
 #include "resources/studio_rehlds.hpp"
 #include "voice/voiceserver.hpp"
 #include "console/cmd.hpp"
+#include "console/cvar.hpp"
 #include "system/server.hpp"
 
 /*
@@ -1346,49 +1347,6 @@ void EXT_FUNC ServerPrint(const char *szMsg)
 	Con_Printf("%s", szMsg);
 };
 
-int32 EXT_FUNC RandomLong(int32 lLow, int32 lHigh)
-{
-#ifndef SWDS
-	g_engdstAddrs.pfnRandomLong(&lLow, &lHigh);
-#endif
-
-	unsigned long maxAcceptable;
-	unsigned long x = lHigh - lLow + 1;
-	unsigned long n;
-	if(x <= 0 || MAX_RANDOM_RANGE < x - 1)
-	{
-		return lLow;
-	}
-
-	// The following maps a uniform distribution on the interval
-	// [0,MAX_RANDOM_RANGE]
-	// to a smaller, client-specified range of [0,x-1] in a way that doesn't bias
-	// the uniform distribution unfavorably. Even for a worst case x, the loop is
-	// guaranteed to be taken no more than half the time, so for that worst case
-	// x,
-	// the average number of times through the loop is 2. For cases where x is
-	// much smaller than MAX_RANDOM_RANGE, the average number of times through the
-	// loop is very close to 1.
-	//
-	maxAcceptable = MAX_RANDOM_RANGE - ((MAX_RANDOM_RANGE + 1) % x);
-	do
-	{
-		n = ran1();
-	} while(n > maxAcceptable);
-
-	return lLow + (n % x);
-};
-
-float EXT_FUNC RandomFloat(float flLow, float flHigh)
-{
-#ifndef SWDS
-	g_engdstAddrs.pfnRandomFloat(&flLow, &flHigh);
-#endif
-
-	float fl = fran1();                     // float in [0,1)
-	return (fl * (flHigh - flLow)) + flLow; // float in [low,high)
-};
-
 void EXT_FUNC PF_setview_I(const edict_t *clientent, const edict_t *viewent)
 {
 	int clientnum = NUM_FOR_EDICT(clientent);
@@ -2047,7 +2005,7 @@ enginefuncs_t g_engfuncsExportedToDlls = { PF_precache_model_I,
 	                                       PF_setsize_I,
 	                                       PF_changelevel_I,
 	                                       PF_setspawnparms_I,
-	                                       //SaveSpawnParms,
+	                                       SaveSpawnParms,
 	                                       PF_vectoyaw_I,
 	                                       PF_vectoangles_I,
 	                                       //SV_MoveToOrigin_I,
@@ -2096,24 +2054,24 @@ enginefuncs_t g_engfuncsExportedToDlls = { PF_precache_model_I,
 	                                       PF_WriteString_I,
 	                                       PF_WriteEntity_I,
 	                                       //CVarRegister,
-	                                       //CVarGetFloat,
-	                                       //CVarGetString,
-	                                       //CVarSetFloat,
-	                                       //CVarSetString,
-	                                       //AlertMessage,
-	                                       //EngineFprintf,
-	                                       //PvAllocEntPrivateData,
-	                                       //PvEntPrivateData,
-	                                       //FreeEntPrivateData,
-	                                       //SzFromIndex,
-	                                       //AllocEngineString,
-	                                       //GetVarsOfEnt,
-	                                       //PEntityOfEntOffset,
-	                                       //EntOffsetOfPEntity,
-	                                       //IndexOfEdict,
-	                                       //PEntityOfEntIndex,
-	                                       //FindEntityByVars,
-	                                       //GetModelPtr,
+	                                       Cvar_VariableValue, //CVarGetFloat,
+	                                       Cvar_VariableString, //CVarGetString,
+	                                       Cvar_SetValue, //CVarSetFloat,
+	                                       Cvar_Set, //CVarSetString,
+	                                       AlertMessage,
+	                                       EngineFprintf,
+	                                       PvAllocEntPrivateData,
+	                                       PvEntPrivateData,
+	                                       FreeEntPrivateData,
+	                                       SzFromIndex,
+	                                       AllocEngineString,
+	                                       GetVarsOfEnt,
+	                                       PEntityOfEntOffset,
+	                                       EntOffsetOfPEntity,
+	                                       IndexOfEdict,
+	                                       PEntityOfEntIndex,
+	                                       FindEntityByVars,
+	                                       GetModelPtr,
 	                                       //RegUserMsg,
 	                                       //AnimationAutomove,
 	                                       //GetBonePosition,
@@ -2121,25 +2079,25 @@ enginefuncs_t g_engfuncsExportedToDlls = { PF_precache_model_I,
 	                                       //NameForFunction,
 	                                       ClientPrintf,
 	                                       ServerPrint,
-	                                       //Cmd_Args,
-	                                       //Cmd_Argv,
-	                                       //Cmd_Argc,
+	                                       Cmd_Args,
+	                                       Cmd_Argv,
+	                                       Cmd_Argc,
 	                                       //GetAttachment,
-	                                       //CRC32_Init,
-	                                       //CRC32_ProcessBuffer,
-	                                       //CRC32_ProcessByte,
-	                                       //CRC32_Final,
-	                                       RandomLong,
-	                                       RandomFloat,
+	                                       CRC32_Init,
+	                                       CRC32_ProcessBuffer,
+	                                       CRC32_ProcessByte,
+	                                       CRC32_Final,
+	                                       Math_RandomLong,
+	                                       Math_RandomFloat,
 	                                       PF_setview_I,
 	                                       PF_Time,
 	                                       PF_crosshairangle_I,
-	                                       //COM_LoadFileForMe,
-	                                       //COM_FreeFile,
+	                                       COM_LoadFileForMe,
+	                                       COM_FreeFile,
 	                                       //Host_EndSection,
-	                                       //COM_CompareFileTime,
-	                                       //COM_GetGameDir,
-	                                       //Cvar_RegisterVariable,
+	                                       COM_CompareFileTime,
+	                                       COM_GetGameDir,
+	                                       Cvar_RegisterVariable,
 	                                       PF_FadeVolume,
 	                                       PF_SetClientMaxspeed,
 	                                       PF_CreateFakeClient_I,
@@ -2155,7 +2113,7 @@ enginefuncs_t g_engfuncsExportedToDlls = { PF_precache_model_I,
 	                                       PF_GetPlayerUserId,
 	                                       PF_BuildSoundMsg_I,
 	                                       PF_IsDedicatedServer,
-	                                       //CVarGetPointer,
+	                                       Cvar_FindVar, //CVarGetPointer,
 	                                       PF_GetPlayerWONId,
 	                                       PF_RemoveKey_I,
 	                                       PF_GetPhysicsKeyValue,
@@ -2176,24 +2134,24 @@ enginefuncs_t g_engfuncsExportedToDlls = { PF_precache_model_I,
 	                                       //DELTA_UnsetFieldByIndex,
 	                                       PF_SetGroupMask,
 	                                       PF_CreateInstancedBaseline,
-	                                       PF_Cvar_DirectSet,
+	                                       Cvar_DirectSet, //PF_Cvar_DirectSet,
 	                                       PF_ForceUnmodified,
 	                                       PF_GetPlayerStats,
-	                                       //Cmd_AddGameCommand,
+	                                       Cmd_AddGameCommand,
 	                                       //Voice_GetClientListening,
 	                                       //Voice_SetClientListening,
 	                                       PF_GetPlayerAuthId,
-	                                       NULL, // sequenceEntry_s *(*pfnSequenceGet)(const char *fileName, const char *entryName);
-	                                       NULL, // sentenceEntry_s *(*pfnSequencePickSentence)(const char *groupName, int pickMethod, int *picked);
+	                                       // sequenceEntry_s *(*pfnSequenceGet)(const char *fileName, const char *entryName);
+	                                       // sentenceEntry_s *(*pfnSequencePickSentence)(const char *groupName, int pickMethod, int *picked);
 	                                       //COM_FileSize,
-	                                       //COM_GetApproxWavePlayLength,
-	                                       nullptr, //VGuiWrap2_IsInCareerMatch,
-	                                       nullptr, //VGuiWrap2_GetLocalizedStringLength,
-	                                       nullptr, //RegisterTutorMessageShown,
-	                                       nullptr, //GetTimesTutorMessageShown,
-	                                       nullptr, //ProcessTutorMessageDecayBuffer,
-	                                       nullptr, //ConstructTutorMessageDecayBuffer,
-	                                       nullptr, //ResetTutorMessageDecayData,
+	                                       COM_GetApproxWavePlayLength,
+	                                       VGuiWrap2_IsInCareerMatch,
+	                                       VGuiWrap2_GetLocalizedStringLength,
+	                                       RegisterTutorMessageShown,
+	                                       GetTimesTutorMessageShown,
+	                                       ProcessTutorMessageDecayBuffer,
+	                                       ConstructTutorMessageDecayBuffer,
+	                                       ResetTutorMessageDecayData,
 	                                       QueryClientCvarValue,
 	                                       QueryClientCvarValue2,
 	                                       EngCheckParm };

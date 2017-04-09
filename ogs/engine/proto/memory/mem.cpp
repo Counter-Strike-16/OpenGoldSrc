@@ -32,7 +32,7 @@
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
 #include "system/common.hpp"
-#include "system/system.hpp"
+#include "system/System.hpp"
 
 /*
 ========================
@@ -57,7 +57,7 @@ void Memory_Init(void *buf, int size)
 		if(p < com_argc - 1)
 			zonesize = Q_atoi(com_argv[p + 1]) * 1024;
 		else
-			Sys_Error("%s: you must specify a size in KB after -zone", __FUNCTION__);
+			CSystem::Error("%s: you must specify a size in KB after -zone", __FUNCTION__);
 	};
 
 	mainzone = ((memzone_t *)Hunk_AllocName(zonesize, "zone"));
@@ -84,11 +84,6 @@ void *Mem_Realloc(void *memblock, size_t size)
 void *EXT_FUNC Mem_Calloc(int num, size_t size)
 {
 	return calloc(num, size);
-};
-
-char *Mem_Strdup(const char *strSource)
-{
-	return _strdup(strSource);
 };
 
 void Mem_Free(void *p)

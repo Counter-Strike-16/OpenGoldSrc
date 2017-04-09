@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief vgui wrapper
 
 // Looks like this thing was used before the "EngineVgui()->"
 

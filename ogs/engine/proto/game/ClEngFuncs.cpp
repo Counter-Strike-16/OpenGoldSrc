@@ -30,10 +30,10 @@
 /// @brief export engine functions for client side
 
 #include "precompiled.hpp"
-#include "system/system.hpp"
+#include "system/System.hpp"
 #include "system/common.hpp"
 #include "client/cl_demo.hpp"
-#include "console/console.hpp"
+#include "console/Console.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
 #include "engine/cdll_int.h"
@@ -1137,49 +1137,49 @@ cl_enginefunc_t gClEngFuncs =
 
   SPR_GetList,
 
-  pfnFillRGBA,
+  // pfnFillRGBA,
 
-  pfnGetScreenInfo,
+  // pfnGetScreenInfo,
 
-  pfnSetCrosshair,
+  // pfnSetCrosshair,
 
-  (void *)pfnCvar_RegisterVariable,
+  (void *)Cvar_RegisterVariable, // client flag?
   (void *)Cvar_VariableValue,
   (void *)Cvar_VariableString,
 
-  (void *)pfnAddClientCommand,
+  (void *)Cmd_AddHUDCommand,
 
-  (void *)pfnHookUserMsg,
+  // (void *)pfnHookUserMsg,
 
-  (void *)pfnServerCmd,
-  (void *)pfnClientCmd,
+  // (void *)pfnServerCmd,
+  // (void *)pfnClientCmd,
 
-  pfnGetPlayerInfo,
+  // pfnGetPlayerInfo,
 
-  (void *)pfnPlaySoundByName,
-  pfnPlaySoundByIndex,
+  // (void *)pfnPlaySoundByName,
+  // pfnPlaySoundByIndex,
 
-  AngleVectors,
+  // AngleVectors,
 
-  CL_TextMessageGet,
+  // TextMessageGet,
 
-  pfnDrawCharacter,
-  pfnDrawConsoleString,
-  pfnDrawSetTextColor,
-  pfnDrawConsoleStringLen,
+  // pfnDrawCharacter,
+  // pfnDrawConsoleString,
+  // pfnDrawSetTextColor,
+  // pfnDrawConsoleStringLen,
 
-  pfnConsolePrint,
-  pfnCenterPrint,
+  Con_Print,
+  // pfnCenterPrint,
 
-  pfnGetWindowCenterX,
-  pfnGetWindowCenterY,
+  // pfnGetWindowCenterX,
+  // pfnGetWindowCenterY,
 
-  pfnGetViewAngles,
-  pfnSetViewAngles,
+  // pfnGetViewAngles,
+  // pfnSetViewAngles,
 
-  CL_GetMaxClients,
+  // CL_GetMaxClients,
 
-  (void *)Cvar_SetFloat,
+  (void *)Cvar_SetValue,
 
   Cmd_Argc,
   Cmd_Argv,
@@ -1189,114 +1189,114 @@ cl_enginefunc_t gClEngFuncs =
   Con_NPrintf,
   Con_NXPrintf,
 
-  pfnPhysInfo_ValueForKey,
-  pfnServerInfo_ValueForKey,
+  // pfnPhysInfo_ValueForKey,
+  // pfnServerInfo_ValueForKey,
 
-  pfnGetClientMaxspeed,
-  pfnCheckParm,
-  (void *)Key_Event,
-  CL_GetMousePosition,
-  pfnIsNoClipping,
-  CL_GetLocalPlayer,
-  pfnGetViewModel,
-  CL_GetEntityByIndex,
-  pfnGetClientTime,
+  // pfnGetClientMaxspeed,
+  COM_CheckParm,
+  // (void *)Key_Event,
+  // CL_GetMousePosition,
+  // pfnIsNoClipping,
+  // CL_GetLocalPlayer,
+  // pfnGetViewModel,
+  // CL_GetEntityByIndex,
+  // pfnGetClientTime,
   
-  V_CalcShake,
-  V_ApplyShake,
+  // V_CalcShake,
+  // V_ApplyShake,
   
-  (void *)pfnPointContents,
-  (void *)CL_WaterEntity,
-  pfnTraceLine,
-  CL_LoadModel,
-  CL_AddEntity,
-  CL_GetSpritePointer,
-  pfnPlaySoundByNameAtLocation,
+  // (void *)pfnPointContents,
+  // (void *)CL_WaterEntity,
+  // pfnTraceLine,
+  // CL_LoadModel,
+  // CL_AddEntity,
+  // CL_GetSpritePointer,
+  // pfnPlaySoundByNameAtLocation,
 
-  pfnPrecacheEvent,
-  CL_PlaybackEvent,
+  // pfnPrecacheEvent,
+  // CL_PlaybackEvent,
 
-  CL_WeaponAnim,
+  // CL_WeaponAnim,
 
-  Com_RandomFloat,
-  Com_RandomLong,
+  Math_RandomFloat,
+  Math_RandomLong,
 
-  (void *)pfnHookEvent,
+  // (void *)pfnHookEvent,
   (void *)Con_Visible,
-  pfnGetGameDirectory,
-  pfnCVarGetPointer,
-  Key_LookupBinding,
-  pfnGetLevelName,
+  COM_GetGameDir,
+  Cvar_FindVar, // pfnCVarGetPointer,
+  // Key_LookupBinding,
+  // pfnGetLevelName,
 
-  pfnGetScreenFade,
-  pfnSetScreenFade,
+  // pfnGetScreenFade,
+  // pfnSetScreenFade,
 
-  VGui_GetPanel,
-  VGui_ViewportPaintBackground,
+  // VGui_GetPanel,
+  // VGui_ViewportPaintBackground,
 
   (void *)COM_LoadFile,
   COM_ParseFile,
   COM_FreeFile,
 
-  &gTriAPI,
-  &gEfxAPI,
-  &gEventAPI,
-  &gDemoAPI,
-  &gNetAPI,
-  &gVoiceAPI,
+  // &gTriAPI,
+  // &gEfxAPI,
+  // &gEventAPI,
+  // &gDemoAPI,
+  // &gNetAPI,
+  // &gVoiceAPI,
 
-  pfnIsSpectateOnly,
-  pfnLoadMapSprite,
+  // pfnIsSpectateOnly,
+  // pfnLoadMapSprite,
   
-  COM_AddAppDirectoryToSearchPath,
-  COM_ExpandFilename,
+  COM_AddAppDirectory,
+  // COM_ExpandFilename,
   
-  PlayerInfo_ValueForKey,
-  PlayerInfo_SetValueForKey,
+  // PlayerInfo_ValueForKey,
+  // PlayerInfo_SetValueForKey,
   
-  pfnGetPlayerUniqueID,
+  // pfnGetPlayerUniqueID,
   
-  pfnGetTrackerIDForPlayer,
-  pfnGetPlayerForTrackerID,
+  // pfnGetTrackerIDForPlayer,
+  // pfnGetPlayerForTrackerID,
   
-  pfnServerCmdUnreliable,
+  // pfnServerCmdUnreliable,
 
-  pfnGetMousePos,
-  pfnSetMousePos,
+  // pfnGetMousePos,
+  // pfnSetMousePos,
 
-  pfnSetMouseEnable,
+  // pfnSetMouseEnable,
 
   Cvar_GetList,
-  (void *)Cmd_GetFirstFunctionHandle,
-  (void *)Cmd_GetNextFunctionHandle,
-  (void *)Cmd_GetName,
-  pfnGetClientOldTime,
-  pfnGetGravity,
-  Mod_Handle,
-  pfnEnableTexSort,
-  pfnSetLightmapColor,
-  pfnSetLightmapScale,
-  pfnSequenceGet,
-  pfnSPR_DrawGeneric,
-  pfnSequencePickSentence,
-  pfnDrawString,
-  pfnDrawStringReverse,
-  LocalPlayerInfo_ValueForKey,
-  pfnVGUI2DrawCharacter,
-  pfnVGUI2DrawCharacterAdditive,
-  (void *)Sound_GetApproxWavePlayLen,
-  GetCareerGameInterface,
+  (void *)Cmd_GetFirstCmd,
+  (void *)Cmd_GetNextCmd,
+  // (void *)Cmd_GetName,
+  // pfnGetClientOldTime,
+  // pfnGetGravity,
+  // Mod_Handle,
+  // pfnEnableTexSort,
+  // pfnSetLightmapColor,
+  // pfnSetLightmapScale,
+  // pfnSequenceGet,
+  SPR_DrawGeneric,
+  // pfnSequencePickSentence,
+  // pfnDrawString,
+  // pfnDrawStringReverse,
+  // LocalPlayerInfo_ValueForKey,
+  // pfnVGUI2DrawCharacter,
+  // pfnVGUI2DrawCharacterAdditive,
+  (void *)COM_GetApproxWavePlayLength, // COM_ -> Sound_?
+  VguiWrap2_GetCareerUI,
   (void *)Cvar_Set,
-  pfnIsCareerMatch,
-  pfnPlaySoundVoiceByName,
-  pfnMP3_InitStream,
+  VGuiWrap2_IsInCareerMatch,
+  // pfnPlaySoundVoiceByName,
+  // pfnMP3_InitStream,
   Sys_FloatTime,
-  pfnProcessTutorMessageDecayBuffer,
-  pfnConstructTutorMessageDecayBuffer,
-  pfnResetTutorMessageDecayData,
-  pfnPlaySoundByNameAtPitch,
-  pfnFillRGBABlend,
-  pfnGetAppID,
-  Cmd_AliasGetList,
-  pfnVguiWrap2_GetMouseDelta
+  ProcessTutorMessageDecayBuffer,
+  ConstructTutorMessageDecayBuffer,
+  ResetTutorMessageDecayData,
+  // pfnPlaySoundByNameAtPitch,
+  // pfnFillRGBABlend,
+  // pfnGetAppID,
+  Cmd_GetAliasList,
+  // pfnVguiWrap2_GetMouseDelta
 };

@@ -66,7 +66,7 @@ void CConVarHandler::SetVarString(const char *var_name, const char *value)
 
 	if(!var)
 	{
-		mpConsole->DPrintf("%s: variable \"%s\" not found\n", __FUNCTION__, var_name);
+		mpConsole->DevPrintf("%s: variable \"%s\" not found\n", __FUNCTION__, var_name);
 		return;
 	};
 

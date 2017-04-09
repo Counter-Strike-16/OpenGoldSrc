@@ -29,7 +29,7 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "math/comtomath.hpp"
+#include "math/math.hpp"
 
 void COM_NormalizeAngles(vec_t *angles)
 {
@@ -40,4 +40,48 @@ void COM_NormalizeAngles(vec_t *angles)
 		else if(angles[i] < -180.0)
 			angles[i] = (float)(fmod((double)angles[i], 360.0) + 360.0);
 	};
+};
+
+int32 EXT_FUNC Math_RandomLong(int32 lLow, int32 lHigh)
+{
+#ifndef SWDS
+	g_engdstAddrs.pfnRandomLong(&lLow, &lHigh);
+#endif
+
+	unsigned long maxAcceptable;
+	unsigned long x = lHigh - lLow + 1;
+	unsigned long n;
+	
+	if(x <= 0 || MAX_RANDOM_RANGE < x - 1)
+		return lLow;
+
+	// The following maps a uniform distribution on the interval
+	// [0,MAX_RANDOM_RANGE]
+	// to a smaller, client-specified range of [0,x-1] in a way that doesn't bias
+	// the uniform distribution unfavorably. Even for a worst case x, the loop is
+	// guaranteed to be taken no more than half the time, so for that worst case
+	// x,
+	// the average number of times through the loop is 2. For cases where x is
+	// much smaller than MAX_RANDOM_RANGE, the average number of times through the
+	// loop is very close to 1.
+	//
+	maxAcceptable = MAX_RANDOM_RANGE - ((MAX_RANDOM_RANGE + 1) % x);
+	
+	do
+	{
+		n = ran1();
+	}
+	while(n > maxAcceptable);
+
+	return lLow + (n % x);
+};
+
+float EXT_FUNC Math_RandomFloat(float flLow, float flHigh)
+{
+#ifndef SWDS
+	g_engdstAddrs.pfnRandomFloat(&flLow, &flHigh);
+#endif
+
+	float fl = fran1();                     // float in [0,1)
+	return (fl * (flHigh - flLow)) + flLow; // float in [low,high)
 };

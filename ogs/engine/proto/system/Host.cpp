@@ -647,7 +647,8 @@ void CHost::ShutdownServer(bool crash)
 {
 	/*
 	int i;
-	if(!g_psv.active)
+	
+	if(!g_psv.IsActive())
 		return;
 
 	SV_ServerShutdown();
@@ -658,7 +659,7 @@ void CHost::ShutdownServer(bool crash)
 	for(i = 0; i < g_psvs.maxclients; i++, host_client++)
 	{
 		if(host_client->active || host_client->connected)
-			SV_DropClient(host_client, crash, "Server shutting down");
+			host_client->Drop(crash, "Server shutting down"); // was SV_DropClient(client_t *, ...)
 	};
 
 	CL_Disconnect();
@@ -836,9 +837,7 @@ void CHost::GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, cha
 		//if(g_psv.name[0])
 			//Q_strcpy(pszMap, g_psv.GetMapName());
 		//else
-			//*pszMap = 0;
-
-		Q_strcpy(pszMap, "<no map>");
+			Q_strcpy(pszMap, "<no map>");
 	};
 
 	*nMaxPlayers = 0; //g_psvs.maxclients; // mpServer->GetMaxClients();
@@ -912,18 +911,16 @@ Refresh the screen
 */
 void CHost::UpdateScreen()
 {
-	/*
-	if(!gfBackground)
+	//if(!gfBackground)
 	{
 		mpScreen->Update();
 		
-		if(cl_inmovie)
+		//if(cl_inmovie)
 		{
-			if(*(float *)&scr_con_current == 0.0f)
-				VID_WriteBuffer(NULL);
-		}
-	}
-	*/
+			//if(*(float *)&scr_con_current == 0.0f)
+				//VID_WriteBuffer(NULL);
+		};
+	};
 };
 
 /*
@@ -1007,7 +1004,7 @@ void CHost::_Frame(float time)
 
 	ClientDLL_UpdateClientData();
 
-	if(g_psv.active)
+	if(g_psv.IsActive())
 		CL_Move();
 */
 
@@ -1279,7 +1276,7 @@ int CHost::GetStartTime()
 void CHost::InitializeGameDLL()
 {
 	//mpCmdBuffer->Execute();
-	//mpNetwork->Config(g_psvs.maxclients > 1);
+	mpNetwork->Config(false); //g_psvs.maxclients > 1
 
 	//if(g_psvs.dll_initialized)
 	{

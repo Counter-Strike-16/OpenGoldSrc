@@ -98,17 +98,8 @@ void Cmd_CmdList_f();
 
 char *CopyString(char *in);
 
-struct cmd_function_s *Cmd_GetFirstCmd();
-
 void Cmd_Init();
 void Cmd_Shutdown();
-
-// The functions that execute commands get their parameters with these
-// functions. Cmd_Argv () will return an empty string, not a NULL
-// if arg > argc, so string operations are always safe.
-int Cmd_Argc();
-const char *Cmd_Argv(int arg);
-const char *Cmd_Args();
 
 // Takes a null terminated string.  Does not need to be /n terminated.
 // breaks the string up into arg tokens.
@@ -125,9 +116,7 @@ cmd_function_t *Cmd_FindCmdPrev(char *cmd_name);
 void Cmd_AddCommand(char *cmd_name, xcommand_t function);
 
 void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag);
-NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function);
 NOXREF void Cmd_AddWrapperCommand(char *cmd_name, xcommand_t function);
-void Cmd_AddGameCommand(char *cmd_name, xcommand_t function);
 void Cmd_RemoveCmd(char *cmd_name);
 void Cmd_RemoveMallocedCmds(int flag);
 NOXREF void Cmd_RemoveHudCmds();

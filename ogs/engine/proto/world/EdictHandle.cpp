@@ -51,13 +51,13 @@ entvars_t *CEdictHandle::GetEntVars()
 	if(mpHandlingEdict)
 		return &mpHandlingEdict->v;
 
-	return NULL;
+	return nullptr;
 };
 
 void *CEdictHandle::GetModelPtr()
 {
 	if(!mpHandlingEdict)
-		return NULL;
+		return nullptr;
 
 	return Mod_Extradata(g_psv.models[mpHandlingEdict->v.modelindex]);
 }
@@ -65,7 +65,7 @@ void *CEdictHandle::GetModelPtr()
 void *CEdictHandle::GetPrivateData()
 {
 	if(!mpHandlingEdict)
-		return NULL;
+		return nullptr;
 
 	return mpHandlingEdict->pvPrivateData;
 };

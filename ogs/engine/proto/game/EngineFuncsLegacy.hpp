@@ -27,11 +27,11 @@
  */
 
 /// @file
-/// @brief engine functions set for exposing to game dll
+/// @brief engine functions set for exposing to game module
 
 #pragma once
 
-#include "core/CommonTypes.hpp"
+#include "common/commontypes.h"
 
 class IModelManager;
 class ISoundManager;
@@ -45,8 +45,8 @@ extern sv_enginefuncs_t *gpServerEngFuncs; // Global pointer to engfuncs struct.
 class CEngineFuncs
 {
 public:
-	CEngineFuncs(enginefuncs_t *apEngFuncs);
-	~CEngineFuncs();
+	CEngineFuncs(enginefuncs_t *apEngFuncs) = default;
+	~CEngineFuncs() = default;
 	
 	void Init(IModelManager *apModelManager, ISoundManager *apSoundManager, CEdictHandler *apEdictHandler, CEngineServer *apEngineServer, CGameWorld *apGameWorld);
 /*	
@@ -75,8 +75,6 @@ int pfnIsInGame();
 // CS engfuncs (stubs)
 void *pfnSequenceGet( const char *fileName, const char *entryName );
 void *pfnSequencePickSentence( const char *groupName, int pickMethod, int *picked );
-
-int pfnIsCareerMatch();
 
 // Decay engfuncs (stubs)
 int pfnGetTimesTutorMessageShown( int mid );

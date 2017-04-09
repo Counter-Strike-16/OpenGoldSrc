@@ -32,6 +32,25 @@
 
 struct IConCmdArgs;
 
+// exports
+
+// The functions that execute commands get their parameters with these
+// functions. Cmd_Argv () will return an empty string, not a NULL
+// if arg > argc, so string operations are always safe.
+int Cmd_Argc();
+const char *Cmd_Argv(int arg);
+const char *Cmd_Args();
+
+NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function); // client
+void Cmd_AddGameCommand(char *cmd_name, xcommand_t function);
+
+struct cmd_function_s *Cmd_GetFirstCmd();
+struct cmd_function_s *Cmd_GetNextCmd(struct cmd_function_s *pCmd);
+
+cmdalias_t *Cmd_GetAliasList();
+
+// exports end
+
 class CConCmdHandler
 {
 public:

@@ -69,6 +69,9 @@ NOXREF void Legacy_MP3subsys_Resume_Audio();
 
 double Sys_FloatTime();
 
+void EngineFprintf(void *pfile, const char *szFmt, ...);
+void AlertMessage(ALERT_TYPE atype, const char *szFmt, ...);
+
 class CSystem
 {
 public:

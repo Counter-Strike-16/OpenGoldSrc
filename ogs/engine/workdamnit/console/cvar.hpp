@@ -33,33 +33,15 @@
 
 #include "common/commontypes.h"
 #include "common/maintypes.h"
-#include "public/FileSystem.h"
-
-/*
-==============================================================
-
-CVAR
-
-==============================================================
-
-cvar_t variables are used to hold scalar or string variables that can be changed or displayed at the console or prog code as well as accessed directly
-in C code.
-
-The user can access cvars from the console in three ways:
-r_draworder			prints the current value
-r_draworder 0		sets the current value to 0
-set r_draworder 0	as above, but creates the cvar if not present
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
-
-==============================================================
-*/
+//#include "public/FileSystem.h"
 
 #ifdef HOOK_ENGINE
 	#define cvar_vars (*pcvar_vars)
 #endif
 
-const int MAX_CVAR_VALUE = 1024;
+class CFile;
+
+constexpr auto MAX_CVAR_VALUE = 1024;
 
 typedef struct cvar_s cvar_t;
 
@@ -68,23 +50,22 @@ extern cvar_t *cvar_vars;
 void Cvar_Init();
 void Cvar_Shutdown();
 
-cvar_t *Cvar_FindVar(const char *var_name);
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name);
 
-float Cvar_VariableValue(const char *var_name);
 NOXREF int Cvar_VariableInt(const char *var_name);
-char *Cvar_VariableString(const char *var_name);
+
+// from pr_edict
+float CVarGetFloat(const char *szVarName);
+const char *CVarGetString(const char *szVarName);
+cvar_t *CVarGetPointer(const char *szVarName);
+void CVarSetFloat(const char *szVarName, float flValue);
+void CVarSetString(const char *szVarName, const char *szValue);
+void CVarRegister(cvar_t *pCvar);
+//
 
 // attempts to match a partial variable name for command line completion
 // returns NULL if nothing fits
 NOXREF const char *Cvar_CompleteVariable(const char *search, int forward);
-
-void Cvar_DirectSet(struct cvar_s *var, const char *value);
-
-void Cvar_Set(const char *var_name, const char *value);
-void Cvar_SetValue(const char *var_name, float value);
-
-void Cvar_RegisterVariable(cvar_t *variable);
 
 NOXREF void Cvar_RemoveHudCvars();
 
@@ -98,9 +79,9 @@ qboolean Cvar_Command();
 // appends lines containing "set variable value" for all variables
 // with the archive flag set to true.
 //void Cvar_WriteVariables (char *path);
-NOXREF void Cvar_WriteVariables(FileHandle_t f);
+NOXREF void Cvar_WriteVariables(CFile *f);
 
-void Cmd_CvarListPrintCvar(cvar_t *var, FileHandle_t f);
+void Cmd_CvarListPrintCvar(cvar_t *var, CFile *f);
 void Cmd_CvarList_f();
 
 NOXREF int Cvar_CountServerVariables();

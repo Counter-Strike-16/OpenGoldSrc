@@ -60,7 +60,7 @@ unsigned short pop[] =
 /*
 
 
-All of Quake's data access is through a hierchal file system, but the contents of the file system can be transparently merged from several sources.
+All of data access is through a hierchal file system, but the contents of the file system can be transparently merged from several sources.
 
 The "base directory" is the path to the directory holding the quake.exe and all game directories.  The sys_* files pass this to host_init in quakeparms_t->basedir.  This can be overridden with the "-basedir" command line parm to allow code debugging in a different directory.  The base directory is
 only used during filesystem initialization.
@@ -932,8 +932,6 @@ void COM_DefaultExtension (char *path, char *extension)
 //============================================================================
 
 char		com_token[1024];
-int		com_argc;
-char	**com_argv;
 
 
 /*
@@ -1768,10 +1766,9 @@ void COM_InitFilesystem (void)
 		strcpy (com_basedir, host_parms.basedir);
 
 //
-// start up with id1 by default
+// start up with valve by default
 //
-	COM_AddGameDirectory (va("%s/id1", com_basedir) );
-	COM_AddGameDirectory (va("%s/qw", com_basedir) );
+	COM_AddGameDirectory (va("%s/valve", com_basedir) );
 
 	// any set gamedirs will be freed up to here
 	com_base_searchpaths = com_searchpaths;

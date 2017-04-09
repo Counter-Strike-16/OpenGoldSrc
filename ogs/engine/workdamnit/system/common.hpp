@@ -215,6 +215,8 @@ NOBODY uint64 Q_strtoull(char *str);
 // strcpy that works correctly with overlapping src and dst buffers
 char *strcpy_safe(char *dst, char *src);
 
+char *Mem_Strdup(const char *strSource);
+
 unsigned char COM_Nibble(char c);
 void COM_HexConvert(const char *pszInput, int nInputLength, unsigned char *pOutput);
 NOXREF char *COM_BinPrintf(unsigned char *buf, int nLen);
@@ -236,16 +238,13 @@ void COM_DefaultExtension(char *path, const char *extension);
 
 void COM_FileBase(const char *in, char *out);
 
-//char *COM_GetToken();
+char *COM_GetToken();
 void COM_UngetToken();
 
 char *COM_Parse(char *data); // const char all?
 char *COM_ParseLine(char *data);
-//const char *COM_ParseFile(const char *data, char *token, int maxtoken);
 
 int COM_TokenWaiting(char *buffer);
-
-int COM_CheckParm(char *parm);
 
 void COM_Init(char *basedir); // is basedir really present as arg in gs?
 void COM_InitArgv(int argc, char *argv[]);
@@ -256,8 +255,6 @@ char *va(char *format, ...);
 char *vstr(vec_t *v);
 NOXREF int memsearch(unsigned char *start, int count, int search);
 
-unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
-void COM_FreeFile(void *buffer);
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize);
 NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile);
 unsigned char *COM_LoadHunkFile(char *path);
@@ -265,7 +262,6 @@ unsigned char *COM_LoadTempFile(char *path, int *pLength);
 void COM_LoadCacheFile(char *path, struct cache_user_s *cu);
 NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length);
 void COM_Shutdown();
-NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName);
 void COM_AddDefaultDir(char *pszDir);
 
 void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault);
@@ -273,9 +269,7 @@ qboolean COM_SetupDirectories();
 void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOutdated);
 void COM_ListMaps(char *pszSubString);
 void COM_Log(char *pszFile, char *fmt, ...);
-unsigned char *COM_LoadFileForMe(char *filename, int *pLength);
-int COM_CompareFileTime(char *filename1, char *filename2, int *iCompare);
-void COM_GetGameDir(char *szGameDir);
+
 int COM_EntsForPlayerSlots(int nPlayers);
 
 void COM_Munge(unsigned char *data, int len, int seq);
@@ -287,4 +281,20 @@ void COM_UnMunge2(unsigned char *data, int len, int seq);
 void COM_Munge3(unsigned char *data, int len, int seq);
 NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq);
 
+// engine export funcs section below
+
+unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
+unsigned char *COM_LoadFileForMe(char *filename, int *pLength);
+void COM_FreeFile(void *buffer);
+
+const char *COM_ParseFile(const char *data, char *token, int maxtoken);
+
+int COM_CompareFileTime(char *filename1, char *filename2, int *iCompare);
+
+NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName);
+
 unsigned int COM_GetApproxWavePlayLength(const char *filepath);
+
+void COM_GetGameDir(char *szGameDir);
+
+int COM_CheckParm(char *parm);

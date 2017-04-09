@@ -58,12 +58,18 @@ void Con_CheckResize();
 void Con_Init();
 void Con_Shutdown();
 
+// exports
+
 void Con_Print(const char *txt);
 void Con_Printf(const char *fmt, ...); // _format(1);
 void Con_DPrintf(const char *fmt, ...); // _format(1);
-//void Con_NPrintf(int idx, const char *fmt, ...);
-//void Con_NPrintf( int idx, char *fmt, ... ) _format(2);
-//void Con_NXPrintf( struct con_nprint_s *info, char *fmt, ... ) _format(2);
+void Con_NPrintf(int idx, const char *fmt, ...); //( int idx, char *fmt, ... ) _format(2);
+void Con_NXPrintf( struct con_nprint_s *info, char *fmt, ... ) _format(2);
+
+qboolean Con_Visible();
+
+//
+
 void Con_SafePrintf(const char *fmt, ...);
 void Con_CenteredPrint (char *text);
 

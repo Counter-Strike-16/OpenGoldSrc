@@ -31,12 +31,8 @@
 
 #pragma once
 
-// Altering saves so that the version goes in the Details file 
-// that we read in during the enumeration phase
-//constexpr auto BUILD_NUMBER_SAVE_VERSION_CHANGE = 1400;
-
-//constexpr auto BUILD_NUMBER = BUILD_NUMBER_SAVE_VERSION_CHANGE;
-//constexpr auto BUILD_NUMBER_MINOR = 0;
+// Internal codename
+constexpr auto CODENAME = "RW17"; // ReWrite '17 // AC96 (Ancient Code/Absolute Crap '96)
 
 // Target build num
 // Current engine build num (latest successful) is equals to (BUILD_NUMBER - 1)

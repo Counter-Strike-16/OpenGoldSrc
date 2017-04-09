@@ -27,19 +27,13 @@
  */
 
 /// @file
-/// @brief resource list struct wrapper
+/// @brief new math funcs
 
 #pragma once
 
-typedef struct resource_s resource_t;
+#include "common/commontypes.h"
 
-class CResourceList
-{
-public:
-	void Clear();
-	
-	void Add(resource_t *apResource);
-	void Remove(resource_t *apResource);
-private:
-	resource_t *mpList{nullptr}; // head
-};
+void COM_NormalizeAngles(vec_t *angles);
+
+int32 EXT_FUNC Math_RandomLong(int32 lLow, int32 lHigh);
+float EXT_FUNC Math_RandomFloat(float flLow, float flHigh);

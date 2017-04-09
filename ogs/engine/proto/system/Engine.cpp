@@ -357,7 +357,7 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	//CSystem::InitFloatTime();
 #endif // SWDS
 	
-	//gpFileSystem->LogLevelLoadStarted("Launcher");
+	mpFileSystem->LogLevelLoadStarted("Launcher");
 	
 	//SeedRandomNumberGenerator();
 	
@@ -385,9 +385,9 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	if(mbDedicated)
 	{
 		mpHost->InitializeGameDLL(); // We should immediately init the game dll for dedicated mode
-									   // (client is initializing it after the first call to new game)
-									   // NOTE: move to host init?
-		//NET_Config(TRUE); // double call (already called inside host_initgamedll)
+									 // (client is initializing it after the first call to new game)
+									 // NOTE: move to host init?
+		//mpNetwork->Config(TRUE); // double call (already called inside host_initgamedll)
 	};
 
 #ifndef SWDS
@@ -426,7 +426,7 @@ void CEngine::ShutdownGame()
 	mpHost->Shutdown();
 
 	//if(mbDedicated)
-		//NET_Config(FALSE);
+		//mpNetwork->Config(FALSE);
 
 	//TraceShutdown("Sys_ShutdownLauncherInterface()", 0);
 	CSystem::ShutdownLauncherInterface();

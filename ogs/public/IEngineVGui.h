@@ -8,7 +8,7 @@
 #include "vgui/VGUI.h"
 #include "public/interface.h"
 
-namespace vgui
+namespace vgui // hm...
 {
 
 enum VGUIPANEL
@@ -26,4 +26,5 @@ public:
 }
 
 #define VENGINE_VGUI_VERSION "VEngineVGui001"
-#endif
+
+#endif // IENGINEVGUI_H

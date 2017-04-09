@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,10 +27,27 @@
  */
 
 /// @file
-/// @brief COM_ -> math funcs (temp)
+/// @brief tutor api
 
 #pragma once
 
-#include "common/commontypes.h"
+/*
+extern "C"
+{
 
-void COM_NormalizeAngles(vec_t *angles);
+void EngFunc_RegisterTutorMessageShown(int mid);
+int EngFunc_GetTimesTutorMessageShown(int mid);
+
+void EngFunc_ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength);
+void EngFunc_ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength);
+
+void EngFunc_ResetTutorMessageDecayData();
+
+};
+*/
+
+void ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength);
+void ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength);
+int GetTimesTutorMessageShown(int id);
+void RegisterTutorMessageShown(int mid);
+void ResetTutorMessageDecayData();

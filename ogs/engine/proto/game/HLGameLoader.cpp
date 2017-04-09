@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief old api game (dll) loader component
+/// @brief old api game module loader component
 
 #include "precompiled.hpp"
 #include "game/HLGameLoader.hpp"

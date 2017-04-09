@@ -42,6 +42,11 @@
 
 char serverinfo[MAX_INFO_STRING];
 
+char *Mem_Strdup(const char *strSource)
+{
+	return _strdup(strSource);
+};
+
 char *strcpy_safe(char *dst, char *src)
 {
 	int len = Q_strlen(src);
@@ -174,7 +179,7 @@ NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...)
 
 char com_token[COM_TOKEN_LEN];
 
-qboolean com_ignorecolons;
+qboolean com_ignorecolons //= false;
 qboolean s_com_token_unget;
 char *com_last_in_quotes_data = NULL;
 char com_clientfallback[MAX_PATH];
@@ -326,10 +331,22 @@ void COM_DefaultExtension(char *path, char *extension)
 	Q_strcat(path, extension);
 }
 
+char *COM_GetToken()
+{
+	return com_token;
+};
+
 void COM_UngetToken()
 {
 	s_com_token_unget = 1;
-}
+};
+
+const char *COM_ParseFile(const char *data, char *token, int maxtoken)
+{
+	const char *return_data = COM_Parse(data);
+	Q_strncpy(token, com_token, maxtoken);
+	return return_data;
+};
 
 char *COM_Parse(char *data)
 {
