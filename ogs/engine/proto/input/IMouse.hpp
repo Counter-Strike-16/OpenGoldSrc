@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,23 +27,12 @@
  */
 
 /// @file
-/// @brief header of hl-compatible player movement class
+/// @brief draft mouse interface
 
 #pragma once
 
-#include "game/shared/IPlayerMovement.hpp"
-#include "engine/eiface.h"
-
-class CHLPlayerMovement : public IPlayerMovement
+struct IMouse
 {
-public:
-	CHLPlayerMovement(DLL_FUNCTIONS *apHLGameDLL);
-	~CHLPlayerMovement();
-	
-	void Init(playermove_t *apPlayerMoveData);
-	void Move(playermove_t *apPlayerMoveData, bool abServer);
-	
-	char FindTextureType(char *asName);
-private:
-	DLL_FUNCTIONS *mpHLGameDLL{nullptr};
+	virtual void Activate() = 0;
+	virtual void Deactivate() = 0;
 };

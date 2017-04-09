@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,34 +27,60 @@
  */
 
 /// @file
-/// @brief engine interface with OGS extensions
+/// @brief old client input
 
-#pragma once
+#include "precompiled.hpp"
+#include "oldclientdll/OldClientInput.hpp"
 
-#include "system/IEngine.hpp"
-
-class CFileSystem;
-
-struct TEngineLoadParams
+COldClientInput::COldClientInput(cdll_func_t *apClientExports)
 {
-	CreateInterfaceFn filesystemFactory{nullptr};
-	
-	char *basedir{nullptr};
-	const char *cmdline{""};
-	
-	bool dedicated{false};
+	mpClientExports = apClientExports;
 };
 
-struct IOGSEngine : public IEngine
+COldClientInput::~COldClientInput()
 {
-	/// Extended engine load method
-	virtual bool LoadEx(const TEngineLoadParams &aLoadParams) = 0;
-	
-	/// Add the text to console command buffer
-	virtual void AddCommandText(const char *asText) = 0;
-	
-	/// Get the info about current player count and map
-	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap) = 0;
 };
 
-extern IOGSEngine *ogseng;
+void COldClientInput::ActivateMouse()
+{
+};
+
+void COldClientInput::DeactivateMouse()
+{
+};
+
+void COldClientInput::SetSampleTime(float afFrameTime)
+{
+};
+
+void COldClientInput::Accumulate()
+{
+};
+
+void COldClientInput::ClearStates()
+{
+};
+
+bool COldClientInput::IsKeyDown(const char *asName, bool &abIsDown)
+{
+};
+
+void COldClientInput::OnMouseWheeled(int anDelta)
+{
+};
+
+int COldClientInput::Key_Event(int anEventCode, int anKeyNum, const char *asCurrentBinding)
+{
+};
+
+void COldClientInput::MouseEvent(int anMouseState)
+{
+};
+
+void COldClientInput::ExtraMouseSample(float afFrameTime, bool abActive)
+{
+};
+
+void *COldClientInput::KB_Find(const char *asName)
+{
+};

@@ -27,34 +27,16 @@
  */
 
 /// @file
-/// @brief source of hl-compatible player movement class
+/// @brief wrapper class around old hlsdk client interface
 
-#include "hlcompatgamedll/HLPlayerMovement.hpp"
-#include "debug/Debug.hpp"
+#include "game/OldClientDLL.hpp"
 
-CHLPlayerMovement::CHLPlayerMovement(DLL_FUNCTIONS *apHLGameDLL)
+bool COldClientDLL::Init()
 {
-	LogMsg("Constructing the hl-compatible player move callbacks component...");
-	
-	mpHLGameDLL = apHLGameDLL;
+	DevMsg(eMsgType_Info, "Initializing the old client dll component...");
+	return true;
 };
 
-CHLPlayerMovement::~CHLPlayerMovement()
+void COldClientDLL::Shutdown()
 {
-	LogMsg("Destructing the hl-compatible player move callbacks component...");
-};
-
-void CHLPlayerMovement::Init(playermove_t *apPlayerMoveData)
-{
-	mpHLGameDLL->pfnPM_Init(apPlayerMoveData);
-};
-
-void CHLPlayerMovement::Move(playermove_t *apPlayerMoveData, bool abServer)
-{
-	mpHLGameDLL->pfnPM_Move(apPlayerMoveData, abServer ? 1 : 0);
-};
-
-char CHLPlayerMovement::FindTextureType(char *asName)
-{
-	return mpHLGameDLL->pfnPM_FindTextureType(asName);
 };

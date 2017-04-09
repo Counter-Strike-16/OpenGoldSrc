@@ -71,7 +71,7 @@ CRegistry::~CRegistry(void)
 //			defaultValue - 
 // Output : int
 //-----------------------------------------------------------------------------
-int CRegistry::ReadInt(const char *key, int defaultValue /*= 0*/)
+int CRegistry::ReadInt(const char *key, int defaultValue)
 {
 #ifdef _WIN32
 	LONG lResult;           // Registry function result code
@@ -81,9 +81,7 @@ int CRegistry::ReadInt(const char *key, int defaultValue /*= 0*/)
 	int value;
 
 	if (!m_bValid)
-	{
 		return defaultValue;
-	}
 
 	dwSize = sizeof(DWORD);
 
@@ -139,7 +137,7 @@ void CRegistry::WriteInt(const char *key, int value)
 //			*defaultValue - 
 // Output : const char
 //-----------------------------------------------------------------------------
-const char *CRegistry::ReadString(const char *key, const char *defaultValue /* = NULL */)
+const char *CRegistry::ReadString(const char *key, const char *defaultValue)
 {
 #ifdef _WIN32
 	LONG lResult;
@@ -153,9 +151,7 @@ const char *CRegistry::ReadString(const char *key, const char *defaultValue /* =
 	value[0] = 0;
 
 	if (!m_bValid)
-	{
 		return defaultValue;
-	}
 
 	lResult = RegQueryValueEx(
 		m_hKey,		// handle to key
@@ -166,14 +162,10 @@ const char *CRegistry::ReadString(const char *key, const char *defaultValue /* =
 		&dwSize);  // size of data buffer
 
 	if (lResult != ERROR_SUCCESS)
-	{
 		return defaultValue;
-	}
 
 	if (dwType != REG_SZ)
-	{
 		return defaultValue;
-	}
 
 	return value;
 #else

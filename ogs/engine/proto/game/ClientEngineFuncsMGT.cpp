@@ -1,5 +1,4 @@
-#include "client/hlcompatclientdll/ClientEngineFuncs.hpp"
-#include "debug/Debug.hpp"
+#include "client/ClientEngineFuncs.hpp"
 
 // Engine callbacks for client dll
 cl_enginefunc_t gEngfuncs = 

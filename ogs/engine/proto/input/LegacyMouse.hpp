@@ -27,34 +27,19 @@
  */
 
 /// @file
-/// @brief engine interface with OGS extensions
+/// @brief legacy mouse interface implementation (redirect to clientdll)
 
 #pragma once
 
-#include "system/IEngine.hpp"
+#include "input/IMouse.hpp"
 
-class CFileSystem;
-
-struct TEngineLoadParams
+class CLegacyMouse : public IMouse
 {
-	CreateInterfaceFn filesystemFactory{nullptr};
+public:
+	CLegacyMouse();
 	
-	char *basedir{nullptr};
-	const char *cmdline{""};
-	
-	bool dedicated{false};
+	void Activate();
+	void Deactivate();
+private:
+	//clientfuncs
 };
-
-struct IOGSEngine : public IEngine
-{
-	/// Extended engine load method
-	virtual bool LoadEx(const TEngineLoadParams &aLoadParams) = 0;
-	
-	/// Add the text to console command buffer
-	virtual void AddCommandText(const char *asText) = 0;
-	
-	/// Get the info about current player count and map
-	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap) = 0;
-};
-
-extern IOGSEngine *ogseng;

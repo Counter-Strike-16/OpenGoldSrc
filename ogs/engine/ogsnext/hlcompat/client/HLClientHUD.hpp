@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,34 +27,30 @@
  */
 
 /// @file
-/// @brief engine interface with OGS extensions
+/// @brief hl-compatible client hud
 
 #pragma once
 
-#include "system/IEngine.hpp"
+#include "game/client/IClientHUD.hpp"
+#include "engine/cdll_exp.h"
 
-class CFileSystem;
-
-struct TEngineLoadParams
+class CHLClientHUD : public IClientHUD
 {
-	CreateInterfaceFn filesystemFactory{nullptr};
+public:
+	CHLClientHUD();
+	~CHLClientHUD();
 	
-	char *basedir{nullptr};
-	const char *cmdline{""};
+	void Init();
 	
-	bool dedicated{false};
+	void Update(bool abActive);
+	
+	void Redraw(float afTime, bool abIntermission);
+	
+	void Reset();
+	
+	void ProcessInput();
+	
+	void TextMsg(const char *asMsg);
+private:
+	cdll_func_t *mpClientExports{nullptr};
 };
-
-struct IOGSEngine : public IEngine
-{
-	/// Extended engine load method
-	virtual bool LoadEx(const TEngineLoadParams &aLoadParams) = 0;
-	
-	/// Add the text to console command buffer
-	virtual void AddCommandText(const char *asText) = 0;
-	
-	/// Get the info about current player count and map
-	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap) = 0;
-};
-
-extern IOGSEngine *ogseng;

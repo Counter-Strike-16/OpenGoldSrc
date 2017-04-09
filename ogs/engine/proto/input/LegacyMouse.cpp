@@ -27,34 +27,18 @@
  */
 
 /// @file
-/// @brief engine interface with OGS extensions
 
-#pragma once
+#include "precompiled.hpp"
+#include "input/LegacyMouse.hpp"
 
-#include "system/IEngine.hpp"
-
-class CFileSystem;
-
-struct TEngineLoadParams
+CLegacyMouse::CLegacyMouse()
 {
-	CreateInterfaceFn filesystemFactory{nullptr};
-	
-	char *basedir{nullptr};
-	const char *cmdline{""};
-	
-	bool dedicated{false};
 };
 
-struct IOGSEngine : public IEngine
+void CLegacyMouse::Activate()
 {
-	/// Extended engine load method
-	virtual bool LoadEx(const TEngineLoadParams &aLoadParams) = 0;
-	
-	/// Add the text to console command buffer
-	virtual void AddCommandText(const char *asText) = 0;
-	
-	/// Get the info about current player count and map
-	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap) = 0;
 };
 
-extern IOGSEngine *ogseng;
+void CLegacyMouse::Deactivate()
+{
+};

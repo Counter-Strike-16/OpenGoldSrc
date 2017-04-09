@@ -125,9 +125,8 @@ private:
 	
 	quakeparms_t host_parms;
 	
+	std::unique_ptr<CFileSystem> mpFileSystem;
 	std::unique_ptr<CHost> mpHost;
-
-	CFileSystem *mpFileSystem{nullptr};
 	
 	double m_fCurTime{0.0f};
 	double m_fFrameTime{0.0f};

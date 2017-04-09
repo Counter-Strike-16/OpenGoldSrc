@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,34 +27,21 @@
  */
 
 /// @file
-/// @brief engine interface with OGS extensions
 
-#pragma once
+#include "game/CRC32Handler.hpp"
 
-#include "system/IEngine.hpp"
-
-class CFileSystem;
-
-struct TEngineLoadParams
+void CCRC32Handler::Init(CRC32_t *pulCRC)
 {
-	CreateInterfaceFn filesystemFactory{nullptr};
-	
-	char *basedir{nullptr};
-	const char *cmdline{""};
-	
-	bool dedicated{false};
 };
 
-struct IOGSEngine : public IEngine
+void CCRC32Handler::ProcessBuffer(CRC32_t *pulCRC, void *p, int len)
 {
-	/// Extended engine load method
-	virtual bool LoadEx(const TEngineLoadParams &aLoadParams) = 0;
-	
-	/// Add the text to console command buffer
-	virtual void AddCommandText(const char *asText) = 0;
-	
-	/// Get the info about current player count and map
-	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap) = 0;
 };
 
-extern IOGSEngine *ogseng;
+void CCRC32Handler::ProcessByte(CRC32_t *pulCRC, unsigned char ch)
+{
+};
+
+CRC32_t CCRC32Handler::Finalize(CRC32_t pulCRC)
+{
+};

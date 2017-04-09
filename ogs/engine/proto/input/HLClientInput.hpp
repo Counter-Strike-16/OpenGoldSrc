@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,34 +27,37 @@
  */
 
 /// @file
-/// @brief engine interface with OGS extensions
+/// @brief hl-compatible client input component
 
 #pragma once
 
-#include "system/IEngine.hpp"
+#include "game/client/IClientInput.hpp"
 
-class CFileSystem;
-
-struct TEngineLoadParams
+class CHLCompatClientInput : public IClientInput
 {
-	CreateInterfaceFn filesystemFactory{nullptr};
+public:
+	CHLCompatClientInput();
+	~CHLCompatClientInput();
 	
-	char *basedir{nullptr};
-	const char *cmdline{""};
+	void ActivateMouse();
+	void DeactivateMouse();
 	
-	bool dedicated{false};
+	void SetSampleTime(float afFrameTime);
+	
+	void Accumulate();
+	
+	void ClearStates();
+	
+	bool IsKeyDown(const char *asName, bool &abIsDown);
+	
+	void OnMouseWheeled(int anDelta);
+	
+	int Key_Event(int anEventCode, int anKeyNum, const char *asCurrentBinding);
+	void MouseEvent(int anMouseState);
+	
+	void ExtraMouseSample(float afFrameTime, bool abActive);
+	
+	void *KB_Find(const char *asName);
+private:
+	cdll_func_t *mpClientExports{nullptr};
 };
-
-struct IOGSEngine : public IEngine
-{
-	/// Extended engine load method
-	virtual bool LoadEx(const TEngineLoadParams &aLoadParams) = 0;
-	
-	/// Add the text to console command buffer
-	virtual void AddCommandText(const char *asText) = 0;
-	
-	/// Get the info about current player count and map
-	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap) = 0;
-};
-
-extern IOGSEngine *ogseng;

@@ -70,7 +70,7 @@ public:
 	NOXREF int GetChallengeNr(netadr_t *adr);
 	NOXREF void ReplyServerChallenge(netadr_t *adr);
 	
-	int GetClientCount() const;
+	int GetClientCount(bool abActiveOnly = false) const;
 	int GetFakeClientCount() const;
 	
 	int GetMaxClients() const;
