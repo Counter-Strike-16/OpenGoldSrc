@@ -92,3 +92,6 @@ void Cvar_CmdInit();
 
 // returns an info string containing all the CVAR_SERVERINFO cvars
 char *Cvar_Serverinfo();
+
+// returns an info string containing all the CVAR_USERINFO cvars
+//char *Cvar_Userinfo();

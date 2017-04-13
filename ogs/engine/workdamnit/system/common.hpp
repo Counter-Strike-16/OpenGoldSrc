@@ -191,26 +191,40 @@ extern int loadsize;
 
 void Q_strcpy(char *dest, const char *src);
 int Q_strlen(const char *str);
+
 NOBODY void Q_memset(void *dest, int fill, int count);
 NOBODY void Q_memcpy(void *dest, const void *src, int count);
 NOBODY int Q_memcmp(void *m1, void *m2, int count);
+
 NOBODY void Q_strncpy(char *dest, const char *src, int count);
+
 NOBODY char *Q_strrchr(char *s, char c);
+
 NOBODY void Q_strcat(char *dest, char *src);
+
 NOBODY int Q_strcmp(const char *s1, const char *s2);
 NOBODY int Q_strncmp(const char *s1, const char *s2, int count);
+
 NOBODY int Q_strncasecmp(const char *s1, const char *s2, int n);
 NOBODY int Q_strcasecmp(const char *s1, const char *s2);
+
 NOBODY int Q_stricmp(const char *s1, const char *s2);
 NOBODY int Q_strnicmp(const char *s1, const char *s2, int n);
+
 NOBODY int Q_atoi(const char *str);
 NOBODY float Q_atof(const char *str);
+
 NOBODY char *Q_strlwr(char *src);
+
 NOBODY int Q_FileNameCmp(char *file1, char *file2);
+
 NOBODY char *Q_strstr(const char *s1, const char *search);
+
 NOBODY uint64 Q_strtoull(char *str);
 
 #endif // Q_functions
+
+//============================================================================
 
 // strcpy that works correctly with overlapping src and dst buffers
 char *strcpy_safe(char *dst, char *src);
@@ -223,6 +237,8 @@ NOXREF char *COM_BinPrintf(unsigned char *buf, int nLen);
 void COM_ExplainDisconnection(qboolean bPrint, char *fmt, ...);
 NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...);
 
+//============================================================================
+
 int LongSwap(int l);
 short ShortSwap(short l);
 short ShortNoSwap(short l);
@@ -230,7 +246,7 @@ int LongNoSwap(int l);
 float FloatSwap(float f);
 float FloatNoSwap(float f);
 
-//=============================================
+//============================================================================
 
 NOXREF char *COM_SkipPath(char *pathname);
 
@@ -250,11 +266,17 @@ int COM_TokenWaiting(char *buffer);
 void COM_Init(char *basedir); // is basedir really present as arg in gs?
 void COM_InitArgv(int argc, char *argv[]);
 
+void COM_Shutdown();
+
+//============================================================================
+
 // does a varargs printf into a temp buffer
 char *va(char *format, ...);
 
 char *vstr(vec_t *v);
 NOXREF int memsearch(unsigned char *start, int count, int search);
+
+//============================================================================
 
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize);
 NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile);
@@ -262,7 +284,7 @@ unsigned char *COM_LoadHunkFile(char *path);
 unsigned char *COM_LoadTempFile(char *path, int *pLength);
 void COM_LoadCacheFile(char *path, struct cache_user_s *cu);
 NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length);
-void COM_Shutdown();
+
 void COM_AddDefaultDir(char *pszDir);
 
 void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault);

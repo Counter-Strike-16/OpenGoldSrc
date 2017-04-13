@@ -365,16 +365,6 @@ void Cbuf_InsertFromDefer ();
 
 //===========================================================================
 
-/*
-
-Command execution takes a null terminated string, breaks it into tokens,
-then searches for a command or variable that matches the first token.
-
-*/
-
-void	Cmd_RemoveCommand (char *cmd_name);
-
-
 void	Cmd_TokenizeString (char *text, qboolean macroExpand);
 
 /////////////////////
@@ -392,8 +382,6 @@ cvar_t 	*Cvar_FullSet (char *var_name, char *value, int flags);
 void	Cvar_GetLatchedVars ();
 // any CVAR_LATCHED variables that have been set will now take effect
 
-char	*Cvar_Userinfo ();
-// returns an info string containing all the CVAR_USERINFO cvars
 
 extern	qboolean	userinfo_modified;
 // this is set each time a CVAR_USERINFO variable is changed
@@ -415,11 +403,8 @@ typedef struct
 {
 	qboolean	fatal_error;
 
-	netsrc_t	sock;
-
 	int			dropped;			// between last packet and previous
 
-	int			last_received;		// for timeouts
 	int			last_sent;			// for retransmits
 
 	int			qport;				// qport value to write when transmitting
@@ -660,19 +645,11 @@ int Q_strcmp (char *s1, char *s2);
 int Q_strncmp (char *s1, char *s2, int count);
 int Q_strcasecmp (char *s1, char *s2);
 int Q_strncasecmp (char *s1, char *s2, int n);
-int	Q_atoi (char *str);
-float Q_atof (char *str);
+
 
 //============================================================================
 
 extern	qboolean	com_eof;
-
-void COM_Init (char *path);
-
-char *COM_SkipPath (char *pathname);
-void COM_StripExtension (char *in, char *out);
-void COM_FileBase (char *in, char *out);
-void COM_DefaultExtension (char *path, char *extension);
 
 
 //============================================================================

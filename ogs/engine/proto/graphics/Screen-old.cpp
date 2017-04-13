@@ -992,8 +992,7 @@ void SCR_UpdateWholeScreen()
 {
 	scr_fullupdate = 0;
 	SCR_UpdateScreen();
-}
-
+};
 
 void SCR_BeginLoadingPlaque ()
 {

@@ -53,10 +53,21 @@ void Key_Shutdown();
 
 void Key_ClearStates();
 
-void Key_Event(int key, int down); // void Key_Event(int key, qboolean down, unsigned time);
+void Key_Event(int key, /*bool*/ int down); // void Key_Event(int key, qboolean down, unsigned time);
 
 int Key_CountBindings();
 void Key_WriteBindings(FileHandle_t f);
+
+/*
+#include "keydefs.h"
+
+extern	char		*keybindings[256];
+extern	int			key_repeats[256];
+
+void		Key_SetBinding (int keynum, char *binding);
+const char	*Key_BindingForKey( int keynum );
+const char	*Key_NameForBinding( const char *pBinding );
+*/
 
 const char *Key_LookupBinding(const char *pBinding);
 

@@ -31,7 +31,7 @@
 #pragma once
 
 struct IRender;
-class CSharedLib;
+class CFactorySharedLib;
 
 class CRendererManager
 {
@@ -41,7 +41,7 @@ public:
 	
 	IRender *GetRenderer() const;
 private:
-	CSharedLib *mpRendererLib{nullptr}; // Handle to render dll
+	CFactorySharedLib *mpRendererLib{nullptr}; // Handle to render dll
 	
 	bool reflib_active{false};
 };

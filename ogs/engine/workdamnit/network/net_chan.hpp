@@ -81,14 +81,17 @@ typedef struct netchan_s
 	netadr_t remote_address;
 
 	int player_slot;
+	
 	// For timeouts.  Time last message was received.
-	float last_received;
+	float last_received; // int
+	
 	// Time when channel was connected.
 	float connect_time;
 
 	// Bandwidth choke
 	// Bytes per second
 	double rate;
+	
 	// If realtime > cleartime, free to send next packet
 	double cleartime;
 
@@ -96,16 +99,22 @@ typedef struct netchan_s
 	//
 	// Increasing count of sequence numbers
 	int incoming_sequence;
+	
 	// # of last outgoing message that has been ack'd.
 	int incoming_acknowledged;
+	
 	// Toggles T/F as reliable messages are received.
 	int incoming_reliable_acknowledged;
+	
 	// single bit, maintained local
 	int incoming_reliable_sequence;
+	
 	// Message we are sending to remote
 	int outgoing_sequence;
+	
 	// Whether the message contains reliable payload, single bit
 	int reliable_sequence;
+	
 	// Outgoing sequence number of last send that had reliable data
 	int last_reliable_sequence;
 
@@ -119,7 +128,7 @@ typedef struct netchan_s
 	// Reliable message buffer. We keep adding to it until reliable is
 	// acknowledged. Then we clear it.
 	int reliable_length;
-	byte reliable_buf[MAX_MSGLEN];
+	byte reliable_buf[MAX_MSGLEN]; // unacked reliable message
 
 	// Waiting list of buffered fragments to go onto queue. Multiple outgoing
 	// buffers can be queued in succession.

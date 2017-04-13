@@ -52,24 +52,6 @@ interface from being ambiguous.
 
 struct IConsole;
 
-// exports
-
-void Cvar_RegisterVariable(cvar_t *variable);
-
-cvar_t *Cvar_FindVar(const char *var_name);
-
-cvar_t *Cvar_GetList(); // GetFirst/GetHead
-
-void Cvar_DirectSet(struct cvar_s *var, const char *value);
-
-void Cvar_Set(const char *var_name, const char *value);
-void Cvar_SetValue(const char *var_name, float value);
-
-char *Cvar_VariableString(const char *var_name);
-float Cvar_VariableValue(const char *var_name);
-
-//
-
 class CConVarHandler
 {
 public:

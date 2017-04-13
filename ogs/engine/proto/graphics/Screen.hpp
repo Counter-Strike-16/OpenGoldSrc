@@ -39,11 +39,11 @@ extern int sb_lines;
 extern int clearnotify; // set to 0 whenever notify text is drawn
 
 extern cvar_t scr_viewsize; // cvar_t *
-extern cvar_t *crosshair;
+extern cvar_t crosshair; // cvar_t *
 
-extern cvar_t scr_downloading;
+extern cvar_t scr_downloading; // cvar_t *
 
-extern qboolean block_drawing; // wasn't extern
+extern qboolean block_drawing;
 
 class CSound;
 
@@ -57,9 +57,6 @@ public:
 	void Shutdown();
 
 	void Update();
-
-	//void SizeUp();
-	//void SizeDown();
 
 	//void BringDownConsole();
 
@@ -98,6 +95,9 @@ public:
 	void SCR_UpdateWholeScreen();
 	*/
 private:
+	//void SizeUp();
+	//void SizeDown();
+	
 	CSound *mpSound{nullptr};
 	
 	// only the render window will be updated unless these variables are flagged

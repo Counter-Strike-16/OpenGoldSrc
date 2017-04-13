@@ -19,8 +19,6 @@ typedef struct
 {
 	qboolean fatal_error;
 
-	float last_received; // for timeouts
-
 	// the statistics are cleared at each client begin, because
 	// the server connecting process gives a bogus picture of the data
 	float frame_latency; // rolling average
@@ -35,23 +33,12 @@ typedef struct
 	double cleartime; // if realtime > nc->cleartime, free to go
 	double rate;      // seconds / byte
 
-	// sequencing variables
-	int incoming_sequence;
-	int incoming_acknowledged;
 	int incoming_reliable_acknowledged; // single bit
 
 	int incoming_reliable_sequence; // single bit, maintained local
 
-	int outgoing_sequence;
-	int reliable_sequence;      // single bit
-	int last_reliable_sequence; // sequence number of last send
-
 	// reliable staging and holding areas
 	sizebuf_t message; // writing buffer to send to server
-	byte message_buf[MAX_MSGLEN];
-
-	int reliable_length;
-	byte reliable_buf[MAX_MSGLEN]; // unacked reliable message
 
 	// time and size data to calculate bandwidth
 	int outgoing_size[MAX_LATENT];

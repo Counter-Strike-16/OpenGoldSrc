@@ -69,4 +69,4 @@ qboolean Info_IsValid(const char *s);
 void Info_CollectFields(char *destInfo, const char *srcInfo, const char *collectedKeysOfFields);
 #endif
 
-NOBODY void Info_WriteVars(FileHandle_t fp);
+NOBODY void Info_WriteVars(/*char *s,*/ FileHandle_t fp);

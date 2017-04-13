@@ -58,6 +58,10 @@ The + command line options are also added to the command buffer.
 Command execution takes a null terminated string, breaks it into tokens,
 then searches for a command or variable that matches the first token.
 
+*/
+
+/*
+
 Commands can come from three sources, but the handler functions may choose
 to disallow the action or forward it to a remote server if the source is
 not apropriate.
@@ -117,7 +121,7 @@ void Cmd_AddCommand(char *cmd_name, xcommand_t function);
 
 void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag);
 NOXREF void Cmd_AddWrapperCommand(char *cmd_name, xcommand_t function);
-void Cmd_RemoveCmd(char *cmd_name);
+void Cmd_RemoveCmd(char *cmd_name); // Cmd_RemoveCommand
 void Cmd_RemoveMallocedCmds(int flag);
 NOXREF void Cmd_RemoveHudCmds();
 void Cmd_RemoveGameCmds();

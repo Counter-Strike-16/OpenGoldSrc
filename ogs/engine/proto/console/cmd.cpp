@@ -396,10 +396,7 @@ void Cmd_Alias_f()
 	a->value = CopyString(cmd);
 }
 
-struct cmd_function_s *Cmd_GetFirstCmd()
-{
-	return cmd_functions;
-}
+
 
 void Cmd_Init()
 {
@@ -424,48 +421,7 @@ void Cmd_Shutdown()
 	cmd_functions = NULL; // TODO: Check that memory from functions is released too
 }
 
-int EXT_FUNC Cmd_Argc()
-{
-#ifndef SWDS
-	g_engdstAddrs.Cmd_Argc();
-#endif
 
-	return cmd_argc;
-}
-
-/*
-============
-Cmd_Argv
-============
-*/
-const char *EXT_FUNC Cmd_Argv(int arg)
-{
-#ifndef SWDS
-	g_engdstAddrs.Cmd_Argv(&arg);
-#endif
-
-	if(arg >= 0 && arg < cmd_argc)
-		return cmd_argv[arg];
-	
-	return ""; // TODO: Possibly better to return NULL here, but require to check
-	           // all usages
-}
-
-/*
-============
-Cmd_Args
-
-Returns a single string containing argv(1) to argv(argc()-1)
-============
-*/
-const char *EXT_FUNC Cmd_Args()
-{
-#ifndef SWDS
-	//g_engdstAddrs.Cmd_Args();
-#endif
-
-	return cmd_args;
-}
 
 /*
 Parses the given string into command line tokens.
@@ -651,23 +607,11 @@ void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag)
 	Cmd_InsertCommand(cmd);
 }
 
-NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function)
-{
-	NOXREFCHECK;
-
-	Cmd_AddMallocCommand(cmd_name, function, FCMD_HUD_COMMAND);
-}
-
 NOXREF void Cmd_AddWrapperCommand(char *cmd_name, xcommand_t function)
 {
 	NOXREFCHECK;
 
 	Cmd_AddMallocCommand(cmd_name, function, FCMD_WRAPPER_COMMAND);
-}
-
-void EXT_FUNC Cmd_AddGameCommand(char *cmd_name, xcommand_t function)
-{
-	Cmd_AddMallocCommand(cmd_name, function, FCMD_GAME_COMMAND);
 }
 
 /*

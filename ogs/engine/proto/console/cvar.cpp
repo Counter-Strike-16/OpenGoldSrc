@@ -55,23 +55,11 @@ void Cvar_Shutdown()
 {
 };
 
-cvar_t *Cvar_FindVar(const char *var_name)
-{
-};
-
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name)
 {
 };
 
-float Cvar_VariableValue(const char *var_name)
-{
-};
-
 NOXREF int Cvar_VariableInt(const char *var_name)
-{
-};
-
-char *Cvar_VariableString(const char *var_name)
 {
 };
 
@@ -254,23 +242,11 @@ void EXT_FUNC Cvar_DirectSet_internal(struct cvar_s *var, const char *value)
 	var->value = (float)Q_atof(var->string);
 };
 
-void Cvar_DirectSet(struct cvar_s *var, const char *value)
-{
-	g_RehldsHookchains.m_Cvar_DirectSet.callChain(Cvar_DirectSet_internal, var, value);
-};
 
-void Cvar_Set(const char *var_name, const char *value)
-{
-};
 
-void Cvar_SetValue(const char *var_name, float value)
-{
-};
 
-void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
-{
-	gpConVarHandler->RegisterVariable(variable);
-};
+
+
 
 NOXREF void Cvar_RemoveHudCvars()
 {
