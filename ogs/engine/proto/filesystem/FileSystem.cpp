@@ -53,11 +53,7 @@ int CFileSystem::Init(char *basedir)
 	Q_strcpy(msBaseDir, basedir);
 #endif
 
-	//host_parms.basedir = msBaseDir;
-
-	//return COM_SetupDirectories() != 0;
-
-	return 0;
+	return 0; // COM_SetupDirectories() != 0
 };
 
 void CFileSystem::Shutdown()
@@ -462,7 +458,7 @@ int CFileSystem::Read(void *pOutput, int size, int count, FileHandle_t file)
 {
 #ifdef REHLDS_FIXES
 	return mpFileSystem->Read(pOutput, size * count, file);
-#else  // REHLDS_FIXES
+#else
 	return mpFileSystem->Read(pOutput, size, file);
 #endif // REHLDS_FIXES
 };
@@ -471,7 +467,7 @@ int CFileSystem::Write(const void *pInput, int size, int count, FileHandle_t fil
 {
 #ifdef REHLDS_FIXES
 	return mpFileSystem->Write(pInput, size * count, file);
-#else  // REHLDS_FIXES
+#else
 	return mpFileSystem->Write(pInput, size, file);
 #endif // REHLDS_FIXES
 };

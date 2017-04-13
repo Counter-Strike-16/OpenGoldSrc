@@ -65,6 +65,12 @@ int Key_StringToKeynum(const char *string);
 
 int Key_GetKey(const char *sBinding); // int Key_GetKey();
 
+struct TKeyBinding
+{
+	int nKey{0};
+	const char *sCmd{""};
+};
+
 class CKeyboard
 {
 public:

@@ -31,11 +31,9 @@
 
 #pragma once
 
-#include <memory>
 #include "common/commontypes.h"
 #include "public/engine_hlds_api.h"
 #include "public/idedicatedexports.h"
-#include "system/FileSystemLoader.hpp"
 
 extern IDedicatedExports *dedicated_;
 
@@ -61,8 +59,6 @@ private:
 	bool RunFrame_noVirt();
 	void AddConsoleText_noVirt(char *text);
 	void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char*pszMap);
-	
-	std::unique_ptr<CFileSystemLoader> mpFileSystemLoader;
 	
 	char msOrigCmd[1024];
 };

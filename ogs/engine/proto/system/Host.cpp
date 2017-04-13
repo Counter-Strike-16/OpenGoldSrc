@@ -369,6 +369,11 @@ void CHost::Shutdown()
 	//cl.time = 0.0f;
 };
 
+/*
+================
+Host_EndGame
+================
+*/
 void CHost::EndGame(const char *message, ...)
 {
 	NOXREFCHECK;
@@ -381,6 +386,10 @@ void CHost::EndGame(const char *message, ...)
 	va_end(argptr);
 
 	mpConsole->DevPrintf("%s: %s\n", __FUNCTION__, string);
+	
+#ifndef SWDS
+	scr_disabled_for_loading = true;
+#endif
 	
 /*
 	int oldn = cls.demonum;
@@ -408,6 +417,13 @@ void CHost::EndGame(const char *message, ...)
 	*/
 };
 
+/*
+================
+Host_Error
+
+This shuts down both the client and server
+================
+*/
 void NORETURN CHost::Error(const char *error, ...)
 {
 	static bool inerror = false;

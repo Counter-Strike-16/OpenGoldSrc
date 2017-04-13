@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,47 +27,14 @@
  */
 
 /// @file
-/// @brief client viewport
+/// @brief filesystem module implementation provider
 
 #pragma once
 
-#include "common/commontypes.h"
-#include "engine/shake.h"
+struct IRender;
 
-extern cvar_t v_gamma; // monitor gamma
-//extern cvar_t v_texgamma; // source gamma of textures
-//extern cvar_t v_brightness; // low level light adjustment
-//extern cvar_t v_linearFrameBuffer; // gamma convert in hardware or in textures?
-extern cvar_t lcd_x;
-
-//extern byte gammatable[256]; // palette is sent through this
-//extern byte ramps[3][256];
-
-#ifdef GLQUAKE
-extern float v_blend[4];
-#endif
-
-void V_Init();
-
-void V_RenderView();
-
-void V_UpdatePalette();
-
-void V_Register();
-
-void V_ParseDamage();
-
-void V_SetContentsColor(int contents);
-
-void V_CalcBlend();
-
-//float V_CalcRoll (vec3_t angles, vec3_t velocity);
-
-class CView
+class CRenderProvider
 {
 public:
-	void Init();
-	void Shutdown();
-	
-	void DrawConsole();
+	IRender *LoadModule(const char *asName);
 };

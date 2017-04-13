@@ -66,7 +66,7 @@ void Con_DPrintf(const char *fmt, ...); // _format(1);
 void Con_NPrintf(int idx, const char *fmt, ...); //( int idx, char *fmt, ... ) _format(2);
 void Con_NXPrintf( struct con_nprint_s *info, char *fmt, ... ) _format(2);
 
-qboolean Con_Visible();
+qboolean Con_Visible(); // bool Con_IsVisible();
 
 //
 
@@ -113,6 +113,8 @@ public:
 	//IConVar *GetConVar(const char *asName);
 	
 	cmdalias_t *GetAliasList() const;
+	
+	bool IsInitialized() const {return initialized;}
 private:
 	tConVarList mlstConVars;
 	

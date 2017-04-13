@@ -189,11 +189,8 @@ void PerpendicularVector( vec3_t dst, const vec3_t src );
 void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
 
 
-//=============================================
 
-char *COM_SkipPath (char *pathname);
-void COM_StripExtension (char *in, char *out);
-void COM_FileBase (char *in, char *out);
+
 void COM_FilePath (char *in, char *out);
 void COM_DefaultExtension (char *path, char *extension);
 
@@ -634,82 +631,6 @@ typedef struct
 #define	MZ_NUKE4			38
 #define	MZ_NUKE8			39
 //ROGUE
-
-//
-// monster muzzle flashes
-//
-#define MZ2_TANK_BLASTER_1				1
-#define MZ2_TANK_BLASTER_2				2
-#define MZ2_TANK_BLASTER_3				3
-#define MZ2_TANK_MACHINEGUN_1			4
-#define MZ2_TANK_MACHINEGUN_2			5
-#define MZ2_TANK_MACHINEGUN_3			6
-#define MZ2_TANK_MACHINEGUN_4			7
-#define MZ2_TANK_MACHINEGUN_5			8
-#define MZ2_TANK_MACHINEGUN_6			9
-#define MZ2_TANK_MACHINEGUN_7			10
-#define MZ2_TANK_MACHINEGUN_8			11
-#define MZ2_TANK_MACHINEGUN_9			12
-#define MZ2_TANK_MACHINEGUN_10			13
-#define MZ2_TANK_MACHINEGUN_11			14
-#define MZ2_TANK_MACHINEGUN_12			15
-#define MZ2_TANK_MACHINEGUN_13			16
-#define MZ2_TANK_MACHINEGUN_14			17
-#define MZ2_TANK_MACHINEGUN_15			18
-#define MZ2_TANK_MACHINEGUN_16			19
-#define MZ2_TANK_MACHINEGUN_17			20
-#define MZ2_TANK_MACHINEGUN_18			21
-#define MZ2_TANK_MACHINEGUN_19			22
-#define MZ2_TANK_ROCKET_1				23
-#define MZ2_TANK_ROCKET_2				24
-#define MZ2_TANK_ROCKET_3				25
-
-#define MZ2_INFANTRY_MACHINEGUN_1		26
-#define MZ2_INFANTRY_MACHINEGUN_2		27
-#define MZ2_INFANTRY_MACHINEGUN_3		28
-#define MZ2_INFANTRY_MACHINEGUN_4		29
-#define MZ2_INFANTRY_MACHINEGUN_5		30
-#define MZ2_INFANTRY_MACHINEGUN_6		31
-#define MZ2_INFANTRY_MACHINEGUN_7		32
-#define MZ2_INFANTRY_MACHINEGUN_8		33
-#define MZ2_INFANTRY_MACHINEGUN_9		34
-#define MZ2_INFANTRY_MACHINEGUN_10		35
-#define MZ2_INFANTRY_MACHINEGUN_11		36
-#define MZ2_INFANTRY_MACHINEGUN_12		37
-#define MZ2_INFANTRY_MACHINEGUN_13		38
-
-#define MZ2_SOLDIER_BLASTER_1			39
-#define MZ2_SOLDIER_BLASTER_2			40
-#define MZ2_SOLDIER_SHOTGUN_1			41
-#define MZ2_SOLDIER_SHOTGUN_2			42
-#define MZ2_SOLDIER_MACHINEGUN_1		43
-#define MZ2_SOLDIER_MACHINEGUN_2		44
-
-#define MZ2_GUNNER_MACHINEGUN_1			45
-#define MZ2_GUNNER_MACHINEGUN_2			46
-#define MZ2_GUNNER_MACHINEGUN_3			47
-#define MZ2_GUNNER_MACHINEGUN_4			48
-#define MZ2_GUNNER_MACHINEGUN_5			49
-#define MZ2_GUNNER_MACHINEGUN_6			50
-#define MZ2_GUNNER_MACHINEGUN_7			51
-#define MZ2_GUNNER_MACHINEGUN_8			52
-#define MZ2_GUNNER_GRENADE_1			53
-#define MZ2_GUNNER_GRENADE_2			54
-#define MZ2_GUNNER_GRENADE_3			55
-#define MZ2_GUNNER_GRENADE_4			56
-
-#define MZ2_CHICK_ROCKET_1				57
-
-#define MZ2_FLYER_BLASTER_1				58
-#define MZ2_FLYER_BLASTER_2				59
-
-#define MZ2_MEDIC_BLASTER_1				60
-
-#define MZ2_GLADIATOR_RAILGUN_1			61
-
-#define MZ2_HOVER_BLASTER_1				62
-
-#define MZ2_ACTOR_MACHINEGUN_1			63
 
 extern	vec3_t monster_flash_offset [];
 

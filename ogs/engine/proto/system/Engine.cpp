@@ -209,6 +209,8 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 	if(!mpFileSystem->Init(basedir))
 		return false;
 	
+	host_parms.basedir = basedir;
+	
 	if(InitGame(cmdline, basedir, nullptr /*game->GetMainWindowAddress()*/, dedicated))
 	{
 		success = true;

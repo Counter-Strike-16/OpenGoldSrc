@@ -27,25 +27,53 @@
  */
 
 /// @file
-/// @brief filesystem loader
 
-#pragma once
+#include "precompiled.hpp"
+#include "filesystem/FileSystemProvider.hpp"
 
-class IFileSystem;
-
-class CFileSystemLoader
+IFileSystem *CFileSystemProvider::Load(CreateInterfaceFn afnFileSystemFactory)
 {
-public:
-	CFileSystemLoader() = default;
-	~CFileSystemLoader(){UnloadDLL();}
-	
-	IFileSystem *Load(CreateInterfaceFn afnFileSystemFactory);
-	
-	NOXREF void *GetFileSystemFactory();
-private:
-	IFileSystem *LoadDLL(CreateInterfaceFn filesystemFactory);
-	void UnloadDLL();
-	
-	CSysModule *mpFileSystemModule{nullptr};
-	CreateInterfaceFn g_FileSystemFactory{nullptr};
+	return LoadDLL(afnFileSystemFactory);
+};
+
+NOXREF void *CFileSystemProvider::GetFileSystemFactory()
+{
+	NOXREFCHECK;
+
+	return (void *)g_FileSystemFactory;
+};
+
+IFileSystem *CFileSystemProvider::LoadDLL(CreateInterfaceFn filesystemFactory)
+{
+	if(!filesystemFactory)
+	{
+		mpFileSystemModule = Sys_LoadModule(FILESYSTEM_DLL_NAME);
+
+		if(mpFileSystemModule)
+			filesystemFactory = Sys_GetFactory(mpFileSystemModule);
+	};
+
+	if(filesystemFactory)
+	{
+		g_FileSystemFactory = filesystemFactory;
+
+		IFileSystem *pFileSystem = (IFileSystem *)filesystemFactory(FILESYSTEM_INTERFACE_VERSION, 0);
+		
+		assert(pFileSystem);
+		
+		return pFileSystem;
+	};
+
+	return nullptr;
+};
+
+void CFileSystemProvider::UnloadDLL()
+{
+	if(mpFileSystemModule)
+	{
+		Sys_UnloadModule((CSysModule *)mpFileSystemModule);
+		mpFileSystemModule = NULL;
+		g_FileSystemFactory = NULL;
+		mpFileSystem = NULL;
+	};
 };

@@ -31,16 +31,17 @@
 #pragma once
 
 struct IRender;
-
-extern IRender *gpRender; // temp; interface to render dll
+class CSharedLib;
 
 class CRendererManager
 {
 public:
 	bool LoadRenderer(const char *asName);
 	void UnloadRenderer();
-private:
-	CSharedLib *mpRendererLib; // Handle to render dll
 	
-	bool reflib_active;
+	IRender *GetRenderer() const;
+private:
+	CSharedLib *mpRendererLib{nullptr}; // Handle to render dll
+	
+	bool reflib_active{false};
 };

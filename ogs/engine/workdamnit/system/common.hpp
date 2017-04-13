@@ -230,6 +230,8 @@ int LongNoSwap(int l);
 float FloatSwap(float f);
 float FloatNoSwap(float f);
 
+//=============================================
+
 NOXREF char *COM_SkipPath(char *pathname);
 
 void COM_StripExtension(char *in, char *out);
@@ -238,7 +240,6 @@ void COM_DefaultExtension(char *path, const char *extension);
 
 void COM_FileBase(const char *in, char *out);
 
-char *COM_GetToken();
 void COM_UngetToken();
 
 char *COM_Parse(char *data); // const char all?
@@ -282,6 +283,8 @@ void COM_Munge3(unsigned char *data, int len, int seq);
 NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq);
 
 // engine export funcs section below
+
+char *COM_GetToken();
 
 unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
 unsigned char *COM_LoadFileForMe(char *filename, int *pLength);

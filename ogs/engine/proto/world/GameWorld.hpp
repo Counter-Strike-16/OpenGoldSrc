@@ -81,12 +81,13 @@ public:
 	bool IsActive();
 
 	void CreateEntity();
-
+	
+	const char *GetMapName();
 private:
 	char mapname[64]; // map name
 	char startspot[64];
 
-	struct model_s *worldmodel;
+	struct model_s *worldmodel{nullptr};
 
 	char *lightstyles[MAX_LIGHTSTYLES];
 

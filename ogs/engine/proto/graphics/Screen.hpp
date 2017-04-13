@@ -37,7 +37,6 @@ extern int scr_fullupdate; // set to 0 to force full redraw
 extern int sb_lines;
 
 extern int clearnotify; // set to 0 whenever notify text is drawn
-extern qboolean scr_disabled_for_loading;
 
 extern cvar_t scr_viewsize; // cvar_t *
 extern cvar_t *crosshair;
@@ -46,24 +45,28 @@ extern cvar_t scr_downloading;
 
 extern qboolean block_drawing; // wasn't extern
 
+class CSound;
+
 class CScreen
 {
 public:
-	CScreen() = default;
+	CScreen(CSound *apSound) = default;
 	~CScreen() = default;
 	
 	void Init();
+	void Shutdown();
 
 	void Update();
 
-	void SizeUp();
-	void SizeDown();
+	//void SizeUp();
+	//void SizeDown();
 
-	void BringDownConsole();
+	//void BringDownConsole();
 
 	void CenterPrint(const char *str);
+	//void CenterStringOff();
 
-	int ModalMessage(const char *text);
+	//int ModalMessage(const char *text);
 
 	void BeginLoadingPlaque(bool reconnect);
 	void EndLoadingPlaque();
@@ -95,9 +98,13 @@ public:
 	void SCR_UpdateWholeScreen();
 	*/
 private:
+	CSound *mpSound{nullptr};
+	
 	// only the render window will be updated unless these variables are flagged
-	int scr_copytop;
-	int scr_copyeverything;
-
-	bool scr_skipupdate;
+	int scr_copytop{0};
+	int scr_copyeverything{0};
+	
+	bool scr_initialized{false}; // ready to draw
+	bool scr_skipupdate{false};
+	bool scr_disabled_for_loading{false};
 };

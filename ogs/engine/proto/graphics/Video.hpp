@@ -53,7 +53,7 @@ public:
 	
 	// sets the mode; only used by the engine for resetting to mode 0 
 	// (the base mode) on memory allocation failures
-	int SetMode(int modenum, unsigned char *palette);
+	int SetMode(int modenum, byte *palette); // ushort here; should be in sync with init
 	
 	void SetDefaultMode();
 private:

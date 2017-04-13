@@ -129,5 +129,5 @@ void SetLoadingProgressBarStatusText(const char *statusText);
 
 void VID_MenuInit();
 void VID_MenuDraw();
-const char *VID_MenuKey(int anKey); // void VID_MenuKey(int key);
+const char *VID_MenuKey(int anKey); // return void?
 */

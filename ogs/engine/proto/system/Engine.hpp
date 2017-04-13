@@ -34,8 +34,10 @@
 #include "common/maintypes.h"
 #include "system/IOGSEngine.hpp"
 #include "system/IGame.hpp"
-#include "system/Host.hpp"
-#include "filesystem/FileSystem.hpp"
+
+class CHost;
+class CFileSystem;
+class CFileSystemLoader;
 
 // clang-format off
 #ifdef HOOK_ENGINE
@@ -125,6 +127,7 @@ private:
 	
 	quakeparms_t host_parms;
 	
+	std::unique_ptr<CFileSystemLoader> mpFileSystemLoader;
 	std::unique_ptr<CFileSystem> mpFileSystem;
 	std::unique_ptr<CHost> mpHost;
 	
