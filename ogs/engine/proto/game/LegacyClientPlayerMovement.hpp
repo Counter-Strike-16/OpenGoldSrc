@@ -27,23 +27,22 @@
  */
 
 /// @file
-/// @brief hl-compatible player movement component
+/// @brief old api client-side player movement component
 
 #pragma once
 
 #include "game/shared/IPlayerMovement.hpp"
-#include "engine/eiface.h"
 
-class CHLPlayerMovement : public IPlayerMovement
+class CLegacyClientPlayerMovement : public IPlayerMovement
 {
 public:
-	CHLPlayerMovement(DLL_FUNCTIONS *apHLGameDLL);
-	~CHLPlayerMovement();
+	CLegacyClientPlayerMovement(DLL_FUNCTIONS *apLegacyClient);
+	~CLegacyClientPlayerMovement() = default;
 	
 	void Init(playermove_t *apPlayerMoveData);
-	void Move(playermove_t *apPlayerMoveData, bool abServer);
+	void Move(playermove_t *apPlayerMoveData);
 	
 	char FindTextureType(char *asName);
 private:
-	DLL_FUNCTIONS *mpHLGameDLL{nullptr};
+	DLL_FUNCTIONS *mpLegacyClient{nullptr};
 };

@@ -1,10 +1,5 @@
 
-// sys_win.c -- Win32 system interface code
 
-#include "quakedef.h"
-#include "winquake.h"
-#include "errno.h"
-#include "resource.h"
 #include "conproc.h"
 
 #define MINIMUM_WIN_MEMORY		0x0880000
@@ -14,10 +9,6 @@
 										//  dedicated before exiting
 #define PAUSE_SLEEP		50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP	20				// sleep time when not focus
-
-int			starttime;
-qboolean	ActiveApp, Minimized;
-qboolean	WinNT;
 
 static double		pfreq;
 static double		curtime = 0.0;
@@ -405,39 +396,15 @@ void Sys_Error (char *error, ...)
 	exit (1);
 }
 
-void Sys_Printf (char *fmt, ...)
-{
-	va_list		argptr;
-	char		text[1024];
-	DWORD		dummy;
-	
-	if (isDedicated)
-	{
-		va_start (argptr,fmt);
-		vsprintf (text, fmt, argptr);
-		va_end (argptr);
-
-		WriteFile(houtput, text, strlen (text), &dummy, NULL);	
-	}
-}
-
 void Sys_Quit (void)
 {
 
-	VID_ForceUnlockedAndReturnState ();
-
-	Host_Shutdown();
-
-	if (tevent)
-		CloseHandle (tevent);
 
 	if (isDedicated)
 		FreeConsole ();
 
 // shut down QHOST hooks if necessary
 	DeinitConProc ();
-
-	exit (0);
 }
 
 
@@ -592,57 +559,6 @@ void Sys_Sleep (void)
 {
 	Sleep (1);
 }
-
-
-void Sys_SendKeyEvents (void)
-{
-    MSG        msg;
-
-	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE))
-	{
-	// we always update if there are any event, even if we're paused
-		scr_skipupdate = 0;
-
-		if (!GetMessage (&msg, NULL, 0, 0))
-			Sys_Quit ();
-
-      	TranslateMessage (&msg);
-      	DispatchMessage (&msg);
-	}
-}
-
-
-/*
-==============================================================================
-
- WINDOWS CRAP
-
-==============================================================================
-*/
-
-
-/*
-==================
-WinMain
-==================
-*/
-void SleepUntilInput (int time)
-{
-
-	MsgWaitForMultipleObjects(1, &tevent, FALSE, time, QS_ALLINPUT);
-}
-
-
-/*
-==================
-WinMain
-==================
-*/
-HINSTANCE	global_hInstance;
-int			global_nCmdShow;
-char		*argv[MAX_NUM_ARGVS];
-static char	*empty_string = "";
-HWND		hwnd_dialog;
 
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)

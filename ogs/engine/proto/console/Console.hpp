@@ -53,23 +53,7 @@ using tConVarList = std::list<CConVar*>;
 
 //extern console_t *con; // point to either con_main or con_chat
 
-void Con_CheckResize();
-
-void Con_Init();
-void Con_Shutdown();
-
-void Con_SafePrintf(const char *fmt, ...);
-void Con_CenteredPrint (char *text);
-
-void Con_DrawNotify();
-void Con_ClearNotify();
 void Con_NotifyBox(const char *text); // during startup for sound / cd warnings
-
-void Con_DebugLog(const char *file, const char *fmt, ...);
-
-void Con_Clear_f();
-void Con_ToggleConsole_f();
-void Con_Debug_f();
 
 class CConsole : public IConsole
 {
@@ -77,15 +61,14 @@ public:
 	bool Init();
 	void Shutdown();
 	
-	void Printf(/*int anPrintLevel,*/ const char *asMsg, ...);
+	void Printf(/*int anLevel,*/ const char *asMsg, ...);
 
 	void CheckResize();
 
 	void Print(const char *txt);
 	//void Printf(const char *fmt, ...); // _format(1);
 
-	void DevPrintf(const char *fmt, ...); // _format(1);
-	//void DPrintf(const char *fmt, ...); // _format(1);
+	void DevPrintf(const char *fmt, ...); // DPrintf; _format(1);
 	//void NPrintf(int idx, const char *fmt, ...);
 	//void NPrintf( int idx, char *fmt, ... ) _format(2);
 	//void NXPrintf( struct con_nprint_s *info, char *fmt, ... ) _format(2);
@@ -104,6 +87,10 @@ public:
 	
 	bool IsInitialized() const {return initialized;}
 private:
+	void Con_Clear_f();
+	void Con_ToggleConsole_f();
+	void Con_Debug_f();
+	
 	tConVarList mlstConVars;
 	
 	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;

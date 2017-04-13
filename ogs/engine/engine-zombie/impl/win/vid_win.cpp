@@ -174,10 +174,11 @@ void VID_RememberWindowPos()
 	if(GetWindowRect(mainwindow, &rect))
 	{
 		if((rect.left < GetSystemMetrics(SM_CXSCREEN)) &&
-		   (rect.top < GetSystemMetrics(SM_CYSCREEN)) && (rect.right > 0) &&
+		   (rect.top < GetSystemMetrics(SM_CYSCREEN)) &&
+		   (rect.right > 0) &&
 		   (rect.bottom > 0))
 		{
-			// Window is now always will be created on the screen center
+			// Always centered
 			//Cvar_SetValue("vid_window_x", (float)rect.left);
 			//Cvar_SetValue("vid_window_y", (float)rect.top);
 		}
@@ -193,7 +194,8 @@ void VID_CheckWindowXY()
 {
 	if(((int)vid_window_x.value > (GetSystemMetrics(SM_CXSCREEN) - 160)) ||
 	   ((int)vid_window_y.value > (GetSystemMetrics(SM_CYSCREEN) - 120)) ||
-	   ((int)vid_window_x.value < 0) || ((int)vid_window_y.value < 0))
+	   ((int)vid_window_x.value < 0) ||
+	   ((int)vid_window_y.value < 0))
 	{
 		Cvar_SetValue("vid_window_x", 0.0);
 		Cvar_SetValue("vid_window_y", 0.0);
@@ -277,8 +279,7 @@ qboolean VID_AllocBuffers(int width, int height)
 
 	// see if there's enough memory, allowing for the normal mode 0x13 pixel,
 	// z, and surface buffers
-	if((host_parms.memsize - tbuffersize + SURFCACHE_SIZE_AT_320X200 +
-	    0x10000 * 3) < MINIMUM_MEMORY)
+	if((host_parms.memsize - tbuffersize + SURFCACHE_SIZE_AT_320X200 + 0x10000 * 3) < MINIMUM_MEMORY) // MINIMUM_MEMORY = minimum_memory
 	{
 		Con_SafePrintf("Not enough memory for video mode\n");
 		return false; // not enough memory for mode
@@ -346,7 +347,7 @@ int VID_Suspend (MGLDC *dc, int flags)
 
 #else
 
-int VID_Suspend(MGLDC *dc, int flags)
+int VID_Suspend(MGLDC *dc, int flags) // m_int flags
 {
 	if(flags & MGL_DEACTIVATE)
 	{
@@ -1712,8 +1713,7 @@ int VID_SetMode(int modenum, unsigned char *palette)
 	ClearAllStates();
 
 	if(!msg_suppress_1)
-		Con_SafePrintf("Video mode %s initialized\n",
-		               VID_GetModeDescription(vid_modenum));
+		Con_SafePrintf("Video mode %s initialized\n", VID_GetModeDescription(vid_modenum));
 
 	VID_SetPalette(palette);
 
@@ -2368,6 +2368,7 @@ void VID_Update(vrect_t *rects)
 	}
 
 	// handle the mouse state when windowed if that's changed
+	//
 	if(modestate == MS_WINDOWED)
 	{
 		if(!_windowed_mouse.value)
@@ -2394,6 +2395,28 @@ void VID_Update(vrect_t *rects)
 			}
 		}
 	}
+	//
+	/*
+	if (modestate == MS_WINDOWED)
+	{
+		if ((int)_windowed_mouse.value != windowed_mouse)
+		{
+			if (_windowed_mouse.value)
+			{
+				IN_ActivateMouse ();
+				IN_HideMouse ();
+			}
+			else
+			{
+				IN_DeactivateMouse ();
+				IN_ShowMouse ();
+			}
+
+			windowed_mouse = (int)_windowed_mouse.value;
+		}
+	}
+	*/
+	//
 }
 
 /*
@@ -2956,6 +2979,7 @@ LPARAM lParam)
 			IN_MouseEvent(temp);
 		}
 		break;
+	
 	// JACK: This is the mouse wheel with the Intellimouse
 	// Its delta is either positive or neg, and we generate the proper
 	// Event.
@@ -3252,7 +3276,6 @@ void VID_MenuKey(int key)
 		break;
 
 	case K_LEFTARROW:
-
 		S_LocalSound("misc/menu1.wav");
 		vid_line = ((vid_line / VID_ROW_SIZE) * VID_ROW_SIZE) +
 		((vid_line + 2) % VID_ROW_SIZE);

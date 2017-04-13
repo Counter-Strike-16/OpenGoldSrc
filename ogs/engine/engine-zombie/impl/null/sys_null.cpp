@@ -29,8 +29,17 @@
 /// @file
 /// @brief null system driver to aid porting efforts
 
+#include "precompiled.hpp"
 #include "errno.h"
-#include "quakedef.hpp"
+#include "commondef.hpp"
+
+/*
+===============================================================================
+
+FILE IO
+
+===============================================================================
+*/
 
 /*
 ================
@@ -79,7 +88,7 @@ void Sys_Error(char *error, ...)
 {
 	va_list argptr;
 
-	printf("I_Error: ");
+	printf("Sys_Error: ");
 	va_start(argptr, error);
 	vprintf(error, argptr);
 	va_end(argptr);
@@ -116,9 +125,9 @@ void Sys_LowFPPrecision(){};
 
 void main(int argc, char **argv)
 {
-	quakeparms_t parms;
+	static quakeparms_t parms;
 
-	parms.memsize = 5861376;
+	parms.memsize = 8*1024*1024; // 5861376
 	parms.membase = malloc(parms.memsize);
 	parms.basedir = ".";
 
@@ -232,3 +241,74 @@ void Sys_FindClose()
 void Sys_Init()
 {
 };
+
+
+
+#define MAX_HANDLES             10
+FILE    *sys_handles[MAX_HANDLES];
+
+int             findhandle (void)
+{
+	int             i;
+	
+	for (i=1 ; i<MAX_HANDLES ; i++)
+		if (!sys_handles[i])
+			return i;
+	Sys_Error ("out of handles");
+	return -1;
+}
+
+int Sys_FileOpenRead (char *path, int *hndl)
+{
+	FILE    *f;
+	int             i;
+	
+	i = findhandle ();
+
+	f = fopen(path, "rb");
+	if (!f)
+	{
+		*hndl = -1;
+		return -1;
+	}
+	sys_handles[i] = f;
+	*hndl = i;
+	
+	return filelength(f);
+}
+
+int Sys_FileOpenWrite (char *path)
+{
+	FILE    *f;
+	int             i;
+	
+	i = findhandle ();
+
+	f = fopen(path, "wb");
+	if (!f)
+		Sys_Error ("Error opening %s: %s", path,strerror(errno));
+	sys_handles[i] = f;
+	
+	return i;
+}
+
+void Sys_FileClose (int handle)
+{
+	fclose (sys_handles[handle]);
+	sys_handles[handle] = NULL;
+}
+
+void Sys_FileSeek (int handle, int position)
+{
+	fseek (sys_handles[handle], position, SEEK_SET);
+}
+
+int Sys_FileRead (int handle, void *dest, int count)
+{
+	return fread (dest, 1, count, sys_handles[handle]);
+}
+
+int Sys_FileWrite (int handle, void *data, int count)
+{
+	return fwrite (data, 1, count, sys_handles[handle]);
+}

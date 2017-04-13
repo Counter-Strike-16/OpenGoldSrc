@@ -28,4 +28,5 @@
 
 /// @file
 
+#include "precompiled.hpp"
 #include "system/GameHandler.hpp"

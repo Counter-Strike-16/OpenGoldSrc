@@ -130,13 +130,6 @@ void IN_ActivateMouse(void)
 		;
 }
 
-/*
-===========
-IN_DeactivateMouse
-
-Called when the window loses focus
-===========
-*/
 void IN_DeactivateMouse(void)
 {
 	if(!mouseinitialized)
@@ -379,18 +372,6 @@ void IN_Move(usercmd_t *cmd)
 }
 
 /*
-===================
-IN_ClearStates
-===================
-*/
-void IN_ClearStates(void)
-{
-	mx_accum = 0;
-	my_accum = 0;
-	mouse_oldbuttonstate = 0;
-}
-
-/*
 =========================================================================
 
 JOYSTICK
@@ -398,20 +379,9 @@ JOYSTICK
 =========================================================================
 */
 
-/*
-===============
-IN_StartupJoystick
-===============
-*/
 void IN_StartupJoystick(void)
 {
-	int numdevs;
-	JOYCAPS jc;
-	MMRESULT mmr;
 	cvar_t *cv;
-
-	// assume no joystick
-	joy_avail = false;
 
 	// abort startup if user requests no joystick
 	cv = Cvar_Get("in_initjoy", "1", CVAR_NOSET);
@@ -467,30 +437,6 @@ void IN_StartupJoystick(void)
 	joy_advancedinit = false;
 
 	Com_Printf("\njoystick detected\n\n");
-}
-
-/*
-===========
-RawValuePointer
-===========
-*/
-PDWORD RawValuePointer(int axis)
-{
-	switch(axis)
-	{
-	case JOY_AXIS_X:
-		return &ji.dwXpos;
-	case JOY_AXIS_Y:
-		return &ji.dwYpos;
-	case JOY_AXIS_Z:
-		return &ji.dwZpos;
-	case JOY_AXIS_R:
-		return &ji.dwRpos;
-	case JOY_AXIS_U:
-		return &ji.dwUpos;
-	case JOY_AXIS_V:
-		return &ji.dwVpos;
-	}
 }
 
 /*
@@ -633,16 +579,8 @@ void IN_Commands(void)
 	}
 }
 
-/*
-===============
-IN_ReadJoystick
-===============
-*/
 qboolean IN_ReadJoystick(void)
 {
-	memset(&ji, 0, sizeof(ji));
-	ji.dwSize = sizeof(ji);
-	ji.dwFlags = joy_flags;
 
 	if(joyGetPosEx(joy_id, &ji) == JOYERR_NOERROR)
 	{

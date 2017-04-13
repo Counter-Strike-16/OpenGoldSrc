@@ -28,19 +28,9 @@ static HANDLE hinput, houtput;
 unsigned sys_msg_time;
 unsigned sys_frame_time;
 
-static HANDLE qwclsemaphore;
-
 #define MAX_NUM_ARGVS 128
 int argc;
 char *argv[MAX_NUM_ARGVS];
-
-/*
-===============================================================================
-
-SYSTEM IO
-
-===============================================================================
-*/
 
 void Sys_Error(char *error, ...)
 {
@@ -331,30 +321,6 @@ void Sys_ConsoleOutput(char *string)
 
 	if(console_textlen)
 		WriteFile(houtput, console_text, console_textlen, &dummy, NULL);
-}
-
-/*
-================
-Sys_SendKeyEvents
-
-Send Key_Event calls
-================
-*/
-void Sys_SendKeyEvents(void)
-{
-	MSG msg;
-
-	while(PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
-	{
-		if(!GetMessage(&msg, NULL, 0, 0))
-			Sys_Quit();
-		sys_msg_time = msg.time;
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
-	// grab frame time
-	sys_frame_time = timeGetTime(); // FIXME: should this be at start?
 }
 
 /*

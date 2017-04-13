@@ -30,7 +30,7 @@
 /// @brief old api game module wrapper
 
 #include "precompiled.hpp"
-#include "game/HLGame.hpp"
+#include "game/LegacyGame.hpp"
 #include <cstring>
 
 CHLGame::CHLGame(CSystem *apSystem) : mpSystem(apSystem)

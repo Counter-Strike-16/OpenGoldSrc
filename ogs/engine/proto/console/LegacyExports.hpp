@@ -54,7 +54,7 @@ int Cmd_Argc();
 const char *Cmd_Argv(int arg);
 const char *Cmd_Args();
 
-NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function); // client
+NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function); // Cmd_AddClientCommand; int pfnAddClientCommand( const char *cmd_name, xcommand_t func );
 void Cmd_AddGameCommand(char *cmd_name, xcommand_t function);
 
 struct cmd_function_s *Cmd_GetFirstCmd();

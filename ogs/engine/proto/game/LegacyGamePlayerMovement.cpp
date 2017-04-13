@@ -27,23 +27,21 @@
  */
 
 /// @file
-/// @brief hl-compatible player movement component
 
-#pragma once
+#include "precompiled.hpp"
+#include "game/LegacyGamePlayerMovement.hpp"
 
-#include "game/shared/IPlayerMovement.hpp"
-#include "engine/eiface.h"
-
-class CHLPlayerMovement : public IPlayerMovement
+void CLegacyGamePlayerMovement::Init(playermove_t *apPlayerMoveData)
 {
-public:
-	CHLPlayerMovement(DLL_FUNCTIONS *apHLGameDLL);
-	~CHLPlayerMovement();
-	
-	void Init(playermove_t *apPlayerMoveData);
-	void Move(playermove_t *apPlayerMoveData, bool abServer);
-	
-	char FindTextureType(char *asName);
-private:
-	DLL_FUNCTIONS *mpHLGameDLL{nullptr};
+	mpLegacyGame->pfnPM_Init(apPlayerMoveData);
+};
+
+void CLegacyGamePlayerMovement::Move(playermove_t *apPlayerMoveData)
+{
+	mpLegacyGame->pfnPM_Move(apPlayerMoveData, 1);
+};
+
+char CLegacyGamePlayerMovement::FindTextureType(char *asName)
+{
+	return mpLegacyGame->pfnPM_FindTextureType(asName);
 };

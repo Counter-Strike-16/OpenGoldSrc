@@ -33,37 +33,9 @@
 
 #include "common/commontypes.h"
 
-class IModelManager;
-class ISoundManager;
-class CEngineServer;
-class CEntityHandler;
-class CGameWorld;
-class CCRC32Handler;
-
-extern sv_enginefuncs_t *gpServerEngFuncs; // Global pointer to engfuncs struct... (BAD)
-
-class CEngineFuncs
-{
-public:
-	CEngineFuncs(enginefuncs_t *apEngFuncs) = default;
-	~CEngineFuncs() = default;
-	
-	void Init(IModelManager *apModelManager, ISoundManager *apSoundManager, CEdictHandler *apEdictHandler, CEngineServer *apEngineServer, CGameWorld *apGameWorld);
-/*	
-	const enginefuncs_t &Get(){return mpEngFuncs;}
-	
-	enginefuncs_t &operator*(){return *mpEngFuncs;}
-	enginefuncs_t *operator->(){return mpEngFuncs;}
-private:
-	enginefuncs_t *mpEngFuncs{nullptr};
-*/
-};
-
 int pfnDrawConsoleString( int x, int y, char *string );
 void pfnDrawSetTextColor( float r, float g, float b );
 void pfnDrawConsoleStringLen( const char *pText, int *length, int *height );
-
-int pfnAddClientCommand( const char *cmd_name, xcommand_t func );
 
 void pfnGetGameDir( char *szGetGameDir );
 

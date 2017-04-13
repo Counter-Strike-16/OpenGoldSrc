@@ -27,7 +27,7 @@
  */
 
 /// @file
-/// @brief hl-compatible game client listener class
+/// @brief legacy api game client listener
 
 #pragma once
 

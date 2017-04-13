@@ -1,7 +1,4 @@
 
-// in_mouse.c -- dos mouse code
-
-#include "quakedef.h"
 
 #define AUX_FLAG_FREELOOK	0x00000001
 
@@ -56,20 +53,11 @@ typedef struct
 } externControl_t;
 */
 
-cvar_t	m_filter = {"m_filter","1"};
-
 qboolean	mouse_avail;
-int		mouse_buttons;
-int		mouse_oldbuttonstate;
 int		mouse_buttonstate;
-float	mouse_x, mouse_y;
-float	old_mouse_x, old_mouse_y;
 
-
-cvar_t	in_joystick = {"joystick","1"};
 cvar_t	joy_numbuttons = {"joybuttons","4", true};
 
-qboolean	joy_avail;
 int		joy_oldbuttonstate;
 int		joy_buttonstate;
 
@@ -87,7 +75,6 @@ externControl_t	*extern_control;
 void IN_StartupExternal (void);
 void IN_ExternalMove (usercmd_t *cmd);
 
-void IN_StartupJoystick (void);
 qboolean IN_ReadJoystick (void);
 
 
@@ -99,17 +86,10 @@ void Toggle_AuxLook_f (void)
 		Cvar_Set ("auxlook","1");
 }
 
-/*
-===========
-IN_Init
-===========
-*/
 void IN_Init (void)
 {
 	int i;
 
-	Cvar_RegisterVariable (&m_filter);
-	Cvar_RegisterVariable (&in_joystick);
 	Cvar_RegisterVariable (&joy_numbuttons);
 	Cvar_RegisterVariable (&aux_look);
 	Cmd_AddCommand ("toggle_auxlook", Toggle_AuxLook_f);
@@ -206,41 +186,14 @@ IN_Move
 */
 void IN_MouseMove (usercmd_t *cmd)
 {
-	int		mx, my;
 
 	if (!mouse_avail)
 		return;
 
-	regs.x.ax = 11;		// read move
-	dos_int86(0x33);
-	mx = (short)regs.x.cx;
-	my = (short)regs.x.dx;
-	
-	if (m_filter.value)
-	{
-		mouse_x = (mx + old_mouse_x) * 0.5;
-		mouse_y = (my + old_mouse_y) * 0.5;
-	}
-	else
-	{
-		mouse_x = mx;
-		mouse_y = my;
-	}
-	old_mouse_x = mx;
-	old_mouse_y = my;
-
-	mouse_x *= sensitivity.value;
-	mouse_y *= sensitivity.value;
-
 // add mouse X/Y movement to cmd
 	if ( (in_strafe.state & 1) || (lookstrafe.value && (in_mlook.state & 1) ))
-		cmd->sidemove += m_side.value * mouse_x;
-	else
-		cl.viewangles[YAW] -= m_yaw.value * mouse_x;
-	
-	if (in_mlook.state & 1)
-		V_StopPitchDrift ();
 		
+	
 	if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
 	{
 		cl.viewangles[PITCH] += m_pitch.value * mouse_y;
@@ -258,17 +211,8 @@ void IN_MouseMove (usercmd_t *cmd)
 	}
 }
 
-/*
-===========
-IN_JoyMove
-===========
-*/
 void IN_JoyMove (usercmd_t *cmd)
 {
-	float	speed, aspeed;
-
-	if (!joy_avail || !in_joystick.value) 
-		return; 
  
 	IN_ReadJoystick (); 
 	if (joysticky > joyyh*2 || joystickx > joyxh*2)
@@ -277,10 +221,7 @@ void IN_JoyMove (usercmd_t *cmd)
 
 	if (in_speed.state & 1)
 		speed = cl_movespeedkey.value;
-	else
-		speed = 1;
-	aspeed = speed*host_frametime;
-
+	
 	if (in_strafe.state & 1)
 	{
 		if (joystickx < joyxl)
@@ -316,18 +257,6 @@ void IN_JoyMove (usercmd_t *cmd)
 	}
 }
 
-/*
-===========
-IN_Move
-===========
-*/
-void IN_Move (usercmd_t *cmd)
-{
-	IN_MouseMove (cmd);
-	IN_JoyMove (cmd);
-	IN_ExternalMove (cmd);
-}
-
 /* 
 ============================================================================ 
  
@@ -348,13 +277,9 @@ qboolean IN_ReadJoystick (void)
 
 	count = 0;
 
-	b = dos_inportb(0x201);
-	dos_outportb(0x201, b);
-
 // clear counters
 	while (++count < 10000)
 	{
-		b = dos_inportb(0x201);
 
 		joystickx += b&1;
 		joysticky += (b&2)>>1;
@@ -389,7 +314,6 @@ qboolean WaitJoyButton (void)
 		}
 		key_lastpress = 0;
 		SCR_UpdateScreen ();
-		buttons =  ((dos_inportb(0x201) >> 4)&1)^1; 
 		if (buttons != oldbuttons) 
 		{ 
 			oldbuttons = buttons; 
@@ -409,7 +333,6 @@ qboolean WaitJoyButton (void)
 		}
 		key_lastpress = 0;
 		SCR_UpdateScreen ();
-		buttons =  ((dos_inportb(0x201) >> 4)&1)^1; 
 		if (buttons != oldbuttons) 
 		{ 
 			oldbuttons = buttons; 

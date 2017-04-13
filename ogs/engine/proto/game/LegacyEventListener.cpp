@@ -27,14 +27,18 @@
  */
 
 /// @file
-/// @brief event listener for old api
 
-#pragma once
+#include "precompiled.hpp"
+#include "game/LegacyEventListener.hpp"
+#include "game/LegacyGame.hpp"
 
-#include "system/IEventListener.hpp"
-
-class CHLEventListener : public IEventListener
+void CLegacyEventListener::OnEvent(const TEvent &aEvent)
 {
-public:
-	void OnEvent(const TEvent &aEvent);
+	switch(aEvent.type)
+	{
+	case TEvent::Type::SysError:
+		// handle here or call game wrapper
+		mpGame->SysError(TEvent::SysError::msMsg);
+		break;
+	};
 };

@@ -189,14 +189,14 @@ extern int loadsize;
 
 #else // Q_functions
 
-void Q_strcpy(char *dest, const char *src);
-int Q_strlen(const char *str);
-
 NOBODY void Q_memset(void *dest, int fill, int count);
 NOBODY void Q_memcpy(void *dest, const void *src, int count);
 NOBODY int Q_memcmp(void *m1, void *m2, int count);
 
+void Q_strcpy(char *dest, const char *src);
 NOBODY void Q_strncpy(char *dest, const char *src, int count);
+
+int Q_strlen(const char *str);
 
 NOBODY char *Q_strrchr(char *s, char c);
 

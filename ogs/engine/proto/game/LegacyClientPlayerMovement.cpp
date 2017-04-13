@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -29,15 +29,25 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "game/HLEventListener.hpp"
+#include "game/LegacyClientPlayerMovement.hpp"
+#include "game/LegacyGame.hpp"
 
-void CHLEventListener::OnEvent(const TEvent &aEvent)
+CLegacyClientPlayerMovement::CLegacyClientPlayerMovement(DLL_FUNCTIONS *apHLClientHUD)
 {
-	switch(aEvent.type)
-	{
-	case TEvent::Type::SysError:
-		// handle here or call game wrapper
-		mpGame->SysError(TEvent::SysError::msMsg);
-		break;
-	};
+	mpHLClientHUD = apHLClientHUD;
+};
+
+void CLegacyClientPlayerMovement::Init(playermove_t *apPlayerMoveData)
+{
+	mpLegacyClient->pfnPM_Init(apPlayerMoveData);
+};
+
+void CLegacyClientPlayerMovement::Move(playermove_t *apPlayerMoveData)
+{
+	mpLegacyClient->pfnPM_Move(apPlayerMoveData, 0);
+};
+
+char CLegacyClientPlayerMovement::FindTextureType(char *asName)
+{
+	return mpLegacyClient->pfnPM_FindTextureType(asName);
 };

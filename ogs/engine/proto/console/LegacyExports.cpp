@@ -31,29 +31,64 @@
 #include "precompiled.hpp"
 #include "console/LegacyExports.hpp"
 
+static IConsole *gpConsole = nullptr;
+
 void Con_Print(const char *txt)
 {
+	gpConsole->Print(txt);
 };
 
 void Con_Printf(const char *fmt, ...)
 {
+	va_list argptr;
+	char sTemp[256] = {0};
+	
+	va_start(argptr, fmt);
+	Q_vsnprintf(sTemp, charsmax(sTemp), fmt, argptr);
+	va_end(argptr);
+	
+	gpConsole->Printf(sTemp);
 };
 
 void Con_DPrintf(const char *fmt, ...)
 {
+	va_list argptr;
+	char sTemp[256] = {0};
+	
+	va_start(argptr, fmt);
+	Q_vsnprintf(sTemp, charsmax(sTemp), fmt, argptr);
+	va_end(argptr);
+	
+	gpConsole->DevPrintf(sTemp);
 };
 
 void Con_NPrintf(int idx, const char *fmt, ...)
 {
+	va_list argptr;
+	char sTemp[256] = {0};
+	
+	va_start(argptr, fmt);
+	Q_vsnprintf(sTemp, charsmax(sTemp), fmt, argptr);
+	va_end(argptr);
+	
+	gpConsole->NotifyPrintf(idx, sTemp);
 };
 
 void Con_NXPrintf(struct con_nprint_s *info, char *fmt, ...)
 {
+	va_list argptr;
+	char sTemp[256] = {0};
+	
+	va_start(argptr, fmt);
+	Q_vsnprintf(sTemp, charsmax(sTemp), fmt, argptr);
+	va_end(argptr);
+	
+	gpConsole->NotifyPrintfEx(info, sTemp);
 };
 
 qboolean Con_Visible()
 {
-	return false;
+	return false; // ?
 };
 
 //============================================================================

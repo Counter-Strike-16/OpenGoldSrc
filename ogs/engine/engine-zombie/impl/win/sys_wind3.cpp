@@ -30,24 +30,6 @@ int		findhandle (void)
 	return -1;
 }
 
-/*
-================
-filelength
-================
-*/
-int filelength (FILE *f)
-{
-	int		pos;
-	int		end;
-
-	pos = ftell (f);
-	fseek (f, 0, SEEK_END);
-	end = ftell (f);
-	fseek (f, pos, SEEK_SET);
-
-	return end;
-}
-
 int Sys_FileOpenRead (char *path, int *hndl)
 {
 	FILE	*f;
@@ -120,15 +102,6 @@ int	Sys_FileTime (char *path)
 void Sys_mkdir (char *path)
 {
 }
-
-
-/*
-===============================================================================
-
-SYSTEM IO
-
-===============================================================================
-*/
 
 void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 {

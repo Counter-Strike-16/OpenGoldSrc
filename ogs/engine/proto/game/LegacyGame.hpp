@@ -34,13 +34,15 @@
 #include "game/server/IGame.hpp"
 //#include "system/IEventListener.hpp"
 
-class CHLGame : public IGame//, public IEventListener
+class CLegacyGame : public IGame//, public IEventListener
 {
 public:
-	CHLGame(CSystem *apSystem);
-	~CHLGame();
+	CLegacyGame(CSystem *apSystem);
+	CLegacyGame(DLL_FUNCTIONS aFuncs, NEW_DLL_FUNCTIONS aNewFuncs);
+	~CLegacyGame();
 	
-	bool Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs);
+	//bool Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs);
+	bool Init(DLL_FUNCTIONS aFuncs, NEW_DLL_FUNCTIONS aNewFuncs);
 	
 	bool Init(CreateInterfaceFn afnEngineFactory);
 	void Shutdown();

@@ -28,28 +28,22 @@
 
 /// @file
 
-#include "hlcompat/HLPlayerMovement.hpp"
+#pragma once
 
-CHLPlayerMovement::CHLPlayerMovement(DLL_FUNCTIONS *apHLGameDLL)
-{
-	mpHLGameDLL = apHLGameDLL;
-};
+#include "game/GameLoader.hpp"
 
-CHLPlayerMovement::~CHLPlayerMovement()
-{
-};
+class CLegacyGame;
 
-void CHLPlayerMovement::Init(playermove_t *apPlayerMoveData)
+class CLegacyGameLoader : public IGameLoader
 {
-	mpHLGameDLL->pfnPM_Init(apPlayerMoveData);
-};
-
-void CHLPlayerMovement::Move(playermove_t *apPlayerMoveData, bool abServer)
-{
-	mpHLGameDLL->pfnPM_Move(apPlayerMoveData, abServer ? 1 : 0);
-};
-
-char CHLPlayerMovement::FindTextureType(char *asName)
-{
-	return mpHLGameDLL->pfnPM_FindTextureType(asName);
+public:
+	CLegacyGameLoader();
+	~CLegacyGameLoader();
+	
+	IGame *LoadGame(const tString &asPath);
+	void UnloadGame();
+private:
+	std::unique_ptr<CLegacyGame> mpLegacyGame/*{nullptr}*/;
+	
+	void *mpGameLib{nullptr};
 };

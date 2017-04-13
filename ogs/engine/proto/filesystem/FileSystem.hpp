@@ -110,10 +110,10 @@ public:
 	int FileExists(const char *pFileName);
 	NOXREF int IsDirectory(const char *pFileName);
 
-	FileHandle_t Open(const char *pFileName, const char *pOptions);
-	FileHandle_t OpenPathID(const char *pFileName, const char *pOptions, const char *pathID);
+	/*FileHandle_t*/ CFile *Open(const char *pFileName, const char *pOptions);
+	/*FileHandle_t*/ CFile *OpenPathID(const char *pFileName, const char *pOptions, const char *pathID);
 
-	void Close(FileHandle_t file);
+	void Close(/*FileHandle_t*/ CFile *file);
 
 	void Seek(FileHandle_t file, int pos, FileSystemSeek_t seekType);
 	unsigned int Tell(FileHandle_t file);

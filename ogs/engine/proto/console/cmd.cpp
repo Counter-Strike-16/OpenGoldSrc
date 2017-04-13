@@ -396,8 +396,6 @@ void Cmd_Alias_f()
 	a->value = CopyString(cmd);
 }
 
-
-
 void Cmd_Init()
 {
 	Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);

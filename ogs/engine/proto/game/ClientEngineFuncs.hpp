@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2015-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,23 +27,15 @@
  */
 
 /// @file
+/// @brief engine export functions for client side
 
 #pragma once
 
-#include "server/GameLoader.hpp"
-
-class CHLGame;
-
-class CHLGameLoader : public IGameLoader
+class CClientEngineFuncs
 {
 public:
-	CNativeGameLoader();
-	~CNativeGameLoader();
+	CClientEngineFuncs() = default;
+	~CClientEngineFuncs() = default;
 	
-	IGame *LoadGame(const tString &asPath);
-	void UnloadGame();
-private:
-	std::unique_ptr<CHLGame> mpHLCompatGame/*{nullptr}*/;
-	
-	void *mpGameLib{nullptr};
+	void Init(const TEnvironment &aEnv);
 };

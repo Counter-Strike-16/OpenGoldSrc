@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2015-2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,15 +27,23 @@
  */
 
 /// @file
-/// @brief engine export functions for client side
+/// @brief hl-compatible player movement component
 
 #pragma once
 
-class CClientEngineFuncs
+#include "game/shared/IPlayerMovement.hpp"
+#include "engine/eiface.h"
+
+class CLegacyGamePlayerMovement : public IPlayerMovement
 {
 public:
-	CClientEngineFuncs();
-	~CClientEngineFuncs();
+	CHLPlayerMovement(DLL_FUNCTIONS *apLegacyGame) : mpLegacyGame(apLegacyGame){}
+	~CHLPlayerMovement() = default;
 	
-	void Init();
+	void Init(playermove_t *apPlayerMoveData);
+	void Move(playermove_t *apPlayerMoveData);
+	
+	char FindTextureType(char *asName);
+private:
+	DLL_FUNCTIONS *mpLegacyGame{nullptr};
 };

@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,29 +27,20 @@
  */
 
 /// @file
+/// @brief event listener for legacy api game support
 
-#include "hlcompat/HLPlayerMovement.hpp"
+#pragma once
 
-CHLPlayerMovement::CHLPlayerMovement(DLL_FUNCTIONS *apHLGameDLL)
+#include "system/IEventListener.hpp"
+
+class CLegacyGame;
+
+class CLegacyEventListener : public IEventListener
 {
-	mpHLGameDLL = apHLGameDLL;
-};
-
-CHLPlayerMovement::~CHLPlayerMovement()
-{
-};
-
-void CHLPlayerMovement::Init(playermove_t *apPlayerMoveData)
-{
-	mpHLGameDLL->pfnPM_Init(apPlayerMoveData);
-};
-
-void CHLPlayerMovement::Move(playermove_t *apPlayerMoveData, bool abServer)
-{
-	mpHLGameDLL->pfnPM_Move(apPlayerMoveData, abServer ? 1 : 0);
-};
-
-char CHLPlayerMovement::FindTextureType(char *asName)
-{
-	return mpHLGameDLL->pfnPM_FindTextureType(asName);
+public:
+	CLegacyEventListener(CLegacyGame *apGame) : mpGame(apGame){}
+	
+	void OnEvent(const TEvent &aEvent);
+private:
+	CLegacyGame *mpGame{nullptr};
 };

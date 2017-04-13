@@ -1,3 +1,4 @@
+#include "precompiled.hpp"
 #include "client/ClientEngineFuncs.hpp"
 
 // Engine callbacks for client dll
@@ -18,8 +19,8 @@ cl_enginefunc_t gEngfuncs =
 	pfnGetScreenInfo,
 	pfnSetCrosshair,
 	//pfnCvar_RegisterVariable,
-	//Cvar_VariableValue,
-	//Cvar_VariableString,
+	Cvar_VariableValue,
+	Cvar_VariableString,
 	//pfnAddClientCommand,
 	pfnHookUserMsg,
 	pfnServerCmd,
@@ -40,13 +41,13 @@ cl_enginefunc_t gEngfuncs =
 	pfnGetViewAngles,
 	pfnSetViewAngles,
 	//CL_GetMaxClients,
-	//Cvar_SetFloat,
-	//Cmd_Argc,
-	//Cmd_Argv,
-	//Con_Printf,
-	//Con_DPrintf,
-	//Con_NPrintf,
-	//Con_NXPrintf,
+	Cvar_SetValue,
+	Cmd_Argc,
+	Cmd_Argv,
+	Con_Printf,
+	Con_DPrintf,
+	Con_NPrintf,
+	Con_NXPrintf,
 	pfnPhysInfo_ValueForKey,
 	pfnServerInfo_ValueForKey,
 	pfnGetClientMaxspeed,
@@ -70,8 +71,8 @@ cl_enginefunc_t gEngfuncs =
 	pfnPrecacheEvent,
 	//CL_PlaybackEvent,
 	//CL_WeaponAnim,
-	//Com_RandomFloat,
-	//Com_RandomLong,
+	Math_RandomFloat,
+	Math_RandomLong,
 	pfnHookEvent,
 	//Con_Visible,
 	pfnGetGameDirectory,
@@ -124,29 +125,19 @@ cl_enginefunc_t gEngfuncs =
 	pfnVGUI2DrawCharacterAdditive,
 	//Sound_GetApproxWavePlayLen,
 	GetCareerGameInterface,
-	//Cvar_Set,
+	Cvar_Set,
 	//pfnIsCareerMatch,
 	pfnPlaySoundVoiceByName,
 	pfnMP3_InitStream,
-	//Sys_DoubleTime,
+	Sys_FloatTime,
 	//pfnProcessTutorMessageDecayBuffer,
 	//pfnConstructTutorMessageDecayBuffer,
 	//pfnResetTutorMessageDecayData,
 	pfnPlaySoundByNameAtPitch,
 	pfnFillRGBABlend,
 	pfnGetAppID,
-	//Cmd_AliasGetList,
+	Cmd_GetAliasList,
 	pfnVguiWrap2_GetMouseDelta
-};
-
-CClientEngineFuncs::CClientEngineFuncs()
-{
-	LogMsg(eMsgType_Info, "Constructing the hl-compat client engine functions component...");
-};
-
-CClientEngineFuncs::~CClientEngineFuncs()
-{
-	LogMsg(eMsgType_Info, "Destructing the hl-compat client engine functions component...");
 };
 
 void CClientEngineFuncs::Init()

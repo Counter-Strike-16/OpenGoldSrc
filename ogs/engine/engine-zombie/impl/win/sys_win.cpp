@@ -27,7 +27,9 @@
  */
 
 /// @file
+/// @brief Win32 system interface code
 
+#include "precompiled.hpp"
 #include "errno.h"
 #include "fcntl.h"
 #include "quakedef.h"
@@ -53,9 +55,11 @@ static double lastcurtime = 0.0;
 static int lowshift;
 static HANDLE hinput, houtput;
 
-HANDLE qwclsemaphore;
+static HANDLE qwclsemaphore;
 
 static HANDLE tevent;
+
+//cvar_t	sys_nostdout = {"sys_nostdout","0"};
 
 void Sys_InitFloatTime();
 
@@ -103,12 +107,17 @@ int filelength(FILE *f)
 	return end;
 }
 
+/*
+================
+Sys_FileTime
+================
+*/
 int Sys_FileTime(char *path)
 {
 	FILE *f;
 	int t, retval;
 
-	t = VID_ForceUnlockedAndReturnState();
+	t = VID_ForceUnlockedAndReturnState(); // win only
 
 	f = fopen(path, "rb");
 
@@ -118,14 +127,17 @@ int Sys_FileTime(char *path)
 		retval = 1;
 	}
 	else
-	{
 		retval = -1;
-	}
 
-	VID_ForceLockState(t);
+	VID_ForceLockState(t); // win only
 	return retval;
 }
 
+/*
+================
+Sys_mkdir
+================
+*/
 void Sys_mkdir(char *path)
 {
 	_mkdir(path);
@@ -256,22 +268,41 @@ void Sys_Error(char *error, ...)
 	exit(1);
 }
 
+/*
+================
+Sys_Printf
+================
+*/
 void Sys_Printf(char *fmt, ...)
 {
 	va_list argptr;
 	char text[1024];
-	DWORD dummy;
-
-	va_start(argptr, fmt);
-	vprintf(fmt, argptr);
-	va_end(argptr);
+	
+	//if (sys_nostdout.value)
+		//return;
+	
+	//if (isDedicated)
+	{
+		va_start(argptr, fmt);
+		vprintf(fmt, argptr); // vsprintf(text, fmt, argptr)
+		va_end(argptr);
+		
+		//DWORD dummy;
+		//WriteFile(houtput, text, strlen (text), &dummy, NULL);
+	};
 }
 
+/*
+================
+Sys_Quit
+================
+*/
 void Sys_Quit()
 {
 	VID_ForceUnlockedAndReturnState();
 
 	Host_Shutdown();
+	
 #ifndef SERVERONLY
 	if(tevent)
 		CloseHandle(tevent);
@@ -286,10 +317,10 @@ void Sys_Quit()
 #if 0
 /*
 ================
-Sys_DoubleTime
+Sys_FloatTime
 ================
 */
-double Sys_DoubleTime ()
+double Sys_FloatTime ()
 {
 	static int			sametimecount;
 	static unsigned int	oldtime;
@@ -352,7 +383,7 @@ double Sys_DoubleTime ()
 
 #endif
 
-double Sys_DoubleTime()
+double Sys_FloatTime()
 {
 	static DWORD starttime;
 	static qboolean first = true;
@@ -377,6 +408,11 @@ double Sys_DoubleTime()
 	return (now - starttime) / 1000.0;
 }
 
+/*
+================
+Sys_ConsoleInput
+================
+*/
 char *Sys_ConsoleInput()
 {
 	static char text[256];
@@ -484,6 +520,13 @@ char *Sys_ConsoleInput()
 	return NULL;
 }
 
+/*
+================
+Sys_SendKeyEvents
+
+Send Key_Event calls
+================
+*/
 void Sys_SendKeyEvents()
 {
 	MSG msg;
@@ -495,9 +538,14 @@ void Sys_SendKeyEvents()
 
 		if(!GetMessage(&msg, NULL, 0, 0))
 			Sys_Quit();
+		
+		//sys_msg_time = msg.time;
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+	
+	// grab frame time
+	//sys_frame_time = timeGetTime(); // FIXME: should this be at start?
 }
 
 /*
@@ -510,7 +558,7 @@ void Sys_SendKeyEvents()
 
 /*
 ==================
-WinMain
+SleepUntilInput
 ==================
 */
 void SleepUntilInput(int time)
@@ -518,6 +566,11 @@ void SleepUntilInput(int time)
 	MsgWaitForMultipleObjects(1, &tevent, FALSE, time, QS_ALLINPUT);
 }
 
+/*
+==================
+WinMain
+==================
+*/
 HINSTANCE global_hInstance;
 int global_nCmdShow;
 char *argv[MAX_NUM_ARGVS];

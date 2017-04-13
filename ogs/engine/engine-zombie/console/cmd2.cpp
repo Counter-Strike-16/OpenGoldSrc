@@ -855,25 +855,8 @@ Creates a new command that executes a command string (possibly ; seperated)
 */
 void Cmd_Alias_f (void)
 {
-	cmdalias_t	*a;
 	char		cmd[1024];
-	int			i, c;
 	char		*s;
-
-	if (Cmd_Argc() == 1)
-	{
-		Com_Printf ("Current alias commands:\n");
-		for (a = cmd_alias ; a ; a=a->next)
-			Com_Printf ("%s : %s\n", a->name, a->value);
-		return;
-	}
-
-	s = Cmd_Argv(1);
-	if (strlen(s) >= MAX_ALIAS_NAME)
-	{
-		Com_Printf ("Alias name is too long\n");
-		return;
-	}
 
 	// if the alias already exists, reuse it
 	for (a = cmd_alias ; a ; a=a->next)

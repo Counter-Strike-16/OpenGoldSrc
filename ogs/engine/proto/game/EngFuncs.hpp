@@ -31,4 +31,48 @@
 
 #pragma once
 
+struct IMemory;
+struct ISystem;
+struct IFileSystem;
+struct IConsole;
+struct IModelManager;
+struct ISoundManager;
+class CEngineServer;
+class CEntityHandler;
+class CGameWorld;
+class CCRC32Handler;
+
 extern enginefuncs_t g_engfuncsExportedToDlls;
+//extern sv_enginefuncs_t *gpServerEngFuncs; // Global pointer to engfuncs struct... (BAD)
+
+struct TEnvironment
+{
+	//IMemory *pMemory{nullptr};
+	//ISystem *pSystem{nullptr};
+	IFileSystem *pFileSystem{nullptr};
+	IConsole *pConsole{nullptr};
+	
+	//IModelManager *pModelManager{nullptr};
+	//ISoundManager *pSoundManager{nullptr};
+	
+	//CEdictHandler *pEdictHandler{nullptr};
+	//CEngineServer *pEngineServer{nullptr};
+	CGameWorld *pGameWorld{nullptr};
+};
+
+class CEngineFuncs // CLegacyEngineInterface
+{
+public:
+	CEngineFuncs(enginefuncs_t *apEngFuncs) : mpEngFuncs(apEngFuncs){}
+	~CEngineFuncs() = default;
+	
+	void Init(const TEnvironment &aEnv);
+/*	
+	const enginefuncs_t &Get(){return *mpEngFuncs;}
+	
+	enginefuncs_t &operator*(){return *mpEngFuncs;}
+	enginefuncs_t *operator->(){return mpEngFuncs;}
+*/
+private:
+	enginefuncs_t *mpEngFuncs{nullptr};
+};
