@@ -37,10 +37,6 @@ CHLGameClientListener::CHLGameClientListener(DLL_FUNCTIONS *apHLGameDLL, NEW_DLL
 	mpHLGameDLLEx = apHLGameDLLEx;
 };
 
-CHLGameClientListener::~CHLGameClientListener()
-{
-;
-
 bool CHLGameClientListener::OnClientConnect(IGameClient *apClient, const char *asName, const char *asAdr, char *asRejectMsg, int anMaxRejectMsgLen)
 {
 	return false;

@@ -32,12 +32,14 @@
 #pragma once
 
 #include "game/shared/IPlayerMovement.hpp"
-#include "engine/eiface.h"
+//#include "engine/eiface.h"
+
+class CLegacyGame;
 
 class CLegacyGamePlayerMovement : public IPlayerMovement
 {
 public:
-	CHLPlayerMovement(DLL_FUNCTIONS *apLegacyGame) : mpLegacyGame(apLegacyGame){}
+	CHLPlayerMovement(CLegacyGame *apLegacyGame) : mpLegacyGame(apLegacyGame){}
 	~CHLPlayerMovement() = default;
 	
 	void Init(playermove_t *apPlayerMoveData);
@@ -45,5 +47,5 @@ public:
 	
 	char FindTextureType(char *asName);
 private:
-	DLL_FUNCTIONS *mpLegacyGame{nullptr};
+	CLegacyGame *mpLegacyGame{nullptr};
 };

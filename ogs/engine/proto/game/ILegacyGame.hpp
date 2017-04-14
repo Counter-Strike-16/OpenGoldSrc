@@ -27,18 +27,11 @@
  */
 
 /// @file
+/// @brief legacy game interface
 
-#include "precompiled.hpp"
-#include "game/LegacyEventListener.hpp"
-#include "game/LegacyGame.hpp"
+#pragma once
 
-void CLegacyEventListener::OnEvent(const TEvent &aEvent)
+struct ILegacyGame
 {
-	switch(aEvent.type)
-	{
-	case TEvent::Type::SysError:
-		// handle here or call game wrapper
-		mpGame->OnSysError(TEvent::SysError::msMsg);
-		break;
-	};
+	virtual ~ILegacyGame() = default;
 };

@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,60 +27,17 @@
  */
 
 /// @file
-/// @brief old client input
+/// @brief system module interface
 
-#include "precompiled.hpp"
-#include "oldclientdll/OldClientInput.hpp"
+#pragma once
 
-COldClientInput::COldClientInput(cdll_func_t *apClientExports)
+struct IEventListener; // ISystemEventListener?
+
+struct ISystem
 {
-	mpClientExports = apClientExports;
-};
-
-COldClientInput::~COldClientInput()
-{
-};
-
-void COldClientInput::ActivateMouse()
-{
-};
-
-void COldClientInput::DeactivateMouse()
-{
-};
-
-void COldClientInput::SetSampleTime(float afFrameTime)
-{
-};
-
-void COldClientInput::Accumulate()
-{
-};
-
-void COldClientInput::ClearStates()
-{
-};
-
-bool COldClientInput::IsKeyDown(const char *asName, bool &abIsDown)
-{
-};
-
-void COldClientInput::OnMouseWheeled(int anDelta)
-{
-};
-
-int COldClientInput::Key_Event(int anEventCode, int anKeyNum, const char *asCurrentBinding)
-{
-};
-
-void COldClientInput::MouseEvent(int anMouseState)
-{
-};
-
-void COldClientInput::ExtraMouseSample(float afFrameTime, bool abActive)
-{
-};
-
-void *COldClientInput::KB_Find(const char *asName)
-{
+	virtual bool Init() = 0;
+	virtual void Shutdown() = 0;
+	
+	virtual void AddListener(IEventListener *apListener) = 0;
+	virtual void RemoveListener(IEventListener *apListener) = 0;
 };

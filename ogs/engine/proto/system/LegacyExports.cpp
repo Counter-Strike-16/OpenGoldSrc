@@ -29,16 +29,4 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "game/LegacyEventListener.hpp"
-#include "game/LegacyGame.hpp"
-
-void CLegacyEventListener::OnEvent(const TEvent &aEvent)
-{
-	switch(aEvent.type)
-	{
-	case TEvent::Type::SysError:
-		// handle here or call game wrapper
-		mpGame->OnSysError(TEvent::SysError::msMsg);
-		break;
-	};
-};
+#include "system/LegacyExports.hpp"

@@ -32,13 +32,15 @@
 #pragma once
 
 #include "game/server/IGameClientListener.hpp"
-#include "engine/eiface.h"
+//#include "engine/eiface.h"
 
-class CHLGameClientListener : public IGameClientListener
+class CLegacyGame;
+
+class CLegacyGameClientListener : public IGameClientListener
 {
 public:
-	CHLGameClientListener(DLL_FUNCTIONS *apHLGameDLL, NEW_DLL_FUNCTIONS *apHLGameDLLEx);
-	~CHLGameClientListener();
+	CLegacyGameClientListener(CLegacyGame *apGame) : mpGame(apGame){}
+	~CLegacyGameClientListener() = default;
 	
 	void Update(float afTimeStep);
 	
@@ -90,6 +92,5 @@ public:
 	
 	int GetPlayerWeaponData(IGameClient *apClient, weapon_data_t *apWeaponData);
 private:
-	DLL_FUNCTIONS *mpHLGameDLL{nullptr};
-	NEW_DLL_FUNCTIONS *mpHLGameDLLEx{nullptr};
+	CLegacyGame *mpGame{nullptr};
 };

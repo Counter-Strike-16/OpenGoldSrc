@@ -27,23 +27,25 @@
  */
 
 /// @file
-/// @brief hl-compatible game spectator listener class
+/// @brief old api game spectator listener
 
 #pragma once
 
 #include "game/server/IGameSpectatorListener.hpp"
-#include "engine/eiface.h"
+//#include "engine/eiface.h"
 
-class CHLGameSpectatorListener : public IGameSpectatorListener
+class CLegacyGame;
+
+class CLegacyGameSpectatorListener : public IGameSpectatorListener
 {
 public:
-	CHLGameSpectatorListener(DLL_FUNCTIONS *apHLGameDLL);
-	~CHLGameSpectatorListener();
+	CLegacyGameSpectatorListener(CLegacyGame *apGame) : mpGame(apGame){}
+	~CLegacyGameSpectatorListener() = default;
 	
 	void OnSpectatorConnect(edict_t *apSpectator);
 	void OnSpectatorDisconnect(edict_t *apSpectator);
 	
 	void OnSpectatorThink(edict_t *apSpectator);
 private:
-	DLL_FUNCTIONS *mpHLGameDLL{nullptr};
+	CLegacyGame *mpGame{nullptr};
 };

@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -29,16 +29,57 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "game/LegacyEventListener.hpp"
-#include "game/LegacyGame.hpp"
+#include "oldclientdll/OldClientInput.hpp"
 
-void CLegacyEventListener::OnEvent(const TEvent &aEvent)
+CLegacyClientInput::CLegacyClientInput(cdll_func_t *apClientExports)
 {
-	switch(aEvent.type)
-	{
-	case TEvent::Type::SysError:
-		// handle here or call game wrapper
-		mpGame->OnSysError(TEvent::SysError::msMsg);
-		break;
-	};
+	mpClientExports = apClientExports;
+};
+
+CLegacyClientInput::~CLegacyClientInput()
+{
+};
+
+void CLegacyClientInput::ActivateMouse()
+{
+};
+
+void CLegacyClientInput::DeactivateMouse()
+{
+};
+
+void CLegacyClientInput::SetSampleTime(float afFrameTime)
+{
+};
+
+void CLegacyClientInput::Accumulate()
+{
+};
+
+void CLegacyClientInput::ClearStates()
+{
+};
+
+bool CLegacyClientInput::IsKeyDown(const char *asName, bool &abIsDown)
+{
+};
+
+void CLegacyClientInput::OnMouseWheeled(int anDelta)
+{
+};
+
+int CLegacyClientInput::Key_Event(int anEventCode, int anKeyNum, const char *asCurrentBinding)
+{
+};
+
+void CLegacyClientInput::MouseEvent(int anMouseState)
+{
+};
+
+void CLegacyClientInput::ExtraMouseSample(float afFrameTime, bool abActive)
+{
+};
+
+void *CLegacyClientInput::KB_Find(const char *asName)
+{
 };

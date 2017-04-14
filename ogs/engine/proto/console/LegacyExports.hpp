@@ -66,7 +66,8 @@ cmdalias_t *Cmd_GetAliasList();
 // Console Variables
 //============================================================================
 
-void Cvar_RegisterVariable(cvar_t *variable);
+void Cvar_RegisterGameVariable(cvar_t *variable);
+void Cvar_RegisterClientVariable();
 
 cvar_t *Cvar_FindVar(const char *var_name);
 

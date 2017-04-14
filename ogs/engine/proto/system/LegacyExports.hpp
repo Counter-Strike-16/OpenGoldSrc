@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,37 +27,28 @@
  */
 
 /// @file
-/// @brief hl-compatible client input component
+/// @brief legacy engine exports from system module
 
 #pragma once
 
-#include "game/client/IClientInput.hpp"
+//============================================================================
+// Common functionality
+//============================================================================
 
-class CHLCompatClientInput : public IClientInput
-{
-public:
-	CHLCompatClientInput();
-	~CHLCompatClientInput();
-	
-	void ActivateMouse();
-	void DeactivateMouse();
-	
-	void SetSampleTime(float afFrameTime);
-	
-	void Accumulate();
-	
-	void ClearStates();
-	
-	bool IsKeyDown(const char *asName, bool &abIsDown);
-	
-	void OnMouseWheeled(int anDelta);
-	
-	int Key_Event(int anEventCode, int anKeyNum, const char *asCurrentBinding);
-	void MouseEvent(int anMouseState);
-	
-	void ExtraMouseSample(float afFrameTime, bool abActive);
-	
-	void *KB_Find(const char *asName);
-private:
-	cdll_func_t *mpClientExports{nullptr};
-};
+char *COM_GetToken();
+
+unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
+unsigned char *COM_LoadFileForMe(char *filename, int *pLength);
+void COM_FreeFile(void *buffer);
+
+const char *COM_ParseFile(const char *data, char *token, int maxtoken);
+
+int COM_CompareFileTime(char *filename1, char *filename2, int *iCompare);
+
+NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName);
+
+unsigned int COM_GetApproxWavePlayLength(const char *filepath);
+
+void COM_GetGameDir(char *szGameDir);
+
+int COM_CheckParm(char *parm);

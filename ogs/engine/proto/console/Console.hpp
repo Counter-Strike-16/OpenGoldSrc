@@ -87,9 +87,9 @@ public:
 	
 	bool IsInitialized() const {return initialized;}
 private:
-	void Con_Clear_f();
-	void Con_ToggleConsole_f();
-	void Con_Debug_f();
+	//void Con_Clear_f();
+	//void Con_ToggleConsole_f();
+	//void Con_Debug_f();
 	
 	tConVarList mlstConVars;
 	

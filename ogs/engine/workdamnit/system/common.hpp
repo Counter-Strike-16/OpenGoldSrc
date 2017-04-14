@@ -303,23 +303,3 @@ void COM_UnMunge2(unsigned char *data, int len, int seq);
 
 void COM_Munge3(unsigned char *data, int len, int seq);
 NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq);
-
-// engine export funcs section below
-
-char *COM_GetToken();
-
-unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
-unsigned char *COM_LoadFileForMe(char *filename, int *pLength);
-void COM_FreeFile(void *buffer);
-
-const char *COM_ParseFile(const char *data, char *token, int maxtoken);
-
-int COM_CompareFileTime(char *filename1, char *filename2, int *iCompare);
-
-NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName);
-
-unsigned int COM_GetApproxWavePlayLength(const char *filepath);
-
-void COM_GetGameDir(char *szGameDir);
-
-int COM_CheckParm(char *parm);

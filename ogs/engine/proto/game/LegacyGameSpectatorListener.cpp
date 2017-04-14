@@ -27,30 +27,27 @@
  */
 
 /// @file
-/// @brief hl-compatible game spectator listener class
 
-#include "game/HLGameSpectatorListener.hpp"
+#include "precompiled.hpp"
+#include "game/LegacyGameSpectatorListener.hpp"
+#include "game/LegacyGame.hpp"
 
-CHLGameSpectatorListener::CHLGameSpectatorListener(DLL_FUNCTIONS *apHLGameDLL)
+CLegacyGameSpectatorListener::CLegacyGameSpectatorListener(DLL_FUNCTIONS *apHLGameDLL)
 {
-	mpHLGameDLL = apHLGameDLL;
+	mpLegacyGame = apHLGameDLL;
 };
 
-CHLGameSpectatorListener::~CHLGameSpectatorListener()
+void CLegacyGameSpectatorListener::OnSpectatorConnect(edict_t *apSpectator)
 {
+	mpLegacyGame->pfnSpectatorConnect(apSpectator);
 };
 
-void CHLSpectatorListener::OnSpectatorConnect(edict_t *apSpectator)
+void CLegacyGameSpectatorListener::OnSpectatorDisconnect(edict_t *apSpectator)
 {
-	mpHLGameDLL->pfnSpectatorConnect(apSpectator);
+	mpLegacyGame->pfnSpectatorDisconnect(apSpectator);
 };
 
-void CHLSpectatorListener::OnSpectatorDisconnect(edict_t *apSpectator)
+void CLegacyGameSpectatorListener::OnSpectatorThink(edict_t *apSpectator)
 {
-	mpHLGameDLL->pfnSpectatorDisconnect(apSpectator);
-};
-
-void CHLSpectatorListener::OnSpectatorThink(edict_t *apSpectator)
-{
-	mpHLGameDLL->pfnSpectatorThink(apSpectator);
+	mpLegacyGame->pfnSpectatorThink(apSpectator);
 };

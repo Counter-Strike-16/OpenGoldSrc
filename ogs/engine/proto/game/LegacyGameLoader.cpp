@@ -30,22 +30,14 @@
 /// @brief old api game module loader component
 
 #include "precompiled.hpp"
-#include "game/HLGameLoader.hpp"
-#include "game/HLGame.hpp"
+#include "game/LegacyGameLoader.hpp"
+#include "game/LegacyGame.hpp"
 
 // Exports
 using pfnLinkEntity = void (__cdecl *)(entvars_t *pev);
 using pfnGiveFnPtrsToDLL = void (__stdcall *)(enginefuncs_t *apEngFuncs, globalvars_t *apGlobals); // GiveEngineFuncsToDLL
 
-CHLGameLoader::CHLGameLoader()
-{
-};
-
-CHLGameLoader::~CHLGameLoader()
-{
-};
-
-IGame *CHLGameLoader::LoadGame(const tString &asPath)
+IGame *CLegacyGameLoader::LoadGame(const tString &asPath)
 {
 	pfnGiveFnPtrsToDLL fnGiveFnPtrsToDLL;
 	APIFUNCTION fnGetEntityAPI;
@@ -86,13 +78,13 @@ IGame *CHLGameLoader::LoadGame(const tString &asPath)
 	// Provide gamedll pointers to enginefuncs and globalvars
 	fnGiveFnPtrsToDLL(nullptr /*&gpEngFuncs*/, nullptr /*mpGlobals*/);
 	
-	if(!mpHLCompatGame)
-		mpHLCompatGame = std::make_unique<CHLCompatGame>();
+	if(!mpLegacyGame)
+		mpLegacyGame = std::make_unique<CLegacyGame>();
 	
-	if(!mpHLCompatGame->DLLInit(fnGetEntityAPI, fnGetEntityAPI2, fnGetNewDllFuncs))
+	if(!mpLegacyGame->DLLInit(fnGetEntityAPI, fnGetEntityAPI2, fnGetNewDllFuncs))
 		return nullptr;
 	
-	return mpHLCompatGame.get(); // release?
+	return mpLegacyGame.get(); // release?
 };
 
 void CHLGameLoader::UnloadGame()

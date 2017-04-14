@@ -30,6 +30,7 @@
 
 #include "precompiled.hpp"
 #include "game/LegacyGamePlayerMovement.hpp"
+#include "game/LegacyGame.hpp"
 
 void CLegacyGamePlayerMovement::Init(playermove_t *apPlayerMoveData)
 {

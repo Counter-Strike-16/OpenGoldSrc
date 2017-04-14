@@ -33,12 +33,12 @@
 
 #include "public/FileSystem.h"
 
-class CFileSystem;
+class IFileSystem;
 
 class CFile
 {
 public:
-	CFile(CFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
+	CFile(IFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
 	CFile(const char *asName, CFileSystem *apFileSystem);
 	~CFile(){Close();}
 	
@@ -65,7 +65,7 @@ public:
 private:
 	void Close(); // make public?
 	
-	CFileSystem *mpFileSystem{nullptr};
+	IFileSystem *mpFileSystem{nullptr};
 	
 	FileHandle_t mpFileHandle{nullptr};
 };

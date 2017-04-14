@@ -32,18 +32,23 @@
 
 #include "game/GameLoader.hpp"
 
+namespace shiftutil
+{
+	class CSharedLib;
+};
+
 class CLegacyGame;
 
 class CLegacyGameLoader : public IGameLoader
 {
 public:
-	CLegacyGameLoader();
-	~CLegacyGameLoader();
+	CLegacyGameLoader() = default;
+	~CLegacyGameLoader() = default;
 	
 	IGame *LoadGame(const tString &asPath);
 	void UnloadGame();
 private:
 	std::unique_ptr<CLegacyGame> mpLegacyGame/*{nullptr}*/;
 	
-	void *mpGameLib{nullptr};
+	CSharedLib *mpGameLib{nullptr};
 };
