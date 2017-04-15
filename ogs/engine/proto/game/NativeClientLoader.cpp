@@ -27,17 +27,18 @@
  */
 
 /// @file
-/// @brief client module loader interface
 
-#pragma once
+#include "precompiled.hpp"
+#include "game/NativeClientLoader.hpp"
 
-struct IClientHUD;
-class CFactorySharedLib;
-
-struct IClientLoader
+IClientHUD *CNativeClientLoader::LoadClient(CFactorySharedLib *apLib)
 {
-	virtual ~IClientLoader() = default;
+	CreateInterfaceFn fnClientFactory = apLib->GetFactory();
 	
-	// Originally the IClientDLL interface in Source should be called IClientHUD
-	virtual IClientHUD *LoadClient(CFactorySharedLib *apLib) = 0;
+	if(!fnClientFactory)
+		return nullptr;
+	
+	IClientHUD *pClientHUD = fnClientFactory(OGS_CLIENTDLL_INTERFACE_VERSION, nullptr);
+	
+	return pClientHUD;
 };

@@ -27,17 +27,16 @@
  */
 
 /// @file
-/// @brief client module loader interface
+/// @brief native OGSAPI client module loader
 
 #pragma once
 
-struct IClientHUD;
-class CFactorySharedLib;
+#include "game/IClientLoader.hpp"
 
-struct IClientLoader
+class CNativeClientLoader : public IClientLoader
 {
-	virtual ~IClientLoader() = default;
+public:
+	~CNativeClientLoader() = default;
 	
-	// Originally the IClientDLL interface in Source should be called IClientHUD
-	virtual IClientHUD *LoadClient(CFactorySharedLib *apLib) = 0;
+	IClientHUD *LoadClient(CFactorySharedLib *apLib) override;
 };

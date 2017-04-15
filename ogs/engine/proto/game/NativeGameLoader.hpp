@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,21 +27,16 @@
  */
 
 /// @file
-/// @brief wrapper class around old hlsdk client interface
+/// @brief native OGSAPI game module loader
 
 #pragma once
 
-#include "game/client/IClientDLL.hpp"
-#include "engine/cldll_exp.h"
+#include "game/IGameLoader.hpp"
 
-class CHLCompatClientGameDLL : public IClientDLL
+class CNativeGameLoader : public IGameLoader
 {
 public:
-	CHLCompatClientDLL();
-	~CHLCompatClientDLL();
+	~CNativeGameLoader() = default;
 	
-	bool Init();
-	void Shutdown();
-private:
-	cldll_func_t *mpClientDLLFuncs{nullptr}; // dll exported functions
+	IGame *LoadGame(CFactorySharedLib *apLib) override;
 };

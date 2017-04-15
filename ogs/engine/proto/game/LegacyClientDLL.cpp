@@ -27,18 +27,18 @@
  */
 
 /// @file
-/// @brief hl-compatible client dll class
+/// @brief wrapper around the old hlsdk client interface
 
-#pragma once
+#include "precompiled.hpp"
+#include "game/LegacyClientDLL.hpp"
+#include "engine/cldll_exp.h"
 
-#include "game/client/IClientDLL.hpp"
-
-class CHLCompatClientDLL : public IClientDLL
+bool CLegacyClientDLL::Init()
 {
-public:
-	CHLCompatClientDLL() = default;
-	~CHLCompatClientDLL() = default;
-	
-	bool Init();
-	void Shutdown();
+	DevMsg(eMsgType_Info, "Initializing the old client dll component...");
+	return true;
+};
+
+void CLegacyClientDLL::Shutdown()
+{
 };

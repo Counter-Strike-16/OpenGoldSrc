@@ -67,15 +67,7 @@ public:
 	void ClientSetupVisibility(edict_t *apViewEntity, IGameClient *apClient, byte *pvs, int pvssize);
 	void SetupEntityVisibility(edict_t *apEntity, IGameClient *apClient, byte **apPVS, byte **apPAS);
 	
-	//float ProcessUsercmds(IGameClient *apClient, bf_read *buf, int anCmds, int anTotalCmds, int anDroppedPackets, bool abIgnore, bool abPaused);
-	
-	//CPlayerState *GetState(IGameClient *apClient);
-	
-	//void GetEarPosition(IGameClient *apClient, Vector *avEarOrigin);
-	
 	int GetReplayDelay(IGameClient *apClient, int &anEntity);
-	
-	//void ClientCommandKeyValues(edict_t *apClient, KeyValues *apKeyValues);
 	
 	void OnClientSpawn(IGameClient *apClient);
 	

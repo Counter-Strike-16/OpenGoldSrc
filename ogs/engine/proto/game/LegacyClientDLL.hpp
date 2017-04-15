@@ -27,16 +27,22 @@
  */
 
 /// @file
-/// @brief wrapper class around old hlsdk client interface
+/// @brief old hlsdk api client module wrapper
 
-#include "game/OldClientDLL.hpp"
+#pragma once
 
-bool COldClientDLL::Init()
+#include "game/client/IClientDLL.hpp"
+
+typedef struct cldll_func_s cldll_func_t;
+
+class CLegacyClientDLL : public IClientDLL
 {
-	DevMsg(eMsgType_Info, "Initializing the old client dll component...");
-	return true;
-};
-
-void COldClientDLL::Shutdown()
-{
+public:
+	CLegacyClientDLL(cldll_func_t *apFuncs) : mpFuncs(apFuncs){}
+	~CLegacyClientDLL() = default;
+	
+	bool Init();
+	void Shutdown();
+private:
+	cldll_func_t *mpFuncs{nullptr}; // dll exported functions
 };
