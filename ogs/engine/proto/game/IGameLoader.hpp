@@ -32,11 +32,12 @@
 #pragma once
 
 struct IGame;
+class CFactorySharedLib;
 
 struct IGameLoader
 {
 	virtual ~IGameLoader() = default;
 
-	virtual IGame *LoadGame(const char *asPath) = 0;
+	virtual IGame *LoadGame(CFactorySharedLib *apLib) = 0;
 	virtual void UnloadGame() = 0;
 };

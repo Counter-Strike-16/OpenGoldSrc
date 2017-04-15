@@ -30,6 +30,7 @@
 
 #include "precompiled.hpp"
 #include "game/NativeGameLoader.hpp"
+#include "console/IConsole.hpp"
 
 IGame *CNativeGameLoader::LoadGame(CFactorySharedLib *apLib)
 {
@@ -37,6 +38,8 @@ IGame *CNativeGameLoader::LoadGame(CFactorySharedLib *apLib)
 	
 	if(!fnGameFactory)
 		return nullptr;
+	
+	mpConsole->DevPrintf("Detected native OGS API format!");
 	
 	IGame *pGame = fnGameFactory(OGS_GAME_INTERFACE_VERSION, nullptr);
 	

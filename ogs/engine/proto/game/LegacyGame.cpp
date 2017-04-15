@@ -60,46 +60,6 @@ CLegacyGame::~CLegacyGame()
 	mpNewFuncs = nullptr;
 };
 
-bool CLegacyGame::Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs)
-{
-	int nVersion;
-	
-	// Get extended callbacks
-	if(afnGetNewDllFuncs)
-	{
-		nVersion = NEW_DLL_FUNCTIONS_VERSION;
-		
-		if(!afnGetNewDllFuncs(mpNewFuncs, &nVersion))
-		{
-			if(nVersion != NEW_DLL_FUNCTIONS_VERSION)
-				DevWarning("SV_LoadProgs: new interface version is %d, should be %d", NEW_DLL_FUNCTIONS_VERSION, nVersion);
-			
-			memset(&mpNewFuncs, 0, sizeof(mpNewFuncs));
-		};
-	};
-	
-	nVersion = INTERFACE_VERSION;
-	
-	if(afnGetEntityAPI2)
-	{
-		if(!afnGetEntityAPI2(mpFuncs, &nVersion))
-		{
-			DevWarning("SV_LoadProgs: interface version is %d, should be %d", INTERFACE_VERSION, nVersion);
-			
-			// Fallback to old API
-			if(!afnGetEntityAPI(mpFuncs, nVersion))
-				return false;
-		}
-		else
-			DevMsg(eMsgType_AIConsole, "SV_LoadProgs: ^2initailized extended EntityAPI ^7ver. %d", nVersion);
-	}
-	else
-		if(!afnGetEntityAPI(mpFuncs, nVersion))
-			return false;
-	
-	return true;
-};
-
 bool CLegacyGame::Init(CreateInterfaceFn afnEngineFactory)
 {
 	DevMsg("Initializing the old api game component...");

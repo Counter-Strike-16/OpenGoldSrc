@@ -177,51 +177,12 @@ void LoadEntityDLLs(const char *szBaseDir)
 	gNewDLLFunctions.pfnCvarValue = NULL;
 	gNewDLLFunctions.pfnCvarValue2 = NULL;
 
-	pNewAPI = (NEW_DLL_FUNCTIONS_FN)GetDispatch("GetNewDLLFunctions");
 	if(pNewAPI)
 	{
 		interface_version = NEW_DLL_FUNCTIONS_VERSION;
 		pNewAPI(&gNewDLLFunctions, &interface_version);
 	}
 
-	pfnGetAPI2 = (APIFUNCTION2)GetDispatch("GetEntityAPI2");
-	if(pfnGetAPI2)
-	{
-		interface_version = INTERFACE_VERSION;
-		if(!pfnGetAPI2(&gEntityInterface, &interface_version))
-		{
-			Con_Printf("==================\n");
-			Con_Printf("Game DLL version mismatch\n");
-			Con_Printf("DLL version is %i, engine version is %i\n", interface_version, INTERFACE_VERSION);
-			if(interface_version <= INTERFACE_VERSION)
-				Con_Printf(
-				"The game DLL for %s appears to be outdated, check for updates\n",
-				szGameDir);
-			else
-				Con_Printf("Engine appears to be outdated, check for updates\n");
-			Con_Printf("==================\n");
-			Host_Error("\n");
-		}
-	}
-	else
-	{
-		pfnGetAPI = (APIFUNCTION)GetDispatch("GetEntityAPI");
-		if(!pfnGetAPI)
-			Host_Error("Couldn't get DLL API from %s!", szDllFilename);
-		interface_version = INTERFACE_VERSION;
-		if(!pfnGetAPI(&gEntityInterface, interface_version))
-		{
-			Con_Printf("==================\n");
-			Con_Printf("Game DLL version mismatch\n");
-			Con_Printf(
-			"The game DLL for %s appears to be outdated, check for updates\n",
-			szGameDir);
-			Con_Printf("==================\n");
-			Host_Error("\n");
-		}
-	}
-
-	Con_DPrintf("Dll loaded for %s %s\n", gmodinfo.bIsMod ? "mod" : "game", gEntityInterface.pfnGetGameDescription());
 }
 
 #ifdef _WIN32

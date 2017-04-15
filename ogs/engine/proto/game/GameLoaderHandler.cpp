@@ -48,15 +48,28 @@ IGame *CGameLoaderHandler::LoadGame(const char *asPath)
 	// Otherwise a nullptr will be returned means that the
 	// specified module cannot be loaded with our game loaders
 	
+	// Try to load the game module
+	CFactorySharedLib GameLib(asPath.c_str());
+	
+	if(!GameLib)
+		return nullptr;
+	
+	// Try to find it's format
+	mpConsole->DevPrintf("Trying to detect the game module format...");
+	
 	IGame *pGame = nullptr;
 	
 	for(auto It : mlstLoaders)
 	{
-		pGame = It->LoadGame(asPath);
+		pGame = It->LoadGame(&GameLib); // add error code?
 		
-		if(!pGame)
-			continue;
+		if(pGame)
+		{
+			mpConsole->DevPrintf("Dll loaded for %s %s\n", gmodinfo.bIsMod ? "mod" : "game", pGame->GetGameDescription());
+			return pGame;
+		};
 	};
 	
-	return pGame;
+	mpConsole->DevPrintf("Couldn't load the game module! (Probably unsupported game format)");
+	return nullptr;
 };

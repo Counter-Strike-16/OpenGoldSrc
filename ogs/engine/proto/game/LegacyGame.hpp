@@ -41,7 +41,6 @@ public:
 	CLegacyGame(CSystem *apSystem, DLL_FUNCTIONS aFuncs, NEW_DLL_FUNCTIONS aNewFuncs);
 	~CLegacyGame();
 	
-	//bool Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs);
 	bool Init(DLL_FUNCTIONS aFuncs, NEW_DLL_FUNCTIONS aNewFuncs);
 	
 	bool Init(CreateInterfaceFn afnEngineFactory);

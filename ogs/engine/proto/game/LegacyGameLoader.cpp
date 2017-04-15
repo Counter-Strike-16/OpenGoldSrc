@@ -37,12 +37,10 @@
 using pfnLinkEntity = void (__cdecl *)(entvars_t *pev);
 using pfnGiveFnPtrsToDLL = void (__stdcall *)(enginefuncs_t *apEngFuncs, globalvars_t *apGlobals); // GiveEngineFuncsToDLL
 
-IGame *CLegacyGameLoader::LoadGame(const tString &asPath)
+IGame *CLegacyGameLoader::LoadGame(CFactorySharedLib *apGameLib)
 {
-	pfnGiveFnPtrsToDLL fnGiveFnPtrsToDLL;
 	APIFUNCTION fnGetEntityAPI;
 	APIFUNCTION2 fnGetEntityAPI2;
-	NEW_DLL_FUNCTIONS_FN fnGetNewDllFuncs;
 	//enginefuncs_t gpEngfuncs;
 	//globalvars_t gpGlobals;
 	//playermove_t gpMove;
@@ -51,29 +49,92 @@ IGame *CLegacyGameLoader::LoadGame(const tString &asPath)
 	//svgame.pmove = &gpMove;
 	//mpGlobals = &gpGlobals;
 	
-	// Make a local copy of engfuncs to prevent overwrite it with bots.dll
-	//memcpy(&gpEngfuncs, &gEngfuncs, sizeof(gpEngfuncs));
+	NEW_DLL_FUNCTIONS_FN fnGetNewDllFuncs;
 	
-	// Try to load a new dll
-	if(!(mpGameLib = LibUtil::LoadLibrary(asPath.c_str())))
-		return nullptr;
+	// Try to find an extended export set first
+	fnGetNewDllFuncs = (NEW_DLL_FUNCTIONS_FN)apGameLib->GetExportFunc("GetNewDLLFunctions", false);
+	//pNewAPI = (NEW_DLL_FUNCTIONS_FN)GetDispatch("GetNewDLLFunctions");
 	
-	// Try to find a format of gamedll
-	mpConsole->DevPrintf("Trying to detect game dll format...");
+	int nVersion = 0;
 	
-	// Engine funcs
-	if(!(fnGiveFnPtrsToDLL = (pfnGiveFnPtrsToDLL)LibUtil::GetProcAddr(mpGameLib, "GiveFnptrsToDll")))
-		return nullptr;
+	// Get extended callbacks
+	if(fnGetNewDllFuncs)
+	{
+		nVersion = NEW_DLL_FUNCTIONS_VERSION;
+		
+		if(!fnGetNewDllFuncs(mpNewFuncs, &nVersion))
+		{
+			if(nVersion != NEW_DLL_FUNCTIONS_VERSION)
+				DevWarning("SV_LoadProgs: new interface version is %d, should be %d", NEW_DLL_FUNCTIONS_VERSION, nVersion);
+			
+			memset(&mpNewFuncs, 0, sizeof(mpNewFuncs));
+		};
+	};
+	
+	nVersion = INTERFACE_VERSION;
 	
 	// Main export set
-	if(!(fnGetEntityAPI2 = (APIFUNCTION2)LibUtil::GetProcAddr(mpGameLib, "GetEntityAPI2", false))) // Check if secondary api is present
-		if(!(fnGetEntityAPI = (APIFUNCTION)LibUtil::GetProcAddr(mpGameLib, "GetEntityAPI"))) // Check if primary api is present
-			return nullptr;
+	// Check if secondary api is present
+	fnGetEntityAPI2 = (APIFUNCTION2)apGameLib->GetExportFunc("GetEntityAPI2", false);
+	//pfnGetAPI2 = (APIFUNCTION2)GetDispatch("GetEntityAPI2");
 	
-	mpConsole->DevPrintf("Detected legacy hlsdk format...");
+	if(fnGetEntityAPI2)
+	{
+		//nVersion = INTERFACE_VERSION; // interface_version
+		
+		//if(!pfnGetAPI2(&gEntityInterface, &interface_version))
+		if(!fnGetEntityAPI2(&gEntityInterface, &nVersion))
+		{
+			//DevWarning("SV_LoadProgs: interface version is %d, should be %d", INTERFACE_VERSION, nVersion);
+			
+			mpConsole->Printf("==================\n");
+			mpConsole->Printf("Game DLL version mismatch\n");
+			mpConsole->Printf("DLL version is %i, engine version is %i\n", interface_version, INTERFACE_VERSION);
+			
+			if(nVersion <= INTERFACE_VERSION)
+				mpConsole->Printf("The game DLL for %s appears to be outdated, check for updates\n", szGameDir);
+			else
+				mpConsole->Printf("Engine appears to be outdated, check for updates\n");
+			
+			mpConsole->Printf("==================\n");
+			Host_Error("\n");
+		}
+		//else
+			//DevMsg(eMsgType_AIConsole, "SV_LoadProgs: ^2initailized extended EntityAPI ^7ver. %d", nVersion);
+	}
+	else
+	{
+		// Check if primary api is present
+		fnGetEntityAPI = (APIFUNCTION)apGameLib->GetExportFunc("GetEntityAPI");
+		//pfnGetAPI = (APIFUNCTION)GetDispatch("GetEntityAPI");
+		
+		if(!fnGetEntityAPI) // if(!pfnGetAPI)
+			return nullptr; // 	Host_Error("Couldn't get DLL API from %s!", szDllFilename);
+		
+		nVersion = INTERFACE_VERSION; // interface_version
+		
+		//if(!pfnGetAPI(&gEntityInterface, interface_version))
+		if(!fnGetEntityAPI(&gEntityInterface, nVersion))
+		{
+			mpConsole->Printf("==================\n");
+			mpConsole->Printf("Game DLL version mismatch\n");
+			mpConsole->Printf("The game DLL for %s appears to be outdated, check for updates\n", szGameDir);
+			mpConsole->Printf("==================\n");
+			
+			Host_Error("\n");
+		};
+	};
 	
-	// Extended export set
-	fnGetNewDllFuncs = (NEW_DLL_FUNCTIONS_FN)LibUtil::GetProcAddr(mpGameLib, "GetNewDLLFunctions", false);
+	mpConsole->DevPrintf("Detected legacy API format!");
+	
+	pfnGiveFnPtrsToDLL fnGiveFnPtrsToDLL;
+	
+	// Engine funcs
+	if(!(fnGiveFnPtrsToDLL = (pfnGiveFnPtrsToDLL)apGameLib->GetExportFunc("GiveFnptrsToDll")))
+		return nullptr;
+	
+	// Make a local copy of engfuncs to prevent overwrite of it by bots.dll
+	//memcpy(&gpEngfuncs, &gEngfuncs, sizeof(gpEngfuncs));
 	
 	// Provide gamedll pointers to enginefuncs and globalvars
 	fnGiveFnPtrsToDLL(nullptr /*&gpEngFuncs*/, nullptr /*mpGlobals*/);

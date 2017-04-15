@@ -33,10 +33,15 @@
 
 #include "game/IGameLoader.hpp"
 
+struct IConsole;
+
 class CNativeGameLoader : public IGameLoader
 {
 public:
+	CNativeGameLoader(IConsole *apConsole) : mpConsole(apConsole){}
 	~CNativeGameLoader() = default;
 	
 	IGame *LoadGame(CFactorySharedLib *apLib) override;
+private:
+	IConsole *mpConsole{nullptr};
 };
