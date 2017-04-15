@@ -29,146 +29,118 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "game/HLGameClientListener.hpp"
+#include "game/LegacyGameClientListener.hpp"
+#include "game/LegacyGame.hpp"
 
-CHLGameClientListener::CHLGameClientListener(DLL_FUNCTIONS *apHLGameDLL, NEW_DLL_FUNCTIONS *apHLGameDLLEx)
-{
-	mpHLGameDLL = apHLGameDLL;
-	mpHLGameDLLEx = apHLGameDLLEx;
-};
-
-bool CHLGameClientListener::OnClientConnect(IGameClient *apClient, const char *asName, const char *asAdr, char *asRejectMsg, int anMaxRejectMsgLen)
+bool CLegacyGameClientListener::OnClientConnect(IGameClient *apClient, const char *asName, const char *asAdr, char *asRejectMsg, int anMaxRejectMsgLen)
 {
 	return false;
 };
 
 /*
-bool CHLGameClientListener::OnClientConnect(IGameClient *apClient, const char *asName, const char *asAddress, char asRejectReason[128])
+bool CLegacyGameClientListener::OnClientConnect(IGameClient *apClient, const char *asName, const char *asAddress, char asRejectReason[128])
 {
 	return false;
 };
 */
 
-void CHLGameClientListener::OnClientDisconnect(IGameClient *apClient)
+void CLegacyGameClientListener::OnClientDisconnect(IGameClient *apClient)
 {
-	mpHLGameDLL->pfnClientDisconnect(apClient);
+	mpGame->OnClientDisconnect(apClient);
 };
 
-void CHLGameClientListener::UpdateClientData(IGameClient *apClient, int abSendWeapons, clientdata_t *apClientData)
+void CLegacyGameClientListener::UpdateClientData(IGameClient *apClient, int abSendWeapons, clientdata_t *apClientData)
 {
-	mpHLGameDLL->pfnUpdateClientData(apClient, abSendWeapons, apClientData);
+	mpGame->pfnUpdateClientData(apClient, abSendWeapons, apClientData);
 };
 
-void CHLGameClientListener::OnClientKill(IGameClient *apClient)
+void CLegacyGameClientListener::OnClientKill(IGameClient *apClient)
 {
-	mpHLGameDLL->pfnClientKill(apClient);
+	mpGame->OnClientKill(apClient);
 };
 
-int CHLGameClientListener::ClientInconsistentFile(IGameClient *apClient, const char *asFileName, char *asDisconnectMsg)
+int CLegacyGameClientListener::ClientInconsistentFile(IGameClient *apClient, const char *asFileName, char *asDisconnectMsg)
 {
-	return mpHLGameDLL->pfnInconsistentFile(apClient, asFileName, asDisconnectMsg);
+	return mpGame->pfnInconsistentFile(apClient, asFileName, asDisconnectMsg);
 };
 
-void CHLGameClientListener::OnClientActivate(IGameClient *apClient, bool abLoadGame)
-{
-};
-
-void CHLGameClientListener::ClientPutInServer(IGameClient *apClient /*, char const *asPlayerName*/)
-{
-	mpHLGameDLL->pfnClientPutInServer(apClient);
-};
-
-void CHLGameClientListener::OnClientCommand(IGameClient *apClient /*, const CCommand &apArgs*/)
-{
-	mpHLGameDLL->pfnClientCommand(apClient);
-};
-
-void CHLGameClientListener::OnClientSettingsChanged(IGameClient *apClient)
+void CLegacyGameClientListener::OnClientActivate(IGameClient *apClient, bool abLoadGame)
 {
 };
 
-void CHLGameClientListener::OnClientUserInfoChanged(IGameClient *apClient, char *asInfoBuffer)
+void CLegacyGameClientListener::ClientPutInServer(IGameClient *apClient /*, char const *asPlayerName*/)
 {
-	mpHLGameDLL->pfnClientUserInfoChanged(apClient, asInfoBuffer);
+	mpGame->OnClientPutInServer(apClient);
 };
 
-void CHLGameClientListener::ClientSetupVisibility(edict_t *apViewEntity, IGameClient *apClient, byte *pvs, int pvssize)
+void CLegacyGameClientListener::OnClientCommand(IGameClient *apClient /*, const CCommand &apArgs*/)
+{
+	mpGame->OnClientCommand(apClient);
+};
+
+void CLegacyGameClientListener::OnClientSettingsChanged(IGameClient *apClient)
 {
 };
 
-void CHLGameClientListener::SetupEntityVisibility(edict_t *apEntity, IGameClient *apClient, byte **apPVS, byte **apPAS)
+void CLegacyGameClientListener::OnClientUserInfoChanged(IGameClient *apClient, char *asInfoBuffer)
+{
+	mpGame->OnClientUserInfoChanged(apClient, asInfoBuffer);
+};
+
+void CLegacyGameClientListener::ClientSetupVisibility(edict_t *apViewEntity, IGameClient *apClient, byte *pvs, int pvssize)
+{
+};
+
+void CLegacyGameClientListener::SetupEntityVisibility(edict_t *apEntity, IGameClient *apClient, byte **apPVS, byte **apPAS)
 {
 };
 
 /*
-float CHLGameClientListener::ProcessClientUsercmds(IGameClient *apClient, bf_read *buf, int anCmds, int anTotalCmds, int anDroppedPackets, bool abIgnore, bool abPaused)
-{
-	return 0.0f;
-};
-*/
-
-/*
-CPlayerState *CHLGameClientListener::GetPlayerState(IGameClient *apClient)
-{
-	return nullptr;
-};
-
-void CHLGameClientListener::GetClientEarPosition(IGameClient *apClient, Vector *avEarOrigin)
+void CLegacyGameClientListener::ClientCommandKeyValues(IGameClient *apClient, KeyValues *apKeyValues)
 {
 };
 */
 
-int CHLGameClientListener::GetClientReplayDelay(IGameClient *apClient, int &anEntity)
-{
-	return 0;
-};
-
-/*
-void CHLGameClientListener::ClientCommandKeyValues(IGameClient *apClient, KeyValues *apKeyValues)
-{
-};
-*/
-
-void CHLGameClientListener::OnClientSpawn(IGameClient *apClient)
+void CLegacyGameClientListener::OnClientSpawn(IGameClient *apClient)
 {
 };
 
-void CHLGameClientListener::QueryClientCvarValue(const edict_t *apEntity, const char *asValue)
+void CLegacyGameClientListener::QueryClientCvarValue(const edict_t *apEntity, const char *asValue)
 {
-	mpHLGameDLLEx->pfnCvarValue(apEntity, asValue);
+	mpGame->pfnCvarValue(apEntity, asValue);
 };
 
-void CHLGameClientListener::QueryClientCvarValueEx(const edict_t *apEntity, int anRequestID, const char *asCvarName, const char *asValue)
+void CLegacyGameClientListener::QueryClientCvarValueEx(const edict_t *apEntity, int anRequestID, const char *asCvarName, const char *asValue)
 {
-	mpHLGameDLLEx->pfnCvarValue2(apEntity, anRequestID, asCvarName, asValue);
+	mpGame->pfnCvarValue2(apEntity, anRequestID, asCvarName, asValue);
 };
 
-void CHLGameClientListener::PlayerPreThink(IGameClient *apClient)
+void CLegacyGameClientListener::PlayerPreThink(IGameClient *apClient)
 {
-	mpHLGameDLL->pfnPlayerPreThink(apClient);
+	mpGame->pfnPlayerPreThink(apClient);
 };
 
-void CHLGameClientListener::PlayerPostThink(IGameClient *apClient)
+void CLegacyGameClientListener::PlayerPostThink(IGameClient *apClient)
 {
-	mpHLGameDLL->pfnPlayerPostThink(apClient);
+	mpGame->pfnPlayerPostThink(apClient);
 };
 
-void CHLGameClientListener::OnClientCustomization(IGameClient *apClient, customization_t *apCustomization)
+void CLegacyGameClientListener::OnClientCustomization(IGameClient *apClient, customization_t *apCustomization)
 {
-	mpHLGameDLL->pfnPlayerCustomization(apClient, apCustomization);
+	mpGame->pfnPlayerCustomization(apClient, apCustomization);
 };
 
-void CHLGameClientListener::ClientCmdStart(IGameClient *apClient, const usercmd_t *apCmd, uint anRandomSeed)
+void CLegacyGameClientListener::ClientCmdStart(IGameClient *apClient, const usercmd_t *apCmd, uint anRandomSeed)
 {
-	mpHLGameDLL->pfnCmdStart(apClient, apCmd, anRandomSeed);
+	mpGame->pfnCmdStart(apClient, apCmd, anRandomSeed);
 };
 
-void CHLGameClientListener::ClientCmdEnd(IGameClient *apClient)
+void CLegacyGameClientListener::ClientCmdEnd(IGameClient *apClient)
 {
-	mpHLGameDLL->pfnCmdEnd(apClient);
+	mpGame->pfnCmdEnd(apClient);
 };
 
-int CHLGameClientListener::GetPlayerWeaponData(IGameClient *apClient, weapon_data_t *apWeaponData)
+int CLegacyGameClientListener::GetPlayerWeaponData(IGameClient *apClient, weapon_data_t *apWeaponData)
 {
-	return mpHLGameDLL->pfnGetWeaponData(apClient, apWeaponData);
+	return mpGame->pfnGetWeaponData(apClient, apWeaponData);
 };

@@ -39,8 +39,8 @@ class CLegacyGame;
 class CLegacyGamePlayerMovement : public IPlayerMovement
 {
 public:
-	CHLPlayerMovement(CLegacyGame *apLegacyGame) : mpLegacyGame(apLegacyGame){}
-	~CHLPlayerMovement() = default;
+	CLegacyGamePlayerMovement(CLegacyGame *apLegacyGame) : mpLegacyGame(apLegacyGame){}
+	~CLegacyGamePlayerMovement() = default;
 	
 	void Init(playermove_t *apPlayerMoveData);
 	void Move(playermove_t *apPlayerMoveData);

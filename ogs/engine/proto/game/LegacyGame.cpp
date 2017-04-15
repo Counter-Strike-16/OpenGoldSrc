@@ -33,7 +33,7 @@
 #include "game/LegacyGame.hpp"
 #include <cstring>
 
-CHLGame::CHLGame(CSystem *apSystem) : mpSystem(apSystem)
+CLegacyGame::CLegacyGame(CSystem *apSystem) : mpSystem(apSystem)
 {
 	mpFuncs = new DLL_FUNCTIONS;
 	mpNewFuncs = new NEW_DLL_FUNCTIONS;
@@ -42,7 +42,13 @@ CHLGame::CHLGame(CSystem *apSystem) : mpSystem(apSystem)
 	//memset(&mpNewFuncs, 0, sizeof(mpNewFuncs));
 };
 
-CHLGame::~CHLGame()
+CLegacyGame::CLegacyGame(CSystem *apSystem, DLL_FUNCTIONS aFuncs, NEW_DLL_FUNCTIONS aNewFuncs) : CLegacyGame(apSystem)
+{
+	mpFuncs = nullptr;
+	mpNewFuncs = nullptr;
+};
+
+CLegacyGame::~CLegacyGame()
 {
 	if(mpFuncs)
 		delete mpFuncs;
@@ -54,7 +60,7 @@ CHLGame::~CHLGame()
 	mpNewFuncs = nullptr;
 };
 
-bool CHLGame::Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs)
+bool CLegacyGame::Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs)
 {
 	int nVersion;
 	
@@ -94,7 +100,7 @@ bool CHLGame::Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGe
 	return true;
 };
 
-bool CHLGame::Init(CreateInterfaceFn afnEngineFactory)
+bool CLegacyGame::Init(CreateInterfaceFn afnEngineFactory)
 {
 	DevMsg("Initializing the old api game component...");
 	
@@ -104,7 +110,7 @@ bool CHLGame::Init(CreateInterfaceFn afnEngineFactory)
 	return true;
 };
 
-void CHLGame::Shutdown()
+void CLegacyGame::Shutdown()
 {
 	if(mpNewFuncs)
 		mpNewFuncs->pfnGameShutdown();
@@ -114,7 +120,7 @@ void CHLGame::Shutdown()
 // We need to listen to some events in order to react to them
 // Engine is just broadcasting events from now so everybody can 
 // listen and react to them (gamedll/plugins/other modules)
-void CHLGame::OnEvent(const TEvent &aEvent)
+void CLegacyGame::OnEvent(const TEvent &aEvent)
 {
 	switch(aEvent.type)
 	{
@@ -132,110 +138,110 @@ void CHLGame::OnEvent(const TEvent &aEvent)
 	};
 };
 
-const char *CHLGame::GetGameDescription()
+const char *CLegacyGame::GetGameDescription()
 {
 	return mpFuncs->pfnGetGameDescription();
 };
 
-bool CHLGame::AllowLagCompensation()
+bool CLegacyGame::AllowLagCompensation()
 {
 	return mpFuncs->pfnAllowLagCompensation() ? true : false;
 };
 
-bool CHLGame::LevelInit(char const *asMapName, char const *asMapEntities, char const *asOldLevel, char const *asLandmarkName, bool abLoadGame, bool abBackground)
+bool CLegacyGame::LevelInit(char const *asMapName, char const *asMapEntities, char const *asOldLevel, char const *asLandmarkName, bool abLoadGame, bool abBackground)
 {
 	return true;
 };
 
-void CHLGame::LevelShutdown()
+void CLegacyGame::LevelShutdown()
 {
 };
 
-void CHLGame::RegisterEncoders()
+void CLegacyGame::RegisterEncoders()
 {
 	mpFuncs->pfnRegisterEncoders();
 };
 
-void CHLGame::PostInit()
+void CLegacyGame::PostInit()
 {
 };
 
-void CHLGame::HandleSysError(const char *asMsg)
+void CLegacyGame::HandleSysError(const char *asMsg)
 {
 	mpFuncs->pfnSys_Error(asMsg);
 };
 
-void CHLGame::Update()
+void CLegacyGame::Update()
 {
 	mpFuncs->pfnStartFrame();
 };
 
-void CHLGame::OnServerActivate(edict_t *apEdictList, uint anEdictCount, uint anMaxPlayers)
+void CLegacyGame::OnServerActivate(edict_t *apEdictList, uint anEdictCount, uint anMaxPlayers)
 {
 	mpFuncs->pfnServerActivate(apEdictList, anEdictCount, anMaxPlayers);
 };
 
-void CHLGame::OnServerDeactivate()
+void CLegacyGame::OnServerDeactivate()
 {
 	mpFuncs->pfnServerDeactivate();
 };
 
-void CHLGame::OnNewLevel()
+void CLegacyGame::OnNewLevel()
 {
 	mpFuncs->pfnParmsNewLevel();
 };
 
-void CHLGame::OnChangeLevel()
+void CLegacyGame::OnChangeLevel()
 {
 	mpFuncs->pfnParmsChangeLevel();
 };
 
-int CHLGame::OnConnectionlessPacket(const netadr_t *apFrom, const char *asArgs, char *asResponseBuffer, int *anBufferSize)
+int CLegacyGame::OnConnectionlessPacket(const netadr_t *apFrom, const char *asArgs, char *asResponseBuffer, int *anBufferSize)
 {
 	return mpFuncs->pfnConnectionlessPacket(apFrom, asArgs, asResponseBuffer, anBufferSize);
 };
 
-void CHLGame::SaveWriteFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an)
+void CLegacyGame::SaveWriteFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an)
 {
 	mpFuncs->pfnSaveWriteFields(apSaveRestoreData, as, ap, apTypeDesc, an);
 };
 
-void CHLGame::SaveReadFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an)
+void CLegacyGame::SaveReadFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an)
 {
 	mpFuncs->pfnSaveReadFields(apSaveRestoreData, as, ap, apTypeDesc, an);
 };
 
-void CHLGame::OnSaveGlobalState(SAVERESTOREDATA *apSaveRestoreData)
+void CLegacyGame::OnSaveGlobalState(SAVERESTOREDATA *apSaveRestoreData)
 {
 	mpFuncs->pfnSaveGlobalState(apSaveRestoreData);
 };
 
-void CHLGame::OnRestoreGlobalState(SAVERESTOREDATA *apSaveRestoreData)
+void CLegacyGame::OnRestoreGlobalState(SAVERESTOREDATA *apSaveRestoreData)
 {
 	mpFuncs->pfnRestoreGlobalState(apSaveRestoreData);
 };
 
-void CHLGame::OnResetGlobalState()
+void CLegacyGame::OnResetGlobalState()
 {
 	mpFuncs->pfnResetGlobalState();
 };
 
-int CHLGame::AddToFullPack(entity_state_t *apEntityState, int anE, edict_t *apEnt, edict_t *apHost, int anHostFlags, int anPlayer, unsigned char *apSet)
+int CLegacyGame::AddToFullPack(entity_state_t *apEntityState, int anE, edict_t *apEnt, edict_t *apHost, int anHostFlags, int anPlayer, unsigned char *apSet)
 {
 	return mpFuncs->pfnAddToFullPack(apEntityState, anE, apEnt, apHost, anHostFlags, anPlayer, apSet);
 };
 
-void CHLGame::CreateBaseline(int anPlayer, int anEntIndex, entity_state_t *apBaseline, edict_t *apEntity, int anPlayerModelIndex, vec3_t avPlayerMins, vec3_t avPlayerMaxs)
+void CLegacyGame::CreateBaseline(int anPlayer, int anEntIndex, entity_state_t *apBaseline, edict_t *apEntity, int anPlayerModelIndex, vec3_t avPlayerMins, vec3_t avPlayerMaxs)
 {
 	mpFuncs->pfnCreateBaseline(anPlayer, anEntIndex, apBaseline, apEntity, anPlayerModelIndex, avPlayerMins, avPlayerMaxs);
 };
 
-void CHLGame::CreateInstancedBaselines()
+void CLegacyGame::CreateInstancedBaselines()
 {
 	mpFuncs->pfnCreateInstancedBaselines();
 };
 
-int CHLGame::GetHullBounds(int anHullNumber, float *afMins, float *afMaxs)
+int CLegacyGame::GetHullBounds(int anHullNumber, float *afMins, float *afMaxs)
 {
 	return mpFuncs->pfnGetHullBounds(anHullNumber, afMins, afMaxs);
 };

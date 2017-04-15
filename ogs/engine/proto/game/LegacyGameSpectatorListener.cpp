@@ -32,22 +32,17 @@
 #include "game/LegacyGameSpectatorListener.hpp"
 #include "game/LegacyGame.hpp"
 
-CLegacyGameSpectatorListener::CLegacyGameSpectatorListener(DLL_FUNCTIONS *apHLGameDLL)
-{
-	mpLegacyGame = apHLGameDLL;
-};
-
 void CLegacyGameSpectatorListener::OnSpectatorConnect(edict_t *apSpectator)
 {
-	mpLegacyGame->pfnSpectatorConnect(apSpectator);
+	mpGame->pfnSpectatorConnect(apSpectator);
 };
 
 void CLegacyGameSpectatorListener::OnSpectatorDisconnect(edict_t *apSpectator)
 {
-	mpLegacyGame->pfnSpectatorDisconnect(apSpectator);
+	mpGame->pfnSpectatorDisconnect(apSpectator);
 };
 
 void CLegacyGameSpectatorListener::OnSpectatorThink(edict_t *apSpectator)
 {
-	mpLegacyGame->pfnSpectatorThink(apSpectator);
+	mpGame->pfnSpectatorThink(apSpectator);
 };

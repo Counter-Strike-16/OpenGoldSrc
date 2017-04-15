@@ -80,7 +80,13 @@ int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *po
 	//if(!game->Init((void*)instance))
 		//return bRestart;
 	
-	TEngineLoadParams EngLauncherParams = {mpFileSystem.get(), basedir, cmdline, false};
+	TEngineLoadParams EngLauncherParams =
+	{
+		mpFileSystem.get(),
+		basedir,
+		cmdline,
+		false // Listen server mode
+	};
 
 	if(!ogseng->LoadEx(EngLauncherParams))
 		return bRestart;
@@ -91,7 +97,7 @@ int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *po
 	{
 		if(ogseng->GetQuitting() != IEngine::QUIT_NOTQUITTING)
 		{
-			// ogseng->GetQuitting() != QUIT_TODESKTOP
+			// ogseng->GetQuitting() != IEngine::QUIT_TODESKTOP
 			if(ogseng->GetQuitting() == IEngine::QUIT_RESTART)
 				bRestart = true;
 			

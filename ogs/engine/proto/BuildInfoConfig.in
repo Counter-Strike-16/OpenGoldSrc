@@ -42,7 +42,7 @@ constexpr auto DEV_STAGE = "Pre-Alpha";
 
 constexpr auto VERSION_MAJOR = 0;
 constexpr auto VERSION_MINOR = 1;
-constexpr auto VERSION_PATCH = 2;
+constexpr auto VERSION_PATCH = 3;
 
 #ifdef _DEBUG
 	constexpr auto BUILD_TYPE = "Debug";

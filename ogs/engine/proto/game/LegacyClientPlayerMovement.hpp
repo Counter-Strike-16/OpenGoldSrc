@@ -36,7 +36,7 @@
 class CLegacyClientPlayerMovement : public IPlayerMovement
 {
 public:
-	CLegacyClientPlayerMovement(DLL_FUNCTIONS *apLegacyClient);
+	CLegacyClientPlayerMovement(cdll_func_t *apLegacyClient);
 	~CLegacyClientPlayerMovement() = default;
 	
 	void Init(playermove_t *apPlayerMoveData);
@@ -44,5 +44,5 @@ public:
 	
 	char FindTextureType(char *asName);
 private:
-	DLL_FUNCTIONS *mpLegacyClient{nullptr};
+	cdll_func_t *mpLegacyClient{nullptr};
 };

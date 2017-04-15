@@ -27,37 +27,16 @@
  */
 
 /// @file
-/// @brief old api client input component
+/// @brief game loader interface
 
 #pragma once
 
-#include "game/client/IClientInput.hpp"
+struct IGame;
 
-class CLegacyClientInput : public IClientInput
+struct IGameLoader
 {
-public:
-	CLegacyClientInput();
-	~CLegacyClientInput() = default;
-	
-	void ActivateMouse();
-	void DeactivateMouse();
-	
-	void SetSampleTime(float afFrameTime);
-	
-	void Accumulate();
-	
-	void ClearStates();
-	
-	bool IsKeyDown(const char *asName, bool &abIsDown);
-	
-	void OnMouseWheeled(int anDelta);
-	
-	int Key_Event(int anEventCode, int anKeyNum, const char *asCurrentBinding);
-	void MouseEvent(int anMouseState);
-	
-	void ExtraMouseSample(float afFrameTime, bool abActive);
-	
-	void *KB_Find(const char *asName);
-private:
-	cdll_func_t *mpClientExports{nullptr};
+	virtual ~IGameLoader() = default;
+
+	virtual IGame *LoadGame(const char *asPath) = 0;
+	virtual void UnloadGame() = 0;
 };

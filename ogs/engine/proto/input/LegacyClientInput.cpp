@@ -29,15 +29,11 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "oldclientdll/OldClientInput.hpp"
+#include "input/LegacyClientInput.hpp"
 
 CLegacyClientInput::CLegacyClientInput(cdll_func_t *apClientExports)
 {
 	mpClientExports = apClientExports;
-};
-
-CLegacyClientInput::~CLegacyClientInput()
-{
 };
 
 void CLegacyClientInput::ActivateMouse()
@@ -62,6 +58,7 @@ void CLegacyClientInput::ClearStates()
 
 bool CLegacyClientInput::IsKeyDown(const char *asName, bool &abIsDown)
 {
+	return false;
 };
 
 void CLegacyClientInput::OnMouseWheeled(int anDelta)
@@ -70,6 +67,7 @@ void CLegacyClientInput::OnMouseWheeled(int anDelta)
 
 int CLegacyClientInput::Key_Event(int anEventCode, int anKeyNum, const char *asCurrentBinding)
 {
+	return 0;
 };
 
 void CLegacyClientInput::MouseEvent(int anMouseState)
@@ -82,4 +80,5 @@ void CLegacyClientInput::ExtraMouseSample(float afFrameTime, bool abActive)
 
 void *CLegacyClientInput::KB_Find(const char *asName)
 {
+	return nullptr;
 };

@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,37 +27,26 @@
  */
 
 /// @file
-/// @brief old api client input component
+/// @brief client module loader container
 
 #pragma once
 
-#include "game/client/IClientInput.hpp"
+#include <list>
+#include <memory>
 
-class CLegacyClientInput : public IClientInput
+struct IClientLoader;
+using tClientLoaderList = std::list<std::unique_ptr<IClientLoader>>;
+
+class CClientLoaderHandler
 {
 public:
-	CLegacyClientInput();
-	~CLegacyClientInput() = default;
+	CClientLoaderHandler() = default;
+	~CClientLoaderHandler() = default;
 	
-	void ActivateMouse();
-	void DeactivateMouse();
+	void AddLoader(IClientLoader *apLoader);
+	void RemoveLoader(IClientLoader *apLoader);
 	
-	void SetSampleTime(float afFrameTime);
-	
-	void Accumulate();
-	
-	void ClearStates();
-	
-	bool IsKeyDown(const char *asName, bool &abIsDown);
-	
-	void OnMouseWheeled(int anDelta);
-	
-	int Key_Event(int anEventCode, int anKeyNum, const char *asCurrentBinding);
-	void MouseEvent(int anMouseState);
-	
-	void ExtraMouseSample(float afFrameTime, bool abActive);
-	
-	void *KB_Find(const char *asName);
+	IClientHUD *LoadClient(const char *asPath);
 private:
-	cdll_func_t *mpClientExports{nullptr};
+	tClientLoaderList mlstLoaders;
 };

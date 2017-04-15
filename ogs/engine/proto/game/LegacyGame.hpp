@@ -38,7 +38,7 @@ class CLegacyGame : public IGame//, public IEventListener
 {
 public:
 	CLegacyGame(CSystem *apSystem);
-	CLegacyGame(DLL_FUNCTIONS aFuncs, NEW_DLL_FUNCTIONS aNewFuncs);
+	CLegacyGame(CSystem *apSystem, DLL_FUNCTIONS aFuncs, NEW_DLL_FUNCTIONS aNewFuncs);
 	~CLegacyGame();
 	
 	//bool Load(const APIFUNCTION &afnGetEntityAPI, const APIFUNCTION2 &afnGetEntityAPI2, const NEW_DLL_FUNCTIONS_FN &afnGetNewDllFuncs);

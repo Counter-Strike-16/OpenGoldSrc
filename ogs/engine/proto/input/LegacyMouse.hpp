@@ -33,13 +33,15 @@
 
 #include "input/IMouse.hpp"
 
+class CLegacyClient; // CLegacyClientHUD
+
 class CLegacyMouse : public IMouse
 {
 public:
-	CLegacyMouse();
+	CLegacyMouse(CLegacyClientHUD *apClient);
 	
 	void Activate();
 	void Deactivate();
 private:
-	//clientfuncs
+	CLegacyClientHUD *mpClient{nullptr};
 };

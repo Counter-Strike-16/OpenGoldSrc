@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,37 +27,36 @@
  */
 
 /// @file
-/// @brief old api client input component
 
-#pragma once
+#include "precompiled.hpp"
+#include "game/GameLoaderHandler.hpp"
+#include "game/IGameLoader.hpp"
 
-#include "game/client/IClientInput.hpp"
-
-class CLegacyClientInput : public IClientInput
+void CGameLoaderHandler::AddLoader(IGameLoader *apLoader)
 {
-public:
-	CLegacyClientInput();
-	~CLegacyClientInput() = default;
+};
+
+void CGameLoaderHandler::RemoveLoader(IGameLoader *apLoader)
+{
+};
+
+IGame *CGameLoaderHandler::LoadGame(const char *asPath)
+{
+	// Pass a dll module path
+	// Iterate through each registered loader trying to load it
+	// If successful a valid ptr to IGame will be returned
+	// Otherwise a nullptr will be returned means that the
+	// specified module cannot be loaded with our game loaders
 	
-	void ActivateMouse();
-	void DeactivateMouse();
+	IGame *pGame = nullptr;
 	
-	void SetSampleTime(float afFrameTime);
+	for(auto It : mlstLoaders)
+	{
+		pGame = It->LoadGame(asPath);
+		
+		if(!pGame)
+			continue;
+	};
 	
-	void Accumulate();
-	
-	void ClearStates();
-	
-	bool IsKeyDown(const char *asName, bool &abIsDown);
-	
-	void OnMouseWheeled(int anDelta);
-	
-	int Key_Event(int anEventCode, int anKeyNum, const char *asCurrentBinding);
-	void MouseEvent(int anMouseState);
-	
-	void ExtraMouseSample(float afFrameTime, bool abActive);
-	
-	void *KB_Find(const char *asName);
-private:
-	cdll_func_t *mpClientExports{nullptr};
+	return pGame;
 };
