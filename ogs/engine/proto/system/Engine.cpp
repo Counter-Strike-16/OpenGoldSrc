@@ -67,18 +67,20 @@ void ForceReloadProfile()
 	
 	//if(cls.state != ca_dedicated)
 	{
+#ifdef SWDS
 		//CSystem::Error("Only dedicated mode is supported");
-		
+#else
 		char sRate[32] = {'\0'};
 		const char *sRegRate = "";
 		
-		//sRegRate = GetRateRegistrySetting(rate_.string);
+		//sRegRate = CSystem::GetRateRegistrySetting(rate_.string);
 		//Q_strncpy(sRate, sRegRate, sizeof(sRate)); // 0x20u
 		
 		//Q_strncpy(sRate, sRegRate, charsmax(sRate)); // == sizeof(sRate) - 1
-		//sRate[sizeof(sRate) - 1] = '\0';
+		sRate[sizeof(sRate) - 1] = '\0';
 		
 		//Cvar_DirectSet(&rate_, sRate);
+#endif // SWDS
 	};
 };
 
@@ -202,7 +204,7 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 	
 	mpFileSystemLoader = std::make_unique<CFileSystemLoader>();
 	
-	mpFileSystem = std::make_unique<CFileSystem>(mpFileSystemLoader->Load(filesystemFactory));
+	mpFileSystem = std::make_unique<CFileSystem>(mpFileSystemProvider->GetFromFactory(filesystemFactory));
 	mpHost = std::make_unique<CHost>(mpFileSystem.get());
 	
 	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
@@ -355,26 +357,11 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	//SV_ResetModInfo();
 	
 	//TraceInit("Sys_Init()", "Sys_Shutdown()", 0);
-
-#ifdef _WIN32
-	//CSystem::InitHardwareTimer();
-#endif // _WIN32
-
-	//CSystem::CheckCpuInstructionsSupport();
-
-#ifndef SWDS
-	//CSystem::InitFloatTime();
-#endif // SWDS
+	CSystem::Init(&host_parms, mpFileSystem, apDedicatedExports, mbDedicated);
 	
 	mpFileSystem->LogLevelLoadStarted("Launcher");
 	
 	//SeedRandomNumberGenerator();
-	
-	//TraceInit("Sys_InitMemory()", "Sys_ShutdownMemory()", 0);
-	//CSystem::InitMemory(&host_parms);
-	
-	//TraceInit("Sys_InitLauncherInterface()", "Sys_ShutdownLauncherInterface()", 0);
-	CSystem::InitLauncherInterface();
 
 #ifndef SWDS
 	//if(!GL_SetMode(*pmainwindow, &maindc, &baseRC))
@@ -393,9 +380,9 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	// We should init the game dll and enable the multiplayer mode for the network here
 	if(mbDedicated)
 	{
-		mpHost->InitializeGameDLL(); // We should immediately init the game dll for dedicated mode
-									 // (client is initializing it after the first call to new game)
-									 // NOTE: move to host init?
+		mpHost->InitGame(); // We should immediately init the game module for dedicated mode
+							// (client is initializing it after the first call to new game)
+							// NOTE: move to host init?
 		//mpNetwork->Config(TRUE); // double call (already called inside host_initgamedll)
 	};
 
@@ -428,26 +415,16 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 
 void CEngine::ShutdownGame()
 {
-	//if(!mbDedicated)
-		//ClientDLL_DeactivateMouse();
-
+	//mpEventManager->BroadcastEvent(GenerateGameShutdownEvent());
+	
 	//TraceShutdown("Host_Shutdown()", 0);
 	mpHost->Shutdown();
-	
-	//TraceShutdown("FileSystem_Shutdown()", 0);
-	mpFileSystem->Shutdown();
 
 	//if(mbDedicated)
 		//mpNetwork->Config(FALSE);
-
-	//TraceShutdown("Sys_ShutdownLauncherInterface()", 0);
-	CSystem::ShutdownLauncherInterface();
-
-	//TraceShutdown("Sys_ShutdownAuthentication()", 0);
-	CSystem::ShutdownAuthentication();
-
-	//TraceShutdown("Sys_ShutdownMemory()", 0);
-	//CSystem::ShutdownMemory();
+	
+	//TraceShutdown("FileSystem_Shutdown()", 0);
+	mpFileSystem->Shutdown();
 	
 	//TraceShutdown("Sys_Shutdown()", 0);
 	CSystem::Shutdown();

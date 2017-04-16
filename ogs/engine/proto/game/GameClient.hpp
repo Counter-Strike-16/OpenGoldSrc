@@ -156,11 +156,14 @@ public:
 	void BanEx(const char *asReason, ...);
 	void TimeBan(uint anTimeInMins);
 
-	void SetConnected(bool connected);
-	bool IsConnected() const;
+	virtual void SetConnected(bool connected);
+	virtual bool IsConnected();
 
-	void SetActive(bool active);
-	bool IsActive() const;
+	virtual void SetActive(bool active);
+	virtual bool IsActive();
+	
+	virtual void SetSpawned(bool spawned);
+	virtual bool IsSpawned();
 	
 	bool IsFakeClient() const; // IsBot
 	
@@ -200,19 +203,61 @@ public:
 
 	void ParseResourceList(client_t *pSenderClient);
 	
+	virtual uint32 GetVoiceStream(int stream_id);
+	
+	virtual void SetLastVoiceTime(double time);
+	virtual double GetLastVoiceTime();
+	
+	virtual bool GetLoopback();
+	
 	char *GetIDString();
-
-	const char *GetName() const {return mpClientData->name;}
-	int GetID() const {return mpClientData->userid;}
-	edict_t *GetEdict() const {return mpClientData->edict;}
+	
+	virtual USERID_t *GetNetworkUserID();
+	virtual sizebuf_t *GetDatagram();
+	
+	virtual INetChan* GetNetChan();
+	
+	virtual struct usercmd_s *GetLastCmd();
+	
+	virtual const char *GetName(){return mpClientData->name;}
+	virtual int GetId(){return mpClientData->userid;}
+	virtual edict_t *GetEdict(){return mpClientData->edict;}
+	
+	virtual client_t *GetClient(){return mpClientData;}
+	
+	bool GetSpawnedOnce() const {return m_bSpawnedOnce;}
+	void SetSpawnedOnce(bool spawned){m_bSpawnedOnce = spawned;}
+	
+#ifdef REHLDS_FIXES
+	uint8_t* GetExtendedMessageBuffer(){return m_NetChan.GetExtendedMessageBuffer(); };
+#endif
+	
+#ifdef REHLDS_FIXES
+	void SetupLocalGameTime(){m_localGameTimeBase = g_psv.time;}
+	double GetLocalGameTime() const {return g_psv.time - m_localGameTimeBase;}
+	double GetLocalGameTimeBase() const {return m_localGameTimeBase;}
+#endif
 private:
 	void Drop_internal(bool crash, const char *string);
 	void ReplaceSpecialCharactersInName(char *newname, const char *oldname);
 	
 	void WriteClientdata(sizebuf_t *msg);
 	
-	client_t *mpClientData{nullptr};
+	CNetChan m_NetChan; // INetChan *
+	
+#ifdef REHLDS_FIXES
+	double m_localGameTimeBase{0.0f};
+#endif
+	
+	client_t *mpClientData{nullptr}; // m_pClient
 	CGameServer *mpServer{nullptr};
+	
+	int m_Id{0};
+	
+	// added this field to handle a bug with hanging clients in scoreboard after a map change.
+	// we would also use the field client_t:connected, but actually can't because there is a bug in CS client when server sends TeamScore
+	// and client is not yet initialized ScoreBoard which leads to memory corruption in the client.
+	bool m_bSpawnedOnce{false};
 };
 
 /*

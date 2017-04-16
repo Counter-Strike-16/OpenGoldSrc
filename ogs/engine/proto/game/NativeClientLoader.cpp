@@ -30,6 +30,7 @@
 
 #include "precompiled.hpp"
 #include "game/NativeClientLoader.hpp"
+#include "console/IConsole.hpp"
 
 IClientHUD *CNativeClientLoader::LoadClient(CFactorySharedLib *apLib)
 {
@@ -37,6 +38,8 @@ IClientHUD *CNativeClientLoader::LoadClient(CFactorySharedLib *apLib)
 	
 	if(!fnClientFactory)
 		return nullptr;
+	
+	mpConsole->DevPrintf("Detected native OGS API format!");
 	
 	IClientHUD *pClientHUD = fnClientFactory(OGS_CLIENTDLL_INTERFACE_VERSION, nullptr);
 	

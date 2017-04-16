@@ -32,11 +32,6 @@
 #include "game/LegacyClientPlayerMovement.hpp"
 #include "game/LegacyGame.hpp"
 
-CLegacyClientPlayerMovement::CLegacyClientPlayerMovement(DLL_FUNCTIONS *apHLClientHUD)
-{
-	mpHLClientHUD = apHLClientHUD;
-};
-
 void CLegacyClientPlayerMovement::Init(playermove_t *apPlayerMoveData)
 {
 	mpLegacyClient->pfnPM_Init(apPlayerMoveData);

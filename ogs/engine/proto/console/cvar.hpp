@@ -39,16 +39,9 @@
 	#define cvar_vars (*pcvar_vars)
 #endif
 
-class CFile;
+
 
 constexpr auto MAX_CVAR_VALUE = 1024;
-
-typedef struct cvar_s cvar_t;
-
-extern cvar_t *cvar_vars;
-
-void Cvar_Init();
-void Cvar_Shutdown();
 
 NOXREF cvar_t *Cvar_FindPrevVar(const char *var_name);
 
@@ -76,13 +69,8 @@ const char *Cvar_IsMultipleTokens(const char *varname);
 // was handled. (print or change)
 qboolean Cvar_Command();
 
-// appends lines containing "set variable value" for all variables
-// with the archive flag set to true.
-//void Cvar_WriteVariables (char *path);
-NOXREF void Cvar_WriteVariables(CFile *f);
-
 void Cmd_CvarListPrintCvar(cvar_t *var, CFile *f);
-void Cmd_CvarList_f();
+
 
 NOXREF int Cvar_CountServerVariables();
 

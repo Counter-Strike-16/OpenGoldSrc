@@ -31,9 +31,33 @@
 #include "precompiled.hpp"
 #include "filesystem/FileSystemProvider.hpp"
 
-IFileSystem *CFileSystemProvider::Load(CreateInterfaceFn afnFileSystemFactory)
+IFileSystem *CFileSystemProvider::GetFromFactory(CreateInterfaceFn afnFactory)
 {
-	return LoadDLL(afnFileSystemFactory);
+	if(afnFactory)
+	{
+		g_FileSystemFactory = afnFactory;
+
+		IFileSystem *pFileSystem = (IFileSystem *)afnFactory(FILESYSTEM_INTERFACE_VERSION, nullptr); // kinda hardcode
+		
+		assert(pFileSystem);
+		
+		return pFileSystem;
+	};
+	
+	return nullptr;
+};
+
+IFileSystem *CFileSystemProvider::GetFromModule(const char *asName /*CreateInterfaceFn filesystemFactory*/)
+{
+	mpFileSystemModule = Sys_LoadModule(asName);
+	
+	CreateInterfaceFn fnFactory;
+	
+	if(mpFileSystemModule)
+		fnFactory = Sys_GetFactory(mpFileSystemModule);
+	
+	// Will return a valid ptr or nullptr if failed (see above)
+	return GetFromFactory(fnFactory);
 };
 
 NOXREF void *CFileSystemProvider::GetFileSystemFactory()
@@ -43,37 +67,13 @@ NOXREF void *CFileSystemProvider::GetFileSystemFactory()
 	return (void *)g_FileSystemFactory;
 };
 
-IFileSystem *CFileSystemProvider::LoadDLL(CreateInterfaceFn filesystemFactory)
-{
-	if(!filesystemFactory)
-	{
-		mpFileSystemModule = Sys_LoadModule(FILESYSTEM_DLL_NAME);
-
-		if(mpFileSystemModule)
-			filesystemFactory = Sys_GetFactory(mpFileSystemModule);
-	};
-
-	if(filesystemFactory)
-	{
-		g_FileSystemFactory = filesystemFactory;
-
-		IFileSystem *pFileSystem = (IFileSystem *)filesystemFactory(FILESYSTEM_INTERFACE_VERSION, 0);
-		
-		assert(pFileSystem);
-		
-		return pFileSystem;
-	};
-
-	return nullptr;
-};
-
 void CFileSystemProvider::UnloadDLL()
 {
 	if(mpFileSystemModule)
 	{
 		Sys_UnloadModule((CSysModule *)mpFileSystemModule);
-		mpFileSystemModule = NULL;
-		g_FileSystemFactory = NULL;
-		mpFileSystem = NULL;
+		mpFileSystemModule = nullptr;
+		g_FileSystemFactory = nullptr;
+		mpFileSystem = nullptr;
 	};
 };

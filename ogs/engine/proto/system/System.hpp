@@ -50,8 +50,6 @@
 
 typedef struct quakeparms_s quakeparms_t;
 
-extern void (*Launcher_ConsolePrintf)(char *, ...);
-
 extern bool gbIsDedicatedServer;
 
 extern FileFindHandle_t g_hfind;
@@ -60,22 +58,27 @@ extern FileFindHandle_t g_hfind;
 extern qboolean gHasMMXTechnology;
 #endif
 
-void Legacy_Sys_Printf(char *fmt, ...);
-
 NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage);
 
 NOXREF void Legacy_MP3subsys_Suspend_Audio();
 NOXREF void Legacy_MP3subsys_Resume_Audio();
+
+// exports
 
 double Sys_FloatTime();
 
 void EngineFprintf(void *pfile, const char *szFmt, ...);
 void AlertMessage(ALERT_TYPE atype, const char *szFmt, ...);
 
+//
+
+class IDedicatedExports;
+class CFileSystem;
+
 class CSystem
 {
 public:
-	static NOBODY void Init(quakeparms_t *host_parms, CFileSystem *apFileSystem);
+	static NOBODY void Init(quakeparms_t *host_parms, CFileSystem *apFileSystem, IDedicatedExports *apRemoteConsole, bool abDedicatedServer);
 	static NOXREF void Shutdown();
 	
 	static void InitFloatTime();
@@ -93,7 +96,7 @@ public:
 	static void InitAuthentication();
 	static NOXREF void ShutdownAuthentication();
 	
-	static double GetFloatTime();
+	static double GetFloatTime(); // platform-specific
 
 	/// Called to yield for a little bit so as
 	/// not to hog cpu when paused or debugging
@@ -121,9 +124,11 @@ public:
 	static NOXREF bool IsWin98();
 private:
 	static void SetupLegacyAPIs();
+	static bool LegacySysPrintf(char *fmt, ...); // RemoteConsolePrintf
 	
 	static quakeparms_t *mhost_parms;
 	
+	static IDedicatedExports *mpRemoteConsole; // mpDedicatedExports
 	static CFileSystem *mpFileSystem;
 	
 	static bool mbDedicatedServer;

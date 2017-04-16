@@ -34,25 +34,20 @@
 #endif
 
 #include "precompiled.hpp"
+#include "system/System.hpp"
 
-NOXREF void CSystem::Sleep(int msec)
-{
-	NOXREFCHECK;
-	
-	usleep(1000 * msec);
-};
-
-double Sys_FloatTime()
+double CSystem::FloatTime()
 {
 	static struct timespec start_time;
-	static bool bInitialized;
+	static bool bInitialized = false;
 	struct timespec now;
 
 	if(!bInitialized)
 	{
-		bInitialized = 1;
+		bInitialized = true;
 		clock_gettime(1, &start_time);
-	}
+	};
+	
 	clock_gettime(1, &now);
 	return (now.tv_sec - start_time.tv_sec) + now.tv_nsec * 0.000000001;
 };

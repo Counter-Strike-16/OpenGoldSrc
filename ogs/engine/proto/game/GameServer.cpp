@@ -29,7 +29,8 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "system/GameServer.hpp"
+#include "game/GameServer.hpp"
+#include "network/NetServer.hpp"
 
 void CGameServer::Init()
 {

@@ -37,6 +37,7 @@
 #include "system/System.hpp"
 #include "system/SystemTypes.hpp"
 #include "console/Console.hpp"
+#include "game/GameLoaderHandler.hpp"
 
 /*
 * Globals initialization
@@ -99,6 +100,7 @@ int CHost::Init(quakeparms_t *parms)
 	//com_argv = parms->argv;
 	
 	realtime = 0.0f;
+	
 /*
 	Memory_Init(parms->membase, parms->memsize);
 
@@ -113,6 +115,7 @@ int CHost::Init(quakeparms_t *parms)
 	mpNetwork = std::make_unique<CNetwork>(mpConsole.get());
 	mpSound = std::make_unique<CSound>();
 	mpScreen = std::make_unique<CScreen>();
+	mpGameLoaderHandler = std::make_unique<CGameLoaderHandler>();
 
 	InitLocal();
 
@@ -241,7 +244,7 @@ int CHost::Init(quakeparms_t *parms)
 	//host_hunklevel = Hunk_LowMark();
 	
 	//giActive = DLL_ACTIVE;
-	//scr_skipupdate = FALSE;
+	//scr_skipupdate = false; // mpScreen->SetSkipUpdate(false);
 	
 	CheckGore();
 	
@@ -295,6 +298,9 @@ void CHost::Shutdown()
 	};
 
 	isdown = true;
+	
+	//if(!mbDedicated)
+		//ClientDLL_DeactivateMouse();
 	
 	if(host_initialized) // Client-side
 		WriteConfig(); // TODO: also call it before the new game
@@ -391,30 +397,28 @@ void CHost::EndGame(const char *message, ...)
 	scr_disabled_for_loading = true;
 #endif
 	
-/*
-	int oldn = cls.demonum;
+	int oldn = 0; //cls.demonum;
+	
+	//if(g_psv.IsActive())
+		//ShutdownServer(false);
 
-	if(g_psv.IsActive())
-		ShutdownServer(false);
+	//cls.demonum = oldn;
 
-	cls.demonum = oldn;
-
-	if(!cls.state)
-		CSystem::Error("%s: %s\n", __FUNCTION__, string);
+	//if(!cls.state)
+		//CSystem::Error("%s: %s\n", __FUNCTION__, string);
 
 	if(oldn != -1)
 	{
-		CL_Disconnect_f();
-		cls.demonum = oldn;
-		Host_NextDemo();
-		longjmp(host_enddemo, 1);
+		//CL_Disconnect_f();
+		//cls.demonum = oldn;
+		//Host_NextDemo();
+		//longjmp(host_enddemo, 1);
 	};
 
-	CL_Disconnect();
-	mpCmdBuffer->AddText("cd stop\n");
-	mpCmdBuffer->Execute();
-	longjmp(host_abortserver, 1);
-	*/
+	//CL_Disconnect();
+	//mpCmdBuffer->AddText("cd stop\n");
+	//mpCmdBuffer->Execute();
+	//longjmp(host_abortserver, 1);
 };
 
 /*
@@ -539,7 +543,7 @@ void CHost::WriteConfig()
 
 void CHost::WriteCustomConfig()
 {
-	char configname[261];
+	char configname[261]; // magic
 	//Q_snprintf(configname, 257, "%s", Cmd_Args());
 
 	if(Q_strstr(configname, "..") || !Q_stricmp(configname, "config") ||
@@ -768,7 +772,7 @@ bool CHost::FilterTime(float time)
 			//command_line_ticrate = mpCmdLine->CheckArg("-sys_ticrate");
 		
 		//if(command_line_ticrate > 0)
-			//fps = Q_atof(com_argv[command_line_ticrate + 1]);
+			//fps = Q_atof(com_argv[command_line_ticrate + 1]); // ->GetArgValue();
 		//else
 			fps = sys_ticrate.value;
 
@@ -1033,7 +1037,7 @@ void CHost::_Frame(float time)
 /*	
 	mpServer->CheckForRcon();
 
-	if(!g_psv.active)
+	if(!g_psv.IsActive())
 		CL_Move();
 
 	ClientDLL_Frame(host_frametime);
@@ -1289,7 +1293,7 @@ int CHost::GetStartTime()
 	return startTime;
 };
 
-void CHost::InitializeGameDLL()
+void CHost::InitGame()
 {
 	//mpCmdBuffer->Execute();
 	mpNetwork->Config(false); //g_psvs.maxclients > 1
@@ -1299,13 +1303,22 @@ void CHost::InitializeGameDLL()
 		mpConsole->DevPrintf("Sys_InitializeGameDLL called twice, skipping second call\n");
 		return;
 	};
+
+#ifndef OGS_STATIC_GAME
+	//mpFileParser->ParseFile("liblist.gam");
+	mpGame = mpGameLoaderHandler->LoadGame(/*GetGamePath()*/);
+	//CLegacyGame *pOldAPIGame = new HLGame();
+	
+	//LoadEntityDLLs(host_parms.basedir);
+#else
+	#error "Static game linkage is not supported!"
+#endif // OGS_STATIC_GAME
+	
+	mpGame->Init();
+	//pOldAPIGame->Init();
 	
 	// if we initializing it here then it's init state shouldn't be contained in server static data
-	//g_psvs.dll_initialized = TRUE; // it's actually not initialized yet
-	//LoadEntityDLLs(host_parms.basedir);
-	
-	//CHLGame *pOldAPIGame = new HLGame();
-	//pOldAPIGame->Init();
+	//g_psvs.dll_initialized = TRUE;
 	
 	//gEntityInterface.pfnGameInit();
 	//gEntityInterface.pfnPM_Init(&g_svmove);

@@ -36,7 +36,7 @@ Please read [CONTRIBUTING](CONTRIBUTING.md) before pushing any changes and for a
 
 * Thanks to ReHLDS team for their [ReHLDS](https://github.com/dreamstalker/rehlds) - reverse-engineered implementation of dedicated server of GoldSrc engine (aka HLDS) with lot of bugfixes and improvements of original code;
 * Lot of Id Tech engines sources by [Id Software](https://github.com/id-Software) were used; thanks them for that;
-* Also a lot of (Valve Software](https://github.com/ValveSoftware) sources from their [HLSDK](https://github.com/ValveSoftware/halflife) / [SourceSDK](https://github.com/ValveSoftware/source-sdk-2013) were used;
+* Also a lot of [Valve Software](https://github.com/ValveSoftware) sources from their [HLSDK](https://github.com/ValveSoftware/halflife) / [SourceSDK](https://github.com/ValveSoftware/source-sdk-2013) were used;
 
 You can see [CREDITS](CREDITS.md) file for more details
 

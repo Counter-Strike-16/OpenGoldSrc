@@ -58,13 +58,16 @@ typedef struct quakeparms_s
 	int memsize;
 } quakeparms_t;
 
+struct IGame;
 class CFileSystem;
+class CGameLoaderHandler;
 
 class CHost
 {
 public:
 	CHost(CFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
-
+	~CHost() = default;
+	
 	int Init(quakeparms_t *parms);
 	void InitLocal();
 	
@@ -108,7 +111,7 @@ public:
 	
 	int GetStartTime();
 	
-	void InitializeGameDLL();
+	void InitGame();
 	
 	void UpdateStats();
 	
@@ -164,6 +167,9 @@ public:
 	void Host_NextDemo();
 */
 private:
+	bool InitRender();
+	bool InitSound();
+	
 	// Console commands
 /*	
 	void Host_Motd_f();
@@ -231,8 +237,10 @@ private:
 	std::unique_ptr<CSound> mpSound;
 	std::unique_ptr<CGameServer> mpServer;
 	std::unique_ptr<CScreen> mpScreen;
+	std::unique_ptr<CGameLoaderHandler> mpGameLoaderHandler;
 	
 	CFileSystem *mpFileSystem{nullptr};
+	IGame *mpGame{nullptr};
 
 	quakeparms_t *host_params{nullptr};
 	

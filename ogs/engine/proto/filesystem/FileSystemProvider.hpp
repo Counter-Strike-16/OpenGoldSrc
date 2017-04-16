@@ -39,11 +39,11 @@ public:
 	CFileSystemProvider() = default;
 	~CFileSystemProvider(){UnloadDLL();}
 	
-	IFileSystem *Load(CreateInterfaceFn afnFileSystemFactory);
+	IFileSystem *GetFromFactory(CreateInterfaceFn afnFactory);
+	IFileSystem *GetFromModule(const char *asName); // FILESYSTEM_DLL_NAME
 	
 	NOXREF void *GetFileSystemFactory();
 private:
-	IFileSystem *LoadDLL(CreateInterfaceFn filesystemFactory);
 	void UnloadDLL();
 	
 	CSysModule *mpFileSystemModule{nullptr};

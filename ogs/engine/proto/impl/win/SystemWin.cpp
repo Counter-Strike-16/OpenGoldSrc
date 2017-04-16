@@ -31,7 +31,7 @@
 
 #include "precompiled.hpp"
 #include "system/System.hpp"
-#include "system/systemtypes.hpp"
+#include "system/SystemTypes.hpp"
 #include "system/common.hpp"
 
 #ifdef _WIN32
@@ -126,7 +126,7 @@ void Sys_SetStartTime()
 {
 	int startTimeArg = 0;
 
-	Sys_FloatTime();
+	CSystem::FloatTime();
 
 	//startTimeArg = COM_CheckParm("-starttime");
 
@@ -191,7 +191,7 @@ void __cdecl CSystem::InitHardwareTimer()
 	Sys_SetStartTime();
 };
 
-double EXT_FUNC Sys_FloatTime()
+double EXT_FUNC CSystem::FloatTime()
 {
 	unsigned int currentTime;
 	int savedOldTime;

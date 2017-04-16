@@ -30,12 +30,7 @@
 
 #pragma once
 
-#include "game/GameLoader.hpp"
-
-namespace shiftutil
-{
-	class CSharedLib;
-};
+#include "game/IGameLoader.hpp"
 
 class CLegacyGame;
 
@@ -49,6 +44,4 @@ public:
 	void UnloadGame();
 private:
 	std::unique_ptr<CLegacyGame> mpLegacyGame/*{nullptr}*/;
-	
-	CSharedLib *mpGameLib{nullptr};
 };

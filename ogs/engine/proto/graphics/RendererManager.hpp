@@ -41,7 +41,7 @@ public:
 	
 	IRender *GetRenderer() const;
 private:
-	CFactorySharedLib *mpRendererLib{nullptr}; // Handle to render dll
+	CFactorySharedLib *mpRendererLib{nullptr}; // Handle to render module
 	
 	bool reflib_active{false};
 };

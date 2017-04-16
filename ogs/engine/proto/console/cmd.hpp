@@ -87,23 +87,9 @@ extern int cmd_argc;
 extern char *cmd_argv[80];
 extern char *cmd_args;
 
-extern sizebuf_t cmd_text;
 extern cmd_source_t cmd_source;
 
-extern cmd_function_t *cmd_functions;
-extern cmdalias_t *cmd_alias;
-
-void Cmd_Wait_f();
-void Cmd_StuffCmds_f();
-void Cmd_Exec_f();
-void Cmd_Echo_f();
-void Cmd_Alias_f();
-void Cmd_CmdList_f();
-
 char *CopyString(char *in);
-
-void Cmd_Init();
-void Cmd_Shutdown();
 
 // Takes a null terminated string.  Does not need to be /n terminated.
 // breaks the string up into arg tokens.

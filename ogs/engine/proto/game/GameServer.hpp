@@ -35,23 +35,32 @@
 #include "network/GameConnectionHandler.hpp"
 #include "system/server.hpp"
 
-class CGameServer
+class CNetServer; // NOTE: struct INetServer?
+class CGameConnectionHandler;
+
+//mpNetServer->SetConnectionHandler(mpConnectionHandler);
+
+class CGameServer // : public IGameServer
 {
 public:
-	void Init();
+	CGameServer(CNetServer *apNetServer) : mpNetServer(apNetServer){}
+	~CGameServer() = default;
+	
+	void Init(); // bool?
 	void Shutdown();
+	
+	//void Clear();
 	
 	void Frame(float frametime);
 	
 	void ClearClientStates();
-	
-	bool IsActive();
 	
 	void SetupMaxClients();
 	
 	void HandleConnectionlessPacket(netadr_t *adr, const char *c, const char *args);
 	
 	void BroadcastCommand(char *fmt, ...);
+	void BroadMessage(const char *asMsg, ...);
 	
 	void ConnectClient();
 	
@@ -61,6 +70,10 @@ public:
 	bool FindEmptySlot(int *pslot, client_t **ppClient);
 	
 	void CountPlayers(int *clients);
+	
+	bool IsActive() const;
+	
+	//CNetServer *GetNetServer() const {return mpNetServer;} // ?
 private:
 	void CheckCmdTimes();
 	void CheckTimeouts();
@@ -73,4 +86,6 @@ private:
 	void ConnectClient_internal();
 	
 	std::unique_ptr<CGameConnectionHandler> mpConnectionHandler;
+	
+	CNetServer *mpNetServer{nullptr}; // It's impl can be split into dll...
 };

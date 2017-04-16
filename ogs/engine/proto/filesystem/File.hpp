@@ -33,8 +33,6 @@
 
 #include "public/FileSystem.h"
 
-class IFileSystem;
-
 class CFile
 {
 public:

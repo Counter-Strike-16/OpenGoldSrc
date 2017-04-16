@@ -70,7 +70,7 @@ public:
 	void SetWait(bool abWait);
 private:
 	IConsole *mpConsole{nullptr};
-	CSizeBuffer *cmd_text{nullptr};
+	CSizeBuffer *cmd_text{nullptr}; // sizebuf_t cmd_text;
 	
 	bool cmd_wait{false};
 };

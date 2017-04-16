@@ -33,26 +33,27 @@
 
 // clang-format off
 #ifndef REHLDS_FIXES
-	#define __BUILD_TIME__ __TIME__
-	#define __BUILD_DATE__ __DATE__
+	constexpr auto __BUILD_TIME__ = __TIME__;
+	constexpr auto __BUILD_DATE__ = __DATE__;
 #else // REHLDS_FIXES
-	#define __BUILD_TIME__ APP_COMMIT_TIME
-	#define __BUILD_DATE__ APP_COMMIT_DATE
+	constexpr auto __BUILD_TIME__ = APP_COMMIT_TIME;
+	constexpr auto __BUILD_DATE__ = APP_COMMIT_DATE;
 #endif // REHLDS_FIXES
 // clang-format on
 
-int build_number();
-
 class CBuildInfo
 {
+public:
 	uint version_major{0};
 	uint version_minor{0};
 	uint version_patch{0};
 	
-	uint build_number{0};
-	
 	const char *GetBuildTime() const;
 	const char *GetBuildDate() const;
 	
+	int GetBuildNum() const;
+	
 	void ToString(char *asString, int anSize);
+private:
+	uint build_number{0};
 };

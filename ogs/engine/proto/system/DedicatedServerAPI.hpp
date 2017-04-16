@@ -33,9 +33,8 @@
 
 #include "common/commontypes.h"
 #include "public/engine_hlds_api.h"
-#include "public/idedicatedexports.h"
 
-extern IDedicatedExports *dedicated_;
+class IDedicatedExports;
 
 //-----------------------------------------------------------------------------
 // Purpose: Expose engine interface to launcher
@@ -61,4 +60,6 @@ private:
 	void UpdateStatus_noVirt(float *fps, int *nActive, int *nMaxPlayers, char*pszMap);
 	
 	char msOrigCmd[1024];
+	
+	IDedicatedExports *dedicated_{nullptr};
 };

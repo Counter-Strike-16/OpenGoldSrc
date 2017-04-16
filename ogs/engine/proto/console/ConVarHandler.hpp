@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "console/IConVarSystem.hpp"
+
 /*
 ==============================================================
 
@@ -51,15 +53,33 @@ interface from being ambiguous.
 */
 
 struct IConsole;
+class CFile;
 
-class CConVarHandler
+typedef struct cvar_s cvar_t;
+
+class CConVarHandler : public IConVarSystem
 {
 public:
-	CConVarHandler(IConsole *apConsole);
+	CConVarHandler(IConsole *apConsole) : mpConsole(apConsole){}
+	~CConVarHandler() = default;
 	
 	void Init();
 	void Shutdown();
 	
+	virtual void Register(IConVar *apVar);
+
+	virtual IConVar *Find(const char *asName);
+	
 	const char *CompleteVar(const char *asSearch, bool abForward);
+	
+	// appends lines containing "set variable value" for all variables
+	// with the archive flag set to true.
+	//void Cvar_WriteVariables (char *path);
+	NOXREF void WriteVariables(CFile *f);
 private:
+	void Cmd_CvarList_f();
+	
+	IConsole *mpConsole{nullptr};
+
+	cvar_t *cvar_vars{nullptr};
 };

@@ -85,7 +85,6 @@ public:
 	virtual const netadr_t* GetRemoteAdr() = 0;
 	virtual sizebuf_t* GetMessageBuf() = 0;
 
-
 	// this must be the last virtual function in class
 #ifdef REHLDS_SELF
 	virtual netchan_t* GetChan() = 0;

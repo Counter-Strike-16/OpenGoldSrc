@@ -29,6 +29,7 @@
 /// @file
 
 #include "precompiled.hpp"
+#include "public/idedicatedexports.h"
 #include "system/DedicatedServerAPI.hpp"
 #include "system/common.hpp"
 #include "system/Host.hpp"
@@ -43,7 +44,6 @@
 #include "system/GameServer.hpp"
 */
 
-IDedicatedExports *dedicated_;
 bool gbIsDedicatedServer;
 
 #ifndef HOOK_ENGINE

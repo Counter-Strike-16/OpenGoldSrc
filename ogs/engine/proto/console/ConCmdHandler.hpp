@@ -30,9 +30,11 @@
 
 #pragma once
 
+#include "console/IConCmdSystem.hpp"
+
 struct IConCmdArgs;
 
-class CConCmdHandler
+class CConCmdHandler : public IConCmdSystem
 {
 public:
 	void Init();
@@ -50,4 +52,13 @@ public:
 	
 	const IConCmdArgs &TokenizeString(const char *asArgs) const;
 private:
+	void Cmd_Wait_f(); // static void Wait_f( const idCmdArgs &args );
+	void Cmd_StuffCmds_f();
+	void Cmd_Exec_f(); // static void Exec_f( const idCmdArgs &args );
+	void Cmd_Echo_f(); // static void Echo_f( const idCmdArgs &args );
+	void Cmd_Alias_f();
+	void Cmd_CmdList_f();
+	
+	cmd_function_t *cmd_functions; // CConCmd *commands;
+	cmdalias_t *cmd_alias;
 };

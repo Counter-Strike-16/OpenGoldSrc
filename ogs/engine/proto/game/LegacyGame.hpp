@@ -34,6 +34,7 @@
 #include "game/server/IGame.hpp"
 //#include "system/IEventListener.hpp"
 
+// Wrapper for game dll funcs and new dll funcs that could be optionally exported
 class CLegacyGame : public IGame//, public IEventListener
 {
 public:
@@ -41,10 +42,20 @@ public:
 	CLegacyGame(CSystem *apSystem, DLL_FUNCTIONS aFuncs, NEW_DLL_FUNCTIONS aNewFuncs);
 	~CLegacyGame();
 	
+	// Allow to dinamically change the whole set of export funcs
+	//void SetDLLFuncs(const DLL_FUNCTIONS &aFuncs);
+	//void GetDLLFuncs(DLL_FUNCTIONS &aFuncs);
+	
+	//void SetNewDLLFuncs(const NEW_DLL_FUNCTIONS &aNewFuncs);
+	//void GetNewDLLFuncs(NEW_DLL_FUNCTIONS &aNewFuncs);
+	
 	bool Init(DLL_FUNCTIONS aFuncs, NEW_DLL_FUNCTIONS aNewFuncs);
 	
 	bool Init(CreateInterfaceFn afnEngineFactory);
 	void Shutdown();
+	
+	void GameInit();
+	void GameShutdown();
 	
 	bool LevelInit(char const *asMapName, char const *asMapEntities, char const *asOldLevel, char const *asLandmarkName, bool abLoadGame, bool abBackground);
 	void LevelShutdown();
@@ -81,15 +92,86 @@ public:
 	
 	int GetHullBounds(int anHullNumber, float *afMins, float *afMaxs);
 	
+	int DispatchEntitySpawn(edict_t *pent);
+	void DispatchEntityThink(edict_t *pent);
+	void DispatchEntityUse(edict_t *pentUsed, edict_t *pentOther);
+	void DispatchEntityTouch(edict_t *pentTouched, edict_t *pentOther);
+	void DispatchEntityBlocked(edict_t *pentBlocked, edict_t *pentOther);
+	void DispatchEntityKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd);
+	void DispatchEntitySave(edict_t *pent, SAVERESTOREDATA *pSaveData);
+	int DispatchEntityRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity);
+	void DispatchEntitySetAbsBox(edict_t *pent);
+	
 	void SaveWriteFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an);
 	void SaveReadFields(SAVERESTOREDATA *apSaveRestoreData, const char *as, void *ap, TYPEDESCRIPTION *apTypeDesc, int an);
 	
-	void OnSaveGlobalState(SAVERESTOREDATA *apSaveRestoreData);
-	void OnRestoreGlobalState(SAVERESTOREDATA *apSaveRestoreData);
-	void OnResetGlobalState();
+	void SaveGlobalState(SAVERESTOREDATA *apSaveRestoreData);
+	void RestoreGlobalState(SAVERESTOREDATA *apSaveRestoreData);
+	void ResetGlobalState();
+	
+	qboolean DispatchClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);
+
+	void DispatchClientDisconnect(edict_t *pEntity);
+	void DispatchClientKill(edict_t *pEntity);
+	void DispatchClientClientPutInServer(edict_t *pEntity);
+	void DispatchClientClientCommand(edict_t *pEntity);
+	void DispatchClientClientUserInfoChanged(edict_t *pEntity, char *infobuffer);
+
+	void DispatchServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
+	void DispatchServerDeactivate();
+
+	void PlayerPreThink(edict_t *pEntity);
+	void PlayerPostThink(edict_t *pEntity);
+
+	void StartFrame();
+	void ParmsNewLevel();
+	void ParmsChangeLevel();
+
+	const char *GetGameDescription();
+
+	void PlayerCustomization(edict_t *pEntity, customization_t *pCustom);
+
+	void SpectatorConnect(edict_t *pEntity);
+	void SpectatorDisconnect(edict_t *pEntity);
+	void SpectatorThink(edict_t *pEntity);
+
+	void Sys_Error(const char *error_string);
+
+	void (*pfnPM_Move)(struct playermove_s *ppmove, qboolean server);
+	void (*pfnPM_Init)(struct playermove_s *ppmove);
+	char (*pfnPM_FindTextureType)(char *name);
+	void (*pfnSetupVisibility)(struct edict_s *pViewEntity, struct edict_s *pClient, unsigned char **pvs, unsigned char **pas);
+	void (*pfnUpdateClientData)(const struct edict_s *ent, int sendweapons, struct clientdata_s *cd);
+	int (*pfnAddToFullPack)(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet);
+	void (*pfnCreateBaseline)(int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, vec3_t player_mins, vec3_t player_maxs);
+	void (*pfnRegisterEncoders)();
+	int (*pfnGetWeaponData)(struct edict_s *player, struct weapon_data_s *info);
+
+	void CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed);
+	void CmdEnd(const edict_t *player);
+
+	int ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size);
+
+	int GetHullBounds(int hullnumber, float *mins, float *maxs);
+
+	void CreateInstancedBaselines();
+
+	int InconsistentFile(const struct edict_s *player, const char *filename, char *disconnect_message);
+	
+	int AllowLagCompensation();
+	
+	void OnFreeEntPrivateData(edict_t *pEnt);
+	
+	int ShouldCollide(edict_t *pentTouched, edict_t *pentOther);
+	
+	void CvarValue(const edict_t *pEnt, const char *value);
+	void CvarValue2(const edict_t *pEnt, int requestID, const char *cvarName, const char *value);
 private:
 	DLL_FUNCTIONS *mpFuncs{nullptr}; // DLL exported funcs
 	NEW_DLL_FUNCTIONS *mpNewFuncs{nullptr}; // New dll exported funcs (may be null)
+	
+	//DLL_FUNCTIONS mFuncs;
+	//NEW_DLL_FUNCTIONS mNewFuncs;
 	
 	CSystem *mpSystem{nullptr}; // temp; purpose?
 };

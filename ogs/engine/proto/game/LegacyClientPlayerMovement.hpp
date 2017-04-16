@@ -36,7 +36,7 @@
 class CLegacyClientPlayerMovement : public IPlayerMovement
 {
 public:
-	CLegacyClientPlayerMovement(cdll_func_t *apLegacyClient);
+	CLegacyClientPlayerMovement(cdll_func_t *apLegacyClient) : mpLegacyClient(apLegacyClient){}
 	~CLegacyClientPlayerMovement() = default;
 	
 	void Init(playermove_t *apPlayerMoveData);

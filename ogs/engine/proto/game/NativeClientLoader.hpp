@@ -33,10 +33,15 @@
 
 #include "game/IClientLoader.hpp"
 
+struct IConsole;
+
 class CNativeClientLoader : public IClientLoader
 {
 public:
+	CNativeClientLoader(IConsole *apConsole) : mpConsole(apConsole){}
 	~CNativeClientLoader() = default;
 	
 	IClientHUD *LoadClient(CFactorySharedLib *apLib) override;
+private:
+	IConsole *mpConsole{nullptr};
 };

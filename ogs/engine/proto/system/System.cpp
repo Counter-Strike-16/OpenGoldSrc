@@ -36,7 +36,6 @@
 #include "system/SystemTypes.hpp"
 #include "system/DedicatedServerAPI.hpp"
 
-void (*Launcher_ConsolePrintf)(char *, ...);
 char *(*Launcher_GetLocalizedString)(unsigned int);
 
 int (*Launcher_MP3subsys_Suspend_Audio)();
@@ -56,6 +55,11 @@ FileFindHandle_t g_hfind;
 #endif // HOOK_ENGINE
 
 const int MAX_COMMAND_LINE_PARAMS = 50;
+
+double Sys_FloatTime()
+{
+	return CSystem::GetFloatTime();
+};
 
 void EXT_FUNC EngineFprintf(void *pfile, const char *szFmt, ...)
 {
@@ -111,6 +115,7 @@ void EXT_FUNC AlertMessage(ALERT_TYPE atype, const char *szFmt, ...)
 
 quakeparms_t *CSystem::mhost_parms = nullptr;
 
+IDedicatedServerExports *CSystem::mpRemoteConsole = nullptr;
 CFileSystem *CSystem::mpFileSystem = nullptr;
 
 bool CSystem::mbDedicatedServer = false;
@@ -118,22 +123,42 @@ bool CSystem::mbDedicatedServer = false;
 bool CSystem::mbIsWin95 = false;
 bool CSystem::mbIsWin98 = false;
 
-void CSystem::Init(quakeparms_t *host_parms, CFileSystem *apFileSystem) : mpFileSystem(apFileSystem)
+void CSystem::Init(quakeparms_t *host_parms, CFileSystem *apFileSystem, IDedicatedExports *apRemoteConsole, bool abDedicatedServer)
+	: mhost_parms(host_parms), mpFileSystem(apFileSystem), mpRemoteConsole(apRemoteConsole), mbDedicatedServer(abDedicatedServer)
 {
-	mhost_parms = host_parms;
-	
+#ifdef _WIN32
+	//InitHardwareTimer();
+#endif // _WIN32
+
+	//CheckCpuInstructionsSupport();
+
 #ifndef SWDS
 	InitFloatTime();
 #endif
+	
+	//TraceInit("Sys_InitMemory()", "Sys_ShutdownMemory()", 0);
+	//InitMemory(&host_parms);
+	
+	//TraceInit("Sys_InitLauncherInterface()", "Sys_ShutdownLauncherInterface()", 0);
+	InitLauncherInterface();
 };
 
 void CSystem::Shutdown()
 {
+	//TraceShutdown("Sys_ShutdownLauncherInterface()", 0);
+	ShutdownLauncherInterface();
+
+	//TraceShutdown("Sys_ShutdownAuthentication()", 0);
+	ShutdownAuthentication();
+
+	//TraceShutdown("Sys_ShutdownMemory()", 0);
+	//ShutdownMemory();
+	
 #ifndef SWDS
 	ShutdownFloatTime();
 #endif // SWDS
 	
-	//Steam_ShutdownClient();
+	//Steam_ShutdownClient(); // why here?
 	
 #ifdef _WIN32
 	//if(g_PerfCounterInitialized)
@@ -145,7 +170,7 @@ void CSystem::Shutdown()
 #else // if not _WIN32
 	
 #ifndef SWDS
-	GL_Shutdown(*pmainwindow, maindc, baseRC);
+	GL_Shutdown(*pmainwindow, maindc, baseRC); // why here?
 #endif // SWDS
 
 #endif // _WIN32
@@ -291,7 +316,7 @@ void CSystem::InitMemory()
 		else
 			mhost_parms->memsize = MAXIMUM_WIN_MEMORY;
 
-		if(gbIsDedicatedServer)
+		if(mbIsDedicatedServer)
 			mhost_parms->memsize = DEFAULT_MEMORY;
 #else
 		mhost_parms->memsize = DEFAULT_MEMORY;
@@ -319,7 +344,7 @@ void CSystem::ShutdownMemory()
 #ifdef _WIN32
 	GlobalFree((HGLOBAL)mhost_parms->membase);
 #else
-	Mem_Free(mhost_parms->membase);
+	Mem_Free(mhost_parms->membase); // CMemory::Free
 #endif // _WIN32
 	
 	mhost_parms->membase = NULL;
@@ -329,8 +354,8 @@ void CSystem::ShutdownMemory()
 void CSystem::InitLauncherInterface()
 {
 #ifdef _WIN32
+	
 	// TODO: client-side code
-	Launcher_ConsolePrintf = Legacy_Sys_Printf;
 	
 #else // if not _WIN32
 	
@@ -357,11 +382,6 @@ NOXREF void CSystem::ShutdownAuthentication()
 	NOXREFCHECK;
 };
 
-double CSystem::GetFloatTime()
-{
-	return Sys_FloatTime();
-};
-
 NOXREF void CSystem::Sleep(int msec)
 {
 	NOXREFCHECK;
@@ -378,13 +398,13 @@ void CSystem::Printf(const char *fmt, ...)
 	Q_vsnprintf(Dest, sizeof(Dest), fmt, va);
 	va_end(va);
 
-	if(gbIsDedicatedServer && Launcher_ConsolePrintf)
-		Launcher_ConsolePrintf("%s", Dest);
+	if(mbIsDedicatedServer)
+		LegacySysPrintf("%s", Dest);
 
 #ifdef _WIN32
 	OutputDebugStringA(Dest);
 #else
-	if(!gbIsDedicatedServer)
+	if(!mbIsDedicatedServer)
 		fprintf(stderr, "%s\n", Dest);
 #endif // _WIN32
 };
@@ -454,11 +474,9 @@ void NORETURN CSystem::Error(const char *error, ...)
 	};
 #endif // REHLDS_FIXES
 
-	if(gbIsDedicatedServer)
+	if(mbIsDedicatedServer)
 	{
-		if(Launcher_ConsolePrintf)
-			Launcher_ConsolePrintf("FATAL ERROR (shutting down): %s\n", text);
-		else
+		if(!LegacySysPrintf("FATAL ERROR (shutting down): %s\n", text))
 			printf("FATAL ERROR (shutting down): %s\n", text);
 	}
 #ifndef SWDS
@@ -475,9 +493,8 @@ void NORETURN CSystem::Error(const char *error, ...)
 	};
 #endif // SWDS
 
-	// exit(-1);
 	// Allahu akbar!
-	*(int *)NULL = NULL;
+	*(int *)NULL = NULL; // exit(-1);
 };
 
 NOXREF void CSystem::SetRateRegistrySetting(const char *pchRate)
@@ -500,8 +517,24 @@ void CSystem::SetupLegacyAPIs()
 	//VID_FlipScreen = Sys_VID_FlipScreen;
 	//D_SurfaceCacheForRes = Sys_GetSurfaceCacheSize;
 #endif // SWDS
+};
+
+bool CSystem::LegacySysPrintf(char *fmt, ...)
+{
+	if(mpRemoteConsole)
+	{
+		va_list argptr;
+		char text[1024];
+
+		va_start(argptr, fmt);
+		Q_vsnprintf(text, sizeof(text), fmt, argptr);
+		va_end(argptr);
+		
+		mpRemoteConsole->Sys_Printf(text);
+		return true;
+	};
 	
-	Launcher_ConsolePrintf = Legacy_Sys_Printf;
+	return false;
 };
 
 NOXREF bool CSystem::IsWin95()
@@ -528,22 +561,9 @@ NOXREF bool CSystem::IsWin98()
 #endif // _WIN32
 };
 
-NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage)
+NOXREF void Legacy_ErrorMessage(int nLevel, const char *pszErrorMessage) // looks like this thing came out from q2 (Com_Error)
 {
 	NOXREFCHECK;
-};
-
-void Legacy_Sys_Printf(char *fmt, ...)
-{
-	va_list argptr;
-	char text[1024];
-
-	va_start(argptr, fmt);
-	Q_vsnprintf(text, sizeof(text), fmt, argptr);
-	va_end(argptr);
-
-	if(dedicated_)
-		dedicated_->Sys_Printf(text);
 };
 
 NOXREF void Legacy_MP3subsys_Suspend_Audio()
