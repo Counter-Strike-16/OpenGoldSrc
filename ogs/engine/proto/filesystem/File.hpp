@@ -37,7 +37,7 @@ class CFile
 {
 public:
 	CFile(IFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
-	CFile(const char *asName, CFileSystem *apFileSystem);
+	CFile(const char *asName, IFileSystem *apFileSystem);
 	~CFile(){Close();}
 	
 	bool Open(const char *asName, const char *asOptions);

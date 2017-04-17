@@ -1143,7 +1143,7 @@ cl_enginefunc_t gClEngFuncs =
 
   // pfnSetCrosshair,
 
-  (void *)Cvar_RegisterVariable, // client flag?
+  (void *)Cvar_RegisterClientVariable,
   (void *)Cvar_VariableValue,
   (void *)Cvar_VariableString,
 

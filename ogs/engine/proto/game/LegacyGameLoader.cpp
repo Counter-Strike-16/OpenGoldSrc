@@ -39,8 +39,8 @@ using pfnGiveFnPtrsToDLL = void (__stdcall *)(enginefuncs_t *apEngFuncs, globalv
 
 IGame *CLegacyGameLoader::LoadGame(CFactorySharedLib *apGameLib)
 {
-	APIFUNCTION fnGetEntityAPI;
-	APIFUNCTION2 fnGetEntityAPI2;
+	APIFUNCTION fnGetEntityAPI; // pfnGetAPI;
+	APIFUNCTION2 fnGetEntityAPI2; // pfnGetAPI2;
 	//enginefuncs_t gpEngfuncs;
 	//globalvars_t gpGlobals;
 	//playermove_t gpMove;
@@ -49,7 +49,7 @@ IGame *CLegacyGameLoader::LoadGame(CFactorySharedLib *apGameLib)
 	//svgame.pmove = &gpMove;
 	//mpGlobals = &gpGlobals;
 	
-	NEW_DLL_FUNCTIONS_FN fnGetNewDllFuncs;
+	NEW_DLL_FUNCTIONS_FN fnGetNewDllFuncs; // pNewAPI;
 	
 	// Try to find an extended export set first
 	fnGetNewDllFuncs = (NEW_DLL_FUNCTIONS_FN)apGameLib->GetExportFunc("GetNewDLLFunctions", false);

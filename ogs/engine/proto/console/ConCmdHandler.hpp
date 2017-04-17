@@ -40,22 +40,32 @@ public:
 	void Init();
 	void Shutdown();
 	
-	bool IsCmdExists(const char *asName);
+	bool IsCmdExists(const char *asName) const;
 	
 	void AddCommand(const char *asName, pfnConCmdCallback afnCallback);
+	//void AddCommand(const char *cmdName, cmdFunction_t function, int flags, const char *description, argCompletion_t argCompletion = NULL );
 	void RemoveCommand(const char *asName);
+	//void RemoveFlaggedCommands(int flags);
 	
-	IConCmd *GetFirstCmd();
+	IConCmd *GetFirstCmd() const;
+	//IConCmd *GetList() const;
+	// IConCmd should be returned from GetList in case we have GetNext method
+	// in our IConCmd
+	// or return IConCmdList which will be used as a wrapper around the
+	// std list of IConCmd
+	// the legacy code isn't connected with cmd_function_t struct so we can
+	// freely change the way of work of this thing
+	//IConCmd *GetCommands() const {return commands;}
 	
-	IConCmd *FindCmd(const char *asName);
-	IConCmd *FindCmdPrev(const char *asName);
+	IConCmd *FindCmd(const char *asName) const;
+	IConCmd *FindCmdPrev(const char *asName) const;
 	
 	const IConCmdArgs &TokenizeString(const char *asArgs) const;
 private:
-	void Cmd_Wait_f(); // static void Wait_f( const idCmdArgs &args );
+	void Cmd_Wait_f(); // static void Wait_f( const IConCmdArgs &args );
 	void Cmd_StuffCmds_f();
-	void Cmd_Exec_f(); // static void Exec_f( const idCmdArgs &args );
-	void Cmd_Echo_f(); // static void Echo_f( const idCmdArgs &args );
+	void Cmd_Exec_f(); // static void Exec_f( const IConCmdArgs &args );
+	void Cmd_Echo_f(); // static void Echo_f( const IConCmdArgs &args );
 	void Cmd_Alias_f();
 	void Cmd_CmdList_f();
 	

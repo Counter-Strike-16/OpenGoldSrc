@@ -67,10 +67,11 @@ public:
 	void Execute();
 	
 	// Leave the execution for next frame
-	void SetWait(bool abWait);
+	void SetWait(bool abWait){cmd_wait = true;}
+	//void SetWait(int anFrames){wait = anFrames;}
 private:
 	IConsole *mpConsole{nullptr};
 	CSizeBuffer *cmd_text{nullptr}; // sizebuf_t cmd_text;
 	
-	bool cmd_wait{false};
+	bool cmd_wait{false}; // int wait; - framenum to wait
 };

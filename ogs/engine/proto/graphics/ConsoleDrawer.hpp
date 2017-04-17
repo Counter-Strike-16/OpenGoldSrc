@@ -31,18 +31,20 @@
 
 #pragma once
 
-void Con_DrawCharacter(int cx, int line, int num);
-
-void Con_DrawConsole(int lines /*, qboolean drawinput*/);
-//void Con_DrawConsole (float frac);
+struct IConsole;
 
 class CConsoleDrawer
 {
 public:
-	CConsoleDrawer();
+	CConsoleDrawer(IConsole *apConsole) : mpConsole(apConsole){}
+	~CConsoleDrawer() = default;
 	
-	void DrawCharacter(IConsole *apConsole, int cx, int line, int num);
+	void DrawCharacter(int cx, int line, int num);
 	
-	void Draw(IConsole *apConsole, int lines /*, qboolean drawinput*/);
-	//void Draw(IConsole *apConsole, float frac);
+	void Draw(int lines /*, qboolean drawinput*/);
+	//void Draw(float frac);
+	
+	void DrawNotify();
+private:
+	IConsole *mpConsole{nullptr};
 };

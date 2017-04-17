@@ -51,10 +51,10 @@ IFileSystem *CFileSystemProvider::GetFromModule(const char *asName /*CreateInter
 {
 	mpFileSystemModule = Sys_LoadModule(asName);
 	
-	CreateInterfaceFn fnFactory;
+	if(!mpFileSystemModule)
+		return nullptr;
 	
-	if(mpFileSystemModule)
-		fnFactory = Sys_GetFactory(mpFileSystemModule);
+	CreateInterfaceFn fnFactory = Sys_GetFactory(mpFileSystemModule);
 	
 	// Will return a valid ptr or nullptr if failed (see above)
 	return GetFromFactory(fnFactory);

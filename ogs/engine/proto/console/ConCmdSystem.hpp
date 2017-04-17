@@ -5,12 +5,11 @@ class CConCmdSystem : public IConCmdSystem
 {
 public:
 
-	virtual void			AddCommand( const char *cmdName, cmdFunction_t function, int flags, const char *description, argCompletion_t argCompletion = NULL );
 	
-	virtual void			RemoveFlaggedCommands( int flags );
-
+	
 	virtual void			CommandCompletion( void(*callback)( const char *s ) );
 	virtual void			ArgCompletion( const char *cmdString, void(*callback)( const char *s ) );
+	
 	virtual void			ExecuteCommandText( const char * text );
 	virtual void			AppendCommandText( const char * text );
 
@@ -25,15 +24,10 @@ public:
 	virtual void			SetupReloadEngine( const idCmdArgs &args );
 	virtual bool			PostReloadEngine();
 
-	void					SetWait( int numFrames ) { wait = numFrames; }
-	CConCmd *			GetCommands() const { return commands; }
-
+	
 private:
 	static const int		MAX_CMD_BUFFER = 0x10000;
 
-	
-
-	int						wait;
 	int						textLength;
 	byte					textBuf[MAX_CMD_BUFFER];
 

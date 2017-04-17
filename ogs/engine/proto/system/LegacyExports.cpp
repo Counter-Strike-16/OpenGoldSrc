@@ -30,3 +30,213 @@
 
 #include "precompiled.hpp"
 #include "system/LegacyExports.hpp"
+#include "filesystem/FileSystem.hpp"
+#include "filesystem/File.hpp"
+
+CFileSystem *gpFileSystem = nullptr;
+
+char *COM_GetToken()
+{
+	return com_token;
+};
+
+unsigned char *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength)
+{
+	char base[33];
+	unsigned char *buf = NULL;
+
+#ifndef SWDS
+	g_engdstAddrs.COM_LoadFile((char**)path, &usehunk, &pLength);
+#endif
+
+	if(pLength)
+		*pLength = 0;
+
+	CFile *hFile = gpFileSystem->Open(path, "rb");
+
+	if(!hFile)
+		return NULL;
+
+	int len = hFile->GetSize();
+	
+	COM_FileBase(path, base);
+	base[32] = 0;
+
+	switch(usehunk)
+	{
+	case 0:
+		buf = (unsigned char *)Z_Malloc(len + 1);
+		break;
+
+	case 1:
+		buf = (unsigned char *)Hunk_AllocName(len + 1, base);
+		break;
+
+	case 2:
+		buf = (unsigned char *)Hunk_TempAlloc(len + 1);
+		break;
+
+	case 3:
+		buf = (unsigned char *)Cache_Alloc(loadcache, len + 1, base);
+		break;
+
+	case 4:
+		if(len + 1 <= loadsize)
+		{
+			buf = loadbuf;
+		}
+		else
+		{
+			buf = (unsigned char *)Hunk_TempAlloc(len + 1);
+		}
+		break;
+
+	case 5:
+		buf = (unsigned char *)Mem_Malloc(len + 1);
+		break;
+
+	default:
+#ifdef REHLDS_FIXES
+		gpFileSystem->Close(hFile);
+#endif
+		CSystem::Error("%s: bad usehunk", __FUNCTION__);
+	}
+
+	if(!buf)
+	{
+#ifdef REHLDS_FIXES
+		gpFileSystem->Close(hFile);
+#endif
+		CSystem::Error("%s: not enough space for %s", __FUNCTION__, path);
+	}
+
+	hFile->Read(buf, len, 1);
+	
+	gpFileSystem->Close(hFile);
+
+	buf[len] = 0;
+
+	if(pLength)
+		*pLength = len;
+
+	return buf;
+};
+
+unsigned char *EXT_FUNC COM_LoadFileForMe(char *filename, int *pLength)
+{
+	return COM_LoadFile(filename, 5, pLength);
+};
+
+void EXT_FUNC COM_FreeFile(void *buffer)
+{
+#ifndef SWDS
+	g_engdstAddrs.COM_FreeFile(&buffer);
+#endif
+
+	if(buffer)
+		Mem_Free(buffer);
+};
+
+const char *COM_ParseFile(const char *data, char *token, int maxtoken)
+{
+	const char *return_data = COM_Parse(data);
+	Q_strncpy(token, com_token, maxtoken);
+	return return_data;
+};
+
+int EXT_FUNC COM_CompareFileTime(char *filename1, char *filename2, int *iCompare)
+{
+	*iCompare = 0;
+
+	if(filename1 && filename2)
+	{
+		int ft1 = gpFileSystem->GetFileTime(filename1);
+		int ft2 = gpFileSystem->GetFileTime(filename2);
+
+		if(ft1 >= ft2)
+		{
+			if(ft1 > ft2)
+				*iCompare = 1;
+
+			return 1;
+		}
+		else
+		{
+			*iCompare = -1;
+			return 1;
+		};
+	};
+
+	return 0;
+};
+
+NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName)
+{
+	NOXREFCHECK;
+
+	gpFileSystem->AddSearchPath(pszBaseDir, "PLATFORM");
+};
+
+typedef struct
+{
+	unsigned char chunkID[4];
+	long chunkSize;
+	short wFormatTag;
+	unsigned short wChannels;
+	unsigned long dwSamplesPerSec;
+	unsigned long dwAvgBytesPerSec;
+	unsigned short wBlockAlign;
+	unsigned short wBitsPerSample;
+} FormatChunk;
+
+constexpr auto WAVE_HEADER_LENGTH = 128;
+
+unsigned int EXT_FUNC COM_GetApproxWavePlayLength(const char *filepath)
+{
+	char buf[WAVE_HEADER_LENGTH + 1];
+	int filelength;
+	FormatChunk format;
+
+	CFile *hFile = gpFileSystem->Open(filepath, "rb");
+
+	if(hFile)
+	{
+		filelength = hFile->GetSize();
+
+		if(filelength <= WAVE_HEADER_LENGTH)
+			return 0;
+
+		hFile->Read(buf, WAVE_HEADER_LENGTH, 1);
+		
+		gpFileSystem->Close(hFile);
+
+		buf[WAVE_HEADER_LENGTH] = 0;
+
+		if(!Q_strnicmp(buf, "RIFF", 4) && !Q_strnicmp(&buf[8], "WAVE", 4) &&
+		   !Q_strnicmp(&buf[12], "fmt ", 4))
+		{
+			Q_memcpy(&format, &buf[12], sizeof(FormatChunk));
+
+			filelength -= WAVE_HEADER_LENGTH;
+
+			if(format.dwAvgBytesPerSec > 999)
+				return filelength / (format.dwAvgBytesPerSec / 1000);
+
+			return 1000 * filelength / format.dwAvgBytesPerSec;
+		}
+	}
+
+	return 0;
+};
+
+void EXT_FUNC COM_GetGameDir(char *szGameDir)
+{
+	if(szGameDir)
+		Q_snprintf(szGameDir, MAX_PATH - 1, "%s", gpFileSystem->GetGameDirectory());
+};
+
+int COM_CheckParm(char *parm)
+{
+	//gpCmdLine->HasArg(parm);
+	return 0;
+};

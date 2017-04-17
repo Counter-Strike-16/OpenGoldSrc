@@ -33,7 +33,7 @@
 #include "filesystem/FileSystem.hpp"
 #include "system/common.hpp"
 
-CFile::CFile(const char *asName, CFileSystem *apFileSystem) : CFile(apFileSystem)
+CFile::CFile(const char *asName, IFileSystem *apFileSystem) : CFile(apFileSystem)
 {
 	assert(asName);
 	

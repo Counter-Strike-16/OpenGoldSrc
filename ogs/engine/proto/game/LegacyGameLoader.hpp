@@ -33,6 +33,7 @@
 #include "game/IGameLoader.hpp"
 
 class CLegacyGame;
+class CFactorySharedLib;
 
 class CLegacyGameLoader : public IGameLoader
 {
@@ -40,7 +41,7 @@ public:
 	CLegacyGameLoader() = default;
 	~CLegacyGameLoader() = default;
 	
-	IGame *LoadGame(const tString &asPath);
+	IGame *LoadGame(CFactorySharedLib *apLib);
 	void UnloadGame();
 private:
 	std::unique_ptr<CLegacyGame> mpLegacyGame/*{nullptr}*/;

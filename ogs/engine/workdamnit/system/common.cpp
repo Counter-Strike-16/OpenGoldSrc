@@ -183,7 +183,6 @@ qboolean com_ignorecolons //= false;
 qboolean s_com_token_unget;
 char *com_last_in_quotes_data = NULL;
 char com_clientfallback[MAX_PATH];
-char com_gamedir[MAX_PATH];
 
 cache_user_t *loadcache;
 unsigned char *loadbuf;
@@ -331,22 +330,14 @@ void COM_DefaultExtension(char *path, char *extension)
 	Q_strcat(path, extension);
 }
 
-char *COM_GetToken()
-{
-	return com_token;
-};
+
 
 void COM_UngetToken()
 {
 	s_com_token_unget = 1;
 };
 
-const char *COM_ParseFile(const char *data, char *token, int maxtoken)
-{
-	const char *return_data = COM_Parse(data);
-	Q_strncpy(token, com_token, maxtoken);
-	return return_data;
-};
+
 
 char *COM_Parse(char *data)
 {
@@ -535,11 +526,7 @@ int COM_TokenWaiting(char *buffer)
 	return 0;
 }
 
-int COM_CheckParm(char *parm)
-{
-	//gpCmdLine->HasArg(parm);
-	return 0;
-}
+
 
 void COM_InitArgv(int argc, char *argv[])
 {
@@ -589,7 +576,7 @@ char *va(char *format, ...)
 	return string[current];
 }
 
-NOXREF char *vstr(vec_t *v)
+NOXREF char *vstr(vec_t *v) // vec_to_string
 {
 	NOXREFCHECK;
 
@@ -616,96 +603,6 @@ NOXREF int memsearch(unsigned char *start, int count, int search)
 	}
 
 	return -1;
-}
-
-unsigned char *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength)
-{
-	char base[33];
-	unsigned char *buf = NULL;
-
-#ifndef SWDS
-	g_engdstAddrs.COM_LoadFile((char**)path, &usehunk, &pLength);
-#endif
-
-	if(pLength)
-		*pLength = 0;
-
-	FileHandle_t hFile = FS_Open(path, "rb");
-
-	if(!hFile)
-		return NULL;
-
-	int len = FS_Size(hFile);
-	COM_FileBase(path, base);
-	base[32] = 0;
-
-	switch(usehunk)
-	{
-	case 0:
-		buf = (unsigned char *)Z_Malloc(len + 1);
-		break;
-
-	case 1:
-		buf = (unsigned char *)Hunk_AllocName(len + 1, base);
-		break;
-
-	case 2:
-		buf = (unsigned char *)Hunk_TempAlloc(len + 1);
-		break;
-
-	case 3:
-		buf = (unsigned char *)Cache_Alloc(loadcache, len + 1, base);
-		break;
-
-	case 4:
-		if(len + 1 <= loadsize)
-		{
-			buf = loadbuf;
-		}
-		else
-		{
-			buf = (unsigned char *)Hunk_TempAlloc(len + 1);
-		}
-		break;
-
-	case 5:
-		buf = (unsigned char *)Mem_Malloc(len + 1);
-		break;
-
-	default:
-#ifdef REHLDS_FIXES
-		FS_Close(hFile);
-#endif
-		Sys_Error("%s: bad usehunk", __FUNCTION__);
-	}
-
-	if(!buf)
-	{
-#ifdef REHLDS_FIXES
-		FS_Close(hFile);
-#endif
-		Sys_Error("%s: not enough space for %s", __FUNCTION__, path);
-	}
-
-	FS_Read(buf, len, 1, hFile);
-	FS_Close(hFile);
-
-	buf[len] = 0;
-
-	if(pLength)
-		*pLength = len;
-
-	return buf;
-}
-
-void EXT_FUNC COM_FreeFile(void *buffer)
-{
-#ifndef SWDS
-	g_engdstAddrs.COM_FreeFile(&buffer);
-#endif
-
-	if(buffer)
-		Mem_Free(buffer);
 }
 
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize)
@@ -820,13 +717,6 @@ void COM_Shutdown()
 	// Do nothing.
 }
 
-NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName)
-{
-	NOXREFCHECK;
-
-	FS_AddSearchPath(pszBaseDir, "PLATFORM");
-}
-
 void COM_AddDefaultDir(char *pszDir)
 {
 	if(pszDir && *pszDir)
@@ -870,25 +760,7 @@ void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char 
 	CStringHandler::StripTrailingSlash(pDirName);
 }
 
-// TODO: finish me!
-qboolean COM_SetupDirectories()
-{
-	char pDirName[512];
 
-	com_clientfallback[0] = 0;
-	com_gamedir[0] = 0;
-
-	COM_ParseDirectoryFromCmd("-basedir", pDirName, "valve");
-	COM_ParseDirectoryFromCmd("-game", com_gamedir, pDirName);
-
-	if(FileSystem_SetGameDirectory(pDirName, (const char *)(com_gamedir[0] != 0 ? com_gamedir : 0)))
-	{
-		Info_SetValueForStarKey(Info_Serverinfo(), "*gamedir", com_gamedir, MAX_INFO_STRING);
-		return 1;
-	}
-
-	return 0;
-}
 
 void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOutdated)
 {
@@ -997,49 +869,11 @@ void COM_Log(char *pszFile, char *fmt, ...)
 	}
 }
 
-unsigned char *EXT_FUNC COM_LoadFileForMe(char *filename, int *pLength)
-{
-	return COM_LoadFile(filename, 5, pLength);
-}
 
-int EXT_FUNC COM_CompareFileTime(char *filename1, char *filename2, int *iCompare)
-{
-	int ft1;
-	int ft2;
 
-	*iCompare = 0;
 
-	if(filename1 && filename2)
-	{
-		ft1 = FS_GetFileTime(filename1);
-		ft2 = FS_GetFileTime(filename2);
 
-		if(ft1 >= ft2)
-		{
-			if(ft1 > ft2)
-			{
-				*iCompare = 1;
-			}
 
-			return 1;
-		}
-		else
-		{
-			*iCompare = -1;
-			return 1;
-		}
-	}
-
-	return 0;
-}
-
-void EXT_FUNC COM_GetGameDir(char *szGameDir)
-{
-	if(szGameDir)
-	{
-		Q_snprintf(szGameDir, MAX_PATH - 1, "%s", com_gamedir);
-	}
-}
 
 int COM_EntsForPlayerSlots(int nPlayers)
 {
@@ -1381,58 +1215,6 @@ NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq)
 	}
 }
 
-typedef struct
-{
-	unsigned char chunkID[4];
-	long chunkSize;
-	short wFormatTag;
-	unsigned short wChannels;
-	unsigned long dwSamplesPerSec;
-	unsigned long dwAvgBytesPerSec;
-	unsigned short wBlockAlign;
-	unsigned short wBitsPerSample;
-} FormatChunk;
 
-#define WAVE_HEADER_LENGTH 128
-
-unsigned int EXT_FUNC COM_GetApproxWavePlayLength(const char *filepath)
-{
-	char buf[WAVE_HEADER_LENGTH + 1];
-	int filelength;
-	FileHandle_t hFile;
-	FormatChunk format;
-
-	hFile = FS_Open(filepath, "rb");
-
-	if(hFile)
-	{
-		filelength = FS_Size(hFile);
-
-		if(filelength <= WAVE_HEADER_LENGTH)
-			return 0;
-
-		FS_Read(buf, WAVE_HEADER_LENGTH, 1, hFile);
-		FS_Close(hFile);
-
-		buf[WAVE_HEADER_LENGTH] = 0;
-
-		if(!Q_strnicmp(buf, "RIFF", 4) && !Q_strnicmp(&buf[8], "WAVE", 4) &&
-		   !Q_strnicmp(&buf[12], "fmt ", 4))
-		{
-			Q_memcpy(&format, &buf[12], sizeof(FormatChunk));
-
-			filelength -= WAVE_HEADER_LENGTH;
-
-			if(format.dwAvgBytesPerSec > 999)
-			{
-				return filelength / (format.dwAvgBytesPerSec / 1000);
-			}
-
-			return 1000 * filelength / format.dwAvgBytesPerSec;
-		}
-	}
-
-	return 0;
-}
 
 #endif // COM_Functions_region

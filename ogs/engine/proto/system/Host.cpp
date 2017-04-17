@@ -309,16 +309,17 @@ void CHost::Shutdown()
 	//Voice_Deinit();
 	
 	host_initialized = false;
-/*
+	
 	// CDAudio_Shutdown();
 	// VGui_Shutdown();
 	
-	if(cls.state != ca_dedicated)
-		ClientDLL_Shutdown();
+	//if(cls.state != ca_dedicated)
+		//ClientDLL_Shutdown();
 
 	// Rehlds Security
 	//Rehlds_Security_Shutdown();
-
+	
+/*
 	Cmd_RemoveGameCmds(); // Host_?
 	Cmd_Shutdown();
 	Cvar_Shutdown();
@@ -333,9 +334,9 @@ void CHost::Shutdown()
 		SV_ClearFrames(&pclient->frames);
 
 	mpServer->Shutdown();
+*/
 	
 	// SystemWrapper_ShutDown();
-	*/
 
 	mpNetwork->Shutdown();
 
@@ -1198,13 +1199,23 @@ void CHost::CheckGore()
 
 bool CHost::IsSinglePlayerGame()
 {
+	// it's better to replace this with host.maxclients
+	// it will work the same
+	// currently we check that local server is active
+	// if so, we get the maxclients from there
+	// otherwise, we're connected to some remote server
+	// so we get our stored maxclients which we got from
+	// that server
+	
 	/*
-	if(g_psv.IsActive())
-		return g_psvs.maxclients == 1;
+	if(mpServer->IsActive())
+		return mpServer->GetMaxClients() == 1;
 	else
-		return cl.maxclients == 1;
+		return mpLocalClient->GetServerData()->GetMaxClients() == 1;
 	*/
-	return false;
+	
+	//mnMaxPlayers
+	return mnMaxClients == 1;
 };
 
 bool CHost::IsServerActive() // remove?

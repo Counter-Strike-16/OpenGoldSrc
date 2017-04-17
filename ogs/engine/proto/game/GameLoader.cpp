@@ -49,9 +49,7 @@ void LoadEntityDLLs(const char *szBaseDir)
 	int nBytesRead;
 	char *pStreamPos;
 	const char *findfn;
-	NEW_DLL_FUNCTIONS_FN pNewAPI;
-	APIFUNCTION2 pfnGetAPI2;
-	APIFUNCTION pfnGetAPI;
+	
 	char szDllFilename[8192];
 	char szDllWildcard[260];
 	char szDllListFile[260];
@@ -103,12 +101,14 @@ void LoadEntityDLLs(const char *szBaseDir)
 			pStreamPos = COM_Parse(pStreamPos);
 			Q_strncpy(szValue, com_token, sizeof(szValue) - 1);
 			szValue[sizeof(szValue) - 1] = 0;
+			
 #ifdef _WIN32
 			if(Q_stricmp(szKey, "gamedll"))
-#else  // _WIN32
+#elif __linux__
 			if(Q_stricmp(szKey, "gamedll_linux"))
+#elif __APPLE__
+			if(Q_stricmp(szKey, "gamedll_mac"))
 #endif // _WIN32
-			// TODO: Mac support
 			{
 				DLL_SetModKey(&gmodinfo, szKey, szValue);
 			}
@@ -199,11 +199,11 @@ HMODULE LoadWindowsDLL(LPCSTR lpLibFileName)
 void LoadThisDll(const char *szDllFilename)
 {
 #ifdef _WIN32
-	typedef void(__stdcall * PFN_GiveFnptrsToDll)(enginefuncs_t *,
-	                                              globalvars_t *);
+	typedef void (__stdcall * PFN_GiveFnptrsToDll)(enginefuncs_t *, globalvars_t *);
 #else
-	typedef void(__cdecl * PFN_GiveFnptrsToDll)(enginefuncs_t *, globalvars_t *);
+	typedef void (__cdecl * PFN_GiveFnptrsToDll)(enginefuncs_t *, globalvars_t *);
 #endif // _WIN32
+	
 	PFN_GiveFnptrsToDll pfnGiveFnptrsToDll;
 	extensiondll_t *pextdll;
 
@@ -224,8 +224,7 @@ void LoadThisDll(const char *szDllFilename)
 #endif
 
 #ifdef _WIN32
-	pfnGiveFnptrsToDll =
-	(PFN_GiveFnptrsToDll)GetProcAddress(hDLL, "GiveFnptrsToDll");
+	pfnGiveFnptrsToDll = (PFN_GiveFnptrsToDll)GetProcAddress(hDLL, "GiveFnptrsToDll");
 #else
 	pfnGiveFnptrsToDll = (PFN_GiveFnptrsToDll)dlsym(hDLL, "GiveFnptrsToDll");
 #endif // _WIN32

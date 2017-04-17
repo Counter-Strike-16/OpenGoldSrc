@@ -63,8 +63,6 @@ public:
 	
 	void Printf(/*int anLevel,*/ const char *asMsg, ...);
 
-	void CheckResize();
-
 	void Print(const char *txt);
 	//void Printf(const char *fmt, ...); // _format(1);
 
@@ -74,8 +72,9 @@ public:
 	//void NXPrintf( struct con_nprint_s *info, char *fmt, ... ) _format(2);
 	void SafePrintf(const char *fmt, ...);
 	void CenteredPrint(const char *text);
-
-	void DrawNotify();
+	
+	void CheckResize();
+	
 	void ClearNotify();
 	void ShowNotifyBox(const char *text); // during startup for sound / cd warnings
 

@@ -27,40 +27,11 @@
  */
 
 /// @file
-/// @brief legacy engine exports from system module
+/// @brief shared client data between client/server side
 
 #pragma once
 
-//============================================================================
-// Common functionality
-//============================================================================
-
-char *COM_GetToken();
-
-unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
-unsigned char *COM_LoadFileForMe(char *filename, int *pLength);
-void COM_FreeFile(void *buffer);
-
-const char *COM_ParseFile(const char *data, char *token, int maxtoken);
-
-int COM_CompareFileTime(char *filename1, char *filename2, int *iCompare);
-
-NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName);
-
-unsigned int COM_GetApproxWavePlayLength(const char *filepath);
-
-void COM_GetGameDir(char *szGameDir);
-
-int COM_CheckParm(char *parm);
-
-//COM_ExpandFileName();
-//int COM_FileSize(const char *name);
-
-//============================================================================
-// Info string
-//============================================================================
-
-void Info_SetValueForKey(char *s, const char *key, const char *value, int maxsize);
-const char *Info_ValueForKey(const char *s, const char *key);
-
-void Info_RemoveKey(char *s, const char *key);
+struct TClientData
+{
+	char name[32];
+};

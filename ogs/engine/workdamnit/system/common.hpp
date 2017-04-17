@@ -288,7 +288,7 @@ NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, i
 void COM_AddDefaultDir(char *pszDir);
 
 void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault);
-qboolean COM_SetupDirectories();
+
 void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOutdated);
 void COM_ListMaps(char *pszSubString);
 void COM_Log(char *pszFile, char *fmt, ...);

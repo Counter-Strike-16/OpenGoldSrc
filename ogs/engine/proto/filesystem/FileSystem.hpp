@@ -81,10 +81,11 @@ int Host_GetVideoLevel();
 
 void *FS_LoadLibrary(const char *dllName);
 
-class CFileSystem
+class CFileSystem // : public opengoldsrc::IFileSystem
 {
 public:
 	CFileSystem(IFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
+	~CFileSystem() = default;
 	
 	int Init(char *basedir);
 	void Shutdown();
@@ -96,6 +97,7 @@ public:
 	NOXREF void CopyFile(char *netpath, char *cachepath);
 	
 	const char *GetBaseDirectory();
+	const char *GetGameDirectory(); // GetGameDir
 	
 	int SetGameDirectory(const char *pDefaultDir, const char *pGameDir);
 	int AddFallbackGameDir(const char *pGameDir);
@@ -176,8 +178,10 @@ public:
 	void Rename(const char *originalName, const char *newName);
 private:
 	void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_);
+	bool SetupDirectories(); // SetupGameDirectories
 	
 	char msBaseDir[512];
+	char com_gamedir[MAX_PATH];
 	
 	IFileSystem *mpFileSystem{nullptr}; // pimpl
 };

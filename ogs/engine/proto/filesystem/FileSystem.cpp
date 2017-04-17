@@ -870,3 +870,23 @@ void CFileSystem::CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguag
 	
 	Close(hFile);
 };
+
+// TODO: finish me!
+bool CFileSystem::SetupDirectories()
+{
+	char pDirName[512] = {0};
+
+	//com_clientfallback[0] = 0;
+	com_gamedir[0] = 0;
+
+	COM_ParseDirectoryFromCmd("-basedir", pDirName, "valve");
+	COM_ParseDirectoryFromCmd("-game", com_gamedir, pDirName);
+
+	if(SetGameDirectory(pDirName, (const char *)(com_gamedir[0] != 0 ? com_gamedir : 0)))
+	{
+		Info_SetValueForStarKey(Cvar_Serverinfo(), "*gamedir", com_gamedir, MAX_INFO_STRING);
+		return true;
+	};
+
+	return false;
+};

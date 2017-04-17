@@ -111,7 +111,6 @@ public:
 	static NOBODY void NORETURN Error(const char *error, ...); // mb add int code?
 	
 	static NOXREF void SetRateRegistrySetting(const char *pchRate);
-
 	static NOXREF const char *GetRateRegistrySetting(const char *pchDef);
 	
 #ifdef _WIN32

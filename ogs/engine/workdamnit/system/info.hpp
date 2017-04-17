@@ -49,16 +49,14 @@ constexpr auto MAX_LOCALINFO = 4096;
 constexpr auto MAX_LOCALINFO = MAX_INFO_STRING * 128;
 #endif // REHLDS_FIXES
 
-const char *Info_ValueForKey(const char *s, const char *key);
 
-void Info_RemoveKey(char *s, const char *key);
+
 void Info_RemovePrefixedKeys(char *s, const char prefix);
 
 qboolean Info_IsKeyImportant(const char *key);
 
 char *Info_FindLargestKey(char *s, int maxsize);
 
-void Info_SetValueForKey(char *s, const char *key, const char *value, int maxsize);
 void Info_SetValueForStarKey(char *s, const char *key, const char *value, int maxsize);
 
 void Info_Print(const char *s);

@@ -56,6 +56,8 @@ FileFindHandle_t g_hfind;
 
 const int MAX_COMMAND_LINE_PARAMS = 50;
 
+// exports
+
 double Sys_FloatTime()
 {
 	return CSystem::GetFloatTime();
@@ -112,6 +114,8 @@ void EXT_FUNC AlertMessage(ALERT_TYPE atype, const char *szFmt, ...)
 	};
 	va_end(argptr);
 };
+
+//
 
 quakeparms_t *CSystem::mhost_parms = nullptr;
 
@@ -420,7 +424,7 @@ NOXREF void CSystem::Warning(const char *pszWarning, ...)
 	Q_vsnprintf(text, sizeof(text), pszWarning, argptr);
 	va_end(argptr);
 
-	Printf(text);
+	Printf(text); // Printf("[WARNING] %s", text);
 };
 
 void NORETURN CSystem::Error(const char *error, ...)

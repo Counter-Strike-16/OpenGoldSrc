@@ -232,6 +232,8 @@ private:
 	
 	std::unique_ptr<CConsole> mpConsole; // IConsole
 	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
+	//std::unique_ptr<CConCmdHandler> mpConCmdHandler;
+	//std::unique_ptr<CConVarHandler> mpConVarHandler;
 	
 	std::unique_ptr<CNetwork> mpNetwork;
 	std::unique_ptr<CSound> mpSound;
@@ -260,6 +262,9 @@ private:
 	int host_framecount{0}; // incremented every frame, never reset
 	
 	int host_hunklevel{0};
+	
+	// instead of svs.maxclients/cl.maxclients
+	int mnMaxClients{0};
 
 	//jmp_buf host_abortserver;
 	//jmp_buf host_enddemo;
