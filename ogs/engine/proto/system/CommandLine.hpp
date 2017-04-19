@@ -36,11 +36,14 @@
 class CCmdLine
 {
 public:
-	CCmdLine();
+	CCmdLine() = default;
+	~CCmdLine() = default;
 	
 	void Init(int argc, char **argv);
 	
 	int HasArg(const char *asArg);
+	
+	const char *GetArg(int anArg);
 private:
 	int com_argc{0};
 	

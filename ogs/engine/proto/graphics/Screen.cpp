@@ -144,7 +144,7 @@ void CScreen::Update()
 		if(realtime - scr_disabled_time > 60)
 		{
 			scr_disabled_for_loading = false;
-			Con_Printf ("load failed.\n");
+			mpConsole->Printf("load failed.\n");
 		}
 		else
 		*/
@@ -190,7 +190,7 @@ void CScreen::Update()
 	{
 		//oldlcd_x = lcd_x.value;
 		//vid.recalc_refdef = true;
-	}
+	};
 
 	if(oldscreensize != scr_viewsize.value)
 	{
@@ -203,17 +203,15 @@ void CScreen::Update()
 		oldsbar = cl_sbar.value;
 		vid.recalc_refdef = true;
 	};
-
+	
+	// something changed, so reorder the screen
 	if(vid.recalc_refdef)
-	{
-		// something changed, so reorder the screen
-		SCR_CalcRefdef();
-	};
+		CalcRefdef();
 
 	//
 	// do 3D refresh drawing, and then update the screen
 	//
-	D_EnableBackBufferAccess(); // of all overlay stuff if drawing directly
+	//D_EnableBackBufferAccess(); // of all overlay stuff if drawing directly
 
 	if(scr_fullupdate++ < vid.numpages)
 	{
@@ -228,14 +226,14 @@ void CScreen::Update()
 	SCR_SetUpToDrawConsole();
 	SCR_EraseCenterString();
 
-	D_DisableBackBufferAccess(); // for adapters that can't stay mapped in
+	//D_DisableBackBufferAccess(); // for adapters that can't stay mapped in
 	                             //  for linear writes all the time
 
 	VID_LockBuffer();
 	V_RenderView();
 	VID_UnlockBuffer();
 
-	D_EnableBackBufferAccess(); // of all overlay stuff if drawing directly
+	//D_EnableBackBufferAccess(); // of all overlay stuff if drawing directly
 
 	if(scr_drawdialog)
 	{
@@ -244,10 +242,12 @@ void CScreen::Update()
 		SCR_DrawNotifyString();
 		scr_copyeverything = true;
 	}
-	else if (scr_drawloading)
+	else if (scr_drawloading) // scr_draw_loading == 2 ?
 	{
-		SCR_DrawLoading ();
+		DrawLoading();
 		Sbar_Draw ();
+		//mpRender->EndFrame();
+		//return;
 	}
 	else if(cl.intermission == 1 && key_dest == key_game)
 	{
@@ -275,7 +275,7 @@ void CScreen::Update()
 		M_Draw();
 	};
 
-	D_DisableBackBufferAccess(); // for adapters that can't stay mapped in
+	//D_DisableBackBufferAccess(); // for adapters that can't stay mapped in
 	                             //  for linear writes all the time
 	if(pconupdate)
 		D_UpdateRects(pconupdate);
@@ -315,6 +315,8 @@ void CScreen::Update()
 
 		VID_Update(&vrect);
 	};
+	
+	mpRender->EndFrame();
 };
 
 void CScreen::SizeUp()
@@ -388,4 +390,95 @@ void CScreen::EndLoadingPlaque()
 	//scr_fullupdate = 0;
 	cls.disable_screen = 0.0f;
 	Con_ClearNotify();
+};
+
+/*
+=================
+SCR_CalcRefdef
+
+Must be called whenever vid changes
+Internal use only
+=================
+*/
+void CScreen::CalcRefdef()
+{
+	vrect_t vrect;
+	float size;
+
+	scr_fullupdate = 0; // force a background redraw
+	vid.recalc_refdef = 0;
+
+	// force the status bar to redraw
+	//Sbar_Changed(); // ?
+
+	//========================================
+
+	// bound viewsize
+	if(scr_viewsize.value < 30)
+		Cvar_Set("viewsize", "30");
+	
+	if(scr_viewsize.value > 120)
+		Cvar_Set("viewsize", "120");
+
+	// bound field of view
+	if(scr_fov.value < 10)
+		Cvar_Set("fov", "10");
+	
+	if(scr_fov.value > 170)
+		Cvar_Set("fov", "170");
+
+	r_refdef.fov_x = scr_fov.value;
+	r_refdef.fov_y = CalcFov(r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
+
+	// intermission is always full screen
+	if(cl.intermission)
+		size = 120;
+	else
+		size = scr_viewsize.value;
+
+	if(size >= 120)
+		sb_lines = 0; // no status bar at all
+	else if(size >= 110)
+		sb_lines = 24; // no inventory
+	else
+		sb_lines = 24 + 16 + 8;
+
+	// these calculations mirror those in R_Init() for r_refdef, but take no
+	// account of water warping
+	vrect.x = 0;
+	vrect.y = 0;
+	vrect.width = vid.width;
+	vrect.height = vid.height;
+
+	R_SetVrect(&vrect, &scr_vrect, sb_lines);
+
+	// guard against going from one mode to another that's less than half the
+	// vertical resolution
+	if(scr_con_current > vid.height)
+		scr_con_current = vid.height;
+
+	// notify the refresh of the change
+	R_ViewChanged(&vrect, sb_lines, vid.aspect);
+};
+
+qboolean scr_drawloading;
+float scr_disabled_time;
+
+/*
+==============
+SCR_DrawLoading
+
+loading plaque over black screen
+==============
+*/
+void CScreen::DrawLoading()
+{
+	if (!scr_drawloading) // if (!scr_draw_loading)
+		return;
+	
+	int w, h;
+	//mpRender->CinematicSetPalette(nullptr);
+	scr_draw_loading = false;
+	qpic_t *pic = Draw_CachePic("gfx/loading.lmp"); // re.DrawGetPicSize (&w, &h, "loading");
+	Draw_Pic ( (vid.width - pic->width) * 0.5, (vid.height - 48 - pic->height) * 0.5, pic); // re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
 };

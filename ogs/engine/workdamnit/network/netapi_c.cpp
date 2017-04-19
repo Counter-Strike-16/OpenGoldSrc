@@ -30,12 +30,10 @@
 /// @brief export api of network module for client dll
 
 #include "precompiled.hpp"
-#include "common/commontypes.h"
-#include "common/net_api.h"
 #include "system/common.hpp"
 #include "system/info.hpp"
 #include "network/net.hpp"
-#include "console/console.hpp"
+#include "console/Console.hpp"
 #include "client/client.hpp"
 
 /*

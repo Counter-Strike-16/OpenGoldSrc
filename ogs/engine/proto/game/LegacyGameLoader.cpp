@@ -55,23 +55,23 @@ IGame *CLegacyGameLoader::LoadGame(CFactorySharedLib *apGameLib)
 	fnGetNewDllFuncs = (NEW_DLL_FUNCTIONS_FN)apGameLib->GetExportFunc("GetNewDLLFunctions", false);
 	//pNewAPI = (NEW_DLL_FUNCTIONS_FN)GetDispatch("GetNewDLLFunctions");
 	
-	int nVersion = 0;
+	int nInterfaceVersion = 0;
 	
 	// Get extended callbacks
 	if(fnGetNewDllFuncs)
 	{
-		nVersion = NEW_DLL_FUNCTIONS_VERSION;
+		nInterfaceVersion = NEW_DLL_FUNCTIONS_VERSION;
 		
-		if(!fnGetNewDllFuncs(mpNewFuncs, &nVersion))
+		if(!fnGetNewDllFuncs(mpNewFuncs, &nInterfaceVersion))
 		{
-			if(nVersion != NEW_DLL_FUNCTIONS_VERSION)
+			if(nInterfaceVersion != NEW_DLL_FUNCTIONS_VERSION)
 				DevWarning("SV_LoadProgs: new interface version is %d, should be %d", NEW_DLL_FUNCTIONS_VERSION, nVersion);
 			
 			memset(&mpNewFuncs, 0, sizeof(mpNewFuncs));
 		};
 	};
 	
-	nVersion = INTERFACE_VERSION;
+	nInterfaceVersion = INTERFACE_VERSION;
 	
 	// Main export set
 	// Check if secondary api is present
@@ -80,18 +80,18 @@ IGame *CLegacyGameLoader::LoadGame(CFactorySharedLib *apGameLib)
 	
 	if(fnGetEntityAPI2)
 	{
-		//nVersion = INTERFACE_VERSION; // interface_version
+		//nInterfaceVersion = INTERFACE_VERSION;
 		
-		//if(!pfnGetAPI2(&gEntityInterface, &interface_version))
-		if(!fnGetEntityAPI2(&gEntityInterface, &nVersion))
+		//if(!pfnGetAPI2(&gEntityInterface, &nInterfaceVersion))
+		if(!fnGetEntityAPI2(&gEntityInterface, &nInterfaceVersion))
 		{
 			//DevWarning("SV_LoadProgs: interface version is %d, should be %d", INTERFACE_VERSION, nVersion);
 			
 			mpConsole->Printf("==================\n");
 			mpConsole->Printf("Game DLL version mismatch\n");
-			mpConsole->Printf("DLL version is %i, engine version is %i\n", interface_version, INTERFACE_VERSION);
+			mpConsole->Printf("DLL version is %i, engine version is %i\n", nInterfaceVersion, INTERFACE_VERSION);
 			
-			if(nVersion <= INTERFACE_VERSION)
+			if(nInterfaceVersion <= INTERFACE_VERSION)
 				mpConsole->Printf("The game DLL for %s appears to be outdated, check for updates\n", szGameDir);
 			else
 				mpConsole->Printf("Engine appears to be outdated, check for updates\n");
@@ -111,10 +111,10 @@ IGame *CLegacyGameLoader::LoadGame(CFactorySharedLib *apGameLib)
 		if(!fnGetEntityAPI) // if(!pfnGetAPI)
 			return nullptr; // 	Host_Error("Couldn't get DLL API from %s!", szDllFilename);
 		
-		nVersion = INTERFACE_VERSION; // interface_version
+		nInterfaceVersion = INTERFACE_VERSION;
 		
-		//if(!pfnGetAPI(&gEntityInterface, interface_version))
-		if(!fnGetEntityAPI(&gEntityInterface, nVersion))
+		//if(!pfnGetAPI(&gEntityInterface, nInterfaceVersion))
+		if(!fnGetEntityAPI(&gEntityInterface, nInterfaceVersion))
 		{
 			mpConsole->Printf("==================\n");
 			mpConsole->Printf("Game DLL version mismatch\n");
@@ -142,7 +142,7 @@ IGame *CLegacyGameLoader::LoadGame(CFactorySharedLib *apGameLib)
 	if(!mpLegacyGame)
 		mpLegacyGame = std::make_unique<CLegacyGame>();
 	
-	if(!mpLegacyGame->DLLInit(fnGetEntityAPI, fnGetEntityAPI2, fnGetNewDllFuncs))
+	if(!mpLegacyGame->Init(gEntityInterface, mpNewFuncs))
 		return nullptr;
 	
 	return mpLegacyGame.get(); // release?

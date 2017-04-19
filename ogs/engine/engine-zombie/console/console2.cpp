@@ -8,14 +8,9 @@
 #include <fcntl.h>
 #include "quakedef.h"
 
-#define		CON_TEXTSIZE	16384
-
 qboolean 	con_forcedup;		// because no entities to refresh
 
-int			con_totallines;		// total lines in console scrollback
 int			con_backscroll;		// lines up from bottom to display
-int			con_current;		// where next message will be printed
-int			con_x;				// offset in current line for next print
 char		*con_text=0;
 
 float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
@@ -297,28 +292,6 @@ void Con_Printf (char *fmt, ...)
 			inupdate = false;
 		}
 	}
-}
-
-/*
-================
-Con_DPrintf
-
-A Con_Printf that only shows up if the "developer" cvar is set
-================
-*/
-void Con_DPrintf (char *fmt, ...)
-{
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
-		
-	if (!developer.value)
-		return;			// don't confuse non-developers with techie stuff...
-
-	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
-	va_end (argptr);
-	
-	Con_Printf ("%s", msg);
 }
 
 

@@ -48,19 +48,20 @@
 
 typedef struct quakeparms_s
 {
-	char *basedir;
-	char *cachedir; // for development over ISDN lines
+	char *basedir{nullptr};
+	char *cachedir{nullptr}; // for development over ISDN lines
 
-	int argc;
-	char **argv;
+	int argc{0};
+	char **argv{nullptr};
 
-	void *membase;
-	int memsize;
+	void *membase{nullptr};
+	int memsize{0};
 } quakeparms_t;
 
 struct IGame;
 class CFileSystem;
 class CGameLoaderHandler;
+class CInput;
 
 class CHost
 {
@@ -69,14 +70,13 @@ public:
 	~CHost() = default;
 	
 	int Init(quakeparms_t *parms);
-	void InitLocal();
-	
 	void Shutdown();
 	
-	void _Frame(float time);
 	int Frame(float time, int iState, int *stateInfo);
 	
-	void EndGame(const char *message, ...);
+	// Loads a map and starts a new game on it
+	//void StartNewGame(const char *mapName, bool devmap, int gameMode);
+	void EndGame(const char *message, ...); // void	LeaveGame();
 
 	void NORETURN Error(const char *error, ...);
 
@@ -84,19 +84,13 @@ public:
 	void WriteCustomConfig();
 
 	void ClientCommands(const char *fmt, ...);
-	void ClearClients(bool bFramesOnly);
 	void ShutdownServer(bool crash);
 
-	void CheckDynamicStructures();
 	void ClearMemory(bool bQuiet);
-	bool FilterTime(float time);
 
 	void ComputeFPS(double frametime);
 	void GetInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
 	void PrintSpeeds(double *time); // CalcSpeeds
-
-	void UpdateScreen();
-	void UpdateSounds();
 
 	void CheckConnectionFailure();
 
@@ -107,13 +101,14 @@ public:
 
 	void PrintVersion();
 	
-	bool IsInitialized() const {return host_initialized;}
-	
 	int GetStartTime();
 	
 	void InitGame();
+	void ShutdownGame();
 	
 	void UpdateStats();
+	
+	bool IsInitialized() const {return host_initialized;}
 	
 	//
 	
@@ -167,8 +162,17 @@ public:
 	void Host_NextDemo();
 */
 private:
+	void InitLocal();
+	
 	bool InitRender();
 	bool InitSound();
+	
+	void _Frame(float time);
+	
+	bool FilterTime(float time);
+	
+	void UpdateScreen();
+	void UpdateSounds();
 	
 	// Console commands
 /*	
@@ -231,22 +235,17 @@ private:
 	char gpszProductString[32];
 	
 	std::unique_ptr<CConsole> mpConsole; // IConsole
-	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
-	//std::unique_ptr<CConCmdHandler> mpConCmdHandler;
-	//std::unique_ptr<CConVarHandler> mpConVarHandler;
-	
 	std::unique_ptr<CNetwork> mpNetwork;
 	std::unique_ptr<CSound> mpSound;
 	std::unique_ptr<CGameServer> mpServer;
 	std::unique_ptr<CScreen> mpScreen;
 	std::unique_ptr<CGameLoaderHandler> mpGameLoaderHandler;
+	std::unique_ptr<CInput> mpInput;
 	
 	CFileSystem *mpFileSystem{nullptr};
 	IGame *mpGame{nullptr};
 
 	quakeparms_t *host_params{nullptr};
-	
-	bool host_initialized{false}; // true if into command execution
 	
 	double realtime{0.0f};  // without any filtering or bounding;
 							// not bounded in any way, changed at
@@ -265,7 +264,9 @@ private:
 	
 	// instead of svs.maxclients/cl.maxclients
 	int mnMaxClients{0};
-
+	
+	bool host_initialized{false}; // true if into command execution
+	
 	//jmp_buf host_abortserver;
 	//jmp_buf host_enddemo;
 };

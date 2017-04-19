@@ -49,6 +49,9 @@ int sv_numareanodes;
 
 cvar_t sv_force_ent_intersection = { "sv_force_ent_intersection", "0", 0, 0.0f, NULL };
 
+//============================================================================
+
+// ClearLink is used for new headnodes
 void ClearLink(link_t *l)
 {
 	l->next = l;

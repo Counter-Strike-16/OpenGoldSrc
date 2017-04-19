@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2017 OGS Dev Team
+ *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,25 +27,15 @@
  */
 
 /// @file
-/// @brief game module loader container
+/// @brief old api physics entity listener
 
 #pragma once
 
-#include <list>
-#include <memory>
+#include "physics/IPhysicsEntityListener.hpp"
 
-struct IGameLoader;
-using tGameLoaderList = std::list<std::unique_ptr<IGameLoader>>;
-
-class CGameLoaderHandler
+class CLegacyPhysicsEntityListener : public IPhysicsEntityListener
 {
 public:
-	CGameLoaderHandler() = default;
-	~CGameLoaderHandler() = default;
-	
-	void Add(IGameLoader *apLoader);
-	
-	IGame *LoadGame(const char *asPath);
-private:
-	tGameLoaderList mlstLoaders;
+	CLegacyPhysicsEntityListener();
+	~CLegacyPhysicsEntityListener();
 };

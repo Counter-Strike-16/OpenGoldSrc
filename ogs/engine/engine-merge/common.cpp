@@ -1,6 +1,4 @@
 
-// common.c -- misc functions used in client and server
-
 #include <ctype.h>
 
 #ifdef SERVERONLY 
@@ -75,26 +73,6 @@ into the cache directory, then opened there.
 
 //============================================================================
 
-
-// ClearLink is used for new headnodes
-void ClearLink (link_t *l)
-{
-	l->prev = l->next = l;
-}
-
-void RemoveLink (link_t *l)
-{
-	l->next->prev = l->prev;
-	l->prev->next = l->next;
-}
-
-void InsertLinkBefore (link_t *l, link_t *before)
-{
-	l->next = before;
-	l->prev = before->prev;
-	l->prev->next = l;
-	l->next->prev = l;
-}
 void InsertLinkAfter (link_t *l, link_t *after)
 {
 	l->next = after->next;
@@ -822,28 +800,6 @@ void MSG_ReadDeltaUsercmd (usercmd_t *from, usercmd_t *move)
 	move->msec = MSG_ReadByte ();
 }
 
-//============================================================================
-
-
-/*
-============
-COM_SkipPath
-============
-*/
-char *COM_SkipPath (char *pathname)
-{
-	char	*last;
-	
-	last = pathname;
-	while (*pathname)
-	{
-		if (*pathname=='/')
-			last = pathname+1;
-		pathname++;
-	}
-	return last;
-}
-
 /*
 ============
 COM_StripExtension
@@ -856,15 +812,10 @@ void COM_StripExtension (char *in, char *out)
 	*out = 0;
 }
 
-/*
-============
-COM_FileExtension
-============
-*/
+
 char *COM_FileExtension (char *in)
 {
 	static char exten[8];
-	int		i;
 
 	while (*in && *in != '.')
 		in++;
@@ -930,9 +881,6 @@ void COM_DefaultExtension (char *path, char *extension)
 }
 
 //============================================================================
-
-char		com_token[1024];
-
 
 /*
 ==============
@@ -1114,55 +1062,6 @@ void COM_AddParm (char *parm)
 	largv[com_argc++] = parm;
 }
 
-
-/*
-================
-COM_Init
-================
-*/
-void COM_Init (void)
-{
-	byte	swaptest[2] = {1,0};
-
-// set the byte swapping variables in a portable manner	
-	if ( *(short *)swaptest == 1)
-	{
-		bigendien = false;
-		BigShort = ShortSwap;
-		LittleShort = ShortNoSwap;
-		BigLong = LongSwap;
-		LittleLong = LongNoSwap;
-		BigFloat = FloatSwap;
-		LittleFloat = FloatNoSwap;
-	}
-	else
-	{
-		bigendien = true;
-		BigShort = ShortNoSwap;
-		LittleShort = ShortSwap;
-		BigLong = LongNoSwap;
-		LittleLong = LongSwap;
-		BigFloat = FloatNoSwap;
-		LittleFloat = FloatSwap;
-	}
-
-	Cvar_RegisterVariable (&registered);
-	Cmd_AddCommand ("path", COM_Path_f);
-
-	COM_InitFilesystem ();
-	COM_CheckRegistered ();
-}
-
-
-/*
-============
-va
-
-does a varargs printf into a temp buffer, so I don't need to have
-varargs versions of all text functions.
-FIXME: make this buffer size safe someday
-============
-*/
 char	*va(char *format, ...)
 {
 	va_list		argptr;
@@ -1175,18 +1074,6 @@ char	*va(char *format, ...)
 	return string;	
 }
 
-
-/// just for debugging
-int	memsearch (byte *start, int count, int search)
-{
-	int		i;
-	
-	for (i=0 ; i<count ; i++)
-		if (start[i] == search)
-			return i;
-	return -1;
-}
-
 /*
 =============================================================================
 
@@ -1196,46 +1083,6 @@ QUAKE FILESYSTEM
 */
 
 int	com_filesize;
-
-
-//
-// in memory
-//
-
-typedef struct
-{
-	char	name[MAX_QPATH];
-	int		filepos, filelen;
-} packfile_t;
-
-typedef struct pack_s
-{
-	char	filename[MAX_OSPATH];
-	FILE	*handle;
-	int		numfiles;
-	packfile_t	*files;
-} pack_t;
-
-//
-// on disk
-//
-typedef struct
-{
-	char	name[56];
-	int		filepos, filelen;
-} dpackfile_t;
-
-typedef struct
-{
-	char	id[4];
-	int		dirofs;
-	int		dirlen;
-} dpackheader_t;
-
-#define	MAX_FILES_IN_PACK	2048
-
-char	com_gamedir[MAX_OSPATH];
-char	com_basedir[MAX_OSPATH];
 
 typedef struct searchpath_s
 {
@@ -1521,34 +1368,6 @@ byte *COM_LoadFile (char *path, int usehunk)
 	Draw_EndDisc ();
 #endif
 
-	return buf;
-}
-
-byte *COM_LoadHunkFile (char *path)
-{
-	return COM_LoadFile (path, 1);
-}
-
-byte *COM_LoadTempFile (char *path)
-{
-	return COM_LoadFile (path, 2);
-}
-
-void COM_LoadCacheFile (char *path, struct cache_user_s *cu)
-{
-	loadcache = cu;
-	COM_LoadFile (path, 3);
-}
-
-// uses temp hunk if larger than bufsize
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize)
-{
-	byte	*buf;
-	
-	loadbuf = (byte *)buffer;
-	loadsize = bufsize;
-	buf = COM_LoadFile (path, 4);
-	
 	return buf;
 }
 

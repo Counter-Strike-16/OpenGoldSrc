@@ -1243,7 +1243,7 @@ cl_enginefunc_t gClEngFuncs =
   // &gEventAPI,
   // &gDemoAPI,
   // &gNetAPI,
-  // &gVoiceAPI,
+  &gVoiceAPI, // gVoiceTweak
 
   // pfnIsSpectateOnly,
   // pfnLoadMapSprite,

@@ -38,6 +38,7 @@
 #include "system/SystemTypes.hpp"
 #include "console/Console.hpp"
 #include "game/GameLoaderHandler.hpp"
+#include "input/Input.hpp"
 
 /*
 * Globals initialization
@@ -116,7 +117,8 @@ int CHost::Init(quakeparms_t *parms)
 	mpSound = std::make_unique<CSound>();
 	mpScreen = std::make_unique<CScreen>();
 	mpGameLoaderHandler = std::make_unique<CGameLoaderHandler>();
-
+	mpInput = std::make_unique<CInput>();
+	
 	InitLocal();
 
 	//if(mpCmdLine->CheckArg("-dev"))
@@ -143,12 +145,15 @@ int CHost::Init(quakeparms_t *parms)
 	COM_Init(parms->basedir);
 	Host_ClearSaveDirectory();
 	HPAK_Init();
-	W_LoadWadFile("gfx.wad");
-	W_LoadWadFile("fonts.wad");
+	
+	mpWADManager->LoadWadFile("gfx.wad"); // WADArchive->LoadFromFile?
+	mpWADManager->LoadWadFile("fonts.wad");
+	
 	Key_Init();
 */
 
 	mpConsole->Init();
+	mpInput->Init();
 
 	//Decal_Init();
 	//Mod_Init();
@@ -209,7 +214,7 @@ int CHost::Init(quakeparms_t *parms)
 		
 		//PM_Init(&g_clmove);
 		//CL_InitEventSystem();
-		//ClientDLL_Init();
+		//ClientDLL_Init(); // it's not loaded yet!
 		// VGui_Startup();
 
 		//if(!VID_Init(host_basepal))
@@ -248,6 +253,22 @@ int CHost::Init(quakeparms_t *parms)
 	
 	CheckGore();
 	
+	//TraceInit("Sys_InitAuthentication()", "Sys_ShutdownAuthentication()", 0);
+	CSystem::InitAuthentication();
+	
+	// Since the dedicated mode is oriented on multiplayer (only)
+	// We should init the game dll and enable the multiplayer mode for the network here
+	if(mbDedicated)
+	{
+		InitGame(); // We should immediately init the game module for dedicated mode
+					// (client is initializing it after the first call to new game)
+		//mpNetwork->Config(TRUE); // double call (already called inside host_initgamedll)
+	}
+#ifndef SWDS
+	//else
+		//ClientDLL_ActivateMouse();
+#endif
+	
 	host_initialized = true;
 	return 1;
 };
@@ -271,12 +292,15 @@ void CHost::InitLocal()
 	mpConsole->RegisterVariable(&host_framerate);
 	mpConsole->RegisterVariable(&host_speeds);
 	mpConsole->RegisterVariable(&host_profile);
+	
 	mpConsole->RegisterVariable(&mp_logfile);
 	mpConsole->RegisterVariable(&mp_logecho);
+	
 	mpConsole->RegisterVariable(&sv_log_onefile);
 	mpConsole->RegisterVariable(&sv_log_singleplayer);
 	mpConsole->RegisterVariable(&sv_logsecret);
 	mpConsole->RegisterVariable(&sv_stats);
+	
 	mpConsole->RegisterVariable(&developer);
 	mpConsole->RegisterVariable(&deathmatch);
 	mpConsole->RegisterVariable(&coop);
@@ -326,7 +350,7 @@ void CHost::Shutdown()
 	
 	HPAK_FlushHostQueue();
 	
-	SV_DeallocateDynamicData();
+	mpServer->DeallocateDynamicData();
 
 	client_t *pclient = g_psvs.clients;
 	
@@ -341,6 +365,8 @@ void CHost::Shutdown()
 	mpNetwork->Shutdown();
 
 	mpSound->Shutdown();
+	
+	//mpInput->Shutdown();
 	
 	mpConsole->Shutdown();
 	
@@ -400,7 +426,7 @@ void CHost::EndGame(const char *message, ...)
 	
 	int oldn = 0; //cls.demonum;
 	
-	//if(g_psv.IsActive())
+	//if(mpServer->IsActive())
 		//ShutdownServer(false);
 
 	//cls.demonum = oldn;
@@ -447,12 +473,12 @@ void NORETURN CHost::Error(const char *error, ...)
 	Q_vsnprintf(string, sizeof(string), error, argptr);
 	va_end(argptr);
 
-	//if(g_psv.IsActive() && developer.value != 0.0f)
+	//if(mpServer->IsActive() && developer.value != 0.0f)
 		//CL_WriteMessageHistory(0, 0);
 
 	mpConsole->Printf("%s: %s\n", __FUNCTION__, string);
 	
-	//if(g_psv.IsActive())
+	//if(mpServer->IsActive())
 		//ShutdownServer(false);
 
 	//if(cls.state)
@@ -466,17 +492,24 @@ void NORETURN CHost::Error(const char *error, ...)
 	CSystem::Error("%s: %s\n", __FUNCTION__, string);
 };
 
+/*
+===============
+CL_WriteConfiguration
+
+Writes key bindings and archived cvars to config.cfg
+===============
+*/
 void CHost::WriteConfig()
 {
 #ifndef SWDS
-	if(!host_initialized || cls.state == ca_dedicated)
+	if(!host_initialized || cls.state == ca_dedicated) // == ca_uninitialized
 		return;
 
 #ifdef _WIN32
-	Sys_GetRegKeyValue("Software\\Valve\\Steam", "rate", rate_.string);
+	CSystem::GetRegKeyValue("Software\\Valve\\Steam", "rate", rate_.string);
 	
 	if(cl_name.string && Q_stricmp(cl_name.string, "unnamed") && Q_stricmp(cl_name.string, "player") && Q_strlen(cl_name.string))
-		Sys_GetRegKeyValue("Software\\Valve\\Steam", "LastGameNameUsed", cl_name.string);
+		CSystem::GetRegKeyValue("Software\\Valve\\Steam", "LastGameNameUsed", cl_name.string);
 #else
 	CSystem::SetRateRegistrySetting(rate_.string);
 #endif // _WIN32
@@ -521,8 +554,8 @@ void CHost::WriteConfig()
 	Cvar_WriteVariables(f);
 	//mpClient->GetUserInfo()->WriteToFile(f);
 
-	kbutton_t *ml = ClientDLL_FindKey("in_mlook");
-	kbutton_t *jl = ClientDLL_FindKey("in_jlook");
+	kbutton_t *ml = nullptr; //ClientDLL_FindKey("in_mlook");
+	kbutton_t *jl = nullptr; //ClientDLL_FindKey("in_jlook");
 
 	if(ml && (ml->state & 1))
 		f->Printf("+mlook\n");
@@ -579,8 +612,8 @@ void CHost::WriteCustomConfig()
 				Cvar_WriteVariables(f);
 				mpClient->GetUserInfo()->WriteToFile(f);
 
-				kbutton_t *ml = ClientDLL_FindKey("in_mlook");
-				kbutton_t *jl = ClientDLL_FindKey("in_jlook");
+				kbutton_t *ml = nullptr; //ClientDLL_FindKey("in_mlook");
+				kbutton_t *jl = nullptr; //ClientDLL_FindKey("in_jlook");
 
 				if(ml && ml->state & 1)
 					f->Printf("+mlook\n");
@@ -621,55 +654,12 @@ void CHost::ClientCommands(const char *fmt, ...)
 	va_end(argptr);
 };
 
-void CHost::ClearClients(bool bFramesOnly)
-{
-	/*
-	int i;
-	int j;
-	client_frame_t *frame;
-	netadr_t save;
-
-	host_client = g_psvs.clients;
-	for(i = 0; i < g_psvs.maxclients; i++, host_client++)
-	{
-		if(host_client->frames)
-		{
-			for(j = 0; j < SV_UPDATE_BACKUP; j++)
-			{
-				frame = &(host_client->frames[j]);
-				SV_ClearPacketEntities(frame);
-				frame->senttime = 0;
-				frame->ping_time = -1;
-			}
-		}
-		if(host_client->netchan.remote_address.type)
-		{
-			Q_memcpy(&save, &host_client->netchan.remote_address, sizeof(netadr_t));
-			Q_memset(&host_client->netchan, 0, sizeof(netchan_t));
-			Netchan_Setup(NS_SERVER, &host_client->netchan, save, host_client - g_psvs.clients, (void *)host_client, SV_GetFragmentSize);
-		};
-		
-		COM_ClearCustomizationList(&host_client->customdata, 0);
-	};
-
-	if(bFramesOnly == FALSE)
-	{
-		host_client = g_psvs.clients;
-		for(i = 0; i < g_psvs.maxclientslimit; i++, host_client++)
-			SV_ClearFrames(&host_client->frames);
-
-		Q_memset(g_psvs.clients, 0, sizeof(client_t) * g_psvs.maxclientslimit);
-		SV_AllocClientFrames();
-	};
-	*/
-};
-
 void CHost::ShutdownServer(bool crash)
 {
 	/*
 	int i;
 	
-	if(!g_psv.IsActive())
+	if(!mpServer->IsActive())
 		return;
 
 	SV_ServerShutdown();
@@ -679,7 +669,7 @@ void CHost::ShutdownServer(bool crash)
 	host_client = g_psvs.clients;
 	for(i = 0; i < g_psvs.maxclients; i++, host_client++)
 	{
-		if(host_client->active || host_client->connected)
+		if(host_client->IsActive() || host_client->IsConnected())
 			host_client->Drop(crash, "Server shutting down"); // was SV_DropClient(client_t *, ...)
 	};
 
@@ -705,19 +695,6 @@ void CHost::ShutdownServer(bool crash)
 	*/
 };
 
-void CHost::CheckDynamicStructures() // TODO: move to server class
-{
-	/*
-	client_t *cl = g_psvs.clients;
-
-	for(int i = 0; i < g_psvs.maxclients; i++, cl++)
-	{
-		if(cl->frames)
-			SV_ClearFrames(&cl->frames);
-	};
-	*/
-};
-
 void CHost::ClearMemory(bool bQuiet)
 {
 	// Engine string pooling
@@ -736,16 +713,19 @@ void CHost::ClearMemory(bool bQuiet)
 
 	if(host_hunklevel)
 	{
-		CheckDynamicStructures();
+		mpServer->CheckDynamicStructures();
 		//Hunk_FreeToLowMark(host_hunklevel);
 	};
 
 /*
 	cls.signon = 0;
-	SV_ClearCaches();
+	mpServer->ClearCaches();
+	
 	Q_memset(&g_psv, 0, sizeof(server_t));
+	
 	CL_ClearClientState();
-	SV_ClearClientStates();
+	
+	mpServer->ClearClientStates();
 */
 };
 
@@ -1025,7 +1005,7 @@ void CHost::_Frame(float time)
 
 	ClientDLL_UpdateClientData();
 
-	if(g_psv.IsActive())
+	if(mpServer->IsActive())
 		CL_Move();
 */
 
@@ -1220,7 +1200,7 @@ bool CHost::IsSinglePlayerGame()
 
 bool CHost::IsServerActive() // remove?
 {
-	return false; //g_psv.IsActive();
+	return false; //mpServer->IsActive();
 };
 
 void CHost::PrintVersion()
@@ -1325,7 +1305,10 @@ void CHost::InitGame()
 	#error "Static game linkage is not supported!"
 #endif // OGS_STATIC_GAME
 	
-	mpGame->Init();
+	// Initialize the game
+	if(mpGame)
+		mpGame->Init();
+	
 	//pOldAPIGame->Init();
 	
 	// if we initializing it here then it's init state shouldn't be contained in server static data
@@ -1344,6 +1327,23 @@ void CHost::InitGame()
 	
 #ifdef REHLDS_FIXES // DONE: Set cstrike flags on server start
 	SetCStrikeFlags();
+#endif
+};
+
+void CHost::ShutdownGame()
+{
+	// Shutdown the game
+	if(mpGame)
+		mpGame->Shutdown();
+
+#ifndef OGS_STATIC_GAME
+	if ( gameDLL )
+	{
+		Sys_DLL_Unload( gameDLL );
+		gameDLL = nullptr;
+	};
+	
+	mpGame = nullptr;
 #endif
 };
 

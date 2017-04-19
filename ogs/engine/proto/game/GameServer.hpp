@@ -73,6 +73,10 @@ public:
 	
 	bool IsActive() const;
 	
+	void CheckDynamicStructures();
+	
+	void ClearClients(bool bFramesOnly);
+	
 	//CNetServer *GetNetServer() const {return mpNetServer;} // ?
 private:
 	void CheckCmdTimes();

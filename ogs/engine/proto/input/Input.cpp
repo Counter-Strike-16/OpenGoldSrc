@@ -27,25 +27,16 @@
  */
 
 /// @file
-/// @brief game module loader container
 
-#pragma once
+#include "precompiled.hpp"
+#include "input/Input.hpp"
 
-#include <list>
-#include <memory>
-
-struct IGameLoader;
-using tGameLoaderList = std::list<std::unique_ptr<IGameLoader>>;
-
-class CGameLoaderHandler
+bool CInput::Init()
 {
-public:
-	CGameLoaderHandler() = default;
-	~CGameLoaderHandler() = default;
-	
-	void Add(IGameLoader *apLoader);
-	
-	IGame *LoadGame(const char *asPath);
-private:
-	tGameLoaderList mlstLoaders;
+	return mpImpl->Init();
+};
+
+void CInput::Update()
+{
+	mpImpl->Update();
 };

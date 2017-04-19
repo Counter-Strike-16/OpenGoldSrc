@@ -141,6 +141,7 @@ bool CGame::CreateGameWindow_noVirt()
 
 void CGame::SleepUntilInput_noVirt(int time)
 {
+	// This thing works with seconds
 	/*
 #ifdef _WIN32
 	Sleep(time * 1000);

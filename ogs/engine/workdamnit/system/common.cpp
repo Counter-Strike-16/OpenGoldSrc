@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief misc functions used in client and server
 
 #include "precompiled.hpp"
 #include "memory/mem.hpp"
@@ -177,7 +178,7 @@ NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...)
 //int com_argc;
 //char **com_argv;
 
-char com_token[COM_TOKEN_LEN];
+char com_token[COM_TOKEN_LEN]; // 1024
 
 qboolean com_ignorecolons //= false;
 qboolean s_com_token_unget;
@@ -194,6 +195,13 @@ const unsigned char mungify_table2[] = { 0x05, 0x61, 0x7A, 0xED, 0x1B, 0xCA, 0x0
 
 unsigned char mungify_table3[] = { 0x20, 0x07, 0x13, 0x61, 0x03, 0x45, 0x17, 0x72, 0x0A, 0x2D, 0x48, 0x0C, 0x4A, 0x12, 0xA9, 0xB5 };
 
+//============================================================================
+
+/*
+============
+COM_SkipPath
+============
+*/
 NOXREF char *COM_SkipPath(char *pathname)
 {
 	NOXREFCHECK;
@@ -205,9 +213,10 @@ NOXREF char *COM_SkipPath(char *pathname)
 		if(*pathname == '/' || *pathname == '\\')
 			last = pathname + 1;
 		pathname++;
-	}
+	};
+	
 	return last;
-}
+};
 
 void COM_StripExtension(char *in, char *out)
 {
@@ -251,6 +260,11 @@ void COM_StripExtension(char *in, char *out)
 	}
 }
 
+/*
+============
+COM_FileExtension
+============
+*/
 char *COM_FileExtension(char *in)
 {
 	static char exten[MAX_PATH];
@@ -262,31 +276,25 @@ char *COM_FileExtension(char *in)
 	while(*c)
 	{
 		if(*c == '/' || *c == '\\')
-		{
 			d = NULL; // reset dot location on path separator
-		}
 		else if(d == NULL && *c == '.')
-		{
 			d = c; // store first dot location in the file name
-		}
+		
 		c++;
-	}
+	};
 
 	if(d == NULL)
-	{
 		return "";
-	}
 
 	d++; // skip dot
+	
 	// Copy extension
 	for(i = 0; i < (ARRAYSIZE(exten) - 1) && *d; i++, d++)
-	{
 		exten[i] = *d;
-	}
 	exten[i] = 0;
 
 	return exten;
-}
+};
 
 // Fills "out" with the file name without path and extension.
 void COM_FileBase(const char *in, char *out)
@@ -524,22 +532,26 @@ int COM_TokenWaiting(char *buffer)
 	}
 
 	return 0;
-}
-
-
+};
 
 void COM_InitArgv(int argc, char *argv[])
 {
 	gpCmdLine->Init(argc, argv);
-}
+};
 
+/*
+================
+COM_Init
+================
+*/
 void COM_Init(char *basedir)
 {
 	unsigned short swaptest = 1;
-
+	
+	// set the byte swapping variables in a portable manner
 	if(*(byte *)&swaptest == 1)
 	{
-		bigendien = 0;
+		bigendien = 0; // false
 		BigShort = ShortSwap;
 		LittleShort = ShortNoSwap;
 		BigLong = LongSwap;
@@ -549,18 +561,27 @@ void COM_Init(char *basedir)
 	}
 	else
 	{
-		bigendien = 1;
+		bigendien = 1; // true
 		BigShort = ShortNoSwap;
 		LittleShort = ShortSwap;
 		BigLong = LongNoSwap;
 		LittleLong = LongSwap;
 		BigFloat = FloatNoSwap;
 		LittleFloat = FloatSwap;
-	}
+	};
 
 	COM_BitOpsInit();
-}
+};
 
+/*
+============
+va
+
+does a varargs printf into a temp buffer, so I don't need to have
+varargs versions of all text functions.
+FIXME: make this buffer size safe someday
+============
+*/
 char *va(char *format, ...)
 {
 	va_list argptr;
@@ -590,20 +611,17 @@ NOXREF char *vstr(vec_t *v) // vec_to_string
 	return string[idx];
 }
 
-NOXREF int memsearch(unsigned char *start, int count, int search)
+/// just for debugging
+NOXREF int memsearch(byte *start, int count, int search)
 {
 	NOXREFCHECK;
 
 	for(int i = 0; i < count; i++)
-	{
 		if(start[i] == search)
-		{
 			return i;
-		}
-	}
 
 	return -1;
-}
+};
 
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize)
 {
@@ -625,12 +643,12 @@ void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize)
 	FS_Flush(dst);
 }
 
-NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile)
+NOXREF byte *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile)
 {
 	NOXREFCHECK;
 	
 	FileHandle_t hFile;
-	unsigned char *buf;
+	byte *buf;
 	char base[32];
 	int len;
 	int cbload;
@@ -664,7 +682,7 @@ NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcb
 	if(path)
 		COM_FileBase(path, base);
 
-	buf = (unsigned char *)Hunk_TempAlloc(cbload + 1);
+	buf = (byte *)Hunk_TempAlloc(cbload + 1);
 	if(!buf)
 	{
 		if(path)
@@ -686,27 +704,28 @@ NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcb
 	return buf;
 }
 
-unsigned char *COM_LoadHunkFile(char *path)
+byte *COM_LoadHunkFile(char *path)
 {
 	return COM_LoadFile(path, 1, NULL);
-}
+};
 
-unsigned char *COM_LoadTempFile(char *path, int *pLength)
+byte *COM_LoadTempFile(char *path, int *pLength)
 {
 	return COM_LoadFile(path, 2, pLength);
-}
+};
 
 void EXT_FUNC COM_LoadCacheFile(char *path, struct cache_user_s *cu)
 {
 	loadcache = cu;
 	COM_LoadFile(path, 3, 0);
-}
+};
 
-NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length)
+// uses temp hunk if larger than bufsize
+NOXREF byte *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length)
 {
 	NOXREFCHECK;
 
-	loadbuf = (unsigned char *)buffer;
+	loadbuf = (byte *)buffer;
 	loadsize = bufsize;
 
 	return COM_LoadFile(path, 4, length);
@@ -759,8 +778,6 @@ void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char 
 
 	CStringHandler::StripTrailingSlash(pDirName);
 }
-
-
 
 void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOutdated)
 {

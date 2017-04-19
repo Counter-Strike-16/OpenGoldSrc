@@ -32,11 +32,7 @@
 #include "game/GameLoaderHandler.hpp"
 #include "game/IGameLoader.hpp"
 
-void CGameLoaderHandler::AddLoader(IGameLoader *apLoader)
-{
-};
-
-void CGameLoaderHandler::RemoveLoader(IGameLoader *apLoader)
+void CGameLoaderHandler::Add(IGameLoader *apLoader)
 {
 };
 

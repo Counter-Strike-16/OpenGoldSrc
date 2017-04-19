@@ -1167,15 +1167,10 @@ void SCR_UpdateScreen (void)
 		re.BeginFrame( separation[i] );
 
 		if (scr_draw_loading == 2)
-		{	//  loading plaque over black screen
-			int		w, h;
-
-			re.CinematicSetPalette(NULL);
-			scr_draw_loading = false;
-			re.DrawGetPicSize (&w, &h, "loading");
+		{
+			
 			re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
-//			re.EndFrame();
-//			return;
+
 		} 
 		// if a cinematic is supposed to be running, handle menus
 		// and console specially
@@ -1252,5 +1247,5 @@ void SCR_UpdateScreen (void)
 			SCR_DrawLoading ();
 		}
 	}
-	re.EndFrame();
+	
 }

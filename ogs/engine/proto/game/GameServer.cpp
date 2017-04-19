@@ -853,3 +853,59 @@ void CGameServer::UpdateToReliableMessages()
 	SZ_Clear(&g_psv.datagram);
 	SZ_Clear(&g_psv.spectator);
 };
+
+void CGameServer::CheckDynamicStructures() // TODO: move to server class
+{
+	/*
+	client_t *cl = g_psvs.clients;
+
+	for(int i = 0; i < g_psvs.maxclients; i++, cl++)
+	{
+		if(cl->frames)
+			SV_ClearFrames(&cl->frames);
+	};
+	*/
+};
+
+void CGameServer::ClearClients(bool bFramesOnly)
+{
+	/*
+	int i;
+	int j;
+	client_frame_t *frame;
+	netadr_t save;
+
+	host_client = g_psvs.clients;
+	for(i = 0; i < g_psvs.maxclients; i++, host_client++)
+	{
+		if(host_client->frames)
+		{
+			for(j = 0; j < SV_UPDATE_BACKUP; j++)
+			{
+				frame = &(host_client->frames[j]);
+				SV_ClearPacketEntities(frame);
+				frame->senttime = 0;
+				frame->ping_time = -1;
+			}
+		}
+		if(host_client->netchan.remote_address.type)
+		{
+			Q_memcpy(&save, &host_client->netchan.remote_address, sizeof(netadr_t));
+			Q_memset(&host_client->netchan, 0, sizeof(netchan_t));
+			Netchan_Setup(NS_SERVER, &host_client->netchan, save, host_client - g_psvs.clients, (void *)host_client, SV_GetFragmentSize);
+		};
+		
+		COM_ClearCustomizationList(&host_client->customdata, 0);
+	};
+
+	if(bFramesOnly == FALSE)
+	{
+		host_client = g_psvs.clients;
+		for(i = 0; i < g_psvs.maxclientslimit; i++, host_client++)
+			SV_ClearFrames(&host_client->frames);
+
+		Q_memset(g_psvs.clients, 0, sizeof(client_t) * g_psvs.maxclientslimit);
+		SV_AllocClientFrames();
+	};
+	*/
+};

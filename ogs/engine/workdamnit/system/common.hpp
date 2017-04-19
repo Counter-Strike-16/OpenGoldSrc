@@ -279,11 +279,12 @@ NOXREF int memsearch(unsigned char *start, int count, int search);
 //============================================================================
 
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize);
-NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile);
-unsigned char *COM_LoadHunkFile(char *path);
-unsigned char *COM_LoadTempFile(char *path, int *pLength);
+NOXREF byte *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile);
+
+byte *COM_LoadHunkFile(char *path);
+byte *COM_LoadTempFile(char *path, int *pLength); // pLength?
 void COM_LoadCacheFile(char *path, struct cache_user_s *cu);
-NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length);
+NOXREF byte *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length); // length?
 
 void COM_AddDefaultDir(char *pszDir);
 

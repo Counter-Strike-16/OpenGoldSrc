@@ -93,8 +93,13 @@ public:
 	void SCR_FinishCinematic ();
 
 	void SCR_UpdateWholeScreen();
+	
+	// this is in the client code, but can be used for debugging from server
+	void SCR_DebugGraph(float value, int color);
 	*/
 private:
+	void CalcRefdef();
+	
 	//void SizeUp();
 	//void SizeDown();
 	

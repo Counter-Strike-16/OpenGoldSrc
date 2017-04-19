@@ -34,41 +34,39 @@
 #include <memory>
 #include "common/commontypes.h"
 #include "console/IConsole.hpp"
-//#include "console/CmdBuffer.hpp"
 
 constexpr auto NUM_CON_TIMES = 4;
-
 constexpr auto CON_TEXTSIZE = 32768; // 16384;
-
-class CConsole;
-extern CConsole *gpConsole;
 
 class CConVar;
 using tConVarList = std::list<CConVar*>;
 
+//
+
 //extern console_t con_main;
 //extern console_t con_chat;
 
+//
+
 //extern console_t con;
 
-//extern console_t *con; // point to either con_main or con_chat
+//
 
-void Con_NotifyBox(const char *text); // during startup for sound / cd warnings
+//extern console_t *con; // point to either con_main or con_chat
 
 class CConsole : public IConsole
 {
 public:
+	CConsole();
+	~CConsole();
+	
 	bool Init();
 	void Shutdown();
 	
-	void Printf(/*int anLevel,*/ const char *asMsg, ...);
-
 	void Print(const char *txt);
-	//void Printf(const char *fmt, ...); // _format(1);
-
+	void Printf(/*int anLevel,*/ const char *asMsg, ...); // _format(1);
 	void DevPrintf(const char *fmt, ...); // DPrintf; _format(1);
-	//void NPrintf(int idx, const char *fmt, ...);
-	//void NPrintf( int idx, char *fmt, ... ) _format(2);
+	//void NPrintf(int idx, /*const*/ char *fmt, ...); //_format(2)
 	//void NXPrintf( struct con_nprint_s *info, char *fmt, ... ) _format(2);
 	void SafePrintf(const char *fmt, ...);
 	void CenteredPrint(const char *text);
@@ -93,6 +91,8 @@ private:
 	tConVarList mlstConVars;
 	
 	//std::unique_ptr<CCmdBuffer> mpCmdBuffer;
+	//std::unique_ptr<CConCmdHandler> mpConCmdHandler;
+	//std::unique_ptr<CConVarHandler> mpConVarHandler;
 	
 	char text[CON_TEXTSIZE];
 
@@ -102,15 +102,15 @@ private:
 
 	byte *con_chars{nullptr};
 	int con_notifylines{0}; // scan lines to clear for notify lines
-
-	//int con_backscroll{0};
-	//bool con_forcedup{false}; // because no entities to refresh
-	
-	bool initialized{false};
 	
 	int ormask{0}; // high bit mask for colored characters
 	
 	int totallines{0}; // total lines in console scrollback
+	
+	//int con_backscroll{0};
+	//bool con_forcedup{false}; // because no entities to refresh
+	
+	bool initialized{false};
 	
 /*
 	int 	linewidth{0};		// characters across screen

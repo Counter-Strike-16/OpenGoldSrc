@@ -578,6 +578,9 @@ void V_RenderView()
 
 	if(cls.state != ca_active)
 		return;
+	
+	//if (!cl.refresh_prepped)
+		//return;			// still loading
 
 	view_frame = &cl.frames[cls.netchan.incoming_sequence & UPDATE_MASK];
 	view_message = &view_frame->playerstate[cl.playernum];

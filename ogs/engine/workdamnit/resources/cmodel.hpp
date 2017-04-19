@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "maintypes.h"
-#include "rehlds/model.h"
+#include "common/maintypes.h"
+#include "public/rehlds/model.h"
 
 /*
 ==============================================================
@@ -41,12 +41,14 @@ CMODEL
 ==============================================================
 */
 
+// clang-format off
 #ifdef HOOK_ENGINE
-#define gPAS (*pgPAS)
-#define gPVS (*pgPVS)
-#define gPVSRowBytes (*pgPVSRowBytes)
-#define mod_novis (*pmod_novis)
+	#define gPAS (*pgPAS)
+	#define gPVS (*pgPVS)
+	#define gPVSRowBytes (*pgPVSRowBytes)
+	#define mod_novis (*pmod_novis)
 #endif // HOOK_ENGINE
+// clang-format on
 
 // Looks like no more than 8096 visibility leafs per world model
 const int MODEL_MAX_PVS = 1024;
@@ -58,10 +60,10 @@ extern unsigned char mod_novis[MODEL_MAX_PVS];
 
 void Mod_Init();
 
-unsigned char *Mod_DecompressVis(unsigned char *in, model_t *model);
+unsigned char *Mod_DecompressVis(byte *in, model_t *model);
 unsigned char *Mod_LeafPVS(mleaf_t *leaf, model_t *model);
 
-void CM_DecompressPVS(unsigned char *in, unsigned char *decompressed, int byteCount);
+void CM_DecompressPVS(byte *in, byte *decompressed, int byteCount);
 
 unsigned char *CM_LeafPVS(int leafnum);
 unsigned char *CM_LeafPAS(int leafnum);
@@ -69,4 +71,4 @@ unsigned char *CM_LeafPAS(int leafnum);
 void CM_FreePAS();
 void CM_CalcPAS(model_t *pModel);
 
-qboolean CM_HeadnodeVisible(mnode_t *node, unsigned char *visbits, int *first_visible_leafnum);
+qboolean CM_HeadnodeVisible(mnode_t *node, byte *visbits, int *first_visible_leafnum);

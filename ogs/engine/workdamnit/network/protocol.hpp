@@ -178,7 +178,7 @@ const char S2M_SHUTDOWN		= 'C';
 //
 // server to client
 //
-typedef enum svc_commands_e
+typedef enum svc_commands_e // svc_ops_e
 {
 	svc_bad,
 	svc_nop,
@@ -186,10 +186,10 @@ typedef enum svc_commands_e
 	svc_event,
 	svc_version,
 	svc_setview,
-	svc_sound,
+	svc_sound,		// <see code>
 	svc_time,
-	svc_print,
-	svc_stufftext,
+	svc_print,		// [byte] id [string] null terminated string
+	svc_stufftext,	// [string] stuffed into client's console buffer, should be \n terminated
 	svc_setangle,
 	svc_serverinfo,
 	svc_lightstyle,
@@ -206,7 +206,7 @@ typedef enum svc_commands_e
 	svc_temp_entity,
 	svc_setpause,
 	svc_signonnum,
-	svc_centerprint,
+	svc_centerprint, // [string] to put in center of the screen
 	svc_killedmonster,
 	svc_foundsecret,
 	svc_spawnstaticsound,
@@ -220,8 +220,8 @@ typedef enum svc_commands_e
 	svc_roomtype,
 	svc_addangle,
 	svc_newusermsg,
-	svc_packetentities,
-	svc_deltapacketentities,
+	svc_packetentities,			// [...]
+	svc_deltapacketentities,	// [...]
 	svc_choke,
 	svc_resourcelist,
 	svc_newmovevars,

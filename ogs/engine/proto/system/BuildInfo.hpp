@@ -53,7 +53,8 @@ public:
 	
 	int GetBuildNum() const;
 	
-	void ToString(char *asString, int anSize);
+	const char *ToString();
 private:
 	uint build_number{0};
+	char *string;
 };

@@ -93,7 +93,7 @@ void VID_Error(int err_level, char *fmt, ...)
 	vsprintf(msg, fmt, argptr);
 	va_end(argptr);
 
-	Sys_Error(err_level, "%s", msg);
+	CSystem::Error("%s", msg); // err_level
 }
 
 //==========================================================================

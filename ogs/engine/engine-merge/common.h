@@ -15,11 +15,28 @@ void InsertLinkAfter (link_t *l, link_t *after);
 // FIXME: remove this mess!
 #define	STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (int)&(((t *)0)->m)))
 
+// (type *)STRUCT_FROM_LINK(link_t *link, type, member)
+// ent = STRUCT_FROM_LINK(link,entity_t,order)
+// FIXME: remove this mess!
+#define	STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (int)&(((t *)0)->m)))
+
 //============================================================================
 
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
+
+#define Q_MAXCHAR ((char)0x7f)
+#define Q_MAXSHORT ((short)0x7fff)
+#define Q_MAXINT	((int)0x7fffffff)
+#define Q_MAXLONG ((int)0x7fffffff)
+#define Q_MAXFLOAT ((int)0x7fffffff)
+
+#define Q_MINCHAR ((char)0x80)
+#define Q_MINSHORT ((short)0x8000)
+#define Q_MININT 	((int)0x80000000)
+#define Q_MINLONG ((int)0x80000000)
+#define Q_MINFLOAT ((int)0x7fffffff)
 
 #define Q_MAXCHAR ((char)0x7f)
 #define Q_MAXSHORT ((short)0x7fff)
@@ -68,7 +85,7 @@ void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 
 extern	qboolean	com_eof;
 
-void COM_AddParm (char *parm);
+
 
 //============================================================================
 
@@ -76,8 +93,9 @@ extern int com_filesize;
 struct cache_user_s;
 
 void COM_WriteFile (char *filename, void *data, int len);
+int COM_OpenFile (char *filename, int *hndl);
 int COM_FOpenFile (char *filename, FILE **file);
-void COM_CloseFile (FILE *h);
+void COM_CloseFile (FILE *h); // void COM_CloseFile (int h);
 
 byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
 byte *COM_LoadTempFile (char *path);
@@ -146,6 +164,8 @@ typedef struct sizebuf_s
 
 void SZ_Init (sizebuf_t *buf, byte *data, int length);
 
+void SZ_Free (sizebuf_t *buf);
+
 //============================================================================
 
 struct usercmd_s;
@@ -190,7 +210,6 @@ extern	float	LittleFloat (float l);
 
 //============================================================================
 
-
 int	COM_Argc ();
 char *COM_Argv (int arg);	// range and null checked
 void COM_ClearArgv (int arg);
@@ -207,30 +226,18 @@ char *CopyString (char *in);
 
 enum svc_ops_e
 {
-	svc_bad,
-
 	// these ops are known to the game dll
 	svc_muzzleflash,
 	svc_muzzleflash2,
-	svc_temp_entity,
 	svc_layout,
 	svc_inventory,
-
-	// the rest are private to the client and server
-	svc_nop,
-	svc_disconnect,
-	svc_reconnect,
-	svc_sound,					// <see code>
-	svc_print,					// [byte] id [string] null terminated string
-	svc_stufftext,				// [string] stuffed into client's console buffer, should be \n terminated
+	
+	svc_reconnect,			
 	svc_serverdata,				// [long] protocol ...
-	svc_configstring,			// [short] [string]
-	svc_spawnbaseline,		
-	svc_centerprint,			// [string] to put in center of the screen
+	svc_configstring,			// [short] [string]	
 	svc_download,				// [short] size [size bytes]
 	svc_playerinfo,				// variable
-	svc_packetentities,			// [...]
-	svc_deltapacketentities,	// [...]
+		
 	svc_frame
 };
 
@@ -385,8 +392,6 @@ extern	qboolean	userinfo_modified;
 
 #define	MAX_MSGLEN		1400		// max length of a message
 #define	PACKET_HEADER	10			// two ints and a short
-
-
 
 
 //============================================================================
@@ -579,72 +584,9 @@ void Qcommon_Shutdown ();
 #define NUMVERTEXNORMALS	162
 extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
 
-// this is in the client code, but can be used for debugging from server
-void SCR_DebugGraph (float value, int color);
-
 void SV_Shutdown (char *finalmsg, qboolean reconnect);
 
 #if !defined BYTE_DEFINED
 typedef unsigned char 		byte;
 #define BYTE_DEFINED 1
 #endif
-
-//============================================================================
-
-void SZ_Free (sizebuf_t *buf);
-
-//============================================================================
-
-void ClearLink (link_t *l);
-void RemoveLink (link_t *l);
-void InsertLinkBefore (link_t *l, link_t *before);
-void InsertLinkAfter (link_t *l, link_t *after);
-
-// (type *)STRUCT_FROM_LINK(link_t *link, type, member)
-// ent = STRUCT_FROM_LINK(link,entity_t,order)
-// FIXME: remove this mess!
-#define	STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (int)&(((t *)0)->m)))
-
-//============================================================================
-
-#ifndef NULL
-#define NULL ((void *)0)
-#endif
-
-#define Q_MAXCHAR ((char)0x7f)
-#define Q_MAXSHORT ((short)0x7fff)
-#define Q_MAXINT	((int)0x7fffffff)
-#define Q_MAXLONG ((int)0x7fffffff)
-#define Q_MAXFLOAT ((int)0x7fffffff)
-
-#define Q_MINCHAR ((char)0x80)
-#define Q_MINSHORT ((short)0x8000)
-#define Q_MININT 	((int)0x80000000)
-#define Q_MINLONG ((int)0x80000000)
-#define Q_MINFLOAT ((int)0x7fffffff)
-
-//============================================================================
-
-void MSG_WriteCoord (sizebuf_t *sb, float f);	
-
-//============================================================================
-
-extern	qboolean	com_eof;
-
-
-//============================================================================
-
-extern int com_filesize;
-struct cache_user_s;
-
-extern	char	com_gamedir[MAX_OSPATH];
-
-void COM_WriteFile (char *filename, void *data, int len);
-int COM_OpenFile (char *filename, int *hndl);
-int COM_FOpenFile (char *filename, FILE **file);
-void COM_CloseFile (int h);
-
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
-byte *COM_LoadTempFile (char *path);
-byte *COM_LoadHunkFile (char *path);
-void COM_LoadCacheFile (char *path, struct cache_user_s *cu);

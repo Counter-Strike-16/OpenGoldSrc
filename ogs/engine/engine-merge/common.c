@@ -1,6 +1,4 @@
 
-// common.c -- misc functions used in client and server
-
 #include "quakedef.h"
 
 #define NUM_SAFE_ARGVS  7
@@ -28,16 +26,11 @@ void COM_InitFilesystem (void);
 #define PAK0_COUNT              339
 #define PAK0_CRC                32981
 
-char	com_token[1024];
-
 #define CMDLINE_LENGTH	256
 char	com_cmdline[CMDLINE_LENGTH];
 
 
 /*
-
-
-
 
 FIXME:
 The file "parms.txt" will be read out of the game directory and appended to the current command line arguments to allow different games to initialize startup parms differently.  This could be used to add a "-sspeed 22050" for the high quality sound edition.  Because they are added at the end, they will not override an explicit setting on the original command line.
@@ -48,8 +41,6 @@ void MSG_WriteAngle (sizebuf_t *sb, float f)
 {
 	MSG_WriteByte (sb, ((int)f*256/360) & 255);
 }
-
-
 
 
 float MSG_ReadCoord (void)
@@ -314,35 +305,14 @@ void COM_InitArgv (int argc, char **argv)
 }
 
 
-/*
-================
-COM_Init
-================
-*/
+
 void COM_Init (char *basedir)
 {
 	byte    swaptest[2] = {1,0};
 
-// set the byte swapping variables in a portable manner 
+
 	if ( *(short *)swaptest == 1)
 	{
-		bigendien = false;
-		BigShort = ShortSwap;
-		LittleShort = ShortNoSwap;
-		BigLong = LongSwap;
-		LittleLong = LongNoSwap;
-		BigFloat = FloatSwap;
-		LittleFloat = FloatNoSwap;
-	}
-	else
-	{
-		bigendien = true;
-		BigShort = ShortNoSwap;
-		LittleShort = ShortSwap;
-		BigLong = LongNoSwap;
-		LittleLong = LongSwap;
-		BigFloat = FloatNoSwap;
-		LittleFloat = FloatSwap;
 	}
 
 	Cvar_RegisterVariable (&registered);
@@ -353,23 +323,22 @@ void COM_Init (char *basedir)
 	COM_CheckRegistered ();
 }
 
-
 //
 // in memory
 //
 
 typedef struct
 {
-	char    name[MAX_QPATH];
-	int             filepos, filelen;
+	char	name[MAX_QPATH];
+	int		filepos, filelen;
 } packfile_t;
 
 typedef struct pack_s
 {
-	char    filename[MAX_OSPATH];
-	int             handle;
-	int             numfiles;
-	packfile_t      *files;
+	char	filename[MAX_OSPATH];
+	FILE	*handle; // int             handle;
+	int		numfiles;
+	packfile_t	*files;
 } pack_t;
 
 //
@@ -389,6 +358,8 @@ typedef struct
 } dpackheader_t;
 
 #define MAX_FILES_IN_PACK       2048
+
+char	com_basedir[MAX_OSPATH];
 
 char    com_cachedir[MAX_OSPATH];
 char    com_gamedir[MAX_OSPATH];

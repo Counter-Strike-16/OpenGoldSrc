@@ -372,24 +372,8 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	
 	if(!mpHost->Init(&host_parms))
 		return 0;
-
-	//TraceInit("Sys_InitAuthentication()", "Sys_ShutdownAuthentication()", 0);
-	CSystem::InitAuthentication();
 	
-	// Since the dedicated mode is oriented on multiplayer (only)
-	// We should init the game dll and enable the multiplayer mode for the network here
-	if(mbDedicated)
-	{
-		mpHost->InitGame(); // We should immediately init the game module for dedicated mode
-							// (client is initializing it after the first call to new game)
-							// NOTE: move to host init?
-		//mpNetwork->Config(TRUE); // double call (already called inside host_initgamedll)
-	};
-
 #ifndef SWDS
-	//else
-		//ClientDLL_ActivateMouse();
-
 	char en_US[12];
 
 	Q_strcpy(en_US, "en_US.UTF-8");

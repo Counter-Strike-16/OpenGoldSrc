@@ -1,5 +1,4 @@
 
-// common.c -- misc functions used in client and server
 #include "qcommon.h"
 #include <setjmp.h>
 
@@ -951,20 +950,6 @@ void COM_AddParm (char *parm)
 	if (com_argc == MAX_NUM_ARGVS)
 		Com_Error (ERR_FATAL, "COM_AddParm: MAX_NUM)ARGS");
 	com_argv[com_argc++] = parm;
-}
-
-
-
-
-/// just for debugging
-int	memsearch (byte *start, int count, int search)
-{
-	int		i;
-	
-	for (i=0 ; i<count ; i++)
-		if (start[i] == search)
-			return i;
-	return -1;
 }
 
 void Info_Print (char *s)
