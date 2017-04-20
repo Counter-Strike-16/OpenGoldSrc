@@ -165,9 +165,9 @@ cmdalias_t *Cmd_GetAliasList()
 
 //============================================================================
 
-void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
+void EXT_FUNC Cvar_RegisterGameVariable(cvar_t *variable)
 {
-	gpConVarHandler->RegisterVariable(variable);
+	gpConVarHandler->RegisterGameVariable(variable); // add FCVAR_EXTDLL flag to it
 };
 
 cvar_t *Cvar_FindVar(const char *var_name)

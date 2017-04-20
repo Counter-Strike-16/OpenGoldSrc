@@ -74,9 +74,18 @@ void CCmdBuffer::AddText(char *text)
 	cmd_text->Write(text, len);
 };
 
-// When a command wants to issue other commands immediately, the text is
-// inserted at the beginning of the buffer, before any remaining unexecuted
-// commands.
+/*
+============
+idCmdSystemLocal::InsertCommandText
+
+Adds command text immediately after the current command
+Adds a \n to the text
+
+When a command wants to issue other commands immediately, the text is
+inserted at the beginning of the buffer, before any remaining unexecuted
+commands
+============
+*/
 void CCmdBuffer::InsertText(char *text)
 {
 	int addLen = Q_strlen(text);
@@ -172,6 +181,9 @@ Do not call inside a command function!
 */
 void CCmdBuffer::Execute()
 {
+	//cmd_text->cursize == textLength
+	//cmd_text->data == textBuf
+	
 	int i;
 	char *text;
 	char line[MAX_CMD_LINE];
@@ -191,7 +203,7 @@ void CCmdBuffer::Execute()
 			if(!(quotes & 1) && text[i] == ';')
 				break; // don't break if inside a quoted string
 			
-			if(text[i] == '\n')
+			if(text[i] == '\n') // || text[i] == '\r'
 				break;
 		};
 
@@ -234,7 +246,7 @@ void CCmdBuffer::Execute()
 		};
 
 		// execute the command line
-		Cmd_ExecuteString(line, src_command);
+		//Cmd_ExecuteString(line, src_command);
 
 		if(cmd_wait)
 		{

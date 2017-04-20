@@ -547,33 +547,17 @@ void Cmd_InsertCommand(cmd_function_t *cmd)
 // alloc string for the name.
 void Cmd_AddCommand(char *cmd_name, xcommand_t function)
 {
-	cmd_function_t *cmd;
-
-	if(host_initialized)
-		Sys_Error("%s after host_initialized", __FUNCTION__);
-
-	// Check in variables list
-	if(Cvar_FindVar(cmd_name) != NULL)
-	{
-		Con_Printf("%s: \"%s\" already defined as a var\n", __FUNCTION__, cmd_name);
-		return;
-	}
-
-	// Check if this command is already defined
-	if(Cmd_Exists(cmd_name))
-	{
-		Con_Printf("%s: \"%s\" already defined\n", __FUNCTION__, cmd_name);
-		return;
-	}
-
 	// Create cmd_function
-	cmd = (cmd_function_t *)Hunk_Alloc(sizeof(cmd_function_t));
+	cmd_function_t *cmd = (cmd_function_t *)Hunk_Alloc(sizeof(cmd_function_t));
+	
 	cmd->name = cmd_name;
 	cmd->function = function ? function : Cmd_ForwardToServer;
 	cmd->flags = 0;
 
 	Cmd_InsertCommand(cmd);
 }
+
+// It almost fully duplicates the Cmd_AddCommand
 
 // Use this for call from user code, because it alloc string for the name.
 void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag)
@@ -894,7 +878,7 @@ NOXREF int Cmd_CheckParm(char *parm)
 	NOXREFCHECK;
 
 	if(!parm)
-		Sys_Error("%s: NULL", __FUNCTION__);
+		CSystem::Error("%s: NULL", __FUNCTION__); // it's not that critical
 
 	for(int i = 1; i < Cmd_Argc(); ++i)
 	{

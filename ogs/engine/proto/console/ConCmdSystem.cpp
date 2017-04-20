@@ -452,14 +452,7 @@ void idCmdSystemLocal::ExecuteCommandText( const char *text ) {
 	ExecuteTokenizedString( idCmdArgs( text, false ) );
 }
 
-/*
-============
-idCmdSystemLocal::InsertCommandText
 
-Adds command text immediately after the current command
-Adds a \n to the text
-============
-*/
 void idCmdSystemLocal::InsertCommandText( const char *text ) {
 	int		len;
 	int		i;
@@ -551,15 +544,8 @@ void idCmdSystemLocal::BufferCommandArgs( cmdExecution_t exec, const idCmdArgs &
 	}
 }
 
-/*
-============
-idCmdSystemLocal::ExecuteCommandBuffer
-============
-*/
 void idCmdSystemLocal::ExecuteCommandBuffer() {
-	int			i;
-	char *		text;
-	int			quotes;
+	
 	idCmdArgs	args;
 
 	while( textLength ) {
@@ -570,20 +556,8 @@ void idCmdSystemLocal::ExecuteCommandBuffer() {
 			break;
 		}
 
-		// find a \n or ; line break
-		text = (char *)textBuf;
-
-		quotes = 0;
 		for ( i = 0; i < textLength; i++ ) {
-			if ( text[i] == '"' ) {
-				quotes++;
-			}
-			if ( !( quotes & 1 ) &&  text[i] == ';' ) {
-				break;	// don't break if inside a quoted string
-			}
-			if ( text[i] == '\n' || text[i] == '\r' ) {
-				break;
-			}
+			
 		}
 			
 		text[i] = 0;
@@ -593,18 +567,6 @@ void idCmdSystemLocal::ExecuteCommandBuffer() {
 			tokenizedCmds.RemoveIndex( 0 );
 		} else {
 			args.TokenizeString( text, false );
-		}
-
-		// delete the text from the command buffer and move remaining commands down
-		// this is necessary because commands (exec) can insert data at the
-		// beginning of the text buffer
-
-		if ( i == textLength ) {
-			textLength = 0;
-		} else {
-			i++;
-			textLength -= i;
-			memmove( text, text+i, textLength );
 		}
 
 		// execute the command line that we have already tokenized

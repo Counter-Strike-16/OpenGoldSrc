@@ -1,22 +1,28 @@
+// We either using the cmd/var handlers with their's internal std lists
+// or the cmd/var list classes which still internally contains std lists
+
 CCmdBuffer gCmdBuffer;
 gCmdBuffer.InsertText("Hello Gordon");
 gCmdBuffer.InsertText("exit");
 gCmdBuffer.Exec();
 
-// rename CmdBuffer to CmdProcessor?
+// rename CmdBuffer to CmdProcessor/CmdParser?
 
 void CCmdBuffer::Exec()
 {
 	std::string line{""};
 	
-	// Format our internal buffer
-	// Current buffer:
-	// "Hello Gordon\nexit\n"
-	// Split the string into tokens divided by ; or "\n"
-	// And exec each of them
+	while(has unprocessed data)
+	{
+		// Format our internal buffer
+		// Current buffer:
+		// "Hello Gordon\nexit\n"
+		// Split the string into lines divided by ; or "\n"
+		// And exec each of them
 	
-	// Exec our "Hello Gordon" string
-	mpCmdHandler->ExecCmd(line);
+		// Exec our "Hello Gordon" string
+		UNKNOWN->ExecCmd(line);
+	};
 };
 
 void CCmdProcessor::ExecCmd(const char *text)
@@ -24,15 +30,15 @@ void CCmdProcessor::ExecCmd(const char *text)
 	// do CConCmdHandler::ExecCmd things here
 };
 
-IConCmdArgs *CConCmdHandler::TokenizeString(const char *text)
+void CConCmdHandler::TokenizeString(const char *text, IConCmdArgs &Args)
 {
-	return new CConCmdArgs(text); // temp
+	// tokenize the passed string
 };
 
 void CConCmdHandler::ExecCmd(const char *text)
 {
-	static IConCmdArgs CmdArgs; // crappy
-	&CmdArgs = TokenizeString(text); // crappy
+	CConCmdArgs CmdArgs;
+	TokenizeString(text, CmdArgs);
 	
 	for(auto It : mlstCmds)
 		if(!Q_strcmp(It->GetName(), CmdArgs[0])) // 0 - cmdname; but should we remain it in args?
@@ -60,36 +66,220 @@ void CConCmdHandler::ExecCmd(const char *text)
 // AddConVar - check that concmd with the same name isn't present
 // AddConCmd - check than convar with the same name isn't present
 
-bool CConsole::AddCommand(const char *asName)
+// These two funcs below should be used as front-end funcs for client/server
+// game dlls
+// That means that if use create a concmd on dll side and registering it in
+// system these funcs below should be used instead of direct AddCommand method
+// to guarantee that the specific flags will be set
+
+// Our CUnknown class should be some kind of front-end for user code
+// That means that the cmdhandler/varhandler is operating on lower-level
+// which is not directly acessible from a higher level (user code)
+// Current GS code is already oriented on that so we just need to
+// organize it properly
+
+bool CUnknown::AddGameCommand(IConCmd *apCmd)
 {
-	if(mpCmdHandler->Find(asName))
-	{
-		Printf("Blah-blah");
-		return true;
-	};
+	apCmd->ClearFlags();
+	apCmd->AddFlag(game command); // AddFlag as part of public interface?
+	return mpCmdHandler->AddCommand(apCmd);
+};
+
+bool CUnknown::AddHUDCommand(IConCmd *apCmd)
+{
+	apCmd->ClearFlags(); //or ClearCmdFlags(IConCmd *apCmd)?
+	apCmd->AddFlag(client command);
+	return mpCmdHandler->AddCommand(apCmd);
+};
+
+//bool CUnknown::AddCommand(const char *asName, IConCmd *apCmd) // you can use something like an "Exec" method on that
+bool CUnknown::AddCommand(const char *asName, pfnConCmdCallback afnCallback, const char *asDesc)
+{
+	if(host_initialized) // What's wrong with that?
+		CSystem::Error("%s after host_initialized", __FUNCTION__);
 	
-	if(mpVarHandler->Find(asName))
+	// GS is checking inside vars first
+	// Can we change this logic?
+	
+	// Check in variables list
+	if(mpVarHandler->Exists(asName)) // was Find; var list
 	{
-		Printf("ConCmd is already known as a var");
+		mpConsole->Printf("ConCmd \"%s\" is already known as a var!", asName);
+		//Con_Printf("%s: \"%s\" already defined as a var\n", __FUNCTION__, cmd_name);
 		return false;
 	};
 	
+	// Check if this command is already defined
+	// Fail if the command already exists
+	if(mpCmdHandler->Exists(asName)) // was Find; cmd list
+	{
+		mpConsole->Printf("ConCmd \"%s\" is already registered!", asName);
+		//"%s: \"%s\" already defined\n", __FUNCTION__, asName
+		return true; // false?
+	};
+	
+	mpCmdHandler->AddCommand(asName, afnCallback, asDesc);
 	return true;
 };
 
-bool CConsole::AddVar(const char *asName)
+// Need a some way to detect where did a cvar came from
+//bool CUnknown::AddGameVar
+//bool CUnknown::AddClientVar // AddHUDVar
+//bool CUnknown::AddExternalVar
+// What is CUnknown here? The console?
+//
+// Use different impl of IConsole for server/client sides?
+//
+// OGS_CLIENTCONSOLE_INTERFACE_VERSION
+// OGS_SERVERCONSOLE_INTERFACE_VERSION
+//
+// Or what?
+// IConsoleController?
+
+bool CUnknown::AddVar(const char *asName, const char *asValue, const char *asDesc)
 {
-	if(mpVarHandler->Find(asName))
+	if(mpVarHandler->Exists(asName)) // was Find; var list
 	{
-		Printf("Blah-blah");
-		return true;
+		mpConsole->Printf("ConVar \"%s\" is already registered!", asName);
+		return true; // false?
 	};
 	
-	if(mpCmdHandler->Find(asName))
+	if(mpCmdHandler->Exists(asName)) // was Find; cmd list
 	{
-		Printf("ConVar is already known as a cmd");
+		mpConsole->Printf("ConVar \"%s\" is already known as a cmd!", asName);
 		return false;
 	};
 	
+	mpVarHandler->AddVar(asName, asValue, asDesc);
 	return true;
+};
+
+IConVar *CUnknown::GetVar(const char *asName)
+{
+	return mpVarHandler->Find(asName);
+};
+
+// This thing is temp
+// It's meant to be used instead of IConVar to prevent checks for validity
+// With this IConVarRef interface you don't need to check for var and
+// you can directly set/get it's values; if it's pointing to a valid var then
+// it's values will be modified/returned; otherwise, the internal values of
+// convarref class will be modified
+// This is planned to be used instead of setvar/getvar value methods
+//
+// It's may be better to use a CConVarRef class object in the user code
+// and pass a IConVar pointer into it for the same functionality
+//
+// CConVarRef SomeVarRef;
+// SomeVarRef = mpUnknown->GetVar("cl_hellogordon");
+// SomeVarRef.SetString("bye"); // so this will set the value of "cl_hellogordon"
+// cvar to "bye" in case it's registered
+//
+// CConVarRef NotRegisteredVarRef;
+// NotRegisteredVarRef = mpUnknown->GetVar("killme");
+// NotRegisteredVarRef.SetBool(false); // set false to internal value of CConVarRef object
+// since "killme" wasn't found
+const IConVarRef &CUnknown::GetVarRef(const char *asName)
+{
+	static CConVarRef ConVarRef;
+	
+	IConVar *pVar = mpVarHandler->Find(asName);
+	
+	if(pVar)
+		ConVarRef.SetVar(pVar); // set our internal var to pVar
+	
+	return ConVarRef;
+};
+
+void CUnknown::SetVar(const char *asName, const char *asValue)
+{
+	IConVar *pVar = mpVarHandler->Find(asName);
+	
+	if(pVar)
+		pVar->SetString(asValue);
+};
+
+void CUnknown::SetVar(const char *asName, int anValue)
+{
+	IConVar *pVar = mpVarHandler->Find(asName);
+	
+	if(pVar)
+		pVar->SetInt();
+};
+
+void CUnknown::SetVar(const char *asName, float afValue)
+{
+	IConVar *pVar = mpVarHandler->Find(asName);
+	
+	if(pVar)
+		pVar->SetFloat();
+};
+
+void CUnknown::SetVarBool(const char *asName, bool abValue)
+{
+	IConVar *pVar = mpVarHandler->Find(asName);
+	
+	if(pVar)
+		pVar->SetBool(abValue);
+};
+
+const char *CUnknown::GetVarString(const char *asName, const char *asDefVal)
+{
+	IConVar *pVar = mpVarHandler->Find(asName);
+	
+	if(pVar)
+		return pVar->GetString();
+	
+	return asDefVal;
+};
+
+int CUnknown::GetVarInt(const char *asName, int anDefVal)
+{
+	IConVar *pVar = mpVarHandler->Find(asName);
+	
+	if(pVar)
+		return pVar->GetInt();
+	
+	return anDefVal;
+};
+
+float CUnknown::GetVarFloat(const char *asName, float afDefVal)
+{
+	IConVar *pVar = mpVarHandler->Find(asName);
+	
+	if(pVar)
+		return pVar->GetFloat();
+	
+	return afDefVal;
+};
+
+bool CUnknown::GetVarBool(const char *asName, bool abDefVal)
+{
+	IConVar *pVar = mpVarHandler->Find(asName);
+	
+	if(pVar)
+		return pVar->GetBool();
+	
+	return abDefVal;
+};
+
+// Legacy command exec support
+
+// Legacy console commands aren't support the IConCmdArgs as their arg
+// so we need to pass 'em manually
+
+int Cmd_Argc()
+{
+	return gpUnknown->GetCurrentCmd()->GetArgs()->GetCount(); // ...
+};
+
+char *Cmd_Args()
+{
+	return gpUnknown->GetCurrentCmd()->GetArgs()->ToString(); // ...
+};
+
+void Cmd_Legacy_f()
+{
+	int nArgCount = Cmd_Argc();
+	char *sArgs = Cmd_Args();
 };
