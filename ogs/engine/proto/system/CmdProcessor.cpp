@@ -29,69 +29,42 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "system/byteorder.hpp"
-#include "common/mathlib_local.hpp"
+#include "system/CmdProcessor.hpp"
+#include "console/ConCmdHandler.hpp"
+#include "console/ConVarHandler.hpp"
 
-/*
-============================================================================
-
-BYTE ORDER FUNCTIONS
-
-============================================================================
-*/
-
-bool bigendien;
-
-short (*BigShort)(short l);
-short (*LittleShort)(short l);
-
-int (*BigLong)(int l);
-int (*LittleLong)(int l);
-
-float (*BigFloat)(float l);
-float (*LittleFloat)(float l);
-
-int LongSwap(int l)
+void CCmdProcessor::ExecuteString(const char *asText) // CConCmdHandler::ExecCmd
 {
-	return bswap(l);
-};
-
-int LongNoSwap(int l)
-{
-	return l;
-};
-
-short ShortSwap(short l)
-{
-	return bswap(l);
-};
-
-short ShortNoSwap(short l)
-{
-	return l;
-};
-
-float FloatSwap(float f)
-{
-	/*union
-  {
-          float f;
-          byte b[4];
-  } dat1, dat2;
-
-  dat1.f = f;
-  dat2.b[0] = dat1.b[3];
-  dat2.b[1] = dat1.b[2];
-  dat2.b[2] = dat1.b[1];
-  dat2.b[3] = dat1.b[0];
-
-  return dat2.f;*/
-	// unsigned long u = bswap(*(unsigned long *)&f);
-	// return *(float *)&u;
-	return bswap(f);
-};
-
-float FloatNoSwap(float f)
-{
-	return f;
+	CConCmdArgs CmdArgs;
+	TokenizeString(asText, CmdArgs);
+	
+	// These components are directly checking their internal data
+	// so we can't place their methods code here
+	// But I think it's better to remove the additional logic of cmd execution
+	// from those levels and make them work mostly as containers
+	
+	/// Solution #1
+	
+	// mpCmdHandler = mpCmdList = mpCmdContainer
+	//IConCmd *pCmd = mpCmdHandler->GetCmd(CmdArgs[0]);
+	
+	//if(pCmd)
+	//{
+		//pCmd->Exec(CmdArgs);
+		//return;
+	//};
+	
+	/// Solution #2
+	
+	if(mpCmdHandler->ExecCmd(CmdArgs))
+		return;
+	
+	///
+	
+	if(mpVarHandler->HandleCommand(CmdArgs)) // that's harder
+		return;
+	
+	if(mpLocalClient->GetState() >= eClientState::Connected)
+		mpNetwork->ForwardCmdToServer(CmdArgs); // network/client ?
+		//mpLocalClient->ForwardCmdToServer(CmdArgs); // client has a ptr to net
 };

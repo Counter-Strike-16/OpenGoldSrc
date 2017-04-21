@@ -82,19 +82,6 @@ extern bf_write_t bfwrite;
 
 //============================================================================
 
-extern qboolean bigendien;
-
-extern short (*BigShort)(short l);
-extern short (*LittleShort)(short l);
-
-extern int (*BigLong)(int l);
-extern int (*LittleLong)(int l);
-
-extern float (*BigFloat)(float l);
-extern float (*LittleFloat)(float l);
-
-//============================================================================
-
 extern int com_argc;
 extern char **com_argv;
 
@@ -104,12 +91,12 @@ extern qboolean com_ignorecolons;
 extern qboolean s_com_token_unget;
 
 extern char com_clientfallback[MAX_PATH];
-extern char com_gamedir[MAX_PATH]; // MAX_OSPATH
+//extern char com_gamedir[MAX_PATH]; // MAX_OSPATH
 
 typedef struct cache_user_s cache_user_t;
 
 extern cache_user_t *loadcache;
-extern unsigned char *loadbuf;
+extern byte *loadbuf;
 extern int loadsize;
 
 //============================================================================

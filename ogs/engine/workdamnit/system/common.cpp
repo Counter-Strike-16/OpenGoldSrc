@@ -72,29 +72,29 @@ void COM_BitOpsInit()
 
 #ifndef COM_Functions_region
 
-unsigned char COM_Nibble(char c)
+byte COM_Nibble(char c)
 {
 	if(c >= '0' && c <= '9')
 	{
-		return (unsigned char)(c - '0');
+		return (byte)(c - '0');
 	}
 
 	if(c >= 'A' && c <= 'F')
 	{
-		return (unsigned char)(c - 'A' + 0x0A);
+		return (byte)(c - 'A' + 0x0A);
 	}
 
 	if(c >= 'a' && c <= 'f')
 	{
-		return (unsigned char)(c - 'a' + 0x0A);
+		return (byte)(c - 'a' + 0x0A);
 	}
 
 	return '0';
 }
 
-void COM_HexConvert(const char *pszInput, int nInputLength, unsigned char *pOutput)
+void COM_HexConvert(const char *pszInput, int nInputLength, byte *pOutput)
 {
-	unsigned char *p;
+	byte *p;
 	int i;
 	const char *pIn;
 
@@ -111,12 +111,12 @@ void COM_HexConvert(const char *pszInput, int nInputLength, unsigned char *pOutp
 	}
 }
 
-NOXREF char *COM_BinPrintf(unsigned char *buf, int nLen)
+NOXREF char *COM_BinPrintf(byte *buf, int nLen)
 {
 	NOXREFCHECK;
 	
 	static char szReturn[4096];
-	unsigned char c;
+	byte c;
 	char szChunk[10];
 	int i;
 
@@ -124,7 +124,7 @@ NOXREF char *COM_BinPrintf(unsigned char *buf, int nLen)
 
 	for(i = 0; i < nLen; i++)
 	{
-		c = (unsigned char)buf[i];
+		c = (byte)buf[i];
 
 		Q_snprintf(szChunk, sizeof(szChunk), "%02x", c);
 		Q_strncat(szReturn, szChunk, sizeof(szReturn) - Q_strlen(szReturn) - 1);
@@ -144,12 +144,13 @@ void COM_ExplainDisconnection(qboolean bPrint, char *fmt, ...)
 	Q_strncpy(gszDisconnectReason, string, sizeof(gszDisconnectReason) - 1);
 	gszDisconnectReason[sizeof(gszDisconnectReason) - 1] = 0;
 	gfExtendedError = 1;
+	
 	if(bPrint)
 	{
 		if(gszDisconnectReason[0] != '#')
-			Con_Printf("%s\n", gszDisconnectReason);
-	}
-}
+			gpConsole->Printf("%s\n", gszDisconnectReason);
+	};
+};
 
 NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...)
 {
@@ -164,12 +165,13 @@ NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...)
 
 	Q_strncpy(gszExtendedDisconnectReason, string, sizeof(gszExtendedDisconnectReason) - 1);
 	gszExtendedDisconnectReason[sizeof(gszExtendedDisconnectReason) - 1] = 0;
+	
 	if(bPrint)
 	{
 		if(gszExtendedDisconnectReason[0] != '#')
-			Con_Printf("%s\n", gszExtendedDisconnectReason);
-	}
-}
+			gpConsole->Printf("%s\n", gszExtendedDisconnectReason);
+	};
+};
 
 #endif // COM_Functions_region
 
@@ -186,14 +188,12 @@ char *com_last_in_quotes_data = NULL;
 char com_clientfallback[MAX_PATH];
 
 cache_user_t *loadcache;
-unsigned char *loadbuf;
+byte *loadbuf;
 int loadsize;
 
-const unsigned char mungify_table[] = { 0x7A, 0x64, 0x05, 0xF1, 0x1B, 0x9B, 0xA0, 0xB5, 0xCA, 0xED, 0x61, 0x0D, 0x4A, 0xDF, 0x8E, 0xC7 };
-
-const unsigned char mungify_table2[] = { 0x05, 0x61, 0x7A, 0xED, 0x1B, 0xCA, 0x0D, 0x9B, 0x4A, 0xF1, 0x64, 0xC7, 0xB5, 0x8E, 0xDF, 0xA0 };
-
-unsigned char mungify_table3[] = { 0x20, 0x07, 0x13, 0x61, 0x03, 0x45, 0x17, 0x72, 0x0A, 0x2D, 0x48, 0x0C, 0x4A, 0x12, 0xA9, 0xB5 };
+const byte mungify_table[] = { 0x7A, 0x64, 0x05, 0xF1, 0x1B, 0x9B, 0xA0, 0xB5, 0xCA, 0xED, 0x61, 0x0D, 0x4A, 0xDF, 0x8E, 0xC7 };
+const byte mungify_table2[] = { 0x05, 0x61, 0x7A, 0xED, 0x1B, 0xCA, 0x0D, 0x9B, 0x4A, 0xF1, 0x64, 0xC7, 0xB5, 0x8E, 0xDF, 0xA0 };
+byte mungify_table3[] = { 0x20, 0x07, 0x13, 0x61, 0x03, 0x45, 0x17, 0x72, 0x0A, 0x2D, 0x48, 0x0C, 0x4A, 0x12, 0xA9, 0xB5 };
 
 //============================================================================
 
@@ -338,14 +338,10 @@ void COM_DefaultExtension(char *path, char *extension)
 	Q_strcat(path, extension);
 }
 
-
-
 void COM_UngetToken()
 {
 	s_com_token_unget = 1;
 };
-
-
 
 char *COM_Parse(char *data)
 {
@@ -454,11 +450,10 @@ skipwhite:
 char *COM_ParseLine(char *data)
 {
 #ifndef REHLDS_FIXES
-	unsigned int c;
+	uint c;
 #else
 	int c;
 #endif
-	int len;
 
 	if(s_com_token_unget)
 	{
@@ -466,7 +461,7 @@ char *COM_ParseLine(char *data)
 		return data;
 	}
 
-	len = 0;
+	int len = 0;
 	com_token[0] = 0;
 
 	if(!data)
@@ -520,16 +515,15 @@ char *COM_ParseLine(char *data)
 
 int COM_TokenWaiting(char *buffer)
 {
-	char *p;
-
-	p = buffer;
+	char *p = buffer;
+	
 	while(*p && *p != '\n')
 	{
 		if(!isspace(*p) || isalnum(*p))
 			return 1;
 
 		p++;
-	}
+	};
 
 	return 0;
 };
@@ -551,7 +545,7 @@ void COM_Init(char *basedir)
 	// set the byte swapping variables in a portable manner
 	if(*(byte *)&swaptest == 1)
 	{
-		bigendien = 0; // false
+		bigendien = false;
 		BigShort = ShortSwap;
 		LittleShort = ShortNoSwap;
 		BigLong = LongSwap;
@@ -561,7 +555,7 @@ void COM_Init(char *basedir)
 	}
 	else
 	{
-		bigendien = 1; // true
+		bigendien = true;
 		BigShort = ShortNoSwap;
 		LittleShort = ShortSwap;
 		BigLong = LongNoSwap;
@@ -635,42 +629,43 @@ void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize)
 		FS_Read(copybuf, COM_COPY_CHUNK_SIZE, 1, src);
 		FS_Write(copybuf, COM_COPY_CHUNK_SIZE, 1, dst);
 		copysize -= COM_COPY_CHUNK_SIZE;
-	}
+	};
 
 	FS_Read(copybuf, copysize, 1, src);
 	FS_Write(copybuf, copysize, 1, dst);
 	FS_Flush(src);
 	FS_Flush(dst);
-}
+};
 
 NOXREF byte *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile)
 {
 	NOXREFCHECK;
 	
-	FileHandle_t hFile;
 	byte *buf;
 	char base[32];
 	int len;
 	int cbload;
 
-	hFile = *phFile;
+	CFile *hFile = *phFile;
+	
 	if(!hFile)
 	{
-		hFile = FS_Open(path, "rb");
+		hFile = gpFileSystem->Open(path, "rb");
 		if(!hFile)
-			return NULL;
-	}
+			return nullptr;
+	};
 
-	len = FS_Size(hFile);
+	len = hFile->GetSize(hFile);
+	
 	if(len < pos)
 	{
 #ifdef REHLDS_FIXES
-		FS_Close(hFile);
+		gpFileSystem->Close(hFile);
 #endif
-		Sys_Error("%s: invalid seek position for %s", __FUNCTION__, path);
+		CSystem::Error("%s: invalid seek position for %s", __FUNCTION__, path);
 	}
 
-	FS_Seek(hFile, pos, FILESYSTEM_SEEK_HEAD);
+	hFile->Seek(pos, FILESYSTEM_SEEK_HEAD);
 
 	if(len > cbmax)
 		cbload = cbmax;
@@ -688,17 +683,17 @@ NOXREF byte *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, Fil
 		if(path)
 		{
 #ifdef REHLDS_FIXES
-			FS_Close(hFile);
+			gpFileSystem->Close(hFile);
 #endif
-			Sys_Error("%s: not enough space for %s", __FUNCTION__, path);
-		}
+			CSystem::Error("%s: not enough space for %s", __FUNCTION__, path);
+		};
 
-		FS_Close(hFile);
-		return NULL;
-	}
+		gpFileSystem->Close(hFile);
+		return nullptr;
+	};
 
 	buf[cbload] = 0;
-	FS_Read(buf, cbload, 1, hFile);
+	hFile->Read(buf, cbload, 1);
 	*phFile = hFile;
 
 	return buf;
@@ -733,20 +728,18 @@ NOXREF byte *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *lengt
 
 void COM_Shutdown()
 {
-	// Do nothing.
+	// Do nothing
 }
 
 void COM_AddDefaultDir(char *pszDir)
 {
 	if(pszDir && *pszDir)
-	{
 		FileSystem_AddFallbackGameDir(pszDir);
-	}
 }
 
 void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault)
 {
-	const char *pParameter = NULL;
+	const char *pParameter = "";
 	int cmdParameterIndex = COM_CheckParm((char *)pCmdName);
 
 	if(cmdParameterIndex && cmdParameterIndex < com_argc - 1)
@@ -754,9 +747,7 @@ void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char 
 		pParameter = com_argv[cmdParameterIndex + 1];
 
 		if(*pParameter == '-' || *pParameter == '+')
-		{
-			pParameter = NULL;
-		}
+			pParameter = "";
 	}
 
 	// Found a valid parameter on the cmd line?
@@ -784,23 +775,18 @@ void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOut
 	if(header->version == HLBSP_VERSION)
 	{
 		if(!bShowOutdated)
-		{
-			Con_Printf("%s\n", mapname);
-		}
+			gpConsole->Printf("%s\n", mapname);
 	}
 	else
 	{
 		if(bShowOutdated)
-		{
-			Con_Printf("OUTDATED:  %s\n", mapname);
-		}
-	}
-}
+			gpConsole->Printf("OUTDATED:  %s\n", mapname);
+	};
+};
 
 void COM_ListMaps(char *pszSubString)
 {
 	dheader_t header;
-	FileHandle_t fp;
 
 	char mapwild[64];
 	char curDir[4096];
@@ -810,12 +796,12 @@ void COM_ListMaps(char *pszSubString)
 	int nSubStringLen = 0;
 
 	if(pszSubString && *pszSubString)
-	{
 		nSubStringLen = Q_strlen(pszSubString);
-	}
 
-	Con_Printf("-------------\n");
-
+	gpConsole->Printf("-------------\n");
+	
+	CFile *fp = nullptr;
+	
 	for(int bShowOutdated = 1; bShowOutdated >= 0; bShowOutdated--)
 	{
 		Q_strcpy(mapwild, "maps/*.bsp");
@@ -824,22 +810,20 @@ void COM_ListMaps(char *pszSubString)
 		while(findfn != NULL)
 		{
 			Q_snprintf(curDir, ARRAYSIZE(curDir), "maps/%s", findfn);
-			FS_GetLocalPath(curDir, curDir, ARRAYSIZE(curDir));
+			gpFileSystem->GetLocalPath(curDir, curDir, ARRAYSIZE(curDir));
 
-			if(strstr(curDir, com_gamedir) &&
-			   (!nSubStringLen ||
-			    !Q_strnicmp(findfn, pszSubString, nSubStringLen)))
+			if(strstr(curDir, com_gamedir) && (!nSubStringLen || !Q_strnicmp(findfn, pszSubString, nSubStringLen)))
 			{
 				Q_memset(&header, 0, sizeof(dheader_t));
 				Q_sprintf(pFileName, "maps/%s", findfn);
 
-				fp = FS_Open(pFileName, "rb");
+				fp = gpFileSystem->Open(pFileName, "rb");
 
 				if(fp)
 				{
-					FS_Read(&header, sizeof(dheader_t), 1, fp);
-					FS_Close(fp);
-				}
+					fp->Read(&header, sizeof(dheader_t), 1);
+					gpFileSystem->Close(fp);
+				};
 
 				COM_CheckPrintMap(&header, findfn, bShowOutdated != 0);
 			}
@@ -848,8 +832,8 @@ void COM_ListMaps(char *pszSubString)
 		}
 
 		Sys_FindClose();
-	}
-}
+	};
+};
 
 void COM_Log(char *pszFile, char *fmt, ...)
 {
@@ -866,9 +850,7 @@ void COM_Log(char *pszFile, char *fmt, ...)
 #endif
 	}
 	else
-	{
 		pfilename = pszFile;
-	}
 
 	va_list argptr;
 	va_start(argptr, fmt);
@@ -877,20 +859,14 @@ void COM_Log(char *pszFile, char *fmt, ...)
 
 	string[ARRAYSIZE(string) - 1] = 0;
 
-	FileHandle_t fp = FS_Open(pfilename, "a+t");
+	CFile *fp = gpFileSystem->Open(pfilename, "a+t");
 
 	if(fp)
 	{
-		FS_FPrintf(fp, "%s", string);
-		FS_Close(fp);
-	}
-}
-
-
-
-
-
-
+		fp->Printf(fp, "%s", string);
+		gpFileSystem->Close(fp);
+	};
+};
 
 int COM_EntsForPlayerSlots(int nPlayers)
 {
@@ -912,13 +888,13 @@ int COM_EntsForPlayerSlots(int nPlayers)
 
 // Anti-proxy/aimbot obfuscation code
 // COM_UnMunge should reversably fixup the data
-void COM_Munge(unsigned char *data, int len, int seq)
+void COM_Munge(byte *data, int len, int seq)
 {
 	int i;
 	int mungelen;
 	int c;
 	int *pc;
-	unsigned char *p;
+	byte *p;
 	int j;
 
 	mungelen = len & ~3;
@@ -931,7 +907,7 @@ void COM_Munge(unsigned char *data, int len, int seq)
 		c ^= ~seq;
 		c = LongSwap(c);
 
-		p = (unsigned char *)&c;
+		p = (byte *)&c;
 		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table[(i + j) & 0x0f]);
@@ -942,13 +918,13 @@ void COM_Munge(unsigned char *data, int len, int seq)
 	}
 }
 
-void COM_UnMunge(unsigned char *data, int len, int seq)
+void COM_UnMunge(byte *data, int len, int seq)
 {
 	int i;
 	int mungelen;
 	int c;
 	int *pc;
-	unsigned char *p;
+	byte *p;
 	int j;
 
 	mungelen = len & ~3;
@@ -960,7 +936,7 @@ void COM_UnMunge(unsigned char *data, int len, int seq)
 		c = *pc;
 		c ^= seq;
 
-		p = (unsigned char *)&c;
+		p = (byte *)&c;
 		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table[(i + j) & 0x0f]);
@@ -974,17 +950,17 @@ void COM_UnMunge(unsigned char *data, int len, int seq)
 
 #ifdef REHLDS_FIXES
 // unrolled version
-void COM_Munge2(unsigned char *data, int len, int seq)
+void COM_Munge2(byte *data, int len, int seq)
 {
-	unsigned int *pc;
-	unsigned int *end;
-	unsigned int mSeq;
+	uint *pc;
+	uint *end;
+	uint mSeq;
 
 	mSeq = bswap(~seq) ^ seq;
 	len /= 4;
-	end = (unsigned int *)data + (len & ~15);
+	end = (uint *)data + (len & ~15);
 
-	for(pc = (unsigned int *)data; pc < end; pc += 16)
+	for(pc = (uint *)data; pc < end; pc += 16)
 	{
 		pc[0] = bswap(pc[0]) ^ mSeq ^ 0xFFFFE7A5;
 		pc[1] = bswap(pc[1]) ^ mSeq ^ 0xBFEFFFE5;
@@ -1040,13 +1016,13 @@ void COM_Munge2(unsigned char *data, int len, int seq)
 }
 #else  // REHLDS_FIXES
 
-void COM_Munge2(unsigned char *data, int len, int seq)
+void COM_Munge2(byte *data, int len, int seq)
 {
 	int i;
 	int mungelen;
 	int c;
 	int *pc;
-	unsigned char *p;
+	byte *p;
 	int j;
 
 	mungelen = len & ~3;
@@ -1059,7 +1035,7 @@ void COM_Munge2(unsigned char *data, int len, int seq)
 		c ^= ~seq;
 		c = LongSwap(c);
 
-		p = (unsigned char *)&c;
+		p = (byte *)&c;
 		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table2[(i + j) & 0x0f]);
@@ -1073,17 +1049,17 @@ void COM_Munge2(unsigned char *data, int len, int seq)
 
 #ifdef REHLDS_FIXES
 // unrolled version
-void COM_UnMunge2(unsigned char *data, int len, int seq)
+void COM_UnMunge2(byte *data, int len, int seq)
 {
-	unsigned int *pc;
-	unsigned int *end;
-	unsigned int mSeq;
+	uint *pc;
+	uint *end;
+	uint mSeq;
 
 	mSeq = bswap(~seq) ^ seq;
 	len /= 4;
-	end = (unsigned int *)data + (len & ~15);
+	end = (uint *)data + (len & ~15);
 
-	for(pc = (unsigned int *)data; pc < end; pc += 16)
+	for(pc = (uint *)data; pc < end; pc += 16)
 	{
 		pc[0] = bswap(pc[0] ^ mSeq ^ 0xFFFFE7A5);
 		pc[1] = bswap(pc[1] ^ mSeq ^ 0xBFEFFFE5);
@@ -1139,13 +1115,13 @@ void COM_UnMunge2(unsigned char *data, int len, int seq)
 }
 #else  // REHLDS_FIXES
 
-void COM_UnMunge2(unsigned char *data, int len, int seq)
+void COM_UnMunge2(byte *data, int len, int seq)
 {
 	int i;
 	int mungelen;
 	int c;
 	int *pc;
-	unsigned char *p;
+	byte *p;
 	int j;
 
 	mungelen = len & ~3;
@@ -1157,7 +1133,7 @@ void COM_UnMunge2(unsigned char *data, int len, int seq)
 		c = *pc;
 		c ^= seq;
 
-		p = (unsigned char *)&c;
+		p = (byte *)&c;
 		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table2[(i + j) & 0x0f]);
@@ -1170,13 +1146,13 @@ void COM_UnMunge2(unsigned char *data, int len, int seq)
 }
 #endif // REHLDS_FIXES
 
-void COM_Munge3(unsigned char *data, int len, int seq)
+void COM_Munge3(byte *data, int len, int seq)
 {
 	int i;
 	int mungelen;
 	int c;
 	int *pc;
-	unsigned char *p;
+	byte *p;
 	int j;
 
 	mungelen = len & ~3;
@@ -1189,7 +1165,7 @@ void COM_Munge3(unsigned char *data, int len, int seq)
 		c ^= ~seq;
 		c = LongSwap(c);
 
-		p = (unsigned char *)&c;
+		p = (byte *)&c;
 		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table3[(i + j) & 0x0f]);
@@ -1200,7 +1176,7 @@ void COM_Munge3(unsigned char *data, int len, int seq)
 	}
 }
 
-NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq)
+NOXREF void COM_UnMunge3(byte *data, int len, int seq)
 {
 	NOXREFCHECK;
 
@@ -1208,7 +1184,7 @@ NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq)
 	int mungelen;
 	int c;
 	int *pc;
-	unsigned char *p;
+	byte *p;
 	int j;
 
 	mungelen = len & ~3;
@@ -1220,7 +1196,7 @@ NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq)
 		c = *pc;
 		c ^= seq;
 
-		p = (unsigned char *)&c;
+		p = (byte *)&c;
 		for(j = 0; j < 4; j++)
 		{
 			*p++ ^= (0xa5 | (j << j) | j | mungify_table3[(i + j) & 0x0f]);

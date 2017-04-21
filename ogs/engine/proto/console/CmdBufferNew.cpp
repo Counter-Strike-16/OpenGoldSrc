@@ -35,28 +35,6 @@ void CConCmdHandler::TokenizeString(const char *text, IConCmdArgs &Args)
 	// tokenize the passed string
 };
 
-void CConCmdHandler::ExecCmd(const char *text)
-{
-	CConCmdArgs CmdArgs;
-	TokenizeString(text, CmdArgs);
-	
-	for(auto It : mlstCmds)
-		if(!Q_strcmp(It->GetName(), CmdArgs[0])) // 0 - cmdname; but should we remain it in args?
-		{
-			It->Exec(CmdArgs);
-			return;
-		};
-	
-	for(auto It : mlstAliases)
-		if(!Q_strcmp(It->GetName(), CmdArgs[0]))
-			mpCmdBuffer->InsertText(CmdArgs.ToString());
-	
-	if(!mpVarHandler->HandleCommand(CmdArgs))
-		if(mpLocalClient->GetState() >= eClientState::Connected)
-			mpNetwork->ForwardCmdToServer(CmdArgs); // network/client ?
-			//mpLocalClient->ForwardCmdToServer(CmdArgs); // client has a ptr to net
-};
-
 // We don't need an interconnection between the components so they're need to be revisited
 // in order to use a descending hierarchy model
 
@@ -282,4 +260,38 @@ void Cmd_Legacy_f()
 {
 	int nArgCount = Cmd_Argc();
 	char *sArgs = Cmd_Args();
+};
+
+void CConCmdHandler::ExecCmd(const CConCmdArgs &CmdArgs)
+{
+	// Check in our registered cmds list
+	
+	for(auto It : mlstCmds)
+		if(!Q_strcmp(It->GetName(), CmdArgs[0])) // 0 - cmdname; but should we remain it in args?
+		{
+			It->Exec(CmdArgs);
+			return true;
+		};
+	
+	// Legacy-mode commands support
+	
+	mpCurrentCmdArgs = CmdArgs; // To use Cmd_Argc/Cmd_Argv
+	
+	for(auto It : mlstOldCmds)
+		if(!Q_strcmp(It->GetName(), CmdArgs[0])) // 0 - cmdname; but should we remain it in args?
+		{
+			It->Exec();
+			return true;
+		};
+	
+	// Check in cmd aliases
+	
+	for(auto It : mlstAliases)
+		if(!Q_strcmp(It->GetName(), CmdArgs[0]))
+		{
+			mpCmdBuffer->InsertText(CmdArgs.ToString());
+			return true;
+		};
+	
+	return false;
 };

@@ -608,8 +608,8 @@ void CHost::WriteCustomConfig()
 				};
 
 				f->Printf("unbindall\n");
-				Key_WriteBindings(f);
-				Cvar_WriteVariables(f);
+				mpKeyBindingList->DumpToFile(f); //Key_WriteBindings(f);
+				mpConVarList->DumpToFile(f); //Cvar_WriteVariables(f);
 				mpClient->GetUserInfo()->WriteToFile(f);
 
 				kbutton_t *ml = nullptr; //ClientDLL_FindKey("in_mlook");
@@ -753,7 +753,7 @@ bool CHost::FilterTime(float time)
 			//command_line_ticrate = mpCmdLine->CheckArg("-sys_ticrate");
 		
 		//if(command_line_ticrate > 0)
-			//fps = Q_atof(com_argv[command_line_ticrate + 1]); // ->GetArgValue();
+			//fps = Q_atof(mpCmdLine->GetArgValue(command_line_ticrate + 1)); // com_argv[command_line_ticrate + 1]
 		//else
 			fps = sys_ticrate.value;
 
@@ -1100,8 +1100,6 @@ void CHost::_Frame(float time)
 
 int CHost::Frame(float time, int iState, int *stateInfo)
 {
-	double time1;
-	double time2;
 /*
 	// something bad happened, or the server disconnected
 	if(setjmp(host_abortserver))
@@ -1112,7 +1110,10 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 
 	*stateInfo = 0;
 */
-
+	
+	double time1;
+	double time2;
+	
 	if(host_profile.value != 0.0f)
 		time1 = CSystem::GetFloatTime();
 
@@ -1154,9 +1155,9 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 			timetotal = 0.0f;
 		
 			//mpServer->GetActiveClients(); or GetClients(bool active = true)
-			//for(int i = 0; i < g_psvs.maxclients; i++)
+			//for(int i = 0; i < g_psvs.GetMaxClients(); i++)
 			{
-				//if(g_psvs.clients[i].active)
+				//if(g_psvs.GetClient(i)->IsActive()) // GetClients()[i]
 					//++c;
 			};
 

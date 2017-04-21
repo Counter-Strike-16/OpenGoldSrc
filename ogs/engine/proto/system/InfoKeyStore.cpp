@@ -120,7 +120,7 @@ void CInfoKeyBuffer::RemoveKey(const char *key)
 
 	if(Q_strstr(key, "\\"))
 	{
-		Con_Printf("Can't use a key with a \\\n");
+		mpConsole->Printf("Can't use a key with a \\\n");
 		return;
 	}
 
@@ -258,7 +258,82 @@ bool CInfoKeyBuffer::IsKeyImportant(const char *key)
 
 char *CInfoKeyBuffer::FindLargestKey(int maxsize)
 {
-	return Info_
+	static char largest_key[MAX_KV_LEN];
+	char key[MAX_KV_LEN];
+	char value[MAX_KV_LEN];
+	char *c;
+	int nCount;
+	int largest_size = 0;
+
+	largest_key[0] = 0;
+
+	while(*s)
+	{
+		if(*s == '\\')
+		{
+			s++; // skip the slash
+		}
+
+		// Copy a key
+		nCount = 0;
+		c = key;
+		while(*s != '\\')
+		{
+			if(!*s) // key should end with a \, not a NULL, return this key, so it
+			        // will be deleted as wrong
+			{
+				*c = 0;
+				Q_strcpy(largest_key, key);
+				return largest_key;
+			}
+			if(nCount >= MAX_KV_LEN) // oversized key, return this key, so it will be
+			                         // deleted as wrong
+			{
+				*c = 0;
+				Q_strcpy(largest_key, key);
+				return largest_key;
+			}
+			*c++ = *s++;
+			nCount++;
+		}
+		*c = 0;
+		s++; // skip the slash
+
+		// Get length
+		int size = c - key;
+
+		// Copy a value
+		nCount = 0;
+		c = value;
+		while(*s != '\\')
+		{
+			if(!*s)
+			{
+				break; // allow value to be ended with NULL
+			}
+			if(nCount >= MAX_KV_LEN) // oversized value, return this key, so it will
+			                         // be deleted as wrong
+			{
+				*c = 0;
+				Q_strcpy(largest_key, key);
+				return largest_key;
+			}
+			*c++ = *s++;
+			nCount++;
+		}
+		*c = 0;
+
+		// Add length
+		size += c - value;
+
+		if(size > largest_size && !Info_IsKeyImportant(key))
+		{
+			largest_size = size;
+			Q_strcpy(largest_key, key);
+		};
+	};
+
+	return largest_key;
 };
 
 void CInfoKeyBuffer::SetKeyValue(const char *key, const char *value, int maxsize)
@@ -269,7 +344,7 @@ void CInfoKeyBuffer::SetKeyValue(const char *key, const char *value, int maxsize
 		return;
 	};
 
-	SetValueForStarKey(key, value, maxsize);
+	SetStarKeyValue(key, value, maxsize);
 };
 
 void CInfoKeyBuffer::SetStarKeyValue(const char *key, const char *value, int maxsize)
@@ -314,13 +389,13 @@ void CInfoKeyBuffer::SetStarKeyValue(const char *key, const char *value, int max
 
 	if(keyLen >= MAX_KV_LEN || valueLan >= MAX_KV_LEN)
 	{
-		Con_Printf("Keys and values must be < %i characters\n", MAX_KV_LEN);
+		mpConsole->Printf("Keys and values must be < %i characters\n", MAX_KV_LEN);
 		return;
 	}
 
 	if(!Q_UnicodeValidate(key) || !Q_UnicodeValidate(value))
 	{
-		Con_Printf("Keys and values must be valid utf8 text\n");
+		mpConsole->Printf("Keys and values must be valid utf8 text\n");
 		return;
 	}
 
