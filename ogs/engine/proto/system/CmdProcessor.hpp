@@ -29,6 +29,8 @@
 /// @file
 /// @brief command processor component
 
+// merge with cmdbuffer?
+
 #pragma once
 
 class CConCmdHandler;

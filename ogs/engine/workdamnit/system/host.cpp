@@ -56,14 +56,10 @@
 #include "graphics/vid.hpp"
 #include "graphics/view.hpp"
 
-CHost *gpHost = nullptr;
-
-// unsigned short *host_basepal;
 // int minimum_memory;
 client_t *host_client;
 qboolean gfNoMasterServer;
 // qboolean g_bUsingInGameAdvertisements;
-
 
 unsigned short *host_basepal;
 // unsigned char *host_colormap;
@@ -78,11 +74,6 @@ void NORETURN Host_Error(const char *error, ...)
 {
 	gpHost->Error(error);
 };
-
-void Host_InitLocal()
-{
-	gpHost->InitLocal();
-}
 
 //cls.userinfo->WriteToFile(fp)
 NOXREF void Info_WriteVars(FileHandle_t fp)
@@ -175,12 +166,6 @@ void Host_CheckConnectionFailure()
 	
 }
 
-
-void _Host_Frame(float time)
-{
-	
-}
-
 int Host_Frame(float time, int iState, int *stateInfo)
 {
 	
@@ -254,32 +239,33 @@ int GetGameAppID()
 	return 70;
 };
 
-qboolean IsGameSubscribed(const char *gameName)
+bool IsGameSubscribed(const char *gameName)
 {
 #ifdef _WIN32
 	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
 	{
 		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, gameName))
 			return ISteamApps_BIsSubscribedApp(g_GameToAppIDMap[i].iAppID);
-	}
+	};
 
 	return ISteamApps_BIsSubscribedApp(70);
 #else //_WIN32
-	return 0;
+	return false;
 #endif
 }
 
-NOXREF qboolean BIsValveGame()
+NOXREF bool BIsValveGame()
 {
 	NOXREFCHECK;
 	
 	for(int i = 0; i < ARRAYSIZE(g_GameToAppIDMap); i++)
 	{
 		if(!Q_stricmp(g_GameToAppIDMap[i].pGameDir, com_gamedir))
-			return TRUE;
-	}
-	return FALSE;
-}
+			return true;
+	};
+	
+	return false;
+};
 
 #if 0
 /*
@@ -289,7 +275,7 @@ Host_SimulationTime
 This determines if enough time has passed to run a simulation frame
 ==================
 */
-qboolean Host_SimulationTime(float time)
+bool Host_SimulationTime(float time)
 {
 	float fps;
 

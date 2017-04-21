@@ -57,6 +57,9 @@ public:
 	void Shutdown();
 
 	void Update();
+	
+	//void SetActive(bool abActive);
+	//bool IsActive() const {return scr_skipupdate;}
 
 	//void BringDownConsole();
 

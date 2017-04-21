@@ -74,10 +74,8 @@
 
 //=============================================================================
 
-
 typedef struct cvar_s cvar_t;
 typedef struct client_s client_t;
-
 
 //=============================================================================
 
@@ -113,11 +111,6 @@ NOXREF void Host_EndGame(const char *message, ...);
 
 void NORETURN Host_Error(const char *error, ...);
 
-void Host_InitLocal();
-
-void Host_WriteConfiguration();
-void Host_WriteCustomConfig();
-
 void Host_ClientCommands(const char *fmt, ...);
 void Host_ClearClients(qboolean bFramesOnly);
 void Host_ShutdownServer(qboolean crash);
@@ -130,12 +123,8 @@ void Host_ComputeFPS(double frametime);
 void Host_GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
 void Host_Speeds(double *time);
 
-void Host_UpdateScreen();
-void Host_UpdateSounds();
-
 void Host_CheckConnectionFailure();
 
-void _Host_Frame(float time);
 int Host_Frame(float time, int iState, int *stateInfo);
 
 void CheckGore();
@@ -150,5 +139,5 @@ void Host_Shutdown();
 
 int GetGameAppID();
 
-qboolean IsGameSubscribed(const char *gameName);
-NOXREF qboolean BIsValveGame();
+bool IsGameSubscribed(const char *gameName);
+NOXREF bool BIsValveGame();

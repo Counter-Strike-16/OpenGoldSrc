@@ -56,67 +56,6 @@ FileFindHandle_t g_hfind;
 
 const int MAX_COMMAND_LINE_PARAMS = 50;
 
-// exports
-
-double Sys_FloatTime()
-{
-	return CSystem::GetFloatTime();
-};
-
-void EXT_FUNC EngineFprintf(void *pfile, const char *szFmt, ...)
-{
-	AlertMessage(at_console, "EngineFprintf:  Obsolete API\n");
-};
-
-void EXT_FUNC AlertMessage(ALERT_TYPE atype, const char *szFmt, ...)
-{
-	va_list argptr;
-	static char szOut[1024];
-
-	va_start(argptr, szFmt);
-	
-	if(atype == at_logged && g_psvs.maxclients > 1)
-	{
-		Q_vsnprintf(szOut, sizeof(szOut), szFmt, argptr);
-		Log_Printf("%s", szOut);
-	};
-	
-	else if(developer.value != 0.0f)
-	{
-		switch(atype)
-		{
-		case at_notice:
-			Q_strcpy(szOut, "NOTE:  ");
-			break;
-		case at_console:
-			szOut[0] = 0;
-			break;
-		case at_aiconsole:
-			if(developer.value < 2.0f)
-				return;
-			szOut[0] = 0;
-			break;
-		case at_warning:
-			Q_strcpy(szOut, "WARNING:  ");
-			break;
-		case at_error:
-			Q_strcpy(szOut, "ERROR:  ");
-			break;
-		case at_logged:
-			break;
-		default:
-			break;
-		};
-		
-		int iLen = Q_strlen(szOut);
-		Q_vsnprintf(&szOut[iLen], sizeof(szOut) - iLen, szFmt, argptr);
-		Con_Printf("%s", szOut);
-	};
-	va_end(argptr);
-};
-
-//
-
 quakeparms_t *CSystem::mhost_parms = nullptr;
 
 IDedicatedServerExports *CSystem::mpRemoteConsole = nullptr;
@@ -194,7 +133,7 @@ void CSystem::InitFloatTime()
 	
 	GetFloatTime();
 
-	int j = COM_CheckParm("-starttime");
+	int j = gpCmdLine->CheckArg("-starttime");
 
 	if(j)
 		curtime = (double)(Q_atof(com_argv[j + 1]));

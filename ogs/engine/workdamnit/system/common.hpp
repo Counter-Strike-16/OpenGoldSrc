@@ -82,9 +82,6 @@ extern bf_write_t bfwrite;
 
 //============================================================================
 
-extern int com_argc;
-extern char **com_argv;
-
 extern char com_token[COM_TOKEN_LEN]; // 1024
 
 extern qboolean com_ignorecolons;
@@ -110,69 +107,71 @@ extern int loadsize;
 		p[i] = tolower(p[i]);
 #endif
 
+// clang-format off
 #if defined(REHLDS_OPT_PEDANTIC) || defined(REHLDS_FIXES)
-#define Q_memset A_memset
-#define Q_memcpy A_memcpy
-#define Q_memmove A_memmove
-#define Q_strlen A_strlen
-#define Q_memcmp A_memcmp
-#define Q_strcpy A_strcpy
-#define Q_strncpy strncpy
-#define Q_strrchr strrchr
-#define Q_strcat A_strcat
-#define Q_strncat strncat
-#define Q_strcmp A_strcmp
-#define Q_strncmp strncmp
-//#define Q_strcasecmp _stricmp		// Use Q_stricmp
-//#define Q_strncasecmp _strnicmp	// Use Q_strnicmp
-#define Q_stricmp A_stricmp
-#define Q_strnicmp _strnicmp
-#define Q_strstr A_strstr
-#define Q_strchr strchr
-#define Q_strlwr A_strtolower
-#define Q_sprintf sprintf
-#define Q_snprintf _snprintf
-#define Q_atoi atoi
-#define Q_atof atof
-#define Q_sqrt M_sqrt
-#define Q_min M_min
-#define Q_max M_max
-#define Q_clamp M_clamp
-//#define Q_strtoull strtoull
-//#define Q_FileNameCmp FileNameCmp
-#define Q_vsnprintf _vsnprintf
+	#define Q_memset A_memset
+	#define Q_memcpy A_memcpy
+	#define Q_memmove A_memmove
+	#define Q_strlen A_strlen
+	#define Q_memcmp A_memcmp
+	#define Q_strcpy A_strcpy
+	#define Q_strncpy strncpy
+	#define Q_strrchr strrchr
+	#define Q_strcat A_strcat
+	#define Q_strncat strncat
+	#define Q_strcmp A_strcmp
+	#define Q_strncmp strncmp
+	//#define Q_strcasecmp _stricmp		// Use Q_stricmp
+	//#define Q_strncasecmp _strnicmp	// Use Q_strnicmp
+	#define Q_stricmp A_stricmp
+	#define Q_strnicmp _strnicmp
+	#define Q_strstr A_strstr
+	#define Q_strchr strchr
+	#define Q_strlwr A_strtolower
+	#define Q_sprintf sprintf
+	#define Q_snprintf _snprintf
+	#define Q_atoi atoi
+	#define Q_atof atof
+	#define Q_sqrt M_sqrt
+	#define Q_min M_min
+	#define Q_max M_max
+	#define Q_clamp M_clamp
+	//#define Q_strtoull strtoull
+	//#define Q_FileNameCmp FileNameCmp
+	#define Q_vsnprintf _vsnprintf
 #else
-#define Q_memset memset
-#define Q_memcpy memcpy
-#define Q_memmove memmove
-#define Q_strlen strlen
-#define Q_memcmp memcmp
-#define Q_strcpy strcpy
-#define Q_strncpy strncpy
-#define Q_strrchr strrchr
-#define Q_strcat strcat
-#define Q_strncat strncat
-#define Q_strcmp strcmp
-#define Q_strncmp strncmp
-//#define Q_strcasecmp _stricmp		// Use Q_stricmp
-//#define Q_strncasecmp _strnicmp	// Use Q_strnicmp
-#define Q_stricmp _stricmp
-#define Q_strnicmp _strnicmp
-#define Q_strstr strstr
-#define Q_strchr strchr
-#define Q_strlwr _strlwr
-#define Q_sprintf sprintf
-#define Q_snprintf _snprintf
-#define Q_atoi atoi
-#define Q_atof atof
-#define Q_sqrt sqrt
-#define Q_min min
-#define Q_max max
-#define Q_clamp clamp
-//#define Q_strtoull strtoull
-//#define Q_FileNameCmp FileNameCmp
-#define Q_vsnprintf _vsnprintf
+	#define Q_memset memset
+	#define Q_memcpy memcpy
+	#define Q_memmove memmove
+	#define Q_strlen strlen
+	#define Q_memcmp memcmp
+	#define Q_strcpy strcpy
+	#define Q_strncpy strncpy
+	#define Q_strrchr strrchr
+	#define Q_strcat strcat
+	#define Q_strncat strncat
+	#define Q_strcmp strcmp
+	#define Q_strncmp strncmp
+	//#define Q_strcasecmp _stricmp		// Use Q_stricmp
+	//#define Q_strncasecmp _strnicmp	// Use Q_strnicmp
+	#define Q_stricmp _stricmp
+	#define Q_strnicmp _strnicmp
+	#define Q_strstr strstr
+	#define Q_strchr strchr
+	#define Q_strlwr _strlwr
+	#define Q_sprintf sprintf
+	#define Q_snprintf _snprintf
+	#define Q_atoi atoi
+	#define Q_atof atof
+	#define Q_sqrt sqrt
+	#define Q_min min
+	#define Q_max max
+	#define Q_clamp clamp
+	//#define Q_strtoull strtoull
+	//#define Q_FileNameCmp FileNameCmp
+	#define Q_vsnprintf _vsnprintf
 #endif // defined(REHLDS_OPT_PEDANTIC) || defined(REHLDS_FIXES)
+// clang-format on
 
 #else // Q_functions
 
@@ -218,9 +217,9 @@ char *strcpy_safe(char *dst, char *src);
 
 char *Mem_Strdup(const char *strSource);
 
-unsigned char COM_Nibble(char c);
-void COM_HexConvert(const char *pszInput, int nInputLength, unsigned char *pOutput);
-NOXREF char *COM_BinPrintf(unsigned char *buf, int nLen);
+byte COM_Nibble(char c);
+void COM_HexConvert(const char *pszInput, int nInputLength, byte *pOutput);
+NOXREF char *COM_BinPrintf(byte *buf, int nLen);
 void COM_ExplainDisconnection(qboolean bPrint, char *fmt, ...);
 NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...);
 
@@ -261,11 +260,12 @@ void COM_Shutdown();
 char *va(char *format, ...);
 
 char *vstr(vec_t *v);
-NOXREF int memsearch(unsigned char *start, int count, int search);
+NOXREF int memsearch(byte *start, int count, int search);
 
 //============================================================================
 
-void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize);
+void COM_CopyFileChunk(CFile *dst, CFile *src, int nSize);
+
 NOXREF byte *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile);
 
 byte *COM_LoadHunkFile(char *path);
@@ -273,21 +273,18 @@ byte *COM_LoadTempFile(char *path, int *pLength); // pLength?
 void COM_LoadCacheFile(char *path, struct cache_user_s *cu);
 NOXREF byte *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length); // length?
 
-void COM_AddDefaultDir(char *pszDir);
-
-void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault);
-
 void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOutdated);
 void COM_ListMaps(char *pszSubString);
+
 void COM_Log(char *pszFile, char *fmt, ...);
 
 int COM_EntsForPlayerSlots(int nPlayers);
 
-void COM_Munge(unsigned char *data, int len, int seq);
-void COM_UnMunge(unsigned char *data, int len, int seq);
+void COM_Munge(byte *data, int len, int seq);
+void COM_UnMunge(byte *data, int len, int seq);
 
-void COM_Munge2(unsigned char *data, int len, int seq);
-void COM_UnMunge2(unsigned char *data, int len, int seq);
+void COM_Munge2(byte *data, int len, int seq);
+void COM_UnMunge2(byte *data, int len, int seq);
 
-void COM_Munge3(unsigned char *data, int len, int seq);
-NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq);
+void COM_Munge3(byte *data, int len, int seq);
+NOXREF void COM_UnMunge3(byte *data, int len, int seq);

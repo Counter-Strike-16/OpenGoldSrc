@@ -108,7 +108,7 @@ int CHost::Init(quakeparms_t *parms)
 	Voice_RegisterCvars();
 	Cvar_RegisterVariable(&console);
 
-	if(mpCmdLine->CheckArg("-console") || mpCmdLine->CheckArg("-toconsole") || mpCmdLine->CheckArg("-dev"))
+	if(mpCmdLine->FindArg("-console") || mpCmdLine->FindArg("-toconsole") || mpCmdLine->FindArg("-dev"))
 		Cvar_DirectSet(&console, "1.0");
 */
 
@@ -117,7 +117,16 @@ int CHost::Init(quakeparms_t *parms)
 	mpSound = std::make_unique<CSound>();
 	mpScreen = std::make_unique<CScreen>();
 	mpGameLoaderHandler = std::make_unique<CGameLoaderHandler>();
+	//mpClientLoaderHandler = std::make_unique<CClientLoaderHandler>();
 	mpInput = std::make_unique<CInput>();
+	
+	// Add native and legacy game module loaders
+	mpGameLoaderHandler->AddLoader(new CNativeGameLoader());
+	mpGameLoaderHandler->AddLoader(new CLegacyGameLoader(/*gpEngFuncs*/));
+	
+	// Add native and legacy client module loaders
+	//mpClientLoaderHandler->AddLoader(new CNativeClientLoader());
+	//mpClientLoaderHandler->AddLoader(new CLegacyClientLoader());
 	
 	InitLocal();
 
@@ -398,6 +407,10 @@ void CHost::Shutdown()
 	
 	realtime = 0.0f;
 	
+	// host.time from these two? cl time should be in sync with sv time anyway;
+	// if we on a local server then just use host.time for both sides
+	// if we are connected to any remote server then use host.time for client side
+	
 	//g_psv.time = 0.0f;
 	//cl.time = 0.0f;
 };
@@ -421,7 +434,8 @@ void CHost::EndGame(const char *message, ...)
 	mpConsole->DevPrintf("%s: %s\n", __FUNCTION__, string);
 	
 #ifndef SWDS
-	scr_disabled_for_loading = true;
+	// Should we disable the screen if we want to draw some animations on the screen during load?
+	scr_disabled_for_loading = true; // mpScreen->SetActive(false);?
 #endif
 	
 	int oldn = 0; //cls.demonum;
@@ -731,8 +745,6 @@ void CHost::ClearMemory(bool bQuiet)
 
 bool CHost::FilterTime(float time)
 {
-	static int command_line_ticrate = -1;
-
 	if(host_framerate.value > 0.0f)
 	{
 		if(IsSinglePlayerGame() /*|| cls.demoplayback*/)
@@ -749,12 +761,14 @@ bool CHost::FilterTime(float time)
 	
 	if(gbIsDedicatedServer)
 	{
-		//if(command_line_ticrate == -1)
-			//command_line_ticrate = mpCmdLine->CheckArg("-sys_ticrate");
+		static int command_line_ticrate = -1;
 		
-		//if(command_line_ticrate > 0)
-			//fps = Q_atof(mpCmdLine->GetArgValue(command_line_ticrate + 1)); // com_argv[command_line_ticrate + 1]
-		//else
+		if(command_line_ticrate == -1)
+			command_line_ticrate = mpCmdLine->FindArg("-sys_ticrate");
+		
+		if(command_line_ticrate > 0)
+			fps = Q_atof(mpCmdLine->GetArgValue(command_line_ticrate + 1)); // com_argv[command_line_ticrate + 1]
+		else
 			fps = sys_ticrate.value;
 
 		if(fps > 0.0f)

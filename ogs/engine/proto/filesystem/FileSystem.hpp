@@ -100,6 +100,8 @@ public:
 	const char *GetGameDirectory(); // GetGameDir
 	
 	int SetGameDirectory(const char *pDefaultDir, const char *pGameDir);
+	
+	void AddDefaultDir(char *pszDir);
 	int AddFallbackGameDir(const char *pGameDir);
 	
 	void AddSearchPath(const char *pPath, const char *pathID);
@@ -115,7 +117,7 @@ public:
 	/*FileHandle_t*/ CFile *Open(const char *pFileName, const char *pOptions);
 	/*FileHandle_t*/ CFile *OpenPathID(const char *pFileName, const char *pOptions, const char *pathID);
 
-	void Close(/*FileHandle_t*/ CFile *file);
+	void Close(/*FileHandle_t*/ opengoldsrc::IFile *apFile);
 
 	unsigned int FileSize(const char *pFileName);
 	
@@ -160,6 +162,7 @@ public:
 private:
 	void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_);
 	bool SetupDirectories(); // SetupGameDirectories
+	void ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault);
 	
 	char msBaseDir[512];
 	char com_gamedir[MAX_PATH]; // MAX_OSPATH

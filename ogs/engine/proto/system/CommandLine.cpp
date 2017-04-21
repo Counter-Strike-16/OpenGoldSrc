@@ -30,35 +30,26 @@
 
 #include "precompiled.hpp"
 #include "system/CommandLine.hpp"
+#include "system/common.hpp"
 
-int CCmdLine::CheckArg(const char *parm)
+CCmdLine::CCmdLine(int argc, char **argv)
 {
-	for(int i = 1; i < com_argc; ++i)
-	{
-		if(!com_argv[i])
-			continue;
-
-		if(!Q_strcmp(parm, (const char *)com_argv[i]))
-			return i;
-	};
-
-	return 0;
+	Init(argc, argv);
 };
 
-void CCmdLine::InitArgv(int argc, char *argv[])
+void CCmdLine::Init(int argc, char *argv[])
 {
 	bool safe = false;
 
-	static char *safeargvs[NUM_SAFE_ARGVS] = { "-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly" };
 	static char *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
 
-	int i, j;
-	char *c;
+	int j = 0;
+	char *c = nullptr;
 
 	// Reconstruct the full command line
 	com_cmdline[0] = 0;
 	
-	for(i = 0, j = 0; i < MAX_NUM_ARGVS && i < argc && j < COM_MAX_CMD_LINE - 1; i++)
+	for(int i = 0, j = 0; i < MAX_NUM_ARGVS && i < argc && j < COM_MAX_CMD_LINE - 1; i++)
 	{
 		c = argv[i];
 		if(*c)
@@ -89,7 +80,7 @@ void CCmdLine::InitArgv(int argc, char *argv[])
 	{
 		// force all the safe-mode switches. Note that we reserved extra space in
 		// case we need to add these, so we don't need an overflow check
-		for(int i = 0; i < NUM_SAFE_ARGVS; i++)
+		for(int i = 0; i < NUM_SAFE_ARGVS; ++i)
 		{
 			largv[com_argc] = safeargvs[i];
 			com_argc++;
@@ -98,4 +89,23 @@ void CCmdLine::InitArgv(int argc, char *argv[])
 
 	largv[com_argc] = " ";
 	com_argv = largv;
+};
+
+int CCmdLine::FindArg(const char *asArg) const
+{
+	for(int i = 1; i < com_argc; ++i)
+	{
+		if(!com_argv[i])
+			continue;
+
+		if(!Q_strcmp(asArg, (const char *)com_argv[i]))
+			return i;
+	};
+
+	return 0;
+};
+
+const char *CCmdLine::GetArg(int anArg) const
+{
+	return com_argv[anArg];
 };

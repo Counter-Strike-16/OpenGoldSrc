@@ -301,6 +301,12 @@ int CFileSystem::SetGameDirectory(const char *pDefaultDir, const char *pGameDir)
 	return 1;
 };
 
+void CFileSystem::AddDefaultDir(char *pszDir)
+{
+	if(pszDir && *pszDir)
+		AddFallbackGameDir(pszDir);
+};
+
 int CFileSystem::AddFallbackGameDir(const char *pGameDir)
 {
 	char language[128];
@@ -805,8 +811,8 @@ bool CFileSystem::SetupDirectories()
 	//com_clientfallback[0] = 0;
 	com_gamedir[0] = 0;
 
-	COM_ParseDirectoryFromCmd("-basedir", pDirName, "valve");
-	COM_ParseDirectoryFromCmd("-game", com_gamedir, pDirName);
+	ParseDirectoryFromCmd("-basedir", pDirName, "valve");
+	ParseDirectoryFromCmd("-game", com_gamedir, pDirName);
 
 	if(SetGameDirectory(pDirName, (const char *)(com_gamedir[0] != 0 ? com_gamedir : 0)))
 	{
@@ -815,4 +821,37 @@ bool CFileSystem::SetupDirectories()
 	};
 
 	return false;
+};
+
+void CFileSystem::ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault)
+{
+	const char *pParameter = "";
+	int cmdParameterIndex = gpCmdLine->FindArg((char *)pCmdName);
+
+	if(cmdParameterIndex && cmdParameterIndex < gpCmdLine->GetArgCount() - 1)
+	{
+		pParameter = gpCmdLine->GetArgVal(cmdParameterIndex + 1); // com_argv[cmdParameterIndex + 1]
+
+		if(*pParameter == '-' || *pParameter == '+')
+			pParameter = "";
+	};
+
+	// Found a valid parameter on the cmd line?
+	if(pParameter)
+	{
+		// Grab it
+		Q_strcpy(pDirName, pParameter);
+	}
+	else if(pDefault)
+	{
+		// Ok, then use the default
+		Q_strcpy(pDirName, pDefault);
+	}
+	else
+	{
+		// If no default either, then just terminate the string
+		pDirName[0] = 0;
+	};
+
+	CStringHandler::StripTrailingSlash(pDirName);
 };

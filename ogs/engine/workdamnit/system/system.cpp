@@ -119,7 +119,7 @@ NOXREF void Sys_PageIn(void *ptr, int size)
 const char *Sys_FindFirst(const char *path, char *basename)
 {
 	if(g_hfind != -1)
-		Sys_Error("%s without close", __FUNCTION__);
+		CSystem::Error("%s without close", __FUNCTION__);
 
 	const char *psz = FS_FindFirst(path, &g_hfind, 0);
 
@@ -127,15 +127,11 @@ const char *Sys_FindFirst(const char *path, char *basename)
 	// Hack: store first file name to fix multiple enumeration of files in the
 	// filesystem module
 	if(psz != NULL)
-	{
 		Q_strncpy(g_szFindFirstFileName, psz, MAX_PATH - 1);
-	}
 #endif // REHLDS_FIXES
 
 	if(basename && psz)
-	{
 		COM_FileBase((char *)psz, basename);
-	}
 
 	return psz;
 }
@@ -144,7 +140,7 @@ const char *Sys_FindFirstPathID(const char *path, char *pathid)
 {
 	// const char *psz;//unused?
 	if(g_hfind != -1)
-		Sys_Error("Sys_FindFirst without close");
+		CSystem::Error("Sys_FindFirst without close");
 	return FS_FindFirst(path, &g_hfind, pathid);
 }
 
@@ -156,15 +152,11 @@ const char *Sys_FindNext(char *basename)
 #ifdef REHLDS_FIXES
 	// Hack: stop if we are starting over again
 	if(psz && !Q_strcmp(g_szFindFirstFileName, psz))
-	{
 		return NULL;
-	}
 #endif // REHLDS_FIXES
 
 	if(basename && psz)
-	{
 		COM_FileBase((char *)psz, basename);
-	}
 
 	return psz;
 }
@@ -336,7 +328,7 @@ const char *EXT_FUNC NameForFunction(uint32 function)
 			return pName;
 	};
 
-	Con_Printf("Can't find address: %08lx\n", function);
+	gpConsole->Printf("Can't find address: %08lx\n", function);
 	return NULL;
 };
 
@@ -398,7 +390,7 @@ NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname,
 
 	if(fname)
 	{
-		len = (unsigned int)(dot - path);
+		len = (uint)(dot - path);
 		if(len > 0xFF)
 			len = 0xFF;
 
@@ -408,7 +400,7 @@ NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname,
 
 	if(ext)
 	{
-		len = (unsigned int)(dot - path);
+		len = (uint)(dot - path);
 		if(len > 0xFF)
 			len = 0xFF;
 
@@ -457,9 +449,7 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 		struct hostent *hostinfo;
 		hostinfo = CRehldsPlatformHolder::get()->gethostbyname(hostname);
 		if(hostinfo && hostinfo->h_length == 4 && *hostinfo->h_addr_list != NULL)
-		{
 			Q_snprintf(key, sizeof(key), "%u.%u.%u.%u", (*hostinfo->h_addr_list)[0], (*hostinfo->h_addr_list)[1], (*hostinfo->h_addr_list)[2], (*hostinfo->h_addr_list)[3]);
-		}
 		else
 		{
 			CRC32_t crc;
@@ -468,8 +458,9 @@ void Sys_GetCDKey(char *pszCDKey, int *nLength, int *bDedicated)
 #endif
 			CRC32_ProcessBuffer(&crc, hostname, Q_strlen(hostname));
 			Q_snprintf(key, sizeof(key), "%u", crc);
-		}
-	}
+		};
+	};
+	
 	key[64] = 0;
 	Q_strcpy(pszCDKey, key);
 
@@ -489,7 +480,7 @@ void Sys_ShowProgressTicks(char *specialProgressMsg)
 	if(!recursionGuard)
 	{
 		recursionGuard = true;
-		if(COM_CheckParm("-steam"))
+		if(gpCmdLine->FindArg("-steam"))
 		{
 			currentTime = Sys_FloatTime();
 

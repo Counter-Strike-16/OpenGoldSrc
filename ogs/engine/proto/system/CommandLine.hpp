@@ -29,6 +29,11 @@
 /// @file
 /// @brief command line args
 
+// Our internal command line component
+// We can use the one from the vstdlib via CommandLine()->
+// but it's currently unclear if someone else is using it
+// in which case it could call the double init on it so
+// we currently can't trust it
 // NOTE: merge with CConCmdArgs?
 
 #pragma once
@@ -36,15 +41,30 @@
 class CCmdLine
 {
 public:
-	CCmdLine() = default;
+	CCmdLine(int argc, char **argv);
 	~CCmdLine() = default;
 	
-	void Init(int argc, char **argv);
+	void Init(int argc, char **argv); // it's currently possible to multi-init the cmdline
 	
-	int HasArg(const char *asArg);
+	int FindArg(const char *asArg) const; // HasArg
 	
-	const char *GetArg(int anArg);
+	//const char *GetArg(int anArg) const;
+	
+	const char *ToString() const {return com_cmdline;}
+	
+	int GetArgCount() const {return com_argc;}
 private:
+	static char *safeargvs[NUM_SAFE_ARGVS] =
+	{
+		"-stdvid",
+		"-nolan",
+		"-nosound",
+		"-nocdaudio",
+		"-nojoy",
+		"-nomouse",
+		"-dibonly"
+	};
+	
 	int com_argc{0};
 	
 	char **com_argv{nullptr};

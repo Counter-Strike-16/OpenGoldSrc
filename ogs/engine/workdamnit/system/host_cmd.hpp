@@ -33,7 +33,7 @@
 #include "system/client.hpp"
 #include "common/commontypes.h"
 #include "engine/eiface.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "public/FileSystem.h"
 #include "public/archtypes.h"
 
