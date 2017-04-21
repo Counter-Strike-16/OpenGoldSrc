@@ -47,6 +47,11 @@
 
 sizebuf_t cmd_text;
 
+/*
+============
+Cbuf_Init
+============
+*/
 void CCmdBuffer::Init()
 {
 	cmd_text = SZ_Alloc("cmd_text", &cmd_text, MAX_CMD_BUFFER);
@@ -76,10 +81,11 @@ void CCmdBuffer::AddText(char *text)
 
 /*
 ============
-idCmdSystemLocal::InsertCommandText
+Cbuf_InsertText
 
 Adds command text immediately after the current command
 Adds a \n to the text
+FIXME: actually change the command buffer to do less copying
 
 When a command wants to issue other commands immediately, the text is
 inserted at the beginning of the buffer, before any remaining unexecuted
@@ -89,7 +95,7 @@ commands
 void CCmdBuffer::InsertText(char *text)
 {
 	int addLen = Q_strlen(text);
-	int currLen = cmd_text->cursize;
+	int currLen = cmd_text->cursize; // tempLen
 
 	if(cmd_text->cursize + addLen >= cmd_text->maxsize)
 	{
@@ -105,7 +111,10 @@ void CCmdBuffer::InsertText(char *text)
 	cmd_text->cursize += addLen;
 
 #else
+	
 	char *temp = NULL;
+	
+	// copy off any commands still remaining in the exec buffer
 	if(currLen)
 	{
 		temp = (char *)Z_Malloc(currLen); // TODO: Optimize: better use memmove
@@ -113,9 +122,11 @@ void CCmdBuffer::InsertText(char *text)
 		Q_memcpy(temp, cmd_text->data, currLen);
 		cmd_text->Clear();
 	};
-
+	
+	// add the entire text of the file
 	AddText(text);
-
+	
+	// add the copied off data
 	if(currLen)
 	{
 		cmd_text->Write(temp, currLen);

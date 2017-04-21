@@ -191,7 +191,7 @@ const IConVarRef &CUnknown::GetVarRef(const char *asName)
 	return ConVarRef;
 };
 
-void CUnknown::SetVar(const char *asName, const char *asValue)
+void CUnknown::SetVarString(const char *asName, const char *asValue)
 {
 	IConVar *pVar = mpVarHandler->Find(asName);
 	
@@ -199,20 +199,20 @@ void CUnknown::SetVar(const char *asName, const char *asValue)
 		pVar->SetString(asValue);
 };
 
-void CUnknown::SetVar(const char *asName, int anValue)
+void CUnknown::SetVarInt(const char *asName, int anValue)
 {
 	IConVar *pVar = mpVarHandler->Find(asName);
 	
 	if(pVar)
-		pVar->SetInt();
+		pVar->SetInt(anValue);
 };
 
-void CUnknown::SetVar(const char *asName, float afValue)
+void CUnknown::SetVarFloat(const char *asName, float afValue)
 {
 	IConVar *pVar = mpVarHandler->Find(asName);
 	
 	if(pVar)
-		pVar->SetFloat();
+		pVar->SetFloat(afValue);
 };
 
 void CUnknown::SetVarBool(const char *asName, bool abValue)

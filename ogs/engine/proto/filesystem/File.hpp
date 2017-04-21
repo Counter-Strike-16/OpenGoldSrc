@@ -33,7 +33,7 @@
 
 #include "public/FileSystem.h"
 
-class CFile
+class CFile //: public opengoldsrc::IFile
 {
 public:
 	CFile(IFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
@@ -42,22 +42,43 @@ public:
 	
 	bool Open(const char *asName, const char *asOptions);
 	
-	void Printf(const char *asData, ...); // return int?
+	/// Like fprintf
+	int Printf(/*VERIFY_FORMAT_STRING*/ /*const*/ char *asData, ...);
 	
+	/// Seek on a file
 	void Seek(int anPos, FileSystemSeek_t seekType);
-	uint Tell() const;
+	//int Seek(long offset, fsOrigin_t origin);
 	
+	/// Returns offset in file
+	uint Tell() const; // int?
+	
+	/// Causes any buffered data to be written to the file
 	void Flush();
+	
+	/// Forces flush on files being writting to
+	//void ForceFlush();
 	
 	int IsOk() const;
 	int IsEOF() const;
-
+	
+	/// Read data from the file to the buffer
 	int Read(void *apOutput, int anSize, int anCount); // const?
+	
+	/// Write data from the buffer to the file
 	int Write(const void *apInput, int anSize, int anCount); // const?
 	
 	char *ReadLine(char *asOutput, int anMaxChars); // const?
 	
-	uint GetSize() const;
+	NOXREF byte GetCharacter() const;
+	
+	/// Get the name of the file
+	const char *GetName() const {return msName;}
+	
+	/// Get the full file path
+	//const char *GetFullPath() const;
+	
+	/// Returns the length of the file
+	uint GetSize() const; // int GetLength
 	
 	operator bool(){return mpFileHandle != nullptr;}
 private:
@@ -66,4 +87,6 @@ private:
 	IFileSystem *mpFileSystem{nullptr};
 	
 	FileHandle_t mpFileHandle{nullptr};
+	
+	const char *msName{""};
 };

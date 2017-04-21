@@ -33,14 +33,14 @@
 #include "filesystem/FileSystem.hpp"
 #include "system/common.hpp"
 
-CFile::CFile(const char *asName, IFileSystem *apFileSystem) : CFile(apFileSystem)
+CFile::CFile(const char *asName, IFileSystem *apFileSystem) : CFile(apFileSystem), msName(asName)
 {
 	assert(asName);
 	
 	//if(!Open(asName))
 		//boom!
 	
-	//assert(mpFile);
+	//assert(mpFileHandle);
 };
 
 bool CFile::Open(const char *asName, const char *asOptions)
@@ -55,8 +55,9 @@ bool CFile::Open(const char *asName, const char *asOptions)
 	return true;
 };
 
-void CFile::Printf(const char *asData, ...)
+int CFile::Printf(/*const*/ char *asData, ...)
 {
+	//
 	assert(mpFileHandle);
 	
 	va_list arglist;
@@ -66,7 +67,19 @@ void CFile::Printf(const char *asData, ...)
 	Q_vsnprintf(sText, sizeof(sText), asData, arglist);
 	va_end(arglist);
 	
-	mpFileSystem->FPrintf(mpFileHandle, "%s", sText);
+	//
+	// original
+	
+	char data[8192];
+	va_list va;
+
+	va_start(va, pFormat);
+	vsprintf(data, pFormat, va);
+	va_end(va);
+	
+	//
+	
+	return mpFileSystem->FPrintf(mpFileHandle, "%s", sText);
 };
 
 void CFile::Seek(int anPos, FileSystemSeek_t seekType)
@@ -96,12 +109,20 @@ int CFile::IsEOF() const
 
 int CFile::Read(void *apOutput, int anSize, int anCount)
 {
-	return mpFileSystem->Read(apOutput, anSize, anCount, mpFileHandle);
+#ifdef REHLDS_FIXES
+	return mpFileSystem->Read(apOutput, anSize * anCount, mpFileHandle);
+#else
+	return mpFileSystem->Read(apOutput, anSize, mpFileHandle);
+#endif // REHLDS_FIXES
 };
 
 int CFile::Write(const void *apInput, int anSize, int anCount)
 {
-	return mpFileSystem->Write(apInput, anSize, anCount, mpFileHandle);
+#ifdef REHLDS_FIXES
+	return mpFileSystem->Write(apInput, anSize * anCount, mpFileHandle);
+#else
+	return mpFileSystem->Write(apInput, anSize, mpFileHandle); // where's count?
+#endif // REHLDS_FIXES
 };
 
 char *CFile::ReadLine(char *asOutput, int anMaxChars)
@@ -109,8 +130,20 @@ char *CFile::ReadLine(char *asOutput, int anMaxChars)
 	return mpFileSystem->ReadLine(asOutput, anMaxChars, mpFileHandle);
 };
 
-uint CFile::GetSize() const
+NOXREF byte CFile::GetCharacter() const
 {
+	NOXREFCHECK;
+
+	uint8 retval;
+	mpFileSystem->Read(&retval, 1, mpFileHandle);
+	return retval;
+};
+
+uint CFile::GetSize() const // uint -> int ?
+{
+	if(!mpFileHandle)
+		return 0;
+	
 	return mpFileSystem->Size(mpFileHandle);
 };
 

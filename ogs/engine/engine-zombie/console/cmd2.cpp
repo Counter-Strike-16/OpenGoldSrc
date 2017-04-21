@@ -601,49 +601,23 @@ byte		cmd_text_buf[8192];
 
 byte		defer_text_buf[8192];
 
-/*
-============
-Cbuf_Init
-============
-*/
+
 void Cbuf_Init (void)
 {
 	SZ_Init (&cmd_text, cmd_text_buf, sizeof(cmd_text_buf));
 }
 
-/*
-============
-Cbuf_InsertText
-
-Adds command text immediately after the current command
-Adds a \n to the text
-FIXME: actually change the command buffer to do less copying
-============
-*/
 void Cbuf_InsertText (char *text)
 {
-	char	*temp;
 	int		templen;
 
-// copy off any commands still remaining in the exec buffer
+
 	templen = cmd_text.cursize;
 	if (templen)
 	{
 		temp = Z_Malloc (templen);
 		memcpy (temp, cmd_text.data, templen);
 		SZ_Clear (&cmd_text);
-	}
-	else
-		temp = NULL;	// shut up compiler
-		
-// add the entire text of the file
-	Cbuf_AddText (text);
-	
-// add the copied off data
-	if (templen)
-	{
-		SZ_Write (&cmd_text, temp, templen);
-		Z_Free (temp);
 	}
 }
 

@@ -30,17 +30,16 @@
 /// @brief console command system
 
 #include "precompiled.hpp"
-//#include "commondef.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
-#include "console/console.hpp"
+#include "console/Console.hpp"
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
 #include "system/common.hpp"
 #include "system/sizebuf.hpp"
-#include "system/system.hpp"
-#include "system/host.hpp"
-#include "filesystem/filesystem_internal.hpp"
+#include "system/System.hpp"
+#include "system/Host.hpp"
+#include "filesystem/FileSystem.hpp"
 #include "network/net_msg.hpp"
 #include "network/protocol.hpp"
 #include "system/client.hpp"
@@ -60,7 +59,6 @@ cmdalias_t *cmd_alias;
 // int trashtest;
 // int *trashspot;
 
-cmd_function_t *cmd_functions;
 char *const cmd_null_string = "";
 
 // Crappy
@@ -262,7 +260,7 @@ void Cmd_Exec_f()
 	}
 
 	Mem_Free(pszFileData);
-}
+};
 
 /*
 ===============
@@ -273,20 +271,18 @@ Just prints the rest of the line to the console
 */
 void Cmd_Echo_f()
 {
-	int c = Cmd_Argc();
+	for(int i = 1; i < Cmd_Argc(); ++i)
+		pConsole->Printf("%s ", Cmd_Argv(i));
 
-	for(int i = 1; i < c; ++i)
-		Con_Printf("%s ", Cmd_Argv(i));
-
-	Con_Printf("\n");
-}
+	pConsole->Printf("\n");
+};
 
 char *CopyString(char *in)
 {
 	char *out = (char *)Z_Malloc(Q_strlen(in) + 1);
 	Q_strcpy(out, in);
 	return out;
-}
+};
 
 /*
 ===============
@@ -487,21 +483,6 @@ void EXT_FUNC Cmd_TokenizeString(char *text)
 	}
 }
 
-NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name)
-{
-	NOXREFCHECK;
-
-	cmd_function_t *cmd;
-
-	for(cmd = cmd_functions; cmd; cmd = cmd->next)
-	{
-		if(!Q_stricmp(cmd_name, cmd->name))
-			return cmd;
-	}
-
-	return NULL;
-}
-
 cmd_function_t *Cmd_FindCmdPrev(char *cmd_name)
 {
 	cmd_function_t *cmd = NULL;
@@ -516,31 +497,6 @@ cmd_function_t *Cmd_FindCmdPrev(char *cmd_name)
 	}
 
 	return NULL;
-}
-
-void Cmd_InsertCommand(cmd_function_t *cmd)
-{
-	cmd_function_t *c, **p;
-
-	// Commands list is alphabetically sorted, search where to push
-	c = cmd_functions;
-	p = &cmd_functions;
-	while(c)
-	{
-		if(Q_stricmp(c->name, cmd->name) > 0)
-		{
-			// Current command name is bigger, insert before it
-			cmd->next = c;
-			*p = cmd;
-			return;
-		}
-		p = &c->next;
-		c = c->next;
-	}
-
-	// All commands in the list are lower then the new one
-	cmd->next = NULL;
-	*p = cmd;
 }
 
 // Use this for engine inside call only, not from user code, because it doesn't
@@ -653,21 +609,6 @@ void Cmd_RemoveWrapperCmds()
 	Cmd_RemoveMallocedCmds(FCMD_WRAPPER_COMMAND);
 }
 
-qboolean Cmd_Exists(const char *cmd_name)
-{
-	cmd_function_t *cmd = cmd_functions;
-
-	while(cmd)
-	{
-		if(!Q_stricmp(cmd_name, cmd->name))
-			return TRUE;
-
-		cmd = cmd->next;
-	}
-
-	return FALSE;
-}
-
 NOXREF char *Cmd_CompleteCommand(char *search, int forward)
 {
 	NOXREFCHECK;
@@ -714,7 +655,7 @@ NOXREF char *Cmd_CompleteCommand(char *search, int forward)
 		}
 	}
 
-	// Find first matching cvar
+	// Find first matching cmd
 	for(cmd = cmd_functions; cmd != NULL; cmd = cmd->next)
 	{
 		if(!Q_strnicmp(partial, cmd->name, len))

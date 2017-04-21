@@ -42,8 +42,8 @@ public:
 	
 	bool IsCmdExists(const char *asName) const;
 	
-	void AddCommand(const char *asName, pfnConCmdCallback afnCallback);
-	//void AddCommand(const char *cmdName, cmdFunction_t function, int flags, const char *description, argCompletion_t argCompletion = NULL );
+	void AddCommand(const char *asName, pfnConCmdCallback afnCallback, const char *asDesc = "");
+	//void AddCommand(cmdFunction_t function, int flags, argCompletion_t argCompletion = NULL );
 	void RemoveCommand(const char *asName);
 	//void RemoveFlaggedCommands(int flags);
 	
@@ -69,6 +69,6 @@ private:
 	void Cmd_Alias_f();
 	void Cmd_CmdList_f();
 	
-	cmd_function_t *cmd_functions; // CConCmd *commands;
-	cmdalias_t *cmd_alias;
+	cmd_function_t *cmd_functions{nullptr}; // CConCmd *commands;
+	cmdalias_t *cmd_alias{nullptr};
 };

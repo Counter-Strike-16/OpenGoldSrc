@@ -375,24 +375,9 @@ FileHandle_t CFileSystem::OpenPathID(const char *pFileName, const char *pOptions
 	return mpFileSystem->Open(pFileName, pOptions, pathID);
 };
 
-void CFileSystem::Close(FileHandle_t file)
+void CFileSystem::Close(CFile *file)
 {
-	mpFileSystem->Close(file);
-};
-
-void CFileSystem::Seek(FileHandle_t file, int pos, FileSystemSeek_t seekType)
-{
-	mpFileSystem->Seek(file, pos, seekType);
-};
-
-unsigned int CFileSystem::Tell(FileHandle_t file)
-{
-	return mpFileSystem->Tell(file);
-};
-
-unsigned int CFileSystem::Size(FileHandle_t file)
-{
-	return mpFileSystem->Size(file);
+	mpFileSystem->Close(file->GetHandle());
 };
 
 // merged with int EXT_FUNC COM_FileSize(char *filename)
@@ -437,56 +422,6 @@ NOXREF void CFileSystem::FileTimeToString(char *pStrip, int maxCharsIncludingTer
 	NOXREFCHECK;
 
 	mpFileSystem->FileTimeToString(pStrip, maxCharsIncludingTerminator, fileTime);
-};
-
-int CFileSystem::IsOk(FileHandle_t file)
-{
-	return mpFileSystem->IsOk(file);
-};
-
-void CFileSystem::Flush(FileHandle_t file)
-{
-	mpFileSystem->Flush(file);
-};
-
-int CFileSystem::EndOfFile(FileHandle_t file)
-{
-	return mpFileSystem->EndOfFile(file);
-};
-
-int CFileSystem::Read(void *pOutput, int size, int count, FileHandle_t file)
-{
-#ifdef REHLDS_FIXES
-	return mpFileSystem->Read(pOutput, size * count, file);
-#else
-	return mpFileSystem->Read(pOutput, size, file);
-#endif // REHLDS_FIXES
-};
-
-int CFileSystem::Write(const void *pInput, int size, int count, FileHandle_t file)
-{
-#ifdef REHLDS_FIXES
-	return mpFileSystem->Write(pInput, size * count, file);
-#else
-	return mpFileSystem->Write(pInput, size, file);
-#endif // REHLDS_FIXES
-};
-
-char *CFileSystem::ReadLine(char *pOutput, int maxChars, FileHandle_t file)
-{
-	return mpFileSystem->ReadLine(pOutput, maxChars, file);
-};
-
-int CFileSystem::FPrintf(FileHandle_t file, char *pFormat, ...)
-{
-	char data[8192];
-	va_list va;
-
-	va_start(va, pFormat);
-	vsprintf(data, pFormat, va);
-	va_end(va);
-
-	return mpFileSystem->FPrintf(file, "%s", data);
 };
 
 const char *CFileSystem::FindFirst(const char *pWildCard, FileFindHandle_t *pHandle, const char *pathID)
@@ -567,15 +502,6 @@ NOXREF void CFileSystem::SetWarningLevel(FileWarningLevel_t level)
 	NOXREFCHECK;
 
 	mpFileSystem->SetWarningLevel(level);
-};
-
-NOXREF unsigned char CFileSystem::GetCharacter(FileHandle_t f)
-{
-	NOXREFCHECK;
-
-	uint8 retval;
-	mpFileSystem->Read(&retval, 1, f);
-	return retval;
 };
 
 void CFileSystem::LogLevelLoadStarted(const char *name)

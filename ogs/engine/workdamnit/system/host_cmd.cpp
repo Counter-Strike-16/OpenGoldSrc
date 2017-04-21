@@ -2114,13 +2114,6 @@ void LoadAdjacentEntities(const char *pOldLevel, const char *pLandmarkName)
 	gGlobalVariables.pSaveData = NULL;
 }
 
-int FileSize(FileHandle_t pFile)
-{
-	if(!pFile)
-		return 0;
-	return FS_Size(pFile);
-}
-
 void FileCopy(FileHandle_t pOutput, FileHandle_t pInput, int fileSize)
 {
 	char buf[1024];
@@ -2143,7 +2136,7 @@ void DirectoryCopy(const char *pPath, FileHandle_t pFile)
 	const char *findfn;
 	char basefindfn[MAX_PATH];
 	int fileSize;
-	FILE *pCopy;
+	CFile *pCopy;
 	char szName[MAX_PATH];
 
 	findfn = Sys_FindFirst(pPath, basefindfn);
@@ -2151,12 +2144,12 @@ void DirectoryCopy(const char *pPath, FileHandle_t pFile)
 	{
 		Q_snprintf(szName, sizeof(szName), "%s%s", Host_SaveGameDirectory(), findfn);
 		COM_FixSlashes(szName);
-		pCopy = FS_OpenPathID(szName, "rb", "GAMECONFIG");
-		fileSize = FS_Size(pCopy);
-		FS_Write(findfn, MAX_PATH, 1, pFile);
-		FS_Write(&fileSize, sizeof(int), 1, pFile);
+		pCopy = gpFileSystem->OpenPathID(szName, "rb", "GAMECONFIG");
+		fileSize = pCopy->GetSize();
+		pFile->Write(findfn, MAX_PATH, 1);
+		pFile->Write(&fileSize, sizeof(int), 1);
 		FileCopy(pFile, pCopy, fileSize);
-		FS_Close(pCopy);
+		gpFileSystem->Close(pCopy);
 		findfn = Sys_FindNext(basefindfn);
 	}
 	Sys_FindClose();

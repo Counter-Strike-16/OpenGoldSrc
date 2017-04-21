@@ -217,7 +217,7 @@ int CHost::Init(quakeparms_t *parms)
 		//ClientDLL_Init(); // it's not loaded yet!
 		// VGui_Startup();
 
-		//if(!VID_Init(host_basepal))
+		//if(!mpVideo->Init(host_basepal))
 		{
 			// VGui_Shutdown();
 			//return 0;

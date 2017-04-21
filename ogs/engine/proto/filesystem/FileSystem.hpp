@@ -117,29 +117,12 @@ public:
 
 	void Close(/*FileHandle_t*/ CFile *file);
 
-	//void Seek(FileHandle_t file, int pos, FileSystemSeek_t seekType);
-	//unsigned int Tell(FileHandle_t file);
-
-	//unsigned int Size(FileHandle_t file);
 	unsigned int FileSize(const char *pFileName);
 	
 	NOXREF int ExpandFileName(char *filename);
 
 	int32 GetFileTime(const char *pFileName);
 	NOXREF void FileTimeToString(char *pStrip, int maxCharsIncludingTerminator, int32 fileTime);
-
-	//int IsOk(FileHandle_t file);
-
-	//void Flush(FileHandle_t file);
-
-	//int EndOfFile(FileHandle_t file);
-
-	//int Read(void *pOutput, int size, int count, FileHandle_t file);
-	//int Write(const void *pInput, int size, int count, FileHandle_t file);
-
-	//char *ReadLine(char *pOutput, int maxChars, FileHandle_t file);
-
-	//int FPrintf(FileHandle_t file, char *pFormat, ...);
 
 	const char *FindFirst(const char *pWildCard, FileFindHandle_t *pHandle, const char *pathID);
 	const char *FindNext(FileFindHandle_t handle);
@@ -161,8 +144,6 @@ public:
 	NOXREF void SetWarningFunc(void (*pfnWarning)(const char *, ...));
 	NOXREF void SetWarningLevel(FileWarningLevel_t level);
 
-	NOXREF unsigned char GetCharacter(FileHandle_t f);
-	
 	void LogLevelLoadStarted(const char *name);
 	void LogLevelLoadFinished(const char *name);
 
@@ -181,7 +162,7 @@ private:
 	bool SetupDirectories(); // SetupGameDirectories
 	
 	char msBaseDir[512];
-	char com_gamedir[MAX_PATH];
+	char com_gamedir[MAX_PATH]; // MAX_OSPATH
 	
 	IFileSystem *mpFileSystem{nullptr}; // pimpl
 };
