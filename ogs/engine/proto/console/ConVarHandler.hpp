@@ -53,10 +53,38 @@ interface from being ambiguous.
 */
 
 struct IConsole;
+struct IConVar;
 class CFile;
 
 typedef struct cvar_s cvar_t;
 
+using tConVarList = std::list<IConVar*>;
+
+struct IConVarIterator
+{
+	virtual IConVar *GetFirst() const = 0;
+	virtual IConVar *GetLast() const = 0;
+	
+	virtual IConVar *GetNext(IConVar *apVar) const = 0;
+	virtual IConVar *GetPrev(IConVar *apVar) const = 0;
+};
+
+class CConVarIterator : public IConVarIterator
+{
+public:
+	CConVarIterator(const tConVarList &alstVars) : mlstVars(alstVars){}
+	~CConVarIterator() = default;
+	
+	IConVar *GetFirst() const {return mlstVars.begin();}
+	IConVar *GetLast() const {return mlstVars.end();}
+	
+	IConVar *GetNext(IConVar *apVar) const;
+	IConVar *GetPrev(IConVar *apVar) const;
+private:
+	tConVarList mlstVars;
+};
+
+// CConVarList/CConVarContainer
 class CConVarHandler : public IConVarSystem
 {
 public:
@@ -66,20 +94,45 @@ public:
 	void Init();
 	void Shutdown();
 	
-	virtual void Register(IConVar *apVar);
-
-	virtual IConVar *Find(const char *asName);
+	void Register(IConVar *apVar);
+	//bool Insert(cvar_t *apVar);
+	
+	IConVar *Create(const char *asName, const char *asDefVal, int anFlags, const char *asDesc = "");
+	
+	IConVar *Find(const char *asName);
+	//IConVar *FindPrev(const char *asName);
+	
+	IConVarIterator *GetIterator() const;
+	
+	void SetVarString(const char *asName, const char *asvalue, int anFlags = 0);
+	void SetVarInt(const char *asName, const int anValue, int anFlags = 0);
+	void SetVarFloat(const char *asName, const float afValue, int anFlags = 0);
+	void SetVarBool(const char *asName, const bool abValue, int anFlags = 0);
+	
+	const char *GetVarString(const char *asName) const;
+	int GetVarInt(const char *asName) const;
+	float GetVarFloat(const char *asName) const;
+	bool GetVarBool(const char *asName) const;
+	
+	bool HandleCommand(const IConCmdArgs &CmdArgs);
 	
 	const char *CompleteVar(const char *asSearch, bool abForward);
 	
 	// appends lines containing "set variable value" for all variables
 	// with the archive flag set to true.
-	//void Cvar_WriteVariables (char *path);
-	NOXREF void WriteVariables(CFile *f);
+	NOXREF void WriteVariables(CFile *f); // WriteVars; Use const ref here?
+	
+	//NOXREF int CountServerVariables();
+	int CountFlaggedVariables(int anFlag);
+	
+	void UnlinkExternals(); // I'm not sure it's the right place for that
+	//void UnlinkFlagged(int anFlag);
 private:
-	void Cmd_CvarList_f();
+	void Cmd_CvarList_f(const IConCmdArgs &aCmdArgs);
 	
 	IConsole *mpConsole{nullptr};
 
-	cvar_t *cvar_vars{nullptr};
+	//cvar_t *cvar_vars{nullptr};
+	
+	tConVarList mlstVars;
 };

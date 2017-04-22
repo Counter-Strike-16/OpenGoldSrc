@@ -13,20 +13,6 @@ public:
 
 	virtual bool			IsInitialized() const;
 
-	
-
-	virtual void			SetCVarString( const char *name, const char *value, int flags = 0 );
-	virtual void			SetCVarBool( const char *name, const bool value, int flags = 0 );
-	virtual void			SetCVarInteger( const char *name, const int value, int flags = 0 );
-	virtual void			SetCVarFloat( const char *name, const float value, int flags = 0 );
-
-	virtual const char *	GetCVarString( const char *name ) const;
-	virtual bool			GetCVarBool( const char *name ) const;
-	virtual int				GetCVarInteger( const char *name ) const;
-	virtual float			GetCVarFloat( const char *name ) const;
-
-	virtual bool			HandleCommand( const IConCmdArgs &args );
-
 	virtual void			CommandCompletion( void(*callback)( const char *s ) );
 	virtual void			ArgCompletion( const char *cmdString, void(*callback)( const char *s ) );
 

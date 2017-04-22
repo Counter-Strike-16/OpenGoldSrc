@@ -80,9 +80,42 @@ public:
 	void SetActive(bool active); // for disabling simulation if needed (server pause)
 	bool IsActive();
 
-	void CreateEntity();
+	edict_t *CreateEntity(int className = -1);
+	void RemoveEntity(edict_t *e);
 	
-	const char *GetMapName();
+	edict_t *FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue) const;
+	
+	edict_t *FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *org, float rad) const;
+	edict_t *FindClientInPVS(edict_t *pEdict) const;
+	edict_t *GetEntitiesInPVS(edict_t *pplayer) const;
+	
+	void EmitSound(edict_t *entity, int channel, const char *sample, /*int*/ float volume, float attenuation, int fFlags, int pitch);
+	void EmitAmbientSound(edict_t *entity, float *pos, const char *samp, float vol, float attenuation, int fFlags, int pitch);
+	
+	void SetLightStyle(int style, char *val);
+	
+	void *AllocEntPrivateData(edict_t *pEdict, int32 cb);
+	
+	edict_t *CreateFakeClient(const char *netname) const; // returns NULL if fake client can't be created
+	
+	int CreateInstancedBaseline(int classname, struct entity_state_s *baseline);
+	
+	int GetNumberOfEntities() const;
+	
+	char *GetInfoKeyBuffer(edict_t *e) const; // passing in NULL gets the serverinfo
+	
+	void TraceLine(const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr);
+	void TraceToss(edict_t *pent, edict_t *pentToIgnore, TraceResult *ptr);
+	int TraceMonsterHull(edict_t *pEdict, const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr);
+	void TraceHull(const float *v1, const float *v2, int fNoMonsters, int hullNumber, edict_t *pentToSkip, TraceResult *ptr);
+	void TraceModel(const float *v1, const float *v2, int hullNumber, edict_t *pent, TraceResult *ptr);
+	const char *TraceTexture(edict_t *pTextureEntity, const float *v1, const float *v2);
+	void TraceSphere(const float *v1, const float *v2, int fNoMonsters, float radius, edict_t *pentToSkip, TraceResult *ptr);
+	
+	void SpawnParticleEffect(const float *org, const float *dir, float color, float count);
+	void SpawnStaticDecal(const float *origin, int decalIndex, int entityIndex, int modelIndex);
+	
+	const char *GetMapName() const;
 private:
 	char mapname[64]; // map name
 	char startspot[64];
@@ -91,9 +124,9 @@ private:
 
 	char *lightstyles[MAX_LIGHTSTYLES];
 
-	int num_edicts; // increases towards MAX_EDICTS
-	int max_edicts;
-	edict_t *edicts; // can NOT be array indexed, because
+	int num_edicts{0}; // increases towards MAX_EDICTS
+	int max_edicts{0};
+	edict_t *edicts{nullptr}; // can NOT be array indexed, because
 	                 // edict_t is variable sized, but can
 	                 // be used to reference the world ent
 };

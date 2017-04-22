@@ -62,11 +62,16 @@ CLegacyGame::~CLegacyGame()
 
 bool CLegacyGame::Init(CreateInterfaceFn afnEngineFactory)
 {
-	DevMsg("Initializing the old api game component...");
+	mpConsole->DevPrintf("Initializing the old api game component...");
 	
-	mpSystem->AddListener(mpHLGameListener); // add a system event listener
+	mpSystem->AddListener(mpLegacyGameListener); // add a system event listener
 	
 	mpFuncs->pfnGameInit();
+	
+	//gEntityInterface.pfnGameInit();
+	//gEntityInterface.pfnPM_Init(&g_svmove);
+	//gEntityInterface.pfnRegisterEncoders();
+	
 	return true;
 };
 

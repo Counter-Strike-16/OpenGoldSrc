@@ -61,22 +61,36 @@ void CCmdBuffer::Init()
 ============
 Cbuf_AddText
 
-Adds command text at the end of the buffer
+Adds command text at the end of the buffer, does NOT add a final \n
 As new commands are generated from the console or keybindings,
 the text is added to the end of the command buffer.
 ============
 */
+//void CCmdBuffer::AppendCommandText
 void CCmdBuffer::AddText(char *text)
 {
 	int len = Q_strlen(text);
-
+	
+	//cmd_text->cursize == textLength
+	
+	//if(textLength + len >= (int)sizeof(textBuf))
 	if(cmd_text->cursize + len >= cmd_text->maxsize)
 	{
 		mpConsole->Printf("%s: overflow\n", __FUNCTION__);
+		//common->Printf( "idCmdSystemLocal::AppendText: buffer overflow\n" );
 		return;
 	};
-
+	
+	///
+	
 	cmd_text->Write(text, len);
+	
+	///
+	
+	//memcpy( textBuf + textLength, text, l );
+	//textLength += l;
+	
+	///
 };
 
 /*
@@ -104,13 +118,14 @@ void CCmdBuffer::InsertText(char *text)
 	};
 
 #ifdef REHLDS_FIXES
+	
 	if(currLen)
 		Q_memmove(cmd_text->data + addLen, cmd_text->data, currLen);
 
 	Q_memcpy(cmd_text->data, text, addLen);
 	cmd_text->cursize += addLen;
 
-#else
+#else // REHLDS_FIXES
 	
 	char *temp = NULL;
 	
@@ -132,6 +147,7 @@ void CCmdBuffer::InsertText(char *text)
 		cmd_text->Write(temp, currLen);
 		Z_Free(temp);
 	};
+	
 #endif // REHLDS_FIXES
 };
 
@@ -257,13 +273,14 @@ void CCmdBuffer::Execute()
 		};
 
 		// execute the command line
-		//Cmd_ExecuteString(line, src_command);
+		//mpCmdExecutor
+		mpCmdProcessor->ExecuteString(line, src_command);
 
 		if(cmd_wait)
 		{
 			// skip out while text still remains in buffer, leaving it
 			// for next frame
-			cmd_wait = FALSE;
+			cmd_wait = false;
 			break;
 		};
 	};

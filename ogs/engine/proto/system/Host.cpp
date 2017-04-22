@@ -152,7 +152,7 @@ int CHost::Init(quakeparms_t *parms)
 	V_Init();
 	Chase_Init();
 	COM_Init(parms->basedir);
-	Host_ClearSaveDirectory();
+	Host_ClearSaveDirectory(); // mpSaveHandler->
 	HPAK_Init();
 	
 	mpWADManager->LoadWadFile("gfx.wad"); // WADArchive->LoadFromFile?
@@ -252,7 +252,7 @@ int CHost::Init(quakeparms_t *parms)
 	//else
 		//mpConsole->RegisterVariable(&suitvolume);
 
-	//mpCmdBuffer->InsertText("exec valve.rc\n");
+	mpCmdProcessor->InsertCmdText("exec valve.rc\n");
 	
 	//Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
 	//host_hunklevel = Hunk_LowMark();
@@ -457,8 +457,8 @@ void CHost::EndGame(const char *message, ...)
 	};
 
 	//CL_Disconnect();
-	//mpCmdBuffer->AddText("cd stop\n");
-	//mpCmdBuffer->Execute();
+	mpCmdProcessor->AddCmdText("cd stop\n");
+	mpCmdProcessor->ExecCmdBuffer();
 	//longjmp(host_abortserver, 1);
 };
 
@@ -1010,18 +1010,16 @@ void CHost::_Frame(float time)
 	
 	ComputeFPS(host_frametime);
 	
-/*
 	//R_SetStackBase();
-	CL_CheckClientState();
+	//CL_CheckClientState();
 
 	// process console commands
-	mpCmdBuffer->Execute();
+	mpCmdProcessor->ExecCmdBuffer();
 
-	ClientDLL_UpdateClientData();
+	//ClientDLL_UpdateClientData();
 
-	if(mpServer->IsActive())
-		CL_Move();
-*/
+	//if(mpServer->IsActive())
+		//CL_Move();
 
 	host_times[1] = CSystem::GetFloatTime();
 
@@ -1148,7 +1146,7 @@ int CHost::Frame(float time, int iState, int *stateInfo)
 	{
 		*stateInfo = giStateInfo;
 		giStateInfo = 0;
-		mpCmdBuffer->Execute();
+		mpCmdProcessor->ExecCmdBuffer();
 	};
 */
 
@@ -1301,7 +1299,7 @@ int CHost::GetStartTime()
 
 void CHost::InitGame()
 {
-	//mpCmdBuffer->Execute();
+	mpCmdProcessor->ExecCmdBuffer();
 	mpNetwork->Config(false); //g_psvs.maxclients > 1
 
 	//if(g_psvs.dll_initialized)
@@ -1329,16 +1327,12 @@ void CHost::InitGame()
 	// if we initializing it here then it's init state shouldn't be contained in server static data
 	//g_psvs.dll_initialized = TRUE;
 	
-	//gEntityInterface.pfnGameInit();
-	//gEntityInterface.pfnPM_Init(&g_svmove);
-	//gEntityInterface.pfnRegisterEncoders();
-
 	//SV_InitEncoders();
 	//SV_GetPlayerHulls();
 	//SV_CheckBlendingInterface();
 	//SV_CheckSaveGameCommentInterface();
 	
-	//mpCmdBuffer->Execute();
+	mpCmdProcessor->ExecCmdBuffer();
 	
 #ifdef REHLDS_FIXES // DONE: Set cstrike flags on server start
 	SetCStrikeFlags();

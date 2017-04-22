@@ -361,17 +361,7 @@ void EXT_FUNC PF_changepitch_I(edict_t *ent)
 
 edict_t *EXT_FUNC FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue)
 {
-	if(!pszValue)
-		return NULL;
-
-	int iField = iGetIndex(pszField);
-	if(iField == -1)
-		return NULL;
-
-	return PF_find_Shared(
-	pEdictStartSearchAfter ? NUM_FOR_EDICT(pEdictStartSearchAfter) : 0,
-	iField,
-	pszValue);
+	gpWorld->FindEntityByString();
 };
 
 int EXT_FUNC GetEntityIllum(edict_t *pEnt)
@@ -395,33 +385,7 @@ int EXT_FUNC GetEntityIllum(edict_t *pEnt)
 
 edict_t *EXT_FUNC FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *org, float rad)
 {
-	int e = pEdictStartSearchAfter ? NUM_FOR_EDICT(pEdictStartSearchAfter) : 0;
-
-	for(int i = e + 1; i < g_psv.num_edicts; i++)
-	{
-		edict_t *ent = &g_psv.edicts[i];
-		if(ent->free || !ent->v.classname)
-			continue;
-
-		if(i <= g_psvs.maxclients && !g_psvs.clients[i - 1].active)
-			continue;
-
-		float distSquared = 0.0;
-		for(int j = 0; j < 3 && distSquared <= (rad * rad); j++)
-		{
-			float eorg;
-			if(org[j] >= ent->v.absmin[j])
-				eorg = (org[j] <= ent->v.absmax[j]) ? 0.0f : org[j] - ent->v.absmax[j];
-			else
-				eorg = org[j] - ent->v.absmin[j];
-			distSquared = eorg * eorg + distSquared;
-		}
-
-		if(distSquared <= ((rad * rad)))
-			return ent;
-	}
-
-	return &g_psv.edicts[0];
+	gpWorld->FindEntityInSphere();
 };
 
 edict_t *EXT_FUNC PF_checkclient_I(edict_t *pEdict)
@@ -508,36 +472,17 @@ void EXT_FUNC PF_makevectors_I(const float *rgflVector)
 
 edict_t *EXT_FUNC PF_Spawn_I()
 {
-	return ED_Alloc();
+	return gpWorld->CreateEntity();
 };
 
 void EXT_FUNC PF_Remove_I(edict_t *ed)
 {
-	g_RehldsHookchains.m_PF_Remove_I.callChain(PF_Remove_I_internal, ed);
+	gpWorld->RemoveEntity(ed);
 };
 
 edict_t *EXT_FUNC CreateNamedEntity(int className)
 {
-	edict_t *pedict;
-	ENTITYINIT pEntityInit;
-
-	if(!className)
-		Sys_Error("Spawned a NULL entity!");
-
-	pedict = ED_Alloc();
-	pedict->v.classname = className;
-	pEntityInit = GetEntityInit(&pr_strings[className]);
-	if(pEntityInit)
-	{
-		pEntityInit(&pedict->v);
-		return pedict;
-	}
-	else
-	{
-		ED_Free(pedict);
-		Con_DPrintf("Can't create entity: %s\n", &pr_strings[className]);
-		return NULL;
-	}
+	return gpWorld->CreateEntity(className);
 };
 
 void EXT_FUNC PF_makestatic_I(edict_t *ent)
@@ -648,56 +593,7 @@ void EXT_FUNC PF_sound_I(edict_t *entity, int channel, const char *sample, float
 
 void EXT_FUNC PF_ambientsound_I(edict_t *entity, float *pos, const char *samp, float vol, float attenuation, int fFlags, int pitch)
 {
-	int i;
-	int soundnum;
-	int ent;
-	sizebuf_t *pout;
-
-	if(samp[0] == '!')
-	{
-		fFlags |= SND_FL_SENTENCE;
-		soundnum = Q_atoi(samp + 1);
-		if(soundnum >= CVOXFILESENTENCEMAX)
-		{
-			Con_Printf("invalid sentence number: %s", &samp[1]);
-			return;
-		}
-	}
-	else
-	{
-		for(i = 0; i < MAX_SOUNDS; i++)
-		{
-			if(g_psv.sound_precache[i] &&
-			   !Q_stricmp(g_psv.sound_precache[i], samp))
-			{
-				soundnum = i;
-				break;
-			}
-		}
-
-		if(i == MAX_SOUNDS)
-		{
-			Con_Printf("no precache: %s\n", samp);
-			return;
-		}
-	}
-
-	ent = NUM_FOR_EDICT(entity);
-	pout = &g_psv.signon;
-	if(!(fFlags & SND_FL_SPAWNING))
-		pout = &g_psv.datagram;
-
-	MSG_WriteByte(pout, svc_spawnstaticsound);
-	MSG_WriteCoord(pout, pos[0]);
-	MSG_WriteCoord(pout, pos[1]);
-	MSG_WriteCoord(pout, pos[2]);
-
-	MSG_WriteShort(pout, soundnum);
-	MSG_WriteByte(pout, (vol * 255.0));
-	MSG_WriteByte(pout, (attenuation * 64.0));
-	MSG_WriteShort(pout, ent);
-	MSG_WriteByte(pout, pitch);
-	MSG_WriteByte(pout, fFlags);
+	gpWorld->EmitAmbientSound();
 };
 
 void EXT_FUNC PF_traceline_DLL(const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr)
@@ -899,7 +795,7 @@ const char *EXT_FUNC TraceTexture(edict_t *pTextureEntity, const float *v1, cons
 
 void EXT_FUNC TraceSphere(const float *v1, const float *v2, int fNoMonsters, float radius, edict_t *pentToSkip, TraceResult *ptr)
 {
-	Sys_Error("TraceSphere not yet implemented!\n");
+	CSystem::Error("TraceSphere not yet implemented!\n");
 };
 
 void EXT_FUNC PF_aim_I(edict_t *ent, float speed, float *rgflReturn)
@@ -1019,7 +915,7 @@ void EXT_FUNC PF_stuffcmd_I(edict_t *pEdict, char *szFmt, ...)
 	szOut[1023] = 0;
 	if(entnum < 1 || entnum > g_psvs.maxclients)
 	{
-		Con_Printf("\n!!!\n\nStuffCmd:  Some entity tried to stuff '%s' to console "
+		gpConsole->Printf("\n!!!\n\nStuffCmd:  Some entity tried to stuff '%s' to console "
 		           "buffer of entity %i when maxclients was set to %i, "
 		           "ignoring\n\n",
 		           szOut,
@@ -1049,20 +945,7 @@ void EXT_FUNC PF_particle_I(const float *org, const float *dir, float color, flo
 
 void EXT_FUNC PF_lightstyle_I(int style, char *val)
 {
-	g_psv.lightstyles[style] = val;
-	if(g_psv.state != ss_active)
-		return;
-
-	for(int i = 0; i < g_psvs.maxclients; i++)
-	{
-		client_t *cl = &g_psvs.clients[i];
-		if((cl->active || cl->spawned) && !cl->fakeclient)
-		{
-			MSG_WriteChar(&cl->netchan.message, svc_lightstyle);
-			MSG_WriteChar(&cl->netchan.message, style);
-			MSG_WriteString(&cl->netchan.message, val);
-		}
-	}
+	gpWorld->SetLightStyle(style, val);
 };
 
 int EXT_FUNC PF_DecalIndex(const char *name)
@@ -1425,60 +1308,7 @@ void EXT_FUNC PF_SetClientMaxspeed(edict_t *clientent, float fNewMaxspeed)
 
 edict_t *EXT_FUNC PF_CreateFakeClient_I(const char *netname)
 {
-	client_t *fakeclient;
-	edict_t *ent;
-
-	int i = 0;
-	fakeclient = g_psvs.clients;
-	for(i = 0; i < g_psvs.maxclients; i++, fakeclient++)
-	{
-		if(!fakeclient->active && !fakeclient->spawned && !fakeclient->connected)
-			break;
-	}
-
-	if(i >= g_psvs.maxclients)
-		return NULL;
-
-	ent = EDICT_NUM(i + 1);
-	if(fakeclient->frames)
-		SV_ClearFrames(&fakeclient->frames);
-
-	Q_memset(fakeclient, 0, sizeof(client_t));
-	fakeclient->resourcesneeded.pPrev = &fakeclient->resourcesneeded;
-	fakeclient->resourcesneeded.pNext = &fakeclient->resourcesneeded;
-	fakeclient->resourcesonhand.pPrev = &fakeclient->resourcesonhand;
-	fakeclient->resourcesonhand.pNext = &fakeclient->resourcesonhand;
-
-	Q_strncpy(fakeclient->name, netname, sizeof(fakeclient->name) - 1);
-	fakeclient->name[sizeof(fakeclient->name) - 1] = 0;
-
-	fakeclient->active = TRUE;
-	fakeclient->spawned = TRUE;
-	fakeclient->fully_connected = TRUE;
-	fakeclient->connected = TRUE;
-	fakeclient->fakeclient = TRUE;
-	fakeclient->userid = g_userid++;
-	fakeclient->uploading = FALSE;
-	fakeclient->edict = ent;
-	ent->v.netname = (size_t)fakeclient->name - (size_t)pr_strings;
-	ent->v.pContainingEntity = ent;
-	ent->v.flags = FL_FAKECLIENT | FL_CLIENT;
-
-	Info_SetValueForKey(fakeclient->userinfo, "name", netname, MAX_INFO_STRING);
-	Info_SetValueForKey(fakeclient->userinfo, "model", "gordon", MAX_INFO_STRING);
-	Info_SetValueForKey(fakeclient->userinfo, "topcolor", "1", MAX_INFO_STRING);
-	Info_SetValueForKey(fakeclient->userinfo, "bottomcolor", "1", MAX_INFO_STRING);
-	
-	fakeclient->sendinfo = TRUE;
-	
-	SV_ExtractFromUserinfo(fakeclient);
-
-	fakeclient->network_userid.m_SteamID =
-	//ISteamGameServer_CreateUnauthenticatedUserConnection();
-	fakeclient->network_userid.idtype = AUTH_IDTYPE_STEAM;
-	//ISteamGameServer_BUpdateUserData(fakeclient->network_userid.m_SteamID, netname, 0);
-
-	return ent;
+	return gpWorld->CreateFakeClient(netname);
 };
 
 void EXT_FUNC PF_RunPlayerMove_I(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, unsigned char impulse, unsigned char msec)
@@ -1519,14 +1349,7 @@ void EXT_FUNC PF_RunPlayerMove_I(edict_t *fakeclient, const float *viewangles, f
 
 int EXT_FUNC PF_NumberOfEntities_I()
 {
-	int ent_count = 0;
-	for(int i = 1; i < g_psv.num_edicts; i++)
-	{
-		if(!g_psv.edicts[i].free)
-			++ent_count;
-	}
-
-	return ent_count;
+	return gpWorld->GetNumberOfEntities();
 };
 
 char *EXT_FUNC PF_GetInfoKeyBuffer_I(edict_t *e)
@@ -1830,14 +1653,7 @@ void EXT_FUNC PF_SetGroupMask(int mask, int op)
 
 int EXT_FUNC PF_CreateInstancedBaseline(int classname, struct entity_state_s *baseline)
 {
-	extra_baselines_t *bls = g_psv.instance_baselines;
-	if(bls->number >= NUM_BASELINES)
-		return 0;
-
-	bls->classname[bls->number] = classname;
-	Q_memcpy(&bls->baseline[bls->number], baseline, sizeof(struct entity_state_s));
-	bls->number += 1;
-	return bls->number;
+	return gpWorld->CreateInstancedBaseline();
 };
 
 void EXT_FUNC PF_Cvar_DirectSet(struct cvar_s *var, const char *value)

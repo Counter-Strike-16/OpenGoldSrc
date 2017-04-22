@@ -54,6 +54,8 @@ public:
 	bool Init(CreateInterfaceFn afnEngineFactory);
 	void Shutdown();
 	
+	void Reset();
+	
 	void GameInit();
 	void GameShutdown();
 	

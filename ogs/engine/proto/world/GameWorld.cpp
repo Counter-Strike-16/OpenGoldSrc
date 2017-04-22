@@ -32,9 +32,13 @@
 #include "precompiled.hpp"
 #include "world/GameWorld.hpp"
 
-CGameWorld::CGameWorld(){};
+CGameWorld::CGameWorld()
+{
+};
 
-CGameWorld::~CGameWorld(){};
+CGameWorld::~CGameWorld()
+{
+};
 
 void CGameWorld::Init()
 {
@@ -177,4 +181,318 @@ void CGameWorld::StartParticle(vec3_t org, vec3_t dir, int color, int count)
 
 	MSG_WriteByte(&sv.datagram, count);
 	MSG_WriteByte(&sv.datagram, color);
+};
+
+void CGameWorld::Update()
+{
+	if(!mbActive)
+		return;
+};
+
+void CGameWorld::SetActive(bool abActive)
+{
+	mbActive = abActive;
+};
+
+bool CGameWorld::IsActive()
+{
+	return mbActive;
+};
+
+edict_t *CGameWorld::CreateEntity(int className)
+{
+	edict_t *pEdict = ED_Alloc();
+	
+	if(className)
+	{
+		pEdict->v.classname = className;
+		
+		ENTITYINIT pEntityInit = GetEntityInit(&pr_strings[className]);
+		
+		if(pEntityInit)
+		{
+			pEntityInit(&pEdict->v);
+			return pEdict;
+		}
+		else
+		{
+			ED_Free(pEdict);
+			mpConsole->DevPrintf("Can't create entity: %s\n", &pr_strings[className]);
+			return nullptr;
+		};
+	};
+	
+	return pEdict;
+};
+
+void CGameWorld::RemoveEntity(edict_t *ed)
+{
+	g_RehldsHookchains.m_PF_Remove_I.callChain(PF_Remove_I_internal, ed);
+};
+
+edict_t *CGameWorld::FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue) const
+{
+	if(!pszValue)
+		return NULL;
+
+	int iField = iGetIndex(pszField);
+	
+	if(iField == -1)
+		return NULL;
+
+	return PF_find_Shared(pEdictStartSearchAfter ? NUM_FOR_EDICT(pEdictStartSearchAfter) : 0, iField, pszValue);
+};
+
+edict_t *CGameWorld::FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *org, float rad) const
+{
+	int e = pEdictStartSearchAfter ? NUM_FOR_EDICT(pEdictStartSearchAfter) : 0;
+
+	for(int i = e + 1; i < g_psv.num_edicts; i++)
+	{
+		edict_t *ent = &g_psv.edicts[i];
+		if(ent->free || !ent->v.classname)
+			continue;
+
+		if(i <= g_psvs.maxclients && !g_psvs.clients[i - 1].active)
+			continue;
+
+		float distSquared = 0.0;
+		for(int j = 0; j < 3 && distSquared <= (rad * rad); j++)
+		{
+			float eorg;
+			if(org[j] >= ent->v.absmin[j])
+				eorg = (org[j] <= ent->v.absmax[j]) ? 0.0f : org[j] - ent->v.absmax[j];
+			else
+				eorg = org[j] - ent->v.absmin[j];
+			distSquared = eorg * eorg + distSquared;
+		}
+
+		if(distSquared <= ((rad * rad)))
+			return ent;
+	}
+
+	return &g_psv.edicts[0];
+};
+
+edict_t *CGameWorld::FindClientInPVS(edict_t *pEdict) const
+{
+	return nullptr;
+};
+
+edict_t *CGameWorld::GetEntitiesInPVS(edict_t *pplayer) const
+{
+	return nullptr;
+};
+
+void CGameWorld::EmitSound(edict_t *entity, int channel, const char *sample, /*int*/ float volume, float attenuation, int fFlags, int pitch)
+{
+};
+
+void CGameWorld::EmitAmbientSound(edict_t *entity, float *pos, const char *samp, float vol, float attenuation, int fFlags, int pitch)
+{
+	int i;
+	int soundnum;
+	int ent;
+	sizebuf_t *pout;
+
+	if(samp[0] == '!')
+	{
+		fFlags |= SND_FL_SENTENCE;
+		soundnum = Q_atoi(samp + 1);
+		if(soundnum >= CVOXFILESENTENCEMAX)
+		{
+			mpConsole->Printf("invalid sentence number: %s", &samp[1]);
+			return;
+		}
+	}
+	else
+	{
+		for(i = 0; i < MAX_SOUNDS; i++)
+		{
+			if(g_psv.sound_precache[i] &&
+			   !Q_stricmp(g_psv.sound_precache[i], samp))
+			{
+				soundnum = i;
+				break;
+			}
+		}
+
+		if(i == MAX_SOUNDS)
+		{
+			mpConsole->Printf("no precache: %s\n", samp);
+			return;
+		}
+	}
+
+	ent = NUM_FOR_EDICT(entity);
+	pout = &g_psv.signon;
+	if(!(fFlags & SND_FL_SPAWNING))
+		pout = &g_psv.datagram;
+
+	MSG_WriteByte(pout, svc_spawnstaticsound);
+	MSG_WriteCoord(pout, pos[0]);
+	MSG_WriteCoord(pout, pos[1]);
+	MSG_WriteCoord(pout, pos[2]);
+
+	MSG_WriteShort(pout, soundnum);
+	MSG_WriteByte(pout, (vol * 255.0));
+	MSG_WriteByte(pout, (attenuation * 64.0));
+	MSG_WriteShort(pout, ent);
+	MSG_WriteByte(pout, pitch);
+	MSG_WriteByte(pout, fFlags);
+};
+
+void CGameWorld::SetLightStyle(int style, char *val)
+{
+	g_psv.lightstyles[style] = val;
+	
+	if(g_psv.state != ss_active)
+		return;
+
+	for(int i = 0; i < g_psvs.maxclients; i++)
+	{
+		client_t *cl = &g_psvs.clients[i];
+		if((cl->active || cl->spawned) && !cl->fakeclient)
+		{
+			MSG_WriteChar(&cl->netchan.message, svc_lightstyle);
+			MSG_WriteChar(&cl->netchan.message, style);
+			MSG_WriteString(&cl->netchan.message, val);
+		}
+	}
+};
+
+void *CGameWorld::AllocEntPrivateData(edict_t *pEdict, int32 cb)
+{
+	return nullptr;
+};
+
+edict_t *CGameWorld::CreateFakeClient(const char *netname) const
+{
+	client_t *fakeclient;
+	edict_t *ent;
+
+	int i = 0;
+	fakeclient = g_psvs.clients;
+	for(i = 0; i < g_psvs.maxclients; i++, fakeclient++)
+	{
+		if(!fakeclient->active && !fakeclient->spawned && !fakeclient->connected)
+			break;
+	}
+
+	if(i >= g_psvs.maxclients)
+		return NULL;
+
+	ent = EDICT_NUM(i + 1);
+	if(fakeclient->frames)
+		SV_ClearFrames(&fakeclient->frames);
+
+	Q_memset(fakeclient, 0, sizeof(client_t));
+	fakeclient->resourcesneeded.pPrev = &fakeclient->resourcesneeded;
+	fakeclient->resourcesneeded.pNext = &fakeclient->resourcesneeded;
+	fakeclient->resourcesonhand.pPrev = &fakeclient->resourcesonhand;
+	fakeclient->resourcesonhand.pNext = &fakeclient->resourcesonhand;
+
+	Q_strncpy(fakeclient->name, netname, sizeof(fakeclient->name) - 1);
+	fakeclient->name[sizeof(fakeclient->name) - 1] = 0;
+
+	fakeclient->active = TRUE;
+	fakeclient->spawned = TRUE;
+	fakeclient->fully_connected = TRUE;
+	fakeclient->connected = TRUE;
+	fakeclient->fakeclient = TRUE;
+	fakeclient->userid = g_userid++;
+	fakeclient->uploading = FALSE;
+	fakeclient->edict = ent;
+	ent->v.netname = (size_t)fakeclient->name - (size_t)pr_strings;
+	ent->v.pContainingEntity = ent;
+	ent->v.flags = FL_FAKECLIENT | FL_CLIENT;
+
+	Info_SetValueForKey(fakeclient->userinfo, "name", netname, MAX_INFO_STRING);
+	Info_SetValueForKey(fakeclient->userinfo, "model", "gordon", MAX_INFO_STRING);
+	Info_SetValueForKey(fakeclient->userinfo, "topcolor", "1", MAX_INFO_STRING);
+	Info_SetValueForKey(fakeclient->userinfo, "bottomcolor", "1", MAX_INFO_STRING);
+	
+	fakeclient->sendinfo = TRUE;
+	
+	SV_ExtractFromUserinfo(fakeclient);
+
+	fakeclient->network_userid.m_SteamID =
+	//ISteamGameServer_CreateUnauthenticatedUserConnection();
+	fakeclient->network_userid.idtype = AUTH_IDTYPE_STEAM;
+	//ISteamGameServer_BUpdateUserData(fakeclient->network_userid.m_SteamID, netname, 0);
+
+	return ent;
+};
+
+int CGameWorld::CreateInstancedBaseline(int classname, struct entity_state_s *baseline)
+{
+	extra_baselines_t *bls = g_psv.instance_baselines;
+	if(bls->number >= NUM_BASELINES)
+		return 0;
+
+	bls->classname[bls->number] = classname;
+	Q_memcpy(&bls->baseline[bls->number], baseline, sizeof(struct entity_state_s));
+	bls->number += 1;
+	return bls->number;
+};
+
+int CGameWorld::GetNumberOfEntities() const
+{
+	int ent_count = 0;
+	
+	for(int i = 1; i < g_psv.num_edicts; i++)
+	{
+		if(!g_psv.edicts[i].free)
+			++ent_count;
+	}
+
+	return ent_count;
+};
+
+char *CGameWorld::GetInfoKeyBuffer(edict_t *e) const
+{
+	return nullptr;
+};
+
+void CGameWorld::TraceLine(const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr)
+{
+};
+
+void CGameWorld::TraceToss(edict_t *pent, edict_t *pentToIgnore, TraceResult *ptr)
+{
+};
+
+int CGameWorld::TraceMonsterHull(edict_t *pEdict, const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr)
+{
+	return 0;
+};
+
+void CGameWorld::TraceHull(const float *v1, const float *v2, int fNoMonsters, int hullNumber, edict_t *pentToSkip, TraceResult *ptr)
+{
+};
+
+void CGameWorld::TraceModel(const float *v1, const float *v2, int hullNumber, edict_t *pent, TraceResult *ptr)
+{
+};
+
+const char *CGameWorld::TraceTexture(edict_t *pTextureEntity, const float *v1, const float *v2)
+{
+	return "";
+};
+
+void CGameWorld::TraceSphere(const float *v1, const float *v2, int fNoMonsters, float radius, edict_t *pentToSkip, TraceResult *ptr)
+{
+};
+
+void CGameWorld::SpawnParticleEffect(const float *org, const float *dir, float color, float count)
+{
+};
+
+void CGameWorld::SpawnStaticDecal(const float *origin, int decalIndex, int entityIndex, int modelIndex)
+{
+};
+
+const char *CGameWorld::GetMapName() const
+{
+	return "";
 };

@@ -34,6 +34,7 @@
 
 struct IConCmdArgs;
 
+// CConCmdList/CConCmdContainer
 class CConCmdHandler : public IConCmdSystem
 {
 public:

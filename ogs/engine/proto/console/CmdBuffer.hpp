@@ -32,19 +32,12 @@
 #pragma once
 
 struct IConsole;
-
-void Cbuf_Init();
-void Cbuf_AddText(char *text);
-
-void Cbuf_InsertText(char *text);
-void Cbuf_InsertTextLines(char *text);
-
-void Cbuf_Execute();
+class CCmdProcessor;
 
 class CCmdBuffer
 {
 public:
-	CCmdBuffer(IConsole *apConsole) : mpConsole(apConsole){}
+	CCmdBuffer(IConsole *apConsole, CCmdProcessor *apCmdProcessor) : mpConsole(apConsole), mpCmdProcessor(apCmdProcessor){}
 	
 	// Allocates an initial text buffer that will grow as needed
 	void Init();
@@ -71,6 +64,8 @@ public:
 	//void SetWait(int anFrames){wait = anFrames;}
 private:
 	IConsole *mpConsole{nullptr};
+	CCmdProcessor *mpCmdProcessor{nullptr};
+	
 	CSizeBuffer *cmd_text{nullptr}; // sizebuf_t cmd_text;
 	
 	bool cmd_wait{false}; // int wait; - framenum to wait

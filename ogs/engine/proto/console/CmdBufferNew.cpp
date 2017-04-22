@@ -295,3 +295,23 @@ void CConCmdHandler::ExecCmd(const CConCmdArgs &CmdArgs)
 	
 	return false;
 };
+
+struct IConsoleHandler
+{
+	virtual bool AddCommand(IConCmd *apCmd) = 0;
+	virtual bool AddVar(IConVar *apVar) = 0;
+};
+
+class CGameConsoleHandler : public IConsoleHandler
+{
+public:
+	bool AddCommand(IConCmd *apCmd);
+	bool AddVar(IConVar *apVar);
+};
+
+class CClientConsoleHandler : public IConsoleHandler
+{
+public:
+	bool AddCommand(IConCmd *apCmd);
+	bool AddVar(IConVar *apVar);
+};

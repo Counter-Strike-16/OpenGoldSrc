@@ -33,6 +33,57 @@
 #include "console/ConCmdHandler.hpp"
 #include "console/ConVarHandler.hpp"
 
+/*
+============
+idCmdSystemLocal::ExecuteCommandText
+
+Tokenizes, then executes.
+============
+*/
+void CCmdProcessor::ExecCmdText(const char *asText)
+{
+	//ExecuteTokenizedString(CConCmdArgs(asText, false));
+	
+	mpCmdBuffer->InsertText(asText);
+	mpCmdBuffer->Exec();
+};
+
+void CCmdProcessor::AppendCmdText(const char *asText)
+{
+	mpCmdBuffer->AppendText(asText);
+};
+
+void CCmdProcessor::BufferCmdText(cmdExecution_t aExecMode, const char *asText);
+{
+	switch(aExecMode)
+	{
+		case CMD_EXEC_NOW:
+			ExecCmdText(asText);
+			break;
+		case CMD_EXEC_INSERT:
+			InsertCmdText(asText);
+			break;
+		case CMD_EXEC_APPEND:
+			AppendCmdText(asText);
+			break;
+		default:
+			common->FatalError("idCmdSystemLocal::BufferCommandText: bad exec type");
+	};
+};
+
+void CCmdProcessor::ExecCmdBuffer()
+{
+	mpCmdBuffer->Exec();
+};
+
+//void CCmdProcessor::ExecuteTokenizedString(const IConCmdArgs &aCmdArgs)
+//{
+//};
+
+//void CCmdProcessor::InsertCmdText(const char *asText)
+//{
+//};
+
 void CCmdProcessor::ExecuteString(const char *asText) // CConCmdHandler::ExecCmd
 {
 	CConCmdArgs CmdArgs;
@@ -65,6 +116,35 @@ void CCmdProcessor::ExecuteString(const char *asText) // CConCmdHandler::ExecCmd
 		return;
 	
 	if(mpLocalClient->GetState() >= eClientState::Connected)
-		mpNetwork->ForwardCmdToServer(CmdArgs); // network/client ?
-		//mpLocalClient->ForwardCmdToServer(CmdArgs); // client has a ptr to net
+		mpLocalClient->ForwardCmdToServer(CmdArgs); // mpNetwork
+};
+
+/*
+============
+idCmdSystemLocal::SetupReloadEngine
+
+Setup args that will be applied after the engine restart
+============
+*/
+void CCmdProcessor::SetupReloadEngine(const IConCmdArgs &aCmdArgs)
+{
+	BufferCommandText(CMD_EXEC_APPEND, "reloadEngine\n");
+	mPostReloadArgs = aCmdArgs;
+};
+
+/*
+============
+idCmdSystemLocal::PostReloadEngine
+
+Apply our post-reload args
+============
+*/
+bool CCmdProcessor::PostReloadEngine()
+{
+	if(!mPostReloadArgs.GetCount())
+		return false;
+	
+	BufferCommandArgs(CMD_EXEC_APPEND, mPostReloadArgs);
+	mPostReloadArgs.Clear();
+	return true;
 };

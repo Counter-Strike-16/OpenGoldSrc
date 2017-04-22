@@ -33,18 +33,41 @@
 
 #pragma once
 
+class CCmdBuffer;
 class CConCmdHandler;
 class CConVarHandler;
+
+// temp
+class CCmdProcessor;
+CCmdProcessor *CreateCmdProcessor();
 
 class CCmdProcessor
 {
 public:
-	CCmdProcessor(CConCmdHandler *apCmdHandler, CConVarHandler *apVarHandler)
-	: mpCmdHandler(apCmdHandler), mpVarHandler(apVarHandler){}
+	CCmdProcessor(CCmdBuffer *apCmdBuffer, CConCmdHandler *apCmdHandler, CConVarHandler *apVarHandler)
+	: mpCmdBuffer(apCmdBuffer), mpCmdHandler(apCmdHandler), mpVarHandler(apVarHandler){}
 	~CCmdProcessor() = default;
 	
-	void ExecuteString(const char *asText);
+	void ExecCmdText(const char *asText);
+	void AppendCmdText(const char *asText);
+
+	void BufferCmdText(cmdExecution_t aExecMode, const char *asText);
+	void ExecCmdBuffer();
+	
+	void SetupReloadEngine(const IConCmdArgs &aCmdArgs);
+	bool PostReloadEngine();
 private:
+	//void ExecuteTokenizedString(const IConCmdArgs &aCmdArgs);
+	//void InsertCmdText(const char *asText);
+	
+	void ExecuteString(const char *asText);
+	
+	// Commands stored to be executed after a reloadEngine
+	// and all associated commands have been processed
+	CConCmdArgs mPostReloadArgs;
+	
+	CCmdBuffer *mpCmdBuffer{nullptr};
+	
 	CConCmdHandler *mpCmdHandler{nullptr};
 	CConVarHandler *mpVarHandler{nullptr};
 };

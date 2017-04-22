@@ -1083,7 +1083,7 @@ unsigned int EngFunc_GetApproxWavePlayLen(char *filename)
 	return 0;
 };
 
-void *EngFunc_GetCareerGameUI()
+void *EngFunc_GetCareerUI()
 {
 	return nullptr;
 };
@@ -1097,7 +1097,7 @@ void EngFunc_PlaySoundVoiceByName(char *szSound, float volume, int pitch){};
 
 void EngFunc_PrimeMusicStream(char *filename, int looping){};
 
-double EngFunc_Sys_FloatTime()
+double Sys_FloatTime()
 {
 	return 0.0f;
 };

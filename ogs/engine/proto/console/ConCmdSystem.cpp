@@ -441,18 +441,6 @@ void idCmdSystemLocal::ExecuteTokenizedString( const idCmdArgs &args ) {
 	common->Printf( "Unknown command '%s'\n", args.Argv( 0 ) );
 }
 
-/*
-============
-idCmdSystemLocal::ExecuteCommandText
-
-Tokenizes, then executes.
-============
-*/
-void idCmdSystemLocal::ExecuteCommandText( const char *text ) {	
-	ExecuteTokenizedString( idCmdArgs( text, false ) );
-}
-
-
 void idCmdSystemLocal::InsertCommandText( const char *text ) {
 	int		len;
 	int		i;
@@ -475,51 +463,6 @@ void idCmdSystemLocal::InsertCommandText( const char *text ) {
 	textBuf[ len - 1 ] = '\n';
 
 	textLength += len;
-}
-
-/*
-============
-idCmdSystemLocal::AppendCommandText
-
-Adds command text at the end of the buffer, does NOT add a final \n
-============
-*/
-void idCmdSystemLocal::AppendCommandText( const char *text ) {
-	int l;
-	
-	l = strlen( text );
-
-	if ( textLength + l >= (int)sizeof( textBuf ) ) {
-		common->Printf( "idCmdSystemLocal::AppendText: buffer overflow\n" );
-		return;
-	}
-	memcpy( textBuf + textLength, text, l );
-	textLength += l;
-}
-
-/*
-============
-idCmdSystemLocal::BufferCommandText
-============
-*/
-void idCmdSystemLocal::BufferCommandText( cmdExecution_t exec, const char *text ) {
-	switch( exec ) {
-		case CMD_EXEC_NOW: {
-			ExecuteCommandText( text );
-			break;
-		}
-		case CMD_EXEC_INSERT: {
-			InsertCommandText( text );
-			break;
-		}
-		case CMD_EXEC_APPEND: {
-			AppendCommandText( text );
-			break;
-		}
-		default: {
-			common->FatalError( "idCmdSystemLocal::BufferCommandText: bad exec type" );
-		}
-	}
 }
 
 /*
@@ -655,28 +598,4 @@ void idCmdSystemLocal::ArgCompletion_DeclName( const idCmdArgs &args, void(*call
 	for ( i = 0; i < num; i++ ) {
 		callback( idStr( args.Argv( 0 ) ) + " " + declManager->DeclByIndex( (declType_t)type, i , false )->GetName() );
 	}
-}
-
-/*
-============
-idCmdSystemLocal::SetupReloadEngine
-============
-*/
-void idCmdSystemLocal::SetupReloadEngine( const idCmdArgs &args ) {
-	BufferCommandText( CMD_EXEC_APPEND, "reloadEngine\n" );
-	postReload = args;
-}
-
-/*
-============
-idCmdSystemLocal::PostReloadEngine
-============
-*/
-bool idCmdSystemLocal::PostReloadEngine() {
-	if ( !postReload.Argc() ) {
-		return false;
-	}
-	BufferCommandArgs( CMD_EXEC_APPEND, postReload );
-	postReload.Clear();
-	return true;
 }

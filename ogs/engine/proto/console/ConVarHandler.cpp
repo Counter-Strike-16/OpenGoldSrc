@@ -58,6 +58,8 @@ void CConVarHandler::Init()
 
 void CConVarHandler::Shutdown()
 {
+	// TODO: Check memory releasing
+	cvar_vars = nullptr;
 };
 
 void CConVarHandler::SetVarString(const char *var_name, const char *value)
@@ -86,7 +88,7 @@ void CConVarHandler::SetVarValue(const char *var_name, float value)
 	g_engdstAddrs.Cvar_SetValue((char**)&var_name, &value);
 #endif
 
-	if(fabs(value - (double)(signed int)value) >= 0.000001)
+	if(fabs(value - (double)(signed int)value) >= 0.000001f)
 		Q_snprintf(val, ARRAYSIZE(val) - 1, "%f", value);
 	else
 		Q_snprintf(val, ARRAYSIZE(val) - 1, "%d", (signed int)value);
@@ -136,4 +138,167 @@ NOXREF int CConVarHandler::GetVarInt(const char *var_name)
 		return Q_atoi(var->string);
 
 	return 0;
+};
+
+/*
+============
+Cvar_FindVar
+============
+*/
+NOXREF cvar_t *CConVarHandler::Find(const char *var_name)
+{
+	NOXREFCHECK;
+	
+#ifndef SWDS
+	g_engdstAddrs.pfnGetCvarPointer(&var_name);
+#endif
+
+	cvar_t *var = nullptr;
+
+	for(var = cvar_vars; var; var = var->next)
+	{
+		if(!Q_stricmp(var_name, var->name))
+			break;
+	};
+
+	return var;
+};
+
+ cvar_t *CConVarHandler::Find(const char *var_name)
+{
+	
+
+	for(cvar_t *var = cvar_vars; var && var->next; var = var->next)
+	{
+		if(!Q_stricmp(var_name, var->next->name))
+			return var;
+	};
+
+	return nullptr;
+};
+
+void EXT_FUNC CConVarHandler::Register(cvar_t *variable)
+{
+	char *oldstr;
+	cvar_t *v, *c;
+	cvar_t dummyvar;
+
+	if(FindVar(variable->name))
+	{
+		mpConsole->Printf("Can't register variable \"%s\", already defined\n", variable->name);
+		return;
+	};
+
+	if(Cmd_Exists(variable->name))
+	{
+		mpConsole->Printf("%s: \"%s\" is a command\n", __FUNCTION__, variable->name);
+		return;
+	};
+
+	oldstr = variable->string;
+
+	// Alloc string, so it will not dissapear on side modules unloading and to
+	// maintain the same name during run
+	variable->string = (char *)Z_Malloc(Q_strlen(variable->string) + 1);
+	Q_strcpy(variable->string, oldstr);
+	variable->value = (float)Q_atof(oldstr);
+
+	dummyvar.name = " ";
+	dummyvar.next = cvar_vars;
+
+	v = cvar_vars;
+	c = &dummyvar;
+
+	// Insert in alphabetical order
+	while(v)
+	{
+		if(Q_stricmp(v->name, variable->name) > 0)
+			break;
+
+		c = v;
+		v = v->next;
+	};
+
+	c->next = variable;
+	variable->next = v;
+	cvar_vars = dummyvar.next;
+};
+
+//CountServerVariables()
+//{
+	// check for FCVAR_SERVER flag
+//};
+NOXREF int CConVarHandler::CountFlaggedVariables(int anFlags)
+{
+	NOXREFCHECK;
+	
+	int i = 0;
+	
+	for(auto var = cvar_vars; var; var = var->next)
+	{
+		if(var->flags & anFlags)
+			++i;
+	};
+	
+	return i;
+};
+
+void CConVarHandler::UnlinkExternals()
+{
+	cvar_t *pVar = cvar_vars;
+	cvar_t **pList = &cvar_vars;
+
+	while(pVar)
+	{
+		if(pVar->flags & FCVAR_EXTDLL)
+			*pList = pVar->next;
+		else
+			pList = &pVar->next;
+
+		pVar = *pList;
+	};
+};
+
+NOXREF void CConVarHandler::RemoveHudCvars()
+{
+	NOXREFCHECK;
+
+	cvar_t *pVar;
+	cvar_t **pList;
+
+	pVar = cvar_vars;
+	pList = &cvar_vars;
+
+	while(pVar)
+	{
+		if(pVar->flags & FCVAR_CLIENTDLL)
+		{
+			*pList = pVar->next;
+			Z_Free(pVar->string);
+			Z_Free(pVar);
+		}
+		else
+			pList = &pVar->next;
+
+		pVar = *pList;
+	};
+};
+
+/*
+============
+Cvar_WriteVariables
+
+Appends lines containing "set variable value" for all variables
+with the archive flag set to true.
+============
+*/
+NOXREF void CConVarHandler::WriteVariables(CFile *apFile)
+{
+	NOXREFCHECK;
+	
+	for(cvar_t *var = cvar_vars; var; var = var->next)
+	{
+		if(var->flags & FCVAR_ARCHIVE)
+			apFile->Printf("%s \"%s\"\n", var->name, var->string);
+	};
 };
