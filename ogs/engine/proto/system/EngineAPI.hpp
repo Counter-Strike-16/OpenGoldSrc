@@ -34,7 +34,6 @@
 #include <memory>
 #include "common/commontypes.h"
 #include "public/engine_launcher_api.h"
-#include "filesystem/FileSystem.hpp"
 
 void EXPORT F(IEngineAPI **api);
 
@@ -43,6 +42,9 @@ class CFileSystem;
 class CEngineAPI : public IEngineAPI
 {
 public:
+	CEngineAPI();
+	~CEngineAPI();
+	
 	int Run(void *instance,
 			
 	        char *basedir,

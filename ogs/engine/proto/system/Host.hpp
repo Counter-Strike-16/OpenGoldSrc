@@ -40,11 +40,6 @@
 //=============================================================================
 
 #include <memory>
-#include "game/GameServer.hpp"
-#include "console/Console.hpp"
-#include "network/Network.hpp"
-#include "sound/Sound.hpp"
-#include "graphics/Screen.hpp"
 
 typedef struct quakeparms_s
 {
@@ -58,16 +53,23 @@ typedef struct quakeparms_s
 	int memsize{0};
 } quakeparms_t;
 
+NOXREF void Host_EndSection(const char *pszSection); // export
+
 struct IGame;
 class CFileSystem;
 class CGameLoaderHandler;
 class CInput;
+class CNetwork;
+class CConsole;
+class CSound;
+class CScreen;
+class CGameServer;
 
 class CHost
 {
 public:
-	CHost(CFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
-	~CHost() = default;
+	CHost(CFileSystem *apFileSystem); //: mpFileSystem(apFileSystem){}
+	~CHost(); //= default;
 	
 	int Init(quakeparms_t *parms);
 	void Shutdown();
@@ -149,15 +151,15 @@ public:
 	int EntityInSolid(edict_t *pent);
 	int CreateEntityList(SAVERESTOREDATA *pSaveData, int levelMask);
 	void LoadAdjacentEntities(const char *pOldLevel, const char *pLandmarkName);
-	int FileSize(FileHandle_t pFile);
+	
 	void FileCopy(FileHandle_t pOutput, FileHandle_t pInput, int fileSize);
 	void DirectoryCopy(const char *pPath, FileHandle_t pFile);
 	void DirectoryExtract(FileHandle_t pFile, int fileCount);
 	int DirectoryCount(const char *pPath);
+
 	void Host_ClearSaveDirectory();
 	void Host_ClearGameState();
 	void Host_Say(qboolean teamonly);
-	NOXREF void Host_EndSection(const char *pszSection);
 	
 	void Host_NextDemo();
 */

@@ -81,6 +81,11 @@ int Host_GetVideoLevel();
 
 void *FS_LoadLibrary(const char *dllName);
 
+namespace opengoldsrc
+{
+	struct IFile;
+};
+
 class CFileSystem // : public opengoldsrc::IFileSystem
 {
 public:

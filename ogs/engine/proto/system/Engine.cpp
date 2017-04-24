@@ -35,6 +35,8 @@
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
 #include "system/client.hpp"
+#include "filesystem/FileSystem.hpp"
+#include "filesystem/FileSystemProvider.hpp"
 
 /*
 * Globals initialization
@@ -99,6 +101,18 @@ CEngine::CEngine()
 #ifdef REHLDS_FIXES
 	m_fCurTime = 0.0f;
 #endif
+	
+	host_parms = new quakeparms_t;
+};
+
+CEngine::~CEngine() //= default;
+{
+	// temp until the usage of quakeparms_t won't be removed
+	
+	if(host_parms)
+		delete host_parms;
+	
+	host_parms = nullptr;
 };
 
 bool CEngine::Load(bool dedicated, char *basedir, const char *cmdline)
@@ -202,16 +216,13 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 	
 	SetState(DLL_ACTIVE);
 	
-	mpFileSystemLoader = std::make_unique<CFileSystemLoader>();
-	
-	mpFileSystem = std::make_unique<CFileSystem>(mpFileSystemProvider->GetFromFactory(filesystemFactory));
 	mpHost = std::make_unique<CHost>(mpFileSystem.get());
 	
 	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
 	if(!mpFileSystem->Init(basedir))
 		return false;
 	
-	host_parms.basedir = basedir;
+	host_parms->basedir = basedir;
 	
 	if(InitGame(cmdline, basedir, nullptr /*game->GetMainWindowAddress()*/, dedicated))
 	{
@@ -227,8 +238,10 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 
 bool CEngine::LoadEx_noVirt(const TEngineLoadParams &aLoadParams)
 {
-	mpFileSystem = aLoadParams.filesystem;
-
+	mpFileSystemProvider = std::make_unique<CFileSystemProvider>();
+	
+	mpFileSystem = std::make_unique<CFileSystem>(mpFileSystemProvider->GetFromFactory(aLoadParams.filesystemFactory));
+	
 	return Load(aLoadParams.dedicated, aLoadParams.basedir, aLoadParams.cmdline);
 };
 
@@ -341,7 +354,7 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	//gbIsDedicatedServer = bIsDedicated;
 	
 #ifndef SWDS
-	if(!mbIsDedicated)
+	if(!mbDedicated)
 	{
 		//pmainwindow = (HWND *)pwnd;
 		
@@ -357,7 +370,7 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	//SV_ResetModInfo();
 	
 	//TraceInit("Sys_Init()", "Sys_Shutdown()", 0);
-	CSystem::Init(&host_parms, mpFileSystem, apDedicatedExports, mbDedicated);
+	CSystem::Init(host_parms, mpFileSystem.get(), nullptr /*apDedicatedExports*/, mbDedicated);
 	
 	mpFileSystem->LogLevelLoadStarted("Launcher");
 	
@@ -370,7 +383,7 @@ int CEngine::InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int 
 	
 	//TraceInit("Host_Init( &host_parms )", "Host_Shutdown()", 0);
 	
-	if(!mpHost->Init(&host_parms))
+	if(!mpHost->Init(host_parms))
 		return 0;
 	
 #ifndef SWDS

@@ -105,7 +105,7 @@ void EXT_FUNC CConsole::Printf(/*int anPrintLevel,*/ const char *asMsg, ...) // 
 		
 		//Q_strncat(outputbuf, sText, sizeof(outputbuf) - 1);
 	}
-	else
+	//else
 	{
 		//if(con_debuglog)
 			//DebugLog("qconsole.log", "%s", sText);
@@ -257,9 +257,9 @@ void CConsole::CenteredPrint(const char *text)
 {
 };
 
-void CConsole::DrawNotify()
-{
-};
+//void CConsole::DrawNotify()
+//{
+//};
 
 void CConsole::ClearNotify()
 {

@@ -35,7 +35,7 @@
 #include "console/Console.hpp"
 #include "memory/zone.hpp"
 #include "system/common.hpp"
-#include "system/sizebuf.hpp"
+#include "system/SizeBuffer.hpp"
 
 /*
 =============================================================================
@@ -44,8 +44,6 @@
 
 =============================================================================
 */
-
-sizebuf_t cmd_text;
 
 /*
 ============

@@ -32,10 +32,13 @@
 #include "filesystem/File.hpp"
 #include "filesystem/FileSystem.hpp"
 #include "system/common.hpp"
+#include "system/SystemTypes.hpp"
 
-CFile::CFile(const char *asName, IFileSystem *apFileSystem) : CFile(apFileSystem), msName(asName)
+CFile::CFile(const char *asName, IFileSystem *apFileSystem) : CFile(apFileSystem)
 {
 	assert(asName);
+	
+	msName = asName; // TODO: fix
 	
 	//if(!Open(asName))
 		//boom!
@@ -70,12 +73,12 @@ int CFile::Printf(/*const*/ char *asData, ...)
 	//
 	// original
 	
-	char data[8192];
-	va_list va;
+	//char data[8192];
+	//va_list va;
 
-	va_start(va, pFormat);
-	vsprintf(data, pFormat, va);
-	va_end(va);
+	//va_start(va, pFormat);
+	//vsprintf(data, pFormat, va);
+	//va_end(va);
 	
 	//
 	

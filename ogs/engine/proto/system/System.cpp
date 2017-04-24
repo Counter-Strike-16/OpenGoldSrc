@@ -28,13 +28,14 @@
 
 /// @file
 
-#include "precompiled.hpp"
 #include <thread>
+#include "precompiled.hpp"
 #include "system/System.hpp"
 #include "system/Host.hpp"
 #include "system/common.hpp"
 #include "system/SystemTypes.hpp"
 #include "system/DedicatedServerAPI.hpp"
+#include "public/idedicatedexports.h"
 
 char *(*Launcher_GetLocalizedString)(unsigned int);
 
@@ -135,12 +136,12 @@ void CSystem::InitFloatTime()
 
 	int j = gpCmdLine->CheckArg("-starttime");
 
-	if(j)
-		curtime = (double)(Q_atof(com_argv[j + 1]));
-	else
-		curtime = 0.0f;
+	//if(j)
+		//curtime = (double)(Q_atof(com_argv[j + 1]));
+	//else
+		//curtime = 0.0f;
 
-	lastcurtime = curtime;
+	//lastcurtime = curtime;
 #endif
 };
 
@@ -259,7 +260,7 @@ void CSystem::InitMemory()
 		else
 			mhost_parms->memsize = MAXIMUM_WIN_MEMORY;
 
-		if(mbIsDedicatedServer)
+		if(mbDedicatedServer)
 			mhost_parms->memsize = DEFAULT_MEMORY;
 #else
 		mhost_parms->memsize = DEFAULT_MEMORY;
@@ -341,13 +342,13 @@ void CSystem::Printf(const char *fmt, ...)
 	Q_vsnprintf(Dest, sizeof(Dest), fmt, va);
 	va_end(va);
 
-	if(mbIsDedicatedServer)
+	if(mbDedicatedServer)
 		LegacySysPrintf("%s", Dest);
 
 #ifdef _WIN32
 	OutputDebugStringA(Dest);
 #else
-	if(!mbIsDedicatedServer)
+	if(!mbDedicatedServer)
 		fprintf(stderr, "%s\n", Dest);
 #endif // _WIN32
 };
@@ -417,7 +418,7 @@ void NORETURN CSystem::Error(const char *error, ...)
 	};
 #endif // REHLDS_FIXES
 
-	if(mbIsDedicatedServer)
+	if(mbDedicatedServer)
 	{
 		if(!LegacySysPrintf("FATAL ERROR (shutting down): %s\n", text))
 			printf("FATAL ERROR (shutting down): %s\n", text);

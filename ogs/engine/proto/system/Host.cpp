@@ -87,6 +87,10 @@ cvar_t suitvolume;
 
 #endif // HOOK_ENGINE
 
+CHost::CHost(CFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}
+
+CHost::~CHost() = default;
+
 /*
 ====================
 Host_Init

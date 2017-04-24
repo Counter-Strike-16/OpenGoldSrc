@@ -32,7 +32,7 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 
 ////////////////////////////////////////
 

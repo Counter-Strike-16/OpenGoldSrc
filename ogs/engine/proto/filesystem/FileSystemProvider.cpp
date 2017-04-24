@@ -30,6 +30,7 @@
 
 #include "precompiled.hpp"
 #include "filesystem/FileSystemProvider.hpp"
+#include "system/SystemTypes.hpp"
 
 IFileSystem *CFileSystemProvider::GetFromFactory(CreateInterfaceFn afnFactory)
 {
@@ -74,6 +75,6 @@ void CFileSystemProvider::UnloadDLL()
 		Sys_UnloadModule((CSysModule *)mpFileSystemModule);
 		mpFileSystemModule = nullptr;
 		g_FileSystemFactory = nullptr;
-		mpFileSystem = nullptr;
+		//mpFileSystem = nullptr;
 	};
 };

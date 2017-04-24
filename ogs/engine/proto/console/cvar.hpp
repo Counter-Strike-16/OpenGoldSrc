@@ -39,7 +39,7 @@
 	#define cvar_vars (*pcvar_vars)
 #endif
 
-
+class CFile;
 
 constexpr auto MAX_CVAR_VALUE = 1024;
 
@@ -70,7 +70,6 @@ const char *Cvar_IsMultipleTokens(const char *varname);
 qboolean Cvar_Command();
 
 void Cmd_CvarListPrintCvar(cvar_t *var, CFile *f);
-
 
 NOXREF int Cvar_CountServerVariables();
 

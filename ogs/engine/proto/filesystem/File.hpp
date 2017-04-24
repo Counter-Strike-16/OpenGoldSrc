@@ -31,9 +31,9 @@
 
 #pragma once
 
-#include "public/FileSystem.h"
+#include "filesystem/IFile.hpp"
 
-class CFile //: public opengoldsrc::IFile
+class CFile : public opengoldsrc::IFile
 {
 public:
 	CFile(IFileSystem *apFileSystem) : mpFileSystem(apFileSystem){}

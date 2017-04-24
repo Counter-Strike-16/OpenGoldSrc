@@ -31,6 +31,7 @@
 #include "precompiled.hpp"
 #include "system/EngineAPI.hpp"
 #include "system/IOGSEngine.hpp"
+#include "filesystem/FileSystem.hpp"
 
 static CEngineAPI g_CEngineAPI;
 
@@ -52,6 +53,10 @@ void F(IEngineAPI **api)
 	*api = (IEngineAPI *)fnEngineFactory(VENGINE_LAUNCHER_API_VERSION, NULL);
 };
 
+CEngineAPI::CEngineAPI() = default;
+
+CEngineAPI::~CEngineAPI() = default;
+
 int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *postRestartCmdLineArgs, CreateInterfaceFn launcherFactory, CreateInterfaceFn filesystemFactory)
 {
 	// TODO: find out how is the postRestartCmdLineArgs mech works?
@@ -69,7 +74,7 @@ int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *po
 	
 	bool bRestart = false;
 	
-	if(!mpFileSystem->Init(basedir, (void*)filesystemFactory))
+	if(!mpFileSystem->Init(basedir))
 		return bRestart;
 	
 	//host_parms.basedir = basedir;
@@ -82,7 +87,7 @@ int CEngineAPI::Run(void *instance, char *basedir, const char *cmdline, char *po
 	
 	TEngineLoadParams EngLauncherParams =
 	{
-		mpFileSystem.get(),
+		filesystemFactory,
 		basedir,
 		cmdline,
 		false // Listen server mode

@@ -94,6 +94,24 @@
     <ClCompile Include="..\system\Game.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="..\console\CmdBuffer.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConCmd.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConCmdArgs.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConCmdHandler.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConVar.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConVarHandler.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\system\DedicatedServerAPI.hpp">
@@ -137,6 +155,24 @@
     </ClInclude>
     <ClInclude Include="..\system\IOGSEngine.hpp">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\CmdBuffer.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConCmd.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConCmdArgs.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConCmdHandler.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConVar.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConVarHandler.hpp">
+      <Filter>console</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

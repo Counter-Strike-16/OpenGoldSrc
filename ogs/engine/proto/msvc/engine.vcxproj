@@ -87,7 +87,13 @@
     <ClCompile Include="..\..\..\public\rehlds\crc32c.cpp" />
     <ClCompile Include="..\..\..\public\rehlds\sys_shared.cpp" />
     <ClCompile Include="..\..\..\tier0\dbg.cpp" />
+    <ClCompile Include="..\console\CmdBuffer.cpp" />
+    <ClCompile Include="..\console\ConCmd.cpp" />
+    <ClCompile Include="..\console\ConCmdArgs.cpp" />
+    <ClCompile Include="..\console\ConCmdHandler.cpp" />
     <ClCompile Include="..\console\Console.cpp" />
+    <ClCompile Include="..\console\ConVar.cpp" />
+    <ClCompile Include="..\console\ConVarHandler.cpp" />
     <ClCompile Include="..\filesystem\File.cpp" />
     <ClCompile Include="..\filesystem\FileSystem.cpp" />
     <ClCompile Include="..\impl\win\SystemWin.cpp" />
@@ -101,7 +107,13 @@
     <ClCompile Include="..\system\System.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\console\CmdBuffer.hpp" />
+    <ClInclude Include="..\console\ConCmd.hpp" />
+    <ClInclude Include="..\console\ConCmdArgs.hpp" />
+    <ClInclude Include="..\console\ConCmdHandler.hpp" />
     <ClInclude Include="..\console\Console.hpp" />
+    <ClInclude Include="..\console\ConVar.hpp" />
+    <ClInclude Include="..\console\ConVarHandler.hpp" />
     <ClInclude Include="..\filesystem\File.hpp" />
     <ClInclude Include="..\filesystem\FileSystem.hpp" />
     <ClInclude Include="..\network\Network.hpp" />

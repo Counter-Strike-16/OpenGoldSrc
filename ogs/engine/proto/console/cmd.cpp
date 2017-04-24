@@ -411,11 +411,7 @@ void Cmd_Shutdown()
 	Q_memset(cmd_argv, 0, sizeof(cmd_argv));
 	cmd_argc = 0;
 	cmd_args = NULL;
-
-	cmd_functions = NULL; // TODO: Check that memory from functions is released too
-}
-
-
+};
 
 /*
 Parses the given string into command line tokens.
@@ -483,22 +479,6 @@ void EXT_FUNC Cmd_TokenizeString(char *text)
 	}
 }
 
-cmd_function_t *Cmd_FindCmdPrev(char *cmd_name)
-{
-	cmd_function_t *cmd = NULL;
-
-	if(cmd_functions == NULL)
-		return NULL;
-
-	for(cmd = cmd_functions; cmd->next; cmd = cmd->next)
-	{
-		if(!Q_stricmp(cmd_name, cmd->next->name))
-			return cmd;
-	}
-
-	return NULL;
-}
-
 // Use this for engine inside call only, not from user code, because it doesn't
 // alloc string for the name.
 void Cmd_AddCommand(char *cmd_name, xcommand_t function)
@@ -513,62 +493,11 @@ void Cmd_AddCommand(char *cmd_name, xcommand_t function)
 	Cmd_InsertCommand(cmd);
 }
 
-// It almost fully duplicates the Cmd_AddCommand
-
-// Use this for call from user code, because it alloc string for the name.
-void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag)
-{
-	cmd_function_t *cmd;
-
-	// Check in variables list
-	if(Cvar_FindVar(cmd_name) != NULL)
-	{
-		Con_Printf("%s: \"%s\" already defined as a var\n", __FUNCTION__, cmd_name);
-		return;
-	}
-
-	// Check if this command is already defined
-	if(Cmd_Exists(cmd_name))
-	{
-		Con_Printf("%s: \"%s\" already defined\n", __FUNCTION__, cmd_name);
-		return;
-	}
-
-	// Create cmd_function
-	cmd = (cmd_function_t *)Mem_Malloc(sizeof(cmd_function_t));
-	cmd->name = CopyString(cmd_name); // alloc string, so it will not dissapear on
-	                                  // side modules unloading and to maintain
-	                                  // the same name during run
-	cmd->function = function ? function : Cmd_ForwardToServer;
-	cmd->flags = flag;
-
-	Cmd_InsertCommand(cmd);
-}
-
 NOXREF void Cmd_AddWrapperCommand(char *cmd_name, xcommand_t function)
 {
 	NOXREFCHECK;
 
 	Cmd_AddMallocCommand(cmd_name, function, FCMD_WRAPPER_COMMAND);
-}
-
-/*
-============
-Cmd_RemoveCommand
-============
-*/
-void EXT_FUNC Cmd_RemoveCmd(char *cmd_name)
-{
-	auto prev = Cmd_FindCmdPrev(cmd_name);
-	
-	if(prev)
-	{
-		auto cmd = prev->next;
-		prev->next = cmd->next;
-
-		Z_Free(cmd->name);
-		Mem_Free(cmd);
-	};
 }
 
 void Cmd_RemoveMallocedCmds(int flag)

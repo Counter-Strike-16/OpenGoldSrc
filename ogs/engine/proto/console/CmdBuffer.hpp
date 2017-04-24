@@ -32,6 +32,7 @@
 #pragma once
 
 struct IConsole;
+class CSizeBuffer;
 class CCmdProcessor;
 
 class CCmdBuffer

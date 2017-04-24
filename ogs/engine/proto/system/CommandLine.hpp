@@ -48,7 +48,7 @@ public:
 	
 	int FindArg(const char *asArg) const; // HasArg
 	
-	//const char *GetArg(int anArg) const;
+	const char *GetArg(int anArg) const;
 	
 	const char *ToString() const {return com_cmdline;}
 	

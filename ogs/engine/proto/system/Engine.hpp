@@ -37,7 +37,7 @@
 
 class CHost;
 class CFileSystem;
-class CFileSystemLoader;
+class CFileSystemProvider;
 
 // clang-format off
 #ifdef HOOK_ENGINE
@@ -59,7 +59,7 @@ class CEngine : public IOGSEngine
 {
 public:
 	CEngine();
-	virtual ~CEngine() = default;
+	virtual ~CEngine(); //= default;
 
 	virtual bool Load(bool dedicated, char *rootDir, const char *cmdLine);
 	virtual bool LoadEx(const TEngineLoadParams &aLoadParams);
@@ -125,9 +125,9 @@ private:
 	int InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
 	void ShutdownGame();
 	
-	quakeparms_t host_parms;
+	quakeparms_t *host_parms{nullptr};
 	
-	std::unique_ptr<CFileSystemLoader> mpFileSystemLoader;
+	std::unique_ptr<CFileSystemProvider> mpFileSystemProvider;
 	std::unique_ptr<CFileSystem> mpFileSystem;
 	std::unique_ptr<CHost> mpHost;
 	

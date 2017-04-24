@@ -40,6 +40,7 @@
 #include "system/StringHandler.hpp"
 #include "steam/isteamclient.h"
 #include "steam/isteamapps.h"
+#include "filesystem/IFile.hpp"
 
 CUtlVector<char *> g_fallbackLocalizationFiles;
 bool bLowViolenceBuild;
@@ -371,8 +372,9 @@ NOXREF int CFileSystem::IsDirectory(const char *pFileName)
 	return mpFileSystem->IsDirectory(pFileName);
 };
 
-FileHandle_t CFileSystem::Open(const char *pFileName, const char *pOptions)
+opengoldsrc::IFile *CFileSystem::Open(const char *pFileName, const char *pOptions)
 {
+	//new CFile();
 	return mpFileSystem->Open(pFileName, pOptions, 0);
 };
 
@@ -645,7 +647,7 @@ int Host_GetVideoLevel()
 void CFileSystem::CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_)
 {
 	char szTemp[512];
-	FileHandle_t hFile;
+	opengoldsrc::IFile *hFile = nullptr;
 
 	Q_snprintf(szTemp, sizeof(szTemp) - 1, "%s/liblist.gam", pGameDir);
 	
@@ -653,19 +655,19 @@ void CFileSystem::CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguag
 	
 	GetLocalCopy(szTemp);
 
-	//if(Q_stricmp(com_gamedir, pGameDir))
+	if(Q_stricmp(com_gamedir, pGameDir))
 	{
 		Q_snprintf(szTemp, 511, "../%s/liblist.gam", pGameDir);
 		CStringHandler::FixSlashes(szTemp);
 		hFile = Open(szTemp, "rt");
 	}
-	//else
-		//hFile = Open("liblist.gam", "rt");
+	else
+		hFile = Open("liblist.gam", "rt");
 
 	if(!hFile)
 		return;
 
-	if(EndOfFile(hFile))
+	if(hFile->IsEOF())
 	{
 		Close(hFile);
 		return;
@@ -681,7 +683,7 @@ void CFileSystem::CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguag
 	while(1)
 	{
 		szLine[0] = 0;
-		ReadLine(szLine, sizeof(szLine) - 1, hFile);
+		hFile->ReadLine(szLine, sizeof(szLine) - 1);
 		szLine[511] = 0;
 
 		if(!Q_strnicmp(szLine, "fallback_dir", Q_strlen("fallback_dir")))
@@ -714,7 +716,7 @@ void CFileSystem::CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguag
 				break;
 		};
 
-		if(EndOfFile(hFile))
+		if(hFile->IsEOF())
 		{
 			Close(hFile);
 			return;
