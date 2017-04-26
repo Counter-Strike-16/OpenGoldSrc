@@ -38,8 +38,6 @@ struct IInput
 	virtual void Update() = 0;
 };
 
-constexpr auto WM_MOUSEWHEEL = 0x020A;
-
 extern bool mouseinitialized;
 
 void PollDInputDevices();

@@ -27,47 +27,29 @@
  */
 
 /// @file
-/// @brief command line args
+/// @brief high-level system module
 
-// Our internal command line component
-// We can use the one from the vstdlib via CommandLine()->
-// but it's currently unclear if someone else is using it
-// in which case it could call the double init on it so
-// we currently can't trust it
-// NOTE: merge with CConCmdArgs?
+// This is the high-level system module
+// Here is portable core system things are placed
 
 #pragma once
 
-class CCmdLine
+struct ISystem;
+
+class CSystem
 {
 public:
-	CCmdLine(int argc, char **argv);
-	~CCmdLine() = default;
+	CSystem(ISystem *apImpl) : mpImpl(apImpl){}
+	~CSystem() = default;
 	
-	void Init(int argc, char **argv); // it's currently possible to multi-init the cmdline
+	bool Init();
+	void Shutdown();
 	
-	int FindArg(const char *asArg) const; // HasArg
-	
-	const char *GetArg(int anArg) const;
-	
-	const char *ToString() const {return com_cmdline;}
-	
-	int GetArgCount() const {return com_argc;}
+	CCmdLine *GetCmdLine() const;
+	IConsole *GetConsole() const;
+	//CFileSystem *GetFileSystem() const;
 private:
-	static char *safeargvs[NUM_SAFE_ARGVS] =
-	{
-		"-stdvid",
-		"-nolan",
-		"-nosound",
-		"-nocdaudio",
-		"-nojoy",
-		"-nomouse",
-		"-dibonly"
-	};
-	
-	char com_cmdline[COM_MAX_CMD_LINE];
-	
-	char **com_argv{nullptr};
-	
-	int com_argc{0};
+	ISystem *mpImpl{nullptr}; // low-level pimpl
+	CCmdLine *mpCmdLine{nullptr};
+	IConsole *mpConsole{nullptr};
 };

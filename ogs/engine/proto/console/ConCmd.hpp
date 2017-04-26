@@ -30,17 +30,34 @@
 
 #pragma once
 
-class CConCmd
+//#include "console/IConCmd.hpp"
+
+struct IConCmdArgs;
+
+using pfnConCmdCallback = void (*)(const IConCmdArgs &aCmdArgs);
+
+class CConCmd //: public IConCmd
 {
 public:
+	CConCmd(const char *asName, pfnConCmdCallback afnCallback, int anFlags, const char *asDesc = "")
+	: msName(asName), mfnCallback(afnCallback), mnFlags(anFlags), msDesc(asDesc){}
+	~CConCmd() = default;
+	
+	void Exec(const IConCmdArgs &aCmdArgs);
+	
+	const char *GetName() const {return msName;}
+	const char *GetDesc() const {return msDesc;}
+	
+	int GetFlags() const {return mnFlags;}
+	
+	pfnConCmdCallback mfnCallback{nullptr}; // direct access to callback func for now
 private:
-	CConCmd *next;
+	//CConCmd *mpNext{nullptr};
 	
-	char *					name;
-	char *					description;
+	char *msName{nullptr}; // alloc mem
+	char *msDesc{nullptr}; // alloc mem
 	
-	cmdFunction_t			function;
-	argCompletion_t			argCompletion;
+	//argCompletion_t argCompletion{nullptr};
 	
-	int						flags;
+	int mnFlags{0};
 };

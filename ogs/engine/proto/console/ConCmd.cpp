@@ -27,3 +27,11 @@
  */
 
 /// @file
+
+#include "precompiled.hpp"
+#include "console/ConCmd.hpp"
+
+void CConCmd::Exec(const IConCmdArgs &aCmdArgs)
+{
+	mfnCallback(aCmdArgs);
+};

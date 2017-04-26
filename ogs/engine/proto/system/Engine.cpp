@@ -28,38 +28,22 @@
 
 /// @file
 
-#include "precompiled.hpp"
-#include "system/Engine.hpp"
-#include "system/Host.hpp"
 #include "system/System.hpp"
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
 #include "system/client.hpp"
-#include "filesystem/FileSystem.hpp"
-#include "filesystem/FileSystemProvider.hpp"
 
-/*
-* Globals initialization
-*/
-#ifndef HOOK_ENGINE
 
-CEngine gEngine;
-IOGSEngine *ogseng = &gEngine;
 
-#else // HOOK_ENGINE
-
-IOGSEngine *ogseng;
-
-#endif // HOOK_ENGINE
 
 void ForceReloadProfile()
 {
-	//Cbuf_AddText("exec config.cfg\n");
-	//Cbuf_AddText("+mlook\n");
-	//Cbuf_Execute();
+	//mpCmdBuffer->AddText("exec config.cfg\n");
+	//mpCmdBuffer->AddText("+mlook\n");
+	//mpCmdBuffer->Execute();
 	
-	//if(COM_CheckParm("-nomousegrab"))
-		//Cvar_Set("cl_mousegrab", "0");
+	//if(mpCmdLine->CheckParm("-nomousegrab"))
+		//mpConVarHandler->SetVarString("cl_mousegrab", "0");
 
 	// Key_SetBinding(126, "toggleconsole");
 	// Key_SetBinding(96, "toggleconsole");
@@ -118,21 +102,6 @@ CEngine::~CEngine() //= default;
 bool CEngine::Load(bool dedicated, char *basedir, const char *cmdline)
 {
 	return Load_noVirt(dedicated, basedir, cmdline);
-};
-
-bool CEngine::LoadEx(const TEngineLoadParams &aLoadParams)
-{
-	return LoadEx_noVirt(aLoadParams);
-};
-
-void CEngine::Unload()
-{
-	Unload_noVirt();
-};
-
-int CEngine::Frame()
-{
-	return Frame_noVirt();
 };
 
 void CEngine::SetSubState(int iSubState)

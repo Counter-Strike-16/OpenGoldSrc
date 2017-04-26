@@ -64,14 +64,7 @@ NOXREF void Cvar_RemoveHudCvars();
 
 const char *Cvar_IsMultipleTokens(const char *varname);
 
-// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
-// command.  Returns true if the command was a variable reference that
-// was handled. (print or change)
-qboolean Cvar_Command();
-
 void Cmd_CvarListPrintCvar(cvar_t *var, CFile *f);
-
-NOXREF int Cvar_CountServerVariables();
 
 void Cvar_UnlinkExternals();
 

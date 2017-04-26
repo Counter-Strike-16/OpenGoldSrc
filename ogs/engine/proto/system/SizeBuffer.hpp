@@ -52,6 +52,7 @@ public:
 	CSizeBuffer(IConsole *apConsole) : mpConsole(apConsole){}
 	CSizeBuffer(IConsole *apConsole, sizebuf_t *apBuffer) : mpConsole(apConsole), mpBuffer(apBuffer){}
 	CSizeBuffer(IConsole *apConsole, const char *asName, sizebuf_t *apBuffer, int anStartSize);
+	~CSizeBuffer() = default;
 	
 	void Clear();
 

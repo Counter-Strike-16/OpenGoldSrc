@@ -38,19 +38,19 @@
 
 CSizeBuffer *AllocSizeBuf(const char *name, sizebuf_t *buf, int startsize)
 {
-	CSizeBuffer *pSizeBuffer = new CSizeBuffer(name, buf, startsize);
+	CSizeBuffer *pSizeBuffer = nullptr; //new CSizeBuffer(name, buf, startsize);
 	return pSizeBuffer;
 };
 
 CSizeBuffer::CSizeBuffer(IConsole *apConsole, const char *asName, sizebuf_t *apBuffer, int anStartSize) : mpConsole(apConsole)
 {
-	mpBuffer->buffername = name;
+	mpBuffer->buffername = asName;
 
-	if(startsize < 256)
-		startsize = 256;
+	if(anStartSize < 256)
+		anStartSize = 256;
 
-	mpBuffer->data = (byte *)Hunk_AllocName(startsize, name);
-	mpBuffer->maxsize = startsize;
+	mpBuffer->data = (byte *)Hunk_AllocName(anStartSize, asName);
+	mpBuffer->maxsize = anStartSize;
 	mpBuffer->cursize = 0;
 	mpBuffer->flags = SIZEBUF_CHECK_OVERFLOW;
 };
@@ -66,7 +66,7 @@ void *CSizeBuffer::GetSpace(int length)
 	const char *buffername = mpBuffer->buffername ? mpBuffer->buffername : "???";
 
 	if(length < 0)
-		Sys_Error("%s: %i negative length on %s", __FUNCTION__, length, buffername);
+		CSystem::Error("%s: %i negative length on %s", __FUNCTION__, length, buffername);
 
 	if(mpBuffer->cursize + length > mpBuffer->maxsize)
 	{
@@ -74,29 +74,30 @@ void *CSizeBuffer::GetSpace(int length)
 		if(!(mpBuffer->flags & SIZEBUF_ALLOW_OVERFLOW))
 		{
 			if(!mpBuffer->maxsize)
-				Sys_Error("%s: tried to write to an uninitialized sizebuf_t: %s",
+				CSystem::Error("%s: tried to write to an uninitialized sizebuf_t: %s",
 				          __FUNCTION__,
 				          buffername);
 			else if(length > mpBuffer->maxsize)
-				Sys_Error("%s: %i is > full buffer size on %s", __FUNCTION__, length, buffername);
+				CSystem::Error("%s: %i is > full buffer size on %s", __FUNCTION__, length, buffername);
 			else
-				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s",
+				CSystem::Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s",
 				          __FUNCTION__,
 				          buffername);
 		};
 
 		if(length > mpBuffer->maxsize)
-			mpConsole->DPrintf("%s: %i is > full buffer size on %s, ignoring", __FUNCTION__, length, buffername);
+			mpConsole->DevPrintf("%s: %i is > full buffer size on %s, ignoring", __FUNCTION__, length, buffername);
+		
 #else  // REHLDS_FIXES
 
 		if(!(mpBuffer->flags & SIZEBUF_ALLOW_OVERFLOW))
 		{
 			if(!mpBuffer->maxsize)
-				Sys_Error("%s: Tried to write to an uninitialized sizebuf_t: %s",
+				CSystem::Error("%s: Tried to write to an uninitialized sizebuf_t: %s",
 				          __FUNCTION__,
 				          buffername);
 			else
-				Sys_Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s",
+				CSystem::Error("%s: overflow without FSB_ALLOWOVERFLOW set on %s",
 				          __FUNCTION__,
 				          buffername);
 		};
@@ -104,9 +105,9 @@ void *CSizeBuffer::GetSpace(int length)
 		if(length > mpBuffer->maxsize)
 		{
 			if(!(mpBuffer->flags & SIZEBUF_ALLOW_OVERFLOW))
-				Sys_Error("%s: %i is > full buffer size on %s", __FUNCTION__, length, buffername);
+				CSystem::Error("%s: %i is > full buffer size on %s", __FUNCTION__, length, buffername);
 
-			mpConsole->DPrintf("%s: %i is > full buffer size on %s, ignoring", __FUNCTION__, length, buffername);
+			mpConsole->DevPrintf("%s: %i is > full buffer size on %s, ignoring", __FUNCTION__, length, buffername);
 		};
 #endif // REHLDS_FIXES
 

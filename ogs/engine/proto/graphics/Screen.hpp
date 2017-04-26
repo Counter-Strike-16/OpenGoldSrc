@@ -50,7 +50,7 @@ class CSound;
 class CScreen
 {
 public:
-	CScreen(CSound *apSound) = default;
+	CScreen(CSound *apSound) : mpSound(apSound){}
 	~CScreen() = default;
 	
 	void Init();

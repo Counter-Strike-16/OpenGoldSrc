@@ -93,6 +93,11 @@ qboolean Con_Visible()
 
 //============================================================================
 
+// Legacy command exec support
+
+// Legacy console commands aren't support the IConCmdArgs as their arg
+// so we need to pass 'em manually
+
 int EXT_FUNC Cmd_Argc()
 {
 #ifndef SWDS
@@ -100,6 +105,8 @@ int EXT_FUNC Cmd_Argc()
 #endif
 
 	return cmd_argc;
+	
+	//return gpUnknown->GetCurrentCmd()->GetArgs()->GetCount(); // ...
 };
 
 /*
@@ -134,6 +141,8 @@ const char *EXT_FUNC Cmd_Args()
 #endif
 
 	return cmd_args;
+	
+	//return gpUnknown->GetCurrentCmd()->GetArgs()->ToString(); // ...
 };
 
 NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function)

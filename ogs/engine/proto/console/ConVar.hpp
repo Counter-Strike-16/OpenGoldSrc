@@ -53,8 +53,8 @@ public:
 	float GetFloat() const {return mpWrapped->value;}
 	bool GetBool() const;
 	
-	operator cvar_t() const {return mpWrapped;}
+	operator cvar_t*() const {return mpWrapped;}
 private:
-	cvar_t *mpWrapped;
-	const char *msDesc;
+	cvar_t *mpWrapped{nullptr};
+	char *msDesc{nullptr};
 };

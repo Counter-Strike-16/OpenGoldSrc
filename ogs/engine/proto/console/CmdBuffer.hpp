@@ -43,6 +43,8 @@ public:
 	// Allocates an initial text buffer that will grow as needed
 	void Init();
 
+	//void Shutdown();
+	
 	// As new commands are generated from the console or keybindings,
 	// the text is added to the end of the command buffer
 	void AddText(char *text);

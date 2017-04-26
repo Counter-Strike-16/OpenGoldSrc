@@ -29,8 +29,10 @@
 /// @file
 
 #include "precompiled.hpp"
+#include "console/IConsole.hpp"
 #include "sound/Sound.hpp"
 #include "sound/ISound.hpp" // ISoundImpl
+#include "system/CommandLine.hpp" // CmdLine
 
 /*
 ================
@@ -41,13 +43,13 @@ bool CSound::Init()
 {
 	mpConsole->Printf("\nSound Initialization\n");
 	
-	if(COM_CheckParm("-nosound"))
+	if(mpCmdLine->FindArg("-nosound"))
 		return true;
 	
-	if(COM_CheckParm("-simsound"))
-		fakedma = true;
+	if(mpCmdLine->FindArg("-simsound"))
+		mbFakeDMA = true;
 	
-	if(!mpImpl->Init())
+	if(!mpImpl->Init(nullptr)) // Provide an engine module factory here
 		return false;
 	
 	return true;
@@ -62,5 +64,5 @@ void CSound::Update()
 {
 	mpImpl->Update();
 	
-	CL_UpdateSoundFade();
+	//CL_UpdateSoundFade();
 };

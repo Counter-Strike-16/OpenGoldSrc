@@ -241,21 +241,6 @@ bool CUnknown::GetVarBool(const char *asName, bool abDefVal)
 	return abDefVal;
 };
 
-// Legacy command exec support
-
-// Legacy console commands aren't support the IConCmdArgs as their arg
-// so we need to pass 'em manually
-
-int Cmd_Argc()
-{
-	return gpUnknown->GetCurrentCmd()->GetArgs()->GetCount(); // ...
-};
-
-char *Cmd_Args()
-{
-	return gpUnknown->GetCurrentCmd()->GetArgs()->ToString(); // ...
-};
-
 void Cmd_Legacy_f()
 {
 	int nArgCount = Cmd_Argc();
@@ -296,6 +281,7 @@ void CConCmdHandler::ExecCmd(const CConCmdArgs &CmdArgs)
 	return false;
 };
 
+// for just the 2 methods?
 struct IConsoleHandler
 {
 	virtual bool AddCommand(IConCmd *apCmd) = 0;

@@ -30,23 +30,36 @@
 
 #pragma once
 
-#include "console/IConCmdSystem.hpp"
+#include <list>
+//#include "console/IConCmdSystem.hpp"
 
+typedef struct cmdalias_s cmdalias_t;
+
+struct IConCmd;
 struct IConCmdArgs;
 
-// CConCmdList/CConCmdContainer
-class CConCmdHandler : public IConCmdSystem
+using tConCmdList = std::list<IConCmd*>;
+using tConCmdAliasList = std::list<cmdalias_t*>;
+
+// CConCmdList/CConCmdContainer/CConCmdRegistry
+class CConCmdHandler //: public IConCmdSystem
 {
 public:
 	void Init();
 	void Shutdown();
 	
-	bool IsCmdExists(const char *asName) const;
+	bool IsExists(const char *asName) const;
 	
-	void AddCommand(const char *asName, pfnConCmdCallback afnCallback, const char *asDesc = "");
+	bool RegisterCmd(IConCmd *apCmd);
+	bool RegisterAlias(cmdalias_t *apAlias);
+	
+	IConCmd *Create(const char *asName, pfnConCmdCallback afnCallback, int anFlags, const char *asDesc = "");
+	//IConCmd *CreateOld(const char *asName, xcommand_t afnCallback, int anFlags, const char *asDesc = "");
 	//void AddCommand(cmdFunction_t function, int flags, argCompletion_t argCompletion = NULL );
-	void RemoveCommand(const char *asName);
+	void Remove(const char *asName);
 	//void RemoveFlaggedCommands(int flags);
+	
+	bool AddAlias(const char *asName, const char *asArgs);
 	
 	IConCmd *GetFirstCmd() const;
 	//IConCmd *GetList() const;
@@ -59,7 +72,7 @@ public:
 	//IConCmd *GetCommands() const {return commands;}
 	
 	IConCmd *FindCmd(const char *asName) const;
-	IConCmd *FindCmdPrev(const char *asName) const;
+	IConCmd *FindPrevCmd(const char *asName) const;
 	
 	const IConCmdArgs &TokenizeString(const char *asArgs) const;
 private:
@@ -70,6 +83,9 @@ private:
 	void Cmd_Alias_f();
 	void Cmd_CmdList_f();
 	
-	cmd_function_t *cmd_functions{nullptr}; // CConCmd *commands;
-	cmdalias_t *cmd_alias{nullptr};
+	//cmd_function_t *cmd_functions{nullptr}; // CConCmd *commands;
+	//cmdalias_t *cmd_alias{nullptr};
+	
+	tConCmdList mlstCmds;
+	tConCmdAliasList mlstCmdAliases;
 };

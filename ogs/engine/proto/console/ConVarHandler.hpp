@@ -114,6 +114,10 @@ public:
 	float GetVarFloat(const char *asName) const;
 	bool GetVarBool(const char *asName) const;
 	
+	// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
+	// command.  Returns true if the command was a variable reference that
+	// was handled. (print or change)
+	// was qboolean Cvar_Command()
 	bool HandleCommand(const IConCmdArgs &CmdArgs);
 	
 	const char *CompleteVar(const char *asSearch, bool abForward);

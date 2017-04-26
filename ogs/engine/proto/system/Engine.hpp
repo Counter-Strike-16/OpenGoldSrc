@@ -35,9 +35,7 @@
 #include "system/IOGSEngine.hpp"
 #include "system/IGame.hpp"
 
-class CHost;
-class CFileSystem;
-class CFileSystemProvider;
+
 
 // clang-format off
 #ifdef HOOK_ENGINE
@@ -53,25 +51,18 @@ constexpr auto MINIMIZED_SLEEP = 20;
 typedef struct quakeparms_s quakeparms_t;
 
 extern IGame *game;
-extern IOGSEngine *ogseng;
 
 class CEngine : public IOGSEngine
 {
 public:
-	CEngine();
-	virtual ~CEngine(); //= default;
-
+	
 	virtual bool Load(bool dedicated, char *rootDir, const char *cmdLine);
-	virtual bool LoadEx(const TEngineLoadParams &aLoadParams);
-	virtual void Unload();
 	
 	virtual void SetState(int iState);
 	virtual int GetState();
 	
 	virtual void SetSubState(int iSubstate);
 	virtual int GetSubState();
-	
-	virtual int Frame();
 	
 	virtual double GetFrameTime();
 	virtual double GetCurTime();
@@ -86,15 +77,10 @@ public:
 	virtual int GetQuitting();
 	virtual void SetQuitting(int quittype);
 	
-	virtual void AddCommandText(const char *asText);
 	
-	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
-
-	// non-virtual function's of wrap for hooks a virtual
-	// Only needed for HOOK_ENGINE
+	
 	bool Load_noVirt(bool dedicated, char *rootDir, const char *cmdLine);
 	bool LoadEx_noVirt(const TEngineLoadParams &aLoadParams);
-	void Unload_noVirt();
 	
 	void SetState_noVirt(int iState);
 	int GetState_noVirt(){return m_nDLLState;}
@@ -102,7 +88,6 @@ public:
 	void SetSubState_noVirt(int iSubstate);
 	int GetSubState_noVirt(){return m_nSubState;}
 	
-	int Frame_noVirt();
 	
 	double GetFrameTime_noVirt(){return m_fFrameTime;}
 	double GetCurTime_noVirt(){return m_fCurTime;}
@@ -118,7 +103,6 @@ public:
 	int GetQuitting_noVirt(){return m_nQuitting;}
 	void SetQuitting_noVirt(int quittype){m_nQuitting = quittype;}
 	
-	void AddCommandText_noVirt(const char *asText);
 	
 	void GetHostInfo_noVirt(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
 private:
@@ -127,9 +111,7 @@ private:
 	
 	quakeparms_t *host_parms{nullptr};
 	
-	std::unique_ptr<CFileSystemProvider> mpFileSystemProvider;
-	std::unique_ptr<CFileSystem> mpFileSystem;
-	std::unique_ptr<CHost> mpHost;
+	
 	
 	double m_fCurTime{0.0f};
 	double m_fFrameTime{0.0f};
@@ -145,5 +127,5 @@ private:
 	bool m_bTrapMode{false};
 	bool m_bDoneTrapping{false};
 	
-	bool mbDedicated{false};
+	
 };

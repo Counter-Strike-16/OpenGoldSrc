@@ -164,14 +164,11 @@ public:
 	void Host_NextDemo();
 */
 private:
-	void InitLocal();
 	
 	bool InitRender();
 	bool InitSound();
 	
 	void _Frame(float time);
-	
-	bool FilterTime(float time);
 	
 	void UpdateScreen();
 	void UpdateSounds();
@@ -231,30 +228,10 @@ private:
 	
 	void ClearIOStates();
 	
-	void InitCommands();
-	
 	char gpszVersionString[32];
 	char gpszProductString[32];
 	
-	std::unique_ptr<CConsole> mpConsole; // IConsole
-	std::unique_ptr<CNetwork> mpNetwork;
-	std::unique_ptr<CSound> mpSound;
-	std::unique_ptr<CGameServer> mpServer;
-	std::unique_ptr<CScreen> mpScreen;
-	std::unique_ptr<CGameLoaderHandler> mpGameLoaderHandler;
-	std::unique_ptr<CInput> mpInput;
-	
-	CFileSystem *mpFileSystem{nullptr};
-	IGame *mpGame{nullptr};
-
 	quakeparms_t *host_params{nullptr};
-	
-	double realtime{0.0f};  // without any filtering or bounding;
-							// not bounded in any way, changed at
-							// start of every frame, never reset
-	double oldrealtime{0.0f}; // last frame run
-	
-	double host_frametime{0.0f};
 	
 	double rolling_fps{0.0f};
 	
@@ -267,7 +244,6 @@ private:
 	// instead of svs.maxclients/cl.maxclients
 	int mnMaxClients{0};
 	
-	bool host_initialized{false}; // true if into command execution
 	
 	//jmp_buf host_abortserver;
 	//jmp_buf host_enddemo;

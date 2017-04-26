@@ -38,13 +38,14 @@ class CNetwork
 {
 public:
 	CNetwork(IConsole *apConsole) : mpConsole(apConsole){}
-
+	~CNetwork() = default;
+	
 	void Init();
 	void Shutdown();
 	
 	void Update();
 	
-	void Config(bool multiplayer);
+	void Config(bool abMultiPlayer);
 	int IsConfigured();
 	
 	CNetServer *StartServer(int anPort);

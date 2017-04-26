@@ -33,11 +33,13 @@
 
 struct IConsole;
 struct ISound;
+class CCmdLine;
 
 class CSound
 {
 public:
-	CSound(IConsole *apConsole) : mpConsole(apConsole){}
+	CSound(IConsole *apConsole, ISound *apImpl, CCmdLine *apCmdLine) : mpConsole(apConsole), mpImpl(apImpl), mpCmdLine(apCmdLine){}
+	~CSound() = default;
 	
 	bool Init();
 	void Shutdown();
@@ -45,6 +47,8 @@ public:
 	void Update();
 private:
 	IConsole *mpConsole{nullptr};
-	
 	ISound *mpImpl{nullptr};
+	CCmdLine *mpCmdLine{nullptr};
+	
+	bool mbFakeDMA{false};
 };
