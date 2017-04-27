@@ -58,6 +58,53 @@ IEngine *eng;
 
 #endif // HOOK_ENGINE
 
+/*
+* Globals initialization
+*/
+#ifndef HOOK_ENGINE
+
+cvar_t host_name = { "hostname", "Half-Life", 0, 0.0f, NULL };
+cvar_t host_speeds = { "host_speeds", "0", 0, 0.0f, NULL };
+cvar_t host_profile = { "host_profile", "0", 0, 0.0f, NULL };
+cvar_t developer = { "developer", "0", 0, 0.0f, NULL };
+cvar_t host_limitlocal = { "host_limitlocal", "0", 0, 0.0f, NULL };
+cvar_t skill = { "skill", "1", 0, 0.0f, NULL };
+cvar_t deathmatch = { "deathmatch", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t coop = { "coop", "0", FCVAR_SERVER, 0.0f, NULL };
+
+cvar_t sys_ticrate = { "sys_ticrate", "100.0", 0, 0.0f, NULL };
+cvar_t sys_timescale = { "sys_timescale", "1.0", 0, 0.0f, NULL };
+cvar_t fps_max = { "fps_max", "100.0", FCVAR_ARCHIVE, 0.0f, NULL };
+cvar_t host_killtime = { "host_killtime", "0.0", 0, 0.0f, NULL };
+cvar_t sv_stats = { "sv_stats", "1", 0, 0.0f, NULL };
+cvar_t fps_override = { "fps_override", "0", 0, 0.0f, NULL };
+cvar_t host_framerate = { "host_framerate", "0", 0, 0.0f, NULL };
+cvar_t pausable = { "pausable", "1", FCVAR_SERVER, 0.0f, NULL };
+cvar_t suitvolume = { "suitvolume", "0.25", FCVAR_ARCHIVE, 0.0f, NULL };
+
+#else // HOOK_ENGINE
+
+cvar_t host_name;
+cvar_t host_speeds;
+cvar_t host_profile;
+cvar_t developer;
+cvar_t host_limitlocal;
+cvar_t skill;
+cvar_t deathmatch;
+cvar_t coop;
+
+cvar_t sys_ticrate;
+cvar_t sys_timescale;
+cvar_t fps_max;
+cvar_t host_killtime;
+cvar_t sv_stats;
+cvar_t fps_override;
+cvar_t host_framerate;
+cvar_t pausable;
+cvar_t suitvolume;
+
+#endif // HOOK_ENGINE
+
 bool CEngine::Init(const TEngineLoadParams &aLoadParams)
 {
 	return Init_noVirt(aLoadParams);
@@ -75,7 +122,7 @@ int CEngine::Frame()
 
 void CEngine::AddCommandText(const char *asText)
 {
-AddCommandText_noVirt(asText);
+	AddCommandText_noVirt(asText);
 };
 
 void CEngine::GetHostInfo(THostInfo &aInfo)
@@ -97,11 +144,20 @@ bool CEngine::Init_noVirt(const TEngineLoadParams &aLoadParams)
 	Memory_Init(parms->membase, parms->memsize);
 
 	Voice_RegisterCvars();
-	Cvar_RegisterVariable(&console);
+	mpConVarHandler->Register(&console);
 
 	if(mpCmdLine->FindArg("-console") || mpCmdLine->FindArg("-toconsole") || mpCmdLine->FindArg("-dev"))
 		Cvar_DirectSet(&console, "1.0");
 */
+	
+	mpSystem = std::make_unique<CSystemNew>();
+	
+	mpCmdLine = std::make_unique<CCmdLine>();
+	
+	mpFileSystemProvider = std::make_unique<CFileSystemProvider>();
+	mpFileSystem = std::make_unique<CFileSystem>(mpFileSystemProvider->GetFromFactory(aLoadParams.filesystemFactory));
+	
+	//mpHost = std::make_unique<CHost>(mpFileSystem.get());
 	
 	mpConsole = std::make_unique<CConsole>();
 	mpNetwork = std::make_unique<CNetwork>(mpConsole.get());
@@ -110,10 +166,12 @@ bool CEngine::Init_noVirt(const TEngineLoadParams &aLoadParams)
 	mpGameLoaderHandler = std::make_unique<CGameLoaderHandler>();
 	//mpClientLoaderHandler = std::make_unique<CClientLoaderHandler>();
 	mpInput = std::make_unique<CInput>(nullptr);
+	//mpGame = std::make_unique<CGame>();
 	
 	// Add native and legacy game module loaders
-	// NOTE: This thing allows us to potentially some new loaders for different game formats
-	// but this possibility looks useless for now
+	// NOTE: This thing allows us to potentially add some new
+	// loaders for different game formats but this 
+	// possibility looks useless for now
 	mpGameLoaderHandler->AddLoader(new CNativeGameLoader());
 	mpGameLoaderHandler->AddLoader(new CLegacyGameLoader(/*gpEngFuncs*/));
 	
@@ -121,6 +179,15 @@ bool CEngine::Init_noVirt(const TEngineLoadParams &aLoadParams)
 	// NOTE: Same as above here
 	//mpClientLoaderHandler->AddLoader(new CNativeClientLoader());
 	//mpClientLoaderHandler->AddLoader(new CLegacyClientLoader());
+	
+	// get architecture info
+	if(!mpSystem->Init())
+		return false;
+	
+	// initialize the file system
+	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
+	//if(!mpFileSystem->Init(basedir))
+		//return false;
 	
 	InitLocal();
 
@@ -151,20 +218,20 @@ bool CEngine::Init_noVirt(const TEngineLoadParams &aLoadParams)
 	
 	mpWADManager->LoadWadFile("gfx.wad"); // WADArchive->LoadFromFile?
 	mpWADManager->LoadWadFile("fonts.wad");
-	
-	Key_Init();
 */
-
+	
+	// init the console so we can take prints
 	mpConsole->Init();
+	
+	// init the input
 	mpInput->Init();
 
 	//Decal_Init();
 	//Mod_Init();
-
+	
+	// initialize networking
+	//Sys_InitNetworking();
 	mpNetwork->Init();
-	//Netchan_Init();
-
-	//DELTA_Init();
 
 	//mpServer->Init();
 
@@ -278,7 +345,7 @@ bool CEngine::Init_noVirt(const TEngineLoadParams &aLoadParams)
 
 void CEngine::Shutdown_noVirt()
 {
-	static bool isdown = false;
+	static bool isdown = false; // com_shuttingDown
 
 	if(isdown)
 	{
@@ -328,15 +395,12 @@ void CEngine::Shutdown_noVirt()
 	// SystemWrapper_ShutDown();
 
 	mpNetwork->Shutdown();
-
 	mpSound->Shutdown();
-	
-	//mpInput->Shutdown();
-	
+	mpInput->Shutdown();
 	mpConsole->Shutdown();
 	
 	/*
-	ReleaseEntityDlls();
+	mpGameHandler->ReleaseEntityDlls();
 	CL_ShutDownClientStatic();
 	CM_FreePAS();
 
@@ -358,7 +422,6 @@ void CEngine::Shutdown_noVirt()
 	COM_Shutdown();
 	CL_Shutdown();
 	DELTA_Shutdown();
-	Key_Shutdown();
 */
 	
 	realtime = 0.0f;
@@ -373,15 +436,71 @@ void CEngine::Shutdown_noVirt()
 
 int CEngine::Frame_noVirt()
 {
-	return 0;
+#ifndef SWDS
+	//(*(void (**)())(*(DWORD *)cdaudio + 24))();
+#endif // SWDS
+
+	//if(!game->IsActiveApp())
+		//game->SleepUntilInput(m_nDLLState != DLL_PAUSED ? MINIMIZED_SLEEP : NOT_FOCUS_SLEEP);
+
+	m_fCurTime = CSystem::GetFloatTime();
+	m_fFrameTime = m_fCurTime - m_fOldTime;
+	m_fOldTime = m_fCurTime;
+
+	if(m_fFrameTime < 0.0f)
+		m_fFrameTime = 0.001f;
+
+	if(m_nDLLState == DLL_INACTIVE)
+		return m_nDLLState;
+
+	static int dummy;
+	static int iState;
+	
+	iState = mpHost->Frame(m_fFrameTime, m_nDLLState, &dummy);
+	
+	// Compare a new state with the current
+	if(iState == m_nDLLState)
+		return m_nDLLState;
+
+	SetState(iState);
+
+	if(m_nDLLState == DLL_CLOSE)
+		SetQuitting(QUIT_TODESKTOP);
+	else if(m_nDLLState == DLL_RESTART)
+		SetQuitting(QUIT_RESTART);
+
+	return m_nDLLState;
 };
 
 void CEngine::AddCommandText_noVirt(const char *asText)
 {
+	//mpCmdBuffer->AddText(asText); //mpConsole->AddCommandText(asText); // Cbuf_AddText
 };
 
+// Move back to host?
 void CEngine::GetHostInfo_noVirt(THostInfo &aInfo)
 {
+	if(rolling_fps > 0.0f)
+		aInfo.fFPS = 1.0f / rolling_fps;
+	else
+	{
+		rolling_fps = 0.0f;
+		aInfo.fFPS = 0;
+	};
+
+	int nClients = 0;
+	//mpServer->CountPlayers(&nClients);
+	aInfo.nActivePlayers = nClients;
+
+	if(aInfo.sMap)
+	{
+		//if(g_psv.name[0])
+			//Q_strcpy(aInfo.sMap, g_psv.GetMapName());
+		//else
+			Q_strcpy(aInfo.sMap, "<no map>");
+	};
+
+	aInfo.nMaxPlayers = 0; //g_psvs.maxclients; // mpServer->GetMaxClients();
 };
 
 void CEngine::InitLocal()
@@ -422,15 +541,153 @@ void CEngine::InitLocal()
 	*/
 };
 
+/*
+==================
+Host_InitCommands
+==================
+*/
 void CEngine::InitCommands()
 {
+	// CONCMD HELL
+	
+#ifdef HOOK_ENGINE
+	Cmd_AddCommand("shutdownserver", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_KillServer_f", (void *)Host_KillServer_f));
+	Cmd_AddCommand("soundfade", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Soundfade_f", (void *)Host_Soundfade_f));
+	Cmd_AddCommand("status", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Status_f", (void *)Host_Status_f));
+	Cmd_AddCommand("stat", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Status_Formatted_f", (void *)Host_Status_Formatted_f));
+	Cmd_AddCommand("quit", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Quit_f", (void *)Host_Quit_f));
+	Cmd_AddCommand("_restart", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Quit_Restart_f", (void *)Host_Quit_Restart_f));
+	Cmd_AddCommand("exit", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Quit_f", (void *)Host_Quit_f));
+	Cmd_AddCommand("map", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Map_f", (void *)Host_Map_f));
+	Cmd_AddCommand("career", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Career_f", (void *)Host_Career_f));
+	Cmd_AddCommand("maps", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Maps_f", (void *)Host_Maps_f));
+	Cmd_AddCommand("restart", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Restart_f", (void *)Host_Restart_f));
+	Cmd_AddCommand("reload", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Reload_f", (void *)Host_Reload_f));
+	Cmd_AddCommand("changelevel", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Changelevel_f", (void *)Host_Changelevel_f));
+	Cmd_AddCommand("changelevel2", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Changelevel2_f", (void *)Host_Changelevel2_f));
+	Cmd_AddCommand("reconnect", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Reconnect_f", (void *)Host_Reconnect_f));
+	Cmd_AddCommand("version", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Version_f", (void *)Host_Version_f));
+	Cmd_AddCommand("say", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Say_f", (void *)Host_Say_f));
+	Cmd_AddCommand("say_team", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Say_Team_f", (void *)Host_Say_Team_f));
+	Cmd_AddCommand("tell", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Tell_f", (void *)Host_Tell_f));
+	Cmd_AddCommand("kill", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Kill_f", (void *)Host_Kill_f));
+	Cmd_AddCommand("pause", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_TogglePause_f", (void *)Host_TogglePause_f));
+	Cmd_AddCommand("setpause", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Pause_f", (void *)Host_Pause_f));
+	Cmd_AddCommand("unpause", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Unpause_f", (void *)Host_Unpause_f));
+	Cmd_AddCommand("kick", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Kick_f", (void *)Host_Kick_f));
+	Cmd_AddCommand("ping", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Ping_f", (void *)Host_Ping_f));
+	Cmd_AddCommand("motd", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Motd_f", (void *)Host_Motd_f));
+	Cmd_AddCommand("motd_write", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Motd_Write_f", (void *)Host_Motd_Write_f));
+	Cmd_AddCommand("stats", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Stats_f", (void *)Host_Stats_f));
+	Cmd_AddCommand("load", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Loadgame_f", (void *)Host_Loadgame_f));
+	Cmd_AddCommand("save", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Savegame_f", (void *)Host_Savegame_f));
+	Cmd_AddCommand("autosave", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_AutoSave_f", (void *)Host_AutoSave_f));
+	Cmd_AddCommand("writecfg", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_WriteCustomConfig", (void *)Host_WriteCustomConfig));
+	Cmd_AddCommand("startdemos",(xcommand_t)GetOriginalFuncAddrOrDefault("Host_Startdemos_f", (void *)Host_Startdemos_f));
+	Cmd_AddCommand("demos", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Demos_f", (void *)Host_Demos_f));
+	Cmd_AddCommand("stopdemo", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Stopdemo_f", (void *)Host_Stopdemo_f));
+	Cmd_AddCommand("setinfo", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_SetInfo_f", (void *)Host_SetInfo_f));
+	Cmd_AddCommand("fullinfo", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_FullInfo_f", (void *)Host_FullInfo_f));
+	Cmd_AddCommand("mcache", (xcommand_t)GetOriginalFuncAddrOrDefault("Mod_Print", (void *)Mod_Print));
+	Cmd_AddCommand("interp", (xcommand_t)GetOriginalFuncAddrOrDefault("Host_Interp_f", (void *)Host_Interp_f));
+	Cmd_AddCommand("setmaster", (xcommand_t)GetOriginalFuncAddrOrDefault("Master_SetMaster_f", (void *)Master_SetMaster_f));
+	Cmd_AddCommand("heartbeat", (xcommand_t)GetOriginalFuncAddrOrDefault("Master_Heartbeat_f", (void *)Master_Heartbeat_f));
+#else // HOOK_ENGINE
+
+#ifndef SWDS
+	//mpConCmdHandler->AddCommand("cd", CD_Command_f);
+	//mpConCmdHandler->AddCommand("mp3", MP3_Command_f);
+	//mpConCmdHandler->AddCommand("_careeraudio", CareerAudio_Command_f);
+#endif // SWDS
+
+/*
+	mpConCmdHandler->AddCommand("shutdownserver", Host_KillServer_f);
+	mpConCmdHandler->AddCommand("soundfade", Host_Soundfade_f);
+	mpConCmdHandler->AddCommand("status", Host_Status_f);
+	mpConCmdHandler->AddCommand("stat", Host_Status_Formatted_f);
+	mpConCmdHandler->AddCommand("quit", Host_Quit_f);
+	mpConCmdHandler->AddCommand("_restart", Host_Quit_Restart_f);
+
+#ifndef SWDS
+	//mpConCmdHandler->AddCommand("_setrenderer", Host_SetRenderer_f);
+	//mpConCmdHandler->AddCommand("_setvideomode", Host_SetVideoMode_f);
+	//mpConCmdHandler->AddCommand("_setgamedir", Host_SetGameDir_f);
+	mpConCmdHandler->AddCommand("_sethdmodels", Host_SetHDModels_f);
+	mpConCmdHandler->AddCommand("_setaddons_folder", Host_SetAddonsFolder_f);
+	mpConCmdHandler->AddCommand("_set_vid_level", Host_SetVideoLevel_f);
+#endif // SWDS
+
+	mpConCmdHandler->AddCommand("exit", Host_Quit_f);
+	mpConCmdHandler->AddCommand("map", Host_Map_f); ([this](){Map_f();})
+	mpConCmdHandler->AddCommand("career", Host_Career_f);
+	mpConCmdHandler->AddCommand("maps", Host_Maps_f);
+	mpConCmdHandler->AddCommand("restart", Host_Restart_f);
+	mpConCmdHandler->AddCommand("reload", Host_Reload_f);
+
+	mpConCmdHandler->AddCommand("changelevel", Host_Changelevel_f);
+	mpConCmdHandler->AddCommand("changelevel2", Host_Changelevel2_f);
+
+	mpConCmdHandler->AddCommand("reconnect", Host_Reconnect_f);
+	mpConCmdHandler->AddCommand("version", Host_Version_f);
+	mpConCmdHandler->AddCommand("say", Host_Say_f);
+	mpConCmdHandler->AddCommand("say_team", Host_Say_Team_f);
+	mpConCmdHandler->AddCommand("tell", Host_Tell_f);
+	mpConCmdHandler->AddCommand("kill", Host_Kill_f);
+	mpConCmdHandler->AddCommand("pause", Host_TogglePause_f);
+	mpConCmdHandler->AddCommand("setpause", Host_Pause_f);
+	mpConCmdHandler->AddCommand("unpause", Host_Unpause_f);
+	mpConCmdHandler->AddCommand("kick", Host_Kick_f);
+	mpConCmdHandler->AddCommand("ping", Host_Ping_f);
+	mpConCmdHandler->AddCommand("motd", Host_Motd_f);
+	mpConCmdHandler->AddCommand("motd_write", Host_Motd_Write_f);
+	mpConCmdHandler->AddCommand("stats", Host_Stats_f);
+	mpConCmdHandler->AddCommand("load", Host_Loadgame_f);
+	mpConCmdHandler->AddCommand("save", Host_Savegame_f);
+	mpConCmdHandler->AddCommand("autosave", Host_AutoSave_f);
+	mpConCmdHandler->AddCommand("writecfg", Host_WriteCustomConfig);
+
+#ifndef SWDS
+	mpConCmdHandler->AddCommand("+voicerecord", Host_VoiceRecordStart_f);
+	mpConCmdHandler->AddCommand("-voicerecord", Host_VoiceRecordStop_f);
+#endif // SWDS
+
+	mpConCmdHandler->AddCommand("startdemos", Host_Startdemos_f);
+	mpConCmdHandler->AddCommand("demos", Host_Demos_f);
+	mpConCmdHandler->AddCommand("stopdemo", Host_Stopdemo_f);
+	
+	mpConCmdHandler->AddCommand("setinfo", Host_SetInfo_f);
+	mpConCmdHandler->AddCommand("fullinfo", Host_FullInfo_f);
+
+#ifndef SWDS
+	mpConCmdHandler->AddCommand("god", Host_God_f);
+	mpConCmdHandler->AddCommand("notarget", Host_Notarget_f);
+	mpConCmdHandler->AddCommand("fly", Host_Fly_f);
+	mpConCmdHandler->AddCommand("noclip", Host_Noclip_f);
+	
+	mpConCmdHandler->AddCommand("viewmodel", Host_Viewmodel_f);
+	mpConCmdHandler->AddCommand("viewframe", Host_Viewframe_f);
+	mpConCmdHandler->AddCommand("viewnext", Host_Viewnext_f);
+	mpConCmdHandler->AddCommand("viewprev", Host_Viewprev_f);
+#endif // SWDS
+
+	Cmd_AddCommand("mcache", Mod_Print);
+	Cmd_AddCommand("interp", Host_Interp_f);
+	
+	//Cmd_AddCommand("setmaster", Master_SetMaster_f);
+	Cmd_AddCommand("heartbeat", Master_Heartbeat_f);
+*/
+#endif // HOOK_ENGINE
+
+	//Cvar_RegisterVariable(&gHostMap);
+	//Cvar_RegisterVariable(&voice_recordtofile);
+	//Cvar_RegisterVariable(&voice_inputfromfile);
 };
 
 bool CEngine::FilterTime(float time)
 {
 	if(host_framerate.value > 0.0f)
 	{
-		if(IsSinglePlayerGame() /*|| cls.demoplayback*/)
+		if(mpHost->IsSinglePlayerGame() /*|| cls.demoplayback*/)
 		{
 			host_frametime = sys_timescale.value * host_framerate.value;
 			realtime += host_frametime;
@@ -506,4 +763,205 @@ bool CEngine::FilterTime(float time)
 		host_frametime = 0.25f;
 
 	return true;
+};
+
+/*
+==================
+Host_Frame
+
+Runs all active servers
+==================
+*/
+void CEngine::_Frame(float time)
+{
+	static double host_times[6];
+	
+	//if(setjmp(host_enddemo))
+		//return;
+
+	// Unknown_windows_func_01D37CD0();
+	
+	if(!FilterTime(time))
+		return;
+
+#ifdef REHLDS_FLIGHT_REC
+	static long frameCounter = 0;
+	
+	if(rehlds_flrec_frame.string[0] != '0')
+		FR_StartFrame(frameCounter);
+#endif // REHLDS_FLIGHT_REC
+
+	// SystemWrapper_RunFrame(host_frametime);
+
+	//if(g_modfuncs.m_pfnFrameBegin)
+		//g_modfuncs.m_pfnFrameBegin();
+	
+	ComputeFPS(host_frametime);
+	
+	//R_SetStackBase();
+	//CL_CheckClientState();
+
+	// process console commands
+	mpCmdProcessor->ExecCmdBuffer();
+
+	//ClientDLL_UpdateClientData();
+
+	//if(mpServer->IsActive())
+		//CL_Move();
+
+	host_times[1] = CSystem::GetFloatTime();
+
+	//mpServer->Frame(host_frametime); // netserver or gameserver (works as netserver->gameserver) frame
+
+	host_times[2] = CSystem::GetFloatTime();
+
+/*	
+	mpServer->CheckForRcon();
+
+	if(!g_psv.IsActive())
+		CL_Move();
+
+	ClientDLL_Frame(host_frametime);
+	CL_SetLastUpdate();
+
+	// fetch results from server
+	CL_ReadPackets();
+	
+	// wipe all the local states that are older than the latest state 
+	// received from the server and reapply the rest above it
+	//			received state time
+	//					|
+	//					v
+	// [----------------|---------------]
+	//				<--- will be removed
+	//					|---> reapply our predicted states
+	CL_RedoPrediction();
+	
+	CL_VoiceIdle();
+	
+	// build a refresh entity list
+	CL_EmitEntities();
+	
+	CL_CheckForResend();
+
+	while(CL_RequestMissingResources())
+		;
+*/
+
+	CheckConnectionFailure();
+
+/*	
+	// CL_HTTPUpdate();
+	Steam_ClientRunFrame();
+	ClientDLL_CAM_Think();
+	CL_MoveSpectatorCamera();
+*/
+
+	host_times[3] = CSystem::GetFloatTime();
+
+	UpdateScreen();
+
+	host_times[4] = CSystem::GetFloatTime();
+
+	//CL_DecayLights();
+
+	UpdateSounds();
+	
+	//CDAudio_Update(); // call here or inside the UpdateSounds method
+
+	host_times[0] = host_times[5];
+	host_times[5] = CSystem::GetFloatTime();
+
+	PrintSpeeds(host_times);
+
+	++host_framecount;
+
+	//CL_AdjustClock();
+
+	if(sv_stats.value == 1.0f)
+		UpdateStats();
+/*
+	if(host_killtime.value != 0.0 && host_killtime.value < g_psv.time)
+		Host_Quit_f();
+
+	// Rehlds Security
+	//Rehlds_Security_Frame();
+
+#ifdef REHLDS_FLIGHT_REC
+	if(rehlds_flrec_frame.string[0] != '0')
+		FR_EndFrame(frameCounter);
+
+	frameCounter++;
+#endif // REHLDS_FLIGHT_REC
+*/
+};
+
+int CEngine::Frame(float time, int iState, int *stateInfo)
+{
+/*
+	// something bad happened, or the server disconnected
+	if(setjmp(host_abortserver))
+		return giActive;
+
+	if(giActive != 3 || !g_iQuitCommandIssued)
+		giActive = iState;
+
+	*stateInfo = 0;
+*/
+	
+	double time1;
+	double time2;
+	
+	if(host_profile.value != 0.0f)
+		time1 = CSystem::GetFloatTime();
+
+	static int nFrame = 0;
+	nFrame++;
+
+	// 100 frames interval
+	if(nFrame % 100 == 0)
+		CSystem::Printf("Flap #%d (FrameTime: %2f, %d)\n", nFrame, time, iState);
+	
+	_Frame(time);
+	
+	if(host_profile.value != 0.0f)
+		time2 = CSystem::GetFloatTime();
+
+/*
+	if(giStateInfo)
+	{
+		*stateInfo = giStateInfo;
+		giStateInfo = 0;
+		mpCmdProcessor->ExecCmdBuffer();
+	};
+*/
+
+	if(host_profile.value != 0.0f)
+	{
+		static double timetotal;
+		static int timecount;
+
+		timecount++;
+		timetotal += time2 - time1;
+
+		if(++timecount >= 1000)
+		{
+			int m = (timetotal * 1000.0f / (double)timecount);
+			int c = 0;
+
+			timecount = 0;
+			timetotal = 0.0f;
+		
+			//mpServer->GetActiveClients(); or GetClients(bool active = true)
+			//for(int i = 0; i < g_psvs.GetMaxClients(); i++)
+			{
+				//if(g_psvs.GetClient(i)->IsActive()) // GetClients()[i]
+					//++c;
+			};
+
+			mpConsole->Printf("host_profile: %2i clients %2i msec\n", c, m);
+		};
+	};
+
+	return 1; //giActive;
 };

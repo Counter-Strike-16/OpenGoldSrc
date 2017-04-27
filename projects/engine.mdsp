@@ -95,6 +95,14 @@ extraResourceOptions=
 12=..\ogs\engine\proto\filesystem\FileSystem.cpp
 13=..\ogs\engine\proto\network\Network.cpp
 14=..\ogs\engine\proto\console\CmdBuffer.cpp
+15=..\ogs\engine\proto\system\SizeBuffer.cpp
+16=..\ogs\engine\proto\console\ConCmd.cpp
+17=..\ogs\engine\proto\console\ConVar.cpp
+18=..\ogs\engine\proto\console\ConCmdHandler.cpp
+19=..\ogs\engine\proto\console\ConVarHandler.cpp
+20=..\ogs\engine\proto\system\EngineNew.cpp
+21=..\ogs\engine\proto\sound\Sound.cpp
+22=..\ogs\engine\proto\input\Input.cpp
 [Header]
 [Resource]
 [Other]

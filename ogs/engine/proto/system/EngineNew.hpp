@@ -34,12 +34,12 @@ extern IEngine *eng;
 
 struct THostInfo
 {
-	float *fps;
+	float fFPS{0.0f};
 	
-	int *nActivePlayers;
-	int *nMaxPlayers;
+	int nActivePlayers{0};
+	int nMaxPlayers{0};
 	
-	char *pszMap;
+	char *sMap{nullptr};
 };
 
 class CCmdLine;
@@ -87,7 +87,7 @@ private:
 	bool FilterTime(float time);
 	
 	std::unique_ptr<CCmdLine> mpCmdLine;
-	//std::unique_ptr<CSystem> mpSystem;
+	std::unique_ptr<CSystemNew> mpSystem;
 	std::unique_ptr<CFileSystem> mpFileSystem;
 	std::unique_ptr<CNetwork> mpNetwork;
 	std::unique_ptr<CSound> mpSound;
@@ -101,6 +101,8 @@ private:
 	std::unique_ptr<CGameLoaderHandler> mpGameLoaderHandler;
 	
 	//IGame *mpGame{nullptr};
+	
+	double rolling_fps{0.0f};
 	
 	double realtime{0.0f};  // without any filtering or bounding;
 							// not bounded in any way, changed at

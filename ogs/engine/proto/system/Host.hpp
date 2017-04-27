@@ -233,8 +233,6 @@ private:
 	
 	quakeparms_t *host_params{nullptr};
 	
-	double rolling_fps{0.0f};
-	
 	int32 startTime{0};
 	
 	int host_framecount{0}; // incremented every frame, never reset

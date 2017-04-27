@@ -185,11 +185,8 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 	
 	SetState(DLL_ACTIVE);
 	
-	mpHost = std::make_unique<CHost>(mpFileSystem.get());
 	
-	//TraceInit("FileSystem_Init(basedir, (void *)filesystemFactory)", "FileSystem_Shutdown()", 0);
-	if(!mpFileSystem->Init(basedir))
-		return false;
+	
 	
 	host_parms->basedir = basedir;
 	
@@ -203,15 +200,6 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 	};
 	
 	return success;
-};
-
-bool CEngine::LoadEx_noVirt(const TEngineLoadParams &aLoadParams)
-{
-	mpFileSystemProvider = std::make_unique<CFileSystemProvider>();
-	
-	mpFileSystem = std::make_unique<CFileSystem>(mpFileSystemProvider->GetFromFactory(aLoadParams.filesystemFactory));
-	
-	return Load(aLoadParams.dedicated, aLoadParams.basedir, aLoadParams.cmdline);
 };
 
 void CEngine::Unload_noVirt()
@@ -230,44 +218,6 @@ void CEngine::SetSubState_noVirt(int iSubState)
 {
 	//if(iSubState != 1)
 		//GameSetSubState(iSubState);
-};
-
-int CEngine::Frame_noVirt()
-{
-#ifndef SWDS
-	//(*(void (**)())(*(DWORD *)cdaudio + 24))();
-#endif // SWDS
-
-	//if(!game->IsActiveApp())
-		//game->SleepUntilInput(m_nDLLState != DLL_PAUSED ? MINIMIZED_SLEEP : NOT_FOCUS_SLEEP);
-
-	m_fCurTime = CSystem::GetFloatTime();
-	m_fFrameTime = m_fCurTime - m_fOldTime;
-	m_fOldTime = m_fCurTime;
-
-	if(m_fFrameTime < 0.0f)
-		m_fFrameTime = 0.001f;
-
-	if(m_nDLLState == DLL_INACTIVE)
-		return m_nDLLState;
-
-	static int dummy;
-	static int iState;
-	
-	iState = mpHost->Frame(m_fFrameTime, m_nDLLState, &dummy);
-	
-	// Compare a new state with the current
-	if(iState == m_nDLLState)
-		return m_nDLLState;
-
-	SetState(iState);
-
-	if(m_nDLLState == DLL_CLOSE)
-		SetQuitting(QUIT_TODESKTOP);
-	else if(m_nDLLState == DLL_RESTART)
-		SetQuitting(QUIT_RESTART);
-
-	return m_nDLLState;
 };
 
 void CEngine::TrapMouse_Event_noVirt(int buttons, bool down)
@@ -305,11 +255,6 @@ bool CEngine::CheckDoneTrapping_noVirt(int &buttons, int &key)
 	}
 	else
 		return false;
-};
-
-void CEngine::AddCommandText_noVirt(const char *asText)
-{
-	//mpConsole->AddCommandText(asText); // Cbuf_AddText
 };
 
 void CEngine::GetHostInfo_noVirt(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap)

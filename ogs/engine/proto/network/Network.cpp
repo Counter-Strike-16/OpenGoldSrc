@@ -106,7 +106,12 @@ void CNetwork::Init()
 	};
 
 	AllocateQueues();
+	
 	mpConsole->DevPrintf("Base networking initialized.\n");
+	
+	//Netchan_Init();
+
+	//DELTA_Init();
 };
 
 void CNetwork::Shutdown()

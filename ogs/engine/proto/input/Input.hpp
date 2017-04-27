@@ -54,6 +54,7 @@ public:
 	~CInput() = default;
 	
 	bool Init();
+	void Shutdown();
 	
 	void Update();
 private:

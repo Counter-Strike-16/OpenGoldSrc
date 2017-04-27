@@ -27,29 +27,39 @@
  */
 
 /// @file
-/// @brief high-level system module
 
-// This is the high-level system module
-// Here is portable core system things are placed
+#include "precompiled.hpp"
+#include "system/System.hpp"
 
-#pragma once
-
-struct ISystem;
-
-class CSystem
+bool CSystem::Init()
 {
-public:
-	CSystem(ISystem *apImpl) : mpImpl(apImpl){}
-	~CSystem() = default;
-	
-	bool Init();
-	void Shutdown();
-	
-	CCmdLine *GetCmdLine() const;
-	IConsole *GetConsole() const;
-	//CFileSystem *GetFileSystem() const;
-private:
-	ISystem *mpImpl{nullptr}; // low-level pimpl
-	CCmdLine *mpCmdLine{nullptr};
-	IConsole *mpConsole{nullptr};
+	return mpImpl->Init();
 };
+
+void CSystem::Shutdown()
+{
+};
+
+void CSystem::GenerateEvents()
+{
+};
+
+/// Allow game to yield CPU time
+void CSystem::Sleep(std::chrono::milliseconds anMilli);
+{
+	std::this_thread::sleep_for(anMilli);
+};
+
+const CCmdLine &CSystem::GetCmdLine() const
+{
+	return mpCmdLine;
+};
+
+const IConsole &CSystem::GetConsole() const
+{
+};
+
+//const CFileSystem &GetFileSystem() const;
+//const IRegistry &GetRegistry() const;
+
+//const CCmdProcessor &GetCmdProcessor() const;

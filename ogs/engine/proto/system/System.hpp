@@ -31,6 +31,7 @@
 
 #pragma once
 
+#include <memory>
 #include "common/maintypes.h"
 #include "public/FileSystem.h"
 
@@ -134,4 +135,44 @@ private:
 
 	static bool mbIsWin95;
 	static bool mbIsWin98;
+};
+
+///////////////////////////////////////////////////////
+
+/// @brief high-level system module
+
+// This is the high-level system module
+// Here the portable core system components are placed
+
+struct ISystem;
+
+class CSystemNew
+{
+public:
+	CSystem(ISystem *apImpl) : mpImpl(apImpl){}
+	~CSystem() = default;
+	
+	bool Init();
+	void Shutdown();
+	
+	void GenerateEvents();
+	
+	/// Allow game to yield CPU time
+	void Sleep(std::chrono::milliseconds anMilli); // using that you can pass something like 1000ms
+	
+	// return const refs so it's possible to code write like
+	// mpSystem->GetCmdLine()->HasArg("blah")
+	// storing is also possible
+	const CCmdLine &GetCmdLine() const; // return IConCmdArgs?
+	const IConsole &GetConsole() const;
+	//const CFileSystem &GetFileSystem() const;
+	//const IRegistry &GetRegistry() const;
+	
+	// GetCmdProcessor()->Exec()->pCmdBuffer->Exec() hell yeah baby!
+	//const CCmdProcessor &GetCmdProcessor() const;
+private:
+	std::unique_ptr<CCmdLine> mpCmdLine;
+	
+	ISystem *mpImpl{nullptr}; // low-level pimpl
+	IConsole *mpConsole{nullptr};
 };

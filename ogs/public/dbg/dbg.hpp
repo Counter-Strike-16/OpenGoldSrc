@@ -25,11 +25,11 @@
  *	you do not wish to do so, delete this exception statement from your
  *	version.
  */
- 
- /// @file
- /// @brief interface for dbg module
- 
- #pragma once
+
+/// @file
+/// @brief interface for dbg module
+
+#pragma once
 
 DBG_INTERFACE void Error(const char *asMsg, ...);
 DBG_INTERFACE void ClearErrorLogs();

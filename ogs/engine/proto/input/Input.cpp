@@ -30,10 +30,20 @@
 
 #include "precompiled.hpp"
 #include "input/Input.hpp"
+#include "input/keys.hpp"
 
 bool CInput::Init()
 {
+	// initialize key input/binding, done early so bind command exists
+	Key_Init();
+	//idKeyInput::Init();
+	
 	return mpImpl->Init();
+};
+
+void CInput::Shutdown()
+{
+	//Key_Shutdown();
 };
 
 void CInput::Update()
