@@ -5,7 +5,7 @@
 >
 >Mike
 
-![OGS Logo](docs/OGSLogo1280x512.png?raw=true "OGS Logo")
+![OGS Logo](https://github.com/projectogs/ogs-docs/docs/OGSLogo1280x512.png?raw=true "OGS Logo")
 
 Open Source implementation (a recreation) of the GoldSrc engine   
 Based on Reverse-engineered (and bugfixed) HLDS aka ReHLDS and Id Tech sources (+ Xash and Metahook)
