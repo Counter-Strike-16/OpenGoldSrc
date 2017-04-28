@@ -32,6 +32,10 @@
 
 #include "common/maintypes.h"
 
+#ifndef _WIN32
+	#define HWND int
+#endif
+
 class IGame
 {
 public:
@@ -50,12 +54,24 @@ public:
 	virtual void SetWindowXY(int x, int y) = 0;
 	virtual void SetWindowSize(int w, int h) = 0;
 	virtual void GetWindowRect(int *x, int *y, int *w, int *h) = 0;
-
+	
+	/// Not Alt-Tabbed away
 	virtual bool IsActiveApp() = 0;
+	
 	virtual bool IsMultiplayer() = 0;
-
+	
+	// SRC
+	
+	virtual void	DispatchAllStoredGameMessages() = 0;
+	
+	//
+	
 	virtual void PlayStartupVideos() = 0;
 	virtual void PlayAVIAndWait(const char *aviFile) = 0;
 
 	virtual void SetCursorVisible(bool bState) = 0;
+	
+	//
 };
+
+extern IGame *game;

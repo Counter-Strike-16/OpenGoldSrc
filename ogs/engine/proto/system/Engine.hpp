@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,102 +30,90 @@
 
 #pragma once
 
-#include <memory>
-#include "common/maintypes.h"
-#include "system/IOGSEngine.hpp"
-#include "system/IGame.hpp"
+//#include <memory>
+#include "system/IEngine.hpp"
 
+extern IEngine *eng;
 
+struct THostInfo
+{
+	float fFPS{0.0f};
+	
+	int nActivePlayers{0};
+	int nMaxPlayers{0};
+	
+	char *sMap{nullptr};
+};
 
-// clang-format off
-#ifdef HOOK_ENGINE
-	#define game (*pgame)
-	#define eng (*peng)
-#endif
-// clang-format on
+class CCmdLine;
+class CHost;
+class CFileSystem;
+class CFileSystemProvider;
+class CGameLoaderHandler;
+class CScreen;
+class CInput;
+class CSound;
+class CNetwork;
+class CConsole;
+class CGameServer;
 
-// sleep time when not focus
-constexpr auto NOT_FOCUS_SLEEP = 50;
-constexpr auto MINIMIZED_SLEEP = 20;
-
-typedef struct quakeparms_s quakeparms_t;
-
-extern IGame *game;
-
-class CEngine : public IOGSEngine
+class CEngine : public IEngine // CHost/CCommon
 {
 public:
+	CEngine() = default;
+	virtual ~CEngine() = default;
 	
-	virtual bool Load(bool dedicated, char *rootDir, const char *cmdLine);
+	virtual bool Init(const TEngineLoadParams &aLoadParams); // Load
+	virtual void Shutdown(); // Unload
 	
-	virtual void SetState(int iState);
-	virtual int GetState();
+	virtual int Frame();
 	
-	virtual void SetSubState(int iSubstate);
-	virtual int GetSubState();
+	virtual void AddCommandText(const char *asText);
 	
-	virtual double GetFrameTime();
-	virtual double GetCurTime();
-	
-	virtual void TrapKey_Event(int key, bool down);
-	virtual void TrapMouse_Event(int buttons, bool down);
-	
-	virtual void StartTrapMode();
-	virtual bool IsTrapping();
-	virtual bool CheckDoneTrapping(int &buttons, int &keys);
-	
-	virtual int GetQuitting();
-	virtual void SetQuitting(int quittype);
-	
-	
-	
-	bool Load_noVirt(bool dedicated, char *rootDir, const char *cmdLine);
-	bool LoadEx_noVirt(const TEngineLoadParams &aLoadParams);
-	
-	void SetState_noVirt(int iState);
-	int GetState_noVirt(){return m_nDLLState;}
-	
-	void SetSubState_noVirt(int iSubstate);
-	int GetSubState_noVirt(){return m_nSubState;}
-	
-	
-	double GetFrameTime_noVirt(){return m_fFrameTime;}
-	double GetCurTime_noVirt(){return m_fCurTime;}
-	
-	void TrapKey_Event_noVirt(int key, bool down){}
-	void TrapMouse_Event_noVirt(int buttons, bool down);
-	
-	void StartTrapMode_noVirt();
-	bool IsTrapping_noVirt(){return m_bTrapMode;}
-	
-	bool CheckDoneTrapping_noVirt(int &buttons, int &keys);
-	
-	int GetQuitting_noVirt(){return m_nQuitting;}
-	void SetQuitting_noVirt(int quittype){m_nQuitting = quittype;}
-	
-	
-	void GetHostInfo_noVirt(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap);
+	virtual void GetHostInfo(THostInfo &aInfo);
 private:
-	int InitGame(const char *lpOrgCmdLine, char *pBaseDir, void *pwnd, int bIsDedicated);
-	void ShutdownGame();
+	// non-virtual function's of wrap for hooks a virtual
+	// Only needed for HOOK_ENGINE
 	
-	quakeparms_t *host_parms{nullptr};
+	bool Init_noVirt(const TEngineLoadParams &aLoadParams);
+	void Shutdown_noVirt();
 	
+	int Frame_noVirt();
 	
+	void AddCommandText_noVirt(const char *asText);
 	
-	double m_fCurTime{0.0f};
-	double m_fFrameTime{0.0f};
-	double m_fOldTime{0.0f};
+	void GetHostInfo_noVirt(THostInfo &aInfo);
 	
-	int m_nQuitting{0};
-	int m_nDLLState{0};
-	int m_nSubState{0};
+	void InitLocal();
+	void InitCommands();
 	
-	int m_nTrapKey{0};
-	int m_nTrapButtons{0};
+	bool FilterTime(float time);
 	
-	bool m_bTrapMode{false};
-	bool m_bDoneTrapping{false};
+	std::unique_ptr<CCmdLine> mpCmdLine;
+	std::unique_ptr<CSystemNew> mpSystem;
+	std::unique_ptr<CFileSystem> mpFileSystem;
+	std::unique_ptr<CNetwork> mpNetwork;
+	std::unique_ptr<CSound> mpSound;
+	std::unique_ptr<CInput> mpInput;
 	
+	std::unique_ptr<CFileSystemProvider> mpFileSystemProvider;
+	//std::unique_ptr<CHost> mpHost;
+	std::unique_ptr<CConsole> mpConsole; // IConsole
+	//std::unique_ptr<CGameServer> mpServer;
+	std::unique_ptr<CScreen> mpScreen;
+	std::unique_ptr<CGameLoaderHandler> mpGameLoaderHandler;
 	
+	//IGame *mpGame{nullptr};
+	
+	double rolling_fps{0.0f};
+	
+	double realtime{0.0f};  // without any filtering or bounding;
+							// not bounded in any way, changed at
+							// start of every frame, never reset
+	double oldrealtime{0.0f}; // last frame run
+	
+	double host_frametime{0.0f};
+	
+	bool host_initialized{false}; // true if into command execution
+	bool mbDedicated{false};
 };

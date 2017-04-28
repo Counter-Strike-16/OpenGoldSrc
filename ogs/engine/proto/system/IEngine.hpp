@@ -35,6 +35,18 @@
 // (has no version define and isn't inherited from IBaseInterface)
 // Only for internal use (in other words can be freely changed)
 
+struct TEngineLoadParams
+{
+	CreateInterfaceFn fnFilesystemFactory{nullptr}; ///< Factory from filesystem module
+	
+	char *sBaseDir{nullptr}; ///< Base game directory
+	const char *sCmdLine{""}; ///< Passed command line arguments string
+	
+	tWinHandle hWinHandle{0}; ///< Custom window handle
+	
+	bool bDedicated{false}; ///< Start in dedicated server mode
+};
+
 class IEngine
 {
 public:
@@ -45,10 +57,10 @@ public:
 		QUIT_RESTART
 	};
 
-	virtual ~IEngine(){}
+	virtual ~IEngine() = default;
 	
 	/// Load the engine
-	virtual bool Load(bool dedicated, char *basedir, const char *cmdline) = 0;
+	virtual bool Load(const TEngineLoadParams &aLoadParams) = 0;
 	
 	/// Unload the engine
 	virtual void Unload() = 0;
@@ -59,11 +71,11 @@ public:
 	/// Get current engine state
 	virtual int GetState() = 0;
 	
-	/// Set new new engine sub-state
-	virtual void SetSubState(int iSubState) = 0;
+	/// Set the new engine sub-state
+	//virtual void SetSubState(int iSubState) = 0; // not present in src
 	
 	/// Get current engine sub-state
-	virtual int GetSubState() = 0;
+	//virtual int GetSubState() = 0; // not present in src
 	
 	/// Run a single frame
 	virtual int Frame() = 0;
@@ -94,6 +106,12 @@ public:
 	
 	/// Mark engine for quit
 	virtual void SetQuitting(int quittype) = 0;
+	
+	/// Add the text to console command buffer
+	virtual void AddCommandText(const char *asText) = 0;
+	
+	/// Get the info about current player count and map
+	virtual void GetHostInfo(float *fps, int *nActive, int *unused, int *nMaxPlayers, char *pszMap) = 0;
 };
 
 extern IEngine *eng;
