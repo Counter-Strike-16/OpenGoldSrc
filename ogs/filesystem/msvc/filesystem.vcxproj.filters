@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="null">
+      <UniqueIdentifier>{ccf59bf7-567c-4398-83e5-29aa86a6b52f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="stdio">
+      <UniqueIdentifier>{20a4e17e-4ee5-42c5-bc0d-a85e33dfb749}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="steam">
+      <UniqueIdentifier>{35ccd8ff-ba56-42ff-9d6d-79484daafc30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nar">
+      <UniqueIdentifier>{f07e0a27-bb0f-40fe-81bd-53e5f0a52bbf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\tier1\interface.cpp" />
+    <ClCompile Include="..\stdio\FileSystemImpl.cpp">
+      <Filter>stdio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\null\FileSystemImpl.cpp">
+      <Filter>null</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\FileSystemImpl.h" />
+  </ItemGroup>
+</Project>

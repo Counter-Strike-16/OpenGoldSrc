@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\commandline.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommandLineParam.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\coroutine.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cvar.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\KeyValuesSystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\osversion.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\random.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stringnormalize.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\strtools.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\public\vstdlib\coroutine.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\cvar.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\ICommandLine.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\IKeyValuesSystem.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\iprocessutils.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\jobthread.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\osversion.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\pch_vstdlib.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\random.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\vcover.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\vstdlib.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\commandline.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommandLineParam.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stringnormalize.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\KeyValuesSystem.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\vstdlib\strtools.h">
+      <Filter>public</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="public">
+      <UniqueIdentifier>{45ad95bf-a4a1-42c3-9bb1-c9ebf6b51b05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{0035efd3-9bbc-4c17-ac47-3bc5c1c37ffe}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
