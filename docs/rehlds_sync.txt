@@ -1,3 +1,9 @@
-Latest ReHLDS synced commit:
+Latest ReHLDS synced commit (RW17):
+6715402
+https://github.com/dreamstalker/rehlds/commit/6715402425e2247818086a51f9662c0605447177
+
+////////////////////////////
+
+Latest ReHLDS synced commit (AC96):
 6715402
 https://github.com/dreamstalker/rehlds/commit/6715402425e2247818086a51f9662c0605447177
