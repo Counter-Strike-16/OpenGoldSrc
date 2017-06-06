@@ -35,7 +35,6 @@
 #include "console/cmd.hpp"
 #include "console/cvar.hpp"
 #include "system/client.hpp"
-//#include "common/dll_state.h"
 #include "input/keys.hpp"
 
 /*
@@ -81,7 +80,7 @@ void CEngine::Unload()
 void CEngine::Unload_noVirt()
 {
 	Sys_ShutdownGame();
-	m_nDLLState = DLL_INACTIVE; // 0
+	m_nDLLState = DLL_INACTIVE;
 }
 
 void ForceReloadProfile()
@@ -126,7 +125,7 @@ bool CEngine::Load_noVirt(bool dedicated, char *basedir, const char *cmdline)
 {
 	bool success = false;
 	
-	SetState(DLL_ACTIVE); // 1
+	SetState(DLL_ACTIVE);
 	
 	if(Sys_InitGame(cmdline, basedir, game->GetMainWindowAddress(), dedicated))
 	{

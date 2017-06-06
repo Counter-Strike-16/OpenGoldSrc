@@ -46,7 +46,8 @@
 #include "graphics/screen.hpp"
 
 int net_drop;
-char gDownloadFile[256];
+
+char gDownloadFile[256] = {}; // MAX_PATH
 
 /*
 * Globals initialization
@@ -121,9 +122,7 @@ void Netchan_OutOfBand(netsrc_t sock, netadr_t adr, int length, byte *data)
 	SZ_Write(&send, data, length);
 
 	if(!cls.demoplayback)
-	{
 		NET_SendPacket(sock, send.cursize, send.data, adr);
-	}
 }
 
 void Netchan_OutOfBandPrint(netsrc_t sock, netadr_t adr, char *format, ...)
@@ -1069,7 +1068,7 @@ void Netchan_AddBufferToList(fragbuf_t **pplist, fragbuf_t *pbuf)
 	pprev->next = pbuf;
 }
 
-fragbuf_t *Netchan_AllocFragbuf(void)
+fragbuf_t *Netchan_AllocFragbuf()
 {
 	fragbuf_t *buf;
 
@@ -1926,7 +1925,7 @@ NOXREF void Netchan_UpdateProgress(netchan_t *chan)
 	scr_downloading.value = bestpercent;
 }
 
-void Netchan_Init(void)
+void Netchan_Init()
 {
 	Cvar_RegisterVariable(&net_log);
 	Cvar_RegisterVariable(&net_showpackets);

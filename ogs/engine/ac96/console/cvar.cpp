@@ -27,6 +27,7 @@
  */
 
 /// @file
+/// @brief dynamic variable tracking
 
 #include "precompiled.hpp"
 #include "console/cvar.hpp"
@@ -47,8 +48,8 @@
 	All cvar names are case insensitive! Values not
 */
 
-cvar_t *cvar_vars;
-char cvar_null_string[] = "";
+cvar_t *cvar_vars = NULL;
+char cvar_null_string[] = ""; // const char *
 
 /*
 ============
@@ -339,7 +340,7 @@ void Cvar_Set(const char *var_name, const char *value)
 
 	if(!var)
 	{
-		Con_DPrintf("%s: variable \"%s\" not found\n", __FUNCTION__, var_name);
+		Con_DPrintf("%s: variable \"%s\" not found\n", __FUNCTION__, var_name); // Con_Printf
 		return;
 	};
 
@@ -371,31 +372,34 @@ void Cvar_SetValue(const char *var_name, float value)
 
 void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 {
-	char *oldstr;
 	cvar_t *v, *c;
-	cvar_t dummyvar;
-
+	
+	// first check to see if it has already been defined
 	if(Cvar_FindVar(variable->name))
 	{
-		Con_Printf("Can't register variable \"%s\", already defined\n",
-		           variable->name);
+		Con_Printf("Can't register variable \"%s\", already defined\n", variable->name);
 		return;
 	};
-
+	
+	// check for overlap with a command
 	if(Cmd_Exists(variable->name))
 	{
 		Con_Printf("%s: \"%s\" is a command\n", __FUNCTION__, variable->name);
 		return;
 	};
-
-	oldstr = variable->string;
+	
+	// copy the value off, because future sets will Z_Free it
+	char *oldstr = variable->string;
 
 	// Alloc string, so it will not dissapear on side modules unloading and to
 	// maintain the same name during run
 	variable->string = (char *)Z_Malloc(Q_strlen(variable->string) + 1);
 	Q_strcpy(variable->string, oldstr);
 	variable->value = (float)Q_atof(oldstr);
-
+	
+	// Insert into list in alphabetical order
+	cvar_t dummyvar;
+	
 	dummyvar.name = " ";
 	dummyvar.next = cvar_vars;
 
@@ -411,7 +415,8 @@ void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 		c = v;
 		v = v->next;
 	};
-
+	
+	// link the variable in
 	c->next = variable;
 	variable->next = v;
 	cvar_vars = dummyvar.next;
@@ -420,12 +425,12 @@ void EXT_FUNC Cvar_RegisterVariable(cvar_t *variable)
 NOXREF void Cvar_RemoveHudCvars()
 {
 	NOXREFCHECK;
-
-	cvar_t *pVar;
-	cvar_t **pList;
-
-	pVar = cvar_vars;
-	pList = &cvar_vars;
+	
+	if( !cvar_vars )
+		return;
+	
+	cvar_t *pVar = cvar_vars;
+	cvar_t **pList = &cvar_vars;
 
 	while(pVar)
 	{
@@ -449,7 +454,7 @@ const char *Cvar_IsMultipleTokens(const char *varname)
 	int tokens;
 	char *name;
 
-	firstToken[0] = 0;
+	firstToken[0] = 0; //'\0'
 	tokens = 0;
 	name = (char *)varname;
 
@@ -693,20 +698,22 @@ NOXREF int Cvar_CountServerVariables()
 {
 	NOXREFCHECK;
 	
-	cvar_t *var = nullptr;
-	int i = 0;
+	int count = 0;
 	
-	for(i, var = cvar_vars; var; var = var->next)
+	for(cvar_t *var = cvar_vars; var; var = var->next)
 	{
 		if(var->flags & FCVAR_SERVER)
-			++i;
+			++count;
 	};
 	
-	return i;
+	return count;
 };
 
 void Cvar_UnlinkExternals()
 {
+	if( !cvar_vars )
+		return;
+	
 	cvar_t *pVar = cvar_vars;
 	cvar_t **pList = &cvar_vars;
 

@@ -65,11 +65,3 @@ const char *Key_KeynumToString(int nKey);
 //int Key_StringToKeynum(const char *str);
 
 int Key_GetKey(const char *sBinding); // int Key_GetKey();
-
-/*
-class CKeyboard
-{
-public:
-	bool IsKeyDown(int key);
-};
-*/

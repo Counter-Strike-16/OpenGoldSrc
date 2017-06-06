@@ -55,8 +55,8 @@ char *cmd_argv[MAX_ARGS];
 char *cmd_args = NULL;
 
 cmd_source_t cmd_source;
-qboolean cmd_wait;
-cmdalias_t *cmd_alias;
+qboolean cmd_wait = false; // bool
+cmdalias_t *cmd_alias = NULL;
 
 // int trashtest;
 // int *trashspot;
@@ -271,9 +271,7 @@ Just prints the rest of the line to the console
 */
 void Cmd_Echo_f()
 {
-	int c = Cmd_Argc();
-
-	for(int i = 1; i < c; ++i)
+	for(int i = 1; i < Cmd_Argc(); ++i)
 		Con_Printf("%s ", Cmd_Argv(i));
 
 	Con_Printf("\n");
@@ -399,8 +397,16 @@ struct cmd_function_s *Cmd_GetFirstCmd()
 	return cmd_functions;
 }
 
+/*
+============
+Cmd_Init
+============
+*/
 void Cmd_Init()
 {
+	//
+	// register our commands
+	//
 	Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
 	Cmd_AddCommand("exec", Cmd_Exec_f);
 	Cmd_AddCommand("echo", Cmd_Echo_f);
@@ -422,6 +428,11 @@ void Cmd_Shutdown()
 	cmd_functions = NULL; // TODO: Check that memory from functions is released too
 }
 
+/*
+============
+Cmd_Argc
+============
+*/
 int EXT_FUNC Cmd_Argc()
 {
 #ifndef SWDS
@@ -534,14 +545,12 @@ void EXT_FUNC Cmd_TokenizeString(char *text)
 NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name)
 {
 	NOXREFCHECK;
-
-	cmd_function_t *cmd;
-
-	for(cmd = cmd_functions; cmd; cmd = cmd->next)
+	
+	for(cmd_function_t *cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
-		if(!Q_stricmp(cmd_name, cmd->name))
+		if(!Q_stricmp(cmd_name, cmd->name)) // !Q_strcmp
 			return cmd;
-	}
+	};
 
 	return NULL;
 }
@@ -725,6 +734,11 @@ void Cmd_RemoveWrapperCmds()
 	Cmd_RemoveMallocedCmds(FCMD_WRAPPER_COMMAND);
 }
 
+/*
+============
+Cmd_Exists
+============
+*/
 qboolean Cmd_Exists(const char *cmd_name)
 {
 	cmd_function_t *cmd = cmd_functions;
@@ -948,18 +962,16 @@ Returns the position (1 to argc-1) in the command's argument list
 where the given parameter apears, or 0 if not present
 ================
 */
-NOXREF int Cmd_CheckParm(char *parm)
+NOXREF int Cmd_CheckParm(const char *parm)
 {
 	NOXREFCHECK;
 
 	if(!parm)
 		Sys_Error("%s: NULL", __FUNCTION__);
 
-	int c = Cmd_Argc();
-
-	for(int i = 1; i < c; ++i)
+	for(int i = 1; i < Cmd_Argc(); ++i)
 	{
-		if(!Q_stricmp(Cmd_Argv(i), parm)) // Q_strcasecmp
+		if(!Q_stricmp(Cmd_Argv(i), parm)) // !Q_strcasecmp
 			return i;
 	};
 

@@ -113,7 +113,7 @@ extern char com_cmdline[COM_MAX_CMD_LINE];
 typedef struct cache_user_s cache_user_t;
 
 extern cache_user_t *loadcache;
-extern unsigned char *loadbuf;
+extern byte *loadbuf;
 extern int loadsize;
 
 //============================================================================
@@ -219,9 +219,9 @@ NOBODY uint64 Q_strtoull(char *str);
 // strcpy that works correctly with overlapping src and dst buffers
 char *strcpy_safe(char *dst, char *src);
 
-unsigned char COM_Nibble(char c);
-void COM_HexConvert(const char *pszInput, int nInputLength, unsigned char *pOutput);
-NOXREF char *COM_BinPrintf(unsigned char *buf, int nLen);
+byte COM_Nibble(char c);
+void COM_HexConvert(const char *pszInput, int nInputLength, byte *pOutput);
+NOXREF char *COM_BinPrintf(byte *buf, int nLen);
 void COM_ExplainDisconnection(qboolean bPrint, char *fmt, ...);
 NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...);
 
@@ -243,13 +243,21 @@ void COM_FileBase(const char *in, char *out);
 char *COM_GetToken();
 void COM_UngetToken();
 
+/// Parse a token out of a string
 char *COM_Parse(char *data); // const char all?
+
+/// Parse a line out of a string. Used to parse out lines out of cfg files
 char *COM_ParseLine(char *data);
+
 //const char *COM_ParseFile(const char *data, char *token, int maxtoken);
 
 int COM_TokenWaiting(char *buffer);
 
-int COM_CheckParm(char *parm);
+/**
+*	Returns the position (1 to argc-1) in the program's argument list
+*	where the given parameter apears, or 0 if not present
+*/
+int COM_CheckParm(const char *parm);
 
 void COM_Init(char *basedir); // is basedir really present as arg in gs?
 void COM_InitArgv(int argc, char *argv[]); // const char?
@@ -260,7 +268,7 @@ void COM_Shutdown();
 char *va(char *format, ...);
 
 char *vstr(vec_t *v);
-NOXREF int memsearch(unsigned char *start, int count, int search);
+NOXREF int memsearch(byte *start, int count, int search);
 
 NOXREF void COM_WriteFile(char *filename, void *data, int len);
 NOXREF void COM_CopyFile(char *netpath, char *cachepath);
@@ -272,37 +280,37 @@ void COM_CreatePath(const char *path);
 NOXREF int COM_ExpandFilename(char *filename);
 int COM_FileSize(char *filename);
 
-unsigned char *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
+byte *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
 void COM_FreeFile(void *buffer);
 
 void COM_CopyFileChunk(FileHandle_t dst, FileHandle_t src, int nSize);
-NOXREF unsigned char *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile);
-unsigned char *COM_LoadHunkFile(char *path);
-unsigned char *COM_LoadTempFile(char *path, int *pLength);
+NOXREF byte *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, FileHandle_t *phFile);
+byte *COM_LoadHunkFile(char *path);
+byte *COM_LoadTempFile(char *path, int *pLength);
 void COM_LoadCacheFile(char *path, struct cache_user_s *cu);
-NOXREF unsigned char *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length);
+NOXREF byte *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length);
 
 NOXREF void COM_AddAppDirectory(char *pszBaseDir, const char *appName);
-void COM_AddDefaultDir(char *pszDir);
+void COM_AddDefaultDir(const char *pszDir);
 void COM_StripTrailingSlash(char *ppath);
 void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char *pDefault);
 qboolean COM_SetupDirectories(); // bool?
 void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOutdated);
 void COM_ListMaps(char *pszSubString);
 void COM_Log(char *pszFile, char *fmt, ...);
-unsigned char *COM_LoadFileForMe(char *filename, int *pLength);
+byte *COM_LoadFileForMe(char *filename, int *pLength);
 int COM_CompareFileTime(char *filename1, char *filename2, int *iCompare);
 void COM_GetGameDir(char *szGameDir);
 int COM_EntsForPlayerSlots(int nPlayers);
 void COM_NormalizeAngles(vec_t *angles);
 
-void COM_Munge(unsigned char *data, int len, int seq);
-void COM_UnMunge(unsigned char *data, int len, int seq);
+void COM_Munge(byte *data, int len, int seq);
+void COM_UnMunge(byte *data, int len, int seq);
 
-void COM_Munge2(unsigned char *data, int len, int seq);
-void COM_UnMunge2(unsigned char *data, int len, int seq);
+void COM_Munge2(byte *data, int len, int seq);
+void COM_UnMunge2(byte *data, int len, int seq);
 
-void COM_Munge3(unsigned char *data, int len, int seq);
-NOXREF void COM_UnMunge3(unsigned char *data, int len, int seq);
+void COM_Munge3(byte *data, int len, int seq);
+NOXREF void COM_UnMunge3(byte *data, int len, int seq);
 
 unsigned int COM_GetApproxWavePlayLength(const char *filepath);

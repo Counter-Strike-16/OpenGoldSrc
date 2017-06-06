@@ -832,7 +832,7 @@ int MSG_ReadBuf(int iSize, void *pbuf)
 char *MSG_ReadString()
 {
 	int c = 0, l = 0;
-	static char string[8192];
+	static char string[8192]; // 2048
 
 	while((c = MSG_ReadChar(), c) && c != -1 && l < ARRAYSIZE(string) - 1)
 	{
@@ -862,13 +862,15 @@ NOXREF float MSG_ReadAngle()
 	NOXREFCHECK;
 
 	int c = MSG_ReadChar();
+	
 #ifdef REHLDS_FIXES
 	if(c == -1) // FIXED: Added check for wrong value, but just return 0 instead
 	            // of -1 * (360.0 / 256)
 	{
 		return 0;
-	}
+	};
 #endif
+	
 	return (float)(c * (360.0 / 256));
 };
 

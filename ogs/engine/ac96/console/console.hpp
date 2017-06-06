@@ -31,15 +31,11 @@
 #pragma once
 
 #include <string>
-#include <list>
 #include "common/commontypes.h"
-#include "console/IConsole.hpp"
 
 const int CON_TEXTSIZE = 32768; // 16384;
 
-class CConVar;
-typedef std::list<CConVar*> tConVarList;
-
+/*
 typedef struct
 {
 	char text[CON_TEXTSIZE];
@@ -48,32 +44,33 @@ typedef struct
 	int x;       // offset in current line for next print
 	int display; // bottom of console displays this line
 } console_t;
+*/
 
-extern console_t con_main;
-extern console_t con_chat;
+//extern console_t con_main;
+//extern console_t con_chat;
 
-extern console_t *con; // point to either con_main or con_chat
+//extern console_t *con; // point to either con_main or con_chat
 
-extern int con_ormask;
+//extern int con_ormask;
 
-extern int con_totallines;
+//extern int con_totallines;
 extern qboolean con_initialized;
-extern byte *con_chars;
-extern int con_notifylines; // scan lines to clear for notify lines
+//extern byte *con_chars;
+//extern int con_notifylines; // scan lines to clear for notify lines
 
 //extern int con_backscroll;
-//extern qboolean con_forcedup; // because no entities to refresh
+extern qboolean con_forcedup; // because no entities to refresh
 
-void Con_DrawCharacter(int cx, int line, int num);
+//void Con_DrawCharacter(int cx, int line, int num);
 
 void Con_CheckResize();
 
 void Con_Init();
 void Con_Shutdown();
 
-void Con_DrawConsole(int lines /*, qboolean drawinput*/);
+//void Con_DrawConsole(int lines /*, qboolean drawinput*/);
 
-void Con_Print(const char *txt);
+//void Con_Print(const char *txt);
 void Con_Printf(const char *fmt, ...); // _format(1);
 void Con_DPrintf(const char *fmt, ...); // _format(1);
 //void Con_NPrintf(int idx, const char *fmt, ...);
@@ -83,13 +80,15 @@ void Con_SafePrintf(const char *fmt, ...);
 
 void Con_DrawNotify();
 void Con_ClearNotify();
-void Con_NotifyBox(const char *text); // during startup for sound / cd warnings
+//void Con_NotifyBox(const char *text); // during startup for sound / cd warnings
 
-void Con_DebugLog(const char *file, const char *fmt, ...);
+//void Con_DebugLog(const char *file, const char *fmt, ...);
 
-void Con_Clear_f();
+//void Con_Clear_f();
 void Con_ToggleConsole_f();
-void Con_Debug_f();
+//void Con_Debug_f();
+
+qboolean Con_IsVisible();
 
 /*
 
@@ -117,18 +116,4 @@ extern	console_t	con;
 void Con_DrawConsole (float frac);
 
 void Con_CenteredPrint (char *text);
-*/
-
-/*
-class CConsole : public IConsole
-{
-public:
-	void Printf(int anPrintLevel, const char *asMsg, ...);
-	
-	const char *GetConVarDesc(const char *asName);
-	
-	CConVar *GetConVar(const char *asName);
-private:
-	tConVarList mlstConVars;
-};
 */

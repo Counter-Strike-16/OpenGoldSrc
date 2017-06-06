@@ -26,14 +26,14 @@
 *
 */
 
-//#include "precompiled.hpp"
+#include "precompiled.hpp"
 #include "system/traceinit.h"
 #include "system/common.hpp"
 #include "system/system.hpp"
 
-CInitTracker g_InitTracker;
+static CInitTracker g_InitTracker;
 
-CInitTracker::CInitTracker(void)
+CInitTracker::CInitTracker()
 {
 	for(int l = 0; l < NUM_LISTS; l++)
 	{
@@ -42,7 +42,7 @@ CInitTracker::CInitTracker(void)
 	}
 }
 
-CInitTracker::~CInitTracker(void)
+CInitTracker::~CInitTracker()
 {
 	for(int l = 0; l < NUM_LISTS; l++)
 	{

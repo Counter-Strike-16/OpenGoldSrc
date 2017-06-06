@@ -31,6 +31,7 @@
 #pragma once
 
 #include "common/maintypes.h"
+#include "common/dll_state.h"
 #include "system/iengine.hpp"
 #include "system/igame.hpp"
 
@@ -49,7 +50,7 @@ public:
 	CEngine();
 	virtual ~CEngine();
 
-	virtual bool Load(bool dedicated, char *rootDir, const char *cmdLine);
+	virtual bool Load(bool dedicated, char *rootDir, /*const*/ char *cmdLine); // rootDir = basedir
 	virtual void Unload();
 	
 	virtual void SetState(int iState);
@@ -92,17 +93,17 @@ public:
 	int GetQuitting_noVirt();
 	void SetQuitting_noVirt(int quittype);
 private:
-	int m_nQuitting;
-	int m_nDLLState;
-	int m_nSubState;
+	int m_nQuitting{0};
+	int m_nDLLState{DLL_INACTIVE};
+	int m_nSubState{0};
 	
-	double m_fCurTime;
-	double m_fFrameTime;
-	double m_fOldTime;
+	double m_fCurTime{0.0};
+	double m_fFrameTime{0.0};
+	double m_fOldTime{0.0};
 	
-	bool m_bTrapMode;
-	bool m_bDoneTrapping;
+	bool m_bTrapMode{false};
+	bool m_bDoneTrapping{false};
 	
-	int m_nTrapKey;
-	int m_nTrapButtons;
+	int m_nTrapKey{0};
+	int m_nTrapButtons{0};
 };

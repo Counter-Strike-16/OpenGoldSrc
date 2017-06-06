@@ -33,7 +33,7 @@
 
 #include "common/commontypes.h"
 
-int CDAudio_Init();
+int CDAudio_Init(); // void
 void CDAudio_Shutdown();
 
 void CDAudio_Update();
@@ -45,6 +45,8 @@ void CDAudio_Pause();
 void CDAudio_Resume();
 
 //void CDAudio_Activate(qboolean active);
+
+//void PrimeMusicStream(char *filename, int looping);
 
 class CCDAudio
 {

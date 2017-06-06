@@ -41,11 +41,10 @@
 
 #include <csetjmp>
 #include "common/commontypes.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "public/FileSystem.h"
 
 // clang-format off
-
 #ifdef HOOK_ENGINE
 	#define host_name (*phost_name)
 	#define host_speeds (*phost_speeds)
@@ -79,7 +78,6 @@
 	#define host_enddemo (*phost_enddemo)
 	#define host_basepal (*phost_basepal)
 #endif // HOOK_ENGINE
-
 // clang-format on
 
 //=============================================================================

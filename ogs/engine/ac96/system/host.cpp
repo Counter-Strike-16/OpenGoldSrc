@@ -62,7 +62,7 @@
 
 double realtime; // = 0 // without any filtering or bounding
 double rolling_fps;
-quakeparms_t host_parms;
+quakeparms_t host_parms = {};
 qboolean host_initialized; //bool // true if into command execution
 double host_frametime;
 int host_framecount;
@@ -179,7 +179,7 @@ void NORETURN Host_Error(const char *error, ...)
 	Q_vsnprintf(string, sizeof(string), error, argptr);
 	va_end(argptr);
 
-	if(g_psv.active && developer.value != 0.0)
+	if(g_psv.active && developer.value != 0.0) // if(!g_psv.active ...) ?
 		CL_WriteMessageHistory(0, 0);
 
 	Con_Printf("%s: %s\n", __FUNCTION__, string);
@@ -1204,7 +1204,7 @@ int Host_Init(quakeparms_t *parms) // return bool?
 	Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark();
 	
-	giActive = DLL_ACTIVE; // 1
+	giActive = DLL_ACTIVE;
 	scr_skipupdate = FALSE; // false
 
 	CheckGore();

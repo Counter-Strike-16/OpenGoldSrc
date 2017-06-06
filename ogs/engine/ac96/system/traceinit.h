@@ -49,13 +49,14 @@ public:
 		NUM_LISTS = 4,
 	};
 
-	class InitFunc
+	struct InitFunc
 	{
-	public:
 		const char *initname;
 		const char *shutdownname;
+		
 		int referencecount;
 		int sequence;
+		
 		bool warningprinted;
 
 		double inittime;
@@ -67,9 +68,8 @@ public:
 
 	void Init(const char *init, const char *shutdown, int listnum);
 	void Shutdown(const char *shutdown, int listnum);
-
-private:
-	int m_nNumFuncs[NUM_LISTS];
+private: // public?
+	int m_nNumFuncs[NUM_LISTS]; // = {};
 	CUtlVector<InitFunc *> m_Funcs[NUM_LISTS];
 };
 

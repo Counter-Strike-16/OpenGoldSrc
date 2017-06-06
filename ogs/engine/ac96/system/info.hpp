@@ -50,13 +50,19 @@ const int MAX_LOCALINFO = MAX_INFO_STRING * 128;
 #endif // REHLDS_FIXES
 
 const char *Info_ValueForKey(const char *s, const char *key);
+
 void Info_RemoveKey(char *s, const char *key);
 void Info_RemovePrefixedKeys(char *s, const char prefix);
-qboolean Info_IsKeyImportant(const char *key);
+
+qboolean Info_IsKeyImportant(const char *key); // bool
+
 char *Info_FindLargestKey(char *s, int maxsize);
+
 void Info_SetValueForStarKey(char *s, const char *key, const char *value, int maxsize);
 void Info_SetValueForKey(char *s, const char *key, const char *value, int maxsize);
+
 void Info_Print(const char *s);
+
 qboolean Info_IsValid(const char *s);
 
 #ifdef REHLDS_FIXES

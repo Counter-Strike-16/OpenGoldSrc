@@ -186,7 +186,8 @@ CustomizationError:
 			*pCustomization = pCust;
 		pCust->pNext = pListHead->pNext;
 		pListHead->pNext = pCust;
-	}
+	};
+	
 	return bError == FALSE;
 }
 

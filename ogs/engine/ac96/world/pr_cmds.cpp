@@ -2434,14 +2434,11 @@ void EXT_FUNC PF_changelevel_I(const char *s1, const char *s2)
 void SeedRandomNumberGenerator()
 {
 	idum = -(int)CRehldsPlatformHolder::get()->time(NULL);
+	
 	if(idum > 1000)
-	{
 		idum = -idum;
-	}
 	else if(idum > -1000)
-	{
 		idum -= 22261048;
-	}
 }
 
 #define IA 16807
@@ -2518,10 +2515,9 @@ int32 EXT_FUNC RandomLong(int32 lLow, int32 lHigh)
 	unsigned long maxAcceptable;
 	unsigned long x = lHigh - lLow + 1;
 	unsigned long n;
+	
 	if(x <= 0 || MAX_RANDOM_RANGE < x - 1)
-	{
 		return lLow;
-	}
 
 	// The following maps a uniform distribution on the interval
 	// [0,MAX_RANDOM_RANGE]

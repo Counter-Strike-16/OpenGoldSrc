@@ -35,6 +35,16 @@
 
 #include "common/maintypes.h"
 
+#ifdef HOOK_ENGINE
+	#define gMessageTable (*pgMessageTable)
+	#define gMessageTableCount (*pgMessageTableCount)
+	#define gMessageParms (*pgMessageParms)
+
+	#define gNetworkTextMessageBuffer (*pgNetworkTextMessageBuffer)
+	#define gNetworkMessageNames (*pgNetworkMessageNames)
+	#define gNetworkTextMessage (*pgNetworkTextMessage)
+#endif // HOOK_ENGINE
+
 const char DEMO_MESSAGE[] = "__DEMOMESSAGE__";
 
 const char NETWORK_MESSAGE1[] = "__NETMESSAGE__1";
@@ -50,18 +60,6 @@ const int MSGFILE_TEXT = 1;
 const int NAME_HEAP_SIZE = 16384;
 const int MAX_MESSAGES = 1000;
 
-#ifdef HOOK_ENGINE
-
-#define gMessageTable (*pgMessageTable)
-#define gMessageTableCount (*pgMessageTableCount)
-#define gMessageParms (*pgMessageParms)
-
-#define gNetworkTextMessageBuffer (*pgNetworkTextMessageBuffer)
-#define gNetworkMessageNames (*pgNetworkMessageNames)
-#define gNetworkTextMessage (*pgNetworkTextMessage)
-
-#endif // HOOK_ENGINE
-
 typedef struct client_textmessage_s client_textmessage_t;
 
 extern client_textmessage_t *gMessageTable;
@@ -72,19 +70,22 @@ extern char gNetworkTextMessageBuffer[MAX_NETMESSAGE][512];
 extern const char *gNetworkMessageNames[MAX_NETMESSAGE];
 extern client_textmessage_t gNetworkTextMessage[MAX_NETMESSAGE];
 
-char *memfgets(unsigned char *pMemFile, int fileSize, int *pFilePos, char *pBuffer, int bufferSize);
+char *memfgets(byte *pMemFile, int fileSize, int *pFilePos, char *pBuffer, int bufferSize);
+
 int IsComment(char *pText);
 int IsStartOfText(char *pText);
 int IsEndOfText(char *pText);
 int IsWhiteSpace(char space);
+
 NOXREF const char *SkipSpace(const char *pText);
 NOXREF const char *SkipText(const char *pText);
+
 NOXREF int ParseFloats(const char *pText, float *pFloat, int count);
 void TrimSpace(const char *source, char *dest);
 NOXREF int IsToken(const char *pText, const char *pTokenName);
 NOXREF int ParseDirective(const char *pText);
 
-NOXREF void TextMessageParse(unsigned char *pMemFile, int fileSize);
+NOXREF void TextMessageParse(byte *pMemFile, int fileSize);
 
 NOXREF void TextMessageShutdown();
 NOXREF void TextMessageInit();

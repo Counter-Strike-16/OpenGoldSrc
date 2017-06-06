@@ -33,9 +33,9 @@
 typedef struct netadr_s netadr_t;
 
 #ifdef HOOK_ENGINE
-#define rateChecker (*prateChecker)
+	#define rateChecker (*prateChecker)
 
-extern int (*pCheckIP)(netadr_t adr);
+	extern int (*pCheckIP)(netadr_t adr);
 #endif // HOOK_ENGINE
 
 extern class CIPRateLimit rateChecker;

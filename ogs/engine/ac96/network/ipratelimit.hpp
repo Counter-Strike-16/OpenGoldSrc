@@ -37,14 +37,10 @@ typedef struct netadr_s netadr_t;
 class CIPRateLimit
 {
 public:
-	CIPRateLimit()
-	{
-	}
-	~CIPRateLimit()
-	{
-	}
+	CIPRateLimit(){}
+	~CIPRateLimit(){}
+	
 	bool CheckIP(netadr_t adr);
-
 private:
 	enum
 	{
@@ -58,10 +54,9 @@ private:
 		typedef int ip_t;
 		ip_t ip;
 
-		long lastTime;
+		long lastTime; // int?
 		int count;
 	} iprate_t;
-
 private:
 	CUtlRBTree<CIPRateLimit::iprate_s, int> m_IPTree;
 

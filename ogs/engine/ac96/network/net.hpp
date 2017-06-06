@@ -33,7 +33,7 @@
 #include "common/commontypes.h"
 #include "common/enums.h"
 #include "common/netadr.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "rehlds/common_rehlds.h"
 #include "network/networktypes.hpp"
 
@@ -343,14 +343,15 @@ void NET_OpenIPX();
 
 void NET_GetLocalAddress();
 
-int NET_IsConfigured();
 void NET_Config(qboolean multiplayer);
+int NET_IsConfigured();
 
 void MaxPlayers_f();
 
 void NET_Init();
-void NET_ClearLagData(qboolean bClient, qboolean bServer);
 void NET_Shutdown();
+
+void NET_ClearLagData(qboolean bClient, qboolean bServer);
 
 qboolean NET_JoinGroup(netsrc_t sock, netadr_t &addr);
 qboolean NET_LeaveGroup(netsrc_t sock, netadr_t &addr);

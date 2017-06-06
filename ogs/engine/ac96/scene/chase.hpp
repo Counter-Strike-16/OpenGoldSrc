@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,24 +27,16 @@
  */
 
 /// @file
+/// @brief chase camera defs
 
-#include "precompiled.hpp"
+#pragma once
 
-// TODO: security modules are obsolete and no longer used.
-// Remove all of this - Solokiller
+typedef struct cvar_s cvar_t;
 
-// TODO: Implement security module
-//cl_enginefunc_dst_t *pg_engdstAddrs;
-//??cl_enginefunc_dst_t g_engdstAddrs = k_engdstNull
+extern cvar_t chase_active;
 
-modfuncs_t g_modfuncs = {};
-module_t g_module = {};
+void Chase_Init();
+void Chase_Reset();
+void Chase_Update();
 
-BlobFootprint_t g_blobfootprintModule = {};
-
-modshelpers_t g_modshelpers =
-{
-	&SV_KickPlayer
-};
-
-void *g_pvModuleSpecial = nullptr;
+//void TraceLine(vec_t *start, vec_t *end, vec_t *impact);

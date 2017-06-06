@@ -48,8 +48,8 @@ cachewad_t *menu_wad; // NOXREF, reference of client-side code
 char szCustName[10];
 char decal_names[MAX_DECALS][16];
 
-qboolean m_bDrawInitialized;
-qboolean gfCustomBuild;
+qboolean m_bDrawInitialized = false; // bool
+qboolean gfCustomBuild = false; // bool
 
 void Draw_Shutdown()
 {
