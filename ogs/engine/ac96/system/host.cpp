@@ -556,7 +556,7 @@ void Host_ClearMemory(qboolean bQuiet)
 	if(!bQuiet)
 		Con_DPrintf("Clearing memory\n");
 
-	//D_FlushCaches(); // TODO: uncomment
+	D_FlushCaches();
 	Mod_ClearAll();
 	
 	if(host_hunklevel)
@@ -991,8 +991,6 @@ qboolean Host_IsSinglePlayerGame()
 		return g_psvs.maxclients == 1;
 	else
 		return cl.maxclients == 1;
-	
-	return false;
 }
 
 qboolean Host_IsServerActive()

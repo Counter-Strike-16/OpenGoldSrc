@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -35,7 +36,7 @@
 #include "system/system.hpp"
 #include "tier0/commonmacros.h"
 
-wadlist_t wads[NUM_WADS];
+/*static*/ wadlist_t wads[NUM_WADS];
 
 /*
 ==================
@@ -48,7 +49,7 @@ Space padding is so names can be printed nicely in tables.
 Can safely be performed in place.
 ==================
 */
-void W_CleanupName(char *in, char *out)
+void W_CleanupName(const char *in, char *out)
 {
 	int i;
 	int c;
@@ -56,10 +57,13 @@ void W_CleanupName(char *in, char *out)
 	for(i = 0; i < 16; i++)
 	{
 		c = in[i];
+		
 		if(!c)
 			break;
+		
 		if(c >= 'A' && c <= 'Z')
 			c += ('a' - 'A');
+		
 		out[i] = c;
 	};
 	
@@ -72,7 +76,7 @@ void W_CleanupName(char *in, char *out)
 W_LoadWadFile
 ====================
 */
-int W_LoadWadFile(char *filename)
+int W_LoadWadFile(const char *filename)
 {
 	int slot = 0; // -1?
 	
@@ -130,7 +134,7 @@ int W_LoadWadFile(char *filename)
 W_GetLumpinfo
 =============
 */
-lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror)
+lumpinfo_t *W_GetLumpinfo(int wad, const char *name, qboolean doerror)
 {
 	int i;
 	lumpinfo_t *lump_p;
@@ -151,7 +155,7 @@ lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror)
 	return NULL;
 };
 
-void *W_GetLumpName(int wad, char *name)
+void *W_GetLumpName(int wad, const char *name)
 {
 	lumpinfo_t *lump = W_GetLumpinfo(wad, name, TRUE);
 	
@@ -177,6 +181,7 @@ void W_Shutdown()
 	for(int slot = 0; slot < NUM_WADS; ++slot)
 	{
 		wadlist_t *wad = &wads[slot];
+		
 		if(!wad->loaded)
 			break;
 
