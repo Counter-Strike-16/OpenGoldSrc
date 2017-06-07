@@ -30,8 +30,9 @@
 
 #pragma once
 
-#include "maintypes.h"
+#include "commom/maintypes.h"
 #include "public/archtypes.h"
+//#include "common/const.h"
 
 typedef struct edict_s edict_t;
 typedef struct entvars_s entvars_t;

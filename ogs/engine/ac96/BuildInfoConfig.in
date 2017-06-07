@@ -32,17 +32,17 @@
 #pragma once
 
 // Internal codename
-constexpr auto CODENAME = "AC96"; // Ancient Code/Absolute Crap '96
+constexpr auto CODENAME = "AC96"; // Ancient Code '96
 
 // Target build num
 // Current engine build num (latest successful) is equals to (BUILD_NUMBER - 1)
-constexpr auto BUILD_NUMBER = 0003; // 0015 for rw17 (actually 13?)
+constexpr auto BUILD_NUMBER = 0003;
 
 constexpr auto DEV_STAGE = "Pre-Alpha";
 
 constexpr auto VERSION_MAJOR = 0;
 constexpr auto VERSION_MINOR = 1;
-constexpr auto VERSION_PATCH = 2;
+constexpr auto VERSION_PATCH = 3;
 
 #ifdef _DEBUG
 	constexpr auto BUILD_TYPE = "Debug";

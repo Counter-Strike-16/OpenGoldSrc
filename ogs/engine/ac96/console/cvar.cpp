@@ -61,7 +61,7 @@ Reads in all archived cvars
 void Cvar_Init()
 {
 #ifndef SWDS
-// TODO: add client code, possibly none
+	// TODO: add client code, possibly none
 #endif
 
 	Cvar_CmdInit();

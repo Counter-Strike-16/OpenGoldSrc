@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -31,10 +32,10 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 
 #ifdef HOOK_ENGINE
-#define wads (*pwads)
+	#define wads (*pwads)
 #endif
 
 const int NUM_WADS = 2;
@@ -79,12 +80,12 @@ typedef struct wadlist_s
 
 extern wadlist_t wads[NUM_WADS];
 
-void W_CleanupName(char *in, char *out);
+void W_CleanupName(const char *in, char *out);
 
-int W_LoadWadFile(char *filename); // const char
+int W_LoadWadFile(const char *filename);
 
-lumpinfo_t *W_GetLumpinfo(int wad, char *name, qboolean doerror);
-void *W_GetLumpName(int wad, char *name);
+lumpinfo_t *W_GetLumpinfo(int wad, const char *name, qboolean doerror);
+void *W_GetLumpName(int wad, const char *name);
 NOXREF void *W_GetLumpNum(int wad, int num);
 
 void W_Shutdown();

@@ -235,7 +235,7 @@ typedef struct client_state_s
 	// and teleport times
 	vec3_t viewangles;
 	
-	vec3_t punchangle; // temporary view kick from weapon firing
+	vec3_t punchangle; ///< temporary view kick from weapon firing
 	vec3_t crosshairangle;
 
 	vec3_t simorg;
@@ -258,11 +258,11 @@ typedef struct client_state_s
 	int waterlevel;
 	int usehull;
 
-	float maxspeed; // local value for maximum movement speed (for prediction)
+	float maxspeed; ///< local value for maximum movement speed (for prediction)
 
 	int pushmsec;
 	int light_level;
-	int intermission; // don't change view angle, full screen, etc
+	int intermission; ///< don't change view angle, full screen, etc
 
 	double mtime[2];
 	

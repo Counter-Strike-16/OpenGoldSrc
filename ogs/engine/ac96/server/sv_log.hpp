@@ -32,24 +32,27 @@
 
 #include "system/server_static.hpp"
 
+#ifdef HOOK_ENGINE
+	#define firstLog (*pfirstLog)
+#endif // HOOK_ENGINE
+
 typedef struct loglist
 {
 	server_log_t log;
 	struct loglist *next;
 } LOGLIST_T;
 
-#ifdef HOOK_ENGINE
-#define firstLog (*pfirstLog)
-#endif // HOOK_ENGINE
-
 extern LOGLIST_T *firstLog;
 
 void Log_Printf(const char *fmt, ...);
+
 void Log_PrintServerVars();
+
 void Log_Close();
 void Log_Open();
 
 void SV_SetLogAddress_f();
 void SV_AddLogAddress_f();
 void SV_DelLogAddress_f();
+
 void SV_ServerLog_f();

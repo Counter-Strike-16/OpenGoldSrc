@@ -115,7 +115,6 @@ void Info_RemoveKey(char *s, const char *key)
 	char value[MAX_KV_LEN];
 	char *start;
 	char *c;
-	int cmpsize;
 	int nCount;
 
 	if(Q_strstr(key, "\\"))
@@ -124,7 +123,8 @@ void Info_RemoveKey(char *s, const char *key)
 		return;
 	}
 
-	cmpsize = Q_strlen(key);
+	int cmpsize = Q_strlen(key);
+	
 	if(cmpsize > MAX_KV_LEN - 1)
 		cmpsize = MAX_KV_LEN - 1;
 

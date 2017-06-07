@@ -31,7 +31,7 @@
 #pragma once
 
 #ifdef HOOK_ENGINE
-#define gSystemWrapper (*pgSystemWrapper)
+	#define gSystemWrapper (*pgSystemWrapper)
 #endif // HOOK_ENGINE
 
 #include "ObjectList.h"
@@ -75,7 +75,7 @@ public:
 
 class Panel;
 
-class SystemWrapper: public IBaseSystem, public BaseSystemModule
+class SystemWrapper : public IBaseSystem, public BaseSystemModule
 {
 public:
 	bool Init(IBaseSystem *system, int serial, char *name);
@@ -155,7 +155,7 @@ extern SystemWrapper gSystemWrapper;
 void SystemWrapper_Init();
 void SystemWrapper_ShutDown();
 
-void SystemWrapper_RunFrame(double time); //float frametime
+void SystemWrapper_RunFrame(double time);
 
 BOOL SystemWrapper_LoadModule(char *interfacename, char *library, char *instancename = nullptr);
 void SystemWrapper_ExecuteString(char *command);

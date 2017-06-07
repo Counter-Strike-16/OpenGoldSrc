@@ -57,7 +57,7 @@ hash_pack_header_t hash_pack_header;
 
 #endif // HOOK_ENGINE
 
-qboolean HPAK_GetDataPointer(char *pakname, struct resource_s *pResource, unsigned char **pbuffer, int *bufsize)
+qboolean HPAK_GetDataPointer(char *pakname, struct resource_s *pResource, byte **pbuffer, int *bufsize)
 {
 	qboolean retval = FALSE;
 	FileHandle_t fp;
@@ -172,7 +172,7 @@ qboolean HPAK_GetDataPointer(char *pakname, struct resource_s *pResource, unsign
 	return retval;
 }
 
-qboolean HPAK_FindResource(hash_pack_directory_t *pDir, unsigned char *hash, struct resource_s *pResourceEntry)
+qboolean HPAK_FindResource(hash_pack_directory_t *pDir, byte *hash, struct resource_s *pResourceEntry)
 {
 	for(int i = 0; i < pDir->nEntries; i++)
 	{
@@ -403,9 +403,7 @@ void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResourc
 	}
 
 	if(pNewEntry == NULL)
-	{
 		pNewEntry = &newdirectory.p_rgEntries[newdirectory.nEntries - 1];
-	}
 
 	Q_memset(pNewEntry, 0, sizeof(hash_pack_entry_t));
 	FS_Seek(iWrite, hash_pack_header.nDirectoryOffset, FILESYSTEM_SEEK_HEAD);
@@ -458,7 +456,8 @@ void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 	{
 		Con_Printf("%s:  Invalid arguments\n", __FUNCTION__);
 		return;
-	}
+	};
+	
 	HPAK_FlushHostQueue();
 
 #ifdef REHLDS_FIXES
@@ -648,7 +647,7 @@ qboolean HPAK_ResourceForIndex(char *pakname, int nIndex, struct resource_s *pRe
 	return TRUE;
 }
 
-qboolean HPAK_ResourceForHash(char *pakname, unsigned char *hash, struct resource_s *pResourceEntry)
+qboolean HPAK_ResourceForHash(char *pakname, byte *hash, struct resource_s *pResourceEntry)
 {
 	qboolean bFound;
 	hash_pack_header_t header;

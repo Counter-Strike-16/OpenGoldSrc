@@ -33,7 +33,7 @@
 #include "system/client.hpp"
 #include "common/commontypes.h"
 #include "engine/eiface.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "public/FileSystem.h"
 #include "public/archtypes.h"
 
@@ -113,19 +113,26 @@ extern double cpuPercent;
 extern int32 startTime;
 extern int current_skill;
 extern int gHostSpawnCount;
+
 extern CareerStateType g_careerState;
+
 extern SV_SAVEGAMECOMMENT_FUNC g_pSaveGameCommentFunc;
+
 extern qboolean g_bMajorMapChange;
+
 extern cvar_t voice_recordtofile;
 extern cvar_t voice_inputfromfile;
+
 extern TITLECOMMENT gTitleComments[66];
+
 extern TYPEDESCRIPTION gGameHeaderDescription[3];
 extern TYPEDESCRIPTION gSaveHeaderDescription[13];
 extern TYPEDESCRIPTION gAdjacencyDescription[4];
 extern TYPEDESCRIPTION gEntityTableDescription[5];
 extern TYPEDESCRIPTION gLightstyleDescription[2];
+
 extern cvar_t gHostMap;
-extern int g_iQuitCommandIssued;
+extern int g_iQuitCommandIssued; // qboolean
 extern char *g_pPostRestartCmdLineArgs;
 
 void SV_GetPlayerHulls();

@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -46,16 +47,18 @@ extern float v_blend[4];
 
 void V_Init();
 
-void V_RenderView();
+//void V_RenderView();
 
-void V_UpdatePalette();
+//void V_UpdatePalette();
 
-void V_Register();
+//void V_Register();
 
-void V_ParseDamage();
+//void V_ParseDamage();
 
-void V_SetContentsColor(int contents);
+//void V_SetContentsColor(int contents);
 
-void V_CalcBlend();
+//void V_CalcBlend();
 
-//float V_CalcRoll (vec3_t angles, vec3_t velocity);
+//float V_CalcRoll(vec3_t angles, vec3_t velocity);
+
+qboolean V_CheckGamma();

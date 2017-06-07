@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -76,7 +77,7 @@ player_state_t *view_message;
 /*
 ==============================================================================
 
-                                                PALETTE FLASHES
+PALETTE FLASHES
 
 ==============================================================================
 */
@@ -104,7 +105,7 @@ void BuildGammaTable(float g)
 		for(i = 0; i < 256; i++)
 			gammatable[i] = i;
 		return;
-	}
+	};
 
 	for(i = 0; i < 256; i++)
 	{
@@ -114,8 +115,8 @@ void BuildGammaTable(float g)
 		if(inf > 255)
 			inf = 255;
 		gammatable[i] = inf;
-	}
-}
+	};
+};
 
 /*
 =================
@@ -135,7 +136,7 @@ qboolean V_CheckGamma()
 	vid.recalc_refdef = 1; // force a surface cache flush
 
 	return true;
-}
+};
 
 /*
 ===============
@@ -147,48 +148,21 @@ void V_ParseDamage()
 	// Deprecated
 	// Moved to client dll (CHud::MsgFunc_Damage) and unused
 
-	int armor, blood;
 	vec3_t from;
-	int i;
 	vec3_t forward, right, up;
-	float side;
-	float count;
 
-	armor = 0;
-	blood = 0;
-	for(i = 0; i < 3; i++)
+	int armor = 0;
+	int blood = 0;
+	
+	for(int i = 0; i < 3; i++)
 		from[i] = 0;
 
-	count = blood * 0.5 + armor * 0.5;
+	float count = blood * 0.5 + armor * 0.5;
+	
 	if(count < 10)
 		count = 10;
 
 	cl.faceanimtime = cl.time + 0.2; // but sbar face into pain frame
-
-	cl.cshifts[CSHIFT_DAMAGE].percent += 3 * count;
-	if(cl.cshifts[CSHIFT_DAMAGE].percent < 0)
-		cl.cshifts[CSHIFT_DAMAGE].percent = 0;
-	if(cl.cshifts[CSHIFT_DAMAGE].percent > 150)
-		cl.cshifts[CSHIFT_DAMAGE].percent = 150;
-
-	if(armor > blood)
-	{
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[0] = 200;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[1] = 100;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[2] = 100;
-	}
-	else if(armor)
-	{
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[0] = 220;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[1] = 50;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[2] = 50;
-	}
-	else
-	{
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[0] = 255;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[1] = 0;
-		cl.cshifts[CSHIFT_DAMAGE].destcolor[2] = 0;
-	}
 
 	//
 	// calculate view angle kicks
@@ -198,7 +172,7 @@ void V_ParseDamage()
 
 	AngleVectors(cl.simangles, forward, right, up);
 
-	side = DotProduct(from, right);
+	float side = DotProduct(from, right);
 	v_dmg_roll = count * side * v_kickroll.value;
 
 	side = DotProduct(from, forward);
@@ -242,25 +216,18 @@ Underwater, lava, etc each has a color shift
 void V_SetContentsColor(int contents)
 {
 	if(!v_contentblend.value)
-	{
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		return;
-	}
 
 	switch(contents)
 	{
 	case CONTENTS_EMPTY:
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		break;
 	case CONTENTS_LAVA:
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_lava;
 		break;
 	case CONTENTS_SOLID:
 	case CONTENTS_SLIME:
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_slime;
 		break;
 	default:
-		cl.cshifts[CSHIFT_CONTENTS] = cshift_water;
 	}
 }
 
@@ -273,34 +240,16 @@ void V_CalcPowerupCshift()
 {
 	if(cl.stats[STAT_ITEMS] & IT_QUAD)
 	{
-		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
-		cl.cshifts[CSHIFT_POWERUP].percent = 30;
 	}
 	else if(cl.stats[STAT_ITEMS] & IT_SUIT)
 	{
-		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
-		cl.cshifts[CSHIFT_POWERUP].percent = 20;
 	}
 	else if(cl.stats[STAT_ITEMS] & IT_INVISIBILITY)
 	{
-		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
-		cl.cshifts[CSHIFT_POWERUP].percent = 100;
 	}
 	else if(cl.stats[STAT_ITEMS] & IT_INVULNERABILITY)
 	{
-		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
-		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
-		cl.cshifts[CSHIFT_POWERUP].percent = 30;
 	}
-	else
-		cl.cshifts[CSHIFT_POWERUP].percent = 0;
 }
 
 /*
@@ -694,13 +643,9 @@ void V_CalcShake()
 
 	// ramp up frequency over duration
 	if(fraction)
-	{
 		freq = (clgame.shake.frequency / fraction);
-	}
 	else
-	{
 		freq = 0;
-	}
 
 	// square fraction to approach zero more quickly
 	fraction *= fraction;
@@ -715,11 +660,9 @@ void V_CalcShake()
 	clgame.shake.applied_angle = clgame.shake.angle * fraction;
 
 	// drop amplitude a bit, less for higher frequency shakes
-	localAmp =
-	clgame.shake.amplitude *
-	(host.frametime / (clgame.shake.duration * clgame.shake.frequency));
+	localAmp = clgame.shake.amplitude * (host.frametime / (clgame.shake.duration * clgame.shake.frequency));
 	clgame.shake.amplitude -= localAmp;
-}
+};
 
 /*
 =============
@@ -734,4 +677,16 @@ void V_ApplyShake(float *origin, float *angles, float factor)
 
 	if(angles)
 		angles[ROLL] += clgame.shake.applied_angle * factor;
+};
+
+int V_ScreenShake( const char* pszName, int iSize, void* pbuf )
+{
+	// TODO
+	return 0;
+};
+
+int V_ScreenFade( const char* pszName, int iSize, void* pbuf )
+{
+	// TODO
+	return 0;
 };

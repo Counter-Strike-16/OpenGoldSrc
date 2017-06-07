@@ -36,7 +36,7 @@ constexpr auto CODENAME = "RW17"; // ReWrite '17 // AC96 (Ancient Code/Absolute 
 
 // Target build num
 // Current engine build num (latest successful) is equals to (BUILD_NUMBER - 1)
-constexpr auto BUILD_NUMBER = 0015;
+constexpr auto BUILD_NUMBER = 0015; // actually 13?
 
 constexpr auto DEV_STAGE = "Pre-Alpha";
 

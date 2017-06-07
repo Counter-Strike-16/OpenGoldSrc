@@ -36,27 +36,45 @@ namespace
 {
 
 #ifndef OGS_EVENTAPI_NULL_IMPL
-void EventAPI_PlaySound(int ent, float *origin, int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch){};
 
-void EventAPI_StopSound(int ent, int channel, const char *sample){};
-
-int EventAPI_FindModelIndex(const char *pmodel)
+//EV_PlaySound
+void EventAPI_PlaySound(int ent,
+						float *origin,
+						int channel,
+						const char *sample,
+						float volume,
+						float attenuation,
+						int fFlags,
+						int pitch)
 {
+	// TODO
+};
+
+void EventAPI_StopSound(int ent, int channel, const char *sample) // EV_StopSound
+{
+	// TODO
+};
+
+int EventAPI_FindModelIndex(const char *pmodel) // EV_FindModelIndex
+{
+	for( int i = 1; i < cl.model_precache_count; ++i )
+	{
+		if( cl.model_precache[ i ] && !Q_stricmp( pmodel, cl.model_precache[ i ]->name ) )
+			return i;
+	};
+	
 	return 0;
 };
 
-int EventAPI_IsLocal /*Player*/ (int playernum)
+int EventAPI_IsLocal /*Player*/ (int playernum) // EV_IsLocal
 {
-	if(playernum == cl.playernum)
-		return true;
-
-	return false;
+	return cl.playernum == playernum;
 };
 
-int EventAPI_LocalPlayerDucking()
+int EventAPI_LocalPlayerDucking() // EV_LocalPlayerDucking
 {
-	//return cl.predicted.usehull == 1;
-	return 0;
+	// TODO: define constant - Solokiller
+	return cl.usehull == 1; // true?
 };
 
 void EventAPI_LocalPlayerViewheight(float *view_ofs)
@@ -68,7 +86,7 @@ void EventAPI_LocalPlayerViewheight(float *view_ofs)
 	//if(CL_IsPredictionActive())
 		//VectorCopy(cl.predicted.viewofs, view_ofs);
 	//else
-		//VectorCopy(cl.frame.client.view_ofs, view_ofs);
+		VectorCopy(cl.viewheight, view_ofs);
 };
 
 void EventAPI_LocalPlayerBounds(int hull, float *mins, float *maxs)
@@ -94,30 +112,55 @@ int EventAPI_IndexFromTrace(struct pmtrace_s *pTrace)
 	return -1;
 };
 
-struct physent_s *EventAPI_GetPhysent(int idx)
+struct physent_s *EventAPI_GetPhysent(int idx) // physent_t *EV_GetPhysent
 {
-	if(idx >= 0 && idx < g_clmove.numphysent)
+	if(idx >= 0 && idx < g_clmove.numphysent) // pmove->numphysent
 	{
 		// return physent
-		return &g_clmove.physents[idx];
+		return &g_clmove.physents[idx]; // pmove->
 	};
 
 	return NULL;
 };
 
-void EventAPI_SetUpPlayerPrediction(int dopred, int bIncludeLocalClient){};
+void EventAPI_SetUpPlayerPrediction(int dopred, int bIncludeLocalClient) // EV_SetUpPlayerPrediction
+{
+	CL_SetUpPlayerPrediction( dopred != 0, bIncludeLocalClient != 0 );
+};
 
-void EventAPI_PushPMStates(){};
+void EventAPI_PushPMStates()
+{
+	//
+};
 
-void EventAPI_PopPMStates(){};
+void EventAPI_PopPMStates()
+{
+	//
+};
 
-void EventAPI_SetSolidPlayers(int playernum){};
+void EventAPI_SetSolidPlayers(int playernum)
+{
+	//
+};
 
-void EventAPI_SetTraceHull(int hull){};
+void EventAPI_SetTraceHull(int hull) // EV_SetTraceHull
+{
+	//pmove->
+	g_clmove.usehull = hull;
+};
 
-void EventAPI_PlayerTrace(float *start, float *end, int traceFlags, int ignore_pe, struct pmtrace_s *tr){};
+// EV_PlayerTrace
+void EventAPI_PlayerTrace(float *start, float *end, int traceFlags, int ignore_pe, struct pmtrace_s *tr)
+{
+	*tr = PM_PlayerTrace(start, end, traceFlags, ignore_pe);
+};
 
-void EventAPI_WeaponAnimation(int sequence, int body){};
+void EventAPI_WeaponAnimation(int sequence, int body) // EV_WeaponAnimation
+{
+	cl.weaponstarttime = 0;
+	cl.weaponsequence = sequence;
+	cl.viewent.curstate.body = body;
+};
 
 unsigned short EventAPI_PrecacheEvent(int type, const char *psz)
 {
@@ -125,7 +168,43 @@ unsigned short EventAPI_PrecacheEvent(int type, const char *psz)
 	return 0;
 };
 
-void EventAPI_PlaybackEvent(int flags, const struct edict_s *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2){};
+// EV_PlaybackEvent
+void EventAPI_PlaybackEvent(int flags,
+							const struct edict_s *pInvoker,
+							unsigned short eventindex,
+							float delay,
+							float *origin,
+							float *angles,
+							float fparam1, float fparam2,
+							int iparam1, int iparam2,
+							int bparam1, int bparam2)
+{
+	// This is a client event
+	if( !( flags & FEV_SERVER ) )
+	{
+		event_args_t event;
+		Q_memset( &event, 0, sizeof( event ) );
+
+		event.entindex = flags;
+
+		event.origin[ 0 ] = origin[ 0 ];
+		event.origin[ 1 ] = origin[ 1 ];
+		event.origin[ 2 ] = origin[ 2 ];
+
+		event.angles[ 0 ] = angles[ 0 ];
+		event.angles[ 1 ] = angles[ 1 ];
+		event.angles[ 2 ] = angles[ 2 ];
+
+		event.fparam1 = fparam1;
+		event.fparam2 = fparam2;
+		event.iparam1 = iparam1;
+		event.iparam2 = iparam2;
+		event.bparam1 = bparam1;
+		event.bparam2 = bparam2;
+
+		CL_QueueEvent( flags, eventindex, delay, &event );
+	};
+};
 
 const char *EventAPI_TraceTexture(int ground, float *vstart, float *vend)
 {
@@ -137,7 +216,10 @@ const char *EventAPI_TraceTexture(int ground, float *vstart, float *vend)
 	return ""; //PM_SV_TraceTexture(pe, vstart, vend);
 };
 
-void EventAPI_StopAllSounds(int entnum, int entchannel){};
+void EventAPI_StopAllSounds(int entnum, int entchannel)
+{
+	//
+};
 
 void EventAPI_KillEvents(int entnum, const char *eventname)
 {
@@ -254,76 +336,42 @@ static event_api_t gEventApi =
 	CL_SoundFromIndex,
 	pfnTraceSurface,
 };
-
-event_api_t gEventAPI = { EVENT_API_VERSION,
-
-	                      EventAPI_PlaySound,
-	                      EventAPI_StopSound,
-
-	                      EventAPI_FindModelIndex,
-
-	                      EventAPI_IsLocal /*Player*,
-	                      EventAPI_LocalPlayerDucking,
-	                      EventAPI_LocalPlayerViewheight,
-	                      EventAPI_LocalPlayerBounds,
-
-	                      EventAPI_IndexFromTrace,
-
-	                      EventAPI_GetPhysent,
-
-	                      EventAPI_SetUpPlayerPrediction,
-
-	                      EventAPI_PushPMStates,
-	                      EventAPI_PopPMStates,
-
-	                      EventAPI_SetSolidPlayers,
-
-	                      EventAPI_SetTraceHull,
-	                      EventAPI_PlayerTrace,
-
-	                      EventAPI_WeaponAnimation,
-
-	                      EventAPI_PrecacheEvent,
-	                      EventAPI_PlaybackEvent,
-
-	                      EventAPI_TraceTexture,
-	                      EventAPI_StopAllSounds,
-	                      EventAPI_KillEvents };
 */
 
 event_api_t gEventAPI =
-    {
-        EVENT_API_VERSION,
+{
+	EVENT_API_VERSION,
 
-        EventAPI_PlaySound,
-        EventAPI_StopSound, // S_StopSound
+	EventAPI_PlaySound,
+	EventAPI_StopSound, // S_StopSound
 
-        EventAPI_FindModelIndex, // CL_FindModelIndex
+	EventAPI_FindModelIndex, // CL_FindModelIndex
 
-        EventAPI_IsLocal /*Player*/,
-        EventAPI_LocalPlayerDucking,
-        EventAPI_LocalPlayerViewheight,
-        EventAPI_LocalPlayerBounds,
+	EventAPI_IsLocal /*Player*/,
+	EventAPI_LocalPlayerDucking,
+	EventAPI_LocalPlayerViewheight,
+	EventAPI_LocalPlayerBounds,
 
-        EventAPI_IndexFromTrace,
+	EventAPI_IndexFromTrace,
 
-        EventAPI_GetPhysent,
+	EventAPI_GetPhysent,
 
-        EventAPI_SetUpPlayerPrediction, // CL_SetUpPlayerPrediction
+	EventAPI_SetUpPlayerPrediction, // CL_SetUpPlayerPrediction
 
-        EventAPI_PushPMStates, // CL_PushPMStates
-        EventAPI_PopPMStates,  // CL_PopPMStates
+	EventAPI_PushPMStates, // CL_PushPMStates
+	EventAPI_PopPMStates,  // CL_PopPMStates
 
-        EventAPI_SetSolidPlayers, // CL_SetSolidPlayers
+	EventAPI_SetSolidPlayers, // CL_SetSolidPlayers
 
-        EventAPI_SetTraceHull, // CL_SetTraceHull
-        EventAPI_PlayerTrace,  // CL_PlayerTrace
+	EventAPI_SetTraceHull, // CL_SetTraceHull
+	EventAPI_PlayerTrace,  // CL_PlayerTrace
 
-        EventAPI_WeaponAnimation, // CL_WeaponAnim
+	EventAPI_WeaponAnimation, // CL_WeaponAnim
 
-        EventAPI_PrecacheEvent,
-        EventAPI_PlaybackEvent, // CL_PlaybackEvent,
+	EventAPI_PrecacheEvent,
+	EventAPI_PlaybackEvent, // CL_PlaybackEvent,
 
-        EventAPI_TraceTexture,
-        EventAPI_StopAllSounds,
-        EventAPI_KillEvents};
+	EventAPI_TraceTexture,
+	EventAPI_StopAllSounds,
+	EventAPI_KillEvents
+};

@@ -66,17 +66,21 @@ vec_t gHullMaxs[4][3] = {
 	{ 16.0f, 16.0f, 18.0f },
 };
 
-unsigned char gMsgData[512];
+byte gMsgData[512];
 
 edict_t *gMsgEntity;
 int gMsgDest;
 int gMsgType;
 qboolean gMsgStarted;
 vec3_t gMsgOrigin;
+
 int32 idum;
+
 int g_groupop;
 int g_groupmask;
-unsigned char checkpvs[1024];
+
+byte checkpvs[1024];
+
 int c_invis;
 int c_notvis;
 

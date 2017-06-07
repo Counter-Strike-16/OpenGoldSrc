@@ -60,21 +60,31 @@
 #include "graphics/vid.hpp"
 #include "graphics/view.hpp"
 
-double realtime; // = 0 // without any filtering or bounding
-double rolling_fps;
+double realtime = 0; // without any filtering or bounding
+double oldrealtime = 0; // last frame run
+
+double rolling_fps = 0;
+
 quakeparms_t host_parms = {};
-qboolean host_initialized; //bool // true if into command execution
-double host_frametime;
+
+qboolean host_initialized = false; //bool // true if into command execution
+
+double host_frametime = 0;
 int host_framecount;
+
 // int minimum_memory;
-client_t *host_client;
+
+client_t *host_client = NULL;
+
 qboolean gfNoMasterServer;
 // qboolean g_bUsingInGameAdvertisements;
-double oldrealtime; // last frame run
-int host_hunklevel; // = 0
+
+int host_hunklevel = 0;
+
 jmp_buf host_abortserver;
 jmp_buf host_enddemo;
-unsigned short *host_basepal; // = nullptr
+
+unsigned short *host_basepal = NULL;
 // unsigned char *host_colormap;
 // const char *g_InGameAdsAllowed[3];
 

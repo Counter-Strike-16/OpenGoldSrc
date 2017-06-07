@@ -37,17 +37,17 @@
 #include "system/client.hpp"
 #include "input/keys.hpp"
 
-int con_ormask;
+//int con_ormask;
 
-console_t con_main;
-console_t con_chat;
+//console_t con_main;
+//console_t con_chat;
 
-console_t *con; // point to either con_main or con_chat
+//console_t *con; // point to either con_main or con_chat
 
-int con_linewidth;  // characters across screen
-int con_totallines; // total lines in console scrollback
+int con_linewidth = 1;  // characters across screen
+int con_totallines = 0; // total lines in console scrollback
 
-float con_cursorspeed = 4;
+//float con_cursorspeed = 4;
 
 cvar_t con_notifytime = { "con_notifytime", "3" }; // seconds
 
@@ -56,10 +56,10 @@ const int NUM_CON_TIMES = 4;
 float con_times[NUM_CON_TIMES]; // realtime time the line was generated
                                 // for transparent notify lines
 
-int con_vislines;
-int con_notifylines; // scan lines to clear for notify lines
+//int con_vislines;
+int con_notifylines = 0; // scan lines to clear for notify lines
 
-qboolean con_debuglog;
+qboolean con_debuglog = false;
 
 const int MAXCMDLINE = 256;
 
@@ -67,7 +67,7 @@ extern char key_lines[32][MAXCMDLINE];
 extern int edit_line;
 extern int key_linepos;
 
-qboolean con_initialized;
+qboolean con_initialized = false;
 
 void Key_ClearTyping()
 {
@@ -131,8 +131,13 @@ Con_Clear_f
 */
 void Con_Clear_f()
 {
-	Q_memset(con_main.text, ' ', CON_TEXTSIZE);
-	Q_memset(con_chat.text, ' ', CON_TEXTSIZE);
+	//Q_memset(con_main.text, ' ', CON_TEXTSIZE);
+	//Q_memset(con_chat.text, ' ', CON_TEXTSIZE);
+	
+	if( con_text )
+		Q_memset( con_text, ' ', CON_TEXTSIZE );
+
+	VGuiWrap2_ClearConsole();
 }
 
 /*
@@ -154,7 +159,19 @@ Con_MessageMode_f
 void Con_MessageMode_f()
 {
 	//chat_team = false;
-	//key_dest = key_message;
+	
+	if( VGuiWrap2_IsInCareerMatch() == CAREER_NONE )
+	{
+		key_dest = key_message;
+
+		if( Cmd_Argc() == 2 )
+		{
+			Q_strncpy( message_type, Cmd_Argv( 1 ), ARRAYSIZE( message_type ) - 1 );
+			message_type[ ARRAYSIZE( message_type ) - 1 ] = '\0';
+		}
+		else
+			Q_strcpy( message_type, "say" );
+	};
 };
 
 /*
@@ -164,8 +181,11 @@ Con_MessageMode2_f
 */
 void Con_MessageMode2_f()
 {
-	//chat_team = true;
-	//key_dest = key_message;
+	if( VGuiWrap2_IsInCareerMatch() == CAREER_NONE )
+	{
+		key_dest = key_message;
+		Q_strcpy( message_type, "say_team" ); //chat_team = true;
+	};
 };
 
 /*
@@ -232,6 +252,7 @@ void Con_Dump_f ()
 
 	fclose (f);
 };
+*/
 
 void Con_Debug_f()
 {
@@ -245,7 +266,6 @@ void Con_Debug_f()
 		con_debuglog = TRUE;
 		Con_Printf("condebug enabled\n");
 	};
-*/
 };
 
 /*
@@ -502,8 +522,26 @@ void Con_Printf(char *fmt, ...)
 
 void EXT_FUNC Con_NPrintf(int idx, const char *fmt, ...)
 {
-#ifndef SWDS
-#endif
+//#ifndef SWDS
+	va_list va;
+
+	va_start( va, fmt );
+
+	g_engdstAddrs.Con_NPrintf( &idx, const_cast<char**>( &fmt ) );
+
+	if( 0 <= idx && idx < CON_MAX_DEBUG_AREAS )
+	{
+		vsnprintf( da_notify[ idx ].szNotify, ARRAYSIZE( da_notify[ idx ].szNotify ), fmt, va );
+	
+		da_notify[ idx ].expire = realtime + 4.0;
+		
+		da_notify[ idx ].color[ 0 ] = da_default_color[ 0 ];
+		da_notify[ idx ].color[ 1 ] = da_default_color[ 1 ];
+		da_notify[ idx ].color[ 2 ] = da_default_color[ 2 ];
+	};
+
+	va_end( va );
+//#endif
 };
 
 /*
@@ -577,20 +615,18 @@ Okay to call even when the screen can't be updated
 */
 void Con_SafePrintf(const char *fmt, ...)
 {
-/*
 	va_list argptr;
 	char msg[1024];
-	int temp;
+	//int temp;
 
 	va_start(argptr, fmt);
-	vsprintf(msg, fmt, argptr);
+	vsprintf(msg, fmt, argptr); // Q_vsnprintf( msg, ARRAYSIZE( msg ), fmt, argptr )
 	va_end(argptr);
 
-	temp = scr_disabled_for_loading;
-	scr_disabled_for_loading = true;
+	//temp = scr_disabled_for_loading;
+	//scr_disabled_for_loading = true;
 	Con_Printf("%s", msg);
-	scr_disabled_for_loading = temp;
-*/
+	//scr_disabled_for_loading = temp;
 }
 
 /*

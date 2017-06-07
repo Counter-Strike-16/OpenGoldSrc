@@ -33,6 +33,21 @@
 #include "filesystem/wad.hpp"
 #include "public/FileSystem.h"
 
+#ifdef HOOK_ENGINE
+	#define lumpinfo (*plumpinfo)
+	#define nTexLumps (*pnTexLumps)
+	#define texfiles (*ptexfiles)
+	#define nTexFiles (*pnTexFiles)
+
+	#define texgammatable (*ptexgammatable)
+	#define r_notexture_mip (*pr_notexture_mip)
+
+	#define nummiptex (*pnummiptex)
+	#define miptex (*pmiptex)
+
+	#define r_wadtextures (*pr_wadtextures)
+#endif // HOOK_ENGINE
+
 const int MAX_MAP_TEXTURES = 512;
 
 typedef struct texlumpinfo_s
@@ -40,21 +55,6 @@ typedef struct texlumpinfo_s
 	lumpinfo_t lump;
 	int iTexFile;
 } texlumpinfo_t;
-
-#ifdef HOOK_ENGINE
-#define lumpinfo (*plumpinfo)
-#define nTexLumps (*pnTexLumps)
-#define texfiles (*ptexfiles)
-#define nTexFiles (*pnTexFiles)
-
-#define texgammatable (*ptexgammatable)
-#define r_notexture_mip (*pr_notexture_mip)
-
-#define nummiptex (*pnummiptex)
-#define miptex (*pmiptex)
-
-#define r_wadtextures (*pr_wadtextures)
-#endif
 
 typedef struct texture_s texture_t;
 typedef struct cvar_s cvar_t;
@@ -64,7 +64,7 @@ extern int nTexLumps;
 extern FileHandle_t texfiles[128];
 extern int nTexFiles;
 
-extern unsigned char texgammatable[256];
+extern byte texgammatable[256];
 extern texture_t *r_notexture_mip;
 
 extern int nummiptex;
@@ -78,6 +78,6 @@ int lump_sorter(const void *lump1, const void *lump2);
 void ForwardSlashes(char *pname);
 qboolean TEX_InitFromWad(char *path);
 void TEX_CleanupWadInfo();
-int TEX_LoadLump(char *name, unsigned char *dest);
+int TEX_LoadLump(char *name, byte *dest);
 int FindMiptex(char *name);
 void TEX_AddAnimatingTextures();
