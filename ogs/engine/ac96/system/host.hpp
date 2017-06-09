@@ -155,7 +155,7 @@ void Host_ClientCommands(const char *fmt, ...);
 void Host_ClearClients(qboolean bFramesOnly);
 void Host_ShutdownServer(qboolean crash);
 
-void Host_CheckDyanmicStructures();
+void Host_CheckDyanmicStructures(); // dynamic
 void Host_ClearMemory(qboolean bQuiet);
 qboolean Host_FilterTime(float time);
 

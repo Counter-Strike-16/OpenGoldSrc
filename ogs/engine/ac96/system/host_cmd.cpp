@@ -65,16 +65,18 @@ typedef int (*SV_BLENDING_INTERFACE_FUNC)(int,
                                           float *);
 
 vec3_t r_origin;
-double cpuPercent;
+double cpuPercent = 0.0;
 int32 startTime;
-int current_skill;
-CareerStateType g_careerState;
-int gHostSpawnCount;
+int current_skill = 0;
+
+CareerStateType g_careerState = CAREER_NONE;
+
+int gHostSpawnCount = 0;
 
 // qboolean noclip_anglehack;
-qboolean g_bMajorMapChange;
+qboolean g_bMajorMapChange = false;
 
-int g_iQuitCommandIssued;
+int g_iQuitCommandIssued = false; // bool?
 char *g_pPostRestartCmdLineArgs;
 
 /*
@@ -543,13 +545,13 @@ void Host_Quit_f()
 		giActive = DLL_CLOSE;
 		g_iQuitCommandIssued = 1;
 
-		if(1 /* key_dest != key_console */ /* && cls.state != ca_dedicated */)
-		{
+		//if(1 /* key_dest != key_console */ /* && cls.state != ca_dedicated */)
+		//{
 			//M_Menu_Quit_f();
-			return;
-		}
+			//return;
+		//}
 
-		if(cls.state)
+		if(cls.state) // cls.state != ca_dedicated
 			CL_Disconnect();
 
 		Host_ShutdownServer(FALSE);
@@ -559,8 +561,8 @@ void Host_Quit_f()
 	{
 		giActive = DLL_PAUSED;
 		giStateInfo = 4;
-	}
-}
+	};
+};
 
 void Host_Quit_Restart_f()
 {

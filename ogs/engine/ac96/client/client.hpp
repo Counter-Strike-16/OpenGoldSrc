@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -50,18 +51,18 @@
 #include "system/common.hpp"
 #include "world/event.hpp"
 //#include "engine/custom.h"
-#include "qlimits.h"
+#include "common/qlimits.h"
 
 #ifdef HOOK_ENGINE
-#define cls (*pcls)
-#define cl (*pcl)
+	#define cls (*pcls)
+	#define cl (*pcl)
 
-#define g_clmove (*pg_clmove)
-#define cl_inmovie (*pcl_inmovie)
+	#define g_clmove (*pg_clmove)
+	#define cl_inmovie (*pcl_inmovie)
 
-#define cl_name (*pcl_name)
-#define rate_ (*prate)
-#define console (*pconsole)
+	#define cl_name (*pcl_name)
+	#define rate_ (*prate)
+	#define console (*pconsole)
 #endif // HOOK_ENGINE
 
 typedef struct dlight_s dlight_t;
@@ -134,7 +135,7 @@ typedef struct client_static_s
 	char spawnparms[2048];
 	
 	// private userinfo for sending to masterless servers
-	char userinfo[256]; // MAX_INFO_STRING
+	char userinfo[MAX_INFO_STRING]; // should be 256
 
 	float nextcmdtime;
 
@@ -179,7 +180,7 @@ typedef struct client_static_s
 
 	char physinfo[MAX_PHYSINFO_STRING];
 
-	unsigned char md5_clientdll[16];
+	byte md5_clientdll[16];
 
 	netadr_t game_stream;
 	netadr_t connect_stream;
@@ -313,7 +314,7 @@ typedef struct client_state_s
 
 	CRC32_t serverCRC;
 
-	unsigned char clientdllmd5[16];
+	byte clientdllmd5[16];
 
 	float weaponstarttime;
 	int weaponsequence;
@@ -337,7 +338,7 @@ typedef struct client_state_s
 
 extern client_state_t cl;
 
-typedef struct
+typedef struct lightstyle_s
 {
 	int length;
 	char map[MAX_STYLESTRING];

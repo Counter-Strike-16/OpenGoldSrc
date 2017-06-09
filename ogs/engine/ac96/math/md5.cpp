@@ -322,7 +322,7 @@ char *MD5_Print(unsigned char hash[16])
 	{
 		Q_snprintf(szChunk, sizeof(szChunk), "%02x", hash[i]);
 		Q_strncat(szReturn, szChunk, sizeof(szReturn) - Q_strlen(szReturn) - 1);
-	}
+	};
 
 	return szReturn;
 };

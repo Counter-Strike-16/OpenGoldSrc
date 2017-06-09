@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -103,7 +104,6 @@ Zone block
 ////////////////////////////////////////
 
 // clang-format off
-
 #ifdef HOOK_ENGINE
 	#define mem_dbgfile (*pmem_dbgfile)
 	#define mainzone (*pmainzone)
@@ -117,7 +117,6 @@ Zone block
 	
 	#define cache_head (*pcache_head)
 #endif // HOOK_ENGINE
-
 // clang-format on
 
 ////////////////////////////////////////

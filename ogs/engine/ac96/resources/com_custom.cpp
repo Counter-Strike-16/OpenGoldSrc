@@ -29,6 +29,7 @@
 /// @file
 
 #include "precompiled.hpp"
+//#include "commondef.hpp"
 #include "system/client.hpp"
 #include "filesystem/hashpak.hpp"
 #include "memory/mem.hpp"

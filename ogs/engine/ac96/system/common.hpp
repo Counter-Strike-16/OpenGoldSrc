@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -103,7 +104,11 @@ extern char **com_argv; // const char?
 
 extern char com_token[COM_TOKEN_LEN]; // 1024
 
+/**
+*	If true, colons are treated as regular characters, instead of being parsed as single characters.
+*/
 extern qboolean com_ignorecolons;
+
 extern qboolean s_com_token_unget;
 
 extern char com_clientfallback[MAX_PATH];

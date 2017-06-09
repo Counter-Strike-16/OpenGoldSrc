@@ -83,21 +83,21 @@ extern hash_pack_queue_t *gp_hpak_queue;
 extern hash_pack_directory_t hash_pack_dir;
 extern hash_pack_header_t hash_pack_header;
 
-qboolean HPAK_GetDataPointer(char *pakname, struct resource_s *pResource, unsigned char **pbuffer, int *bufsize);
-qboolean HPAK_FindResource(hash_pack_directory_t *pDir, unsigned char *hash, struct resource_s *pResourceEntry);
+qboolean HPAK_GetDataPointer(char *pakname, struct resource_s *pResource, byte **pbuffer, int *bufsize);
+qboolean HPAK_FindResource(hash_pack_directory_t *pDir, byte *hash, struct resource_s *pResourceEntry);
 
 void HPAK_AddToQueue(char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource);
 void HPAK_FlushHostQueue();
 
-void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource);
+void HPAK_AddLump(qboolean bUseQueue, const char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource);
 void HPAK_RemoveLump(char *pakname, struct resource_s *pResource);
 
-qboolean HPAK_ResourceForIndex(char *pakname, int nIndex, struct resource_s *pResource);
-qboolean HPAK_ResourceForHash(char *pakname, unsigned char *hash, struct resource_s *pResourceEntry);
+qboolean HPAK_ResourceForIndex(const char *pakname, int nIndex, struct resource_s *pResource);
+qboolean HPAK_ResourceForHash(const char *pakname, byte *hash, struct resource_s *pResourceEntry);
 
 void HPAK_List_f();
 
-void HPAK_CreatePak(char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource);
+void HPAK_CreatePak(const char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource);
 
 void HPAK_Remove_f();
 void HPAK_Validate_f();
@@ -107,6 +107,6 @@ void HPAK_Init();
 
 NOXREF char *HPAK_GetItem(int item);
 
-void HPAK_CheckSize(char *pakname);
-void HPAK_ValidatePak(char *fullpakname);
-void HPAK_CheckIntegrity(char *pakname); // const char
+void HPAK_CheckSize(const char *pakname);
+void HPAK_ValidatePak(const char *fullpakname);
+void HPAK_CheckIntegrity(const char *pakname);

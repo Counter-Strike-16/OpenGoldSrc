@@ -73,10 +73,10 @@ extern char miptex[512][64];
 extern cvar_t r_wadtextures;
 
 void SafeRead(FileHandle_t f, void *buffer, int count);
-void CleanupName(char *in, char *out);
+void CleanupName(const char *in, char *out);
 int lump_sorter(const void *lump1, const void *lump2);
 void ForwardSlashes(char *pname);
-qboolean TEX_InitFromWad(char *path);
+qboolean TEX_InitFromWad(const char *path); // bool
 void TEX_CleanupWadInfo();
 int TEX_LoadLump(char *name, byte *dest);
 int FindMiptex(char *name);

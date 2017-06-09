@@ -31,7 +31,9 @@
 /// @brief player eye positioning
 
 #include "precompiled.hpp"
+//#include "commondef.hpp"
 #include "graphics/view.hpp"
+//#include "server/server.hpp"
 
 /*
 

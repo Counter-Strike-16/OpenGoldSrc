@@ -29,7 +29,9 @@
 /// @file
 
 #include "precompiled.hpp"
+//#include "commondef.hpp"
 #include "world/pr_edict.hpp"
+//#include "engine/progs.h"
 #include "memory/mem.hpp"
 #include "memory/zone.hpp"
 #include "system/common.hpp"
@@ -298,18 +300,13 @@ void ED_LoadFromFile(char *data)
 	{
 		data = COM_Parse(data);
 		if(!data)
-		{
 			break;
-		}
+		
 		if(com_token[0] != '{')
-		{
 			Host_Error("%s: found %s when expecting {", __FUNCTION__, com_token);
-		}
 
 		if(ent)
-		{
 			ent = ED_Alloc();
-		}
 		else
 		{
 			ent = g_psv.edicts;
@@ -319,10 +316,9 @@ void ED_LoadFromFile(char *data)
 		}
 
 		data = ED_ParseEdict(data, ent);
+		
 		if(ent->free)
-		{
 			continue;
-		}
 
 		if(deathmatch.value != 0.0 && (ent->v.spawnflags & SF_NOTINDEATHMATCH))
 		{
@@ -485,28 +481,24 @@ void FreeEntPrivateData(edict_t *pEdict)
 	if(pEdict->pvPrivateData)
 	{
 		if(gNewDLLFunctions.pfnOnFreeEntPrivateData)
-		{
 			gNewDLLFunctions.pfnOnFreeEntPrivateData(pEdict);
-		}
 
 #ifdef REHLDS_FLIGHT_REC
 		if(rehlds_flrec_pvdata.string[0] != '0')
-		{
 			FR_FreeEntPrivateData(pEdict->pvPrivateData);
-		}
-#endif // REHLDS_FLIGHT_REC
+#endif
 
 		Mem_Free(pEdict->pvPrivateData);
-		pEdict->pvPrivateData = 0;
-	}
-}
+		//pEdict->pvPrivateData = NULL;
+	};
+	
+	pEdict->pvPrivateData = NULL;
+};
 
 void FreeAllEntPrivateData()
 {
 	for(int i = 0; i < g_psv.num_edicts; i++)
-	{
 		FreeEntPrivateData(&g_psv.edicts[i]);
-	}
 }
 
 edict_t *EXT_FUNC PEntityOfEntOffset(int iEntOffset)

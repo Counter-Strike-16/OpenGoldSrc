@@ -29,6 +29,7 @@
 /// @file
 
 #include "precompiled.hpp"
+//#include "commondef.hpp"
 #include "filesystem/hashpak.hpp"
 #include "memory/mem.hpp"
 #include "system/server.hpp"
@@ -221,8 +222,7 @@ void HPAK_AddToQueue(char *pakname, struct resource_s *pResource, void *pData, F
 
 void HPAK_FlushHostQueue()
 {
-	for(hash_pack_queue_t *p = gp_hpak_queue; gp_hpak_queue != NULL;
-	    p = gp_hpak_queue)
+	for(auto *p = gp_hpak_queue; gp_hpak_queue != NULL; p = gp_hpak_queue)
 	{
 		gp_hpak_queue = p->next;
 		HPAK_AddLump(0, p->pakname, &p->resource, p->data, 0);
@@ -232,7 +232,7 @@ void HPAK_FlushHostQueue()
 	}
 }
 
-void HPAK_AddLump(qboolean bUseQueue, char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource)
+void HPAK_AddLump(qboolean bUseQueue, const char *pakname, struct resource_s *pResource, void *pData, FileHandle_t fpSource)
 {
 	FileHandle_t iRead;
 	FileHandle_t iWrite;
@@ -585,7 +585,7 @@ void HPAK_RemoveLump(char *pakname, resource_t *pResource)
 	Mem_Free(newdir.p_rgEntries);
 }
 
-qboolean HPAK_ResourceForIndex(char *pakname, int nIndex, struct resource_s *pResource)
+qboolean HPAK_ResourceForIndex(const char *pakname, int nIndex, struct resource_s *pResource)
 {
 	hash_pack_header_t header;
 	hash_pack_directory_t directory;
@@ -647,7 +647,7 @@ qboolean HPAK_ResourceForIndex(char *pakname, int nIndex, struct resource_s *pRe
 	return TRUE;
 }
 
-qboolean HPAK_ResourceForHash(char *pakname, byte *hash, struct resource_s *pResourceEntry)
+qboolean HPAK_ResourceForHash(const char *pakname, byte *hash, struct resource_s *pResourceEntry)
 {
 	qboolean bFound;
 	hash_pack_header_t header;
@@ -1432,7 +1432,7 @@ void HPAK_ValidatePak(char *fullpakname)
 	Mem_Free(directory.p_rgEntries);
 }
 
-void HPAK_CheckIntegrity(char *pakname)
+void HPAK_CheckIntegrity(const char *pakname)
 {
 	char name[256];
 	Q_snprintf(name, sizeof(name), "%s", pakname);

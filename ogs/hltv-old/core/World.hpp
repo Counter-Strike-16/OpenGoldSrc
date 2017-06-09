@@ -1,7 +1,5 @@
 #pragma once
 
-#include "IWorld.hpp"
-
 class World : public IWorld
 {
 public:

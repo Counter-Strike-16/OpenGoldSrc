@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -53,8 +54,8 @@ typedef struct movevars_s movevars_t;
 
 extern cvar_t pm_showclip;
 
-extern vec_t player_mins[4][3];
-extern vec_t player_maxs[4][3];
+extern vec_t player_mins[4][3]; // vec3_t player_mins[ 4 ];
+extern vec_t player_maxs[4][3]; // vec3_t player_maxs[ 4 ];
 
 extern playermove_t *pmove;
 extern movevars_t movevars;

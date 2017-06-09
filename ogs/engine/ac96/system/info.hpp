@@ -26,14 +26,21 @@
  *	version.
  */
 
-/// @file
+/**
+*	@file
+*
+*	Handles info key buffer keyvalues
+*
+*	Info key buffers store key value pairs, separated by '\\'.
+*	Keys start with '\\' as well, meaning a buffer that has at least one keyvalue has the form "\\key\\value".
+*/
 
 #pragma once
 
 #include "common/commontypes.h"
 #include "common/com_model.h"
 #include "public/FileSystem.h"
-#include "system/IInfoKeyBuffer.hpp"
+//#include "system/IInfoKeyBuffer.hpp"
 
 /// Max key/value length (with a NULL char)
 const int MAX_KV_LEN = 127; // 512
@@ -49,6 +56,10 @@ const int MAX_LOCALINFO = 4096;
 const int MAX_LOCALINFO = MAX_INFO_STRING * 128;
 #endif // REHLDS_FIXES
 
+/**
+*	Searches the string for the given
+*	key and returns the associated value, or an empty string.
+*/
 const char *Info_ValueForKey(const char *s, const char *key);
 
 void Info_RemoveKey(char *s, const char *key);
@@ -71,6 +82,7 @@ void Info_CollectFields(char *destInfo, const char *srcInfo, const char *collect
 
 NOBODY void Info_WriteVars(FileHandle_t fp);
 
+/*
 class CInfoBuffer : public IInfoKeyBuffer
 {
 public:
@@ -97,3 +109,4 @@ private:
 	char *msBuffer;
 	//key-value strings map here?
 };
+*/

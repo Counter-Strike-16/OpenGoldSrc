@@ -40,8 +40,10 @@
 
 #include "public/IEngineSurface.h"
 #include "sound/sound.hpp"
-#include "graphics/VideoMode.hpp"
+#include "graphics/VideoMode.hpp" // #include "sys_getmodes.h"
 #include "ui/VGUI_EngineSurfaceWrap.hpp"
+
+SDL_Window* pmainwindow = nullptr;
 
 static EngineSurfaceWrap* staticEngineSurface = nullptr;
 
@@ -64,7 +66,9 @@ void VGuiWrap_SetRootPanelSize()
 			SDL_GetWindowSize( pmainwindow, &rect.width, &rect.height );
 		}
 		else
+		{
 			VideoMode_GetCurrentVideoMode( &rect.width, &rect.height, nullptr );
+		}
 
 		rect.height += rect.y;
 
@@ -81,7 +85,7 @@ void VGuiWrap_Startup()
 
 	pApp->reset();
 
-	staticPanel = new vgui::Panel( 0, 0, 320, 240 ); // NO! ABSOLUTELY NO!
+	staticPanel = new vgui::Panel( 0, 0, 320, 240 );
 
 	auto pScheme = pApp->getScheme();
 
@@ -120,7 +124,8 @@ bool VGuiWrap_CallEngineSurfaceAppHandler( void* event, void* userData )
 
 vgui::Panel* VGuiWrap_GetPanel()
 {
-	//g_engdstAddrs.VGui_GetPanel();
+	g_engdstAddrs.VGui_GetPanel();
+	
 	return staticPanel;
 }
 

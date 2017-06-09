@@ -29,7 +29,8 @@
 /// @file
 
 #include "precompiled.hpp"
-#include "world/world.hpp"
+//#include "commondef.hpp"
+#include "physics/world.hpp"
 #include "world/pr_cmds.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
@@ -775,6 +776,7 @@ edict_t *SV_TestEntityPosition(edict_t *ent)
 }
 
 #ifndef REHLDS_OPT_PEDANTIC
+//bool SV_RecursiveHullCheck( hull_t* hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t* trace )
 qboolean SV_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, const vec_t *p1, const vec_t *p2, trace_t *trace)
 {
 	dclipnode_t *node;
@@ -893,9 +895,7 @@ qboolean SV_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, cons
 	}
 
 	if(num == CONTENTS_SOLID)
-	{
 		trace->startsolid = TRUE;
-	}
 	else
 	{
 		trace->allsolid = FALSE;

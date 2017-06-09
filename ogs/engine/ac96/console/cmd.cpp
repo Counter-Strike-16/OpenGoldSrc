@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -48,7 +49,7 @@
 
 const int MAX_ARGS = 80;
 
-int cmd_argc;
+int cmd_argc = 0;
 char *cmd_argv[MAX_ARGS];
 
 // Complete arguments string
@@ -58,10 +59,11 @@ cmd_source_t cmd_source;
 qboolean cmd_wait = false; // bool
 cmdalias_t *cmd_alias = NULL;
 
+// These two are unused
 // int trashtest;
 // int *trashspot;
 
-cmd_function_t *cmd_functions;
+cmd_function_t *cmd_functions = NULL;
 char *const cmd_null_string = "";
 
 //=============================================================================
@@ -392,6 +394,14 @@ void Cmd_Alias_f()
 	a->value = CopyString(cmd);
 }
 
+/*
+=============================================================================
+
+COMMAND EXECUTION
+
+=============================================================================
+*/
+
 struct cmd_function_s *Cmd_GetFirstCmd()
 {
 	return cmd_functions;
@@ -470,18 +480,22 @@ Returns a single string containing argv(1) to argv(argc()-1)
 const char *EXT_FUNC Cmd_Args()
 {
 #ifndef SWDS
-	//g_engdstAddrs.Cmd_Args();
+	//g_engdstAddrs.Cmd_Args(); // Not present
 #endif
 
 	return cmd_args;
 }
 
 /*
+============
+Cmd_TokenizeString
+
 Parses the given string into command line tokens.
 Takes a null terminated string. Does not need to be \n terminated.
 Breaks the string up into arg tokens.
+============
 */
-void EXT_FUNC Cmd_TokenizeString(char *text)
+void EXT_FUNC Cmd_TokenizeString(const char *text)
 {
 	int i;
 	int arglen;
@@ -510,15 +524,11 @@ void EXT_FUNC Cmd_TokenizeString(char *text)
 
 		// A newline separates commands in the buffer
 		if(*text == '\n' || *text == 0)
-		{
 			break;
-		}
 
 		// Store complete args string pointer
 		if(cmd_argc == 1)
-		{
 			cmd_args = text;
-		}
 
 		// Break into token
 		text = COM_Parse(text);
@@ -542,7 +552,7 @@ void EXT_FUNC Cmd_TokenizeString(char *text)
 	}
 }
 
-NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name)
+NOXREF cmd_function_t *Cmd_FindCmd(const char *cmd_name)
 {
 	NOXREFCHECK;
 	
@@ -598,7 +608,7 @@ void Cmd_InsertCommand(cmd_function_t *cmd)
 
 // Use this for engine inside call only, not from user code, because it doesn't
 // alloc string for the name.
-void Cmd_AddCommand(char *cmd_name, xcommand_t function)
+void Cmd_AddCommand(const char *cmd_name, xcommand_t function)
 {
 	cmd_function_t *cmd;
 

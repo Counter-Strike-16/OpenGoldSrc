@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -107,12 +108,14 @@ playermove_t g_clmove;
 qboolean cl_inmovie;
 
 // FIXME: put these on hunk?
-entity_state_t cl_baselines[MAX_EDICTS];
-efrag_t cl_efrags[MAX_EFRAGS];
-//cl_entity_t cl_entities[MAX_EDICTS]; // NetQuake is using this instead of cl_baselines
-cl_entity_t cl_static_entities[MAX_STATIC_ENTITIES];
-lightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
-dlight_t cl_dlights[MAX_DLIGHTS];
+// TODO: allocate dynamically
+entity_state_t cl_baselines[MAX_EDICTS] = {};
+efrag_t cl_efrags[MAX_EFRAGS] = {};
+//cl_entity_t cl_entities[MAX_EDICTS] = {}; // NetQuake is using this instead of cl_baselines
+cl_entity_t cl_static_entities[MAX_STATIC_ENTITIES] = {};
+lightstyle_t cl_lightstyle[MAX_LIGHTSTYLES] = {};
+dlight_t cl_dlights[MAX_DLIGHTS] = {};
+dlight_t cl_elights[MAX_ELIGHTS] = {};
 
 // renderable list
 // this is double buffered so the last frame
@@ -129,13 +132,13 @@ netadr_t master_adr; // address of the master server
 
 cvar_t show_fps = { "cl_showfps", "0" }; // set for running times
 
-int fps_count;
+//int fps_count;
 
-jmp_buf host_abort;
+//jmp_buf host_abort;
 
 void Master_Connect_f();
 
-float server_version = 0; // version of server we connected to
+//float server_version = 0; // version of server we connected to
 
 char emodel_name[] = { 'e' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0 };
 char pmodel_name[] = { 'p' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0 };
@@ -1102,8 +1105,7 @@ void CL_Init()
 	//if(dedicated->value) // cl.state == ca_dedicated
 		//return;
 	
-	extern cvar_t baseskin;
-	extern cvar_t noskins;
+	//TextMessageInit();
 
 	char st[80];
 
@@ -1131,9 +1133,6 @@ void CL_Init()
 
 	//Cvar_RegisterVariable(&localid);
 
-	Cvar_RegisterVariable(&baseskin);
-	Cvar_RegisterVariable(&noskins);
-
 	//
 	// info mirrors
 	//
@@ -1146,7 +1145,11 @@ void CL_Init()
 	Cvar_RegisterVariable(&bottomcolor);
 	Cvar_RegisterVariable(&rate);
 	//Cvar_RegisterVariable(&msg);
-	//Cvar_RegisterVariable(&noaim);
+	
+	//Cvar_RegisterVariable( &cl_lw );
+	//Cvar_RegisterVariable( &dev_overview );
+	//Cvar_RegisterVariable( &cl_mousegrab );
+	//Cvar_RegisterVariable( &m_rawinput );
 
 	//Cmd_AddCommand("cmd", CL_ForwardToServer_f);
 	//Cmd_AddCommand("pause", CL_Pause_f);
@@ -1204,6 +1207,7 @@ void CL_InitClosest()
 void CL_Shutdown()
 {
 #ifndef SWDS
+	//TextMessageShutdown();
 #endif
 };
 
@@ -1241,6 +1245,30 @@ void CL_CheckClientState()
 
 void CL_ClearClientState()
 {
-#ifndef SWDS
-#endif
+//#ifndef SWDS
+	for( int i = 0; i < CL_UPDATE_BACKUP; ++i )
+	{
+		if( cl.frames[ i ].packet_entities.entities )
+			Mem_Free( cl.frames[ i ].packet_entities.entities );
+
+		cl.frames[ i ].packet_entities.entities = nullptr;
+		cl.frames[ i ].packet_entities.num_entities = 0;
+	}
+
+	CL_ClearResourceLists();
+
+	for( int i = 0; i < MAX_CLIENTS; ++i )
+		COM_ClearCustomizationList( &cl.players[ i ].customdata, false );
+
+	CL_ClearCaches();
+
+	Q_memset( &cl, 0, sizeof( cl ) );
+
+	cl.resourcesneeded.pPrev = &cl.resourcesneeded;
+	cl.resourcesneeded.pNext = &cl.resourcesneeded;
+	cl.resourcesonhand.pPrev = &cl.resourcesonhand;
+	cl.resourcesonhand.pNext = &cl.resourcesonhand;
+
+	CL_CreateResourceList();
+//#endif
 };

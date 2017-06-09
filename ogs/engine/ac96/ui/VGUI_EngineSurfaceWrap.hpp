@@ -2,6 +2,7 @@
 
 #include <VGUI_BitmapTGA.h>
 #include <VGUI_SurfaceBase.h>
+#include <vgui/ISurface.h>
 
 class IEngineSurface;
 
@@ -43,11 +44,20 @@ public:
 	virtual void AppHandler( void* event, void* userData );
 	virtual void lockCursor();
 	virtual void unlockCursor();
+
+	virtual void drawLine( int x1, int y1, int x2, int y2 );
+	virtual void drawPolyLine( int* px, int* py, int n );
+	virtual void drawTexturedPolygon( vgui2::VGuiVertex* pVertices, int n );
+	virtual void drawSetTextureBGRA( int id, const char* rgba, int wide, int tall, int hardwareFilter, int hasAlphaChannel );
+	virtual void drawUpdateRegionTextureBGRA( int nTextureID, int x, int y, const byte* pchData, int wide, int tall );
+	virtual void drawGetTextPos( int& x, int& y );
+	virtual void drawPrintChar( int x, int y, int wide, int tall, float s0, float t0, float s1, float t1 );
+	virtual void drawPrintCharAdd( int x, int y, int wide, int tall, float s0, float t0, float s1, float t1 );
 private:
 	EngineSurfaceWrap( const EngineSurfaceWrap& ) = delete;
 	EngineSurfaceWrap& operator=( const EngineSurfaceWrap& ) = delete;
 	
-	vgui::BitmapTGA* _emulatedMouseImage{nullptr};
-	IEngineSurface* _engineSurface{nullptr};
-	bool _cursorLocked{false};
+	vgui::BitmapTGA* _emulatedMouseImage = nullptr;
+	IEngineSurface* _engineSurface;
+	bool _cursorLocked = false;
 };

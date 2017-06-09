@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
 project(OGS-engine)
 
 # Output name
@@ -15,7 +14,7 @@ add_definitions(-DREHLDS_SELF)
 
 # Add include directories
 include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}/
+	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # Build a list of headers
@@ -58,7 +57,7 @@ file(GLOB_RECURSE PLATFORM_SOURCES
 list(REMOVE_DUPLICATES PROJECT_SOURCES)
 
 # Build as dynamic library
-add_library(${MODULE_OUTPUT_FILENAME} SHARED ${PROJECT_HEADERS} ${PLATFORM_SOURCES} ${PROJECT_SOURCES})
+add_library(${MODULE_OUTPUT_FILENAME} MODULE ${PROJECT_HEADERS} ${PLATFORM_SOURCES} ${PROJECT_SOURCES})
 
 # Link with additional libraries
 #target_link_libraries()
