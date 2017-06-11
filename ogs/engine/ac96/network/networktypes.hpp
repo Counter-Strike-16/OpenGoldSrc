@@ -31,6 +31,23 @@
 
 #pragma once
 
+enum
+{
+	FLOW_OUTGOING = 0,
+	FLOW_INCOMING,
+
+	MAX_FLOWS
+};
+
+// 0 == regular, 1 == file stream
+enum
+{
+	FRAG_NORMAL_STREAM = 0,
+	FRAG_FILE_STREAM,
+	
+	MAX_STREAMS
+};
+
 // MAX_CHALLENGES is made large to prevent a denial
 //  of service attack that could cycle all of them
 //  out before legitimate users connected
@@ -39,9 +56,6 @@ const int MAX_CHALLENGES = 64;
 #else
 const int MAX_CHALLENGES = 1024;
 #endif // REHLDS_OPT_PEDANTIC
-
-// 0 == regular, 1 == file stream
-const int MAX_STREAMS = 2;
 
 // Flow control bytes per second limits
 const float MAX_RATE = 100000.0f;
@@ -93,14 +107,6 @@ const int HEADER_BYTES = (8 + MAX_STREAMS * 9);
 // check it why.
 const int NET_MAX_MESSAGE = 4037;
 
-enum
-{
-	FLOW_OUTGOING = 0,
-	FLOW_INCOMING,
-
-	MAX_FLOWS
-};
-
 const int MAX_LATENT = 32;
 
 const int FRAGMENT_C2S_MIN_SIZE = 16;
@@ -128,12 +134,6 @@ const int CUSTOMIZATION_MAX_SIZE = 20480;
 
 const int UDP_HEADER_SIZE = 28;
 const int MAX_RELIABLE_PAYLOAD = 1200;
-
-enum
-{
-	FRAG_NORMAL_STREAM = 0,
-	FRAG_FILE_STREAM
-};
 
 #define MAKE_FRAGID(id, count) (((id & 0xffff) << 16) | (count & 0xffff))
 #define FRAG_GETID(fragid) ((fragid >> 16) & 0xffff)

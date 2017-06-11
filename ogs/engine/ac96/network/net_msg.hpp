@@ -31,7 +31,7 @@
 #pragma once
 
 #include "common/commontypes.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "public/archtypes.h"
 //#include "network/readbuffer.hpp"
 //#include "network/writebuffer.hpp"
@@ -39,7 +39,11 @@
 typedef struct sizebuf_s sizebuf_t;
 typedef struct usercmd_s usercmd_t;
 
+/**
+*	set if a read goes beyond end of message
+*/
 extern int msg_badread; // qboolean; set if a read goes beyond end of message
+
 extern int msg_readcount;
 
 //============================================================================
@@ -112,6 +116,7 @@ NOXREF void MSG_ReadVec3Coord(sizebuf_t *sb, vec3_t fa);
 
 //============================================================================
 
+/*
 class CNetMsg //: public CWriteBuffer, CReadBuffer
 {
 public:
@@ -179,3 +184,4 @@ public:
 	void ReadBitVec3Coord(vec3_t fa);
 	void ReadVec3Coord(vec3_t fa);
 };
+*/

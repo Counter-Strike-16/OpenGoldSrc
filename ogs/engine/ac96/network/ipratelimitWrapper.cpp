@@ -33,10 +33,10 @@
 #include "network/ipratelimit.hpp"
 
 #ifdef HOOK_ENGINE
-int (*pCheckIP)(netadr_t adr);
+	int (*pCheckIP)(netadr_t adr);
 #endif // HOOK_ENGINE
 
-CIPRateLimit rateChecker;
+/*static*/ CIPRateLimit rateChecker;
 
 int CheckIP(netadr_t adr)
 {
@@ -47,6 +47,6 @@ int CheckIP(netadr_t adr)
 	return res;
 #else
 	CRehldsPlatformHolder::get()->time(NULL); // time() is called inside IpRateLimiter
-	return 1;
+	return 1; // rateChecker.CheckIP( adr );
 #endif
 };

@@ -139,7 +139,7 @@ void R_LineGraph(int x, int y, int h)
 	for(i = 0; i < h; i++, dest -= vid.rowbytes * 2)
 	{
 		dest[0] = color;
-		//		*(dest-vid.rowbytes) = 0x30;
+		//*(dest - vid.rowbytes) = 0x30;
 	}
 #if 0
 	for ( ; i<s ; i++, dest -= vid.rowbytes*2)
@@ -439,10 +439,13 @@ void R_SetupFrame()
 	float w, h;
 
 	// don't allow cheats in multiplayer
-	r_draworder.value = 0;
-	r_fullbright.value = 0;
-	r_ambient.value = 0;
-	r_drawflat.value = 0;
+	//if(cl.maxclients > 1)
+	{
+		r_draworder.value = 0;
+		r_fullbright.value = 0;
+		r_ambient.value = 0;
+		r_drawflat.value = 0;
+	}
 
 	if(r_numsurfs.value)
 	{
@@ -502,7 +505,8 @@ void R_SetupFrame()
 
 	r_dowarpold = r_dowarp;
 	r_dowarp = r_waterwarp.value && (r_viewleaf->contents <= CONTENTS_WATER);
-
+	
+	//if((r_dowarp != r_dowarpold) || r_viewchanged || lcd_x.value)
 	if((r_dowarp != r_dowarpold) || r_viewchanged)
 	{
 		if(r_dowarp)

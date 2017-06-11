@@ -32,7 +32,7 @@
 
 #include "common/maintypes.h"
 #include "public/interface.h"
-#include "tier1/utlvector.h"
+#include "tier1/utlvector.h" // #include <UtlVector.h>
 
 // clang-format off
 
@@ -61,7 +61,7 @@ extern CSysModule *g_pFileSystemModule;
 extern CreateInterfaceFn g_FileSystemFactory;
 
 const char *GetBaseDirectory();
-NOXREF void *GetFileSystemFactory();
+NOXREF void *GetFileSystemFactory(); // return CreateInterfaceFn
 
 bool FileSystem_LoadDLL(CreateInterfaceFn filesystemFactory);
 void FileSystem_UnloadDLL();
@@ -71,16 +71,16 @@ bool BEnableAddonsFolder();
 
 // Why here???
 
-void Host_SetHDModels_f();
 void Host_SetAddonsFolder_f();
+void Host_SetHDModels_f();
 void Host_SetVideoLevel_f();
 
 int Host_GetVideoLevel();
 
 void CheckLiblistForFallbackDir(const char *pGameDir, bool bLanguage, const char *pLanguage, bool bLowViolenceBuild_);
 
-int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir);
-int FileSystem_AddFallbackGameDir(const char *pGameDir);
+int FileSystem_SetGameDirectory(const char *pDefaultDir, const char *pGameDir); // return bool?
+int FileSystem_AddFallbackGameDir(const char *pGameDir); // return bool?
 
 int FileSystem_Init(char *basedir, void *voidfilesystemFactory); // return bool?
 void FileSystem_Shutdown();

@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -33,7 +34,7 @@
 
 #include "common/commontypes.h"
 #include "engine/eiface.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "system/systemtypes.hpp"
 //#include "public/interface.h"
 //#include "tier0/platform.h"
@@ -48,7 +49,6 @@
 //#include "engine_launcher_api.h"
 
 // clang-format off
-
 #ifdef HOOK_ENGINE
 	#define g_hfind (*pg_hfind)
 	
@@ -91,7 +91,6 @@
 	#define szReslistsBaseDir (*pszReslistsBaseDir)
 	#define szReslistsExt (*pszReslistsExt)
 #endif
-
 // clang-format on
 
 extern qboolean g_bIsDedicatedServer;
@@ -241,6 +240,14 @@ void ReleaseEntityDlls();
 void EngineFprintf(void *pfile, const char *szFmt, ...);
 void AlertMessage(ALERT_TYPE atype, const char *szFmt, ...);
 
+/**
+*	Splits a path into its individual components
+*	@param[ in ] path Path to split
+*	@param[ out ] drive Optional. The drive letter, if present. Contains the colon
+*	@param[ out ] dir Required. The directory component of the path, including leading and trailing slashes, if present
+*	@param[ out ] fname Optional. The filename component, if present
+*	@param[ out ] ext Optional. The extension component, if present
+*/
 NOXREF void Sys_SplitPath(const char *path, char *drive, char *dir, char *fname, char *ext);
 
 const char *GetCurrentSteamAppName();

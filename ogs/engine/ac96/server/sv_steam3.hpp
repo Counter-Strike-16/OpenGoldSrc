@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "SteamCommon.h"
-#include "maintypes.h"
+#include "common/SteamCommon.h"
+#include "common/maintypes.h"
 #include "system/common.hpp"
 #include "system/server.hpp"
 #include "steam/steam_api.h"
@@ -39,6 +39,10 @@
 #include "steam/steamclientpublic.h"
 
 class CSteamID;
+
+/**
+*	Base class for Steam3 systems
+*/
 class CSteam3
 {
 protected:
@@ -47,13 +51,9 @@ protected:
 	HSteamPipe m_hSteamPipe;
 
 protected:
-	CSteam3()
-	    : m_bLoggedOn(false), m_bLogOnResult(false), m_hSteamPipe(0)
-	{
-	}
-	virtual ~CSteam3()
-	{
-	}
+	CSteam3() : m_bLoggedOn(false), m_bLogOnResult(false), m_hSteamPipe(0){}
+	virtual ~CSteam3(){}
+	
 	virtual void Shutdown() = 0;
 
 	void GSSendUserStatusResponse(CSteamID &, int, int);

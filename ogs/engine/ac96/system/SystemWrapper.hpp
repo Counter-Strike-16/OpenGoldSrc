@@ -51,26 +51,32 @@ public:
 	void RemoveListener(ISystemModule *module)                                 { BaseSystemModule::RemoveListener(module); }
 
 	IBaseSystem *GetSystem() { return BaseSystemModule::GetSystem(); }
-	int GetSerial()          { return BaseSystemModule::GetSerial(); }
+	/*unsigned*/ int GetSerial()          { return BaseSystemModule::GetSerial(); }
 	char *GetStatusLine();
 	char *GetType();
 	char *GetName()          { return BaseSystemModule::GetName(); }
-	int GetState()           { return BaseSystemModule::GetState(); }
+	/*unsigned*/ int GetState()           { return BaseSystemModule::GetState(); }
 	int GetVersion()         { return BaseSystemModule::GetVersion(); }
 	void ShutDown()          { BaseSystemModule::ShutDown(); }
 
 	bool GetViewOrigin(float *origin);
 	bool GetViewAngles(float *angles);
+	
 	int GetTraceEntity();
+	
 	float GetCvarFloat(char *szName);
 	char *GetCvarString(char *szName);
+	
 	void SetCvar(char *szName, char *szValue);
+	
 	void Cbuf_AddText(char *text);
+	
 	void DemoUpdateClientData(client_data_t *cdat);
+	
 	void CL_QueueEvent(int flags, int index, float delay, event_args_t *pargs);
 	void HudWeaponAnim(int iAnim, int body);
 	void CL_DemoPlaySound(int channel, char* sample, float attenuation, float volume, int flags, int pitch);
-	void ClientDLL_ReadDemoBuffer(int size, unsigned char *buffer);
+	void ClientDLL_ReadDemoBuffer(int size, byte *buffer);
 };
 
 class Panel;
@@ -144,9 +150,12 @@ private:
 	ObjectList m_Modules;
 	ObjectList m_Libraries;
 	ObjectList m_Commands;
+	
 	unsigned int m_SerialCounter;
 	unsigned int m_Tick;
+	
 	double m_LastTime;
+	
 	IEngineWrapper *m_EngineWrapper;
 };
 

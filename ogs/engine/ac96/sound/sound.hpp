@@ -236,10 +236,10 @@ private:
 void S_Init();
 void S_Shutdown();
 
-void S_Update();
+//void S_Update();
 
 void S_StopSound(int entnum, int entchannel);
-void S_StopAllSounds(qboolean wut);
+void S_StopAllSounds(qboolean clear);
 
 //void VOX_Init();
 
@@ -247,6 +247,10 @@ void S_StopAllSounds(qboolean wut);
 extern cvar_t suitvolume;
 
 extern bool g_fUseDInput;
+
+sfx_t* S_PrecacheSound( const char* name );
+
+void S_StartDynamicSound( int entnum, int entchannel, sfx_t* sfx, vec3_t origin, float fvol, float attenuation, int flags, int pitch );
 
 void Snd_AcquireBuffer();
 void Snd_ReleaseBuffer();

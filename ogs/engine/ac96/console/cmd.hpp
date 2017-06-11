@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -91,25 +92,20 @@ void Cbuf_Init();
 *	as new commands are generated from the console or keybindings,
 *	the text is added to the end of the command buffer.
 */
-// as new commands are generated from the console or keybindings,
-// the text is added to the end of the command buffer.
-void Cbuf_AddText(char *text); // const char?
+void Cbuf_AddText(const char *text);
 
 /**
 *	when a command wants to issue other commands immediately, the text is
 *	inserted at the beginning of the buffer, before any remaining unexecuted
 *	commands.
 */
-// when a command wants to issue other commands immediately, the text is
-// inserted at the beginning of the buffer, before any remaining unexecuted
-// commands.
-void Cbuf_InsertText(char *text); // const char?
+void Cbuf_InsertText(const char *text);
 
 /**
 *	Inserts text at the beginning of the buffer, adding newlines between the text and the remainder of the buffer.
 *	@see Cbuf_InsertText
 */
-void Cbuf_InsertTextLines(char *text); // const char?
+void Cbuf_InsertTextLines(const char *text);
 
 /**
 *	Pulls off \n terminated lines of text from the command buffer and sends
@@ -155,33 +151,28 @@ const char *Cmd_Args();
 
 /**
 *	Takes a null terminated string.  Does not need to be /n terminated.
-*	breaks the string up into arg tokens.
+*	Breaks the string up into arg tokens.
 */
-// Takes a null terminated string.  Does not need to be /n terminated.
-// breaks the string up into arg tokens.
-void Cmd_TokenizeString(char *text); // const char?
+void Cmd_TokenizeString(const char *text);
 
-NOXREF cmd_function_t *Cmd_FindCmd(char *cmd_name); // const char?
-cmd_function_t *Cmd_FindCmdPrev(char *cmd_name); // const char?
+NOXREF cmd_function_t *Cmd_FindCmd(const char *cmd_name);
+cmd_function_t *Cmd_FindCmdPrev(const char *cmd_name);
 
 /**
 *	called by the init functions of other parts of the program to
 *	register commands and functions to call for them.
 *	The cmd_name is referenced later, so it should not be in temp memory
+*	If function is NULL, the command will be forwarded to the server
+*	as a clc_stringcmd instead of executed locally
 */
-// called by the init functions of other parts of the program to
-// register commands and functions to call for them.
-// The cmd_name is referenced later, so it should not be in temp memory
-// if function is NULL, the command will be forwarded to the server
-// as a clc_stringcmd instead of executed locally
-void Cmd_AddCommand(char *cmd_name, xcommand_t function);
+void Cmd_AddCommand(const char *cmd_name, xcommand_t function);
 
-void Cmd_AddMallocCommand(char *cmd_name, xcommand_t function, int flag);
-NOXREF void Cmd_AddHUDCommand(char *cmd_name, xcommand_t function);
-NOXREF void Cmd_AddWrapperCommand(char *cmd_name, xcommand_t function);
-void Cmd_AddGameCommand(char *cmd_name, xcommand_t function);
+void Cmd_AddMallocCommand(const char *cmd_name, xcommand_t function, int flag);
+NOXREF void Cmd_AddHUDCommand(const char *cmd_name, xcommand_t function);
+NOXREF void Cmd_AddWrapperCommand(const char *cmd_name, xcommand_t function);
+void Cmd_AddGameCommand(const char *cmd_name, xcommand_t function);
 
-void Cmd_RemoveCmd(char *cmd_name);
+void Cmd_RemoveCmd(const char *cmd_name);
 void Cmd_RemoveMallocedCmds(int flag);
 NOXREF void Cmd_RemoveHudCmds();
 void Cmd_RemoveGameCmds();
@@ -194,29 +185,22 @@ qboolean Cmd_Exists(const char *cmd_name); // return bool?
 
 /**
 *	attempts to match a partial command for automatic command line completion
-*	returns nullptr if nothing fits
+*	returns NULL if nothing fits
 */
-// attempts to match a partial command for automatic command line completion
-// returns NULL if nothing fits
-NOXREF char *Cmd_CompleteCommand(char *partial, int forward); // const char? bool forward?
+NOXREF const char *Cmd_CompleteCommand(const char *partial, int forward); // const char? bool forward?
 
 /**
-*	Parses a single line of text into arguments and tries to execute it.
+*	Parses a single line of text into arguments and tries to execute it
+*	as if it was typed at the console.
 *	The text can come from the command buffer, a remote client, or stdin.
 */
-// Parses a single line of text into arguments and tries to execute it
-// as if it was typed at the console
-// The text can come from the command buffer, a remote client, or stdin.
-void Cmd_ExecuteString(char *text, cmd_source_t src); // const char?
+void Cmd_ExecuteString(const char *text, cmd_source_t src);
 
 /**
 *	adds the current command line as a clc_stringcmd to the client message.
 *	things like godmode, noclip, etc, are commands directed to the server,
 *	so when they are typed in at the console, they will need to be forwarded.
 */
-// adds the current command line as a clc_stringcmd to the client message.
-// things like godmode, noclip, etc, are commands directed to the server,
-// so when they are typed in at the console, they will need to be forwarded.
 qboolean Cmd_ForwardToServerInternal(sizebuf_t *pBuf);
 void Cmd_ForwardToServer();
 qboolean Cmd_ForwardToServerUnreliable();
@@ -225,8 +209,6 @@ qboolean Cmd_ForwardToServerUnreliable();
 *	Returns the position (1 to argc-1) in the command's argument list
 *	where the given parameter apears, or 0 if not present
 */
-// Returns the position (1 to argc-1) in the command's argument list
-// where the given parameter apears, or 0 if not present
-NOXREF int Cmd_CheckParm(char *parm); // const char?
+NOXREF int Cmd_CheckParm(const char *parm);
 
 cmdalias_t *Cmd_GetAliasList();

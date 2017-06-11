@@ -96,19 +96,26 @@ unsigned short *host_basepal = NULL;
 cvar_t host_name = { "hostname", "Half-Life", 0, 0.0f, NULL };
 cvar_t host_speeds = { "host_speeds", "0", 0, 0.0f, NULL };
 cvar_t host_profile = { "host_profile", "0", 0, 0.0f, NULL };
+
 cvar_t developer = { "developer", "0", 0, 0.0f, NULL };
+
 cvar_t host_limitlocal = { "host_limitlocal", "0", 0, 0.0f, NULL };
+
 cvar_t skill = { "skill", "1", 0, 0.0f, NULL };
 cvar_t deathmatch = { "deathmatch", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t coop = { "coop", "0", FCVAR_SERVER, 0.0f, NULL };
 
 cvar_t sys_ticrate = { "sys_ticrate", "100.0", 0, 0.0f, NULL };
 cvar_t sys_timescale = { "sys_timescale", "1.0", 0, 0.0f, NULL };
+
 cvar_t fps_max = { "fps_max", "100.0", FCVAR_ARCHIVE, 0.0f, NULL };
-cvar_t host_killtime = { "host_killtime", "0.0", 0, 0.0f, NULL };
-cvar_t sv_stats = { "sv_stats", "1", 0, 0.0f, NULL };
 cvar_t fps_override = { "fps_override", "0", 0, 0.0f, NULL };
+
+cvar_t host_killtime = { "host_killtime", "0.0", 0, 0.0f, NULL };
 cvar_t host_framerate = { "host_framerate", "0", 0, 0.0f, NULL };
+
+cvar_t sv_stats = { "sv_stats", "1", 0, 0.0f, NULL };
+
 cvar_t pausable = { "pausable", "1", FCVAR_SERVER, 0.0f, NULL };
 cvar_t suitvolume = { "suitvolume", "0.25", FCVAR_ARCHIVE, 0.0f, NULL };
 
@@ -527,7 +534,7 @@ void SV_ClearClientStates()
 	
 	for(i = 0, pcl = g_psvs.clients; i < g_psvs.maxclients; i++, pcl++)
 	{
-		//COM_ClearCustomizationList(&pcl->customdata, FALSE); // TODO: uncomment
+		COM_ClearCustomizationList(&pcl->customdata, FALSE); // TODO: uncomment
 		SV_ClearResourceLists(pcl);
 	};
 }
@@ -588,6 +595,7 @@ qboolean Host_FilterTime(float time)
 	}
 
 	realtime += sys_timescale.value * time;
+	
 	if(g_bIsDedicatedServer)
 	{
 		if(command_line_ticrate == -1)

@@ -36,15 +36,17 @@
 #include "filesystem/filesystem_internal.hpp"
 #include "console/console.hpp"
 
-texlumpinfo_t *lumpinfo;
-int nTexLumps;
+texlumpinfo_t *lumpinfo = NULL;
+
 FileHandle_t texfiles[128];
-int nTexFiles;
 
-unsigned char texgammatable[256];
-texture_t *r_notexture_mip;
+int nTexFiles = 0;
+int nTexLumps = 0;
 
-int nummiptex;
+byte texgammatable[256];
+texture_t *r_notexture_mip = NULL;
+
+int nummiptex = 0;
 char miptex[512][64];
 
 /*
@@ -76,9 +78,7 @@ void CleanupName(char *in, char *out)
 	}
 
 	while(i < 16)
-	{
 		out[i++] = 0;
-	}
 }
 
 int lump_sorter(const void *lump1, const void *lump2)
@@ -200,20 +200,22 @@ int TEX_LoadLump(char *name, unsigned char *dest)
 	}
 }
 
-int FindMiptex(char *name)
+int FindMiptex(const char *name)
 {
 	int i = 0;
-	for(i = 0; i < nummiptex; i++)
+	
+	for(i; i < nummiptex; ++i)
 	{
 		if(!Q_stricmp(name, miptex[i]))
 			return i;
-	}
+	};
 
 	if(nummiptex == 512)
 		Sys_Error("Exceeded MAX_MAP_TEXTURES");
 
 	Q_strncpy(miptex[i], name, 63);
 	miptex[i][63] = 0;
+	
 	++nummiptex;
 	return i;
 }
@@ -223,6 +225,7 @@ void TEX_AddAnimatingTextures()
 	char name[32];
 
 	int base = nummiptex;
+	
 	for(int i = 0; i < base; i++)
 	{
 		if(miptex[i][0] != '+' && miptex[i][0] != '-')

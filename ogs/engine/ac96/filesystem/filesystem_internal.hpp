@@ -30,24 +30,24 @@
 
 #pragma once
 
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "public/FileSystem.h"
 #include "public/archtypes.h"
 
 #ifdef HOOK_ENGINE
-#define g_pFileSystem (*pg_pFileSystem)
+	#define g_pFileSystem (*pg_pFileSystem)
 #endif
 
 extern IFileSystem *gpFileSystem;
 
 void FS_AddSearchPath(const char *pPath, const char *pathID);
-NOXREF int FS_RemoveSearchPath(const char *pPath);
+NOXREF int FS_RemoveSearchPath(const char *pPath); // return bool?
 void FS_RemoveAllSearchPaths();
 
 void FS_RemoveFile(const char *pRelativePath, const char *pathID);
 void FS_CreateDirHierarchy(const char *path, const char *pathID);
 
-int FS_FileExists(const char *pFileName);
+int FS_FileExists(const char *pFileName); // return bool?
 NOXREF int FS_IsDirectory(const char *pFileName);
 
 FileHandle_t FS_Open(const char *pFileName, const char *pOptions);
@@ -59,7 +59,7 @@ void FS_Seek(FileHandle_t file, int pos, FileSystemSeek_t seekType);
 unsigned int FS_Tell(FileHandle_t file);
 
 unsigned int FS_Size(FileHandle_t file);
-unsigned int FS_FileSize(const char *pFileName);
+unsigned int FS_FileSize(const char *pFileName); // return int?
 
 int32 FS_GetFileTime(const char *pFileName);
 NOXREF void FS_FileTimeToString(char *pStrip, int maxCharsIncludingTerminator, int32 fileTime);
@@ -68,19 +68,19 @@ int FS_IsOk(FileHandle_t file);
 
 void FS_Flush(FileHandle_t file);
 
-int FS_EndOfFile(FileHandle_t file);
+int FS_EndOfFile(FileHandle_t file); // return bool?
 
-int FS_Read(void *pOutput, int size, int count, FileHandle_t file);
-int FS_Write(const void *pInput, int size, int count, FileHandle_t file);
+int FS_Read(void *pOutput, int size, int count, FileHandle_t file); // is count really present?
+int FS_Write(const void *pInput, int size, int count, FileHandle_t file); // is count really present?
 
 char *FS_ReadLine(char *pOutput, int maxChars, FileHandle_t file);
 
-int FS_FPrintf(FileHandle_t file, char *pFormat, ...);
+int FS_FPrintf(FileHandle_t file, const char *pFormat, ...);
 
 const char *FS_FindFirst(const char *pWildCard, FileFindHandle_t *pHandle, const char *pathID);
 const char *FS_FindNext(FileFindHandle_t handle);
-NOXREF int FS_FindIsDirectory(FileFindHandle_t handle);
-void FS_FindClose(FileFindHandle_t handle);
+NOXREF int FS_FindIsDirectory(FileFindHandle_t handle); // return bool
+void /*__cdecl*/ FS_FindClose(FileFindHandle_t handle);
 
 void FS_GetLocalCopy(const char *pFileName);
 
@@ -88,16 +88,16 @@ const char *FS_GetLocalPath(const char *pFileName, char *pLocalPath, int localPa
 
 NOXREF char *FS_ParseFile(char *pFileBytes, char *pToken, int *pWasQuoted);
 
-NOXREF int FS_FullPathToRelativePath(const char *pFullpath, char *pRelative);
+NOXREF int FS_FullPathToRelativePath(const char *pFullpath, char *pRelative); // return bool?
 
 NOXREF int FS_GetCurrentDirectory(char *pDirectory, int maxlen);
 
 NOXREF void FS_PrintOpenedFiles();
 
-NOXREF void FS_SetWarningFunc(void (*pfnWarning)(const char *, ...));
+NOXREF void FS_SetWarningFunc(void (*pfnWarning)(const char *, ...)); // (FileSystemWarningFunc pfnWarning)
 NOXREF void FS_SetWarningLevel(FileWarningLevel_t level);
 
-NOXREF unsigned char FS_GetCharacter(FileHandle_t f);
+NOXREF unsigned char FS_GetCharacter(FileHandle_t f); // return char?
 
 void FS_LogLevelLoadStarted(const char *name);
 void FS_LogLevelLoadFinished(const char *name);
@@ -113,4 +113,4 @@ void FS_Unlink(const char *filename);
 
 void FS_Rename(const char *originalName, const char *newName);
 
-void *FS_LoadLibrary(const char *dllName);
+void *FS_LoadLibrary(const char *dllName); // return CSysModule *

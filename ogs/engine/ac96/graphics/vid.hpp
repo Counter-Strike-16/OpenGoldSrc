@@ -34,6 +34,7 @@
 #include "common/commontypes.h"
 #include "common/wrect.h"
 #include "common/maintypes.h"
+//#include "tier0/platform.h"
 
 #ifdef HOOK_ENGINE
 	#define r_pixbytes (*pr_pixbytes)

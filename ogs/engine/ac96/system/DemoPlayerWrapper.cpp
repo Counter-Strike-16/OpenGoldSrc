@@ -1,6 +1,6 @@
 /*
  *	This file is part of OGS Engine
- *	Copyright (C) 2016-2017 OGS Dev Team
+ *	Copyright (C) 2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,42 +27,12 @@
  */
 
 /// @file
-/// @brief cdaudio module interface
 
-#pragma once
+#include "precompiled.hpp"
+#include "system/DemoPlayerWrapper.hpp"
 
-#include "common/commontypes.h"
-
-int CDAudio_Init(); // void
-void CDAudio_Shutdown();
-
-void CDAudio_Update();
-
-void CDAudio_Play(byte track, qboolean looping); // int track
-void CDAudio_Stop();
-
-void CDAudio_Pause();
-void CDAudio_Resume();
-
-//void CDAudio_Activate(qboolean active);
-
-//void PrimeMusicStream(char *filename, int looping);
-
-/*
-class CCDAudio
+qboolean DemoPlayer_Init()
 {
-public:
-	int Init();
-	void Shutdown();
-
-	void Update();
-
-	void Play(byte track, qboolean looping); // int track
-	void Stop();
-
-	void Pause();
-	void Resume();
-
-	//void Activate(qboolean active);
+	//pDemoClient->Init(); // DemoPlayer.dll->IDemoClient->Init?
+	return true;
 };
-*/

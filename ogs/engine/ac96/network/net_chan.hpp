@@ -33,22 +33,20 @@
 
 #include "common/commontypes.h"
 #include "common/enums.h"
-#include "maintypes.h"
+#include "common/maintypes.h"
 #include "network/net.hpp"
 
 #ifdef HOOK_ENGINE
+	#define gDownloadFile (*pgDownloadFile)
 
-#define gDownloadFile (*pgDownloadFile)
-
-#define net_drop (*pnet_drop)
-#define net_log (*pnet_log)
-#define net_showpackets (*pnet_showpackets)
-#define net_showdrop (*pnet_showdrop)
-#define net_drawslider (*pnet_drawslider)
-#define net_chokeloopback (*pnet_chokeloopback)
-#define sv_filetransfercompression (*psv_filetransfercompression)
-#define sv_filetransfermaxsize (*psv_filetransfermaxsize)
-
+	#define net_drop (*pnet_drop)
+	#define net_log (*pnet_log)
+	#define net_showpackets (*pnet_showpackets)
+	#define net_showdrop (*pnet_showdrop)
+	#define net_drawslider (*pnet_drawslider)
+	#define net_chokeloopback (*pnet_chokeloopback)
+	#define sv_filetransfercompression (*psv_filetransfercompression)
+	#define sv_filetransfermaxsize (*psv_filetransfermaxsize)
 #endif // HOOK_ENGINE
 
 typedef struct cvar_s cvar_t;
@@ -136,9 +134,9 @@ typedef struct netchan_s
 	int fragbufcount[MAX_STREAMS];
 
 	// Position in outgoing buffer where frag data starts
-	short int frag_startpos[MAX_STREAMS];
+	short int frag_startpos[MAX_STREAMS]; // __int16
 	// Length of frag data in the buffer
-	short int frag_length[MAX_STREAMS];
+	short int frag_length[MAX_STREAMS]; // __int16
 
 	// Incoming fragments are stored here
 	fragbuf_t *incomingbufs[MAX_STREAMS];
@@ -147,7 +145,7 @@ typedef struct netchan_s
 
 	// Only referenced by the FRAG_FILE_STREAM component
 	// Name of file being downloaded
-	char incomingfilename[MAX_PATH];
+	char incomingfilename[MAX_PATH]; // MAX_PATH = 260
 
 	void *tempbuffer;
 	int tempbuffersize;
@@ -205,7 +203,7 @@ qboolean Netchan_IncomingReady(netchan_t *chan);
 
 NOXREF void Netchan_UpdateProgress(netchan_t *chan);
 
-void Netchan_Init(void);
+void Netchan_Init();
 
 NOXREF qboolean Netchan_CompressPacket(sizebuf_t *chan);
 NOXREF qboolean Netchan_DecompressPacket(sizebuf_t *chan);

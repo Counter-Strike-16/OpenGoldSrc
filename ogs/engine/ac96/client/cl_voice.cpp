@@ -27,12 +27,24 @@
  */
 
 /// @file
+/// @brief client side voice subsystem funcs
 
 #include "precompiled.hpp"
-#include "system/DemoPlayer.hpp"
+#include "client/client.hpp"
 
-qboolean DemoPlayer_Init()
+void CL_AddVoiceToDatagram(qboolean bFinal)
 {
-	//pDemoClient->Init(); // DemoPlayer.dll->IDemoClient->Init?
-	return true;
+#ifndef SWDS
+	
+	if(bFinal)
+	{
+	};
+	
+#endif
+};
+
+void CL_VoiceIdle()
+{
+#ifndef SWDS
+#endif
 };

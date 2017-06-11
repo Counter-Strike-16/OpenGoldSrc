@@ -66,6 +66,114 @@ void R_InitParticles()
 	Hunk_AllocName(r_numparticles * sizeof(particle_t), "particles");
 }
 
+#ifdef QUAKE2
+void R_DarkFieldParticles(entity_t *ent)
+{
+	int i, j, k;
+	particle_t *p;
+	float vel;
+	vec3_t dir;
+	vec3_t org;
+
+	org[0] = ent->origin[0];
+	org[1] = ent->origin[1];
+	org[2] = ent->origin[2];
+	for(i = -16; i < 16; i += 8)
+		for(j = -16; j < 16; j += 8)
+			for(k = 0; k < 32; k += 8)
+			{
+				if(!free_particles)
+					return;
+				p = free_particles;
+				free_particles = p->next;
+				p->next = active_particles;
+				active_particles = p;
+
+				p->die = cl.time + 0.2 + (rand() & 7) * 0.02;
+				p->color = 150 + rand() % 6;
+				p->type = pt_slowgrav;
+
+				dir[0] = j * 8;
+				dir[1] = i * 8;
+				dir[2] = k * 8;
+
+				p->org[0] = org[0] + i + (rand() & 3);
+				p->org[1] = org[1] + j + (rand() & 3);
+				p->org[2] = org[2] + k + (rand() & 3);
+
+				VectorNormalize(dir);
+				vel = 50 + (rand() & 63);
+				VectorScale(dir, vel, p->vel);
+			}
+}
+#endif
+
+/*
+===============
+R_EntityParticles
+===============
+*/
+
+#define NUMVERTEXNORMALS 162
+extern float r_avertexnormals[NUMVERTEXNORMALS][3];
+vec3_t avelocities[NUMVERTEXNORMALS];
+float beamlength = 16;
+vec3_t avelocity = { 23, 7, 3 };
+float partstep = 0.01;
+float timescale = 0.01;
+
+void R_EntityParticles(entity_t *ent)
+{
+	int count;
+	int i;
+	particle_t *p;
+	float angle;
+	float sr, sp, sy, cr, cp, cy;
+	vec3_t forward;
+	float dist;
+
+	dist = 64;
+	count = 50;
+
+	if(!avelocities[0][0])
+	{
+		for(i = 0; i < NUMVERTEXNORMALS * 3; i++)
+			avelocities[0][i] = (rand() & 255) * 0.01;
+	}
+
+	for(i = 0; i < NUMVERTEXNORMALS; i++)
+	{
+		angle = cl.time * avelocities[i][0];
+		sy = sin(angle);
+		cy = cos(angle);
+		angle = cl.time * avelocities[i][1];
+		sp = sin(angle);
+		cp = cos(angle);
+		angle = cl.time * avelocities[i][2];
+		sr = sin(angle);
+		cr = cos(angle);
+
+		forward[0] = cp * cy;
+		forward[1] = cp * sy;
+		forward[2] = -sp;
+
+		if(!free_particles)
+			return;
+		p = free_particles;
+		free_particles = p->next;
+		p->next = active_particles;
+		active_particles = p;
+
+		p->die = cl.time + 0.01;
+		p->color = 0x6f;
+		p->type = pt_explode;
+
+		p->org[0] = ent->origin[0] + r_avertexnormals[i][0] * dist + forward[0] * beamlength;
+		p->org[1] = ent->origin[1] + r_avertexnormals[i][1] * dist + forward[1] * beamlength;
+		p->org[2] = ent->origin[2] + r_avertexnormals[i][2] * dist + forward[2] * beamlength;
+	}
+}
+
 /*
 ===============
 R_ClearParticles
@@ -133,6 +241,33 @@ void R_ReadPointFile_f()
 
 /*
 ===============
+R_ParseParticleEffect
+
+Parse an effect out of the server message
+===============
+*/
+void R_ParseParticleEffect(void)
+{
+	vec3_t org, dir;
+	int i, count, msgcount, color;
+
+	for(i = 0; i < 3; i++)
+		org[i] = MSG_ReadCoord();
+	for(i = 0; i < 3; i++)
+		dir[i] = MSG_ReadChar() * (1.0 / 16);
+	msgcount = MSG_ReadByte();
+	color = MSG_ReadByte();
+
+	if(msgcount == 255)
+		count = 1024;
+	else
+		count = msgcount;
+
+	R_RunParticleEffect(org, dir, color, count);
+}
+
+/*
+===============
 R_ParticleExplosion
 
 ===============
@@ -171,6 +306,40 @@ void R_ParticleExplosion(vec3_t org)
 				p->org[j] = org[j] + ((rand() % 32) - 16);
 				p->vel[j] = (rand() % 512) - 256;
 			}
+		}
+	}
+}
+
+/*
+===============
+R_ParticleExplosion2
+
+===============
+*/
+void R_ParticleExplosion2(vec3_t org, int colorStart, int colorLength)
+{
+	int i, j;
+	particle_t *p;
+	int colorMod = 0;
+
+	for(i = 0; i < 512; i++)
+	{
+		if(!free_particles)
+			return;
+		p = free_particles;
+		free_particles = p->next;
+		p->next = active_particles;
+		active_particles = p;
+
+		p->die = cl.time + 0.3;
+		p->color = colorStart + (colorMod % colorLength);
+		colorMod++;
+
+		p->type = pt_blob;
+		for(j = 0; j < 3; j++)
+		{
+			p->org[j] = org[j] + ((rand() % 32) - 16);
+			p->vel[j] = (rand() % 512) - 256;
 		}
 	}
 }
@@ -250,7 +419,7 @@ void R_RunParticleEffect(vec3_t org, vec3_t dir, int color, int count)
 
 		p->die = cl.time + 0.1 * (rand() % 5);
 		p->color = (color & ~7) + (rand() & 7);
-		p->type = pt_grav;
+		p->type = pt_grav; // pt_slowgrav
 		for(j = 0; j < 3; j++)
 		{
 			p->org[j] = org[j] + scale * ((rand() & 15) - 8);
@@ -475,11 +644,11 @@ void R_DrawParticles()
 	VectorCopy(vpn, r_ppn);
 #endif
 
-	frametime = host_frametime;
+	frametime = host_frametime; // = cl.time - cl.oldtime
 	time3 = frametime * 15;
 	time2 = frametime * 10; // 15;
 	time1 = frametime * 5;
-	grav = frametime * 800 * 0.05;
+	grav = frametime * 800 * 0.05; // 800 = sv_gravity.value
 	dvel = 4 * frametime;
 
 	for(;;)
@@ -590,8 +759,12 @@ void R_DrawParticles()
 			p->vel[2] -= grav;
 			break;
 
-		case pt_slowgrav:
 		case pt_grav:
+#ifdef QUAKE2
+			p->vel[2] -= grav * 20;
+			break;
+#endif
+		case pt_slowgrav:
 			p->vel[2] -= grav;
 			break;
 		}

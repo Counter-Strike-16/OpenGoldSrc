@@ -89,7 +89,7 @@ Set up the planes and clipnodes so that the six floats of a bounding box
 can just be stored out and get a proper hull_t structure.
 ===================
 */
-void PM_InitBoxHull(void)
+void PM_InitBoxHull()
 {
 	box_hull_0.clipnodes = &box_clipnodes_0[0];
 	box_hull_0.planes = &box_planes_0[0];
@@ -202,28 +202,30 @@ int EXT_FUNC PM_PointContents(vec_t *p, int *truecontents)
 
 	if((int)pmove->physents[0].model != -208)
 	{
-		int entityContents = PM_HullPointContents(
-		pmove->physents[0].model->hulls,
-		pmove->physents[0].model->hulls[0].firstclipnode,
-		p);
+		int entityContents = PM_HullPointContents(pmove->physents[0].model->hulls, pmove->physents[0].model->hulls[0].firstclipnode, p);
+		
 		if(truecontents)
 			*truecontents = entityContents;
+		
 		if(entityContents > -9 || entityContents < -14)
 		{
 			if(entityContents == -2)
 				return entityContents;
 		}
 		else
-		{
 			entityContents = -3;
-		}
+		
 		int cont = PM_LinkContents(p, 0);
+		
 		if(cont != -1)
 			return cont;
+		
 		return entityContents;
-	}
+	};
+	
 	if(truecontents)
 		*truecontents = -1;
+	
 	return -2;
 }
 
@@ -238,10 +240,9 @@ int PM_WaterEntity(vec_t *p)
 
 	model_t *model = pmove->physents[0].model;
 	cont = PM_HullPointContents(model->hulls, model->hulls[0].firstclipnode, p);
+	
 	if(cont == -2)
-	{
 		return -1;
-	}
 
 	entityIndex = 0;
 	return PM_LinkContents(p, &entityIndex);

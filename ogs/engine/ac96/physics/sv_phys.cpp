@@ -32,11 +32,11 @@
 #include "physics/sv_phys.hpp"
 #include "physics/sv_move.hpp"
 #include "physics/pmove.hpp"
+#include "physics/world.hpp"
 #include "system/common.hpp"
 #include "system/system.hpp"
 #include "system/host.hpp"
 #include "system/server.hpp"
-#include "world/world.hpp"
 #include "world/pr_cmds.hpp"
 #include "console/console.hpp"
 

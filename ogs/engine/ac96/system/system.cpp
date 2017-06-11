@@ -87,31 +87,36 @@ char *szReslistsExt;
 // const char g_szHalfLifeDllName;
 // const char g_szBaseDllName;
 
-char gszDisconnectReason[MAX_DISCONNECT_REASON];
-char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON];
+char gszDisconnectReason[MAX_DISCONNECT_REASON] = {};
+char gszExtendedDisconnectReason[MAX_DISCONNECT_REASON] = {};
 
-qboolean gfExtendedError;
+qboolean gfExtendedError = false;
 
-int giSubState;
-int giActive;
-int giStateInfo;
+int giSubState = 0;
+int giActive = DLL_INACTIVE;
+int giStateInfo = 0;
 
-DLL_FUNCTIONS gEntityInterface;
-NEW_DLL_FUNCTIONS gNewDLLFunctions;
+DLL_FUNCTIONS gEntityInterface = {};
+NEW_DLL_FUNCTIONS gNewDLLFunctions = {};
 
-extensiondll_t g_rgextdll[50];
+extensiondll_t g_rgextdll[50] = {};
+int g_iextdllMac = 0;
 
-int g_iextdllMac;
-qboolean gfBackground;
+qboolean gfBackground = false;
+
 // int starttime;
 // qboolean Win32AtLeastV4;
 // int lowshift;
 // double pfreq;
-qboolean g_bPrintingKeepAliveDots;
+
+qboolean g_bPrintingKeepAliveDots = false;
+
 // DWORD gProcessorSpeed;
+
 #ifndef _WIN32
-qboolean gHasMMXTechnology;
-#endif // _WIN32
+qboolean gHasMMXTechnology = false;
+#endif
+
 // volatile int sys_checksum;
 // char *argv[MAX_NUM_ARGVS];
 
@@ -203,7 +208,8 @@ void __cdecl Sys_InitHardwareTimer()
 	{
 		InitializeCriticalSection(&g_PerfCounterMutex);
 		g_PerfCounterInitialized = 1;
-	}
+	};
+	
 	Sys_SetupFPUOptions();
 	Sys_InitFPUControlWords();
 
@@ -213,12 +219,14 @@ void __cdecl Sys_InitHardwareTimer()
 	perfHighPart = perfFreq.HighPart;
 	perfLowPart = perfFreq.LowPart;
 	g_PerfCounterShiftRightAmount = 0;
+	
 	while(perfHighPart || perfLowPart > 2000000.0)
 	{
 		g_PerfCounterShiftRightAmount++;
 		perfLowPart = (perfHighPart << 31) | (perfLowPart >> 1);
 		perfHighPart >>= 1;
-	}
+	};
+	
 	g_PerfCounterSlice = 1.0 / (double)perfLowPart;
 
 	Sys_CheckOSVersion();
@@ -248,6 +256,8 @@ void Sys_FPUCW_Pop_Prec64()
 NOXREF void Sys_PageIn(void *ptr, int size)
 {
 	NOXREFCHECK;
+	
+	// Obsolete due to vastly increased available memory & I/O speeds
 }
 
 // TODO: investigate filesystem_stdio problem (multiple enumeration of files).
@@ -371,8 +381,6 @@ NOBODY void MaskExceptions();
 //{
 //}
 
-NOBODY void Sys_Init();
-
 NOXREF void Sys_Sleep(int msec)
 {
 	NOXREFCHECK;
@@ -392,7 +400,8 @@ void NORETURN Sys_Error(const char *error, ...)
 {
 	va_list argptr;
 	char text[1024];
-	static qboolean bReentry;
+	
+	static qboolean bReentry = false;
 
 	va_start(argptr, error);
 	Q_vsnprintf(text, ARRAYSIZE(text), error, argptr);
@@ -406,7 +415,8 @@ void NORETURN Sys_Error(const char *error, ...)
 	{
 		fprintf(stderr, "%s\n", text);
 		longjmp(host_abortserver, 2);
-	}
+	};
+	
 	bReentry = true;
 
 	if(g_psvs.dll_initialized && gEntityInterface.pfnSys_Error)
@@ -444,20 +454,19 @@ void NORETURN Sys_Error(const char *error, ...)
 #ifndef SWDS
 	else
 	{
-		HWND hWnd = 0;
+		//HWND hWnd = 0;
 		
 		//if(pmainwindow)
 			//hWnd = *pmainwindow;
 
 		Sys_Printf(text);
 		//SDL_ShowSimpleMessageBox(MB_ICONERROR | MB_OK, "Fatal Error", text, hWnd);
-		//VideoMode_IsWindowed();
+		VideoMode_IsWindowed();
 	}
 #endif // SWDS
 
-	// exit(-1);
 	// Allahu akbar!
-	*(int *)NULL = NULL;
+	*(int *)NULL = NULL; // exit(-1);
 }
 
 NOXREF void Sys_Warning(const char *pszWarning, ...)
@@ -489,7 +498,7 @@ void Sys_Printf(const char *fmt, ...)
 #ifdef _WIN32
 	OutputDebugStringA(Dest);
 #else
-	if(!g_bIsDedicatedServer)
+	if(!g_bIsDedicatedServer) // ?
 		fprintf(stderr, "%s\n", Dest);
 #endif // _WIN32
 }
@@ -600,18 +609,19 @@ void GameSetState(int iState)
 	giActive = iState;
 }
 
-NOBODY void GameSetBackground(qboolean bNewSetting);
-//{
-//}
-
-DISPATCHFUNCTION GetDispatch(char *pname)
+void GameSetBackground(qboolean bNewSetting);
 {
-	DISPATCHFUNCTION pDispatch;
+	gfBackground = bNewSetting;
+}
 
-	for(int i = 0; i < g_iextdllMac; i++)
+DISPATCHFUNCTION GetDispatch(const char *pname)
+{
+	DISPATCHFUNCTION pDispatch = NULL;
+
+	for(int i = 0; i < g_iextdllMac; ++i)
 	{
-		pDispatch = (DISPATCHFUNCTION)GetProcAddress(
-		(HMODULE)g_rgextdll[i].lDLLHandle, pname);
+		pDispatch = (DISPATCHFUNCTION)GetProcAddress((HMODULE)g_rgextdll[i].lDLLHandle, pname);
+		
 		if(pDispatch)
 			return pDispatch;
 	};
@@ -656,11 +666,13 @@ uint32 FindNameInTable(extensiondll_t *pDll, const char *pName)
 #endif // _WIN32
 }
 
-NOBODY const char *ConvertNameToLocalPlatform(const char *pchInName);
-//{
-//	char s_szNewName;                                             //  1409
+const char *ConvertNameToLocalPlatform(const char *pchInName)
+{
+	static char s_szNewName[512];
+	
+	char szTempName[512];
+	
 //	{
-//		char szTempName;                                      //  1463
 //		char *pchAt;                                         //  1464
 //		char *pchClassName;                                  //  1465
 //		char *pchFunctionName;                               //  1466
@@ -671,19 +683,32 @@ NOBODY const char *ConvertNameToLocalPlatform(const char *pchInName);
 //		FindNameInTable(extensiondll_t *pDll,
 //				const char *pName);   //  1491
 //	}
-//}
+}
 
 uint32 EXT_FUNC FunctionFromName(const char *pName)
 {
-	return 0; // TODO: do we really need to reverse it?
+	const char *pszName = ConvertNameToLocalPlatform( pName );
+
+	uint32 function = 0;
+
+	for( int i = 0; i < g_iextdllMac; ++i )
+	{
+		function = FindNameInTable( &g_rgextdll[ i ], pszName );
+
+		if( function )
+			return function;
+	};
+
+	Con_Printf( "Can't find proc: %s\n", pszName );
+
+	return 0;
 }
 
 const char *EXT_FUNC NameForFunction(uint32 function)
 {
-	int i;
-	const char *pName;
+	const char *pName = "";
 
-	for(i = 0; i < g_iextdllMac; i++)
+	for(int i = 0; i < g_iextdllMac; i++)
 	{
 		pName = FindAddressInTable(&g_rgextdll[i], function);
 		if(pName)
@@ -717,6 +742,7 @@ void EXT_FUNC AlertMessage(ALERT_TYPE atype, const char *szFmt, ...)
 	static char szOut[1024];
 
 	va_start(argptr, szFmt);
+	
 	if(atype == at_logged && g_psvs.maxclients > 1)
 	{
 		Q_vsnprintf(szOut, sizeof(szOut), szFmt, argptr);
@@ -1009,7 +1035,44 @@ void Sys_CheckOSVersion()
 void Sys_Init()
 {
 #ifndef SWDS
-	//Sys_InitFloatTime();
+
+/*
+#ifdef WIN32
+	if( !s_bTimeInitialized )
+	{
+		InitializeCriticalSection( &s_Time_CriticalSection );
+		s_bTimeInitialized = true;
+	}
+
+	MaskExceptions();
+	Sys_SetFPCW();
+
+	LARGE_INTEGER	PerformanceFreq;
+
+	if( !QueryPerformanceFrequency( &PerformanceFreq ) )
+		Sys_Error( "No hardware timer available" );
+
+	// get 32 out of the 64 time bits such that we have around
+	// 1 microsecond resolution
+	unsigned int lowpart = ( unsigned int ) PerformanceFreq.LowPart;
+	unsigned int highpart = ( unsigned int ) PerformanceFreq.HighPart;
+	lowshift = 0;
+
+	while( highpart || ( lowpart > 2000000.0 ) )
+	{
+		lowshift++;
+		lowpart >>= 1;
+		lowpart |= ( highpart & 1 ) << 31;
+		highpart >>= 1;
+	}
+
+	pfreq = 1.0 / ( double ) lowpart;
+
+	Sys_CheckOSVersion();
+#endif
+*/
+
+	Sys_InitFloatTime();
 #endif
 }
 

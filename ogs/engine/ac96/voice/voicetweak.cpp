@@ -29,6 +29,7 @@
 /// @file
 
 #include "precompiled.hpp"
+//#include "commondef.hpp"
 #include "voice/voicetweak.hpp"
 
 /*
@@ -42,36 +43,42 @@ IVoiceTweak implementation
 namespace
 {
 
+//VoiceTweak_StartVoiceTweakMode
 int Voice_StartVoiceTweakMode()
 {
 	// TODO: implement
 	return 0;
 };
 
+//VoiceTweak_EndVoiceTweakMode
 void Voice_EndVoiceTweakMode()
 {
 	// TODO: implement
 };
 
+//VoiceTweak_SetControlFloat
 void Voice_SetControlFloat(VoiceTweakControl iControl, float value)
 {
 	// TODO: implement
 };
 
+//VoiceTweak_GetControlFloat
 float Voice_GetControlFloat(VoiceTweakControl iControl)
 {
 	// TODO: implement
-	return 1.0f;
+	return 1.0f; // 0.0f
 };
 
+//VoiceTweak_GetSpeakingVolume
 int Voice_GetSpeakingVolume()
 {
 	// TODO: implement
-	return 255;
+	return 255; // 0
 };
 
 }; // namespace
 
+//g_VoiceTweakAPI
 IVoiceTweak gVoiceAPI = 
 {
 	Voice_StartVoiceTweakMode,
@@ -82,3 +89,14 @@ IVoiceTweak gVoiceAPI =
 	
 	Voice_GetSpeakingVolume
 };
+
+/*
+IVoiceTweak g_VoiceTweakAPI = 
+{
+	&VoiceTweak_StartVoiceTweakMode,
+	&VoiceTweak_EndVoiceTweakMode,
+	&VoiceTweak_SetControlFloat,
+	&VoiceTweak_GetControlFloat,
+	&VoiceTweak_GetSpeakingVolume
+};
+*/

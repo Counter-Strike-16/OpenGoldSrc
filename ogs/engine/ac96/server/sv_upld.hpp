@@ -31,6 +31,8 @@
 #pragma once
 
 #include "common/commontypes.h"
+//#include "engine/custom.h"
+//#include "server/server.hpp"
 
 typedef struct client_s client_t;
 typedef struct sizebuf_s sizebuf_t;
@@ -46,8 +48,10 @@ void SV_AddToResourceList(resource_t *pResource, resource_t *pList);
 void SV_ClearResourceList(resource_t *pList);
 void SV_RemoveFromResourceList(resource_t *pResource);
 int SV_EstimateNeededResources();
-void SV_RequestMissingResourcesFromClients();
 qboolean SV_UploadComplete(client_t *cl);
 void SV_BatchUploadRequest(client_t *cl);
+
 qboolean SV_RequestMissingResources();
+void SV_RequestMissingResourcesFromClients();
+
 void SV_ParseResourceList(client_t *pSenderClient);

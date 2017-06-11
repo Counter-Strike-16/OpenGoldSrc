@@ -57,7 +57,7 @@ byte *r_stack_start;
 
 qboolean r_fov_greater_than_90;
 
-entity_t r_worldentity;
+cl_entity_t r_worldentity;
 
 //
 // view origin
@@ -95,6 +95,10 @@ int d_spanpixcount;
 int r_polycount;
 int r_drawnpolycount;
 int r_wholepolycount;
+
+//#define VIEWMODNAME_LENGTH 256
+//char viewmodname[VIEWMODNAME_LENGTH + 1];
+//int modcount;
 
 int *pfrustum_indexes[4];
 int r_frustum_indexes[4 * 6];
@@ -306,6 +310,10 @@ void R_NewMap()
 
 	r_dowarpold = false;
 	r_viewchanged = false;
+
+#ifdef PASSAGES
+	CreatePassages();
+#endif
 }
 
 /*
@@ -368,6 +376,14 @@ void R_SetVrect(vrect_t *pvrectin, vrect_t *pvrect, int lineadj)
 		pvrect->y = 0;
 	else
 		pvrect->y = (h - pvrect->height) / 2;
+
+{
+		if(lcd_x.value)
+		{
+			pvrect->y >>= 1;
+			pvrect->height >>= 1;
+		}
+	}
 }
 
 /*
@@ -560,7 +576,10 @@ void R_DrawEntitiesOnList()
 
 	for(i = 0; i < cl_numvisedicts; i++)
 	{
-		currententity = &cl_visedicts[i];
+		currententity = &cl_visedicts[i]; // cl_visedicts[i]
+
+		//if(currententity == &cl_entities[cl.viewentity])
+			//continue; // don't draw the player
 
 		switch(currententity->model->type)
 		{
@@ -682,6 +701,10 @@ void R_DrawViewModel()
 
 	r_viewlighting.plightvec = lightvec;
 
+#ifdef QUAKE2
+	cl.light_level = r_viewlighting.ambientlight;
+#endif
+
 	R_AliasDrawModel(&r_viewlighting);
 }
 
@@ -768,7 +791,7 @@ void R_DrawBEntitiesOnList()
 
 	for(i = 0; i < cl_numvisedicts; i++)
 	{
-		currententity = &cl_visedicts[i];
+		currententity = &cl_visedicts[i]; // cl_visedicts[i]
 
 		switch(currententity->model->type)
 		{
@@ -1089,7 +1112,7 @@ void R_InitTurb()
 {
 	int i;
 
-	for(i = 0; i < 1280; i++)
+	for(i = 0; i < 1280; i++) // 1280 = SIN_BUFFER_SIZE
 	{
 		sintable[i] = AMP + sin(i * 3.14159 * 2 / CYCLE) * AMP;
 		intsintable[i] = AMP2 + sin(i * 3.14159 * 2 / CYCLE) * AMP2; // AMP2, not 20

@@ -75,8 +75,8 @@
 
 extern char serverinfo[MAX_INFO_STRING];
 
-extern char gpszVersionString[32];
 extern char gpszProductString[32];
+extern char gpszVersionString[32];
 
 typedef struct bf_read_s bf_read_t;
 typedef struct bf_write_s bf_write_t;
@@ -227,8 +227,19 @@ char *strcpy_safe(char *dst, char *src);
 byte COM_Nibble(char c);
 void COM_HexConvert(const char *pszInput, int nInputLength, byte *pOutput);
 NOXREF char *COM_BinPrintf(byte *buf, int nLen);
-void COM_ExplainDisconnection(qboolean bPrint, char *fmt, ...);
-NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...);
+
+/**
+*	Set explanation for disconnection
+*	@param bPrint Whether to print the explanation to the console
+*/
+void COM_ExplainDisconnection(qboolean bPrint, const char *fmt, ...);
+
+/**
+*	Set extended explanation for disconnection
+*	Only used if COM_ExplainDisconnection has been called as well
+*	@param bPrint Whether to print the explanation to the console
+*/
+NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, const char *fmt, ...);
 
 int LongSwap(int l);
 short ShortSwap(short l);
@@ -237,7 +248,7 @@ int LongNoSwap(int l);
 float FloatSwap(float f);
 float FloatNoSwap(float f);
 
-NOXREF char *COM_SkipPath(char *pathname);
+NOXREF const char *COM_SkipPath(const char *pathname);
 
 void COM_StripExtension(char *in, char *out);
 char *COM_FileExtension(char *in);
@@ -256,7 +267,7 @@ char *COM_ParseLine(char *data);
 
 //const char *COM_ParseFile(const char *data, char *token, int maxtoken);
 
-int COM_TokenWaiting(char *buffer);
+int COM_TokenWaiting(char *buffer); // return bool? const char?
 
 /**
 *	Returns the position (1 to argc-1) in the program's argument list
@@ -272,7 +283,14 @@ void COM_Shutdown();
 // does a varargs printf into a temp buffer
 char *va(char *format, ...);
 
+/**
+*	Converts a vector to a string representation.
+*/
 char *vstr(vec_t *v);
+
+/**
+*	Searches for a byte of data in a binary buffer
+*/
 NOXREF int memsearch(byte *start, int count, int search);
 
 NOXREF void COM_WriteFile(char *filename, void *data, int len);
@@ -280,10 +298,14 @@ NOXREF void COM_CopyFile(char *netpath, char *cachepath);
 
 void COM_FixSlashes(char *pname);
 
+/**
+*	Creates a hierarchy of directories specified by path
+*	Modifies the given string while performing this operation, but restores it to its original state
+*/
 void COM_CreatePath(const char *path);
 
-NOXREF int COM_ExpandFilename(char *filename);
-int COM_FileSize(char *filename);
+NOXREF int COM_ExpandFilename(char *filename); // return bool?
+int COM_FileSize(const char *filename);
 
 byte *COM_LoadFile(char *path, int usehunk, int *pLength); // was const char *path
 void COM_FreeFile(void *buffer);
@@ -318,4 +340,4 @@ void COM_UnMunge2(byte *data, int len, int seq);
 void COM_Munge3(byte *data, int len, int seq);
 NOXREF void COM_UnMunge3(byte *data, int len, int seq);
 
-unsigned int COM_GetApproxWavePlayLength(const char *filepath);
+uint COM_GetApproxWavePlayLength(const char *filepath);
