@@ -17,6 +17,7 @@ for DLL to know too much about its environment.
  */
 
 #define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 
 #include "config.h"
 #include "mangle.h"
@@ -81,6 +82,7 @@ for DLL to know too much about its environment.
 #include <sys/mman.h>
 
 #include "mmap_anon.h"
+#include <execinfo.h>
 //#include "libavutil/avstring.h"
 //#include "cpudetect.h"
 
@@ -620,7 +622,7 @@ static HMODULE WINAPI expGetModuleHandleW(const uint16_t* name)
     int pos = 0;
     while (*name) {
         if (*name > 256 || pos >= sizeof(aname) - 1)
-            return NULL;
+			return 0;
         aname[pos++] = *name++;
     }
     aname[pos] = 0;
@@ -5315,7 +5317,7 @@ static short expSDL_GameControllerGetAxis(void* gc,int a)
 	return 0;
 }
 
-
+#define GLAPI  STDCALL __attribute__((force_align_arg_pointer))
 #include "glfuncs.inc"
 #include "glvars.inc"
 
@@ -6574,9 +6576,11 @@ no_dll_byname:
     return add_stub();
 }
 
+void *GL_GetProcAddress( const char *name ); // defined by Xash's video backend
 static void *WINAPI expwglGetProcAddress(const char *name)
 {
     int i;
+#ifdef SDL
     for(i=0; i < sizeof(glfunctions)/sizeof(struct glfuncs);i++)
     {
 	if(strcasecmp(glfunctions[i].name, name))
@@ -6587,6 +6591,7 @@ static void *WINAPI expwglGetProcAddress(const char *name)
 	return 0;
     }
     dbgprintf("Function %s not implemented in loader\n", name);
+#endif
     return 0;
 }
 
