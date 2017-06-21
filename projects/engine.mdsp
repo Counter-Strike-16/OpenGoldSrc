@@ -10,9 +10,9 @@ workingDirectory=
 arguments=
 intermediateFilesDirectory=../build/mdsp/debug/engine
 outputFilesDirectory=../build/mdsp/debug/engine
-compilerPreprocessor=REHLDS_SELF
-extraCompilerOptions=-std=c++11 -msse4.1 -fpermissive
-compilerIncludeDirectory=..\ogs\engine;..\ogs\engine-zombie;..\ogs\ogsapi;..\ogs\common;..\ogs\public;..\ogs\hookers;..\ogs\rehlds;..\hlsdk
+compilerPreprocessor=REHLDS_SELF;SWDS
+extraCompilerOptions=-std=c++17 -msse4.1 -fpermissive
+compilerIncludeDirectory=..\ogs\engine\proto;..\ogs\engine\workdamnit;..\..\ogsapi\ogs\ogsapi;..\ogs;..\ogs\public;..\..\hlsdk-core;..\..\shiftutil\include
 noWarning=1
 defaultWarning=0
 allWarning=0
@@ -81,11 +81,28 @@ resourceIncludeDirectory=
 extraResourceOptions=
 
 [Source]
-1=..\ogs\engine\hdrfix.cpp
-2=..\ogs\engine\precompiled.cpp
-3=..\ogs\engine\system\dedicatedserverapi.cpp
-4=..\ogs\engine\system\engine.cpp
-5=..\ogs\engine\system\engineapi.cpp
+1=..\ogs\engine\proto\system\CommandLine.cpp
+2=..\ogs\engine\proto\system\DedicatedServerAPI.cpp
+3=..\ogs\engine\proto\system\Engine.cpp
+4=..\ogs\engine\proto\system\EngineAPI.cpp
+5=..\ogs\engine\proto\system\Host.cpp
+6=..\ogs\engine\proto\system\StringHandler.cpp
+7=..\ogs\engine\proto\system\System.cpp
+8=..\ogs\engine\proto\filesystem\FileSystemProvider.cpp
+9=..\..\hlsdk-core\public\interface.cpp
+10=..\ogs\engine\proto\console\Console.cpp
+11=..\ogs\engine\proto\filesystem\File.cpp
+12=..\ogs\engine\proto\filesystem\FileSystem.cpp
+13=..\ogs\engine\proto\network\Network.cpp
+14=..\ogs\engine\proto\console\CmdBuffer.cpp
+15=..\ogs\engine\proto\system\SizeBuffer.cpp
+16=..\ogs\engine\proto\console\ConCmd.cpp
+17=..\ogs\engine\proto\console\ConVar.cpp
+18=..\ogs\engine\proto\console\ConCmdHandler.cpp
+19=..\ogs\engine\proto\console\ConVarHandler.cpp
+20=..\ogs\engine\proto\system\EngineNew.cpp
+21=..\ogs\engine\proto\sound\Sound.cpp
+22=..\ogs\engine\proto\input\Input.cpp
 [Header]
 [Resource]
 [Other]

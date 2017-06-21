@@ -1,11 +1,5 @@
-#ifndef IVGUIMODULE_H
-#define IVGUIMODULE_H
-#ifdef _WIN32
-#pragma once
-#endif
 
-#include <vgui/VGUI.h>
-#include "interface.h"
+
 
 // Purpose: Standard interface to loading vgui modules
 class IVGuiModule: public IBaseInterface
@@ -48,7 +42,3 @@ public:
 	//	"LoadingStarted"	"type"	"name"
 	//  "LoadingFinished"	"type"	"name"
 };
-
-#define VGUIMODULE_INTERFACE_VERSION "VGuiModuleAdminServer001"
-
-#endif // IVGUIMODULE_H

@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="console">
+      <UniqueIdentifier>{4472874e-3f38-4bde-8e09-7dd5af4f1129}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{4a1c02dd-daab-4c56-8b44-9172a6318c4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physics">
+      <UniqueIdentifier>{4f6e6e4f-dda0-4039-b172-414fc3aa43f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sound">
+      <UniqueIdentifier>{b80822a8-0840-4c92-9812-5bcf6093b124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{5c1b8b4a-063b-4d01-99b9-ae674cadf66e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics">
+      <UniqueIdentifier>{5b8dbd8a-1bd4-4178-bce8-2b864ad78325}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="filesystem">
+      <UniqueIdentifier>{8707d5d3-b3ef-4ebe-9198-5ff7bb72078d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{a54edaa9-9efc-4ac2-9769-2d3ee4447590}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="network">
+      <UniqueIdentifier>{b0c580c2-efe9-4e5a-a790-e9bb86a37053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{dcf4e4b8-185c-4988-af99-dbd38cf1eb4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="world">
+      <UniqueIdentifier>{4a2621d5-2041-4f07-9ca6-4d27a116ed6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="script">
+      <UniqueIdentifier>{d3814c68-e278-4345-a412-ab478dd80a17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{aaeffcf2-bd40-42f6-a6b0-18d4b8fff11f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="voice">
+      <UniqueIdentifier>{851ad821-cc68-4518-8a1f-b55d37e8f4da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl">
+      <UniqueIdentifier>{d812781f-983b-4d83-bc15-33445f0438c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl\win">
+      <UniqueIdentifier>{4cbc9e84-ddae-47f0-9146-7e06ba28bf0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl\sdl">
+      <UniqueIdentifier>{7a1068db-8f2d-4dd5-b988-c9a08d1c7a01}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\system\DedicatedServerAPI.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\hlsdk-core\public\interface.cpp" />
+    <ClCompile Include="..\system\Host.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\Engine.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\System.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\impl\win\SystemWin.cpp">
+      <Filter>impl\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filesystem\File.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filesystem\FileSystem.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\rehlds\crc32c.cpp" />
+    <ClCompile Include="..\..\..\public\rehlds\sys_shared.cpp" />
+    <ClCompile Include="..\..\..\tier0\dbg.cpp" />
+    <ClCompile Include="..\system\StringHandler.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\EngineAPI.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\Network.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\Console.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\Game.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\CmdBuffer.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConCmd.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConCmdArgs.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConCmdHandler.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConVar.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\console\ConVarHandler.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\system\DedicatedServerAPI.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\Host.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\Engine.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\IEngine.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\System.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filesystem\FileSystem.hpp">
+      <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filesystem\File.hpp">
+      <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\StringHandler.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\EngineAPI.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\Network.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\Console.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\Game.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\IGame.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\system\IOGSEngine.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\CmdBuffer.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConCmd.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConCmdArgs.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConCmdHandler.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConVar.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\console\ConVarHandler.hpp">
+      <Filter>console</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

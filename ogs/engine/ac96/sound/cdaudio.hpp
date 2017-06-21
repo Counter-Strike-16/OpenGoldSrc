@@ -1,0 +1,68 @@
+/*
+ *	This file is part of OGS Engine
+ *	Copyright (C) 2016-2017 OGS Dev Team
+ *
+ *	OGS Engine is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	OGS Engine is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with OGS Engine.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	In addition, as a special exception, the author gives permission to
+ *	link the code of OGS Engine with the Half-Life Game Engine ("GoldSrc/GS
+ *	Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *	L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *	respects for all of the code used other than the GoldSrc Engine and MODs
+ *	from Valve.  If you modify this file, you may extend this exception
+ *	to your version of the file, but you are not obligated to do so.  If
+ *	you do not wish to do so, delete this exception statement from your
+ *	version.
+ */
+
+/// @file
+/// @brief cdaudio module interface
+
+#pragma once
+
+#include "common/commontypes.h"
+
+int CDAudio_Init(); // void
+void CDAudio_Shutdown();
+
+void CDAudio_Update();
+
+void CDAudio_Play(byte track, qboolean looping); // int track
+void CDAudio_Stop();
+
+void CDAudio_Pause();
+void CDAudio_Resume();
+
+//void CDAudio_Activate(qboolean active);
+
+//void PrimeMusicStream(char *filename, int looping);
+
+/*
+class CCDAudio
+{
+public:
+	int Init();
+	void Shutdown();
+
+	void Update();
+
+	void Play(byte track, qboolean looping); // int track
+	void Stop();
+
+	void Pause();
+	void Resume();
+
+	//void Activate(qboolean active);
+};
+*/

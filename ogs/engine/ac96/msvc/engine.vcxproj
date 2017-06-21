@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\hlsdk\public\interface.cpp" />
+    <ClCompile Include="..\..\public\rehlds\crc32c.cpp" />
+    <ClCompile Include="..\..\public\rehlds\sys_shared.cpp" />
+    <ClCompile Include="..\console\cbuf.cpp" />
+    <ClCompile Include="..\console\cmd.cpp" />
+    <ClCompile Include="..\console\console.cpp" />
+    <ClCompile Include="..\console\cvar.cpp" />
+    <ClCompile Include="..\filesystem\filesystem.cpp" />
+    <ClCompile Include="..\filesystem\filesystem_internal.cpp" />
+    <ClCompile Include="..\filesystem\hashpak.cpp" />
+    <ClCompile Include="..\filesystem\wad.cpp" />
+    <ClCompile Include="..\graphics\screen.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\graphics\view.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\input\keys.cpp" />
+    <ClCompile Include="..\math\crc.cpp" />
+    <ClCompile Include="..\math\mathlib.cpp" />
+    <ClCompile Include="..\math\md5.cpp" />
+    <ClCompile Include="..\math\sse_mathfun.cpp" />
+    <ClCompile Include="..\memory\cache.cpp" />
+    <ClCompile Include="..\memory\hunk.cpp" />
+    <ClCompile Include="..\memory\mem.cpp" />
+    <ClCompile Include="..\memory\zone.cpp" />
+    <ClCompile Include="..\network\cl_parse.cpp" />
+    <ClCompile Include="..\network\delta.cpp" />
+    <ClCompile Include="..\network\delta_jit.cpp" />
+    <ClCompile Include="..\network\ipratelimit.cpp" />
+    <ClCompile Include="..\network\ipratelimitWrapper.cpp" />
+    <ClCompile Include="..\network\net_chan.cpp" />
+    <ClCompile Include="..\network\net_msg.cpp" />
+    <ClCompile Include="..\network\sv_remoteaccess.cpp" />
+    <ClCompile Include="..\network\sv_steam3.cpp" />
+    <ClCompile Include="..\network\sv_user.cpp" />
+    <ClCompile Include="..\physics\pmove.cpp" />
+    <ClCompile Include="..\physics\pmovetst.cpp" />
+    <ClCompile Include="..\physics\sv_move.cpp" />
+    <ClCompile Include="..\physics\sv_phys.cpp" />
+    <ClCompile Include="..\physics\sv_pmove.cpp" />
+    <ClCompile Include="..\resources\cmodel.cpp" />
+    <ClCompile Include="..\resources\com_custom.cpp" />
+    <ClCompile Include="..\resources\czmodelcheck.cpp" />
+    <ClCompile Include="..\resources\decals.cpp" />
+    <ClCompile Include="..\resources\l_studio.cpp" />
+    <ClCompile Include="..\resources\model.cpp" />
+    <ClCompile Include="..\resources\modinfo.cpp" />
+    <ClCompile Include="..\resources\studio.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\resources\sv_upld.cpp" />
+    <ClCompile Include="..\resources\textures.cpp" />
+    <ClCompile Include="..\sound\Sound.cpp" />
+    <ClCompile Include="..\sound\SoundProvider.cpp" />
+    <ClCompile Include="..\system\buildinfo.cpp" />
+    <ClCompile Include="..\system\byteorder.cpp" />
+    <ClCompile Include="..\system\cl_demo.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\system\cl_main.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\system\common.cpp" />
+    <ClCompile Include="..\system\crt_local.cpp" />
+    <ClCompile Include="..\system\dedicatedserverapi.cpp" />
+    <ClCompile Include="..\system\demoapi.cpp" />
+    <ClCompile Include="..\system\engfuncs.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\system\engine.cpp" />
+    <ClCompile Include="..\system\engineapi.cpp" />
+    <ClCompile Include="..\system\game.cpp" />
+    <ClCompile Include="..\system\gamedllloader.cpp" />
+    <ClCompile Include="..\system\host.cpp" />
+    <ClCompile Include="..\system\host_cmd.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\system\info.cpp" />
+    <ClCompile Include="..\system\sizebuf.cpp" />
+    <ClCompile Include="..\system\sv_log.cpp" />
+    <ClCompile Include="..\system\sv_main.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\system\system.cpp" />
+    <ClCompile Include="..\system\textmessage.cpp" />
+    <ClCompile Include="..\workdamnit.cpp" />
+    <ClCompile Include="..\world\ed_strpool.cpp" />
+    <ClCompile Include="..\world\eventapi.cpp" />
+    <ClCompile Include="..\world\pr_cmds.cpp" />
+    <ClCompile Include="..\world\pr_edict.cpp" />
+    <ClCompile Include="..\world\world.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\console\cbuf.hpp" />
+    <ClInclude Include="..\console\cmd.hpp" />
+    <ClInclude Include="..\console\console.hpp" />
+    <ClInclude Include="..\console\cvar.hpp" />
+    <ClInclude Include="..\filesystem\filesystem_.hpp" />
+    <ClInclude Include="..\filesystem\filesystem_internal.hpp" />
+    <ClInclude Include="..\filesystem\hashpak.hpp" />
+    <ClInclude Include="..\filesystem\wad.hpp" />
+    <ClInclude Include="..\graphics\RendererManager.hpp" />
+    <ClInclude Include="..\graphics\screen.hpp" />
+    <ClInclude Include="..\graphics\spriteapi.hpp" />
+    <ClInclude Include="..\graphics\vid.hpp" />
+    <ClInclude Include="..\graphics\view.hpp" />
+    <ClInclude Include="..\input\input.hpp" />
+    <ClInclude Include="..\input\keys.hpp" />
+    <ClInclude Include="..\math\mathlib_e.hpp" />
+    <ClInclude Include="..\math\sse_mathfun.hpp" />
+    <ClInclude Include="..\memory\mem.hpp" />
+    <ClInclude Include="..\memory\zone.hpp" />
+    <ClInclude Include="..\network\bf_read.hpp" />
+    <ClInclude Include="..\network\bf_write.hpp" />
+    <ClInclude Include="..\network\delta.hpp" />
+    <ClInclude Include="..\network\delta_jit.hpp" />
+    <ClInclude Include="..\network\delta_packet.hpp" />
+    <ClInclude Include="..\network\filter.hpp" />
+    <ClInclude Include="..\network\frame.hpp" />
+    <ClInclude Include="..\network\ipratelimit.hpp" />
+    <ClInclude Include="..\network\ipratelimitWrapper.hpp" />
+    <ClInclude Include="..\network\net.hpp" />
+    <ClInclude Include="..\network\networktypes.hpp" />
+    <ClInclude Include="..\network\net_chan.hpp" />
+    <ClInclude Include="..\network\net_msg.hpp" />
+    <ClInclude Include="..\network\protocol.hpp" />
+    <ClInclude Include="..\network\sv_remoteaccess.hpp" />
+    <ClInclude Include="..\network\sv_steam3.hpp" />
+    <ClInclude Include="..\network\sv_user.hpp" />
+    <ClInclude Include="..\network\usermsg.hpp" />
+    <ClInclude Include="..\physics\pmove.hpp" />
+    <ClInclude Include="..\physics\pmovetst.hpp" />
+    <ClInclude Include="..\physics\sv_move.hpp" />
+    <ClInclude Include="..\physics\sv_phys.hpp" />
+    <ClInclude Include="..\physics\sv_pmove.hpp" />
+    <ClInclude Include="..\resources\cmodel.hpp" />
+    <ClInclude Include="..\resources\consistency.hpp" />
+    <ClInclude Include="..\resources\decal.hpp" />
+    <ClInclude Include="..\resources\l_studio.hpp" />
+    <ClInclude Include="..\resources\model_rehlds.hpp" />
+    <ClInclude Include="..\resources\modinfo.hpp" />
+    <ClInclude Include="..\resources\studio_rehlds.hpp" />
+    <ClInclude Include="..\resources\sv_upld.hpp" />
+    <ClInclude Include="..\resources\textures.hpp" />
+    <ClInclude Include="..\sound\cdaudio.hpp" />
+    <ClInclude Include="..\sound\sound.hpp" />
+    <ClInclude Include="..\sound\soundfade.hpp" />
+    <ClInclude Include="..\sound\SoundProvider.hpp" />
+    <ClInclude Include="..\system\buildinfo.hpp" />
+    <ClInclude Include="..\system\client.hpp" />
+    <ClInclude Include="..\system\clientdll.hpp" />
+    <ClInclude Include="..\system\clienttypes.hpp" />
+    <ClInclude Include="..\system\cl_demo.hpp" />
+    <ClInclude Include="..\system\common.hpp" />
+    <ClInclude Include="..\system\dedicatedserverapi.hpp" />
+    <ClInclude Include="..\system\engine.hpp" />
+    <ClInclude Include="..\system\engineapi.hpp" />
+    <ClInclude Include="..\system\game.hpp" />
+    <ClInclude Include="..\system\host.hpp" />
+    <ClInclude Include="..\system\host_cmd.hpp" />
+    <ClInclude Include="..\system\iengine.hpp" />
+    <ClInclude Include="..\system\igame.hpp" />
+    <ClInclude Include="..\system\info.hpp" />
+    <ClInclude Include="..\system\server.hpp" />
+    <ClInclude Include="..\system\servertypes.hpp" />
+    <ClInclude Include="..\system\server_static.hpp" />
+    <ClInclude Include="..\system\sizebuf.hpp" />
+    <ClInclude Include="..\system\sv_log.hpp" />
+    <ClInclude Include="..\system\system.hpp" />
+    <ClInclude Include="..\system\systemtypes.hpp" />
+    <ClInclude Include="..\system\textmessage.hpp" />
+    <ClInclude Include="..\voice\voice.hpp" />
+    <ClInclude Include="..\voice\voiceserver.hpp" />
+    <ClInclude Include="..\voice\voicetweak.hpp" />
+    <ClInclude Include="..\world\ed_strpool.hpp" />
+    <ClInclude Include="..\world\event.hpp" />
+    <ClInclude Include="..\world\eventapi.hpp" />
+    <ClInclude Include="..\world\inst_baseline.hpp" />
+    <ClInclude Include="..\world\pr_cmds.hpp" />
+    <ClInclude Include="..\world\pr_dlls.hpp" />
+    <ClInclude Include="..\world\pr_edict.hpp" />
+    <ClInclude Include="..\world\world.hpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{827605A1-AB99-40B5-BA51-7AB2BA39F20A}</ProjectGuid>
+    <RootNamespace>engine</RootNamespace>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>../../../bin/msvc/debug/</OutDir>
+    <IntDir>../../../build/msvc/debug/engine/</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>../;../../engine-zombie/;../../;../../public/;../../../hlsdk/;../../../../shiftutil/include/;../../../../ogsapi/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled.hpp</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>REHLDS_SELF;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

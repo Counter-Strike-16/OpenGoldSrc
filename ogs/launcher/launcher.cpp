@@ -63,10 +63,7 @@ CSysModule *LoadFilesystemModule() // put name in args?
 	if(!hFSModule)
 	{
 		//Plat_MessageBox(eMsgBoxType_Error, "Fatal Error", "Could not load filesystem dll.\nFileSystem crashed during construction.");
-
-		// fallback to null impl (tracing)
-		if(!(hFSModule = Sys_LoadModule("filesystem_null")))
-			return NULL;
+		return NULL;
 	};
 
 	return hFSModule;

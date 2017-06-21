@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+#cmake_minimum_required(VERSION 2.8)
 project(OGS-root)
 
 # Set C++ code standard
@@ -7,8 +7,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Add include directories
 include_directories(
-	${CMAKE_SOURCE_DIR}/hlsdk
 	${CMAKE_SOURCE_DIR}/../hlsdk-core
+	${CMAKE_SOURCE_DIR}/hlsdk
 )
 
 # Add our modules
