@@ -125,7 +125,11 @@ private:
 	bool m_bRightAligned;
 };
 
-class CBasePanel : public vgui::Panel
+/**
+*	Parent panel for all GameUI panels (except the console, which the engine parents to the root).
+*	Draws the menu background.
+*/
+class CBasePanel : public vgui::Panel // vgui2
 {
 	DECLARE_CLASS_SIMPLE(CBasePanel, vgui::Panel);
 
@@ -164,7 +168,7 @@ protected:
 private:
 	enum EBackgroundState
 	{
-		BACKGROUND_INITIAL,
+		BACKGROUND_INITIAL = 0,
 		BACKGROUND_LOADING,
 		BACKGROUND_MAINMENU,
 		BACKGROUND_LEVEL,

@@ -16,7 +16,7 @@ Since no one from Valve Corp doesn't want to even touch their original GoldSrc e
 **OpenGoldSrc** (or simply **OGS**) is a custom implementation of the original GoldSrc engine based on the source code that was
 used to create the GS - licensed by Valve version of QuakeWorld engine developed by [Id Software](https://github.com/id-Software)  
 **OGS** isn't oriented on fully cloning the GoldSrc - mostly cloning the same module structure and provide some new features  
-**OGS RW17** is a spiritual successor of [Magenta Engine]() which is still in development and written using the same Quake engine sources using the modern C++ features and was initially oriented on GS mods compatibility  
+**OGS RW17** is a spiritual successor of [Magenta Engine](https://github.com/projectmagenta) which is still in development and written using the same Quake engine sources using the modern C++ features    
 **OGS** is an different signt on how the original GoldSrc should look like in present time if Valve still had work on it
 
 ## Building
@@ -30,6 +30,7 @@ TODO
 ## Contributing
 
 Feel free to create issues or pull-requests if you have any problems or you want to support the project  
+Any help is appreciated (mostly coders and documentation/wiki writers are required)
 Please read [CONTRIBUTING](CONTRIBUTING.md) before pushing any changes and for additional information
 
 ## Credits
