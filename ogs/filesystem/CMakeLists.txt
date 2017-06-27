@@ -1,10 +1,5 @@
 project(OGS-filesystem)
 
-# Mostly for common IFileSystem interface
-include_directories(
-	${CMAKE_SOURCE_DIR}/../hlsdk-core
-)
-
 # Detect the impl type
 if(NOT OGS_FILESYSTEM_IMPL_TYPE)
     set(OGS_FILESYSTEM_IMPL_TYPE Null CACHE STRING
@@ -23,3 +18,5 @@ string(TOLOWER ${OGS_FILESYSTEM_IMPL_TYPE} OGS_FILESYSTEM_IMPL_TYPE)
 add_subdirectory(${OGS_FILESYSTEM_IMPL_TYPE})
 
 #add_subdirectory( FileSystem_Stdio )
+
+add_library(${PROJECT_NAME} MODULE ${PROJECT_SOURCES})

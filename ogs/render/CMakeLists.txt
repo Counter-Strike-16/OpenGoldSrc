@@ -11,5 +11,9 @@ if(NOT OGS_RENDER_IMPL_TYPE)
 	)
 endif()
 
+# Add impl-specific subdirectory
 string(TOLOWER ${OGS_RENDER_IMPL_TYPE} OGS_RENDER_IMPL_TYPE)
 add_subdirectory(${OGS_RENDER_IMPL_TYPE})
+
+# Build as module
+add_library(${PROJECT_NAME} MODULE ${RENDER_SOURCES})

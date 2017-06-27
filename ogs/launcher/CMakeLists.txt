@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
 project(OGS-launcher)
-
-# Output name
-set(MODULE_OUTPUT_FILENAME hl) # launcher
 
 # Build a list of headers
 file(GLOB PROJECT_HEADERS
@@ -16,4 +12,8 @@ file(GLOB PROJECT_SOURCES
 )
 
 # Build as executable
-add_executable(${MODULE_OUTPUT_FILENAME} ${PROJECT_HEADERS} ${PROJECT_SOURCES})
+add_executable(${PROJECT_NAME} ${PROJECT_HEADERS} ${PROJECT_SOURCES})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+	OUTPUT_NAME "hl" # launcher
+)

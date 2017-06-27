@@ -1,2 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
 project(OGS-gameui)
+
+add_library(${PROJECT_NAME} MODULE ${PROJECT_SOURCES})

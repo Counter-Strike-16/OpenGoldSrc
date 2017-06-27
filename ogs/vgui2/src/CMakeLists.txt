@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
 project(OGS-vgui2)
 
 # Output name
@@ -16,4 +15,4 @@ file(GLOB_RECURSE PROJECT_SOURCES
 )
 
 # Build as dynamic library
-add_library(${MODULE_OUTPUT_FILENAME} SHARED ${PROJECT_HEADERS} ${PROJECT_SOURCES})
+add_library(${MODULE_OUTPUT_FILENAME} MODULE ${PROJECT_HEADERS} ${PROJECT_SOURCES})
