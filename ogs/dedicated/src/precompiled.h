@@ -1,11 +1,11 @@
 #pragma once
 
-#include "osconfig.h"
-#include "archtypes.h"
-#include "mathlib.h"
-#include "FileSystem.h"
+#include "rehlds/osconfig.h"
+#include "public/archtypes.h"
+#include "common/mathlib.h"
+#include "public/FileSystem.h"
 
-#include "common.h"
+//#include "common.h" // TODO: fix
 
 #include "engine_hlds_api.h"
 #include "idedicatedexports.h"

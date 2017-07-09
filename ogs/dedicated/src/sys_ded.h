@@ -6,7 +6,7 @@
 
 #include "isys.h"
 #include "dedicated.h"
-#include "dll_state.h"
+#include "common/dll_state.h"
 
 #if !defined(_WIN32)
 #include <signal.h>

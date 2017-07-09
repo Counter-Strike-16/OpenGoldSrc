@@ -54,6 +54,14 @@ file(GLOB_RECURSE PLATFORM_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/impl/${PROJECT_TARGET_PLATFORM}/*.cpp
 )
 
+# Additional files out of the engine path that should be compiled in
+set(PROJECT_SOURCES_EXTERNAL
+	#crc32.cpp
+	${CMAKE_SOURCE_DIR}/ogs/tier1/interface.cpp # public/interface.cpp
+	#sys_shared.cpp
+	${CMAKE_SOURCE_DIR}/ogs/public/registry.cpp
+)
+
 list(REMOVE_DUPLICATES PROJECT_SOURCES)
 
 # Build as dynamic library

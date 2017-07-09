@@ -29,12 +29,3 @@
 /// @file
 
 #include "precompiled.hpp"
-
-// Additional files out of the engine path that should be compiled in
-// Not so elegant but this trick at least allows us to indirectly include 'em
-
-//#include "crc32c.cpp"
-#include "public/interface.cpp"
-//#include "sys_shared.cpp"
-
-#include "public/registry.cpp"

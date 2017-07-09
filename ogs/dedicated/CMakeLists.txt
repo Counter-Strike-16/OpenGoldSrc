@@ -1,15 +1,29 @@
 project(OGS-dedicated)
 
 # Build a list of headers
-file(GLOB_RECURSE PROJECT_HEADERS
+file(GLOB PROJECT_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp
 )
 
 # Build a list of sources
-file(GLOB_RECURSE PROJECT_SOURCES
+file(GLOB PROJECT_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 )
+
+# External sources list
+set(PROJECT_SOURCES_EXTERNAL
+	${CMAKE_CURRENT_SOURCE_DIR}/../../engine/ac96/memory/mem.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../tier1/interface.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/SteamAppStartUp.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/ObjectList.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/textconsole.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/TextConsoleUnix.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/TextConsoleWin32.cpp
+)
+
+# Add the external sources list to the main list
+list(APPEND PROJECT_SOURCES ${PROJECT_SOURCES_EXTERNAL})
 
 # Build as executable
 add_executable(${PROJECT_NAME} ${PROJECT_HEADERS} ${PROJECT_SOURCES})
