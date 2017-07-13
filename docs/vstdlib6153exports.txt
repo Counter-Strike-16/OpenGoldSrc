@@ -1,0 +1,66 @@
+vstdlib 6153 exports
+
+CGaussianRandomStream::CGaussianRandomStream(class IUniformRandomStream *)
+class CGaussianRandomStream & CGaussianRandomStream::operator=(class CGaussianRandomStream const &)
+void CGaussianRandomStream::`default constructor closure'(void)
+
+CUniformRandomStream::CUniformRandomStream(class CUniformRandomStream const &)
+class CUniformRandomStream & CUniformRandomStream::operator=(class CUniformRandomStream const &)
+
+class CStringNormalization & CStringNormalization::operator=(class CStringNormalization const &)
+
+CreateInterface
+
+Q_AppendSlash
+Q_BasicHtmlEntityEncode
+Q_ComposeFileName
+Q_CopyAndFixSlashes
+Q_DefaultExtension
+Q_ExtractFileExtension
+Q_ExtractFilePath
+Q_FileBase
+Q_FixSlashes
+Q_FormatAndAppend
+Q_FormatAndAppendTail
+Q_GetFileExtension
+Q_IsAbsolutePath
+Q_MakeAbsolutePath
+Q_NormalizeUTF8
+Q_NormalizeUTF8Old
+Q_RemoveDotSlashes
+Q_ReplaceBadFilenameCharacters
+Q_SetExtension
+Q_SplitString
+Q_SplitString2
+Q_StrLeft
+Q_StrRight
+Q_StrSlice
+Q_StrSubst
+Q_StrSubstInPlace
+Q_StrTrim
+Q_StripExtension
+Q_StripFilename
+Q_StripLastDir
+Q_StripPrecedingAndTrailingWhitespace
+Q_StripTrailingSlash
+Q_UTF8ToUnicode
+Q_UnicodeToUTF8
+Q_UnqualifiedFileName
+Q_binarytohex
+Q_hextobinary
+Q_pretifynum
+
+Q_strcat
+Q_strnappend
+Q_strnchr
+
+Q_strnistr
+Q_strnlen
+Q_strtowcs
+Q_vsnprintfRet
+Q_wcscat
+Q_wcsncpy
+Q_wcstostr
+
+_Q_wcscmp
+_Q_wcslen

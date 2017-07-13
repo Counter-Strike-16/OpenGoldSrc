@@ -1,11 +1,12 @@
 # OpenGoldSource
+
 >Gold Source is a version of Quake and Quake is open source so maybe that is an option for you.
 >
 >Kind regards,
 >
 >Mike
 
-![OGS Logo](https://github.com/projectogs/ogs-docs/blob/master/OGSLogo1280x512.png?raw=true "OGS Logo")
+![OGS Logo](docs/OGSLogo1280x512.png?raw=true "OGS Logo")
 
 Open Source implementation (a recreation) of the GoldSrc engine   
 Based on Reverse-engineered (and bugfixed) HLDS aka ReHLDS and Id Tech sources (+ Xash and Metahook)
@@ -19,13 +20,39 @@ used to create the GS - licensed by Valve version of QuakeWorld engine developed
 **OGS RW17** is a spiritual successor of [Magenta Engine](https://github.com/projectmagenta) which is still in development and written using the same Quake engine sources using the modern C++ features    
 **OGS** is an different signt on how the original GoldSrc should look like in present time if Valve still had work on it
 
-## Building
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+### Prerequisites
+
+What things you need to install the software and how to install them
+
+```
+Give examples
+```
+
+### Building (REMOVE?)
 
 TODO
 
-## Installation
+### Installing
 
-TODO
+A step by step series of examples that tell you have to get a development env running
+
+Say what the step will be
+
+```
+Give the example
+```
+
+And repeat
+
+```
+until finished
+```
+
+End with an example of getting some data out of the system or using it for a little demo
 
 ## Contributing
 
@@ -43,7 +70,7 @@ You can see [CREDITS](CREDITS.md) file for more details
 
 ## License
 
-Licensed under GPLv3, see [LICENSE](LICENSE) file for details  
+Licensed under GPLv3, see the [LICENSE](LICENSE) file for details  
 Some of the code is originally written by Valve LLC and licensed under terms of Valve license which not fully compatible with GPL because it doesn't allow to sell the product  
 This product is also not fully legal because it uses the sources that aren't officialy open-sourced (sorry V) by Valve LLC (and won't be because they doesn't want even to touch the engine now)  
 The sources probably would be rewritten to new impl (that will use the new C++ standards features) to be more legal  

@@ -1,0 +1,82 @@
+
+New Command Line Options for Linux SVGAlib Quake
+------------------------------------------------
+
+-mem <mb>
+Specify memory in megabytes to allocate (default is 8MB, which should be fine
+for most needs).
+
+-nostdout
+Don't do any output to stdout
+
+-mdev <device>
+Mouse device, default is /dev/mouse
+
+-mrate <speed>
+Mouse baud rate, default is 1200
+
+-cddev <device>
+CD device, default is /dev/cdrom
+
+-mode <modenum>
+Use indicated video mode
+
+-nokdb
+Don't initialize keyboard
+
+-sndbits <8 or 16>
+Set sound bit sample size.  Default is 16 if supported.
+
+-sndspeed <speed>
+Set sound speed.  Usual values are 8000, 11025, 22051 and 44100.
+Default is 11025.
+
+-sndmono
+Set mono sound
+
+-sndstereo
+Set stereo sound (default if supported)
+
+Installation
+------------
+
+Boot DOS (I know, but you need it to run the Quake install program) and
+install Quake from your Quake CD to a DOS parition.
+
+Boot Linux and make a directory for Quake.  Copy everything from the DOS Quake
+directory into it.  i.e.:
+	(cd /dos/quake; tar cf - .) | (cd ~/quake; tar xf -)
+
+Place squake into your Quake directory.  You must make it setuid root (since
+Quake access stuff like direct video writes, the raw keyboard mode, CD, etc).
+Quake will setuid back to the normal user as soon as it opens these files.
+Make Quake suid root as follows:
+	chown root squake
+	chmod 4755 squake
+
+squake may segfault if it tries to initialize your sound card and their isn't
+one.  Same with the CDROM.  If it dies, try it with -nosound and/or
+-nocdaudio.  If you have a sound card it died on and you know it is
+supported by USSLite (the driver that comes with the Linux kernel), let me
+know and I'll take a look at it.
+
+Full TCP/IP network support is in, including listen and dedicated server
+modes.  squake makes a nice dedicated server as you don't need the X11
+libraries kicking around.
+
+All of the options described in TECHINFO.TXT and MANUAL.TXT from the Quake
+distribution will work, 'cept for stuff with vid modes and stuff.
+
+End Notes
+---------
+
+Acks
+----
+
+Greg Alexander <galexand@sietch.bloomington.in.us> for initial work in SVGALib
+support.
+Dave Taylor <ddt@crack.com> for basic Linux support.
+id Software for Quake and making me port it. :)
+
+Lots of people on #linux, #quake for testing.
+
