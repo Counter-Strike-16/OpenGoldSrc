@@ -5,7 +5,6 @@
 #include "memory.h"
 #include "model.h"
 
-
 #ifdef _WIN32
 
 typedef qboolean(__cdecl *SV_RecursiveHullCheck_proto)(hull_t *hull, int num, float p1f, float p2f, vec_t *p1, vec_t *p2, trace_t *trace);

@@ -192,6 +192,7 @@ void Cmd_Exec_f()
 	}
 
 	pszFileExt = COM_FileExtension((char *)pszFileName);
+	
 	if(Q_stricmp(pszFileExt, "cfg") && Q_stricmp(pszFileExt, "rc"))
 	{
 		Con_Printf("exec %s: not a .cfg or .rc file\n", pszFileName);
@@ -199,14 +200,12 @@ void Cmd_Exec_f()
 	}
 
 	hFile = FS_OpenPathID(pszFileName, "rb", "GAMECONFIG");
+	
 	if(!hFile)
-	{
 		hFile = FS_OpenPathID(pszFileName, "rb", "GAME");
-	}
+	
 	if(!hFile)
-	{
 		hFile = FS_Open(pszFileName, "rb");
-	}
 
 	if(!hFile)
 	{
@@ -253,9 +252,7 @@ void Cmd_Exec_f()
 			pszDataPtr = COM_ParseLine(pszDataPtr);
 
 			if(com_token[0] == 0)
-			{
 				break;
-			}
 
 			Cbuf_InsertTextLines(com_token);
 		}

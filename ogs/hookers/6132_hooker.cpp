@@ -29,7 +29,8 @@
 #include "precompiled.h"
 
 template<typename MFUNC>
-size_t mfunc_ptr_cast(MFUNC f) {
+size_t mfunc_ptr_cast(MFUNC f)
+{
 	auto x = f;
 	size_t addr = (size_t &)x;
 	return addr;

@@ -42,8 +42,10 @@ public:
 	void HideConsole() override;
 
 	void ShowConsole() override;
-
 private:
+	CBaseUI( const CBaseUI& ) = delete;
+	CBaseUI& operator=( const CBaseUI& ) = delete;
+	
 	CreateInterfaceFn m_FactoryList[ MAX_NUM_FACTORIES ] = {};
 	int m_iNumFactories = 0;
 
@@ -51,10 +53,6 @@ private:
 	CSysModule* m_hStaticGameUIModule = nullptr;
 	CSysModule* m_hChromeModule = nullptr;
 	bool m_bHidingGameUI = false;
-
-private:
-	CBaseUI( const CBaseUI& ) = delete;
-	CBaseUI& operator=( const CBaseUI& ) = delete;
 };
 
 class CEngineVGui : public IEngineVGui
@@ -68,14 +66,12 @@ public:
 	bool SteamProcessCall( bool* finished, TSteamProgress* progress, TSteamError* steamError ) override;
 
 	void SetEngineVisible( bool state );
-
-private:
-	bool m_bVisible = true;
-	SteamHandle_t m_hRefreshLoginHandle = 0;
-
 private:
 	CEngineVGui( const CEngineVGui& ) = delete;
 	CEngineVGui& operator=( const CEngineVGui& ) = delete;
+	
+	bool m_bVisible = true;
+	SteamHandle_t m_hRefreshLoginHandle = 0;
 };
 
 CBaseUI& BaseUI();

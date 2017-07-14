@@ -1,3 +1,4 @@
+#include "precompiled.hpp"
 #include "quakedef.hpp"
 
 #include "client.hpp"

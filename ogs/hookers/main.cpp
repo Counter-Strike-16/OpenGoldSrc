@@ -28,11 +28,9 @@
 
 #include "precompiled.h"
 
-
 int HookEngine(size_t addr);
 
-
-IBaseInterface* CreateFileSystemInterface(void);
+IBaseInterface* CreateFileSystemInterface();
 InterfaceReg iface = InterfaceReg(CreateFileSystemInterface, "VFileSystem009");
 
 #ifdef _WIN32
@@ -47,8 +45,7 @@ CSysModule *g_pOriginalFileSystemModule = NULL;
 CreateInterfaceFn g_OriginalFileSystemFactory = NULL;
 IFileSystem *g_pOriginalFileSystem = NULL;
 
-
-IBaseInterface *CreateFileSystemInterface(void)
+IBaseInterface *CreateFileSystemInterface()
 {
 	if (g_pOriginalFileSystem)
 		return g_pOriginalFileSystem;
