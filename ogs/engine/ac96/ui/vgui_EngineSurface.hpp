@@ -1,5 +1,4 @@
-#ifndef ENGINE_VGUI_ENGINESURFACE_H
-#define ENGINE_VGUI_ENGINESURFACE_H
+#pragma once
 
 #include "EngineSurface.h"
 
@@ -62,5 +61,3 @@ private:
 	EngineSurface( const EngineSurface& ) = delete;
 	EngineSurface& operator=( const EngineSurface& ) = delete;
 };
-
-#endif //ENGINE_VGUI_ENGINESURFACE_H

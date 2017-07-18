@@ -39,8 +39,14 @@
 #include "system/sizebuf.hpp"
 #include "system/server.hpp"
 
-// MESSAGE IO FUNCTIONS
-// Handles byte ordering and avoids alignment errors
+/*
+==============================================================================
+
+MESSAGE IO FUNCTIONS
+
+Handles byte ordering and avoids alignment errors
+==============================================================================
+*/
 
 int msg_badread;
 int msg_readcount;
@@ -60,31 +66,31 @@ const uint32 INVBITTABLE[] = {
 
 void MSG_WriteChar(sizebuf_t *sb, int c)
 {
-	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 1);
+	byte *buf = (byte *)SZ_GetSpace(sb, 1);
 	*(char *)buf = (char)c;
 }
 
 void MSG_WriteByte(sizebuf_t *sb, int c)
 {
-	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 1);
+	byte *buf = (byte *)SZ_GetSpace(sb, 1);
 	*(byte *)buf = (byte)c;
 }
 
 void MSG_WriteShort(sizebuf_t *sb, int c)
 {
-	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 2);
+	byte *buf = (byte *)SZ_GetSpace(sb, 2);
 	*(int16 *)buf = (int16)c;
 }
 
 void MSG_WriteWord(sizebuf_t *sb, int c)
 {
-	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 2);
+	byte *buf = (byte *)SZ_GetSpace(sb, 2);
 	*(uint16 *)buf = (uint16)c;
 }
 
 void MSG_WriteLong(sizebuf_t *sb, int c)
 {
-	unsigned char *buf = (unsigned char *)SZ_GetSpace(sb, 4);
+	byte *buf = (byte *)SZ_GetSpace(sb, 4);
 	*(uint32 *)buf = (uint32)c;
 }
 
@@ -566,11 +572,11 @@ int MSG_ReadBitData(void *dest, int length)
 	if(length > 0)
 	{
 		int i = length;
-		unsigned char *p = (unsigned char *)dest;
+		byte *p = (byte *)dest;
 
 		do
 		{
-			*p = (unsigned char)MSG_ReadBits(8);
+			*p = (byte)MSG_ReadBits(8);
 			p++;
 			--i;
 		} while(i);
@@ -835,9 +841,8 @@ char *MSG_ReadString()
 	static char string[8192]; // 2048
 
 	while((c = MSG_ReadChar(), c) && c != -1 && l < ARRAYSIZE(string) - 1)
-	{
 		string[l++] = c;
-	}
+	
 	string[l] = 0;
 
 	return string;

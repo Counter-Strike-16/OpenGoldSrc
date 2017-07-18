@@ -1,5 +1,6 @@
-#include "quakedef.h"
-#include "gl_draw.h"
+#include "precompiled.hpp"
+#include "quakedef.hpp"
+#include "gl_draw.hpp"
 #include "vgui_EngineSurface.hpp"
 
 //TODO: never set - Solokiller

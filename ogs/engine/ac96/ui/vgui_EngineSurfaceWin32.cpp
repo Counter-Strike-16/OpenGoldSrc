@@ -1,8 +1,8 @@
-#include "quakedef.h"
-#include "vgui_EngineSurface.h"
+#include "precompiled.hpp"
+#include "quakedef.hpp"
+#include "vgui_EngineSurface.hpp"
 
-EngineSurface::EngineSurface()
-	: _renderPlat( nullptr )
+EngineSurface::EngineSurface() : _renderPlat( nullptr )
 {
 	createRenderPlat();
-}
+};

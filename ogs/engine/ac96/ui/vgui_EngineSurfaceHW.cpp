@@ -1,11 +1,12 @@
-#include "quakedef.h"
-#include "cl_main.h"
-#include "qgl.h"
-#include "gl_rmain.h"
-#include "render.h"
+#include "precompiled.hpp"
+#include "quakedef.hpp"
+#include "cl_main.hpp"
+#include "qgl.hpp"
+#include "gl_rmain.hpp"
+#include "render.hpp"
 #include "sys_getmodes.h"
-#include "vgui_EngineSurface.h"
-#include "vgui_int.h"
+#include "vgui_EngineSurface.hpp"
+#include "vgui_int.hpp"
 
 #include <UtlRBTree.h>
 
