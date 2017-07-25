@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -27,6 +28,7 @@
  */
 
 /// @file
+/// @brief misc functions used in client and server
 
 #include "precompiled.hpp"
 #include "memory/mem.hpp"
@@ -116,17 +118,17 @@ NOXREF char *COM_BinPrintf(byte *buf, int nLen)
 	static char szReturn[4096];
 	byte c;
 	char szChunk[10];
-	int i;
 
 	Q_memset(szReturn, 0, sizeof(szReturn));
 
-	for(i = 0; i < nLen; i++)
+	for(int i = 0; i < nLen; ++i)
 	{
 		c = (byte)buf[i];
 
 		Q_snprintf(szChunk, sizeof(szChunk), "%02x", c);
 		Q_strncat(szReturn, szChunk, sizeof(szReturn) - Q_strlen(szReturn) - 1);
-	}
+	};
+	
 	return szReturn;
 }
 
@@ -174,20 +176,24 @@ NOXREF void COM_ExtendedExplainDisconnection(qboolean bPrint, char *fmt, ...)
 #ifndef COM_Functions_region
 
 int com_argc = 0;
-char **com_argv = NULL; // const char **
+char **com_argv = nullptr; // const char **
 
-char com_token[COM_TOKEN_LEN];
+// TODO: on Windows com_token seems to be 2048 characters long
+char com_token[COM_TOKEN_LEN] = {}; // 1024 for linux
 
 qboolean com_ignorecolons = false;
-qboolean s_com_token_unget;
-char *com_last_in_quotes_data = NULL;
-char com_clientfallback[MAX_PATH];
-char com_gamedir[MAX_PATH];
-char com_cmdline[COM_MAX_CMD_LINE];
+qboolean s_com_token_unget = false; // static
 
-cache_user_t *loadcache;
-byte *loadbuf;
-int loadsize;
+char *com_last_in_quotes_data = nullptr;
+
+char com_clientfallback[MAX_PATH] = {}; // FILENAME_MAX
+char com_gamedir[MAX_PATH] = {}; // FILENAME_MAX
+
+char com_cmdline[COM_MAX_CMD_LINE] = {};
+
+cache_user_t *loadcache = nullptr;
+byte *loadbuf = nullptr;
+int loadsize = 0;
 
 const byte mungify_table[] = { 0x7A, 0x64, 0x05, 0xF1, 0x1B, 0x9B, 0xA0, 0xB5, 0xCA, 0xED, 0x61, 0x0D, 0x4A, 0xDF, 0x8E, 0xC7 };
 
@@ -195,7 +201,14 @@ const byte mungify_table2[] = { 0x05, 0x61, 0x7A, 0xED, 0x1B, 0xCA, 0x0D, 0x9B, 
 
 byte mungify_table3[] = { 0x20, 0x07, 0x13, 0x61, 0x03, 0x45, 0x17, 0x72, 0x0A, 0x2D, 0x48, 0x0C, 0x4A, 0x12, 0xA9, 0xB5 };
 
-NOXREF char *COM_SkipPath(char *pathname)
+//============================================================================
+
+/*
+============
+COM_SkipPath
+============
+*/
+NOXREF char *COM_SkipPath(const char *pathname)
 {
 	NOXREFCHECK;
 
@@ -206,10 +219,16 @@ NOXREF char *COM_SkipPath(char *pathname)
 		if(*pathname == '/' || *pathname == '\\')
 			last = pathname + 1;
 		pathname++;
-	}
+	};
+	
 	return last;
 }
 
+/*
+============
+COM_StripExtension
+============
+*/
 void COM_StripExtension(char *in, char *out)
 {
 	char *c, *d = NULL;
@@ -252,6 +271,11 @@ void COM_StripExtension(char *in, char *out)
 	}
 }
 
+/*
+============
+COM_FileExtension
+============
+*/
 char *COM_FileExtension(char *in)
 {
 	static char exten[MAX_PATH];
@@ -273,23 +297,27 @@ char *COM_FileExtension(char *in)
 		c++;
 	}
 
-	if(d == NULL)
-	{
+	if(d == nullptr)
 		return "";
-	}
 
 	d++; // skip dot
+	
 	// Copy extension
 	for(i = 0; i < (ARRAYSIZE(exten) - 1) && *d; i++, d++)
-	{
 		exten[i] = *d;
-	}
+	
 	exten[i] = 0;
 
 	return exten;
 }
 
-// Fills "out" with the file name without path and extension.
+/*
+============
+COM_FileBase
+
+Fills "out" with the file name without path and extension
+============
+*/
 void COM_FileBase(const char *in, char *out)
 {
 	const char *start, *end;
@@ -316,17 +344,23 @@ void COM_FileBase(const char *in, char *out)
 	out[len] = 0;
 }
 
+/*
+==================
+COM_DefaultExtension
+==================
+*/
 void COM_DefaultExtension(char *path, char *extension)
 {
-	char *src;
-	src = path + Q_strlen(path) - 1;
+	//
+	// if path doesn't have a .EXT, append extension
+	// (extension should include the .)
+	//
+	char *src = path + Q_strlen(path) - 1;
 
 	while(*src != '/' && *src != '\\' && src != path)
 	{
 		if(*src == '.')
-		{
-			return;
-		}
+			return; // it has an extension
 
 		src--;
 	}
@@ -339,6 +373,13 @@ void COM_UngetToken()
 	s_com_token_unget = true;
 }
 
+/*
+==============
+COM_Parse
+
+Parse a token out of a string
+==============
+*/
 char *COM_Parse(char *data)
 {
 	int c;
@@ -526,29 +567,36 @@ int COM_TokenWaiting(char *buffer)
 	return 0;
 }
 
-int COM_CheckParm(char *parm)
-{
-	int i;
+/*
+================
+COM_CheckParm
 
-	for(i = 1; i < com_argc; i++)
+Returns the position (1 to argc-1) in the program's argument list
+where the given parameter apears, or 0 if not present
+================
+*/
+int COM_CheckParm(char *parm) // const char
+{
+	for(int i = 1; i < com_argc; i++)
 	{
 		if(!com_argv[i])
-		{
-			continue;
-		}
+			continue; // NEXTSTEP sometimes clears appkit vars
 
 		if(!Q_strcmp(parm, (const char *)com_argv[i]))
-		{
 			return i;
-		}
-	}
+	};
 
 	return 0;
-}
+};
 
+/*
+================
+COM_InitArgv
+================
+*/
 void COM_InitArgv(int argc, char *argv[])
 {
-	qboolean safe = 0;
+	qboolean safe = false;
 
 	static char *safeargvs[NUM_SAFE_ARGVS] = { "-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly" };
 	static char *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
@@ -605,10 +653,16 @@ void COM_InitArgv(int argc, char *argv[])
 	com_argv = largv;
 }
 
+/*
+================
+COM_Init
+================
+*/
 void COM_Init(char *basedir)
 {
 	unsigned short swaptest = 1;
 
+	// set the byte swapping variables in a portable manner
 	if(*(byte *)&swaptest == 1)
 	{
 		bigendien = 0;
@@ -633,6 +687,15 @@ void COM_Init(char *basedir)
 	COM_BitOpsInit();
 }
 
+/*
+============
+va
+
+does a varargs printf into a temp buffer, so I don't need to have
+varargs versions of all text functions.
+FIXME: make this buffer size safe someday
+============
+*/
 char *va(const char *format, ...)
 {
 	va_list argptr;
@@ -718,6 +781,13 @@ void COM_FixSlashes(char *pname)
 	};
 };
 
+/*
+============
+COM_CreatePath
+
+Only used for CopyFile
+============
+*/
 void COM_CreatePath(char *path)
 {
 	char *ofs;
@@ -730,6 +800,7 @@ void COM_CreatePath(char *path)
 	{
 		if(*ofs == '/' || *ofs == '\\')
 		{
+			// create the directory
 			old = *ofs;
 			*ofs = 0;
 			FS_CreateDirHierarchy(path, 0);
@@ -738,6 +809,14 @@ void COM_CreatePath(char *path)
 	}
 }
 
+/*
+===========
+COM_CopyFile
+
+Copies a file over from the net to the local cache, creating any directories
+needed.  This is for the convenience of developers using ISDN from home.
+===========
+*/
 NOXREF void COM_CopyFile(char *netpath, char *cachepath)
 {
 	NOXREFCHECK;
@@ -750,9 +829,7 @@ NOXREF void COM_CopyFile(char *netpath, char *cachepath)
 	FileHandle_t in = FS_Open(netpath, "rb");
 
 	if(!in)
-	{
 		return;
-	}
 
 	count = FS_Size(in);
 	COM_CreatePath(cachepath);
@@ -772,7 +849,7 @@ NOXREF void COM_CopyFile(char *netpath, char *cachepath)
 	FS_Close(out);
 }
 
-NOXREF int COM_ExpandFilename(char *filename)
+NOXREF int COM_ExpandFilename(char *filename) // return bool?
 {
 	NOXREFCHECK;
 
@@ -780,28 +857,37 @@ NOXREF int COM_ExpandFilename(char *filename)
 
 	FS_GetLocalPath(filename, netpath, ARRAYSIZE(netpath));
 	Q_strcpy(filename, netpath);
-	return *filename != 0;
+	
+	return *filename != 0; // '\0'
 }
 
-int EXT_FUNC COM_FileSize(char *filename)
+int EXT_FUNC COM_FileSize(const char *filename)
 {
-	FileHandle_t fp;
-	int iSize;
-
-	iSize = -1;
-	fp = FS_Open(filename, "rb");
-	if(fp)
+	int iSize = -1;
+	
+	FileHandle_t fp = FS_Open(filename, "rb");
+	
+	if(fp) // fp != FILESYSTEM_INVALID_HANDLE
 	{
 		iSize = FS_Size(fp);
 		FS_Close(fp);
-	}
+	};
+	
 	return iSize;
 }
 
+/*
+============
+COM_LoadFile
+
+Filename are reletive to the quake directory.
+Allways appends a 0 byte.
+============
+*/
 byte *EXT_FUNC COM_LoadFile(const char *path, int usehunk, int *pLength)
 {
-	char base[33];
-	byte *buf = NULL;
+	char base[33]; // 32?
+	byte *buf = nullptr; // quiet compiler warning
 
 #ifndef SWDS
 	g_engdstAddrs.COM_LoadFile((char**)path, &usehunk, &pLength);
@@ -959,7 +1045,7 @@ NOXREF byte *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, Fil
 		}
 
 		FS_Close(hFile);
-		return NULL;
+		return nullptr;
 	}
 
 	buf[cbload] = 0;
@@ -971,21 +1057,21 @@ NOXREF byte *COM_LoadFileLimit(char *path, int pos, int cbmax, int *pcbread, Fil
 
 byte *COM_LoadHunkFile(const char *path)
 {
-	return COM_LoadFile(path, 1, NULL);
+	return COM_LoadFile(path, 1, nullptr);
 }
 
-byte *COM_LoadTempFile(char *path, int *pLength)
+byte *COM_LoadTempFile(const char *path, int *pLength)
 {
 	return COM_LoadFile(path, 2, pLength);
 }
 
-void EXT_FUNC COM_LoadCacheFile(char *path, struct cache_user_s *cu)
+void EXT_FUNC COM_LoadCacheFile(const char *path, struct cache_user_s *cu)
 {
 	loadcache = cu;
-	COM_LoadFile(path, 3, 0);
+	COM_LoadFile(path, 3, nullptr);
 }
 
-NOXREF byte *COM_LoadStackFile(char *path, void *buffer, int bufsize, int *length)
+NOXREF byte *COM_LoadStackFile(const char *path, void *buffer, int bufsize, int *length)
 {
 	NOXREFCHECK;
 
@@ -1062,8 +1148,8 @@ void COM_ParseDirectoryFromCmd(const char *pCmdName, char *pDirName, const char 
 // TODO: finish me!
 qboolean COM_SetupDirectories()
 {
-	com_clientfallback[0] = 0;
-	com_gamedir[0] = 0;
+	com_clientfallback[0] = 0; // '\0'
+	com_gamedir[0] = 0; // '\0'
 	
 	char pDirName[512]; // basedir
 	
@@ -1084,16 +1170,12 @@ void COM_CheckPrintMap(dheader_t *header, const char *mapname, qboolean bShowOut
 	if(header->version == HLBSP_VERSION)
 	{
 		if(!bShowOutdated)
-		{
 			Con_Printf("%s\n", mapname);
-		}
 	}
 	else
 	{
 		if(bShowOutdated)
-		{
 			Con_Printf("OUTDATED:  %s\n", mapname);
-		}
 	}
 }
 
@@ -1151,7 +1233,7 @@ void COM_ListMaps(char *pszSubString)
 	}
 }
 
-void COM_Log(char *pszFile, char *fmt, ...)
+void COM_Log(const char *pszFile, const char *fmt, ...)
 {
 	char *pfilename;
 	char string[1024];
@@ -1186,29 +1268,24 @@ void COM_Log(char *pszFile, char *fmt, ...)
 	}
 }
 
-byte *EXT_FUNC COM_LoadFileForMe(char *filename, int *pLength)
+byte *EXT_FUNC COM_LoadFileForMe(const char *filename, int *pLength)
 {
 	return COM_LoadFile(filename, 5, pLength);
 }
 
-int EXT_FUNC COM_CompareFileTime(char *filename1, char *filename2, int *iCompare)
+int EXT_FUNC COM_CompareFileTime(const char *filename1, const char *filename2, int *iCompare)
 {
-	int ft1;
-	int ft2;
-
 	*iCompare = 0;
 
 	if(filename1 && filename2)
 	{
-		ft1 = FS_GetFileTime(filename1);
-		ft2 = FS_GetFileTime(filename2);
+		/*const*/ int ft1 = FS_GetFileTime(filename1);
+		/*const*/ int ft2 = FS_GetFileTime(filename2);
 
 		if(ft1 >= ft2)
 		{
 			if(ft1 > ft2)
-			{
 				*iCompare = 1;
-			}
 
 			return 1;
 		}
@@ -1224,44 +1301,37 @@ int EXT_FUNC COM_CompareFileTime(char *filename1, char *filename2, int *iCompare
 
 void EXT_FUNC COM_GetGameDir(char *szGameDir)
 {
+	// TODO: define this particular limit. It's 260 for Linux as well - Solokiller
 	if(szGameDir)
-	{
 		Q_snprintf(szGameDir, MAX_PATH - 1, "%s", com_gamedir);
-	}
 }
 
 int COM_EntsForPlayerSlots(int nPlayers)
 {
 	int numedicts = gmodinfo.num_edicts;
-	int p = COM_CheckParm("-num_edicts");
+	
+	/*const*/ int p = COM_CheckParm("-num_edicts");
 
 	if(p && p < com_argc - 1)
 	{
 		p = Q_atoi(com_argv[p + 1]);
 
 		if(numedicts < p)
-		{
 			numedicts = p;
-		}
-	}
-
-	return (numedicts + 15 * (nPlayers - 1));
+	};
+	
+	// TODO: this can exceed MAX_EDICTS - Solokiller
+	return numedicts + 15 * (nPlayers - 1);
 }
 
 void COM_NormalizeAngles(vec_t *angles)
 {
-	int i;
-
-	for(i = 0; i < 3; i++)
+	for(int i = 0; i < 3; ++i)
 	{
 		if(angles[i] > 180.0)
-		{
 			angles[i] = (float)(fmod((double)angles[i], 360.0) - 360.0);
-		}
 		else if(angles[i] < -180.0)
-		{
 			angles[i] = (float)(fmod((double)angles[i], 360.0) + 360.0);
-		}
 	}
 }
 

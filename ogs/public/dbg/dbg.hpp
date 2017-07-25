@@ -31,6 +31,8 @@
 
 #pragma once
 
+#include "tier0/dbg.h"
+
 DBG_INTERFACE void Error(const char *asMsg, ...);
 DBG_INTERFACE void ClearErrorLogs();
 

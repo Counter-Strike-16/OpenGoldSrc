@@ -1,5 +1,6 @@
 /*
  *	This file is part of OGS Engine
+ *	Copyright (C) 1996-1997 Id Software, Inc.
  *	Copyright (C) 2016-2017 OGS Dev Team
  *
  *	OGS Engine is free software: you can redistribute it and/or modify
@@ -237,6 +238,7 @@ void Host_InitializeGameDLL()
 
 	g_psvs.dll_initialized = TRUE;
 	LoadEntityDLLs(host_parms.basedir);
+	
 	gEntityInterface.pfnGameInit();
 	gEntityInterface.pfnPM_Init(&g_svmove);
 	gEntityInterface.pfnRegisterEncoders();
@@ -245,6 +247,7 @@ void Host_InitializeGameDLL()
 	SV_GetPlayerHulls();
 	SV_CheckBlendingInterface();
 	SV_CheckSaveGameCommentInterface();
+	
 	Cbuf_Execute();
 	
 #ifdef REHLDS_FIXES // DONE: Set cstrike flags on server start

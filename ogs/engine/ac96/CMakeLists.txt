@@ -1,8 +1,5 @@
 project(OGS-engine)
 
-# Output name
-set(MODULE_OUTPUT_FILENAME engine)
-
 # Build info config file
 #configure_file(BuildInfoConfig.in BuildInfoConfig.hpp)
 
@@ -54,10 +51,27 @@ file(GLOB_RECURSE PLATFORM_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/impl/${PROJECT_TARGET_PLATFORM}/*.cpp
 )
 
+# Additional files out of the engine path that should be compiled in
+set(PROJECT_SOURCES_EXTERNAL
+	#crc32.cpp
+	${CMAKE_SOURCE_DIR}/ogs/tier1/interface.cpp # public/interface.cpp
+	#sys_shared.cpp
+	${CMAKE_SOURCE_DIR}/ogs/public/registry.cpp
+)
+
+# Add external sources to the main sources list
+list(APPEND PROJECT_SOURCES ${PROJECT_SOURCES_EXTERNAL})
+
+# Check the main sources list for duplicated entries
 list(REMOVE_DUPLICATES PROJECT_SOURCES)
 
 # Build as dynamic library
-add_library(${MODULE_OUTPUT_FILENAME} MODULE ${PROJECT_HEADERS} ${PLATFORM_SOURCES} ${PROJECT_SOURCES})
+add_library(${PROJECT_NAME} MODULE ${PROJECT_HEADERS} ${PLATFORM_SOURCES} ${PROJECT_SOURCES})
+
+# Set target properties
+set_target_properties(${PROJECT_NAME} PROPERTIES
+	OUTPUT_NAME "engine" # hw?
+)
 
 # Link with additional libraries
 #target_link_libraries()

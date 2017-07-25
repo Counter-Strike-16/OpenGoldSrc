@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
 project(OGS-vgui)
-
-# Output name
-set(MODULE_OUTPUT_FILENAME vgui)
 
 # Build a list of headers
 file(GLOB_RECURSE PROJECT_HEADERS
@@ -16,4 +12,8 @@ file(GLOB_RECURSE PROJECT_SOURCES
 )
 
 # Build as dynamic library
-add_library(${MODULE_OUTPUT_FILENAME} SHARED ${PROJECT_HEADERS} ${PROJECT_SOURCES})
+add_library(${PROJECT_NAME} MODULE ${PROJECT_HEADERS} ${PROJECT_SOURCES})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+	OUTPUT_NAME "vgui"
+)

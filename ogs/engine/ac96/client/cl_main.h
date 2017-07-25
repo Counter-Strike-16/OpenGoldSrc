@@ -1,19 +1,18 @@
-#ifndef ENGINE_CL_MAIN_H
-#define ENGINE_CL_MAIN_H
+#pragma once
 
-#include "client.h"
-#include "cl_entity.h"
-#include "dlight.h"
-
-struct startup_timing_t
-{
-	const char* name;
-	float time;
-};
+#include "client.hpp"
+#include "common/cl_entity.h"
+#include "common/dlight.h"
 
 const int MAX_STARTUP_TIMINGS = 32;
 
-extern cl_entity_t* cl_entities;
+struct startup_timing_t
+{
+	const char *name;
+	float time;
+};
+
+extern cl_entity_t *cl_entities;
 
 extern efrag_t cl_efrags[ MAX_EFRAGS ];
 extern dlight_t cl_dlights[ MAX_DLIGHTS ];

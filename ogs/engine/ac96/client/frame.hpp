@@ -44,12 +44,12 @@ typedef struct frame_s
 	qboolean invalid;
 	qboolean choked;
 
-	entity_state_t playerstate[32];
+	entity_state_t playerstate[32]; // MAX_PLAYERS?
 
 	double time;
 
 	clientdata_t clientdata;
-	weapon_data_t weapondata[64];
+	weapon_data_t weapondata[64]; // MAX_WEAPON_DATA?
 	packet_entities_t packet_entities;
 
 	uint16 clientbytes;
