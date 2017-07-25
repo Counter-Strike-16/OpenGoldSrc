@@ -1,0 +1,22 @@
+language: cpp
+compiler:
+  - g++
+  - clang++
+sudo: true
+
+#branches:
+  #only:
+    #- stable
+    #- unstable
+
+before_script:
+  - mkdir build
+  
+  # Root CMakeLists.txt has already bound to build folder so we can just run it
+  - cmake .
+
+script:
+  - make
+  #- cd bin
+
+after_script:

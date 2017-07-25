@@ -238,6 +238,7 @@ void Host_InitializeGameDLL()
 
 	g_psvs.dll_initialized = TRUE;
 	LoadEntityDLLs(host_parms.basedir);
+	
 	gEntityInterface.pfnGameInit();
 	gEntityInterface.pfnPM_Init(&g_svmove);
 	gEntityInterface.pfnRegisterEncoders();
@@ -246,6 +247,7 @@ void Host_InitializeGameDLL()
 	SV_GetPlayerHulls();
 	SV_CheckBlendingInterface();
 	SV_CheckSaveGameCommentInterface();
+	
 	Cbuf_Execute();
 	
 #ifdef REHLDS_FIXES // DONE: Set cstrike flags on server start

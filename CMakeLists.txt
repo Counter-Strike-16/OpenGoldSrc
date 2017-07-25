@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 2.8) # 3.6/3.8
 project(OpenGoldSource)
 
 # Specify intermediate directory (for building purposes)
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build/cmake)
+#set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build/cmake)
 
 # Specify output directory (for compiled binaries)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin/cmake)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin/cmake)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/cmake)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/cmake)
 
 # Set additional paths to search for cmake modules
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
