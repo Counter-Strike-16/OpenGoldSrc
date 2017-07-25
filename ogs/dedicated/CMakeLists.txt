@@ -14,20 +14,20 @@ file(GLOB PROJECT_SOURCES
 # External sources list
 set(PROJECT_SOURCES_EXTERNAL
 	${CMAKE_CURRENT_SOURCE_DIR}/../../engine/ac96/memory/mem.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../tier1/interface.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/SteamAppStartUp.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/ObjectList.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/textconsole.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/TextConsoleUnix.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/TextConsoleWin32.cpp
 )
 
 # Add the external sources list to the main list
 list(APPEND PROJECT_SOURCES ${PROJECT_SOURCES_EXTERNAL})
 
-# Build as executable
-add_executable(${PROJECT_NAME} ${PROJECT_HEADERS} ${PROJECT_SOURCES})
-
-set_target_properties(${PROJECT_NAME} PROPERTIES
-	OUTPUT_NAME "hlds" # ogsds
-)
+if(PROJECT_SOURCES)
+	# Build as executable
+	add_executable(${PROJECT_NAME} ${PROJECT_HEADERS} ${PROJECT_SOURCES})
+	
+	# Set properties
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		OUTPUT_NAME "hlds" # ogsds
+	)
+	
+	# Link with other libs
+	target_link_libraries(${PROJECT_NAME} ogs-common ogs-tier1)
+endif()
