@@ -1,5 +1,4 @@
-#ifndef FILESYSTEM_CFILESYSTEM_H
-#define FILESYSTEM_CFILESYSTEM_H
+#pragma once
 
 #include <cstdint>
 #include <cstdio>
@@ -249,5 +248,3 @@ private:
 	CFileSystem( const CFileSystem& ) = delete;
 	CFileSystem& operator=( const CFileSystem& ) = delete;
 };
-
-#endif //FILESYSTEM_CFILESYSTEM_H

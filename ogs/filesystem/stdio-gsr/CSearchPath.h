@@ -1,5 +1,4 @@
-#ifndef FILESYSTEM_CSEARCHPATH_H
-#define FILESYSTEM_CSEARCHPATH_H
+#pragma once
 
 #include <cstdint>
 #include <map>
@@ -25,8 +24,9 @@ namespace SearchPathFlag
 	};
 };
 
-struct CSearchPath
+class CSearchPath
 {
+public:
 	typedef std::map<const char*, std::unique_ptr<CPackFileEntry>, Less_C_String<const char*>> Entries_t;
 
 	CSearchPath() = default;
@@ -54,5 +54,3 @@ private:
 	CSearchPath( const CSearchPath& ) = delete;
 	CSearchPath& operator=( const CSearchPath& ) = delete;
 };
-
-#endif //FILESYSTEM_CSEARCHPATH_H

@@ -54,7 +54,6 @@ file(GLOB_RECURSE PLATFORM_SOURCES
 # Additional files out of the engine path that should be compiled in
 set(PROJECT_SOURCES_EXTERNAL
 	#crc32.cpp
-	${CMAKE_SOURCE_DIR}/ogs/tier1/interface.cpp # public/interface.cpp
 	#sys_shared.cpp
 	${CMAKE_SOURCE_DIR}/ogs/public/registry.cpp
 )
@@ -65,13 +64,15 @@ list(APPEND PROJECT_SOURCES ${PROJECT_SOURCES_EXTERNAL})
 # Check the main sources list for duplicated entries
 list(REMOVE_DUPLICATES PROJECT_SOURCES)
 
-# Build as dynamic library
-add_library(${PROJECT_NAME} MODULE ${PROJECT_HEADERS} ${PLATFORM_SOURCES} ${PROJECT_SOURCES})
+if(PROJECT_SOURCES)
+	# Build as dynamic library
+	add_library(${PROJECT_NAME} MODULE ${PROJECT_HEADERS} ${PLATFORM_SOURCES} ${PROJECT_SOURCES})
 
-# Set target properties
-set_target_properties(${PROJECT_NAME} PROPERTIES
-	OUTPUT_NAME "engine" # hw?
-)
+	# Set target properties
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		OUTPUT_NAME "engine" # hw?
+	)
 
-# Link with additional libraries
-#target_link_libraries()
+	# Link with additional libraries
+	target_link_libraries(${PROJECT_NAME} ogs-tier1)
+endif()

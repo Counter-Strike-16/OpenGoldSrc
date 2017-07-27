@@ -1,5 +1,4 @@
-#ifndef FILESYSTEM_CFILEHANDLE_H
-#define FILESYSTEM_CFILEHANDLE_H
+#pragma once
 
 #include <cstdio>
 #include <cstdint>
@@ -117,5 +116,3 @@ inline bool CFileHandle::operator==( const CFileHandle& other ) const
 {
 	return m_pFile == other.m_pFile;
 }
-
-#endif //FILESYSTEM_CFILEHANDLE_H

@@ -1,5 +1,6 @@
 # OpenGoldSource
 [![Build Status](https://travis-ci.org/headcrab-garage/OpenGoldSrc.svg)](https://travis-ci.org/headcrab-garage/OpenGoldSrc)
+[![license](https://img.shields.io/github/license/headcrab-garage/OpenGoldSrc.svg)](https://github.com/headcrab-garage/OpenGoldSrc/blob/master/LICENSE)
 
 >Gold Source is a version of Quake and Quake is open source so maybe that is an option for you.
 >

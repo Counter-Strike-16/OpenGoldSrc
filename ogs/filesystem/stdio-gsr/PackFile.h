@@ -1,5 +1,4 @@
-#ifndef FILESYSTEM_PACKFILE_H
-#define FILESYSTEM_PACKFILE_H
+#pragma once
 
 #include <cstdint>
 
@@ -141,5 +140,3 @@ inline bool IsAppendPack( const PackAppend_t& header )
 		header.identifier[ 2 ] == 'E';
 }
 }
-
-#endif //FILESYSTEM_PACKFILE_H

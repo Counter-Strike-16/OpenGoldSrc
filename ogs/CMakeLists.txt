@@ -4,14 +4,24 @@ project(OGS-root)
 set(CMAKE_CXX_STANDARD 11) #03/14/17 ?
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(OGS_HLSDK_PATHS
+	${CMAKE_SOURCE_DIR}/../hlsdk-core
+	${CMAKE_SOURCE_DIR}/hlsdk
+)
+
+set(OGS_GOLDSRCSDK_PATH)
+
+set(OGS_SHIFTUTIL_PATHS
+	${CMAKE_SOURCE_DIR}/../shiftutil
+	${CMAKE_SOURCE_DIR}/shiftutil
+)
+
 # Add include directories
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_SOURCE_DIR}/../hlsdk-core
+	${OGS_HLSDK_PATHS}
 	${CMAKE_SOURCE_DIR}/../hlsdk-core/public
-	${CMAKE_SOURCE_DIR}/hlsdk
-	${CMAKE_SOURCE_DIR}/../shiftutil
-	${CMAKE_SOURCE_DIR}/shiftutil
+	${OGS_SHIFTUTIL_PATHS}
 	${CMAKE_CURRENT_SOURCE_DIR}/common
 	${CMAKE_CURRENT_SOURCE_DIR}/public
 	${CMAKE_SOURCE_DIR}/../goldsrc-sdk/goldsrc/common
@@ -21,12 +31,17 @@ include_directories(
 
 # Add our modules
 ##add_subdirectory(dbg)
-add_subdirectory(tier1)
+#add_subdirectory(tier1)
 add_subdirectory(dedicated)
 #add_subdirectory(dedicated-legacy)
 #add_subdirectory(engine)
 ##add_subdirectory(filesystem)
-#add_subdirectory(game)
+
+#add_subdirectory(cl_dll)
+#add_subdirectory(dlls)
+
+#add_subdirectory(rw17/game)
+
 ##add_subdirectory(gameui)
 #add_subdirectory(hltv)
 add_subdirectory(hookers)

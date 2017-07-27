@@ -1,5 +1,4 @@
-#ifndef FILESYSTEM_CPACKFILEENTRY_H
-#define FILESYSTEM_CPACKFILEENTRY_H
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -64,5 +63,3 @@ struct PackLess
 		return PackFileEntryLessFunc( lhs, rhs );
 	}
 };
-
-#endif //FILESYSTEM_CPACKFILEENTRY_H
